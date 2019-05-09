@@ -1,0 +1,13 @@
+*.sql
+*.tar.gz
+*.zip
+.DS_Store
+.editorconfig
+Thumbs.db
+bin
+dist
+public
+node_modules
+tests
+tmp
+vendor
