@@ -13,6 +13,10 @@
  * Domain Path:       /languages/
  */
 
+// The following code is a derivative work of the code from the 
+// Algolia Search plugin for WordPress, which is licensed GPLv2. 
+// This code therefore is also licensed under the terms of the GNU Public License v2.0.
+
 // Nothing to see here if not loaded in WP context.
 if ( ! defined( 'WPINC' ) ) {
 	die;
