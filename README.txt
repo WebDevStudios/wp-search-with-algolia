@@ -89,11 +89,10 @@ Automatic updates should work like a charm; as always though, ensure you backup 
 == Screenshots ==
 
 1. Algolia Settings.
-2. Indexing configuration.
-3. Instant-search results configuration.
-4. Autocomplete dropdown configuration.
-5. Autocomplete dropdown example.
-6. Instant-search results page example.
+2. Search Page Settings.
+3. Autocomplete Settings.
+4. InstantSearch Dropdown.
+5. Search Results.
 
 == Changelog ==
 
