@@ -59,8 +59,8 @@ class Algolia_Admin_Page_Settings {
 		if ( ! $api->is_reachable() ) {
 			// Means this is the only reachable admin page, so make it the default one!
 			return add_menu_page(
-				'Algolia Search',
-				esc_html__( 'Algolia search', 'algolia' ),
+				'WDS Search with Algolia',
+				esc_html__( 'Algolia Search', 'algolia' ),
 				'manage_options',
 				$this->slug,
 				array( $this, 'display_page' ),
@@ -344,9 +344,9 @@ class Algolia_Admin_Page_Settings {
 	}
 
 	public function print_section_settings() {
-		echo '<p>' . esc_html__( 'Configure here your Algolia credentials. You can find them in the "API Keys" section of your Algolia dashboard.', 'algolia' ) . '</p>';
+		echo '<p>' . esc_html__( 'Configure your Algolia account credentials. You can find them in the "API Keys" section of your Algolia dashboard.', 'algolia' ) . '</p>';
 		echo '<p>' . esc_html__( 'Once you provide your Algolia Application ID and API key, this plugin will be able to securely communicate with Algolia servers.', 'algolia' ) . ' ' . esc_html__( 'We ensure your information is correct by testing them against the Algolia servers upon save.', 'algolia' ) . '</p>';
 		/* translators: the placeholder contains the URL to Algolia's website. */
-		echo '<p>' . wp_kses_post( sprintf( __( 'No Algolia account yet? <a href="%s">Follow this link</a> to create one for free in a couple of minutes!.', 'algolia' ), 'https://www.algolia.com/users/sign_up?utm_medium=extension&utm_source=WordPress&utm_campaign=admin' ) ) . '</p>';
+		echo '<p>' . wp_kses_post( sprintf( __( 'No Algolia account yet? <a href="%s">Follow this link</a> to create one for free in a couple of minutes!', 'algolia' ), 'https://www.algolia.com/users/sign_up' ) ) . '</p>';
 	}
 }
