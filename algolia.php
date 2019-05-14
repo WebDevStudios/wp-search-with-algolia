@@ -2,8 +2,8 @@
 
 /**
  * @wordpress-plugin
- * Plugin Name:       WDS Search with Algolia
- * Plugin URI:        https://github.com/WebDevStudios/wds-search-with-algolia
+ * Plugin Name:       WP Search with Algolia
+ * Plugin URI:        https://github.com/WebDevStudios/wp-search-with-algolia
  * Description:       Integrate the powerful Algolia search service with WordPress
  * Version:           1.0.0
  * Author:            WebDevStudios
@@ -13,8 +13,8 @@
  * Domain Path:       /languages/
  */
 
-// The following code is a derivative work of the code from the 
-// Algolia Search plugin for WordPress, which is licensed GPLv2. 
+// The following code is a derivative work of the code from the
+// Algolia Search plugin for WordPress, which is licensed GPLv2.
 // This code therefore is also licensed under the terms of the GNU Public License v2.0.
 
 // Nothing to see here if not loaded in WP context.

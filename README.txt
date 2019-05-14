@@ -1,4 +1,4 @@
-=== WDS Search with Algolia ===
+=== WP Search with Algolia ===
 Contributors: WebDevStudios, algolia, rayrutjes
 Tags: Search, Algolia, Autocomplete, instant-search, relevant search, search highlight, faceted search, find-as-you-type search, suggest, search by category, ajax search, better search, custom search
 Requires at least: 4.4
@@ -41,7 +41,7 @@ WDS Search with Algolia is also completely configurable and fully extensible by 
 
 Want to see out how we did it?
 
-Check it out here: [GitHub Repository](https://github.com/WebDevStudios/wds-search-with-algolia)
+Check it out here: [GitHub Repository](https://github.com/WebDevStudios/wp-search-with-algolia)
 
 Join the Algolia community and meet thousands of search enthusiasts. https://community.algolia.com/
 
@@ -59,7 +59,7 @@ Yes; Algolia will work with any theme, but the Instant Search results page may r
 
 = Where can I report bugs or contribute to the project? =
 
-Bugs can be reported either in our support forum or preferably on the [GitHub repository](https://github.com/WebDevStudios/wds-search-with-algolia/issues).
+Bugs can be reported either in our support forum or preferably on the [GitHub repository](https://github.com/WebDevStudios/wp-search-with-algolia/issues).
 
 == Installation ==
 
@@ -96,4 +96,4 @@ Automatic updates should work like a charm; as always though, ensure you backup 
 
 == Changelog ==
 
-[Checkout the complete changelog here](https://github.com/WebDevStudios/wds-search-with-algolia/releases).
+[Checkout the complete changelog here](https://github.com/WebDevStudios/wp-search-with-algolia/releases).
