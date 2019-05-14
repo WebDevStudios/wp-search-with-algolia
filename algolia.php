@@ -4,7 +4,7 @@
  * @wordpress-plugin
  * Plugin Name:       WDS Search with Algolia
  * Plugin URI:        https://github.com/WebDevStudios/wds-search-with-algolia
- * Description:       Improve search on your site. Autocomplete is included, along with full control over look, feel and relevance.
+ * Description:       Integrate the powerful Algolia search service with WordPress
  * Version:           1.0.0
  * Author:            WebDevStudios
  * Author URI:        https://webdevstudios.com
