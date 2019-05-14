@@ -6,7 +6,7 @@
  * Plugin URI:        https://github.com/WebDevStudios/wds-search-with-algolia
  * Description:       Improve search on your site. Autocomplete is included, along with full control over look, feel and relevance.
  * Version:           1.0.0
- * Author:            WebDevstudios
+ * Author:            WebDevStudios
  * Author URI:        https://webdevstudios.com
  * License:           GNU General Public License v2.0 / MIT License
  * Text Domain:       algolia
