@@ -96,4 +96,4 @@ Automatic updates should work like a charm; as always though, ensure you backup 
 
 == Changelog ==
 
-[Checkout the complete changelog here](hhttps://github.com/WebDevStudios/wds-search-with-algolia).
+[Checkout the complete changelog here](https://github.com/WebDevStudios/wds-search-with-algolia/releases).
