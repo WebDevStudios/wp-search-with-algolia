@@ -14,22 +14,47 @@ Improve search on your site. Autocomplete is included, along with full control o
 
 Improve search on your site. Autocomplete is included, along with full control over look, feel and relevance.
 
-Features:
-- Relevant search results in milliseconds
-- Native typo-tolerance
-- Is language-agnostic
-- Offers hooks and filters for easy customization
-- Built by developers, for developers
-
-*The following code is a derivative work of the code from the Algolia Search plugin for WordPress, which is licensed GPLv2.*
-
-== Requirements ==
+= Features =
+* Relevant search results in milliseconds
+* Native typo-tolerance
+* Is language-agnostic
+* Offers hooks and filters for easy customization
+* Built by developers, for developers
 
 This plugin requires API keys from [Algolia](https://www.algolia.com/). API keys are free for small personal projects and non-commercial use. Learn more about [commercial use pricing](https://www.algolia.com/pricing/).
 
+*The following code is a derivative work of the code from the Algolia Search plugin for WordPress, which is licensed GPLv2.*
+
 == Installation ==
 
-= Minimum Requirements =
+**If you have the *Search by Algolia – Instant & Relevant results* plugin installed, please deactivate it first.**
+
+From your WordPress dashboard
+
+1. **Visit** Plugins > Add New
+2. **Search** for "WP Search with Algolia"
+3. **Activate** WP Search with Algolia from your Plugins page
+4. **Click** on the new menu item "Algolia Search" and enter your API keys
+5. **Read** the step by step [configuration guide](https://community.algolia.com/wordpress/configuration.html)
+
+== Frequently Asked Questions ==
+
+= Is this plugin a fork? =
+
+Yes. The Algolia Team **[no longer supports their original plugin](https://community.algolia.com/wordpress/)**. The engineering team at WebDevStudios has forked the original plugin, and is now maintaining it.
+
+= Should I switch to this plugin? =
+
+Yes. Because Algolia no longer supports their plugin, you will no longer receive updates. WebDevStudios uses Algolia on many of it's projects, and is committed to maintaining this plugin for years to come.
+
+= How do I switch from the *Search by Algolia – Instant & Relevant results* plugin? =
+
+1. Deactivate the *Search by Algolia – Instant & Relevant results* plugin
+2. Follow the [installation instructions](https://wordpress.org/plugins/wp-search-with-algolia/#installation)
+3. Activate "WP Search with Algolia". Your API keys *should already be there*, if not enter them and then save settings
+4. Delete the *Search by Algolia – Instant & Relevant results* plugin
+
+= What are the minimum requirements? =
 
 * Requires WordPress 4.4+
 * PHP version 5.6 or greater (PHP 7.0 or greater is recommended)
@@ -40,32 +65,6 @@ This plugin requires API keys from [Algolia](https://www.algolia.com/). API keys
 * Some payment gateways require fsockopen support (for IPN access)
 
 Visit the [Search by Algolia server requirements documentation](https://community.algolia.com/wordpress/installation.html) for a detailed list of server requirements.
-
-= Automatic Installation =
-1. In the WP Dashboard, Click on "Plugins" --> "Add New" and search for "WP Search with Algolia"
-2. Activate
-3. *If you have the "Search by Algolia – Instant & Relevant results" plugin installed, please deactivate it first!*
-4. Enter your Algolia API keys
-
-= Manual Installation =
-Upload the WP Search with Algolia plugin to your site, Activate it, then Enter your Algolia API keys.
-
-== Getting started guide ==
-Once you have installed the plugin, you can follow the [step by step guide](https://community.algolia.com/wordpress/configuration.html).
-
-== Frequently Asked Questions ==
-
-= Is this plugin a fork? =
-Yes. The Algolia Team **[no longer supports their original plugin](https://community.algolia.com/wordpress/)**. The engineering team at WebDevStudios has forked the original plugin, and is now maintaining it.
-
-= Should I switch to this plugin? =
-Yes. Because Algolia no longer supports their plugin, you will no longer receive updates. WebDevStudios uses Algolia on many of it's projects, and is committed to maintaining this plugin for years to come.
-
-= How do I switch? =
-1. Deactivate the "Search by Algolia – Instant & Relevant results" plugin
-2. Follow the installation instructions above
-3. Activate "WP Search with Algolia". Your API keys *should already be there*, if not enter them and save settings
-4. Delete the "Search by Algolia – Instant & Relevant results" plugin
 
 = Where can I find Algolia documentation and user guides? =
 
@@ -81,105 +80,15 @@ Yes. This plugin will work with any theme, but the Instant Search results page m
 
 Bugs can be reported on our [GitHub repository](https://github.com/WebDevStudios/wp-search-with-algolia/issues).
 
-== About Algolia ==
+= About Algolia =
+
 Algolia offers its Search as a Service provider on a incremental payment program, including a free Community Plan which includes 10,000 records & 50,000 operations per month. Beyond that, [plans](https://www.algolia.com/pricing/) start at $29/month.
 
 *Note: there isn't a direct correlation between the number of posts in WordPress and the number of records in Algolia. Also note that we only offer support starting from the PRO plan.On average, you can expect to have about 10 times more records than you have posts, though this is not a golden rule and you could end up with more records.*
 
-== About WebDevStudios ==
+= About WebDevStudios =
+
 WebDevStudios provides end-to-end WordPress opportunities from strategy and planning to website design and development, as well as full data migration, extensive API integrations, scalability, performance and long-term guidance and maintenance. We have service options and solutions for start-ups, small to mid-size businesses, enterprise organizations and marketing agencies.
-
-== Screenshots ==
-
-1. Algolia Settings.
-2. Search Page Settings.
-3. Autocomplete Settings.
-4. InstantSearch Dropdown.
-5. Search Results.
-
-== Changelog ==
-
-Follow along with the changelog on [Github](https://github.com/WebDevStudios/wp-search-with-algolia/releases).
-
-=== WP Search with Algolia ===
-Contributors: WebDevStudios, williamsba1, gregrickaby, tw2113
-Tags: Search, Algolia, Autocomplete, instant-search, relevant search, search highlight, faceted search, find-as-you-type search, suggest, search by category, ajax search, better search, custom search
-Requires at least: 4.4
-Tested up to: 5.2
-Requires PHP: 5.6
-Stable tag: 1.0.0
-License: GNU General Public License v2.0, MIT License
-
-Improve search on your site. Autocomplete is included, along with full control over look, feel and relevance.
-
-== Description ==
-
-Improve search on your site. Autocomplete is included, along with full control over look, feel and relevance.
-
-Features:
-- Relevant search results in milliseconds
-- Native typo-tolerance
-- Is language-agnostic
-- Offers hooks and filters for easy customization
-- Built by developers, for developers
-
-*The following code is a derivative work of the code from the Algolia Search plugin for WordPress, which is licensed GPLv2.*
-
-== Requirements ==
-
-This plugin requires API keys from [Algolia](https://www.algolia.com/). API keys are free for small personal projects and non-commercial use. Learn more about [commercial use pricing](https://www.algolia.com/pricing/).
-
-== Installation ==
-
-= Minimum Requirements =
-
-* Requires WordPress 4.4+
-* PHP version 5.6 or greater (PHP 7.0 or greater is recommended)
-* MySQL version 5.0 or greater (MySQL 5.6 or greater is recommended)
-* cURL PHP extension
-* mbstring PHP extension
-* OpenSSL greater than 1.0.1
-* Some payment gateways require fsockopen support (for IPN access)
-
-Visit the [Search by Algolia server requirements documentation](https://community.algolia.com/wordpress/installation.html) for a detailed list of server requirements.
-
-= Automatic installation =
-Upload the WP Search with Algolia plugin to your site, Activate it, then enter your your Algolia API keys.
-
-== Getting started guide ==
-Once you have installed the plugin, you can follow the [step by step guide](https://community.algolia.com/wordpress/configuration.html).
-
-== Frequently Asked Questions ==
-
-= Is this plugin a fork? =
-Yes. The Algolia Team **[no longer supports their original plugin](https://community.algolia.com/wordpress/)**. The engineering team at WebDevStudios has forked the original plugin, and is now maintaining it.
-
-= Should I switch to this plugin? =
-Yes. As long as you enter your API keys, everything should work the same.
-
-= Where can I find Algolia documentation and user guides? =
-
-- For help setting up and configuring Search by Algolia please refer to our [user guide](https://community.algolia.com/wordpress/installation.html).
-- For extending or theming the Autocomplete dropdown, see our [Autocomplete Customization guide](https://community.algolia.com/wordpress/customize-autocomplete.html).
-- For extending or theming the Instant Search results page, see our [Search Page Customization guide](https://community.algolia.com/wordpress/customize-search-page.html).
-
-= Will it work with my theme? =
-
-Yes. This plugin will work with any theme, but the Instant Search results page may require some styling to make it match nicely. See the [Search Page Customization](https://community.algolia.com/wordpress/customize-search-page.html).
-
-= Where can I report bugs or contribute to the project? =
-
-Bugs can be reported on our [GitHub repository](https://github.com/WebDevStudios/wp-search-with-algolia/issues).
-
-== About Algolia ==
-
-Algolia offers its Search as a Service provider on a incremental payment program, including a free Community Plan which includes 10,000 records & 50,000 operations per month. Beyond that, plans start at $29/month.
-
-Note that there isn't a direct correlation between the number of posts in WordPress and the number of records in Algolia. Also note that we only offer support starting from the PRO plan.On average, you can expect to have about 10 times more records than you have posts, though this is not a golden rule and you could end up with more records.
-
-== About WebDevStudios ==
-
-WebDevStudios provides end-to-end WordPress opportunities from strategy and planning to website design and development, as well as full data migration, extensive API integrations, scalability, performance and long-term guidance and maintenance. We have service options and solutions for start-ups, small to mid-size businesses, enterprise organizations and marketing agencies. mispellled workd
 
 == Screenshots ==
 
