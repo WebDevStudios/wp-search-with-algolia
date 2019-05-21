@@ -29,7 +29,7 @@ This plugin requires API keys from [Algolia](https://www.algolia.com/). API keys
 * [Documentation](https://community.algolia.com/wordpress/configuration.html)
 * [Support](https://github.com/WebDevStudios/wp-search-with-algolia/issues)
 
-*This plugin is a derivative work of the code from the *Search by Algolia – Instant & Relevant results* plugin for WordPress, which is licensed under the GPLv2.*
+*This plugin is a derivative work of the code from the [Search by Algolia – Instant & Relevant results](https://wordpress.org/plugins/search-by-algolia-instant-relevant-results/) plugin for WordPress, which is licensed under the GPLv2.*
 
 == Installation ==
 
