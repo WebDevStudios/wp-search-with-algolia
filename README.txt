@@ -23,13 +23,19 @@ Improve search on your site. Autocomplete is included, along with full control o
 
 This plugin requires API keys from [Algolia](https://www.algolia.com/). API keys are free for small personal projects and non-commercial use. Learn more about [commercial use pricing](https://www.algolia.com/pricing/).
 
-*The following code is a derivative work of the code from the Algolia Search plugin for WordPress, which is licensed GPLv2.*
+= Links =
+* [WebDevStudios](https://webdevstudios.com)
+* [Algolia](https://www.advancedcustomfields.com)
+* [Documentation](https://community.algolia.com/wordpress/configuration.html)
+* [Support](https://github.com/WebDevStudios/wp-search-with-algolia/issues)
+
+*This plugin is a derivative work of the code from the *Search by Algolia – Instant & Relevant results* plugin for WordPress, which is licensed under the GPLv2.*
 
 == Installation ==
 
 **If you have the *Search by Algolia – Instant & Relevant results* plugin installed, please deactivate it first.**
 
-From your WordPress dashboard
+From your WordPress dashboard:
 
 1. **Visit** Plugins > Add New
 2. **Search** for "WP Search with Algolia"
@@ -47,12 +53,13 @@ Yes. The Algolia Team **[no longer supports their original plugin](https://commu
 
 Yes. Because Algolia no longer supports their plugin, you will no longer receive updates. WebDevStudios uses Algolia on many of it's projects, and is committed to maintaining this plugin for years to come.
 
-= How do I switch from the *Search by Algolia – Instant & Relevant results* plugin? =
+= How do I switch from the "Search by Algolia – Instant & Relevant results" plugin? =
 
-1. Deactivate the *Search by Algolia – Instant & Relevant results* plugin
-2. Follow the [installation instructions](https://wordpress.org/plugins/wp-search-with-algolia/#installation)
-3. Activate "WP Search with Algolia". Your API keys *should already be there*, if not enter them and then save settings
-4. Delete the *Search by Algolia – Instant & Relevant results* plugin
+1. **Deactivate** the *Search by Algolia – Instant & Relevant results* plugin
+2. **Follow** the [installation instructions](https://wordpress.org/plugins/wp-search-with-algolia/#installation)
+3. **Activate** *WP Search with Algolia*
+4. **Check** for your API Keys. They should already be there, if not, enter them and then save settings
+5. **Delete** the *Search by Algolia – Instant & Relevant results* plugin
 
 = What are the minimum requirements? =
 
@@ -68,9 +75,9 @@ Visit the [Search by Algolia server requirements documentation](https://communit
 
 = Where can I find Algolia documentation and user guides? =
 
-- For help setting up and configuring Search by Algolia please refer to our [user guide](https://community.algolia.com/wordpress/installation.html).
-- For extending or theming the Autocomplete dropdown, see our [Autocomplete Customization guide](https://community.algolia.com/wordpress/customize-autocomplete.html).
-- For extending or theming the Instant Search results page, see our [Search Page Customization guide](https://community.algolia.com/wordpress/customize-search-page.html).
+- For help setting up and configuring Search by Algolia please refer to the [user guide](https://community.algolia.com/wordpress/installation.html).
+- For extending or theming the Autocomplete dropdown, see the [Autocomplete Customization guide](https://community.algolia.com/wordpress/customize-autocomplete.html).
+- For extending or theming the Instant Search results page, see the [Search Page Customization guide](https://community.algolia.com/wordpress/customize-search-page.html).
 
 = Will it work with my theme? =
 
@@ -78,7 +85,7 @@ Yes. This plugin will work with any theme, but the Instant Search results page m
 
 = Where can I report bugs, request features, or contribute to the project? =
 
-Bugs can be reported on our [GitHub repository](https://github.com/WebDevStudios/wp-search-with-algolia/issues).
+All development is handled on [GitHub](https://github.com/WebDevStudios/wp-search-with-algolia/issues).
 
 = About Algolia =
 
@@ -92,11 +99,11 @@ WebDevStudios provides end-to-end WordPress opportunities from strategy and plan
 
 == Screenshots ==
 
-1. Algolia Settings.
-2. Search Page Settings.
-3. Autocomplete Settings.
-4. InstantSearch Dropdown.
-5. Search Results.
+1. Algolia Settings
+2. Search Page Settings
+3. Autocomplete Settings
+4. InstantSearch Dropdown
+5. Search Results
 
 == Changelog ==
 
