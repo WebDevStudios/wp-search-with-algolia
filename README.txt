@@ -25,7 +25,7 @@ This plugin requires API keys from [Algolia](https://www.algolia.com/). API keys
 
 = Links =
 * [WebDevStudios](https://webdevstudios.com)
-* [Algolia](https://www.advancedcustomfields.com)
+* [Algolia](https://algolia.com)
 * [Documentation](https://community.algolia.com/wordpress/configuration.html)
 * [Support](https://github.com/WebDevStudios/wp-search-with-algolia/issues)
 
