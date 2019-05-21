@@ -1,5 +1,6 @@
+
 === WP Search with Algolia ===
-Contributors: WebDevStudios, algolia, rayrutjes
+Contributors: WebDevStudios, williamsba1, gregrickaby, tw2113
 Tags: Search, Algolia, Autocomplete, instant-search, relevant search, search highlight, faceted search, find-as-you-type search, suggest, search by category, ajax search, better search, custom search
 Requires at least: 4.4
 Tested up to: 5.2
@@ -11,80 +12,82 @@ Improve search on your site. Autocomplete is included, along with full control o
 
 == Description ==
 
-The plugin provides relevant search results in milliseconds, ensuring that your users can find your best posts at the speed of thought. It also comes with native typo-tolerance and is language-agnostic, so that every WordPress user, no matter where they are, can benefit from it.
+Improve search on your site. Autocomplete is included, along with full control over look, feel and relevance.
 
-= About pricing =
+Features:
+- Relevant search results in milliseconds
+- Native typo-tolerance
+- Is language-agnostic
+- Offers hooks and filters for easy customization
+- Built by developers, for developers
 
-This plugin relies on the [Algolia service](https://www.algolia.com/) which requires you to [create an account here](https://www.algolia.com/users/sign_up).
-Algolia offers its Search as a Service provider on a incremental payment program, including a free Community Plan which includes 10,000 records & 50,000 operations per month.
-Beyond that, plans start at $29/month.
+*The following code is a derivative work of the code from the Algolia Search plugin for WordPress, which is licensed GPLv2.*
 
-Note that there isn’t a direct correlation between the number of posts in WordPress and the number of records in Algolia.
-Also note that we only offer support starting from the PRO plan.
-On average, you can expect to have about 10 times more records than you have posts, though this is not a golden rule and you could end up with more records.
+== Requirements ==
 
-= Getting started guide =
-Once you have installed the plugin, you can follow the step by step guide provided here: https://community.algolia.com/wordpress/configuration.html
-
-= Relevance =
-Algolia enhances your search functionality with a completely customizable search experience which can be seamlessly integrated into your Wordpress theme. It lets you create a find-as-you-type experience or an auto-complete dropdown menu, which provides relevant results from the first keystroke. Our extension also automatically synchronizes data (posts, taxonomies etc.) in real-time, making sure that any updates to your site are available as soon as they are made.
-
-= Speed =
-Algolia returns results in under 35ms on an average – irrespective of whether you have 100s or 1000s of posts.
-Our state-of-the-art infrastructure and distributed search network ensures that your readers benefit from this, no matter where they are.
-
-= Accessibility =
-WDS Search with Algolia gives you the ability to make all forms of data – blog posts, categories, users etc. – searchable from a single search bar. Algolia also gives you the ability to completely customize your search results based on criteria that makes sense for your business, such as popularity, date, relevance etc.
-
-= Built by developers for developers =
-WDS Search with Algolia is also completely configurable and fully extensible by means of WordPress filters and hooks, letting you build a custom search experience or theme based on Algolia.
-
-Want to see out how we did it?
-
-Check it out here: [GitHub Repository](https://github.com/WebDevStudios/wp-search-with-algolia)
-
-Join the Algolia community and meet thousands of search enthusiasts. https://community.algolia.com/
-
-== Frequently Asked Questions ==
-
-= Where can I find Algolia documentation and user guides? =
-
-- For help setting up and configuring Search by Algolia please refer to our [user guide](https://community.algolia.com/wordpress/installation.html)
-- For extending or theming the Autocomplete dropdown, see our [Autocomplete Customization guide](https://community.algolia.com/wordpress/customize-autocomplete.html).
-- For extending or theming the Instant Search results page, see our [Search Page Customization guide](https://community.algolia.com/wordpress/customize-search-page.html).
-
-= Will Algolia work with my theme? =
-
-Yes; Algolia will work with any theme, but the Instant Search results page may require some styling to make it match nicely.
-
-= Where can I report bugs or contribute to the project? =
-
-Bugs can be reported either in our support forum or preferably on the [GitHub repository](https://github.com/WebDevStudios/wp-search-with-algolia/issues).
+This plugin requires API keys from [Algolia](https://www.algolia.com/). API keys are free for small personal projects and non-commercial use. Learn more about [commercial use pricing](https://www.algolia.com/pricing/).
 
 == Installation ==
 
 = Minimum Requirements =
 
+* Requires WordPress 4.4+
 * PHP version 5.6 or greater (PHP 7.0 or greater is recommended)
 * MySQL version 5.0 or greater (MySQL 5.6 or greater is recommended)
+* cURL PHP extension
+* mbstring PHP extension
+* OpenSSL greater than 1.0.1
 * Some payment gateways require fsockopen support (for IPN access)
-* Requires WordPress 4.4+
 
 Visit the [Search by Algolia server requirements documentation](https://community.algolia.com/wordpress/installation.html) for a detailed list of server requirements.
 
-= Automatic installation =
+= Automatic Installation =
+1. In the WP Dashboard, Click on "Plugins" --> "Add New" and search for "WP Search with Algolia"
+2. Activate
+3. *If you have the "Search by Algolia – Instant & Relevant results" plugin installed, please deactivate it first!*
+4. Enter your Algolia API keys
 
-Automatic installation is the easiest option as WordPress handles the file transfers itself and you don’t need to leave your web browser. To do an automatic install of Search by Algolia, log in to your WordPress dashboard, navigate to the Plugins menu and click Add New.
+= Manual Installation =
+Upload the WP Search with Algolia plugin to your site, Activate it, then Enter your Algolia API keys.
 
-In the search field type “Algolia” and click Search Plugins. Once you’ve found our search plugin you can view details about it such as the point release, rating and description. Most importantly of course, you can install it by simply clicking “Install Now”.
+== Getting started guide ==
+Once you have installed the plugin, you can follow the [step by step guide](https://community.algolia.com/wordpress/configuration.html).
 
-= Manual installation =
+== Frequently Asked Questions ==
 
-The manual installation method involves downloading our search plugin and uploading it to your webserver via your favourite FTP application. The WordPress codex contains [instructions on how to do this here](https://codex.wordpress.org/Managing_Plugins#Manual_Plugin_Installation).
+= Is this plugin a fork? =
+Yes. The Algolia Team **[no longer supports their original plugin](https://community.algolia.com/wordpress/)**. The engineering team at WebDevStudios has forked the original plugin, and is now maintaining it.
 
-= Updating =
+= Should I switch to this plugin? =
+Yes. Because Algolia no longer supports their plugin, you will no longer receive updates. WebDevStudios uses Algolia on many of it's projects, and is committed to maintaining this plugin for years to come.
 
-Automatic updates should work like a charm; as always though, ensure you backup your site just in case.
+= How do I switch? =
+1. Deactivate the "Search by Algolia – Instant & Relevant results" plugin
+2. Follow the installation instructions above
+3. Activate "WP Search with Algolia". Your API keys *should already be there*, if not enter them and save settings
+4. Delete the "Search by Algolia – Instant & Relevant results" plugin
+
+= Where can I find Algolia documentation and user guides? =
+
+- For help setting up and configuring Search by Algolia please refer to our [user guide](https://community.algolia.com/wordpress/installation.html).
+- For extending or theming the Autocomplete dropdown, see our [Autocomplete Customization guide](https://community.algolia.com/wordpress/customize-autocomplete.html).
+- For extending or theming the Instant Search results page, see our [Search Page Customization guide](https://community.algolia.com/wordpress/customize-search-page.html).
+
+= Will it work with my theme? =
+
+Yes. This plugin will work with any theme, but the Instant Search results page may require some styling to make it match nicely. See the [Search Page Customization](https://community.algolia.com/wordpress/customize-search-page.html).
+
+= Where can I report bugs, request features, or contribute to the project? =
+
+Bugs can be reported on our [GitHub repository](https://github.com/WebDevStudios/wp-search-with-algolia/issues).
+
+== About Algolia ==
+Algolia offers its Search as a Service provider on a incremental payment program, including a free Community Plan which includes 10,000 records & 50,000 operations per month. Beyond that, [plans](https://www.algolia.com/pricing/) start at $29/month.
+
+*Note: there isn't a direct correlation between the number of posts in WordPress and the number of records in Algolia. Also note that we only offer support starting from the PRO plan.On average, you can expect to have about 10 times more records than you have posts, though this is not a golden rule and you could end up with more records.*
+
+== About WebDevStudios ==
+WebDevStudios provides end-to-end WordPress opportunities from strategy and planning to website design and development, as well as full data migration, extensive API integrations, scalability, performance and long-term guidance and maintenance. We have service options and solutions for start-ups, small to mid-size businesses, enterprise organizations and marketing agencies.
 
 == Screenshots ==
 
@@ -96,4 +99,96 @@ Automatic updates should work like a charm; as always though, ensure you backup 
 
 == Changelog ==
 
-[Checkout the complete changelog here](https://github.com/WebDevStudios/wp-search-with-algolia/releases).
+Follow along with the changelog on [Github](https://github.com/WebDevStudios/wp-search-with-algolia/releases).
+
+=== WP Search with Algolia ===
+Contributors: WebDevStudios, williamsba1, gregrickaby, tw2113
+Tags: Search, Algolia, Autocomplete, instant-search, relevant search, search highlight, faceted search, find-as-you-type search, suggest, search by category, ajax search, better search, custom search
+Requires at least: 4.4
+Tested up to: 5.2
+Requires PHP: 5.6
+Stable tag: 1.0.0
+License: GNU General Public License v2.0, MIT License
+
+Improve search on your site. Autocomplete is included, along with full control over look, feel and relevance.
+
+== Description ==
+
+Improve search on your site. Autocomplete is included, along with full control over look, feel and relevance.
+
+Features:
+- Relevant search results in milliseconds
+- Native typo-tolerance
+- Is language-agnostic
+- Offers hooks and filters for easy customization
+- Built by developers, for developers
+
+*The following code is a derivative work of the code from the Algolia Search plugin for WordPress, which is licensed GPLv2.*
+
+== Requirements ==
+
+This plugin requires API keys from [Algolia](https://www.algolia.com/). API keys are free for small personal projects and non-commercial use. Learn more about [commercial use pricing](https://www.algolia.com/pricing/).
+
+== Installation ==
+
+= Minimum Requirements =
+
+* Requires WordPress 4.4+
+* PHP version 5.6 or greater (PHP 7.0 or greater is recommended)
+* MySQL version 5.0 or greater (MySQL 5.6 or greater is recommended)
+* cURL PHP extension
+* mbstring PHP extension
+* OpenSSL greater than 1.0.1
+* Some payment gateways require fsockopen support (for IPN access)
+
+Visit the [Search by Algolia server requirements documentation](https://community.algolia.com/wordpress/installation.html) for a detailed list of server requirements.
+
+= Automatic installation =
+Upload the WP Search with Algolia plugin to your site, Activate it, then enter your your Algolia API keys.
+
+== Getting started guide ==
+Once you have installed the plugin, you can follow the [step by step guide](https://community.algolia.com/wordpress/configuration.html).
+
+== Frequently Asked Questions ==
+
+= Is this plugin a fork? =
+Yes. The Algolia Team **[no longer supports their original plugin](https://community.algolia.com/wordpress/)**. The engineering team at WebDevStudios has forked the original plugin, and is now maintaining it.
+
+= Should I switch to this plugin? =
+Yes. As long as you enter your API keys, everything should work the same.
+
+= Where can I find Algolia documentation and user guides? =
+
+- For help setting up and configuring Search by Algolia please refer to our [user guide](https://community.algolia.com/wordpress/installation.html).
+- For extending or theming the Autocomplete dropdown, see our [Autocomplete Customization guide](https://community.algolia.com/wordpress/customize-autocomplete.html).
+- For extending or theming the Instant Search results page, see our [Search Page Customization guide](https://community.algolia.com/wordpress/customize-search-page.html).
+
+= Will it work with my theme? =
+
+Yes. This plugin will work with any theme, but the Instant Search results page may require some styling to make it match nicely. See the [Search Page Customization](https://community.algolia.com/wordpress/customize-search-page.html).
+
+= Where can I report bugs or contribute to the project? =
+
+Bugs can be reported on our [GitHub repository](https://github.com/WebDevStudios/wp-search-with-algolia/issues).
+
+== About Algolia ==
+
+Algolia offers its Search as a Service provider on a incremental payment program, including a free Community Plan which includes 10,000 records & 50,000 operations per month. Beyond that, plans start at $29/month.
+
+Note that there isn't a direct correlation between the number of posts in WordPress and the number of records in Algolia. Also note that we only offer support starting from the PRO plan.On average, you can expect to have about 10 times more records than you have posts, though this is not a golden rule and you could end up with more records.
+
+== About WebDevStudios ==
+
+WebDevStudios provides end-to-end WordPress opportunities from strategy and planning to website design and development, as well as full data migration, extensive API integrations, scalability, performance and long-term guidance and maintenance. We have service options and solutions for start-ups, small to mid-size businesses, enterprise organizations and marketing agencies. mispellled workd
+
+== Screenshots ==
+
+1. Algolia Settings.
+2. Search Page Settings.
+3. Autocomplete Settings.
+4. InstantSearch Dropdown.
+5. Search Results.
+
+== Changelog ==
+
+Follow along with the changelog on [Github](https://github.com/WebDevStudios/wp-search-with-algolia/releases).
