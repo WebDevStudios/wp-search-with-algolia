@@ -1,0 +1,23 @@
+{
+  "name": "wp-search-with-algolia",
+  "version": "1.0.0",
+  "description": "Improve search on your site. Autocomplete is included, along with full control over look, feel and relevance.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/WebDevStudios/wp-search-with-algolia.git"
+  },
+  "author": "WebDevStudios",
+  "license": "GPL-2.0+",
+  "bugs": {
+    "url": "https://github.com/WebDevStudios/wp-search-with-algolia/issues"
+  },
+  "homepage": "https://github.com/WebDevStudios/wp-search-with-algolia#readme",
+  "dependencies": {
+    "algoliasearch": "^3.33.0",
+    "instantsearch.js": "^3.5.3"
+  }
+}
