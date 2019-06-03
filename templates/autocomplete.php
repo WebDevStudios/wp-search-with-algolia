@@ -94,7 +94,7 @@
 			});
 
 			search.addWidget(
-				algoliaWidgets.configure({
+				instantsearch.widgets.configure({
 					hitsPerPage: 5,
 				})
 			);

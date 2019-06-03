@@ -1,8 +1,5 @@
 import instantsearch from 'instantsearch.js';
 import { connectAutocomplete } from 'instantsearch.js/es/connectors';
-import * as widgets from 'instantsearch.js/es/widgets';
-
-export {widgets};
 
 export default connectAutocomplete(
 	({ indices, refine, widgetParams }, isFirstRendering) => {

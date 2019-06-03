@@ -1,10 +1,8 @@
 import algoliasearch from 'algoliasearch/lite';
-import instantsearch from 'instantsearch.js';
+import instantsearch from 'instantsearch.js/dist/instantsearch.production.min';
 import autocomplete from './autocomplete';
-import {widgets} from './autocomplete';
 
 window.algoliasearch = algoliasearch;
 window.instantsearch = instantsearch;
 window.algoliaAutocomplete = autocomplete;
-window.algoliaWidgets = widgets;
 

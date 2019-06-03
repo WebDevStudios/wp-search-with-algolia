@@ -84,7 +84,7 @@
 
 				/* Search box widget */
 				search.addWidget(
-					algoliaWidgets.searchBox({
+					instantsearch.widgets.searchBox({
 						container: '#algolia-search-box',
 						placeholder: 'Search for...',
 						wrapInput: false,
@@ -94,14 +94,14 @@
 
 				/* Stats widget */
 				search.addWidget(
-					algoliaWidgets.stats({
+					instantsearch.widgets.stats({
 						container: '#algolia-stats'
 					})
 				);
 
 				/* Hits widget */
 				search.addWidget(
-					algoliaWidgets.hits({
+					instantsearch.widgets.hits({
 						container: '#algolia-hits',
 						hitsPerPage: 10,
 						templates: {
@@ -134,14 +134,14 @@
 
 				/* Pagination widget */
 				search.addWidget(
-					algoliaWidgets.pagination({
+					instantsearch.widgets.pagination({
 						container: '#algolia-pagination'
 					})
 				);
 
 				/* Post types refinement widget */
 				search.addWidget(
-					algoliaWidgets.menu({
+					instantsearch.widgets.menu({
 						container: '#facet-post-types',
 						attribute: 'post_type_label',
 						sortBy: ['isRefined:desc', 'count:desc', 'name:asc'],
@@ -154,7 +154,7 @@
 
 				/* Categories refinement widget */
 				search.addWidget(
-					algoliaWidgets.hierarchicalMenu({
+					instantsearch.widgets.hierarchicalMenu({
 						container: '#facet-categories',
 						separator: ' > ',
 						sortBy: ['count'],
@@ -167,7 +167,7 @@
 
 				/* Tags refinement widget */
 				search.addWidget(
-					algoliaWidgets.refinementList({
+					instantsearch.widgets.refinementList({
 						container: '#facet-tags',
 						attribute: 'taxonomies.post_tag',
 						operator: 'and',
@@ -181,7 +181,7 @@
 
 				/* Users refinement widget */
 				search.addWidget(
-					algoliaWidgets.menu({
+					instantsearch.widgets.menu({
 						container: '#facet-users',
 						attribute: 'post_author.display_name',
 						sortBy: ['isRefined:desc', 'count:desc', 'name:asc'],
