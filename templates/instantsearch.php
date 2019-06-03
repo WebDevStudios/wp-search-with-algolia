@@ -51,24 +51,40 @@
 				}
 
 				/* Instantiate instantsearch.js */
-				var search = instantsearch({
-					appId: algolia.application_id,
-					apiKey: algolia.search_api_key,
+				var client       = algoliasearch(algolia.application_id, algolia.search_api_key);
+				var search       = instantsearch({
 					indexName: algolia.indices.searchable_posts.name,
-					urlSync: {
-						mapping: {'q': 's'},
-						trackedParameters: ['query']
-					},
+					searchClient: client,
+					// urlSync: {
+					// 	mapping: {'q': 's'},
+					// 	trackedParameters: ['query']
+					// },
+                  routing: {
+						stateMapping: {
+							stateToRoute({query, refinementList, page}) {
+								return {
+									s: query,
+                                  paged: page
+                                }
+                            },
+                          routeToState({s, paged}) {
+								return {
+									query: s,
+                                  page: paged
+                                }
+                          }
+                        }
+                  },
 					searchParameters: {
 						facetingAfterDistinct: true,
-			highlightPreTag: '__ais-highlight__',
-			highlightPostTag: '__/ais-highlight__'
+						highlightPreTag: '__ais-highlight__',
+						highlightPostTag: '__/ais-highlight__'
 					}
 				});
 
 				/* Search box widget */
 				search.addWidget(
-					instantsearch.widgets.searchBox({
+					algoliaWidgets.searchBox({
 						container: '#algolia-search-box',
 						placeholder: 'Search for...',
 						wrapInput: false,
@@ -78,14 +94,14 @@
 
 				/* Stats widget */
 				search.addWidget(
-					instantsearch.widgets.stats({
+					algoliaWidgets.stats({
 						container: '#algolia-stats'
 					})
 				);
 
 				/* Hits widget */
 				search.addWidget(
-					instantsearch.widgets.hits({
+					algoliaWidgets.hits({
 						container: '#algolia-hits',
 						hitsPerPage: 10,
 						templates: {
@@ -118,16 +134,16 @@
 
 				/* Pagination widget */
 				search.addWidget(
-					instantsearch.widgets.pagination({
+					algoliaWidgets.pagination({
 						container: '#algolia-pagination'
 					})
 				);
 
 				/* Post types refinement widget */
 				search.addWidget(
-					instantsearch.widgets.menu({
+					algoliaWidgets.menu({
 						container: '#facet-post-types',
-						attributeName: 'post_type_label',
+						attribute: 'post_type_label',
 						sortBy: ['isRefined:desc', 'count:desc', 'name:asc'],
 						limit: 10,
 						templates: {
@@ -138,7 +154,7 @@
 
 				/* Categories refinement widget */
 				search.addWidget(
-					instantsearch.widgets.hierarchicalMenu({
+					algoliaWidgets.hierarchicalMenu({
 						container: '#facet-categories',
 						separator: ' > ',
 						sortBy: ['count'],
@@ -151,9 +167,9 @@
 
 				/* Tags refinement widget */
 				search.addWidget(
-					instantsearch.widgets.refinementList({
+					algoliaWidgets.refinementList({
 						container: '#facet-tags',
-						attributeName: 'taxonomies.post_tag',
+						attribute: 'taxonomies.post_tag',
 						operator: 'and',
 						limit: 15,
 						sortBy: ['isRefined:desc', 'count:desc', 'name:asc'],
@@ -165,9 +181,9 @@
 
 				/* Users refinement widget */
 				search.addWidget(
-					instantsearch.widgets.menu({
+					algoliaWidgets.menu({
 						container: '#facet-users',
-						attributeName: 'post_author.display_name',
+						attribute: 'post_author.display_name',
 						sortBy: ['isRefined:desc', 'count:desc', 'name:asc'],
 						limit: 10,
 						templates: {
