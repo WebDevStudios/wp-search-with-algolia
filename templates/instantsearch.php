@@ -10,10 +10,22 @@
 			<div id="algolia-pagination"></div>
 		</main>
 		<aside id="ais-facets">
-			<section class="ais-facets" id="facet-post-types"></section>
-			<section class="ais-facets" id="facet-categories"></section>
-			<section class="ais-facets" id="facet-tags"></section>
-			<section class="ais-facets" id="facet-users"></section>
+            <div>
+                <h3>Post Types</h3>
+                <section class="ais-facets" id="facet-post-types"></section>
+            </div>
+            <div>
+                <h3>Categories</h3>
+                <section class="ais-facets" id="facet-categories"></section>
+            </div>
+            <div>
+                <h3>Tags</h3>
+                <section class="ais-facets" id="facet-tags"></section>
+            </div>
+            <div>
+                <h3>Users</h3>
+                <section class="ais-facets" id="facet-users"></section>
+            </div>
 		</aside>
 	</div>
 
@@ -146,9 +158,6 @@
 						attribute: 'post_type_label',
 						sortBy: ['isRefined:desc', 'count:desc', 'name:asc'],
 						limit: 10,
-						templates: {
-							header: '<h3 class="widgettitle">Post Type</h3>'
-						},
 					})
 				);
 
@@ -159,9 +168,6 @@
 						separator: ' > ',
 						sortBy: ['count'],
 						attributes: ['taxonomies_hierarchical.category.lvl0', 'taxonomies_hierarchical.category.lvl1', 'taxonomies_hierarchical.category.lvl2'],
-						templates: {
-							header: '<h3 class="widgettitle">Categories</h3>'
-						}
 					})
 				);
 
@@ -173,9 +179,6 @@
 						operator: 'and',
 						limit: 15,
 						sortBy: ['isRefined:desc', 'count:desc', 'name:asc'],
-						templates: {
-							header: '<h3 class="widgettitle">Tags</h3>'
-						}
 					})
 				);
 
@@ -186,9 +189,6 @@
 						attribute: 'post_author.display_name',
 						sortBy: ['isRefined:desc', 'count:desc', 'name:asc'],
 						limit: 10,
-						templates: {
-							header: '<h3 class="widgettitle">Authors</h3>'
-						}
 					})
 				);
 
