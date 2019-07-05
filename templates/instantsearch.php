@@ -32,14 +32,14 @@
 	<script type="text/html" id="tmpl-instantsearch-hit">
 		<article itemtype="http://schema.org/Article">
 			<# if ( data.images.thumbnail ) { #>
-			<div class="ais-hits--thumbnail">
+			<div class="ais-Hits--thumbnail">
 				<a href="{{ data.permalink }}" title="{{ data.post_title }}">
 					<img src="{{ data.images.thumbnail.url }}" alt="{{ data.post_title }}" title="{{ data.post_title }}" itemprop="image" />
 				</a>
 			</div>
 			<# } #>
 
-			<div class="ais-hits--content">
+			<div class="ais-Hits--content">
 				<h2 itemprop="name headline"><a href="{{ data.permalink }}" title="{{ data.post_title }}" itemprop="url">{{{ data._highlightResult.post_title.value }}}</a></h2>
 				<div class="excerpt">
 					<p>
@@ -195,7 +195,7 @@
 				/* Start */
 				search.start();
 
-				jQuery('#algolia-search-box input').attr('type', 'search').select();
+				jQuery('.ais-SearchBox-input').attr('type', 'search').select();
 			}
 		});
 	</script>
