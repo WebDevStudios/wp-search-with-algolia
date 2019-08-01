@@ -5,7 +5,7 @@
  * Plugin Name:       WP Search with Algolia
  * Plugin URI:        https://github.com/WebDevStudios/wp-search-with-algolia
  * Description:       Integrate the powerful Algolia search service with WordPress
- * Version:           1.0.0
+ * Version:           2.11.3
  * Author:            WebDevStudios
  * Author URI:        https://webdevstudios.com
  * License:           GNU General Public License v2.0 / MIT License
@@ -36,7 +36,7 @@ if ( version_compare( $wp_version, '4.4', '<' ) ) {
 }
 
 // The Algolia Search plugin version.
-define( 'ALGOLIA_VERSION', '1.0.0' );
+define( 'ALGOLIA_VERSION', '2.11.3' );
 define( 'ALGOLIA_PLUGIN_BASENAME', plugin_basename( __FILE__ ) );
 
 if ( ! defined( 'ALGOLIA_PATH' ) ) {
