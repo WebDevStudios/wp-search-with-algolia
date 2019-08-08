@@ -9,7 +9,7 @@
  * Author:            WebDevStudios
  * Author URI:        https://webdevstudios.com
  * License:           GNU General Public License v2.0 / MIT License
- * Text Domain:       algolia
+ * Text Domain:       wp-search-with-algolia
  * Domain Path:       /languages/
  */
 
