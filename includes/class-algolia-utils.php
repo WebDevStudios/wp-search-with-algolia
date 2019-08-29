@@ -151,6 +151,8 @@ class Algolia_Utils {
 			$content = preg_replace( $pattern, '', $content );
 		}
 
+		$content = str_replace( '&nbsp;', ' ', $content );
+
 		return html_entity_decode( $content );
 	}
 
