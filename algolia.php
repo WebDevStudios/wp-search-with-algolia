@@ -38,6 +38,7 @@ if ( version_compare( $wp_version, '4.4', '<' ) ) {
 // The Algolia Search plugin version.
 define( 'ALGOLIA_VERSION', '1.0.0' );
 define( 'ALGOLIA_PLUGIN_BASENAME', plugin_basename( __FILE__ ) );
+define( 'ALGOLIA_PLUGIN_URL', plugin_url( __FILE__ ) );
 
 if ( ! defined( 'ALGOLIA_PATH' ) ) {
 	define( 'ALGOLIA_PATH', plugin_dir_path( __FILE__ ) );
