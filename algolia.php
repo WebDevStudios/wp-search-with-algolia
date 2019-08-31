@@ -9,7 +9,7 @@
  * Author:            WebDevStudios
  * Author URI:        https://webdevstudios.com
  * License:           GNU General Public License v2.0 / MIT License
- * Text Domain:       algolia
+ * Text Domain:       wp-search-with-algolia
  * Domain Path:       /languages/
  */
 
@@ -25,14 +25,14 @@ if ( ! defined( 'WPINC' ) ) {
 // Check for required PHP version.
 if ( version_compare( PHP_VERSION, '5.6', '<' ) ) {
 	/* translators: the placeholder always contains the plugin version. */
-	exit( sprintf( esc_html__( 'Algolia plugin requires PHP 5.6 or higher. You’re still on %s.', 'algolia' ), esc_html( PHP_VERSION ) ) );
+	exit( sprintf( esc_html__( 'Algolia plugin requires PHP 5.6 or higher. You’re still on %s.', 'wp-search-with-algolia' ), esc_html( PHP_VERSION ) ) );
 }
 
 // Check for required WordPress version.
 global $wp_version;
 if ( version_compare( $wp_version, '4.4', '<' ) ) {
 	/* translators: the placeholder always contains the plugin version. */
-	exit( sprintf( esc_html__( 'Algolia plugin requires at least WordPress in version 4.4., You are on %s', 'algolia' ), esc_html( $wp_version ) ) );
+	exit( sprintf( esc_html__( 'Algolia plugin requires at least WordPress in version 4.4., You are on %s', 'wp-search-with-algolia' ), esc_html( $wp_version ) ) );
 }
 
 // The Algolia Search plugin version.
@@ -48,10 +48,10 @@ if ( ! defined( 'ALGOLIA_PATH' ) ) {
  * I18n.
  */
 function algolia_load_textdomain() {
-	$locale = apply_filters( 'plugin_locale', get_locale(), 'algolia' );
+	$locale = apply_filters( 'plugin_locale', get_locale(), 'wp-search-with-algolia' );
 
-	load_textdomain( 'algolia', WP_LANG_DIR . '/algolia/algolia-' . $locale . '.mo' );
-	load_plugin_textdomain( 'algolia', false, plugin_basename( dirname( __FILE__ ) ) . '/languages/' );
+	load_textdomain( 'wp-search-with-algolia', WP_LANG_DIR . '/algolia/algolia-' . $locale . '.mo' );
+	load_plugin_textdomain( 'wp-search-with-algolia', false, plugin_basename( dirname( __FILE__ ) ) . '/languages/' );
 }
 
 add_action( 'init', 'algolia_load_textdomain' );

@@ -24,7 +24,7 @@ class Algolia_Admin {
 			add_action( 'wp_ajax_algolia_re_index', array( $this, 're_index' ) );
 			add_action( 'wp_ajax_algolia_push_settings', array( $this, 'push_settings' ) );
 
-			if ( isset( $_GET['page'] ) && substr( (string) $_GET['page'], 0, 7 ) === 'algolia' ) {
+			if ( isset( $_GET['page'] ) && substr( (string) $_GET['page'], 0, 7 ) === 'wp-search-with-algolia' ) {
 				add_action( 'admin_notices', array( $this, 'display_reindexing_notices' ) );
 			}
 		}
@@ -53,17 +53,17 @@ class Algolia_Admin {
 	public function display_unmet_requirements_notices() {
 		if ( ! extension_loaded( 'mbstring' ) ) {
 			echo '<div class="error notice">
-					  <p>' . esc_html__( 'Algolia Search requires the "mbstring" PHP extension to be enabled. Please contact your hosting provider.', 'algolia' ) . '</p>
+					  <p>' . esc_html__( 'Algolia Search requires the "mbstring" PHP extension to be enabled. Please contact your hosting provider.', 'wp-search-with-algolia' ) . '</p>
 				  </div>';
 		} elseif ( ! function_exists( 'mb_ereg_replace' ) ) {
 			echo '<div class="error notice">
-					  <p>' . esc_html__( 'Algolia needs "mbregex" NOT to be disabled. Please contact your hosting provider.', 'algolia' ) . '</p>
+					  <p>' . esc_html__( 'Algolia needs "mbregex" NOT to be disabled. Please contact your hosting provider.', 'wp-search-with-algolia' ) . '</p>
 				  </div>';
 		}
 
 		if ( ! extension_loaded( 'curl' ) ) {
 			echo '<div class="error notice">
-					  <p>' . esc_html__( 'Algolia Search requires the "cURL" PHP extension to be enabled. Please contact your hosting provider.', 'algolia' ) . '</p>
+					  <p>' . esc_html__( 'Algolia Search requires the "cURL" PHP extension to be enabled. Please contact your hosting provider.', 'wp-search-with-algolia' ) . '</p>
 				  </div>';
 
 			return;
@@ -86,7 +86,7 @@ class Algolia_Admin {
 
 		if ( $enabled && ! in_array( 'algolia_', $settings ) ) {
 			/* translators: placeholder contains the URL to the caching plugin's config page. */
-			$message = sprintf( __( 'In order for <strong>database caching</strong> to work with Algolia you must add <code>algolia_</code> to the "Ignored Query Stems" option in W3 Total Cache settings <a href="%s">here</a>.', 'algolia' ), esc_url( admin_url( 'admin.php?page=w3tc_dbcache' ) ) );
+			$message = sprintf( __( 'In order for <strong>database caching</strong> to work with Algolia you must add <code>algolia_</code> to the "Ignored Query Stems" option in W3 Total Cache settings <a href="%s">here</a>.', 'wp-search-with-algolia' ), esc_url( admin_url( 'admin.php?page=w3tc_dbcache' ) ) );
 			?>
 			<div class="error">
 				<p><?php echo wp_kses_post( $message ); ?></p>

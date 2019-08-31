@@ -74,10 +74,10 @@ class Algolia_CLI extends \WP_CLI_Command {
 
 		if ( $clear ) {
 			/* translators: the placeholder will contain the name of the index. */
-			WP_CLI::log( sprintf( __( 'About to clear index %s...', 'algolia' ), $index->get_name() ) );
+			WP_CLI::log( sprintf( __( 'About to clear index %s...', 'wp-search-with-algolia' ), $index->get_name() ) );
 			$index->clear();
 			/* translators: the placeholder will contain the name of the index. */
-			WP_CLI::success( sprintf( __( 'Correctly cleared index "%s".', 'algolia' ), $index->get_name() ) );
+			WP_CLI::success( sprintf( __( 'Correctly cleared index "%s".', 'wp-search-with-algolia' ), $index->get_name() ) );
 		}
 
 		$total_pages = $index->get_re_index_max_num_pages();

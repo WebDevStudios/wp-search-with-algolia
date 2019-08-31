@@ -3,7 +3,7 @@
 	<label>
 		<input type="radio" value="native" name="algolia_override_native_search" <?php if ( 'native' === $value ) :
 ?>checked<?php endif; ?>>
-		<?php esc_html_e( 'Do not use Algolia', 'algolia' ); ?>
+		<?php esc_html_e( 'Do not use Algolia', 'wp-search-with-algolia' ); ?>
 	</label>
 	<div class="radio-info">
 		Do not use Algolia for searching at all.
@@ -16,7 +16,7 @@
 		if ( 'backend' === $value ) :
 ?>
 checked<?php endif; ?>>
-		<?php esc_html_e( 'Use Algolia in the backend', 'algolia' ); ?>
+		<?php esc_html_e( 'Use Algolia in the backend', 'wp-search-with-algolia' ); ?>
 	</label>
 	<div class="radio-info">
 		With this option WordPress search will be powered by Algolia behind the scenes.
@@ -30,7 +30,7 @@ checked<?php endif; ?>>
 		if ( 'instantsearch' === $value ) :
 ?>
 checked<?php endif; ?>>
-		<?php esc_html_e( 'Use Algolia with Instantsearch.js', 'algolia' ); ?>
+		<?php esc_html_e( 'Use Algolia with Instantsearch.js', 'wp-search-with-algolia' ); ?>
 	</label>
 	<div class="radio-info">
 		This will replace the search page with an instant search experience powered by Algolia.

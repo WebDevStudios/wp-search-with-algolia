@@ -76,7 +76,7 @@
 
 <script type="text/html" id="tmpl-autocomplete-empty">
   <div class="autocomplete-empty">
-	  <?php esc_html_e( 'No results matched your query ', 'algolia' ); ?>
+	  <?php esc_html_e( 'No results matched your query ', 'wp-search-with-algolia' ); ?>
 	<span class="empty-query">"{{ data.query }}"</span>
   </div>
 </script>
