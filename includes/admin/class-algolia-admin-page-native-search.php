@@ -41,8 +41,8 @@ class Algolia_Admin_Page_Native_Search {
 	public function add_page() {
 		add_submenu_page(
 			'algolia',
-			esc_html__( 'Search Page', 'algolia' ),
-			esc_html__( 'Search Page', 'algolia' ),
+			esc_html__( 'Search Page', 'wp-search-with-algolia' ),
+			esc_html__( 'Search Page', 'wp-search-with-algolia' ),
 			$this->capability,
 			$this->slug,
 			array( $this, 'display_page' )
@@ -59,7 +59,7 @@ class Algolia_Admin_Page_Native_Search {
 
 		add_settings_field(
 			'algolia_override_native_search',
-			esc_html__( 'Search results', 'algolia' ),
+			esc_html__( 'Search results', 'wp-search-with-algolia' ),
 			array( $this, 'override_native_search_callback' ),
 			$this->slug,
 			$this->section
@@ -85,14 +85,14 @@ class Algolia_Admin_Page_Native_Search {
 			add_settings_error(
 				$this->option_group,
 				'native_search_enabled',
-				esc_html__( 'WordPress search is now based on Algolia!', 'algolia' ),
+				esc_html__( 'WordPress search is now based on Algolia!', 'wp-search-with-algolia' ),
 				'updated'
 			);
 		} elseif ( 'instantsearch' === $value ) {
 			add_settings_error(
 				$this->option_group,
 				'native_search_enabled',
-				esc_html__( 'WordPress search is now based on Algolia instantsearch.js!', 'algolia' ),
+				esc_html__( 'WordPress search is now based on Algolia instantsearch.js!', 'wp-search-with-algolia' ),
 				'updated'
 			);
 		} else {
@@ -100,7 +100,7 @@ class Algolia_Admin_Page_Native_Search {
 			add_settings_error(
 				$this->option_group,
 				'native_search_disabled',
-				esc_html__( 'You chose to keep the WordPress native search instead of Algolia. If you are using the autocomplete feature of the plugin we highly recommend you turn Algolia search on instead of the WordPress native search.', 'algolia' ),
+				esc_html__( 'You chose to keep the WordPress native search instead of Algolia. If you are using the autocomplete feature of the plugin we highly recommend you turn Algolia search on instead of the WordPress native search.', 'wp-search-with-algolia' ),
 				'updated'
 			);
 		}
@@ -134,7 +134,7 @@ class Algolia_Admin_Page_Native_Search {
 		$searchable_posts_index = $this->plugin->get_index( 'searchable_posts' );
 		if ( false === $searchable_posts_index->is_enabled() && isset( $_GET['page'] ) && $_GET['page'] === $this->slug ) {
 			/* translators: placeholder contains the link to the indexing page. */
-			$message = sprintf( __( 'Searchable posts index needs to be checked on the <a href="%s">Algolia: Indexing page</a> for the search results to be powered by Algolia.', 'algolia' ), esc_url( admin_url( 'admin.php?page=algolia-indexing' ) ) );
+			$message = sprintf( __( 'Searchable posts index needs to be checked on the <a href="%s">Algolia: Indexing page</a> for the search results to be powered by Algolia.', 'wp-search-with-algolia' ), esc_url( admin_url( 'admin.php?page=algolia-indexing' ) ) );
 			echo '<div class="error notice">
 					  <p>' . wp_kses_post( $message ) . '</p>
 				  </div>';
@@ -145,7 +145,7 @@ class Algolia_Admin_Page_Native_Search {
 	 * Prints the section text.
 	 */
 	public function print_section_settings() {
-		echo '<p>' . esc_html__( 'By enabling this plugin to override the native WordPress search, your search results will be powered by Algolia\'s typo-tolerant & relevant search algorithms.', 'algolia' ) . '</p>';
+		echo '<p>' . esc_html__( 'By enabling this plugin to override the native WordPress search, your search results will be powered by Algolia\'s typo-tolerant & relevant search algorithms.', 'wp-search-with-algolia' ) . '</p>';
 
 		// todo: replace this with a check on the searchable_posts_index
 		$indices = $this->plugin->get_indices(
@@ -157,7 +157,7 @@ class Algolia_Admin_Page_Native_Search {
 
 		if ( empty( $indices ) ) {
 			echo '<div class="error-message">' .
-					esc_html( __( 'You have no index containing only posts yet. Please index some content on the `Indexing` page.', 'algolia' ) ) .
+					esc_html( __( 'You have no index containing only posts yet. Please index some content on the `Indexing` page.', 'wp-search-with-algolia' ) ) .
 					'</div>';
 		}
 	}

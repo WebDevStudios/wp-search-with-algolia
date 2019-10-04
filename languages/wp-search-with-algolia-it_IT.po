@@ -1,41 +1,45 @@
-# Copyright (C) 2017 Algolia
-# This file is distributed under the MIT License, GNU General Public License v2.0.
 msgid ""
 msgstr ""
-"Project-Id-Version: Search by Algolia – Instant & Relevant results 2.8.0\n"
-"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/algolia\n"
-"POT-Creation-Date: 2017-10-05 19:11+0200\n"
+"Project-Id-Version: WP Search with Algolia\n"
+"POT-Creation-Date: 2019-08-31 15:33-0500\n"
+"PO-Revision-Date: 2019-08-31 15:33-0500\n"
+"Last-Translator: Richard Aber <richard.aber@webdevstudios.com>\n"
+"Language-Team: \n"
+"Language: it_IT\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"PO-Revision-Date: 2017-10-16 18:02+0200\n"
-"Language-Team: \n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Poedit-SourceCharset: UTF-8\n"
-"X-Poedit-KeywordsList: __;_e;_x:1,2c;_ex:1,2c;_n:1,2;_nx:1,2,4c;_n_noop:1,2;"
-"_nx_noop:1,2,3c;esc_attr__;esc_html__;esc_attr_e;esc_html_e;esc_attr_x:1,2c;"
-"esc_html_x:1,2c\n"
+"X-Generator: Poedit 2.2.3\n"
 "X-Poedit-Basepath: ..\n"
-"X-Textdomain-Support: yes\n"
-"X-Generator: Poedit 1.8.11\n"
-"Last-Translator: Giuseppe Pignataro <rogepix@gmail.com>\n"
-"Language: it_IT\n"
+"X-Poedit-Flags-xgettext: --add-comments=translators:\n"
+"X-Poedit-WPHeader: algolia.php\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+"X-Poedit-KeywordsList: __;_e;_n:1,2;_x:1,2c;_ex:1,2c;_nx:4c,1,2;esc_attr__;"
+"esc_attr_e;esc_attr_x:1,2c;esc_html__;esc_html_e;esc_html_x:1,2c;_n_noop:1,2;"
+"_nx_noop:3c,1,2;__ngettext_noop:1,2\n"
 "X-Poedit-SearchPath-0: .\n"
+"X-Poedit-SearchPathExcluded-0: *.min.js\n"
 
-#: algolia.php:23
-msgid "Algolia plugin requires PHP 5.3 or higher. You’re still on %s."
+#. translators: the placeholder always contains the PHP version.
+#: algolia.php:28
+#, php-format
+msgid "Algolia plugin requires PHP 5.6 or higher. You’re still on %s."
 msgstr ""
-"Il plugin Algolia richiede PHP 5.3 o superiore. Tu sei ancora sulla versione "
+"Il plugin Algolia richiede PHP 5.6 o superiore. Tu sei ancora sulla versione "
 "%s."
 
-#: algolia.php:29
+#. translators: the placeholder always contains the WordPress version.
+#: algolia.php:35
+#, php-format
 msgid ""
-"Algolia plugin requires at least WordPress in version 3.7.14., You are on %s"
+"Algolia plugin requires at least WordPress in version 4.4., You are on %s"
 msgstr ""
-"Il plugin Algolia richiede almeno la versione 3.7.14 di Wordpress. Tu sei "
+"Il plugin Algolia richiede almeno la versione 4.4 di Wordpress. Tu sei "
 "ancora sulla versione %s"
 
 #: includes/admin/class-algolia-admin-page-autocomplete.php:53
+#: includes/admin/class-algolia-admin-page-settings.php:63
 msgid "Algolia Search"
 msgstr "Ricerca Algolia"
 
@@ -52,7 +56,7 @@ msgstr "Abilita autocompletamento"
 msgid "Configuration"
 msgstr "Configurazione"
 
-#: includes/admin/class-algolia-admin-page-autocomplete.php:119
+#: includes/admin/class-algolia-admin-page-autocomplete.php:120
 msgid ""
 "Autocomplete configuration has been saved. Make sure to hit the \"re-index\" "
 "buttons of the different indices that are not indexed yet."
@@ -61,15 +65,9 @@ msgstr ""
 "premere i pulsanti di \"ri-indicizzazione\" sui differenti indici che non "
 "sono stati ancora indicizzati."
 
-#: includes/admin/class-algolia-admin-page-autocomplete.php:158
-msgid ""
-"You have enabled the Algolia Autocomplete feature but did not choose any "
-"index to search in."
-msgstr ""
-"Hai abilita la funzione di autocompletamento di Algolia ma non hai ancora "
-"selezionato nessun indice in cui cercare."
-
+#. translators: placeholder contains the URL to the autocomplete configuration page.
 #: includes/admin/class-algolia-admin-page-autocomplete.php:159
+#, php-format
 msgid ""
 "Please select one or multiple indices on the <a href=\"%s\">Algolia: "
 "Autocomplete configuration page</a>."
@@ -77,7 +75,15 @@ msgstr ""
 "Seleziona uno o più indici nella  <a href=\"%s\">Algolia: pagina di "
 "configurazione autocompletamento</a>."
 
-#: includes/admin/class-algolia-admin-page-autocomplete.php:168
+#: includes/admin/class-algolia-admin-page-autocomplete.php:161
+msgid ""
+"You have enabled the Algolia Autocomplete feature but did not choose any "
+"index to search in."
+msgstr ""
+"Hai abilita la funzione di autocompletamento di Algolia ma non hai ancora "
+"selezionato nessun indice in cui cercare."
+
+#: includes/admin/class-algolia-admin-page-autocomplete.php:171
 msgid ""
 "The autocomplete feature adds a find-as-you-type dropdown menu to your "
 "search bar(s)."
@@ -113,7 +119,9 @@ msgstr ""
 "raccomandiamo caldamente di attivare la ricerca di Algolia al post della "
 "ricerca nativa di Wordpress."
 
+#. translators: placeholder contains the link to the indexing page.
 #: includes/admin/class-algolia-admin-page-native-search.php:137
+#, php-format
 msgid ""
 "Searchable posts index needs to be checked on the <a href=\"%s\">Algolia: "
 "Indexing page</a> for the search results to be powered by Algolia."
@@ -122,7 +130,7 @@ msgstr ""
 "<a href=\"%s\">Algolia: Pagina di indicizzazione</a> affinchè i risultati di "
 "ricerca siano offerti da Algolia."
 
-#: includes/admin/class-algolia-admin-page-native-search.php:146
+#: includes/admin/class-algolia-admin-page-native-search.php:148
 msgid ""
 "By enabling this plugin to override the native WordPress search, your search "
 "results will be powered by Algolia's typo-tolerant & relevant search "
@@ -131,7 +139,7 @@ msgstr ""
 "Abilitando questo plugin verrà sovrascritta la ricerca nativa di Wordpress, "
 "i tuoi risultati di ricerca saranno offerti dagli algoritmi di Algolia."
 
-#: includes/admin/class-algolia-admin-page-native-search.php:156
+#: includes/admin/class-algolia-admin-page-native-search.php:160
 msgid ""
 "You have no index containing only posts yet. Please index some content on "
 "the `Indexing` page."
@@ -139,53 +147,49 @@ msgstr ""
 "Non hai ancora nessun indice contenente solo articoli. Indicizza un pò di "
 "contenuto nella pagina 'Indicizzazione'."
 
-#: includes/admin/class-algolia-admin-page-settings.php:51
-#: includes/admin/class-algolia-admin-page-settings.php:71
-#: includes/admin/class-algolia-admin-page-settings.php:72
+#: includes/admin/class-algolia-admin-page-settings.php:52
+#: includes/admin/class-algolia-admin-page-settings.php:73
+#: includes/admin/class-algolia-admin-page-settings.php:74
 msgid "Settings"
 msgstr "Impostazioni"
 
-#: includes/admin/class-algolia-admin-page-settings.php:61
-msgid "Algolia search"
-msgstr "Ricerca Algolia"
-
-#: includes/admin/class-algolia-admin-page-settings.php:89
+#: includes/admin/class-algolia-admin-page-settings.php:91
 msgid "Application ID"
 msgstr "ID applicazione"
 
-#: includes/admin/class-algolia-admin-page-settings.php:97
+#: includes/admin/class-algolia-admin-page-settings.php:99
 msgid "Search-only API key"
 msgstr "Chiave API solo ricerca"
 
-#: includes/admin/class-algolia-admin-page-settings.php:105
+#: includes/admin/class-algolia-admin-page-settings.php:107
 msgid "Admin API key"
 msgstr "Chiave API Admin"
 
-#: includes/admin/class-algolia-admin-page-settings.php:113
+#: includes/admin/class-algolia-admin-page-settings.php:115
 msgid "Index name prefix"
 msgstr "Prefisso nome indice"
 
-#: includes/admin/class-algolia-admin-page-settings.php:121
+#: includes/admin/class-algolia-admin-page-settings.php:123
 msgid "Remove Algolia powered by logo"
 msgstr "Rimuovi il luogo powered by Algolia"
 
-#: includes/admin/class-algolia-admin-page-settings.php:141
+#: includes/admin/class-algolia-admin-page-settings.php:143
 msgid "Your Algolia Application ID."
 msgstr "Il tuo application ID Algolia."
 
-#: includes/admin/class-algolia-admin-page-settings.php:150
+#: includes/admin/class-algolia-admin-page-settings.php:154
 msgid "Your Algolia Search-only API key (public)."
 msgstr "La tua chiave di sola ricerca Algolia (pubblica)."
 
-#: includes/admin/class-algolia-admin-page-settings.php:159
+#: includes/admin/class-algolia-admin-page-settings.php:164
 msgid "Your Algolia ADMIN API key (kept private)."
 msgstr "La tua chiave API ADMIN di Algolia ( mantinenila segreta)."
 
-#: includes/admin/class-algolia-admin-page-settings.php:169
+#: includes/admin/class-algolia-admin-page-settings.php:174
 msgid "This prefix will be prepended to your index names."
 msgstr "Questo prefisso verrà anteposto ai nomi dei tuoi indici."
 
-#: includes/admin/class-algolia-admin-page-settings.php:179
+#: includes/admin/class-algolia-admin-page-settings.php:185
 msgid ""
 "This will remove the Algolia logo from the autocomplete and the search page. "
 "We require that you keep the Algolia logo if you are using a free plan."
@@ -194,19 +198,33 @@ msgstr ""
 "dalla pagina di ricerca. E' richiesto mantenere il logo se si sta usando un "
 "piano gratuito."
 
-#: includes/admin/class-algolia-admin-page-settings.php:192
+#: includes/admin/class-algolia-admin-page-settings.php:198
 msgid "Application ID should not be empty."
 msgstr "Il campo ID applicazione non può essere vuoto."
 
-#: includes/admin/class-algolia-admin-page-settings.php:210
+#: includes/admin/class-algolia-admin-page-settings.php:216
 msgid "Search-only API key should not be empty."
 msgstr "Il campo API solo ricerca non può essere vuoto."
 
-#: includes/admin/class-algolia-admin-page-settings.php:227
+#: includes/admin/class-algolia-admin-page-settings.php:233
 msgid "API key should not be empty"
 msgstr "Il campo chiave API non può essere vuoto"
 
-#: includes/admin/class-algolia-admin-page-settings.php:276
+#: includes/admin/class-algolia-admin-page-settings.php:260
+msgid ""
+"We were unable to authenticate you against the Algolia servers with the "
+"provided information. Please ensure that you used an the Admin API key and a "
+"valid Application ID."
+msgstr ""
+
+#: includes/admin/class-algolia-admin-page-settings.php:271
+msgid ""
+"It looks like your search API key is wrong. Ensure that the key you entered "
+"has only the search capability and nothing else. Also ensure that the key "
+"has no limited time validity."
+msgstr ""
+
+#: includes/admin/class-algolia-admin-page-settings.php:280
 msgid ""
 "We succesfully managed to connect to the Algolia servers with the provided "
 "information. Your search API key has also been checked and is OK."
@@ -215,22 +233,22 @@ msgstr ""
 "informazioni fornite. La tua chiave API di ricerca è stata controllata ed è "
 "OK."
 
-#: includes/admin/class-algolia-admin-page-settings.php:314
+#: includes/admin/class-algolia-admin-page-settings.php:318
 msgid ""
 "Indices prefix can only contain alphanumeric characters and underscores."
 msgstr ""
 "Il prefisso degli indici può contenere solo caratteri alfanumerici e "
 "sottolineature."
 
-#: includes/admin/class-algolia-admin-page-settings.php:343
+#: includes/admin/class-algolia-admin-page-settings.php:347
 msgid ""
-"Configure here your Algolia credentials. You can find them in the \"API Keys"
-"\" section of your Algolia dashboard."
+"Configure your Algolia account credentials. You can find them in the \"API "
+"Keys\" section of your Algolia dashboard."
 msgstr ""
 "Configura qui le tua credenziali di Algolia. Le puoi trovare nella sezione "
 "\"Chiavi API\" della dashboard di Algolia."
 
-#: includes/admin/class-algolia-admin-page-settings.php:344
+#: includes/admin/class-algolia-admin-page-settings.php:348
 msgid ""
 "Once you provide your Algolia Application ID and API key, this plugin will "
 "be able to securely communicate with Algolia servers."
@@ -239,7 +257,7 @@ msgstr ""
 "Algolia, questo plugin sarà in grado di comunicare in modo sicuro con i "
 "server di Algolia."
 
-#: includes/admin/class-algolia-admin-page-settings.php:344
+#: includes/admin/class-algolia-admin-page-settings.php:348
 msgid ""
 "We ensure your information is correct by testing them against the Algolia "
 "servers upon save."
@@ -247,13 +265,15 @@ msgstr ""
 "Ci assicuriamo che le tue informazioni siano corrette confrontandole con "
 "quelle dei server di Algolia al momento del salvataggio."
 
-#: includes/admin/class-algolia-admin-page-settings.php:345
+#. translators: the placeholder contains the URL to Algolia's website.
+#: includes/admin/class-algolia-admin-page-settings.php:350
+#, php-format
 msgid ""
 "No Algolia account yet? <a href=\"%s\">Follow this link</a> to create one "
-"for free in a couple of minutes!."
+"for free in a couple of minutes!"
 msgstr ""
 "Non hai ancora un account Algolia? <a href=\"%s\"> Segui questo link </a> "
-"per crearne uno in pochi minuti!."
+"per crearne uno in pochi minuti!"
 
 #: includes/admin/class-algolia-admin.php:56
 msgid ""
@@ -279,7 +299,9 @@ msgstr ""
 "Algolia Search richiede che l'estensione PHP \"cURL\" sia abilitata. "
 "Contatta il tuo fornitore dell'hosting."
 
-#: includes/admin/class-algolia-admin.php:90
+#. translators: placeholder contains the URL to the caching plugin's config page.
+#: includes/admin/class-algolia-admin.php:89
+#, php-format
 msgid ""
 "In order for <strong>database caching</strong> to work with Algolia you must "
 "add <code>algolia_</code> to the \"Ignored Query Stems\" option in W3 Total "
@@ -293,13 +315,36 @@ msgstr ""
 msgid "Do not use Algolia"
 msgstr "Non usare Algolia"
 
-#: includes/admin/partials/form-override-search-option.php:14
+#: includes/admin/partials/form-override-search-option.php:11
+msgid ""
+"Do not use Algolia for searching at all.<br/>This is only a valid option if "
+"you wish to search on your content from another website."
+msgstr ""
+
+#: includes/admin/partials/form-override-search-option.php:24
 msgid "Use Algolia in the backend"
 msgstr "Usa Algolia nel backend"
 
-#: includes/admin/partials/form-override-search-option.php:24
+#: includes/admin/partials/form-override-search-option.php:30
+msgid ""
+"With this option WordPress search will be powered by Algolia behind the "
+"scenes.<br/>This will allow your search results to be typo tolerant.<br/"
+"><b>This option does not support filtering and displaying instant search "
+"results but has the advantage to play nicely with any theme.</b>"
+msgstr ""
+
+#: includes/admin/partials/form-override-search-option.php:44
 msgid "Use Algolia with Instantsearch.js"
 msgstr "Usa Algolia con instantsearch.js"
+
+#: includes/admin/partials/form-override-search-option.php:50
+msgid ""
+"This will replace the search page with an instant search experience powered "
+"by Algolia.<br/>By default you will be able to filter by post type, "
+"categories, tags and authors.<br/>Please note that the plugin is shipped "
+"with some sensible default styling rules<br/>but it could require some CSS "
+"adjustments to provide an optimal search experience."
+msgstr ""
 
 #: includes/admin/partials/page-autocomplete-config.php:5
 msgid "Enable"
@@ -321,20 +366,26 @@ msgstr "Suggerimenti Massimi"
 msgid "Actions"
 msgstr "Azioni"
 
-#: includes/admin/partials/page-autocomplete-config.php:33
+#. translators: placeholder is the name of an Algolia search index.
+#: includes/admin/partials/page-autocomplete-config.php:28
+#, php-format
+msgid "Index name: %s"
+msgstr ""
+
+#: includes/admin/partials/page-autocomplete-config.php:41
 msgid "Re-index"
 msgstr "Ri-indicizza"
 
-#: includes/admin/partials/page-autocomplete-config.php:34
+#: includes/admin/partials/page-autocomplete-config.php:42
 #: includes/admin/partials/page-search.php:5
 msgid "Push Settings"
 msgstr "Invia impostazioni"
 
-#: includes/admin/partials/page-autocomplete-config.php:41
+#: includes/admin/partials/page-autocomplete-config.php:49
 msgid "Configure here the indices you want to display in the dropdown menu."
 msgstr "Configura qui gli indici che vuoi visualizzare nel menu a discesa."
 
-#: includes/admin/partials/page-autocomplete-config.php:43
+#: includes/admin/partials/page-autocomplete-config.php:51
 msgid ""
 "Use the `Max. Suggestions` column to configure the number of entries that "
 "will be displayed by section."
@@ -342,7 +393,7 @@ msgstr ""
 "Usa la colonna 'Suggerimenti Massimi' per configurare il numero di voci che "
 "verranno visualizzate per sezione."
 
-#: includes/admin/partials/page-autocomplete-config.php:45
+#: includes/admin/partials/page-autocomplete-config.php:53
 msgid ""
 "Use the `Position` column to reflect the order of the sections in the "
 "dropdown menu."
@@ -354,11 +405,15 @@ msgstr ""
 msgid "Re-index search page records"
 msgstr "Ri-indicizza le voci della pagina di ricerca"
 
-#: includes/class-algolia-cli.php:72
+#. translators: the placeholder will contain the name of the index.
+#: includes/class-algolia-cli.php:77
+#, php-format
 msgid "About to clear index %s..."
 msgstr "Pulizia dell'indice %s..."
 
-#: includes/class-algolia-cli.php:74
+#. translators: the placeholder will contain the name of the index.
+#: includes/class-algolia-cli.php:80
+#, php-format
 msgid "Correctly cleared index \"%s\"."
 msgstr "Indice \"%s\" pulito correttamente."
 
@@ -366,7 +421,7 @@ msgstr "Indice \"%s\" pulito correttamente."
 msgid "All posts"
 msgstr "Tutti gli articoli"
 
-#: includes/indices/class-algolia-users-index.php:15
+#: includes/indices/class-algolia-users-index.php:14
 msgid "Users"
 msgstr "Utenti"
 
@@ -375,27 +430,21 @@ msgid "No results matched your query "
 msgstr "Nessun risultato corrisponde alla tua ricerca "
 
 #. Plugin Name of the plugin/theme
-msgid "Search by Algolia – Instant & Relevant results"
-msgstr "Ricerca by Algolia - Risultati instantanei e rilevanti"
+msgid "WP Search with Algolia"
+msgstr ""
 
 #. Plugin URI of the plugin/theme
-msgid "https://community.algolia.com/wordpress"
-msgstr "https://community.algolia.com/wordpress"
+msgid "https://github.com/WebDevStudios/wp-search-with-algolia"
+msgstr ""
 
 #. Description of the plugin/theme
-msgid ""
-"Search by Algolia is the smartest way to improve search on your site. "
-"Autocomplete is included, along with full control over look, feel and "
-"relevance."
+msgid "Integrate the powerful Algolia search service with WordPress"
 msgstr ""
-"La ricerca di Algolia è il modo più intelligente di migliorare la ricerca "
-"sul tuo sito. E' incluso l'autocompletamento , insieme ad un controllo "
-"completo sull'aspetto e la rilevanza."
 
 #. Author of the plugin/theme
-msgid "Algolia"
-msgstr "Algolia"
+msgid "WebDevStudios"
+msgstr ""
 
 #. Author URI of the plugin/theme
-msgid "https://www.algolia.com/"
-msgstr "https://www.algolia.com/"
+msgid "https://webdevstudios.com"
+msgstr ""

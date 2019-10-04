@@ -50,7 +50,7 @@ class Algolia_Admin_Page_Autocomplete {
 	public function add_page() {
 		add_menu_page(
 			'Algolia Search',
-			esc_html__( 'Algolia Search', 'algolia' ),
+			esc_html__( 'Algolia Search', 'wp-search-with-algolia' ),
 			'manage_options',
 			'algolia',
 			array( $this, 'display_page' ),
@@ -58,8 +58,8 @@ class Algolia_Admin_Page_Autocomplete {
 		);
 		add_submenu_page(
 			'algolia',
-			esc_html__( 'Autocomplete', 'algolia' ),
-			esc_html__( 'Autocomplete', 'algolia' ),
+			esc_html__( 'Autocomplete', 'wp-search-with-algolia' ),
+			esc_html__( 'Autocomplete', 'wp-search-with-algolia' ),
 			$this->capability,
 			$this->slug,
 			array( $this, 'display_page' )
@@ -76,7 +76,7 @@ class Algolia_Admin_Page_Autocomplete {
 
 		add_settings_field(
 			'algolia_autocomplete_enabled',
-			esc_html__( 'Enable autocomplete', 'algolia' ),
+			esc_html__( 'Enable autocomplete', 'wp-search-with-algolia' ),
 			array( $this, 'autocomplete_enabled_callback' ),
 			$this->slug,
 			$this->section
@@ -84,7 +84,7 @@ class Algolia_Admin_Page_Autocomplete {
 
 		add_settings_field(
 			'algolia_autocomplete_config',
-			esc_html__( 'Configuration', 'algolia' ),
+			esc_html__( 'Configuration', 'wp-search-with-algolia' ),
 			array( $this, 'autocomplete_config_callback' ),
 			$this->slug,
 			$this->section
@@ -117,7 +117,7 @@ class Algolia_Admin_Page_Autocomplete {
 		add_settings_error(
 			$this->option_group,
 			'autocomplete_enabled',
-			esc_html__( 'Autocomplete configuration has been saved. Make sure to hit the "re-index" buttons of the different indices that are not indexed yet.', 'algolia' ),
+			esc_html__( 'Autocomplete configuration has been saved. Make sure to hit the "re-index" buttons of the different indices that are not indexed yet.', 'wp-search-with-algolia' ),
 			'updated'
 		);
 
@@ -156,9 +156,9 @@ class Algolia_Admin_Page_Autocomplete {
 
 		if ( true === $is_enabled && empty( $indices ) ) {
 			/* translators: placeholder contains the URL to the autocomplete configuration page. */
-			$message = sprintf( __( 'Please select one or multiple indices on the <a href="%s">Algolia: Autocomplete configuration page</a>.', 'algolia' ), esc_url( admin_url( 'admin.php?page=' . $this->slug ) ) );
+			$message = sprintf( __( 'Please select one or multiple indices on the <a href="%s">Algolia: Autocomplete configuration page</a>.', 'wp-search-with-algolia' ), esc_url( admin_url( 'admin.php?page=' . $this->slug ) ) );
 			echo '<div class="error notice">
-					  <p>' . esc_html__( 'You have enabled the Algolia Autocomplete feature but did not choose any index to search in.', 'algolia' ) . '</p>
+					  <p>' . esc_html__( 'You have enabled the Algolia Autocomplete feature but did not choose any index to search in.', 'wp-search-with-algolia' ) . '</p>
 					  <p>' . wp_kses_post( $message ) . '</p>
 				  </div>';
 		}
@@ -168,6 +168,6 @@ class Algolia_Admin_Page_Autocomplete {
 	 * Prints the section text.
 	 */
 	public function print_section_settings() {
-		echo '<p>' . esc_html__( 'The autocomplete feature adds a find-as-you-type dropdown menu to your search bar(s).', 'algolia' ) . '</p>';
+		echo '<p>' . esc_html__( 'The autocomplete feature adds a find-as-you-type dropdown menu to your search bar(s).', 'wp-search-with-algolia' ) . '</p>';
 	}
 }
