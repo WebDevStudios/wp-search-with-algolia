@@ -38,6 +38,10 @@
 	box-sizing: border-box;
 	outline: none;
 	box-shadow: none;
+	appearance:none;
+	-webkit-appearance:none;
+	-moz-appearance:none;
+	-ms-appearance:none;
 }
 
 #algolia-search-box .search-icon {
