@@ -59,7 +59,7 @@ if ( version_compare( $wp_version, ALGOLIA_MIN_WP_VERSION, '<' ) ) {
 	exit(
 		sprintf(
 			/* translators: placeholder 1 is minimum required WordPress version, placeholder 2 is installed WordPress version. */
-			esc_html__( 'Algolia plugin requires at least WordPress in version %1$s, You are on %2$s', 'wp-search-with-algolia' ),
+			esc_html__( 'Algolia plugin requires at least WordPress in version %1$s, You are on %2$s.', 'wp-search-with-algolia' ),
 			esc_html( ALGOLIA_MIN_WP_VERSION ),
 			esc_html( $wp_version )
 		)
