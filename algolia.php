@@ -11,7 +11,7 @@
  * Author URI:        https://webdevstudios.com
  * License:           GNU General Public License v2.0 / MIT License
  * Text Domain:       wp-search-with-algolia
- * Domain Path:       /languages/
+ * Domain Path:       /languages
  */
 
 // The following code is a derivative work of the code from the
