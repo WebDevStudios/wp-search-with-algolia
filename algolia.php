@@ -22,14 +22,19 @@
 if ( ! defined( 'WPINC' ) ) {
 	die;
 }
+// The minmum required PHP version.
+define( 'ALGOLIA_MIN_PHP_VERSION', '7.2' );
+
+// The minimum required WordPress version.
+define( 'ALGOLIA_MIN_WP_VERSION', '5.3' );
 
 // Check for required PHP version.
-if ( version_compare( PHP_VERSION, '7.2', '<' ) ) {
+if ( version_compare( PHP_VERSION, ALGOLIA_MIN_PHP_VERSION, '<' ) ) {
 	exit(
 		sprintf(
 			/* translators: placeholder 1 is minimum required PHP version, placeholder 2 is installed PHP version. */
 			esc_html__( 'Algolia plugin requires PHP %1$s or higher. You’re still on %2$s.', 'wp-search-with-algolia' ),
-			'7.2',
+			ALGOLIA_MIN_PHP_VERSION,
 			PHP_VERSION
 		)
 	);
@@ -38,12 +43,12 @@ if ( version_compare( PHP_VERSION, '7.2', '<' ) ) {
 // Check for required WordPress version.
 global $wp_version;
 
-if ( version_compare( $wp_version, '5.3', '<' ) ) {
+if ( version_compare( $wp_version, ALGOLIA_MIN_WP_VERSION, '<' ) ) {
 	exit(
 		sprintf(
 			/* translators: placeholder 1 is minimum required WordPress version, placeholder 2 is installed WordPress version. */
 			esc_html__( 'Algolia plugin requires at least WordPress in version %1$s, You are on %2$s', 'wp-search-with-algolia' ),
-			'5.3',
+			ALGOLIA_MIN_WP_VERSION,
 			$wp_version
 		)
 	);
