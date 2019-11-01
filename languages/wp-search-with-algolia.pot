@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
 "Project-Id-Version: WP Search with Algolia\n"
-"POT-Creation-Date: 2019-11-01 11:58-0500\n"
+"POT-Creation-Date: 2019-11-01 15:07-0500\n"
 "PO-Revision-Date: 2019-08-30 22:52-0500\n"
 "Last-Translator: Richard Aber <richard.aber@webdevstudios.com>\n"
 "Language-Team: Richard Aber <richard.aber@webdevstudios.com>\n"
@@ -22,13 +22,13 @@ msgstr ""
 "X-Poedit-SearchPathExcluded-0: *.min.js\n"
 
 #. translators: placeholder 1 is minimum required PHP version, placeholder 2 is installed PHP version.
-#: algolia.php:48
+#: algolia.php:77
 #, php-format
 msgid "Algolia plugin requires PHP %1$s or higher. You’re still on %2$s."
 msgstr ""
 
 #. translators: placeholder 1 is minimum required WordPress version, placeholder 2 is installed WordPress version.
-#: algolia.php:62
+#: algolia.php:86
 #, php-format
 msgid ""
 "Algolia plugin requires at least WordPress in version %1$s, You are on %2$s."
