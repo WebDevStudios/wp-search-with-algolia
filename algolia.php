@@ -24,16 +24,29 @@ if ( ! defined( 'WPINC' ) ) {
 }
 
 // Check for required PHP version.
-if ( version_compare( PHP_VERSION, '5.6', '<' ) ) {
-	/* translators: the placeholder always contains the PHP version. */
-	exit( sprintf( esc_html__( 'Algolia plugin requires PHP 5.6 or higher. You’re still on %s.', 'wp-search-with-algolia' ), esc_html( PHP_VERSION ) ) );
+if ( version_compare( PHP_VERSION, '7.2', '<' ) ) {
+	exit(
+		sprintf(
+			/* translators: placeholder 1 is minimum required PHP version, placeholder 2 is installed PHP version. */
+			esc_html__( 'Algolia plugin requires PHP %1$s or higher. You’re still on %2$s.', 'wp-search-with-algolia' ),
+			'7.2',
+			PHP_VERSION
+		)
+	);
 }
 
 // Check for required WordPress version.
 global $wp_version;
-if ( version_compare( $wp_version, '4.4', '<' ) ) {
-	/* translators: the placeholder always contains the WordPress version. */
-	exit( sprintf( esc_html__( 'Algolia plugin requires at least WordPress in version 4.4., You are on %s', 'wp-search-with-algolia' ), esc_html( $wp_version ) ) );
+
+if ( version_compare( $wp_version, '5.3', '<' ) ) {
+	exit(
+		sprintf(
+			/* translators: placeholder 1 is minimum required WordPress version, placeholder 2 is installed WordPress version. */
+			esc_html__( 'Algolia plugin requires at least WordPress in version %1$s, You are on %2$s', 'wp-search-with-algolia' ),
+			'5.3',
+			$wp_version
+		)
+	);
 }
 
 // The Algolia Search plugin version.
