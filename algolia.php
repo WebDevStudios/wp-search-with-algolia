@@ -1,11 +1,11 @@
 <?php
-
 /**
  * @wordpress-plugin
  * Plugin Name:       WP Search with Algolia
  * Plugin URI:        https://github.com/WebDevStudios/wp-search-with-algolia
  * Description:       Integrate the powerful Algolia search service with WordPress
  * Version:           1.0.0
+ * Requires at least: 5.3
  * Author:            WebDevStudios
  * Author URI:        https://webdevstudios.com
  * License:           GNU General Public License v2.0 / MIT License
