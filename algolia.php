@@ -40,30 +40,58 @@ if ( ! defined( 'ALGOLIA_PATH' ) ) {
 	define( 'ALGOLIA_PATH', plugin_dir_path( __FILE__ ) );
 }
 
-// Check for required PHP version.
-if ( version_compare( PHP_VERSION, ALGOLIA_MIN_PHP_VERSION, '<' ) ) {
-	exit(
-		sprintf(
+/**
+ * Check for required PHP version.
+ *
+ * @return bool
+ */
+function algolia_php_version_check() {
+	if ( version_compare( PHP_VERSION, ALGOLIA_MIN_PHP_VERSION, '<' ) ) {
+		return false;
+	}
+	return true;
+}
+
+/**
+ * Check for required WordPress version.
+ *
+ * @return bool
+ */
+function algolia_wp_version_check() {
+	if ( version_compare( $GLOBALS['wp_version'], ALGOLIA_MIN_WP_VERSION, '<' ) ) {
+		return false;
+	}
+	return true;
+}
+
+/**
+ * Admin notices if requirements aren't met.
+ */
+function algolia_requirements_error_notice() {
+
+	$notices = [];
+
+	if ( ! algolia_php_version_check() ) {
+		$notices[] = sprintf(
 			/* translators: placeholder 1 is minimum required PHP version, placeholder 2 is installed PHP version. */
 			esc_html__( 'Algolia plugin requires PHP %1$s or higher. You’re still on %2$s.', 'wp-search-with-algolia' ),
 			esc_html( ALGOLIA_MIN_PHP_VERSION ),
 			esc_html( PHP_VERSION )
-		)
-	);
-}
+		);
+	}
 
-// Check for required WordPress version.
-global $wp_version;
-
-if ( version_compare( $wp_version, ALGOLIA_MIN_WP_VERSION, '<' ) ) {
-	exit(
-		sprintf(
+	if ( ! algolia_wp_version_check() ) {
+		$notices[] = sprintf(
 			/* translators: placeholder 1 is minimum required WordPress version, placeholder 2 is installed WordPress version. */
 			esc_html__( 'Algolia plugin requires at least WordPress in version %1$s, You are on %2$s.', 'wp-search-with-algolia' ),
 			esc_html( ALGOLIA_MIN_WP_VERSION ),
-			esc_html( $wp_version )
-		)
-	);
+			esc_html( $GLOBALS['wp_version'] )
+		);
+	}
+
+	foreach ( $notices as $notice ) {
+		echo '<div class="notice notice-error"><p>' . esc_html( $notice ) . '</p></div>';
+	}
 }
 
 /**
@@ -81,11 +109,15 @@ function algolia_load_textdomain() {
 
 add_action( 'init', 'algolia_load_textdomain' );
 
-require_once ALGOLIA_PATH . 'classmap.php';
+if ( algolia_php_version_check() && algolia_wp_version_check() ) {
+	require_once ALGOLIA_PATH . 'classmap.php';
 
-$algolia = Algolia_Plugin::get_instance();
+	$algolia = Algolia_Plugin::get_instance();
 
-if ( defined( 'WP_CLI' ) && WP_CLI ) {
-	include ALGOLIA_PATH . '/includes/class-algolia-cli.php';
-	WP_CLI::add_command( 'algolia', new Algolia_CLI() );
+	if ( defined( 'WP_CLI' ) && WP_CLI ) {
+		include ALGOLIA_PATH . '/includes/class-algolia-cli.php';
+		WP_CLI::add_command( 'algolia', new Algolia_CLI() );
+	}
+} else {
+	add_action( 'admin_notices', 'algolia_requirements_error_notice' );
 }
