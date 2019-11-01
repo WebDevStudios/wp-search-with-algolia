@@ -5,7 +5,7 @@ Tags: Search, Algolia, Autocomplete, instant-search, relevant search, search hig
 Requires at least: 5.3
 Tested up to: 5.3
 Requires PHP: 7.2
-Stable tag: 1.0.0
+Stable tag: 1.1.0
 License: GNU General Public License v2.0, MIT License
 
 Improve search on your site. Autocomplete is included, along with full control over look, feel and relevance.
