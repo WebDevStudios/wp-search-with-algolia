@@ -34,8 +34,8 @@ if ( version_compare( PHP_VERSION, ALGOLIA_MIN_PHP_VERSION, '<' ) ) {
 		sprintf(
 			/* translators: placeholder 1 is minimum required PHP version, placeholder 2 is installed PHP version. */
 			esc_html__( 'Algolia plugin requires PHP %1$s or higher. You’re still on %2$s.', 'wp-search-with-algolia' ),
-			ALGOLIA_MIN_PHP_VERSION,
-			PHP_VERSION
+			esc_html( ALGOLIA_MIN_PHP_VERSION ),
+			esc_html( PHP_VERSION )
 		)
 	);
 }
@@ -48,8 +48,8 @@ if ( version_compare( $wp_version, ALGOLIA_MIN_WP_VERSION, '<' ) ) {
 		sprintf(
 			/* translators: placeholder 1 is minimum required WordPress version, placeholder 2 is installed WordPress version. */
 			esc_html__( 'Algolia plugin requires at least WordPress in version %1$s, You are on %2$s', 'wp-search-with-algolia' ),
-			ALGOLIA_MIN_WP_VERSION,
-			$wp_version
+			esc_html( ALGOLIA_MIN_WP_VERSION ),
+			esc_html( $wp_version )
 		)
 	);
 }
