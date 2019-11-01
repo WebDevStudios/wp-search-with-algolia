@@ -22,11 +22,23 @@
 if ( ! defined( 'WPINC' ) ) {
 	die;
 }
+
+// The Algolia Search plugin version.
+define( 'ALGOLIA_VERSION', '1.0.0' );
+
 // The minmum required PHP version.
 define( 'ALGOLIA_MIN_PHP_VERSION', '7.2' );
 
 // The minimum required WordPress version.
 define( 'ALGOLIA_MIN_WP_VERSION', '5.3' );
+
+define( 'ALGOLIA_PLUGIN_BASENAME', plugin_basename( __FILE__ ) );
+
+define( 'ALGOLIA_PLUGIN_URL', plugins_url( '/', __FILE__ ) );
+
+if ( ! defined( 'ALGOLIA_PATH' ) ) {
+	define( 'ALGOLIA_PATH', plugin_dir_path( __FILE__ ) );
+}
 
 // Check for required PHP version.
 if ( version_compare( PHP_VERSION, ALGOLIA_MIN_PHP_VERSION, '<' ) ) {
@@ -52,15 +64,6 @@ if ( version_compare( $wp_version, ALGOLIA_MIN_WP_VERSION, '<' ) ) {
 			esc_html( $wp_version )
 		)
 	);
-}
-
-// The Algolia Search plugin version.
-define( 'ALGOLIA_VERSION', '1.0.0' );
-define( 'ALGOLIA_PLUGIN_BASENAME', plugin_basename( __FILE__ ) );
-define( 'ALGOLIA_PLUGIN_URL', plugins_url( '/', __FILE__ ) );
-
-if ( ! defined( 'ALGOLIA_PATH' ) ) {
-	define( 'ALGOLIA_PATH', plugin_dir_path( __FILE__ ) );
 }
 
 /**
