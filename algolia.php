@@ -6,6 +6,7 @@
  * Description:       Integrate the powerful Algolia search service with WordPress
  * Version:           1.0.0
  * Requires at least: 5.3
+ * Requires PHP:      7.2
  * Author:            WebDevStudios
  * Author URI:        https://webdevstudios.com
  * License:           GNU General Public License v2.0 / MIT License
