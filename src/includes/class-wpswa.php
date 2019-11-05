@@ -88,7 +88,7 @@ class WPSWA {
 	 * @since    2.0.0
 	 */
 	public function options_page() {
-		add_options_page( 'Algolia Settings', 'Algolia Settings', 'manage_options', 'wpswa', 'wpswa_option_page' );
+		add_options_page( esc_html__( 'Algolia Settings', 'wp-search-with-algolia' ), esc_html__( 'Algolia Settings', 'wp-search-with-algolia' ), 'manage_options', 'wpswa', 'wpswa_option_page' );
 	}
 
 	/**
