@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "b1e100467a8d78b161de139cc7c9141f",
+    "content-hash": "115876d75d669fabfee04916be4ed4ea",
     "packages": [
         {
             "name": "algolia/algoliasearch-client-php",
-            "version": "2.4.0",
+            "version": "2.5.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/algolia/algoliasearch-client-php.git",
-                "reference": "602748161cecbf9d329379a9949d63e1dc683852"
+                "reference": "446c9faedcb6534f2295b93835b606267ff5f816"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/algolia/algoliasearch-client-php/zipball/602748161cecbf9d329379a9949d63e1dc683852",
-                "reference": "602748161cecbf9d329379a9949d63e1dc683852",
+                "url": "https://api.github.com/repos/algolia/algoliasearch-client-php/zipball/446c9faedcb6534f2295b93835b606267ff5f816",
+                "reference": "446c9faedcb6534f2295b93835b606267ff5f816",
                 "shasum": ""
             },
             "require": {
@@ -74,7 +74,7 @@
                 "php",
                 "search"
             ],
-            "time": "2019-09-11T15:21:08+00:00"
+            "time": "2019-11-05T12:40:49+00:00"
         },
         {
             "name": "psr/http-message",
