@@ -1,110 +1,114 @@
+=== Custom Algolia ===
+Contributors: (this should be a list of wordpress.org userid's)
+Donate link: https://example.com/
+Tags: comments, spam
+Requires at least: 4.5
+Tested up to: 5.2.4
+Stable tag: 0.1.0
+License: GPLv2 or later
+License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-=== WP Search with Algolia ===
-Contributors: WebDevStudios, williamsba1, gregrickaby, tw2113
-Tags: Search, Algolia, Autocomplete, instant-search, relevant search, search highlight, faceted search, find-as-you-type search, suggest, search by category, ajax search, better search, custom search
-Requires at least: 4.4
-Tested up to: 5.2
-Requires PHP: 5.6
-Stable tag: 1.0.0
-License: GNU General Public License v2.0, MIT License
-
-Improve search on your site. Autocomplete is included, along with full control over look, feel and relevance.
+Here is a short description of the plugin.  This should be no more than 150 characters.  No markup here.
 
 == Description ==
 
-Improve search on your site. Autocomplete is included, along with full control over look, feel and relevance.
+This is the long description.  No limit, and you can use Markdown (as well as in the following sections).
 
-= Features =
-* Relevant search results in milliseconds
-* Native typo-tolerance
-* Is language-agnostic
-* Offers hooks and filters for easy customization
-* Built by developers, for developers
+For backwards compatibility, if this section is missing, the full length of the short description will be used, and
+Markdown parsed.
 
-This plugin requires API keys from [Algolia](https://www.algolia.com/). API keys are free for small personal projects and non-commercial use. Learn more about [commercial use pricing](https://www.algolia.com/pricing/).
+A few notes about the sections above:
 
-= Links =
-* [WebDevStudios](https://webdevstudios.com)
-* [Algolia](https://algolia.com)
-* [Documentation](https://community.algolia.com/wordpress/configuration.html)
-* [Support](https://github.com/WebDevStudios/wp-search-with-algolia/issues)
+*   "Contributors" is a comma separated list of wp.org/wp-plugins.org usernames
+*   "Tags" is a comma separated list of tags that apply to the plugin
+*   "Requires at least" is the lowest version that the plugin will work on
+*   "Tested up to" is the highest version that you've *successfully used to test the plugin*. Note that it might work on
+higher versions... this is just the highest one you've verified.
+*   Stable tag should indicate the Subversion "tag" of the latest stable version, or "trunk," if you use `/trunk/` for
+stable.
 
-*This plugin is a derivative work of the code from the [Search by Algolia – Instant & Relevant results](https://wordpress.org/plugins/search-by-algolia-instant-relevant-results/) plugin for WordPress, which is licensed under the GPLv2.*
+    Note that the `readme.txt` of the stable tag is the one that is considered the defining one for the plugin, so
+if the `/trunk/readme.txt` file says that the stable tag is `4.3`, then it is `/tags/4.3/readme.txt` that'll be used
+for displaying information about the plugin.  In this situation, the only thing considered from the trunk `readme.txt`
+is the stable tag pointer.  Thus, if you develop in trunk, you can update the trunk `readme.txt` to reflect changes in
+your in-development version, without having that information incorrectly disclosed about the current stable version
+that lacks those changes -- as long as the trunk's `readme.txt` points to the correct stable tag.
+
+    If no stable tag is provided, it is assumed that trunk is stable, but you should specify "trunk" if that's where
+you put the stable version, in order to eliminate any doubt.
 
 == Installation ==
 
-**If you have the *Search by Algolia – Instant & Relevant results* plugin installed, please deactivate it first.**
+This section describes how to install the plugin and get it working.
 
-From your WordPress dashboard:
+e.g.
 
-1. **Visit** Plugins > Add New
-2. **Search** for "WP Search with Algolia"
-3. **Activate** WP Search with Algolia from your Plugins page
-4. **Click** on the new menu item "Algolia Search" and enter your API keys
-5. **Read** the step by step [configuration guide](https://community.algolia.com/wordpress/configuration.html)
+1. Upload `plugin-name.php` to the `/wp-content/plugins/` directory
+1. Activate the plugin through the 'Plugins' menu in WordPress
+1. Place `<?php do_action('plugin_name_hook'); ?>` in your templates
 
 == Frequently Asked Questions ==
 
-= Is this plugin a fork? =
+= A question that someone might have =
 
-Yes. The Algolia Team **[no longer supports their original plugin](https://community.algolia.com/wordpress/)**. The engineering team at WebDevStudios has forked the original plugin, and is now maintaining it.
+An answer to that question.
 
-= Should I switch to this plugin? =
+= What about foo bar? =
 
-Yes. Because Algolia no longer supports their plugin, you will no longer receive updates. WebDevStudios uses Algolia on many of it's projects, and is committed to maintaining this plugin for years to come.
-
-= How do I switch from the "Search by Algolia – Instant & Relevant results" plugin? =
-
-1. **Deactivate** the *Search by Algolia – Instant & Relevant results* plugin
-2. **Follow** the [installation instructions](https://wordpress.org/plugins/wp-search-with-algolia/#installation)
-3. **Activate** *WP Search with Algolia*
-4. **Check** for your API Keys. They should already be there, if not, enter them and then save settings
-5. **Delete** the *Search by Algolia – Instant & Relevant results* plugin
-
-= What are the minimum requirements? =
-
-* Requires WordPress 4.4+
-* PHP version 5.6 or greater (PHP 7.0 or greater is recommended)
-* MySQL version 5.0 or greater (MySQL 5.6 or greater is recommended)
-* cURL PHP extension
-* mbstring PHP extension
-* OpenSSL greater than 1.0.1
-* Some payment gateways require fsockopen support (for IPN access)
-
-Visit the [Search by Algolia server requirements documentation](https://community.algolia.com/wordpress/installation.html) for a detailed list of server requirements.
-
-= Where can I find Algolia documentation and user guides? =
-
-- For help setting up and configuring Search by Algolia please refer to the [user guide](https://community.algolia.com/wordpress/installation.html).
-- For extending or theming the Autocomplete dropdown, see the [Autocomplete Customization guide](https://community.algolia.com/wordpress/customize-autocomplete.html).
-- For extending or theming the Instant Search results page, see the [Search Page Customization guide](https://community.algolia.com/wordpress/customize-search-page.html).
-
-= Will it work with my theme? =
-
-Yes. This plugin will work with any theme, but the Instant Search results page may require some styling to make it match nicely. See the [Search Page Customization](https://community.algolia.com/wordpress/customize-search-page.html).
-
-= Where can I report bugs, request features, or contribute to the project? =
-
-All development is handled on [GitHub](https://github.com/WebDevStudios/wp-search-with-algolia/issues).
-
-= About Algolia =
-
-Algolia offers its Search as a Service provider on a incremental payment program, including a free Community Plan which includes 10,000 records & 50,000 operations per month. Beyond that, [plans](https://www.algolia.com/pricing/) start at $29/month.
-
-*Note: there isn't a direct correlation between the number of posts in WordPress and the number of records in Algolia. Also note that we only offer support starting from the PRO plan.On average, you can expect to have about 10 times more records than you have posts, though this is not a golden rule and you could end up with more records.*
-
-= About WebDevStudios =
-
-WebDevStudios provides end-to-end WordPress opportunities from strategy and planning to website design and development, as well as full data migration, extensive API integrations, scalability, performance and long-term guidance and maintenance. We have service options and solutions for start-ups, small to mid-size businesses, enterprise organizations and marketing agencies.
+Answer to foo bar dilemma.
 
 == Screenshots ==
 
-1. Algolia Settings
-2. Search Page Settings
-3. Autocomplete Settings
-4. InstantSearch Dropdown
-5. Search Results
+1. This screen shot description corresponds to screenshot-1.(png|jpg|jpeg|gif). Note that the screenshot is taken from
+the /assets directory or the directory that contains the stable readme.txt (tags or trunk). Screenshots in the /assets
+directory take precedence. For example, `/assets/screenshot-1.png` would win over `/tags/4.3/screenshot-1.png`
+(or jpg, jpeg, gif).
+2. This is the second screen shot
 
 == Changelog ==
 
-Follow along with the changelog on [Github](https://github.com/WebDevStudios/wp-search-with-algolia/releases).
+= 1.0 =
+* A change since the previous version.
+* Another change.
+
+= 0.5 =
+* List versions from most recent at top to oldest at bottom.
+
+== Upgrade Notice ==
+
+= 1.0 =
+Upgrade notices describe the reason a user should upgrade.  No more than 300 characters.
+
+= 0.5 =
+This version fixes a security related bug.  Upgrade immediately.
+
+== Arbitrary section ==
+
+You may provide arbitrary sections, in the same format as the ones above.  This may be of use for extremely complicated
+plugins where more information needs to be conveyed that doesn't fit into the categories of "description" or
+"installation."  Arbitrary sections will be shown below the built-in sections outlined above.
+
+== A brief Markdown Example ==
+
+Ordered list:
+
+1. Some feature
+1. Another feature
+1. Something else about the plugin
+
+Unordered list:
+
+* something
+* something else
+* third thing
+
+Here's a link to [WordPress](https://wordpress.org/ "Your favorite software") and one to [Markdown's Syntax Documentation][markdown syntax].
+Titles are optional, naturally.
+
+[markdown syntax]: https://daringfireball.net/projects/markdown/syntax
+            "Markdown is what the parser uses to process much of the readme file"
+
+Markdown uses email style notation for blockquotes and I've been told:
+> Asterisks for *emphasis*. Double it up  for **strong**.
+
+`<?php code(); // goes in backticks ?>`

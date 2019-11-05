@@ -1,0 +1,36 @@
+{
+  "name": "custom-algolia",
+  "version": "2.0.0",
+  "description": "Integrate the powerful Algolia search service with WordPress.",
+  "author": "WebDevStudios <contact@webdevstudios.com>",
+  "license": "GPL-3.0",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:WebDevStudios/wp-search-with-algolia.git"
+  },
+  "keywords": [
+    "algolia"
+  ],
+  "bugs": {
+    "url": "https://github.com/WebDevStudios/wp-search-with-algolia/issues"
+  },
+  "main": "js/algolia-search.js",
+  "scripts": {
+    "build": "wp-scripts build",
+    "check-engines": "wp-scripts check-engines",
+    "check-licenses": "wp-scripts check-licenses",
+    "lint:css": "wp-scripts lint-style",
+    "lint:js": "wp-scripts lint-js",
+    "lint:pkg-json": "wp-scripts lint-pkg-json",
+    "start": "wp-scripts start",
+    "test:e2e": "wp-scripts test-e2e",
+    "test:unit": "wp-scripts test-unit-js"
+  },
+  "dependencies": {
+    "algoliasearch": "^3.35.1",
+    "instantsearch.js": "^4.0.0"
+  },
+  "devDependencies": {
+    "@wordpress/scripts": "^5.1.0"
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "name": "webdevstudios/custom-algolia",
+  "type": "project",
+  "authors": [
+    {
+      "name": "WebDevStudios",
+      "email": "contact@webdevstudios.com"
+    }
+  ],
+  "require": {
+    "algolia/algoliasearch-client-php": "^2.4"
+  }
+}
