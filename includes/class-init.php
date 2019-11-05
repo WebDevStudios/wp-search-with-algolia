@@ -67,11 +67,11 @@ class Init {
 	public function scripts() {
 		$suffix = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ? '' : '.min';
 
-		wp_register_style( 'algolia-styles', WPSWA_PLUGIN_DIR_PATH . '/css/vendor/algolia' . $suffix . '.css', array(), '2.0.0', 'all' );
+		wp_register_style( 'algolia-styles', WPSWA_PLUGIN_DIR_PATH . '/assets/css/vendor/algolia' . $suffix . '.css', array(), '2.0.0', 'all' );
 
-		wp_register_script( 'algolia-client', WPSWA_PLUGIN_DIR_PATH . '/js/vendor/algoliasearchLite' . $suffix . '.js', array(), '3.35.1', true );
-		wp_register_script( 'algolia-instant-search', WPSWA_PLUGIN_DIR_PATH . '/js/vendor/instantsearch.production' . $suffix . '.js', array( 'algolia-client' ), '4.0.0', true );
-		wp_register_script( 'algolia-search', WPSWA_PLUGIN_DIR_PATH . '/js/algolia-search.js', array( 'algolia-instant-search' ), '2.0.0', true );
+		wp_register_script( 'algolia-client', WPSWA_PLUGIN_DIR_PATH . '/assets/js/vendor/algoliasearchLite' . $suffix . '.js', array(), '3.35.1', true );
+		wp_register_script( 'algolia-instant-search', WPSWA_PLUGIN_DIR_PATH . '/assets/js/vendor/instantsearch.production' . $suffix . '.js', array( 'algolia-client' ), '4.0.0', true );
+		wp_register_script( 'algolia-search', WPSWA_PLUGIN_DIR_PATH . '/assets/js/algolia-search.js', array( 'algolia-instant-search' ), '2.0.0', true );
 
 		wp_enqueue_style( 'algolia-styles' );
 		wp_enqueue_script( 'algolia-search' );
