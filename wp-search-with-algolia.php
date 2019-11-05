@@ -27,11 +27,8 @@ define( 'WPSWA_PLUGIN_BASENAME', plugin_basename( __FILE__ ) );
 // Require dependencies.
 require_once __DIR__ . '/vendor/autoload.php';
 
-// Require the main plugin file.
-require_once __DIR__ . '/src/includes/class-wpswa.php';
-
 // Initialize the plugin.
-Init\WPSWA::run();
+Core\WPSWA::run();
 
 // Maybe register WP-CLI commands.
 if ( defined( 'WP_CLI' ) && WP_CLI ) {
