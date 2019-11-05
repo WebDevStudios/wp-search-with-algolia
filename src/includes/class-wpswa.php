@@ -7,14 +7,19 @@
  * @package    WebDevStudios\WPSWA\FrontEnd
  * @since      2.0.0
  */
-namespace WebDevStudios\WPSWA\Bootstrap;
+namespace WebDevStudios\WPSWA\Init;
+
+// Exit if accessed directly.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 /**
  * The core plugin class.
  *
  * @since      2.0.0
  */
-class Init {
+class WPSWA {
 
 	/**
 	 * Define the core functionality of the plugin.
@@ -67,11 +72,11 @@ class Init {
 	public function scripts() {
 		$suffix = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ? '' : '.min';
 
-		wp_register_style( 'algolia-styles', WPSWA_PLUGIN_DIR_PATH . '/assets/css/vendor/algolia' . $suffix . '.css', array(), '2.0.0', 'all' );
+		wp_register_style( 'algolia-styles', WPSWA_PLUGIN_DIR_PATH . '/src/assets/css/vendor/algolia' . $suffix . '.css', array(), '2.0.0', 'all' );
 
-		wp_register_script( 'algolia-client', WPSWA_PLUGIN_DIR_PATH . '/assets/js/vendor/algoliasearchLite' . $suffix . '.js', array(), '3.35.1', true );
-		wp_register_script( 'algolia-instant-search', WPSWA_PLUGIN_DIR_PATH . '/assets/js/vendor/instantsearch.production' . $suffix . '.js', array( 'algolia-client' ), '4.0.0', true );
-		wp_register_script( 'algolia-search', WPSWA_PLUGIN_DIR_PATH . '/assets/js/algolia-search.js', array( 'algolia-instant-search' ), '2.0.0', true );
+		wp_register_script( 'algolia-client', WPSWA_PLUGIN_DIR_PATH . '/src/assets/js/vendor/algoliasearchLite' . $suffix . '.js', array(), '3.35.1', true );
+		wp_register_script( 'algolia-instant-search', WPSWA_PLUGIN_DIR_PATH . '/src/assets/js/vendor/instantsearch.production' . $suffix . '.js', array( 'algolia-client' ), '4.0.0', true );
+		wp_register_script( 'algolia-search', WPSWA_PLUGIN_DIR_PATH . '/src/assets/js/algolia-search.js', array( 'algolia-instant-search' ), '2.0.0', true );
 
 		wp_enqueue_style( 'algolia-styles' );
 		wp_enqueue_script( 'algolia-search' );
@@ -83,6 +88,16 @@ class Init {
 	 * @since    2.0.0
 	 */
 	public function textdomain() {
-		load_plugin_textdomain( 'wp-search-with-algolia', false, WPSWA_PLUGIN_DIR_PATH . '/languages' );
+		load_plugin_textdomain( 'wp-search-with-algolia', false, WPSWA_PLUGIN_DIR_PATH . '/src/languages' );
+	}
+
+
+	/**
+	 * Execute this plugin.
+	 *
+	 * @since    2.0.0
+	 */
+	public static function run() {
+		$init = new WPSWA();
 	}
 }
