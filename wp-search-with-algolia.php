@@ -14,9 +14,9 @@
 
 namespace WebDevStudios\WPSWA;
 
-// If this file is called directly, abort.
-if ( ! defined( 'WPINC' ) ) {
-	die;
+// Exit if accessed directly.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
 }
 
 // Define constants.
@@ -28,14 +28,7 @@ define( 'WPSWA_PLUGIN_BASENAME', plugin_basename( __FILE__ ) );
 require_once __DIR__ . '/vendor/autoload.php';
 
 // Require the main plugin file.
-require_once __DIR__ . '/includes/class-init.php';
+require_once __DIR__ . '/src/includes/class-wpswa.php';
 
-/**
- * Begin execution of this plugin.
- *
- * @since    2.0.0
- */
-function load() {
-	$plugin = new Bootstrap\Init();
-}
-load();
+// Initialize the plugin.
+Init\WPSWA::run();
