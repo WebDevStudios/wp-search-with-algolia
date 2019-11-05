@@ -1,13 +1,13 @@
 <?php
 /**
- * The file that defines the core plugin class
+ * The file that defines the core plugin class.
  *
  * @author     WebDevStudios <contact@webdevstudios.com>
  * @link       https://github.com/WebDevStudios/wp-search-with-algolia/
  * @package    WebDevStudios\WPSWA\FrontEnd
  * @since      2.0.0
  */
-namespace WebDevStudios\WPSWA\Init;
+namespace WebDevStudios\WPSWA\Core;
 
 // Exit if accessed directly.
 if ( ! defined( 'ABSPATH' ) ) {
@@ -27,20 +27,10 @@ class WPSWA {
 	 * @since    2.0.0
 	 */
 	public function __construct() {
-		$this->load_dependencies();
+		$this->admin_hooks();
 		$this->public_hooks();
 		global $algolia;
 		$algolia = \Algolia\AlgoliaSearch\SearchClient::create( '8ZQ19EMET8', '4b5a7c95112fa616d36db7ec3ed0d2fc' );
-	}
-
-	/**
-	 * Require all dependencies.
-	 *
-	 * @since    2.0.0
-	 */
-	public function load_dependencies() {
-		require_once __DIR__ . '/class-wp-cli.php';
-		require_once __DIR__ . '/class-options.php';
 	}
 
 	/**
@@ -50,6 +40,7 @@ class WPSWA {
 	 * @since    1.0.0
 	 */
 	public function admin_hooks() {
+		add_action( 'admin_menu', array( $this, 'register_menu_page' ) );
 	}
 
 	/**
@@ -91,6 +82,9 @@ class WPSWA {
 		load_plugin_textdomain( 'wp-search-with-algolia', false, WPSWA_PLUGIN_DIR_PATH . '/src/languages' );
 	}
 
+	public function register_menu_page() {
+		add_options_page( 'Algolia Settings', 'Algolia Settings', 'manage_options', 'wpswa', 'wpswa_option_page' );
+	}
 
 	/**
 	 * Execute this plugin.
