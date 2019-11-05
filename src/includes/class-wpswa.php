@@ -40,7 +40,7 @@ class WPSWA {
 	 * @since    1.0.0
 	 */
 	public function admin_hooks() {
-		add_action( 'admin_menu', array( $this, 'register_menu_page' ) );
+		add_action( 'admin_menu', array( $this, 'options_page' ) );
 	}
 
 	/**
@@ -82,7 +82,12 @@ class WPSWA {
 		load_plugin_textdomain( 'wp-search-with-algolia', false, WPSWA_PLUGIN_DIR_PATH . '/src/languages' );
 	}
 
-	public function register_menu_page() {
+	/**
+	 * Register options page.
+	 *
+	 * @since    2.0.0
+	 */
+	public function options_page() {
 		add_options_page( 'Algolia Settings', 'Algolia Settings', 'manage_options', 'wpswa', 'wpswa_option_page' );
 	}
 
