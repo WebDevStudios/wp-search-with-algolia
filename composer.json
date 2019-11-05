@@ -1,6 +1,8 @@
 {
   "name": "webdevstudios/custom-algolia",
-  "type": "project",
+  "description": "Integrate the powerful Algolia search service with WordPress.",
+  "license": "GPL-3.0-or-later",
+  "type": "wordpress-plugin",
   "authors": [
     {
       "name": "WebDevStudios",
@@ -8,6 +10,11 @@
     }
   ],
   "require": {
-    "algolia/algoliasearch-client-php": "^2.4"
+    "algolia/algoliasearch-client-php": "^2.5"
+  },
+  "autoload": {
+    "psr-4": {
+      "WebDevStudios\\WPSWA\\": "./src"
+    }
   }
 }
