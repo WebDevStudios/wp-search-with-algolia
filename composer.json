@@ -10,11 +10,12 @@
     }
   ],
   "require": {
+    "php": ">=7.2",
     "algolia/algoliasearch-client-php": "^2.5"
   },
   "autoload": {
     "psr-4": {
-      "WebDevStudios\\WPSWA\\": "./src"
+      "WebDevStudios\\WPSWA\\": "src/"
     }
   }
 }
