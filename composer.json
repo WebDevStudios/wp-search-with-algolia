@@ -33,6 +33,9 @@
     "phpcodesniffer-search-depth": 5
   },
   "scripts": {
-    "install-codestandards": "Dealerdirect\\Composer\\Plugin\\Installers\\PHPCodeSniffer\\Plugin::run"
+    "install-codestandards": "Dealerdirect\\Composer\\Plugin\\Installers\\PHPCodeSniffer\\Plugin::run",
+    "compat": "@php ./vendor/squizlabs/php_codesniffer/bin/phpcs --standard=phpcompat.xml --report=summary,source",
+    "lint": "@php ./vendor/squizlabs/php_codesniffer/bin/phpcs --standard=phpcs.xml --report=summary,source",
+    "lint:errors": "@lint -n"
   }
 }
