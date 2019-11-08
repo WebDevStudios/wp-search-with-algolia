@@ -1,71 +1,92 @@
 <?xml version="1.0"?>
-<ruleset name="WebDevStudios">
+<ruleset name="WP Search With Algolia Coding Standards">
 
-	<!-- See https://github.com/squizlabs/PHP_CodeSniffer/wiki/Annotated-ruleset.xml -->
-	<!-- See https://github.com/WordPress-Coding-Standards/WordPress-Coding-Standards/blob/develop/WordPress-Core/ruleset.xml -->
+	<description>
+		Coding standards configuration for WP Search With Algolia.
+	</description>
 
-	<!-- Set a description for this ruleset. -->
-	<description>A custom ruleset to take in account both WordPress and WebDevStudios code standards.</description>
+	<!-- Only scan PHP files. -->
+	<arg name="extensions" value="php"/>
 
-	<!-- Include the WordPress-Extra ruleset, with some WDS exclusions. -->
-	<rule ref="WordPress-Extra">
-		<exclude name="Generic.WhiteSpace.ScopeIndent.IncorrectExact" />
-		<exclude name="Generic.WhiteSpace.ScopeIndent.Incorrect" />
-		<exclude name="PEAR.Functions.FunctionCallSignature.Indent" />
-		<exclude name="WordPress.Files.FileName.NotHyphenatedLowercase" />
-		<exclude name="WordPress.Arrays.ArrayDeclarationSpacing.AssociativeKeyFound" />
-	</rule>
+	<!-- Whenever possible, cache the scan results and re-use those for unchanged files on the next scan. -->
+	<arg name="cache"/>
 
-	<!-- Include WordPress-Docs -->
-	<rule ref="WordPress-Docs"/>
+	<!-- Set the memory limit to 256M.
+		For most standard PHP configurations, this means the memory limit will temporarily be raised.
+		Ref: https://github.com/squizlabs/PHP_CodeSniffer/wiki/Advanced-Usage#specifying-phpini-settings
+	-->
+	<ini name="memory_limit" value="256M"/>
 
-	<!-- Doc block alignments -->
-	<rule ref="Squiz.Commenting.DocCommentAlignment" />
+	<!-- Strip the file paths down to the relevant bit. -->
+	<arg name="basepath" value="./"/>
 
-	<!-- In some cases this isn't possible to catch. -->
-	<rule ref="Squiz.PHP.DisallowMultipleAssignments.Found">
-		<severity>0</severity>
+	<!-- Show sniff codes in all reports. -->
+	<arg value="ps"/>
+
+	<!-- What to scan. -->
+	<file>.</file>
+
+	<!-- What not to scan. -->
+	<exclude-pattern>index.php</exclude-pattern>
+	<exclude-pattern>/vendor/</exclude-pattern>
+	<exclude-pattern>/node_modules/</exclude-pattern>
+	<exclude-pattern>/tests/</exclude-pattern>
+
+	<!--
+		Use WDS Coding standards.
+	 	https://github.com/WebDevStudios/WDS-Coding-Standards
+	-->
+	<rule ref="WebDevStudios"/>
+
+	<!--
+		WP Search With Algolia currently supports WP 5.0+.
+		https://github.com/WordPress/WordPress-Coding-Standards/wiki/Customizable-sniff-properties#minimum-wp-version-to-check-for-usage-of-deprecated-functions-classes-and-function-parameters
+	-->
+	<config name="minimum_supported_wp_version" value="5.0"/>
+
+	<!--
+		Configure global prefixes/namespaces.
+		https://github.com/WordPress/WordPress-Coding-Standards/wiki/Customizable-sniff-properties#naming-conventions-prefix-everything-in-the-global-namespace
+	-->
+	<rule ref="WordPress.NamingConventions.PrefixAllGlobals">
+		<properties>
+			<!-- Value: replace the function, class, and variable prefixes used. Separate multiple prefixes with a comma. -->
+			<property name="prefixes" type="array" value="webdevstudios,wds,wpswa"/>
+		</properties>
 	</rule>
 
 	<!--
-	Support concatenated function calls.
-
-	This allows the following type of function call:
-
-	    thing( 'par1', [
-		    'par2array1',
-		    'par2array2',
-	    ] );
-
-
-	...which WPCS usually makes you do:
-
-	    $array = [
-		    'par2array1',
-		    'par2array2',
-	    ];
-
-	    thing( 'par1', $array );
-
-	We commonly use condensed functions in themes, so let's keep them around.
-
-	@since 1.2.0
-	@author Aubrey Portwood <aubrey@webdevstudios.com>
+		Configure text_domain for I18n.
+		https://github.com/WordPress/WordPress-Coding-Standards/wiki/Customizable-sniff-properties#properties-strongly-recommended-to-be-set
 	-->
-	<rule ref="PEAR.Functions.FunctionCallSignature">
-	  <properties>
-	    <property name="requiredSpacesAfterOpen" value="1"/>
-	    <property name="requiredSpacesBeforeClose" value="1"/>
-	  </properties>
-	  <severity>0</severity>
+	<rule ref="WordPress.WP.I18n">
+		<properties>
+			<!-- Value: replace the text domain used. -->
+			<property name="text_domain" type="array" value="wp-search-with-algolia"/>
+		</properties>
 	</rule>
 
 	<!--
-	Supports the concatenated function calls above.
-
-	@since 1.2.0
-	@author Aubrey Portwood <aubrey@webdevstudios.com>
+		Precision alignment should be fine in HTML.
+		https://github.com/WordPress/WordPress-Coding-Standards/wiki/Customizable-sniff-properties#precision-alignment-exempt-certain-tokens
 	-->
-	<rule ref="PEAR.Functions.FunctionCallSignature.SpaceAfterOpenBracket" />
-	<rule ref="PEAR.Functions.FunctionCallSignature.SpaceBeforeCloseBracket" />
+	<rule ref="WordPress.WhiteSpace.PrecisionAlignment">
+		<properties>
+			<property name="ignoreAlignmentTokens" type="array">
+				<element value="T_COMMENT"/>
+				<element value="T_INLINE_HTML"/>
+			</property>
+		</properties>
+	</rule>
+
+	<!--
+		We're PSR-4 autoloading, skip the "class-whatever" naming convention.
+		https://github.com/WordPress/WordPress-Coding-Standards/wiki/Customizable-sniff-properties#disregard-class-file-name-rules
+	-->
+	<rule ref="WordPress.Files.FileName">
+		<properties>
+			<property name="strict_class_file_names" value="false"/>
+		</properties>
+	</rule>
+
 </ruleset>
