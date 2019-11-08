@@ -14,7 +14,6 @@
   "bugs": {
     "url": "https://github.com/WebDevStudios/wp-search-with-algolia/issues"
   },
-  "main": "js/algolia-search.js",
   "scripts": {
     "dev": "webpack --config webpack.config.js --mode development --watch --progress",
     "build": "webpack --config webpack.config.js --mode production"
