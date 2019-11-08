@@ -1,5 +1,5 @@
 {
-  "name": "webdevstudios/custom-algolia",
+  "name": "webdevstudios/wp-search-with-algolia",
   "description": "Integrate the powerful Algolia search service with WordPress.",
   "license": "GPL-3.0-or-later",
   "type": "wordpress-plugin",
