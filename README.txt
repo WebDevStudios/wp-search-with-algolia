@@ -1,11 +1,11 @@
 
 === WP Search with Algolia ===
-Contributors: WebDevStudios, williamsba1, gregrickaby, tw2113
+Contributors: WebDevStudios, williamsba1, gregrickaby, tw2113, richaber
 Tags: Search, Algolia, Autocomplete, instant-search, relevant search, search highlight, faceted search, find-as-you-type search, suggest, search by category, ajax search, better search, custom search
-Requires at least: 4.4
-Tested up to: 5.2
-Requires PHP: 5.6
-Stable tag: 1.0.0
+Requires at least: 5.0
+Tested up to: 5.3
+Requires PHP: 7.2
+Stable tag: 1.1.0
 License: GNU General Public License v2.0, MIT License
 
 Improve search on your site. Autocomplete is included, along with full control over look, feel and relevance.
@@ -63,8 +63,8 @@ Yes. Because Algolia no longer supports their plugin, you will no longer receive
 
 = What are the minimum requirements? =
 
-* Requires WordPress 4.4+
-* PHP version 5.6 or greater (PHP 7.0 or greater is recommended)
+* Requires WordPress 5.0+
+* PHP version 7.2 or greater (PHP 7.3 is recommended)
 * MySQL version 5.0 or greater (MySQL 5.6 or greater is recommended)
 * cURL PHP extension
 * mbstring PHP extension

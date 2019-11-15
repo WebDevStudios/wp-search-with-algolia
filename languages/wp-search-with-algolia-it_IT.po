@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: WP Search with Algolia\n"
-"POT-Creation-Date: 2019-08-31 15:33-0500\n"
-"PO-Revision-Date: 2019-08-31 15:33-0500\n"
+"POT-Creation-Date: 2019-11-01 15:07-0500\n"
+"PO-Revision-Date: 2019-11-01 15:07-0500\n"
 "Last-Translator: Richard Aber <richard.aber@webdevstudios.com>\n"
 "Language-Team: \n"
 "Language: it_IT\n"
@@ -10,7 +10,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Poedit 2.2.3\n"
+"X-Generator: Poedit 2.2.4\n"
 "X-Poedit-Basepath: ..\n"
 "X-Poedit-Flags-xgettext: --add-comments=translators:\n"
 "X-Poedit-WPHeader: algolia.php\n"
@@ -21,22 +21,22 @@ msgstr ""
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SearchPathExcluded-0: *.min.js\n"
 
-#. translators: the placeholder always contains the PHP version.
-#: algolia.php:28
+#. translators: placeholder 1 is minimum required PHP version, placeholder 2 is installed PHP version.
+#: algolia.php:77
 #, php-format
-msgid "Algolia plugin requires PHP 5.6 or higher. You’re still on %s."
+msgid "Algolia plugin requires PHP %1$s or higher. You’re still on %2$s."
 msgstr ""
-"Il plugin Algolia richiede PHP 5.6 o superiore. Tu sei ancora sulla versione "
-"%s."
+"Il plugin Algolia richiede PHP %1$s o superiore. Tu sei ancora sulla "
+"versione %2$s."
 
-#. translators: the placeholder always contains the WordPress version.
-#: algolia.php:35
+#. translators: placeholder 1 is minimum required WordPress version, placeholder 2 is installed WordPress version.
+#: algolia.php:86
 #, php-format
 msgid ""
-"Algolia plugin requires at least WordPress in version 4.4., You are on %s"
+"Algolia plugin requires at least WordPress in version %1$s, You are on %2$s."
 msgstr ""
-"Il plugin Algolia richiede almeno la versione 4.4 di Wordpress. Tu sei "
-"ancora sulla versione %s"
+"Il plugin Algolia richiede almeno la versione %1$s di Wordpress. Tu sei "
+"ancora sulla versione %2$s."
 
 #: includes/admin/class-algolia-admin-page-autocomplete.php:53
 #: includes/admin/class-algolia-admin-page-settings.php:63
@@ -216,6 +216,9 @@ msgid ""
 "provided information. Please ensure that you used an the Admin API key and a "
 "valid Application ID."
 msgstr ""
+"Non siamo stati in grado di autenticarvi contro i server dell'Algolia con le "
+"informazioni fornite. Assicurati di aver utilizzato una chiave API di "
+"amministrazione e un ID applicazione valido."
 
 #: includes/admin/class-algolia-admin-page-settings.php:271
 msgid ""
@@ -223,6 +226,9 @@ msgid ""
 "has only the search capability and nothing else. Also ensure that the key "
 "has no limited time validity."
 msgstr ""
+"Sembra che la chiave API di ricerca sia sbagliata. Assicuratevi che la "
+"chiave inserita abbia solo la capacità di ricerca e nient'altro. Assicurarsi "
+"inoltre che la chiave non abbia una validità limitata nel tempo."
 
 #: includes/admin/class-algolia-admin-page-settings.php:280
 msgid ""
@@ -320,6 +326,8 @@ msgid ""
 "Do not use Algolia for searching at all.<br/>This is only a valid option if "
 "you wish to search on your content from another website."
 msgstr ""
+"Non utilizzare Algolia per la ricerca.<br/>Questa è un'opzione valida solo "
+"se si desidera cercare il contenuto di un altro sito web."
 
 #: includes/admin/partials/form-override-search-option.php:24
 msgid "Use Algolia in the backend"
@@ -332,6 +340,11 @@ msgid ""
 "><b>This option does not support filtering and displaying instant search "
 "results but has the advantage to play nicely with any theme.</b>"
 msgstr ""
+"Con questa opzione la ricerca WordPress sarà alimentata dall'Algolia dietro "
+"le quinte.<br/>In questo modo i risultati della tua ricerca saranno "
+"tolleranti al tipo di digitazione.<br/><b>Questa opzione non supporta il "
+"filtraggio e la visualizzazione dei risultati della ricerca istantanea, ma "
+"ha il vantaggio di giocare bene con qualsiasi tema.</b>"
 
 #: includes/admin/partials/form-override-search-option.php:44
 msgid "Use Algolia with Instantsearch.js"
@@ -345,6 +358,12 @@ msgid ""
 "with some sensible default styling rules<br/>but it could require some CSS "
 "adjustments to provide an optimal search experience."
 msgstr ""
+"Questo sostituirà la pagina di ricerca con un'esperienza di ricerca "
+"istantanea powered by Algolia.<br/>Per impostazione predefinita è possibile "
+"filtrare per tipo di messaggio, categorie, tag e autori.<br/>Si prega di "
+"notare che il plugin viene fornito con alcune ragionevoli regole di stile "
+"predefinito,<br/>ma potrebbe richiedere alcune modifiche ai CSS per fornire "
+"un'esperienza di ricerca ottimale."
 
 #: includes/admin/partials/page-autocomplete-config.php:5
 msgid "Enable"
@@ -370,7 +389,7 @@ msgstr "Azioni"
 #: includes/admin/partials/page-autocomplete-config.php:28
 #, php-format
 msgid "Index name: %s"
-msgstr ""
+msgstr "Nome indice: %s"
 
 #: includes/admin/partials/page-autocomplete-config.php:41
 msgid "Re-index"
