@@ -10,6 +10,9 @@
 
 namespace WebDevStudios\WPSWA\CLI;
 
+use \WP_CLI;
+use \WP_CLI_Command;
+
 use WebDevStudios\WPSWA\CLI\Commands\{
 	CopyConfig,
 	Hello,
@@ -28,7 +31,7 @@ use WebDevStudios\WPSWA\CLI\Commands\{
  *
  * @since 2.0.0
  */
-class Algolia extends \WP_CLI_Command {
+class Algolia extends WP_CLI_Command {
 
 	/**
 	 * Array of command classes to register.
@@ -38,10 +41,10 @@ class Algolia extends \WP_CLI_Command {
 	 * @var array
 	 */
 	protected $commands = [
-		'algolia copy_config'   => CopyConfig::class,
-		'algolia hello'         => Hello::class,
-		'algolia reindex_posts' => ReindexPosts::class,
-		'algolia set_config'    => SetConfig::class,
+		CopyConfig::class,
+		Hello::class,
+		ReindexPosts::class,
+		SetConfig::class,
 	];
 
 	/**
@@ -61,8 +64,8 @@ class Algolia extends \WP_CLI_Command {
 	 * @since   2.0.0
 	 */
 	protected function register() {
-		foreach ( $this->commands as $command_name => $command_class ) {
-			\WP_CLI::add_command( $command_name, new $command_class() );
+		foreach ( $this->commands as $command_class ) {
+			WP_CLI::add_command( 'algolia', new $command_class() );
 		}
 	}
 }
