@@ -87,7 +87,7 @@ if ( ! \is_readable( $wpswa_autoloader ) ) {
 require $wpswa_autoloader;
 
 // Run the plugin.
-( PluginFactory::create() )->register();
+( PluginFactory::create() )->run();
 
 // Add WP-CLI commands.
 if ( \defined( 'WP_CLI' ) && WP_CLI ) {
