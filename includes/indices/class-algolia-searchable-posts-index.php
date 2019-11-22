@@ -201,7 +201,7 @@ final class Algolia_Searchable_Posts_Index extends Algolia_Index {
 			),
 			'attributesToSnippet'   => array(
 				'post_title:30',
-				'content:30',
+				'content:' . intval( apply_filters( 'excerpt_length', 55 ) ),
 			),
 			'snippetEllipsisText'   => '…',
 		);
