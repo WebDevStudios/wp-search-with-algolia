@@ -14,8 +14,9 @@ use \WP_CLI;
 use \WP_CLI_Command;
 
 use WebDevStudios\WPSWA\CLI\Commands\{
-	CopyConfig,
+	CopyIndex,
 	Hello,
+	ListIndices,
 	ReindexPosts,
 	SetConfig
 };
@@ -41,10 +42,11 @@ class Algolia extends WP_CLI_Command {
 	 * @var array
 	 */
 	protected $commands = [
-		CopyConfig::class,
+		CopyIndex::class,
 		Hello::class,
 		ReindexPosts::class,
 		SetConfig::class,
+		ListIndices::class,
 	];
 
 	/**
