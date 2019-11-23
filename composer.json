@@ -14,6 +14,7 @@
     "algolia/algoliasearch-client-php": "^2.5"
   },
   "require-dev": {
+    "coenjacobs/mozart": "^0.4.0",
     "dealerdirect/phpcodesniffer-composer-installer": "^0.5.0",
     "phpcompatibility/php-compatibility": "^9.2.0",
     "phpcompatibility/phpcompatibility-paragonie": "^1.0.0",
@@ -26,18 +27,39 @@
   "autoload": {
     "psr-4": {
       "WebDevStudios\\WPSWA\\": "src/"
-    }
+    },
+    "files": [
+      "src/Vendor/Algolia/AlgoliaSearch/Http/Psr7/functions.php",
+      "src/Vendor/Algolia/AlgoliaSearch/functions.php"
+    ]
   },
   "prefer-stable": true,
   "extra": {
     "installer-name": "wp-search-with-algolia",
-    "phpcodesniffer-search-depth": 5
+    "phpcodesniffer-search-depth": 5,
+    "mozart": {
+      "dep_namespace": "WebDevStudios\\WPSWA\\Vendor\\",
+      "dep_directory": "/src/Vendor/",
+      "classmap_directory": "/classes/vendor/",
+      "classmap_prefix": "WPSWA_",
+      "packages": [
+        "algolia/algoliasearch-client-php"
+      ]
+    }
   },
   "scripts": {
     "install-codestandards": "Dealerdirect\\Composer\\Plugin\\Installers\\PHPCodeSniffer\\Plugin::run",
     "compat": "@php ./vendor/squizlabs/php_codesniffer/bin/phpcs --standard=phpcompat.xml --report=summary,source",
     "lint": "@php ./vendor/squizlabs/php_codesniffer/bin/phpcs --standard=phpcs.xml --report=summary,source",
     "lint:errors": "@lint -n",
-    "unit-test": "@php ./vendor/bin/phpunit"
+    "unit-test": "@php ./vendor/bin/phpunit",
+    "post-install-cmd": [
+      "\"vendor/bin/mozart\" compose",
+      "composer dump-autoload"
+    ],
+    "post-update-cmd": [
+      "\"vendor/bin/mozart\" compose",
+      "composer dump-autoload"
+    ]
   }
 }
