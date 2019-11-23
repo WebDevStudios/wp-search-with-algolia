@@ -10,6 +10,11 @@
 
 namespace WebDevStudios\WPSWA\CLI\Commands;
 
+use \WP_CLI;
+use \WP_CLI_Command;
+use \InvalidArgumentException;
+use WebDevStudios\WPSWA\Vendor\Algolia\AlgoliaSearch\SearchClient;
+
 /**
  * Set config.
  *
@@ -21,12 +26,10 @@ namespace WebDevStudios\WPSWA\CLI\Commands;
  *
  * @since 2.0.0
  */
-class SetConfig extends \WP_CLI_Command {
+class SetConfig extends WP_CLI_Command {
 
 	/**
 	 * Set config method.
-	 *
-	 * @todo Determine why there's a global $algolia in here.
 	 *
 	 * @author  WebDevStudios <contact@webdevstudios.com>
 	 * @since   2.0.0
@@ -34,17 +37,30 @@ class SetConfig extends \WP_CLI_Command {
 	 * @param array $args       Positional arguments.
 	 * @param array $assoc_args Associative arguments.
 	 *
-	 * @throws \InvalidArgumentException If --index argument is not supplied.
+	 * @throws InvalidArgumentException If --index argument is not supplied.
+	 *
+	 * @return void
 	 */
-	public function set_config( $args, $assoc_args ) {
-		global $algolia; // Where is this coming from?
+	public function set_config( $args, $assoc_args ): void {
 
-		$canonical_index_name = $assoc_args['index'];
-		if ( ! $canonical_index_name ) {
-			throw new \InvalidArgumentException( '--index argument is required' );
+		$app_id  = \get_option( 'algolia_application_id', '' );
+		$api_key = \get_option( 'algolia_api_key', '' );
+
+		if ( empty( $app_id ) || empty( $api_key ) ) {
+			WP_CLI::error( 'Missing App ID or API key' );
+
+			return;
 		}
 
-		$index = $algolia->initIndex(
+		$this->algolia_search_client = SearchClient::create( $app_id, $api_key );
+
+		$canonical_index_name = $assoc_args['index'];
+
+		if ( ! $canonical_index_name ) {
+			throw new InvalidArgumentException( '--index argument is required' );
+		}
+
+		$index = $this->algolia_search_client->initIndex(
 			\apply_filters( 'algolia_index_name', $canonical_index_name ) // phpcs:ignore
 		);
 
@@ -52,7 +68,7 @@ class SetConfig extends \WP_CLI_Command {
 			$settings = (array) \apply_filters( 'get_' . $canonical_index_name . '_settings', [] ); // phpcs:ignore
 			if ( $settings ) {
 				$index->setSettings( $settings );
-				\WP_CLI::success( 'Push settings to ' . $index->getIndexName() );
+				WP_CLI::success( 'Push settings to ' . $index->getIndexName() );
 			}
 		}
 
@@ -60,7 +76,7 @@ class SetConfig extends \WP_CLI_Command {
 			$synonyms = (array) \apply_filters( 'get_' . $canonical_index_name . '_synonyms', [] ); // phpcs:ignore
 			if ( $synonyms ) {
 				$index->replaceAllSynonyms( $synonyms );
-				\WP_CLI::success( 'Push synonyms to ' . $index->getIndexName() );
+				WP_CLI::success( 'Push synonyms to ' . $index->getIndexName() );
 			}
 		}
 
@@ -68,7 +84,7 @@ class SetConfig extends \WP_CLI_Command {
 			$rules = (array) \apply_filters( 'get_' . $canonical_index_name . '$rules', [] ); // phpcs:ignore
 			if ( $rules ) {
 				$index->replaceAllRules( $rules );
-				\WP_CLI::success( 'Push query rules to ' . $index->getIndexName() );
+				WP_CLI::success( 'Push query rules to ' . $index->getIndexName() );
 			}
 		}
 	}
