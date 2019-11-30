@@ -34,14 +34,23 @@ class Options extends Service {
 	 * @author WebDevStudios <contact@webdevstudios.com>
 	 */
 	public function add_menu_page() {
-		add_menu_page(
-			'Custom Menu Page Title',
-			'Custom Menu Page',
+		\add_menu_page(
+			\esc_html__( 'Algolia Settings', 'wp-search-with-algolia' ),
+			\esc_html__( 'Algolia Settings', 'wp-search-with-algolia' ),
 			'manage_options',
-			'custom.php',
-			'',
+			'wpswa',
+			[ $this, 'option_page' ],
 			'dashicons-welcome-widgets-menus',
 			90
 		);
+	}
+
+	/**
+	 * Callback for add_options_page.
+	 *
+	 * @since  2.0.0
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 */
+	public function option_page() {
 	}
 }
