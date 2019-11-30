@@ -19,12 +19,6 @@ use WebDevStudios\WPSWA\{
 /**
  * Verify that the Algolia CLI commands have loaded.
  *
- * ## EXAMPLE
- *
- *     # Verify that the Algolia CLI commands have loaded.
- *     $ wp algolia hello
- *     Success: Algolia CLI Command is correctly loaded
- *
  * @since 2.0.0
  */
 class Hello extends WP_CLI_Command {
@@ -40,6 +34,23 @@ class Hello extends WP_CLI_Command {
 
 	/**
 	 * Verify that the Algolia CLI commands have loaded.
+	 *
+	 * ## EXAMPLES
+	 *
+	 *     # Verify that the Algolia CLI commands have loaded.
+	 *     $ wp algolia hello
+	 *     Success: Algolia CLI Command is correctly loaded
+	 *
+	 *     # If there is a problem with the requirements check.
+	 *     $  wp algolia hello
+	 *     Missing Algolia Application ID.
+	 *     Missing Algolia Admin API key.
+	 *     WP Search with Algolia requires at least PHP 7.2.
+	 *     WP Search with Algolia requires at least WP 5.0.
+	 *     WP Search with Algolia requires the cURL PHP extension.
+	 *     WP Search with Algolia requires the JSON PHP extension.
+	 *     WP Search with Algolia requires the mbstring PHP extension.
+	 *     Error: One ore more errors were found with WP Search with Algolia settings or environment.
 	 *
 	 * @author  WebDevStudios <contact@webdevstudios.com>
 	 * @since   2.0.0
@@ -77,11 +88,11 @@ class Hello extends WP_CLI_Command {
 		}
 
 		if ( false === $this->requirements_utility->meets_php_version ) {
-			$errors[] = 'WP Search with Algolia requires at least PHP ' . WPSWA_MIN_PHP_VERSION;
+			$errors[] = 'WP Search with Algolia requires at least PHP ' . WPSWA_MIN_PHP_VERSION . '.';
 		}
 
 		if ( false === $this->requirements_utility->meets_wp_version ) {
-			$errors[] = 'WP Search with Algolia requires at least WP ' . WPSWA_MIN_WP_VERSION;
+			$errors[] = 'WP Search with Algolia requires at least WP ' . WPSWA_MIN_WP_VERSION . '.';
 		}
 
 		if ( false === $this->requirements_utility->has_curl ) {
@@ -93,7 +104,7 @@ class Hello extends WP_CLI_Command {
 		}
 
 		if ( false === $this->requirements_utility->has_mbstring ) {
-			$errors[] = 'WP Search with Algolia requires the PHP mbstring extension';
+			$errors[] = 'WP Search with Algolia requires the mbstring PHP extension.';
 		}
 
 		// Does not exit script.
