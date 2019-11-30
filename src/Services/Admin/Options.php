@@ -2,7 +2,9 @@
 
 namespace WebDevStudios\WPSWA\Services\Admin;
 
-class Options {
+use WebDevStudios\WPSWA\Structure\Service;
+
+class Options extends Service {
 
 	public function __construct() {
 		add_action( 'admin_menu', array( $this, 'register_menu_page' ) );
