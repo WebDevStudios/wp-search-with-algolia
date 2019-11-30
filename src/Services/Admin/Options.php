@@ -1,6 +1,6 @@
 <?php
 
-namespace WebDevStudios\WPSWA\Admin;
+namespace WebDevStudios\WPSWA\Services\Admin;
 
 class Options {
 
