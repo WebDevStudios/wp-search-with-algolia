@@ -12,6 +12,9 @@ namespace WebDevStudios\WPSWA\CLI\Commands;
 
 use \WP_CLI;
 use \WP_CLI_Command;
+use WebDevStudios\WPSWA\{
+	Utility\Requirements
+};
 
 /**
  * Verify that the Algolia CLI commands have loaded.
@@ -27,29 +30,75 @@ use \WP_CLI_Command;
 class Hello extends WP_CLI_Command {
 
 	/**
+	 * Requirements utlity.
+	 *
+	 * @since   2.0.0
+	 *
+	 * @var null|Requirements
+	 */
+	protected $requirements_utility = null;
+
+	/**
 	 * Verify that the Algolia CLI commands have loaded.
 	 *
 	 * @author  WebDevStudios <contact@webdevstudios.com>
 	 * @since   2.0.0
 	 */
-	public function hello() {
+	public function hello(): void {
+		$this->requirements_utility = new Requirements();
+		$this->requirements_utility->set_app_id( \get_option( 'algolia_application_id', '' ) );
+		$this->requirements_utility->set_admin_api_key( \get_option( 'algolia_api_key', '' ) );
+		$this->requirements_utility->check_requirements();
+		$this->output_status();
+	}
 
-		$has_errors = false;
-		$app_id     = \get_option( 'algolia_application_id', '' );
-		$api_key    = \get_option( 'algolia_api_key', '' );
-
-		if ( empty( $app_id ) ) {
-			$has_errors = true;
-			WP_CLI::error( 'Missing App ID.' );
-		}
-
-		if ( empty( $api_key ) ) {
-			$has_errors = true;
-			WP_CLI::error( 'Missing API key.' );
-		}
-
-		if ( ! $has_errors ) {
+	/**
+	 * Output the status of our Requirements check.
+	 *
+	 * @author  WebDevStudios <contact@webdevstudios.com>
+	 * @since   2.0.0
+	 *
+	 * @return void
+	 */
+	public function output_status() {
+		if ( true === $this->requirements_utility->meets_requirements() ) {
 			WP_CLI::success( 'Algolia CLI Command is correctly loaded 🎉' );
+			return;
 		}
+
+		$errors = [];
+
+		if ( false === $this->requirements_utility->has_app_id ) {
+			$errors[] = 'Algolia Application ID not configured in plugin settings.';
+		}
+
+		if ( false === $this->requirements_utility->has_admin_api_key ) {
+			$errors[] = 'Algolia Admin API key not configured in plugin settings.';
+		}
+
+		if ( false === $this->requirements_utility->meets_php_version ) {
+			$errors[] = 'WP Search with Algolia requires at least PHP ' . WPSWA_MIN_PHP_VERSION;
+		}
+
+		if ( false === $this->requirements_utility->meets_wp_version ) {
+			$errors[] = 'WP Search with Algolia requires at least WP ' . WPSWA_MIN_WP_VERSION;
+		}
+
+		if ( false === $this->requirements_utility->has_curl ) {
+			$errors[] = 'WP Search with Algolia requires the cURL PHP extension.';
+		}
+
+		if ( false === $this->requirements_utility->has_json ) {
+			$errors[] = 'WP Search with Algolia requires the JSON PHP extension.';
+		}
+
+		if ( false === $this->requirements_utility->has_mbstring ) {
+			$errors[] = 'WP Search with Algolia requires the PHP mbstring extension';
+		}
+
+		// Does not exit script.
+		WP_CLI::error_multi_line( $errors );
+
+		WP_CLI::error( 'One ore more errors were found with WP Search with Algolia settings or environment.' );
 	}
 }
