@@ -44,6 +44,12 @@ if ( ! \defined( 'ABSPATH' ) ) {
 // Plugin directory URL.
 \define( 'WPSWA_PLUGIN_URL', \plugins_url( '', WPSWA_PLUGIN_FILE ) );
 
+// The minmum required PHP version.
+\define( 'WPSWA_MIN_PHP_VERSION', '7.2' );
+
+// The minimum required WordPress version.
+\define( 'WPSWA_MIN_WP_VERSION', '5.0' );
+
 /**
  * The full path to the PSR4 autoloader.
  *
