@@ -1,20 +1,47 @@
 <?php
+/**
+ * Options service class file.
+ *
+ * @package WebDevStudios\WPSWA\Services\Admin
+ * @since   2.0.0
+ */
 
 namespace WebDevStudios\WPSWA\Services\Admin;
 
 use WebDevStudios\WPSWA\Structure\Service;
 
+/**
+ * Class Options
+ *
+ * @since 2.0.0
+ */
 class Options extends Service {
 
-	public function __construct() {
-		add_action( 'admin_menu', array( $this, 'register_menu_page' ) );
+	/**
+	 * Register hooks.
+	 *
+	 * @since  2.0.0
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 */
+	public function register_hooks(): void {
+		\add_action( 'admin_menu', [ $this, 'add_menu_page' ] );
 	}
 
-	public function register_menu_page() {
-		add_menu_page( 'Custom Menu Page Title', 'Custom Menu Page', 'manage_options', 'custom.php', '', 'dashicons-welcome-widgets-menus', 90 );
-	}
-
-	public static function run() {
-		$init = new Options();
+	/**
+	 * Add menu page.
+	 *
+	 * @since  2.0.0
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 */
+	public function add_menu_page() {
+		add_menu_page(
+			'Custom Menu Page Title',
+			'Custom Menu Page',
+			'manage_options',
+			'custom.php',
+			'',
+			'dashicons-welcome-widgets-menus',
+			90
+		);
 	}
 }
