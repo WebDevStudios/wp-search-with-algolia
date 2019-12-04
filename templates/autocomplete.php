@@ -179,6 +179,9 @@
 		  autocomplete.autocomplete.open();
 		}
 	  });
+
+	  // Expose autocomplete instance.
+	  window.autocomplete = autocomplete;
 	});
 
 	jQuery(document).on("click", ".algolia-powered-by-link", function (e) {
