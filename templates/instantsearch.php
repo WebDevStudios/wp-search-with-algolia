@@ -61,8 +61,8 @@
 					},
 					searchParameters: {
 						facetingAfterDistinct: true,
-			highlightPreTag: '__ais-highlight__',
-			highlightPostTag: '__/ais-highlight__'
+						highlightPreTag: '__ais-highlight__',
+						highlightPostTag: '__/ais-highlight__'
 					}
 				});
 
@@ -175,6 +175,19 @@
 						}
 					})
 				);
+
+				/* Send hits to Google Analytics (if present) */
+				if (window.ga) {
+					search.addWidgets([
+						instantsearch.widgets.analytics({
+							pushFunction(formattedParameters, state, results) {
+								console.log('push', window.location.search);
+								window.ga('set', 'page', window.location.pathname + window.location.search);
+								window.ga('send', 'pageView');
+							},
+						})
+					]);
+				}
 
 				/* Start */
 				search.start();
