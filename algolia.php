@@ -2,21 +2,20 @@
 /**
  * @wordpress-plugin
  * Plugin Name:       WP Search with Algolia
- * Plugin URI:        https://github.com/WebDevStudios/wp-search-with-algolia
+ * Plugin URI:        https://github.com/alangf/wp-search-with-algolia
  * Description:       Integrate the powerful Algolia search service with WordPress
- * Version:           1.1.0
+ * Version:           1.2.0
  * Requires at least: 5.0
  * Requires PHP:      7.2
- * Author:            WebDevStudios
- * Author URI:        https://webdevstudios.com
+ * Author:            Alan Gomes
+ * Author URI:        https://alangf.com
  * License:           GNU General Public License v2.0 / MIT License
  * Text Domain:       wp-search-with-algolia
  * Domain Path:       /languages
  */
 
-// The following code is a derivative work of the code from the
-// Algolia Search plugin for WordPress, which is licensed GPLv2.
-// This code therefore is also licensed under the terms of the GNU Public License v2.0.
+// Fork of the fork that WebDevStudios made of the original Algolia plugin, now discontinued.
+// Original: https://github.com/WebDevStudios/wp-search-with-algolia
 
 // Nothing to see here if not loaded in WP context.
 if ( ! defined( 'WPINC' ) ) {
