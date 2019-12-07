@@ -1,5 +1,6 @@
 import algoliasearch from "algoliasearch";
 import instantsearch from "instantsearch.js";
+import { searchBox, hits } from 'instantsearch.js/es/widgets';
 import "instantsearch.css/themes/reset.css";
 import "instantsearch.css/themes/algolia.css";
 
@@ -19,7 +20,7 @@ const search = instantsearch({
 });
 
 search.addWidgets([
-	instantsearch.widgets.searchBox({
+	searchBox({
 		container: ".search-form",
 		limit: 5,
 		showMore: true
@@ -32,7 +33,7 @@ search.addWidgets([
 	// 	attribute: "tags"
 	// }),
 
-	instantsearch.widgets.hits({
+	hits({
 		container: "#content",
 		templates: {
 			item: `
