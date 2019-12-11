@@ -5,4 +5,4 @@ node_modules/
 *.sql
 *.tar.gz
 *.zip
-vendor/
+/vendor/
