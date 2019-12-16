@@ -12,7 +12,7 @@ class Algolia_Post_Changes_Watcher implements Algolia_Changes_Watcher {
 	/**
 	 * @var Array
 	 */
-	private $postsDeleted = array();
+	private $posts_deleted = array();
 
 	/**
 	 * @param Algolia_Index $index
@@ -49,7 +49,7 @@ class Algolia_Post_Changes_Watcher implements Algolia_Changes_Watcher {
 			return;
 		}
 
-		if(in_array($post_id, $this->postsDeleted)) {
+		if(in_array($post_id, $this->posts_deleted)) {
 			return;
 		}
 
