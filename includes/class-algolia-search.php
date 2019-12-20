@@ -56,12 +56,28 @@ class Algolia_Search {
 			$current_page = get_query_var( 'page' );
 		}
 
-		$posts_per_page = (int) get_option( 'posts_per_page' );
-
+		/**
+		 * Filters the array of parameters used in the Algolia Index search.
+		 *
+		 * @author WebDevStudios <contact@webdevstudios.com>
+		 * @since  1.0.0
+		 * @since  1.2.0 Introduced 'highlightPreTag' and 'highlightPostTag` parameters.
+		 *
+		 * @param array $params {
+		 *     Search parameters for the Algolia Index search.
+		 *
+		 *     @type string $attributesToRetrieve Which attributes to retrieve.
+		 *     @type int    $hitsPerPage          Pagination parameter. The number of hits per page to retrieve.
+		 *     @type int    $page                 Pagination parameter. The page of results to retrieve.
+		 *     @type string $highlightPreTag      HTML string to insert before highlights in result snippets.
+		 *     @type string $highlightPostTag     HTML string to insert after highlights in result snippets.
+		 * }
+		 */
 		$params = apply_filters(
-			'algolia_search_params', array(
+			'algolia_search_params',
+			array(
 				'attributesToRetrieve' => 'post_id',
-				'hitsPerPage'          => $posts_per_page,
+				'hitsPerPage'          => (int) get_option( 'posts_per_page' ),
 				'page'                 => $current_page - 1, // Algolia pages are zero indexed.
 				'highlightPreTag'      => '<em class="algolia-search-highlight">',
 				'highlightPostTag'     => '</em>',
@@ -103,7 +119,7 @@ class Algolia_Search {
 			$post_ids = array( 0 );
 		}
 
-		$query->set( 'posts_per_page', $posts_per_page );
+		$query->set( 'posts_per_page', $params['hitsPerPage'] );
 		$query->set( 'offset', 0 );
 
 		$post_types = 'any';
