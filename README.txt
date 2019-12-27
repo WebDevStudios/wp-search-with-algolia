@@ -5,7 +5,7 @@ Tags: Search, Algolia, Autocomplete, instant-search, relevant search, search hig
 Requires at least: 5.0
 Tested up to: 5.3
 Requires PHP: 7.2
-Stable tag: 1.1.0
+Stable tag: 1.2.0
 License: GNU General Public License v2.0, MIT License
 
 Improve search on your site. Autocomplete is included, along with full control over look, feel and relevance.
@@ -108,3 +108,18 @@ WebDevStudios provides end-to-end WordPress opportunities from strategy and plan
 == Changelog ==
 
 Follow along with the changelog on [Github](https://github.com/WebDevStudios/wp-search-with-algolia/releases).
+
+= 1.2.0 =
+* Use filtered value of 'hitsPerPage' as 'posts_per_page' query param
+* Fix broken SVG
+* Add highlighting to backend search results - props @philipnewcomer
+
+= 1.1.0 =
+* Minimum PHP version requirement is now PHP 7.2
+* Minimum WordPress version requirement is now WP 5.0
+* Internationalization/localization improvements, textdomain matches plugin slug
+* Addressed a potential WSOD if minimum PHP and WP version requirements were not met
+* Tested on WP 5.3
+
+= 1.0.0 =
+* Initial release.
