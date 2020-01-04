@@ -28,8 +28,11 @@
 
 	<!-- What not to scan. -->
 	<exclude-pattern>index.php</exclude-pattern>
+	<exclude-pattern>/.github/</exclude-pattern>
+	<exclude-pattern>/bin/</exclude-pattern>
+	<exclude-pattern>/config/</exclude-pattern>
 	<exclude-pattern>/vendor/</exclude-pattern>
-	<exclude-pattern>/src/Vendor/</exclude-pattern>
+	<exclude-pattern>/vendor_prefixed/</exclude-pattern>
 	<exclude-pattern>/node_modules/</exclude-pattern>
 	<exclude-pattern>/tests/</exclude-pattern>
 
