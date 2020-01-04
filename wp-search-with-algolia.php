@@ -39,7 +39,7 @@ if ( ! \defined( 'ABSPATH' ) ) {
 \define( 'WPSWA_PLUGIN_FILE', __FILE__ );
 
 // Plugin directory path.
-\define( 'WPSWA_PLUGIN_DIR', \plugin_dir_path( WPSWA_PLUGIN_FILE ) );
+\define( 'WPSWA_PLUGIN_DIR', __DIR__ );
 
 // Plugin directory URL.
 \define( 'WPSWA_PLUGIN_URL', \plugins_url( '', WPSWA_PLUGIN_FILE ) );
