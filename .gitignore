@@ -6,3 +6,4 @@ node_modules/
 *.tar.gz
 *.zip
 /vendor/
+/vendor_prefixed/
