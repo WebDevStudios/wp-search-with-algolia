@@ -21,6 +21,8 @@ interface Runnable {
 	/**
 	 * Run the initialization process.
 	 *
+	 * @author  Jeremy Ward <jeremy.ward@webdevstudios.com>
+	 *
 	 * @since 0.1.0
 	 */
 	public function run();

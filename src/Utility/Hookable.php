@@ -19,6 +19,8 @@ interface Hookable {
 	/**
 	 * Register actions and filters with WordPress.
 	 *
+	 * @author  Jeremy Ward <jeremy.ward@webdevstudios.com>
+	 *
 	 * @since 0.1.0
 	 */
 	public function register_hooks();

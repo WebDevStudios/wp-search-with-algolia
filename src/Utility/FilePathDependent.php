@@ -18,8 +18,11 @@ namespace WebDevStudios\WPSWA\Utility;
  */
 trait FilePathDependent {
 	/**
-	 * @var
+	 * The root file path.
+	 *
 	 * @since 2019-01-04
+	 *
+	 * @var string
 	 */
 	protected $file_path;
 
