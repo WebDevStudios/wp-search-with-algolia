@@ -59,12 +59,21 @@ if ( ! \defined( 'ABSPATH' ) ) {
  */
 $wpswa_autoloader = __DIR__ . '/vendor/autoload.php';
 
+/**
+ * The full path to the "functions" file.
+ *
+ * @since 2.0.0
+ *
+ * @var string $wpswa_functions
+ */
+$wpswa_functions = __DIR__ . '/src/functions.php';
+
 /*
  * If the autloader is not readable,
  * setup an admin notice, deactivate, and return early,
  * so the site will continue to function.
  */
-if ( ! \is_readable( $wpswa_autoloader ) ) {
+if ( ! \is_readable( $wpswa_autoloader ) || ! \is_readable( $wpswa_functions ) ) {
 
 	\add_action(
 		'admin_notices',
@@ -91,6 +100,9 @@ if ( ! \is_readable( $wpswa_autoloader ) ) {
 
 // Require the autoloader.
 require $wpswa_autoloader;
+
+// Require the functions.
+require $wpswa_functions;
 
 // Run the plugin.
 ( PluginFactory::create() )->run();
