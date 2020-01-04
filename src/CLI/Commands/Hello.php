@@ -71,7 +71,7 @@ class Hello extends WP_CLI_Command {
 	 *
 	 * @return void
 	 */
-	public function output_status() {
+	protected function output_status() {
 		if ( true === $this->requirements_utility->meets_requirements() ) {
 			WP_CLI::success( 'Algolia CLI Command is correctly loaded 🎉' );
 			return;
