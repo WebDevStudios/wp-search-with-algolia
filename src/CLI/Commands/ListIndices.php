@@ -14,10 +14,8 @@ use \WP_CLI;
 use \WP_CLI_Command;
 use function \WP_CLI\Utils\format_items;
 
-use WebDevStudios\WPSWA\{
-	Utility\Options,
-	Vendor\Algolia\AlgoliaSearch\SearchClient
-};
+use WebDevStudios\WPSWA\Utility\Options;
+use WDS_WPSWA_Vendor\Algolia\AlgoliaSearch\SearchClient;
 
 /**
  * List indices.

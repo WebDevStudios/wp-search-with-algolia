@@ -13,7 +13,7 @@ namespace WebDevStudios\WPSWA\CLI\Commands;
 use \WP_CLI;
 use \WP_CLI_Command;
 use function \WP_CLI\Utils\format_items;
-use WebDevStudios\WPSWA\Vendor\Algolia\AlgoliaSearch\SearchClient;
+use WDS_WPSWA_Vendor\Algolia\AlgoliaSearch\SearchClient;
 
 /**
  * Copy Index.
