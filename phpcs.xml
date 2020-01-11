@@ -1,0 +1,97 @@
+<?xml version="1.0"?>
+<ruleset name="WP Search With Algolia Coding Standards">
+
+	<description>
+		Coding standards configuration for WP Search With Algolia.
+	</description>
+
+	<!-- Only scan PHP files. -->
+	<arg name="extensions" value="php"/>
+
+	<!-- Whenever possible, cache the scan results and re-use those for unchanged files on the next scan. -->
+	<arg name="cache"/>
+
+	<!-- Set the memory limit to 256M.
+		For most standard PHP configurations, this means the memory limit will temporarily be raised.
+		Ref: https://github.com/squizlabs/PHP_CodeSniffer/wiki/Advanced-Usage#specifying-phpini-settings
+	-->
+	<ini name="memory_limit" value="256M"/>
+
+	<!-- Strip the file paths down to the relevant bit. -->
+	<arg name="basepath" value="./"/>
+
+	<!-- Show sniff codes in all reports. -->
+	<arg value="ps"/>
+
+	<!-- What to scan. -->
+	<file>.</file>
+
+	<!-- What not to scan. -->
+	<exclude-pattern>/index.php</exclude-pattern>
+	<exclude-pattern>/.github/</exclude-pattern>
+	<exclude-pattern>/bin/</exclude-pattern>
+	<exclude-pattern>/config/</exclude-pattern>
+	<exclude-pattern>/includes/libraries/</exclude-pattern>
+	<exclude-pattern>/vendor/</exclude-pattern>
+	<exclude-pattern>/vendor_prefixed/</exclude-pattern>
+	<exclude-pattern>/node_modules/</exclude-pattern>
+	<exclude-pattern>/tests/</exclude-pattern>
+
+	<!--
+		Use WDS Coding standards.
+	 	https://github.com/WebDevStudios/WDS-Coding-Standards
+	-->
+	<rule ref="WebDevStudios"/>
+
+	<!--
+		WP Search With Algolia currently supports WP 5.0+.
+		https://github.com/WordPress/WordPress-Coding-Standards/wiki/Customizable-sniff-properties#minimum-wp-version-to-check-for-usage-of-deprecated-functions-classes-and-function-parameters
+	-->
+	<config name="minimum_supported_wp_version" value="5.0"/>
+
+	<!--
+		Configure global prefixes/namespaces.
+		https://github.com/WordPress/WordPress-Coding-Standards/wiki/Customizable-sniff-properties#naming-conventions-prefix-everything-in-the-global-namespace
+	-->
+	<rule ref="WordPress.NamingConventions.PrefixAllGlobals">
+		<properties>
+			<!-- Value: replace the function, class, and variable prefixes used. Separate multiple prefixes with a comma. -->
+			<property name="prefixes" type="array" value="webdevstudios,wds,wpswa"/>
+		</properties>
+	</rule>
+
+	<!--
+		Configure text_domain for I18n.
+		https://github.com/WordPress/WordPress-Coding-Standards/wiki/Customizable-sniff-properties#properties-strongly-recommended-to-be-set
+	-->
+	<rule ref="WordPress.WP.I18n">
+		<properties>
+			<!-- Value: replace the text domain used. -->
+			<property name="text_domain" type="array" value="wp-search-with-algolia"/>
+		</properties>
+	</rule>
+
+	<!--
+		Precision alignment should be fine in HTML.
+		https://github.com/WordPress/WordPress-Coding-Standards/wiki/Customizable-sniff-properties#precision-alignment-exempt-certain-tokens
+	-->
+	<rule ref="WordPress.WhiteSpace.PrecisionAlignment">
+		<properties>
+			<property name="ignoreAlignmentTokens" type="array">
+				<element value="T_COMMENT"/>
+				<element value="T_INLINE_HTML"/>
+			</property>
+		</properties>
+	</rule>
+
+	<!--
+		We're PSR-4 autoloading, skip the "class-whatever" naming convention.
+		https://github.com/WordPress/WordPress-Coding-Standards/wiki/Customizable-sniff-properties#disregard-class-file-name-rules
+	-->
+	<rule ref="WordPress.Files.FileName">
+		<properties>
+			<property name="strict_class_file_names" value="false"/>
+		</properties>
+	</rule>
+
+</ruleset>
