@@ -12,25 +12,50 @@ namespace WebDevStudios\WPSWA\CLI\Commands;
 
 use \WP_CLI;
 use \WP_CLI_Command;
-use WebDevStudios\WPSWA\{
-	Utility\Requirements
-};
+use \WebDevStudios\WPSWA\Utility\Requirements;
+use \WebDevStudios\WPSWA\CLI\AlgoliaCLI;
+use \WDS_WPSWA_Vendor\Algolia\AlgoliaSearch\SearchClient;
 
 /**
  * Verify that the Algolia CLI commands have loaded.
  *
  * @since 2.0.0
  */
-class Hello extends WP_CLI_Command {
+class Hello extends AlgoliaCLI {
+
+	/**
+	 * The Aglolia SearchClient.
+	 *
+	 * @since 2.0.0
+	 *
+	 * @Inject
+	 * @var SearchClient
+	 */
+	public $search_client;
 
 	/**
 	 * Requirements utlity.
 	 *
+	 * @since 2.0.0
+	 *
+	 * @Inject
+	 * @var Requirements
+	 */
+	public $requirements_utility;
+
+	/**
+	 * Hello constructor.
+	 *
+	 * @author  WebDevStudios <contact@webdevstudios.com>
 	 * @since   2.0.0
 	 *
-	 * @var null|Requirements
+	 * @param SearchClient $search_client        Algolia SearchClient object.
+	 * @param Requirements $requirements_utility Requirements Utility object.
 	 */
-	protected $requirements_utility = null;
+	public function __construct( SearchClient $search_client, Requirements $requirements_utility ) {
+		$this->search_client        = $search_client;
+		$this->requirements_utility = $requirements_utility;
+	}
 
 	/**
 	 * Verify that the Algolia CLI commands have loaded.
@@ -56,9 +81,6 @@ class Hello extends WP_CLI_Command {
 	 * @since   2.0.0
 	 */
 	public function hello(): void {
-		$this->requirements_utility = new Requirements();
-		$this->requirements_utility->set_app_id( \get_option( 'algolia_application_id', '' ) );
-		$this->requirements_utility->set_admin_api_key( \get_option( 'algolia_api_key', '' ) );
 		$this->requirements_utility->check_requirements();
 		$this->output_status();
 	}
@@ -74,17 +96,18 @@ class Hello extends WP_CLI_Command {
 	protected function output_status() {
 		if ( true === $this->requirements_utility->meets_requirements() ) {
 			WP_CLI::success( 'Algolia CLI Command is correctly loaded 🎉' );
+
 			return;
 		}
 
 		$errors = [];
 
 		if ( false === $this->requirements_utility->has_app_id ) {
-			$errors[] = 'Algolia Application ID not configured in plugin settings.';
+			$errors[] = 'Algolia Application ID not configured.';
 		}
 
 		if ( false === $this->requirements_utility->has_admin_api_key ) {
-			$errors[] = 'Algolia Admin API key not configured in plugin settings.';
+			$errors[] = 'Algolia Admin API key not configured.';
 		}
 
 		if ( false === $this->requirements_utility->meets_php_version ) {
