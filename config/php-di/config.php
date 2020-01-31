@@ -120,11 +120,7 @@ return [
 	/**
 	 * The Algolia CLI Hello subcommand.
 	 */
-	Hello::class               => autowire()
-		->constructor(
-			get( SearchClient::class ),
-			get( Requirements::class )
-		),
+	Hello::class               => autowire(),
 	/**
 	 * The Algolia CLI CopyIndex subcommand.
 	 */
