@@ -129,4 +129,8 @@ return [
 	 * The Algolia CLI ListIndices subcommand.
 	 */
 	ListIndices::class         => autowire(),
+	/**
+	 * The Options page class.
+	 */
+	Options::class             => autowire(),
 ];
