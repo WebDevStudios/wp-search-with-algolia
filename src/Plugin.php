@@ -155,9 +155,8 @@ final class Plugin {
 			if ( ! $this->container->has( $service ) ) {
 				continue;
 			}
-			$service_object = $this->container->get( $service );
-			if ( \method_exists( $service_object, 'run' ) ) {
-				$service_object->run();
+			if ( \method_exists( $service, 'run' ) ) {
+				( $this->container->get( $service ) )->run();
 			}
 		}
 	}
