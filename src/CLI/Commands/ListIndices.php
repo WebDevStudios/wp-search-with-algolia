@@ -13,16 +13,32 @@ namespace WebDevStudios\WPSWA\CLI\Commands;
 use \WP_CLI;
 use \WP_CLI_Command;
 use function \WP_CLI\Utils\format_items;
-
-use WebDevStudios\WPSWA\Utility\Options;
-use WDS_WPSWA_Vendor\Algolia\AlgoliaSearch\SearchClient;
+use \WebDevStudios\WPSWA\CLI\AlgoliaCLI;
+use \WDS_WPSWA_Vendor\Algolia\AlgoliaSearch\SearchClient;
 
 /**
  * List indices.
  *
  * @since 2.0.0
  */
-class ListIndices extends WP_CLI_Command {
+class ListIndices extends AlgoliaCLI {
+
+	/**
+	 * The Aglolia SearchClient.
+	 *
+	 * @Inject
+	 * @var SearchClient
+	 */
+	protected $search_client;
+
+	/**
+	 * ListIndices constructor.
+	 *
+	 * @param SearchClient $search_client Algolia SearchClient object.
+	 */
+	public function __construct( SearchClient $search_client ) {
+		$this->search_client = $search_client;
+	}
 
 	/**
 	 * List indices.
@@ -79,16 +95,6 @@ class ListIndices extends WP_CLI_Command {
 	 */
 	public function list_indices( $args, $assoc_args ): void {
 
-		$app_id = \get_option( 'algolia_application_id', '' );
-
-		$api_key = \get_option( 'algolia_api_key', '' );
-
-		if ( empty( $app_id ) || empty( $api_key ) ) {
-			WP_CLI::error( 'Missing App ID or API key' );
-
-			return;
-		}
-
 		/**
 		 * The fields available for an index object.
 		 *
@@ -123,9 +129,7 @@ class ListIndices extends WP_CLI_Command {
 
 		$items = [];
 
-		$this->algolia_search_client = SearchClient::create( $app_id, $api_key );
-
-		$indices = $this->algolia_search_client->listIndices();
+		$indices = $this->search_client->listIndices();
 
 		if ( ! empty( $indices['items'] ) ) {
 			$items = $indices['items'];
