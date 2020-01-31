@@ -8,7 +8,6 @@
 
 namespace WebDevStudios\WPSWA;
 
-use \WebDevStudios\WPSWA\Structure\Plugin\Plugin as OopsPlugin;
 use \WDS_WPSWA_Vendor\Psr\Container\ContainerInterface;
 use \WDS_WPSWA_Vendor\DI\ContainerBuilder;
 
@@ -19,7 +18,7 @@ use \WDS_WPSWA_Vendor\DI\ContainerBuilder;
  *
  * @since 2.0.0
  */
-final class Plugin extends OopsPlugin {
+final class Plugin {
 
 	/**
 	 * DI container.
@@ -58,16 +57,17 @@ final class Plugin extends OopsPlugin {
 	protected $cli_commands = [];
 
 	/**
-	 * Plugin constructor.
+	 * Run the plugin.
 	 *
-	 * @since  2.0.0
 	 * @author WebDevStudios <contact@webdevstudios.com>
+	 * @since  2.0.0
 	 */
-	public function __construct() {
+	public function run() {
 		$this->build_container();
 		$this->set_services();
 		$this->set_cli_commands();
 		$this->register_cli_commands();
+		$this->register_services();
 	}
 
 	/**
@@ -78,7 +78,7 @@ final class Plugin extends OopsPlugin {
 	 *
 	 * @return void
 	 */
-	public function set_services() {
+	public function set_services(): void {
 		if ( ! $this->container->has( 'services' ) ) {
 			return;
 		}
@@ -93,7 +93,7 @@ final class Plugin extends OopsPlugin {
 	 *
 	 * @return void
 	 */
-	public function set_cli_commands() {
+	public function set_cli_commands(): void {
 		if ( ! $this->container->has( 'cli_commands' ) ) {
 			return;
 		}
@@ -141,6 +141,24 @@ final class Plugin extends OopsPlugin {
 				continue;
 			}
 			\WP_CLI::add_command( 'algolia', $this->container->get( $command ) );
+		}
+	}
+
+	/**
+	 * Add Services.
+	 *
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 * @since  2.0.0
+	 */
+	public function register_services(): void {
+		foreach ( $this->services as $service ) {
+			if ( ! $this->container->has( $service ) ) {
+				continue;
+			}
+			$service_object = $this->container->get( $service );
+			if ( \method_exists( $service_object, 'run' ) ) {
+				$service_object->run();
+			}
 		}
 	}
 
