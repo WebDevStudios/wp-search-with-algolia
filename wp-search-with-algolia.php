@@ -2,7 +2,7 @@
 /**
  * WP Search with Algolia plugin bootstrap file.
  *
- * @since   1.0.0
+ * @since   2.0.0
  * @package WebDevStudios\WPSWA
  *
  * @wordpress-plugin
@@ -21,11 +21,8 @@
 
 namespace WebDevStudios\WPSWA;
 
-use WebDevStudios\WPSWA\{
-	PluginFactory,
-	Plugin,
-	CLI\Algolia
-};
+use \WebDevStudios\WPSWA\Plugin;
+use \WebDevStudios\WPSWA\Utility\PluginFactory;
 
 // Exit if accessed directly.
 if ( ! \defined( 'ABSPATH' ) ) {
@@ -104,10 +101,24 @@ require $wpswa_autoloader;
 // Require the functions.
 require $wpswa_functions;
 
-// Run the plugin.
-( PluginFactory::create() )->run();
+/**
+ * Instantiate the plugin.
+ *
+ * @since 2.0.0
+ *
+ * @var Plugin $wpswa_plugin
+ */
+$wpswa_plugin = PluginFactory::create();
 
-// Add WP-CLI commands.
-if ( \defined( 'WP_CLI' ) && WP_CLI ) {
-	\WP_CLI::add_command( 'algolia', new Algolia() );
-}
+\register_activation_hook(
+	__FILE__, function () use ( $wpswa_plugin ) {
+	$wpswa_plugin->activate();
+} );
+
+\register_deactivation_hook(
+	__FILE__, function () use ( $wpswa_plugin ) {
+	$wpswa_plugin->deactivate();
+} );
+
+// Run the plugin.
+$wpswa_plugin->run();
