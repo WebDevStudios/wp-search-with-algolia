@@ -31,6 +31,9 @@ class Requirements {
 	/**
 	 * Requirements constructor.
 	 *
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 * @since  2.0.0
+	 *
 	 * @param AlgoliaSettings $algoila_settings The AlgoliaSettings instance.
 	 */
 	public function __construct( AlgoliaSettings $algoila_settings ) {

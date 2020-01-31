@@ -32,6 +32,8 @@ final class PluginFactory {
 		/**
 		 * The static instance to share, else null.
 		 *
+		 * @since  2.0.0
+		 *
 		 * @var null|Plugin $plugin
 		 */
 		static $plugin = null;

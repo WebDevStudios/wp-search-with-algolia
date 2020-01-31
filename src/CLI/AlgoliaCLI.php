@@ -30,22 +30,11 @@ use \WDS_WPSWA_Vendor\Algolia\AlgoliaSearch\SearchClient;
 class AlgoliaCLI extends WP_CLI_Command {
 
 	/**
-	 * The Aglolia SearchClient.
-	 *
-	 * @Inject
-	 * @var SearchClient
-	 */
-	protected $search_client;
-
-	/**
 	 * Algolia_CLI constructor.
 	 *
 	 * @author  WebDevStudios <contact@webdevstudios.com>
 	 * @since   2.0.0
-	 *
-	 * @param SearchClient $search_client
 	 */
-	public function __construct( SearchClient $search_client ) {
-		$this->search_client = $search_client;
+	public function __construct() {
 	}
 }

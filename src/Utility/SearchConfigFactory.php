@@ -16,6 +16,11 @@ use \WDS_WPSWA_Vendor\GuzzleHttp\Client as GuzzleClient;
 
 use \WebDevStudios\WPSWA\Utility\AlgoliaSettings;
 
+/**
+ * Class SearchConfigFactory
+ *
+ * @since  2.0.0
+ */
 class SearchConfigFactory {
 
 	/**
@@ -36,6 +41,8 @@ class SearchConfigFactory {
 		/**
 		 * The static instance to share, else null.
 		 *
+		 * @since  2.0.0
+		 *
 		 * @var null|SearchConfig $search_config
 		 */
 		static $search_config = null;
@@ -46,6 +53,9 @@ class SearchConfigFactory {
 
 		/**
 		 * Filters the Aglolia SearchConfig arguments.
+		 *
+		 * @author WebDevStudios <contact@webdevstudios.com>
+		 * @since  2.0.0
 		 *
 		 * @param array $args {
 		 *     Algolia SearchConfig Args.

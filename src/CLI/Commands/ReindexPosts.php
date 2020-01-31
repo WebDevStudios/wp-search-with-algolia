@@ -33,6 +33,8 @@ class ReindexPosts extends AlgoliaCLI {
 	/**
 	 * The Aglolia SearchClient.
 	 *
+	 * @since  2.0.0
+	 *
 	 * @Inject
 	 * @var SearchClient
 	 */
@@ -41,7 +43,10 @@ class ReindexPosts extends AlgoliaCLI {
 	/**
 	 * ReindexPosts constructor.
 	 *
-	 * @param SearchClient $search_client
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 * @since  2.0.0
+	 *
+	 * @param SearchClient $search_client The Algolia Search Client.
 	 */
 	public function __construct( SearchClient $search_client ) {
 		$this->search_client = $search_client;
@@ -57,8 +62,6 @@ class ReindexPosts extends AlgoliaCLI {
 	 *
 	 * @param array $args       Positional arguments.
 	 * @param array $assoc_args Associative arguments.
-	 *
-	 * @return void
 	 */
 	public function reindex_posts( $args, $assoc_args ): void {
 

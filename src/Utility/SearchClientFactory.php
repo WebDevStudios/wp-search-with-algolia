@@ -38,6 +38,8 @@ final class SearchClientFactory {
 		/**
 		 * The static instance to share, else null.
 		 *
+		 * @since  2.0.0
+		 *
 		 * @var null|SearchClient $search_client
 		 */
 		static $search_client = null;
@@ -50,6 +52,8 @@ final class SearchClientFactory {
 		 * > The PHP client allows you to override what http layer
 		 * > will be used by the SearchClient (and the other clients).
 		 * > You need to set it in the Algolia class before instantiating your client.
+		 *
+		 * @since  2.0.0
 		 *
 		 * @link   https://www.algolia.com/doc/api-client/advanced/pass-options-to-the-http-client/php/?language=php
 		 */

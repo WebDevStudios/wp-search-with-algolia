@@ -26,6 +26,8 @@ class ListIndices extends AlgoliaCLI {
 	/**
 	 * The Aglolia SearchClient.
 	 *
+	 * @since 2.0.0
+	 *
 	 * @Inject
 	 * @var SearchClient
 	 */
@@ -33,6 +35,9 @@ class ListIndices extends AlgoliaCLI {
 
 	/**
 	 * ListIndices constructor.
+	 *
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 * @since  2.0.0
 	 *
 	 * @param SearchClient $search_client Algolia SearchClient object.
 	 */
@@ -90,8 +95,6 @@ class ListIndices extends AlgoliaCLI {
 	 *
 	 * @param array $args       Positional arguments.
 	 * @param array $assoc_args Associative arguments.
-	 *
-	 * @return void
 	 */
 	public function list_indices( $args, $assoc_args ): void {
 

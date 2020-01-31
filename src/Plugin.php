@@ -24,12 +24,25 @@ final class Plugin extends OopsPlugin {
 	/**
 	 * DI container.
 	 *
+	 * @since  2.0.0
+	 *
 	 * @var ContainerInterface
 	 */
 	public $container;
 
 	/**
+	 * DI container Builder.
+	 *
+	 * @since  2.0.0
+	 *
+	 * @var ContainerBuilder
+	 */
+	public $container_builder;
+
+	/**
 	 * Array of services.
+	 *
+	 * @since  2.0.0
 	 *
 	 * @var array
 	 */
@@ -37,6 +50,8 @@ final class Plugin extends OopsPlugin {
 
 	/**
 	 * Array of CLI Commands.
+	 *
+	 * @since  2.0.0
 	 *
 	 * @var array
 	 */
@@ -55,6 +70,14 @@ final class Plugin extends OopsPlugin {
 		$this->register_cli_commands();
 	}
 
+	/**
+	 * Set the services for this Plugin.
+	 *
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 * @since  2.0.0
+	 *
+	 * @return void
+	 */
 	public function set_services() {
 		if ( ! $this->container->has( 'services' ) ) {
 			return;
@@ -62,7 +85,15 @@ final class Plugin extends OopsPlugin {
 		$this->services = $this->container->get( 'services' );
 	}
 
-	public function set_cli_commands(){
+	/**
+	 * Set the CLI commands for this Plugin.
+	 *
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 * @since  2.0.0
+	 *
+	 * @return void
+	 */
+	public function set_cli_commands() {
 		if ( ! $this->container->has( 'cli_commands' ) ) {
 			return;
 		}
@@ -71,6 +102,9 @@ final class Plugin extends OopsPlugin {
 
 	/**
 	 * Get the container.
+	 *
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 * @since  2.0.0
 	 *
 	 * @return ContainerInterface|null
 	 */
@@ -81,6 +115,9 @@ final class Plugin extends OopsPlugin {
 	/**
 	 * Is this running under WP-CLI?
 	 *
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 * @since  2.0.0
+	 *
 	 * @return bool
 	 */
 	public function is_wpcli(): bool {
@@ -89,6 +126,9 @@ final class Plugin extends OopsPlugin {
 
 	/**
 	 * Add WP-CLI commands.
+	 *
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 * @since  2.0.0
 	 *
 	 * @return void
 	 */
@@ -107,27 +147,29 @@ final class Plugin extends OopsPlugin {
 	/**
 	 * Build container.
 	 *
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 * @since  2.0.0
+	 *
 	 * @todo PHP-DI can be compiled for performance.
 	 * @todo Probably need a way to manually flush old and recompile (CLI and UI).
 	 * @todo Probably also need an upgrade routine to flush old and recompile.
 	 * @todo Look into wp_get_upload_dir() and wp_mkdir_p() for compilaton path.
 	 *
 	 * @link http://php-di.org/doc/performances.html
-	 *
-	 * @return void
 	 */
 	public function build_container(): void {
-		$this->containerBuilder = new ContainerBuilder();
-		$this->containerBuilder->addDefinitions(
+		$this->container_builder = new ContainerBuilder();
+		$this->container_builder->addDefinitions(
 			WPSWA_PLUGIN_DIR . '/config/php-di/config.php'
 		);
-		$this->container = $this->containerBuilder->build();
+		$this->container = $this->container_builder->build();
 	}
 
 	/**
 	 * Plugin activation routines.
 	 *
-	 * @return void
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 * @since  2.0.0
 	 */
 	public function activate(): void {
 		\flush_rewrite_rules();
@@ -136,7 +178,8 @@ final class Plugin extends OopsPlugin {
 	/**
 	 * Plugin deactivation routines.
 	 *
-	 * @return void
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 * @since  2.0.0
 	 */
 	public function deactivate(): void {
 		\flush_rewrite_rules();

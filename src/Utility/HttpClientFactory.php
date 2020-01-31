@@ -51,6 +51,8 @@ class HttpClientFactory {
 		/**
 		 * The static HttpClientInterface instance to share, else null.
 		 *
+		 * @since 2.0.0
+		 *
 		 * @var null|HttpClientInterface $http_client
 		 */
 		static $http_client = null;
@@ -62,7 +64,8 @@ class HttpClientFactory {
 		/**
 		 * Filters the request options for the Guzzle Client passed to the Guzzle6HttpClient constructor.
 		 *
-		 * @since 2.0.0
+		 * @author WebDevStudios <contact@webdevstudios.com>
+		 * @since  2.0.0
 		 *
 		 * @param array $options Array of Guzzle options.
 		 */
@@ -70,6 +73,8 @@ class HttpClientFactory {
 
 		/**
 		 * The GuzzleClient to use for the HttpClientInterface.
+		 *
+		 * @since 2.0.0
 		 *
 		 * @var GuzzleClient $guzzle_client
 		 */
