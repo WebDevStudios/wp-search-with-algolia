@@ -24,16 +24,6 @@ use \WDS_WPSWA_Vendor\Algolia\AlgoliaSearch\SearchClient;
 class Hello extends AlgoliaCLI {
 
 	/**
-	 * The Aglolia SearchClient.
-	 *
-	 * @since 2.0.0
-	 *
-	 * @Inject
-	 * @var SearchClient
-	 */
-	public $search_client;
-
-	/**
 	 * Requirements utlity.
 	 *
 	 * @since 2.0.0
@@ -49,11 +39,9 @@ class Hello extends AlgoliaCLI {
 	 * @author  WebDevStudios <contact@webdevstudios.com>
 	 * @since   2.0.0
 	 *
-	 * @param SearchClient $search_client        Algolia SearchClient object.
 	 * @param Requirements $requirements_utility Requirements Utility object.
 	 */
-	public function __construct( SearchClient $search_client, Requirements $requirements_utility ) {
-		$this->search_client        = $search_client;
+	public function __construct( Requirements $requirements_utility ) {
 		$this->requirements_utility = $requirements_utility;
 	}
 
@@ -81,7 +69,6 @@ class Hello extends AlgoliaCLI {
 	 * @since   2.0.0
 	 */
 	public function hello(): void {
-		$this->requirements_utility->check_requirements();
 		$this->output_status();
 	}
 
@@ -102,31 +89,31 @@ class Hello extends AlgoliaCLI {
 
 		$errors = [];
 
-		if ( false === $this->requirements_utility->has_app_id ) {
+		if ( false === $this->requirements_utility->has_app_id() ) {
 			$errors[] = 'Algolia Application ID not configured.';
 		}
 
-		if ( false === $this->requirements_utility->has_admin_api_key ) {
+		if ( false === $this->requirements_utility->has_admin_api_key() ) {
 			$errors[] = 'Algolia Admin API key not configured.';
 		}
 
-		if ( false === $this->requirements_utility->meets_php_version ) {
+		if ( false === $this->requirements_utility->meets_php_version() ) {
 			$errors[] = 'WP Search with Algolia requires at least PHP ' . WPSWA_MIN_PHP_VERSION . '.';
 		}
 
-		if ( false === $this->requirements_utility->meets_wp_version ) {
+		if ( false === $this->requirements_utility->meets_wp_version() ) {
 			$errors[] = 'WP Search with Algolia requires at least WP ' . WPSWA_MIN_WP_VERSION . '.';
 		}
 
-		if ( false === $this->requirements_utility->has_curl ) {
+		if ( false === $this->requirements_utility->has_curl() ) {
 			$errors[] = 'WP Search with Algolia requires the cURL PHP extension.';
 		}
 
-		if ( false === $this->requirements_utility->has_json ) {
+		if ( false === $this->requirements_utility->has_json() ) {
 			$errors[] = 'WP Search with Algolia requires the JSON PHP extension.';
 		}
 
-		if ( false === $this->requirements_utility->has_mbstring ) {
+		if ( false === $this->requirements_utility->has_mbstring() ) {
 			$errors[] = 'WP Search with Algolia requires the mbstring PHP extension.';
 		}
 

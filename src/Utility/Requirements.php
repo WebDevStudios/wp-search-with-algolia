@@ -8,6 +8,9 @@
 
 namespace WebDevStudios\WPSWA\Utility;
 
+use \WDS_WPSWA_Vendor\Algolia\AlgoliaSearch\SearchClient;
+use \WebDevStudios\WPSWA\Utility\AlgoliaSettings;
+
 /**
  * Class Requirements
  *
@@ -16,96 +19,22 @@ namespace WebDevStudios\WPSWA\Utility;
 class Requirements {
 
 	/**
-	 * The Algolia "Application ID".
+	 * The Aglolia Settings.
 	 *
 	 * @since 2.0.0
 	 *
-	 * @var string
+	 * @Inject
+	 * @var AlgoliaSettings
 	 */
-	private $app_id = '';
+	public $algoila_settings;
 
 	/**
-	 * The Algolia "Admin API Key".
+	 * Requirements constructor.
 	 *
-	 * @since 2.0.0
-	 *
-	 * @var string
+	 * @param AlgoliaSettings $algoila_settings The AlgoliaSettings instance.
 	 */
-	private $admin_api_key = '';
-
-	/**
-	 * Do we have the Application ID?
-	 *
-	 * @since 2.0.0
-	 *
-	 * @var bool
-	 */
-	public $has_app_id = false;
-
-	/**
-	 * Do we have the Admin API key?
-	 *
-	 * @since 2.0.0
-	 *
-	 * @var bool
-	 */
-	public $has_admin_api_key = false;
-
-	/**
-	 * Does the installed PHP version meet our minimum PHP version?
-	 *
-	 * @since 2.0.0
-	 *
-	 * @var bool
-	 */
-	public $meets_php_version = false;
-
-	/**
-	 * Does the installed WP version meet our minimum WP version?
-	 *
-	 * @since 2.0.0
-	 *
-	 * @var bool
-	 */
-	public $meets_wp_version = false;
-
-	/**
-	 * Does PHP have the cURL extension, as required by the Algolia PHP API Client?
-	 *
-	 * @since 2.0.0
-	 *
-	 * @var bool
-	 */
-	public $has_curl = false;
-
-	/**
-	 * Does PHP have the JSON extension, as required by the Algolia PHP API Client?
-	 *
-	 * @since 2.0.0
-	 *
-	 * @var bool
-	 */
-	public $has_json = false;
-
-	/**
-	 * Does PHP have the mbstring extension, as required by the Algolia PHP API Client?
-	 *
-	 * @since 2.0.0
-	 *
-	 * @var bool
-	 */
-	public $has_mbstring = false;
-
-	/**
-	 * Set the Application ID.
-	 *
-	 * @author WebDevStudios <contact@webdevstudios.com>
-	 * @since  2.0.0
-	 *
-	 * @param string $app_id The Application ID to set.
-	 */
-	public function set_app_id( $app_id = '' ) {
-		$this->app_id = $app_id;
+	public function __construct( AlgoliaSettings $algoila_settings ) {
+		$this->algolia_settings = $algoila_settings;
 	}
 
 	/**
@@ -116,24 +45,12 @@ class Requirements {
 	 *
 	 * @return bool
 	 */
-	protected function check_app_id(): bool {
-		if ( ! empty( $this->app_id ) ) {
+	public function has_app_id(): bool {
+		if ( ! empty( $this->algolia_settings ) && ! empty( $this->algolia_settings->get_app_id() ) ) {
 			return true;
 		}
 
 		return false;
-	}
-
-	/**
-	 * Set the Admin API Key.
-	 *
-	 * @author WebDevStudios <contact@webdevstudios.com>
-	 * @since  2.0.0
-	 *
-	 * @param string $admin_api_key The Admin API Key to set.
-	 */
-	public function set_admin_api_key( $admin_api_key = '' ) {
-		$this->admin_api_key = $admin_api_key;
 	}
 
 	/**
@@ -144,8 +61,8 @@ class Requirements {
 	 *
 	 * @return bool
 	 */
-	protected function check_admin_api_key(): bool {
-		if ( ! empty( $this->admin_api_key ) ) {
+	public function has_admin_api_key(): bool {
+		if ( ! empty( $this->algolia_settings ) && ! empty( $this->algolia_settings->get_api_key() ) ) {
 			return true;
 		}
 
@@ -160,7 +77,7 @@ class Requirements {
 	 *
 	 * @return bool
 	 */
-	protected function check_php_version(): bool {
+	public function meets_php_version(): bool {
 		if ( \version_compare( PHP_VERSION, WPSWA_MIN_PHP_VERSION, '<' ) ) {
 			return false;
 		}
@@ -176,7 +93,7 @@ class Requirements {
 	 *
 	 * @return bool
 	 */
-	protected function check_wp_version(): bool {
+	public function meets_wp_version(): bool {
 		if ( \version_compare( $GLOBALS['wp_version'], WPSWA_MIN_WP_VERSION, '<' ) ) {
 			return false;
 		}
@@ -192,7 +109,7 @@ class Requirements {
 	 *
 	 * @return bool
 	 */
-	protected function check_curl(): bool {
+	public function has_curl(): bool {
 		if ( ! \function_exists( 'curl_init' ) ) {
 			return false;
 		}
@@ -208,7 +125,7 @@ class Requirements {
 	 *
 	 * @return bool
 	 */
-	protected function check_json(): bool {
+	public function has_json(): bool {
 		if ( ! \function_exists( 'json_decode' ) ) {
 			return false;
 		}
@@ -224,28 +141,12 @@ class Requirements {
 	 *
 	 * @return bool
 	 */
-	protected function check_mbstring(): bool {
+	public function has_mbstring(): bool {
 		if ( ! \function_exists( 'mb_strtolower' ) ) {
 			return false;
 		}
 
 		return true;
-	}
-
-	/**
-	 * Run all the requirements checks.
-	 *
-	 * @author WebDevStudios <contact@webdevstudios.com>
-	 * @since  2.0.0
-	 */
-	public function check_requirements() {
-		$this->has_app_id        = $this->check_app_id();
-		$this->has_admin_api_key = $this->check_admin_api_key();
-		$this->meets_php_version = $this->check_php_version();
-		$this->meets_wp_version  = $this->check_wp_version();
-		$this->has_curl          = $this->check_curl();
-		$this->has_json          = $this->check_json();
-		$this->has_mbstring      = $this->check_mbstring();
 	}
 
 	/**
@@ -257,12 +158,12 @@ class Requirements {
 	 * @return bool
 	 */
 	public function meets_requirements(): bool {
-		return $this->has_app_id
-			&& $this->has_admin_api_key
-			&& $this->meets_php_version
-			&& $this->meets_wp_version
-			&& $this->has_curl
-			&& $this->has_json
-			&& $this->has_mbstring;
+		return $this->has_app_id()
+			&& $this->has_admin_api_key()
+			&& $this->meets_php_version()
+			&& $this->meets_wp_version()
+			&& $this->has_curl()
+			&& $this->has_json()
+			&& $this->has_mbstring();
 	}
 }
