@@ -13,7 +13,10 @@ namespace WebDevStudios\WPSWA\CLI\Commands;
 use \WP_CLI;
 use \WP_CLI_Command;
 use function \WP_CLI\Utils\format_items;
-use WDS_WPSWA_Vendor\Algolia\AlgoliaSearch\SearchClient;
+use \WebDevStudios\WPSWA\CLI\AlgoliaCLI;
+use \WDS_WPSWA_Vendor\Algolia\AlgoliaSearch\SearchClient;
+use \WDS_WPSWA_Vendor\Algolia\AlgoliaSearch\SearchIndex;
+use \WDS_WPSWA_Vendor\Algolia\AlgoliaSearch\Response\IndexingResponse;
 
 /**
  * Copy Index.
@@ -31,7 +34,24 @@ use WDS_WPSWA_Vendor\Algolia\AlgoliaSearch\SearchClient;
  *
  * @since 2.0.0
  */
-class CopyIndex extends WP_CLI_Command {
+class CopyIndex extends AlgoliaCLI {
+
+	/**
+	 * The Aglolia SearchClient.
+	 *
+	 * @Inject
+	 * @var SearchClient
+	 */
+	protected $search_client;
+
+	/**
+	 * CopyIndex constructor.
+	 *
+	 * @param SearchClient $search_client
+	 */
+	public function __construct( SearchClient $search_client ) {
+		$this->search_client = $search_client;
+	}
 
 	/**
 	 * Make a copy of an index.
@@ -90,7 +110,7 @@ class CopyIndex extends WP_CLI_Command {
 	 *     +------------+--------------------------+
 	 *
 	 *     # Copy settings and synonyms (but not rules, nor records) from an existing index to a new index.
-	 *     $ wp algolia copy_index indexNameSrc --to=indexNameDest --scope=settings,synonyms
+	 *     $ wp algolia copy_index indexNameSrc --to=indexNameDest --scope=settings,synonyms,rules
 	 *     Success: Copied indexNameSrc to indexNameDest.
 	 *     +------------+--------------------------+
 	 *     | taskID     | updatedAt                |
@@ -114,17 +134,6 @@ class CopyIndex extends WP_CLI_Command {
 	 */
 	public function copy_index( $args, $assoc_args ): void {
 
-		$app_id  = \get_option( 'algolia_application_id', '' );
-		$api_key = \get_option( 'algolia_api_key', '' );
-
-		if ( empty( $app_id ) || empty( $api_key ) ) {
-			WP_CLI::error( 'Missing App ID or API key' );
-
-			return;
-		}
-
-		$this->algolia_search_client = SearchClient::create( $app_id, $api_key );
-
 		if ( empty( $args[0] ) ) {
 			WP_CLI::error( 'The source index is a required argument.' );
 
@@ -139,7 +148,12 @@ class CopyIndex extends WP_CLI_Command {
 
 		$src_index_name = $args[0];
 
-		$src_index = $this->algolia_search_client->initIndex( $src_index_name );
+		/**
+		 * The source index.
+		 *
+		 * @var SearchIndex $src_index
+		 */
+		$src_index = $this->search_client->initIndex( $src_index_name );
 
 		if ( ! $src_index->exists() ) {
 			WP_CLI::error( "The source index {$src_index_name} does not yet exist." );
@@ -147,7 +161,12 @@ class CopyIndex extends WP_CLI_Command {
 
 		$dest_index_name = $assoc_args['to'];
 
-		$dest_index = $this->algolia_search_client->initIndex( $dest_index_name );
+		/**
+		 * The destination index.
+		 *
+		 * @var SearchIndex $dest_index
+		 */
+		$dest_index = $this->search_client->initIndex( $dest_index_name );
 
 		if ( $dest_index->exists() ) {
 			WP_CLI::warning( "The destination index {$dest_index_name} exists and will be overwritten." );
@@ -172,11 +191,18 @@ class CopyIndex extends WP_CLI_Command {
 			$scope = \array_intersect( $scope, $allowed_scope_values );
 		}
 
-		if ( empty( $scope ) ) {
-			$response = $this->algolia_search_client->copyIndex( $src_index_name, $dest_index_name );
-		} else {
-			$response = $this->algolia_search_client->copyIndex( $src_index_name, $dest_index_name, [ 'scope' => $scope ] );
-		}
+		$request_options = ( ! empty( $scope ) ) ? [ 'scope' => $scope ] : [];
+
+		/**
+		 * The response.
+		 *
+		 * @var IndexingResponse $response
+		 */
+		$response = $this->search_client->copyIndex(
+			$src_index_name,
+			$dest_index_name,
+			$request_options
+		);
 
 		WP_CLI::success( "Copied $src_index_name to $dest_index_name." );
 
