@@ -269,7 +269,7 @@ class AlgoliaSettings {
 	 *
 	 * @return bool
 	 */
-	public function is_index_refix_in_config(): bool {
+	public function is_index_prefix_in_config(): bool {
 		return \defined( 'ALGOLIA_INDEX_NAME_PREFIX' );
 	}
 
