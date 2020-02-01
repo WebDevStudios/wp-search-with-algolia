@@ -25,6 +25,12 @@ use \WDS_WPSWA_Vendor\Algolia\AlgoliaSearch\Http\Guzzle6HttpClient;
 use \WDS_WPSWA_Vendor\Algolia\AlgoliaSearch\Http\HttpClientInterface;
 
 use \WebDevStudios\WPSWA\Services\Admin\Options;
+use \WebDevStudios\WPSWA\Services\Admin\Settings\AlgoliaSearchApiKey;
+use \WebDevStudios\WPSWA\Services\Admin\Settings\AlgoliaApiKey;
+use \WebDevStudios\WPSWA\Services\Admin\Settings\AlgoliaApplicationId;
+use \WebDevStudios\WPSWA\Services\Admin\Settings\AlgoliaIndexNamePrefix;
+use \WebDevStudios\WPSWA\Services\Admin\Settings\AlgoliaPoweredByEnabled;
+
 use \WebDevStudios\WPSWA\Services\EnqueueScripts;
 use \WebDevStudios\WPSWA\Services\LoadTextDomain;
 
@@ -47,7 +53,7 @@ return [
 	/**
 	 * AlgoliaSettings.
 	 */
-	AlgoliaSettings::class     => autowire(),
+	AlgoliaSettings::class         => autowire(),
 	/**
 	 * WPSWA Plugin services.
 	 *
@@ -56,17 +62,22 @@ return [
 	 *
 	 * @see Plugin::set_services()
 	 */
-	'services'                 => [
+	'services'                     => [
 		LoadTextDomain::class,
 		EnqueueScripts::class,
 		Options::class,
+		AlgoliaApplicationId::class,
+		AlgoliaApiKey::class,
+		AlgoliaSearchApiKey::class,
+		AlgoliaIndexNamePrefix::class,
+		AlgoliaPoweredByEnabled::class,
 	],
 	/**
 	 * WPSWA WP-CLI commands.
 	 *
 	 * @see Plugin::set_cli_commands()
 	 */
-	'cli_commands'             => [
+	'cli_commands'                 => [
 		AlgoliaCLI::class,
 		Hello::class,
 		ListIndices::class,
@@ -77,7 +88,7 @@ return [
 	 *
 	 * The factory returns a Guzzle6HttpClient object that implements HttpClientInterface.
 	 */
-	HttpClientInterface::class => factory(
+	HttpClientInterface::class     => factory(
 		function ( ContainerInterface $c ) {
 			return HttpClientFactory::create(
 				[]
@@ -87,7 +98,7 @@ return [
 	/**
 	 * The Algolia SearchConfig for Algolia PHP SearchClient to use.
 	 */
-	SearchConfig::class        => factory(
+	SearchConfig::class            => factory(
 		function ( ContainerInterface $c ) {
 			return SearchConfigFactory::create(
 				$c->get( AlgoliaSettings::class )
@@ -97,7 +108,7 @@ return [
 	/**
 	 * The Algolia PHP SearchClient.
 	 */
-	SearchClient::class        => factory(
+	SearchClient::class            => factory(
 		function ( ContainerInterface $c ) {
 			return SearchClientFactory::create(
 				$c->get( SearchConfig::class ),
@@ -108,7 +119,7 @@ return [
 	/**
 	 * Requirements checking.
 	 */
-	Requirements::class        => autowire()
+	Requirements::class            => autowire()
 		->constructor(
 			get( AlgoliaSettings::class ),
 			get( SearchClient::class )
@@ -116,21 +127,26 @@ return [
 	/**
 	 * The Algolia CLI command.
 	 */
-	AlgoliaCLI::class          => autowire(),
+	AlgoliaCLI::class              => autowire(),
 	/**
 	 * The Algolia CLI Hello subcommand.
 	 */
-	Hello::class               => autowire(),
+	Hello::class                   => autowire(),
 	/**
 	 * The Algolia CLI CopyIndex subcommand.
 	 */
-	CopyIndex::class           => autowire(),
+	CopyIndex::class               => autowire(),
 	/**
 	 * The Algolia CLI ListIndices subcommand.
 	 */
-	ListIndices::class         => autowire(),
+	ListIndices::class             => autowire(),
 	/**
 	 * The Options page class.
 	 */
-	Options::class             => autowire(),
+	Options::class                 => autowire(),
+	AlgoliaApplicationId::class    => autowire(),
+	AlgoliaApiKey::class           => autowire(),
+	AlgoliaSearchApiKey::class     => autowire(),
+	AlgoliaIndexNamePrefix::class  => autowire(),
+	AlgoliaPoweredByEnabled::class => autowire(),
 ];
