@@ -25,7 +25,7 @@ class Options extends Service {
 	 *
 	 * @var string
 	 */
-	protected $menu_slug = 'wpswa';
+	protected $slug = 'wpswa';
 
 	/**
 	 * Section name.
@@ -105,7 +105,7 @@ class Options extends Service {
 		return \array_merge(
 			$actions,
 			[
-				'<a href="' . \esc_url( \admin_url( 'admin.php?page=' . $this->menu_slug ) ) . '">' . \esc_html__( 'Settings', 'wp-search-with-algolia' ) . '</a>',
+				'<a href="' . \esc_url( \admin_url( 'admin.php?page=' . $this->slug ) ) . '">' . \esc_html__( 'Settings', 'wp-search-with-algolia' ) . '</a>',
 			]
 		);
 	}
@@ -121,7 +121,7 @@ class Options extends Service {
 			\esc_html__( 'WP Search with Algolia', 'wp-search-with-algolia' ),
 			\esc_html__( 'Algolia Settings', 'wp-search-with-algolia' ),
 			'manage_options',
-			$this->menu_slug,
+			$this->slug,
 			[ $this, 'display_options_page' ],
 			'dashicons-welcome-widgets-menus',
 			90
