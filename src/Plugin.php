@@ -178,7 +178,7 @@ final class Plugin extends OopsPlugin {
 	public function build_container(): void {
 		$this->container_builder = new ContainerBuilder();
 		$this->container_builder->addDefinitions(
-			WPSWA_PLUGIN_DIR . '/config/php-di/config.php'
+			__DIR__ . '/Config/Container.php'
 		);
 		$this->container = $this->container_builder->build();
 	}
