@@ -9,8 +9,8 @@
 namespace WebDevStudios\WPSWA\Services\Admin;
 
 use \WebDevStudios\WPSWA\Services\Admin\Settings\AlgoliaApplicationId;
-use \WebDevStudios\WPSWA\Structure\Service;
 use \WebDevStudios\WPSWA\Utility\AlgoliaSettings;
+use \WDS_WPSWA_Vendor\WebDevStudios\OopsWP\Structure\Service;
 
 /**
  * Class Options

@@ -9,7 +9,7 @@
 namespace WebDevStudios\WPSWA\Services\Admin\Settings;
 
 use \WebDevStudios\WPSWA\Utility\AlgoliaSettings;
-use \WebDevStudios\WPSWA\Structure\Service;
+use \WDS_WPSWA_Vendor\WebDevStudios\OopsWP\Structure\Service;
 
 /**
  * Class AlgoliaIndexNamePrefix
@@ -150,21 +150,21 @@ class AlgoliaIndexNamePrefix extends Service {
 			$value = $this->algolia_settings->get_index_prefix();
 		}
 
-		$value = sanitize_text_field( $value );
+		$value = \sanitize_text_field( $value );
 
 		if ( empty( $value ) ) {
-			add_settings_error(
+			\add_settings_error(
 				$this->get_option_group(),
 				'empty',
-				esc_html__( 'Index prefix should not be empty.', 'wp-search-with-algolia' )
+				\esc_html__( 'Index prefix should not be empty.', 'wp-search-with-algolia' )
 			);
 		}
 
-		if ( ! empty( $value ) && ! ctype_alnum( str_replace( '_', '', $value ) ) ) {
-			add_settings_error(
+		if ( ! empty( $value ) && ! \ctype_alnum( \str_replace( '_', '', $value ) ) ) {
+			\add_settings_error(
 				$this->get_option_group(),
 				'wrong_prefix',
-				esc_html__( 'Index prefix can only contain alphanumeric characters and underscores.', 'wp-search-with-algolia' )
+				\esc_html__( 'Index prefix can only contain alphanumeric characters and underscores.', 'wp-search-with-algolia' )
 			);
 		}
 

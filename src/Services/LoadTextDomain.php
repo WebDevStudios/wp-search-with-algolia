@@ -8,9 +8,7 @@
 
 namespace WebDevStudios\WPSWA\Services;
 
-use WebDevStudios\WPSWA\{
-	Structure\Service
-};
+use \WDS_WPSWA_Vendor\WebDevStudios\OopsWP\Structure\Service;
 
 /**
  * Class LoadTextDomain

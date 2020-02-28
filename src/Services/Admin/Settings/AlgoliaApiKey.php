@@ -9,7 +9,7 @@
 namespace WebDevStudios\WPSWA\Services\Admin\Settings;
 
 use \WebDevStudios\WPSWA\Utility\AlgoliaSettings;
-use \WebDevStudios\WPSWA\Structure\Service;
+use \WDS_WPSWA_Vendor\WebDevStudios\OopsWP\Structure\Service;
 
 /**
  * Class AlgoliaApiKey
@@ -150,13 +150,13 @@ class AlgoliaApiKey extends Service {
 			$value = $this->algolia_settings->get_api_key();
 		}
 
-		$value = sanitize_text_field( $value );
+		$value = \sanitize_text_field( $value );
 
 		if ( empty( $value ) ) {
-			add_settings_error(
+			\add_settings_error(
 				$this->get_option_group(),
 				'empty',
-				esc_html__( 'API Key should not be empty.', 'wp-search-with-algolia' )
+				\esc_html__( 'API Key should not be empty.', 'wp-search-with-algolia' )
 			);
 		}
 

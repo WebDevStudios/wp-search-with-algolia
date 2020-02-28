@@ -8,6 +8,7 @@
 
 namespace WebDevStudios\WPSWA;
 
+use \WDS_WPSWA_Vendor\WebDevStudios\OopsWP\Structure\Plugin\Plugin as OopsPlugin;
 use \WDS_WPSWA_Vendor\Psr\Container\ContainerInterface;
 use \WDS_WPSWA_Vendor\DI\ContainerBuilder;
 
@@ -18,7 +19,7 @@ use \WDS_WPSWA_Vendor\DI\ContainerBuilder;
  *
  * @since 2.0.0
  */
-final class Plugin {
+final class Plugin extends OopsPlugin {
 
 	/**
 	 * DI container.
