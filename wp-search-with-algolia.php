@@ -22,7 +22,7 @@
 namespace WebDevStudios\WPSWA;
 
 use \WebDevStudios\WPSWA\Plugin;
-use \WebDevStudios\WPSWA\Utility\PluginFactory;
+use \WebDevStudios\WPSWA\Factories\PluginFactory;
 
 // Exit if accessed directly.
 if ( ! \defined( 'ABSPATH' ) ) {
