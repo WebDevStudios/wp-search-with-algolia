@@ -1,4 +1,14 @@
 <?php
+/**
+ * PHP-Scoper : Guzzle configuration file.
+ *
+ * @link https://github.com/humbug/php-scoper/blob/master/src/scoper.inc.php.tpl
+ *
+ * @author WebDevStudios <contact@webdevstudios.com>
+ * @since  2.0.0
+ *
+ * @package WebDevStudios\WPSWA
+ */
 
 declare( strict_types=1 );
 
