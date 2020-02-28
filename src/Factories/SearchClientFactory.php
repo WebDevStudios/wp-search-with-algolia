@@ -3,10 +3,10 @@
  * SearchClientFactory class file.
  *
  * @since   2.0.0
- * @package WebDevStudios\WPSWA\Utility
+ * @package WebDevStudios\WPSWA\Factories
  */
 
-namespace WebDevStudios\WPSWA\Utility;
+namespace WebDevStudios\WPSWA\Factories;
 
 use WDS_WPSWA_Vendor\Algolia\AlgoliaSearch\Algolia;
 use WDS_WPSWA_Vendor\Algolia\AlgoliaSearch\Http\HttpClientInterface;
