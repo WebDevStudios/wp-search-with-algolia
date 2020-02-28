@@ -31,12 +31,13 @@ use \WebDevStudios\WPSWA\Services\Admin\Settings\AlgoliaApplicationId;
 use \WebDevStudios\WPSWA\Services\Admin\Settings\AlgoliaIndexNamePrefix;
 use \WebDevStudios\WPSWA\Services\Admin\Settings\AlgoliaPoweredByEnabled;
 
-use \WebDevStudios\WPSWA\Services\EnqueueScripts;
-use \WebDevStudios\WPSWA\Services\LoadTextDomain;
 
-use \WebDevStudios\WPSWA\Utility\HttpClientFactory;
-use \WebDevStudios\WPSWA\Utility\SearchConfigFactory;
-use \WebDevStudios\WPSWA\Utility\SearchClientFactory;
+use \WebDevStudios\WPSWA\Services\LoadTextDomain;
+use \WebDevStudios\WPSWA\Services\Assets\Scripts\AlgoliaBundleScript;
+
+use \WebDevStudios\WPSWA\Factories\HttpClientFactory;
+use \WebDevStudios\WPSWA\Factories\SearchConfigFactory;
+use \WebDevStudios\WPSWA\Factories\SearchClientFactory;
 
 use \WebDevStudios\WPSWA\Utility\AlgoliaSettings;
 use \WebDevStudios\WPSWA\Utility\Requirements;
@@ -64,13 +65,13 @@ return [
 	 */
 	'services'                     => [
 		LoadTextDomain::class,
-		EnqueueScripts::class,
 		Options::class,
 		AlgoliaApplicationId::class,
 		AlgoliaApiKey::class,
 		AlgoliaSearchApiKey::class,
 		AlgoliaIndexNamePrefix::class,
 		AlgoliaPoweredByEnabled::class,
+		AlgoliaBundleScript::class,
 	],
 	/**
 	 * WPSWA WP-CLI commands.
