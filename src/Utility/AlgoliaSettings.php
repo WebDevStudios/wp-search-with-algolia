@@ -80,16 +80,16 @@ class AlgoliaSettings {
 	 * @since  2.0.0
 	 */
 	protected function initialize_options() {
-		add_option( 'algolia_application_id', '', '', 'no' );
-		add_option( 'algolia_search_api_key', '', '', 'no' );
-		add_option( 'algolia_api_key', '', '', 'no' );
-		add_option( 'algolia_synced_indices_ids', [], '', 'no' );
-		add_option( 'algolia_autocomplete_enabled', 'no', '', 'no' );
-		add_option( 'algolia_autocomplete_config', [], '', 'no' );
-		add_option( 'algolia_override_native_search', 'native', '', 'no' );
-		add_option( 'algolia_index_name_prefix', 'wp_', '', 'no' );
-		add_option( 'algolia_api_is_reachable', 'no', '', 'no' );
-		add_option( 'algolia_powered_by_enabled', 'yes', '', 'no' );
+		\add_option( 'algolia_application_id', '', '', 'no' );
+		\add_option( 'algolia_search_api_key', '', '', 'no' );
+		\add_option( 'algolia_api_key', '', '', 'no' );
+		\add_option( 'algolia_synced_indices_ids', [], '', 'no' );
+		\add_option( 'algolia_autocomplete_enabled', 'no', '', 'no' );
+		\add_option( 'algolia_autocomplete_config', [], '', 'no' );
+		\add_option( 'algolia_override_native_search', 'native', '', 'no' );
+		\add_option( 'algolia_index_name_prefix', 'wp_', '', 'no' );
+		\add_option( 'algolia_api_is_reachable', 'no', '', 'no' );
+		\add_option( 'algolia_powered_by_enabled', 'yes', '', 'no' );
 	}
 
 	/**

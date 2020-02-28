@@ -69,7 +69,7 @@ class HttpClientFactory {
 		 *
 		 * @param array $options Array of Guzzle options.
 		 */
-		$options = apply_filters( 'algolia_http_client_options', $options );
+		$options = \apply_filters( 'algolia_http_client_options', $options );
 
 		/**
 		 * The GuzzleClient to use for the HttpClientInterface.
