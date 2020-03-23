@@ -8,11 +8,11 @@
 
 namespace WebDevStudios\WPSWA\Factories;
 
-use \WDS_WPSWA_Vendor\Algolia\AlgoliaSearch\Algolia;
-use \WDS_WPSWA_Vendor\Algolia\AlgoliaSearch\Http\Guzzle6HttpClient;
-use \WDS_WPSWA_Vendor\Algolia\AlgoliaSearch\Http\HttpClientInterface;
+use WDS_WPSWA_Vendor\Algolia\AlgoliaSearch\Algolia;
+use WDS_WPSWA_Vendor\Algolia\AlgoliaSearch\Http\Guzzle6HttpClient;
+use WDS_WPSWA_Vendor\Algolia\AlgoliaSearch\Http\HttpClientInterface;
 
-use \WDS_WPSWA_Vendor\GuzzleHttp\Client as GuzzleClient;
+use WDS_WPSWA_Vendor\GuzzleHttp\Client as GuzzleClient;
 
 /**
  * Class HttpClientFactory
@@ -69,7 +69,7 @@ class HttpClientFactory {
 		 *
 		 * @param array $options Array of Guzzle options.
 		 */
-		$options = \apply_filters( 'algolia_http_client_options', $options );
+		$options = apply_filters( 'algolia_http_client_options', $options );
 
 		/**
 		 * The GuzzleClient to use for the HttpClientInterface.

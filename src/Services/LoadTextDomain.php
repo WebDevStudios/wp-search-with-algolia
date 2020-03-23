@@ -8,7 +8,7 @@
 
 namespace WebDevStudios\WPSWA\Services;
 
-use \WDS_WPSWA_Vendor\WebDevStudios\OopsWP\Structure\Service;
+use WDS_WPSWA_Vendor\WebDevStudios\OopsWP\Structure\Service;
 
 /**
  * Class LoadTextDomain
@@ -24,7 +24,7 @@ class LoadTextDomain extends Service {
 	 * @author WebDevStudios <contact@webdevstudios.com>
 	 */
 	public function register_hooks(): void {
-		\add_action( 'plugins_loaded', [ $this, 'load_textdomain' ] );
+		add_action( 'plugins_loaded', [ $this, 'load_textdomain' ] );
 	}
 
 	/**
@@ -35,22 +35,22 @@ class LoadTextDomain extends Service {
 	 */
 	public function load_textdomain(): void {
 		// phpcs:disable -- This is a legitimate use of a global filter.
-		$locale = \apply_filters(
+		$locale = apply_filters(
 			'plugin_locale',
-			\get_locale(),
+			get_locale(),
 			'wp-search-with-algolia'
 		);
 		// phpcs:enable
 
-		\load_textdomain(
+		load_textdomain(
 			'wp-search-with-algolia',
 			WP_LANG_DIR . '/wp-search-with-algolia/wp-search-with-algolia-' . $locale . '.mo'
 		);
 
-		\load_plugin_textdomain(
+		load_plugin_textdomain(
 			'wp-search-with-algolia',
 			false,
-			\plugin_basename( \dirname( WPSWA_PLUGIN_FILE ) ) . '/languages/'
+			plugin_basename( dirname( WPSWA_PLUGIN_FILE ) ) . '/languages/'
 		);
 	}
 }

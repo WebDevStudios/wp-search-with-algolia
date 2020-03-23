@@ -8,11 +8,11 @@
 
 ?>
 
-<input name="<?php echo \esc_attr( $this->get_option_name() ); ?>"
+<input name="<?php echo esc_attr( $this->get_option_name() ); ?>"
 	type="text" class="regular-text"
-	<?php \disabled( $this->algolia_settings->is_search_key_in_config() ); ?>
-	value="<?php echo \esc_attr( $this->algolia_settings->get_search_key() ); ?>"/>
+	<?php disabled( $this->algolia_settings->is_search_key_in_config() ); ?>
+	value="<?php echo esc_attr( $this->algolia_settings->get_search_key() ); ?>"/>
 
-<p id="<?php echo \esc_attr( $this->get_option_name() ); ?>-description" class="description">
-	<?php \esc_html_e( 'Your Algolia Search-only API key (public).', 'wp-search-with-algolia' ); ?>
+<p id="<?php echo esc_attr( $this->get_option_name() ); ?>-description" class="description">
+	<?php esc_html_e( 'Your Algolia Search-only API key (public).', 'wp-search-with-algolia' ); ?>
 </p>

@@ -16,36 +16,36 @@ use function \WDS_WPSWA_Vendor\DI\{
 	get
 };
 
-use \WDS_WPSWA_Vendor\Psr\Container\ContainerInterface;
+use WDS_WPSWA_Vendor\Psr\Container\ContainerInterface;
 
-use \WDS_WPSWA_Vendor\Algolia\AlgoliaSearch\Algolia;
-use \WDS_WPSWA_Vendor\Algolia\AlgoliaSearch\SearchClient;
-use \WDS_WPSWA_Vendor\Algolia\AlgoliaSearch\Config\SearchConfig;
-use \WDS_WPSWA_Vendor\Algolia\AlgoliaSearch\Http\Guzzle6HttpClient;
-use \WDS_WPSWA_Vendor\Algolia\AlgoliaSearch\Http\HttpClientInterface;
+use WDS_WPSWA_Vendor\Algolia\AlgoliaSearch\Algolia;
+use WDS_WPSWA_Vendor\Algolia\AlgoliaSearch\SearchClient;
+use WDS_WPSWA_Vendor\Algolia\AlgoliaSearch\Config\SearchConfig;
+use WDS_WPSWA_Vendor\Algolia\AlgoliaSearch\Http\Guzzle6HttpClient;
+use WDS_WPSWA_Vendor\Algolia\AlgoliaSearch\Http\HttpClientInterface;
 
-use \WebDevStudios\WPSWA\Services\Admin\Options;
-use \WebDevStudios\WPSWA\Services\Admin\Settings\AlgoliaSearchApiKey;
-use \WebDevStudios\WPSWA\Services\Admin\Settings\AlgoliaApiKey;
-use \WebDevStudios\WPSWA\Services\Admin\Settings\AlgoliaApplicationId;
-use \WebDevStudios\WPSWA\Services\Admin\Settings\AlgoliaIndexNamePrefix;
-use \WebDevStudios\WPSWA\Services\Admin\Settings\AlgoliaPoweredByEnabled;
+use WebDevStudios\WPSWA\Services\Admin\Options;
+use WebDevStudios\WPSWA\Services\Admin\Settings\AlgoliaSearchApiKey;
+use WebDevStudios\WPSWA\Services\Admin\Settings\AlgoliaApiKey;
+use WebDevStudios\WPSWA\Services\Admin\Settings\AlgoliaApplicationId;
+use WebDevStudios\WPSWA\Services\Admin\Settings\AlgoliaIndexNamePrefix;
+use WebDevStudios\WPSWA\Services\Admin\Settings\AlgoliaPoweredByEnabled;
 
 
-use \WebDevStudios\WPSWA\Services\LoadTextDomain;
-use \WebDevStudios\WPSWA\Services\Assets\Scripts\AlgoliaBundleScript;
+use WebDevStudios\WPSWA\Services\LoadTextDomain;
+use WebDevStudios\WPSWA\Services\Assets\Scripts\AlgoliaBundleScript;
 
-use \WebDevStudios\WPSWA\Factories\HttpClientFactory;
-use \WebDevStudios\WPSWA\Factories\SearchConfigFactory;
-use \WebDevStudios\WPSWA\Factories\SearchClientFactory;
+use WebDevStudios\WPSWA\Factories\HttpClientFactory;
+use WebDevStudios\WPSWA\Factories\SearchConfigFactory;
+use WebDevStudios\WPSWA\Factories\SearchClientFactory;
 
-use \WebDevStudios\WPSWA\Utility\AlgoliaSettings;
-use \WebDevStudios\WPSWA\Utility\Requirements;
+use WebDevStudios\WPSWA\Utility\AlgoliaSettings;
+use WebDevStudios\WPSWA\Utility\Requirements;
 
-use \WebDevStudios\WPSWA\CLI\AlgoliaCLI;
-use \WebDevStudios\WPSWA\CLI\Commands\CopyIndex;
-use \WebDevStudios\WPSWA\CLI\Commands\Hello;
-use \WebDevStudios\WPSWA\CLI\Commands\ListIndices;
+use WebDevStudios\WPSWA\CLI\AlgoliaCLI;
+use WebDevStudios\WPSWA\CLI\Commands\CopyIndex;
+use WebDevStudios\WPSWA\CLI\Commands\Hello;
+use WebDevStudios\WPSWA\CLI\Commands\ListIndices;
 
 /**
  * @return array PHP-DI configuration array.

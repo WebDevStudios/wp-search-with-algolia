@@ -10,7 +10,7 @@
 
 namespace WebDevStudios\WPSWA\Services\Assets;
 
-use \WDS_WPSWA_Vendor\WebDevStudios\OopsWP\Structure\Service;
+use WDS_WPSWA_Vendor\WebDevStudios\OopsWP\Structure\Service;
 
 /**
  * Class Asset

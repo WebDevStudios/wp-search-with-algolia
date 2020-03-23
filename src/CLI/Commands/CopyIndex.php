@@ -13,10 +13,10 @@ namespace WebDevStudios\WPSWA\CLI\Commands;
 use \WP_CLI;
 use \WP_CLI_Command;
 use function \WP_CLI\Utils\format_items;
-use \WebDevStudios\WPSWA\CLI\AlgoliaCLI;
-use \WDS_WPSWA_Vendor\Algolia\AlgoliaSearch\SearchClient;
-use \WDS_WPSWA_Vendor\Algolia\AlgoliaSearch\SearchIndex;
-use \WDS_WPSWA_Vendor\Algolia\AlgoliaSearch\Response\IndexingResponse;
+use WebDevStudios\WPSWA\CLI\AlgoliaCLI;
+use WDS_WPSWA_Vendor\Algolia\AlgoliaSearch\SearchClient;
+use WDS_WPSWA_Vendor\Algolia\AlgoliaSearch\SearchIndex;
+use WDS_WPSWA_Vendor\Algolia\AlgoliaSearch\Response\IndexingResponse;
 
 /**
  * Copy Index.
@@ -187,8 +187,8 @@ class CopyIndex extends AlgoliaCLI {
 		];
 
 		if ( ! empty( $assoc_args['scope'] ) ) {
-			$scope = \explode( ',', $assoc_args['scope'] );
-			$scope = \array_intersect( $scope, $allowed_scope_values );
+			$scope = explode( ',', $assoc_args['scope'] );
+			$scope = array_intersect( $scope, $allowed_scope_values );
 		}
 
 		$request_options = ( ! empty( $scope ) ) ? [ 'scope' => $scope ] : [];
@@ -223,8 +223,8 @@ class CopyIndex extends AlgoliaCLI {
 		$fields = [];
 
 		if ( ! empty( $assoc_args['fields'] ) ) {
-			$fields = \explode( ',', $assoc_args['fields'] );
-			$fields = \array_intersect( $fields, $response_fields );
+			$fields = explode( ',', $assoc_args['fields'] );
+			$fields = array_intersect( $fields, $response_fields );
 		}
 
 		if ( empty( $fields ) ) {
@@ -248,7 +248,7 @@ class CopyIndex extends AlgoliaCLI {
 
 		$format = 'table';
 
-		if ( ! empty( $assoc_args['format'] ) && \in_array( $assoc_args['format'], $allowed_formats, true ) ) {
+		if ( ! empty( $assoc_args['format'] ) && in_array( $assoc_args['format'], $allowed_formats, true ) ) {
 			$format = $assoc_args['format'];
 		}
 

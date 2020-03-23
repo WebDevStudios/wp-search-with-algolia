@@ -8,8 +8,9 @@
 
 namespace WebDevStudios\WPSWA\Utility;
 
-use \WDS_WPSWA_Vendor\Algolia\AlgoliaSearch\SearchClient;
-use \WebDevStudios\WPSWA\Utility\AlgoliaSettings;
+use WDS_WPSWA_Vendor\Algolia\AlgoliaSearch\Config\SearchConfig;
+use WDS_WPSWA_Vendor\Algolia\AlgoliaSearch\SearchClient;
+use WebDevStudios\WPSWA\Utility\AlgoliaSettings;
 
 /**
  * Class Requirements
@@ -81,7 +82,7 @@ class Requirements {
 	 * @return bool
 	 */
 	public function meets_php_version(): bool {
-		if ( \version_compare( PHP_VERSION, WPSWA_MIN_PHP_VERSION, '<' ) ) {
+		if ( version_compare( PHP_VERSION, WPSWA_MIN_PHP_VERSION, '<' ) ) {
 			return false;
 		}
 
@@ -97,7 +98,7 @@ class Requirements {
 	 * @return bool
 	 */
 	public function meets_wp_version(): bool {
-		if ( \version_compare( $GLOBALS['wp_version'], WPSWA_MIN_WP_VERSION, '<' ) ) {
+		if ( version_compare( $GLOBALS['wp_version'], WPSWA_MIN_WP_VERSION, '<' ) ) {
 			return false;
 		}
 
@@ -113,7 +114,7 @@ class Requirements {
 	 * @return bool
 	 */
 	public function has_curl(): bool {
-		if ( ! \function_exists( 'curl_init' ) ) {
+		if ( ! function_exists( 'curl_init' ) ) {
 			return false;
 		}
 
@@ -129,7 +130,7 @@ class Requirements {
 	 * @return bool
 	 */
 	public function has_json(): bool {
-		if ( ! \function_exists( 'json_decode' ) ) {
+		if ( ! function_exists( 'json_decode' ) ) {
 			return false;
 		}
 
@@ -145,7 +146,7 @@ class Requirements {
 	 * @return bool
 	 */
 	public function has_mbstring(): bool {
-		if ( ! \function_exists( 'mb_strtolower' ) ) {
+		if ( ! function_exists( 'mb_strtolower' ) ) {
 			return false;
 		}
 

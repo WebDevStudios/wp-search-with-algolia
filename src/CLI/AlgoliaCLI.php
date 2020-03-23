@@ -14,7 +14,7 @@ namespace WebDevStudios\WPSWA\CLI;
 
 use \WP_CLI;
 use \WP_CLI_Command;
-use \WDS_WPSWA_Vendor\Algolia\AlgoliaSearch\SearchClient;
+use WDS_WPSWA_Vendor\Algolia\AlgoliaSearch\SearchClient;
 
 /**
  * Interact with the WP Search with Algolia plugin.

@@ -8,9 +8,10 @@
 
 namespace WebDevStudios\WPSWA;
 
-use \WDS_WPSWA_Vendor\WebDevStudios\OopsWP\Structure\Plugin\Plugin as OopsPlugin;
-use \WDS_WPSWA_Vendor\Psr\Container\ContainerInterface;
-use \WDS_WPSWA_Vendor\DI\ContainerBuilder;
+use \WP_CLI;
+use WDS_WPSWA_Vendor\WebDevStudios\OopsWP\Structure\Plugin\Plugin as OopsPlugin;
+use WDS_WPSWA_Vendor\Psr\Container\ContainerInterface;
+use WDS_WPSWA_Vendor\DI\ContainerBuilder;
 
 /**
  * Class Plugin
@@ -141,7 +142,7 @@ final class Plugin extends OopsPlugin {
 			if ( ! $this->container->has( $command ) ) {
 				continue;
 			}
-			\WP_CLI::add_command( 'algolia', $this->container->get( $command ) );
+			WP_CLI::add_command( 'algolia', $this->container->get( $command ) );
 		}
 	}
 
@@ -156,7 +157,7 @@ final class Plugin extends OopsPlugin {
 			if ( ! $this->container->has( $service ) ) {
 				continue;
 			}
-			if ( \method_exists( $service, 'run' ) ) {
+			if ( method_exists( $service, 'run' ) ) {
 				( $this->container->get( $service ) )->run();
 			}
 		}
@@ -190,7 +191,7 @@ final class Plugin extends OopsPlugin {
 	 * @since  2.0.0
 	 */
 	public function activate(): void {
-		\flush_rewrite_rules();
+		flush_rewrite_rules();
 	}
 
 	/**
@@ -200,6 +201,6 @@ final class Plugin extends OopsPlugin {
 	 * @since  2.0.0
 	 */
 	public function deactivate(): void {
-		\flush_rewrite_rules();
+		flush_rewrite_rules();
 	}
 }

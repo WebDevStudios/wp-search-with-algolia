@@ -12,9 +12,9 @@ namespace WebDevStudios\WPSWA\CLI\Commands;
 
 use \WP_CLI;
 use \WP_CLI_Command;
-use \WebDevStudios\WPSWA\Utility\Requirements;
-use \WebDevStudios\WPSWA\CLI\AlgoliaCLI;
-use \WDS_WPSWA_Vendor\Algolia\AlgoliaSearch\SearchClient;
+use WebDevStudios\WPSWA\Utility\Requirements;
+use WebDevStudios\WPSWA\CLI\AlgoliaCLI;
+use WDS_WPSWA_Vendor\Algolia\AlgoliaSearch\SearchClient;
 
 /**
  * Verify that the Algolia CLI commands have loaded.

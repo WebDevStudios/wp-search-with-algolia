@@ -10,8 +10,8 @@ namespace WebDevStudios\WPSWA\Factories;
 
 use WDS_WPSWA_Vendor\Algolia\AlgoliaSearch\Algolia;
 use WDS_WPSWA_Vendor\Algolia\AlgoliaSearch\Http\HttpClientInterface;
-use \WDS_WPSWA_Vendor\Algolia\AlgoliaSearch\SearchClient;
-use \WDS_WPSWA_Vendor\Algolia\AlgoliaSearch\Config\SearchConfig;
+use WDS_WPSWA_Vendor\Algolia\AlgoliaSearch\SearchClient;
+use WDS_WPSWA_Vendor\Algolia\AlgoliaSearch\Config\SearchConfig;
 
 /**
  * Class SearchClientFactory

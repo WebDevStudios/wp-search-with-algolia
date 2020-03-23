@@ -8,7 +8,7 @@
 
 namespace WebDevStudios\WPSWA\Factories;
 
-use \WebDevStudios\WPSWA\Plugin;
+use WebDevStudios\WPSWA\Plugin;
 
 /**
  * Class PluginFactory

@@ -8,8 +8,8 @@
 
 namespace WebDevStudios\WPSWA\Services\Admin\Settings;
 
-use \WebDevStudios\WPSWA\Utility\AlgoliaSettings;
-use \WDS_WPSWA_Vendor\WebDevStudios\OopsWP\Structure\Service;
+use WebDevStudios\WPSWA\Utility\AlgoliaSettings;
+use WDS_WPSWA_Vendor\WebDevStudios\OopsWP\Structure\Service;
 
 /**
  * Class AlgoliaPoweredByEnabled
@@ -70,8 +70,8 @@ class AlgoliaPoweredByEnabled extends Service {
 	 * @author WebDevStudios <contact@webdevstudios.com>
 	 */
 	public function register_hooks(): void {
-		\add_action( 'admin_init', [ $this, 'register_setting' ] );
-		\add_action( 'admin_init', [ $this, 'add_settings_field' ] );
+		add_action( 'admin_init', [ $this, 'register_setting' ] );
+		add_action( 'admin_init', [ $this, 'add_settings_field' ] );
 	}
 
 	/**
@@ -105,12 +105,12 @@ class AlgoliaPoweredByEnabled extends Service {
 	 * @author WebDevStudios <contact@webdevstudios.com>
 	 */
 	public function register_setting(): void {
-		\register_setting(
+		register_setting(
 			$this->get_option_group(),
 			$this->get_option_name(),
 			[
 				'type'              => 'text',
-				'description'       => \esc_html__( 'Displays or Removes Powered By Algolia logo', 'wp-search-with-algolia' ),
+				'description'       => esc_html__( 'Displays or Removes Powered By Algolia logo', 'wp-search-with-algolia' ),
 				'sanitize_callback' => [ $this, 'sanitize_callback' ],
 				'show_in_rest'      => false,
 				'default'           => '',
@@ -125,9 +125,9 @@ class AlgoliaPoweredByEnabled extends Service {
 	 * @author WebDevStudios <contact@webdevstudios.com>
 	 */
 	public function add_settings_field(): void {
-		\add_settings_field(
+		add_settings_field(
 			$this->get_option_name(),
-			\esc_html__( 'Remove Algolia powered by logo', 'wp-search-with-algolia' ),
+			esc_html__( 'Remove Algolia powered by logo', 'wp-search-with-algolia' ),
 			[ $this, 'render_field' ],
 			'wpswa',
 			'algolia_section_settings'

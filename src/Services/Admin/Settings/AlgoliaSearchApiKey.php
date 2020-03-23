@@ -8,8 +8,8 @@
 
 namespace WebDevStudios\WPSWA\Services\Admin\Settings;
 
-use \WebDevStudios\WPSWA\Utility\AlgoliaSettings;
-use \WDS_WPSWA_Vendor\WebDevStudios\OopsWP\Structure\Service;
+use WebDevStudios\WPSWA\Utility\AlgoliaSettings;
+use WDS_WPSWA_Vendor\WebDevStudios\OopsWP\Structure\Service;
 
 /**
  * Class AlgoliaSearchApiKey
@@ -70,8 +70,8 @@ class AlgoliaSearchApiKey extends Service {
 	 * @author WebDevStudios <contact@webdevstudios.com>
 	 */
 	public function register_hooks(): void {
-		\add_action( 'admin_init', [ $this, 'register_setting' ] );
-		\add_action( 'admin_init', [ $this, 'add_settings_field' ] );
+		add_action( 'admin_init', [ $this, 'register_setting' ] );
+		add_action( 'admin_init', [ $this, 'add_settings_field' ] );
 	}
 
 	/**
@@ -105,12 +105,12 @@ class AlgoliaSearchApiKey extends Service {
 	 * @author WebDevStudios <contact@webdevstudios.com>
 	 */
 	public function register_setting(): void {
-		\register_setting(
+		register_setting(
 			$this->get_option_group(),
 			$this->get_option_name(),
 			[
 				'type'              => 'text',
-				'description'       => \esc_html__( 'Algolia Search API Key', 'wp-search-with-algolia' ),
+				'description'       => esc_html__( 'Algolia Search API Key', 'wp-search-with-algolia' ),
 				'sanitize_callback' => [ $this, 'sanitize_callback' ],
 				'show_in_rest'      => false,
 				'default'           => '',
@@ -125,9 +125,9 @@ class AlgoliaSearchApiKey extends Service {
 	 * @author WebDevStudios <contact@webdevstudios.com>
 	 */
 	public function add_settings_field(): void {
-		\add_settings_field(
+		add_settings_field(
 			$this->get_option_name(),
-			\esc_html__( 'Search-only API key', 'wp-search-with-algolia' ),
+			esc_html__( 'Search-only API key', 'wp-search-with-algolia' ),
 			[ $this, 'render_field' ],
 			'wpswa',
 			'algolia_section_settings'
@@ -150,13 +150,13 @@ class AlgoliaSearchApiKey extends Service {
 			$value = $this->algolia_settings->get_search_key();
 		}
 
-		$value = \sanitize_text_field( $value );
+		$value = sanitize_text_field( $value );
 
 		if ( empty( $value ) ) {
-			\add_settings_error(
+			add_settings_error(
 				$this->get_option_group(),
 				'empty',
-				\esc_html__( 'Search-only API key should not be empty.', 'wp-search-with-algolia' )
+				esc_html__( 'Search-only API key should not be empty.', 'wp-search-with-algolia' )
 			);
 		}
 

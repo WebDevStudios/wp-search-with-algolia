@@ -14,8 +14,8 @@ use \WP_Query;
 use \WP_CLI;
 use \WP_CLI_Command;
 use \InvalidArgumentException;
-use \WebDevStudios\WPSWA\CLI\AlgoliaCLI;
-use \WDS_WPSWA_Vendor\Algolia\AlgoliaSearch\SearchClient;
+use WebDevStudios\WPSWA\CLI\AlgoliaCLI;
+use WDS_WPSWA_Vendor\Algolia\AlgoliaSearch\SearchClient;
 
 /**
  * Reindex posts.
@@ -70,7 +70,7 @@ class ReindexPosts extends AlgoliaCLI {
 		$type       = isset( $assoc_args['type'] ) ? $assoc_args['type'] : 'post';
 		$index_name = $table_prefix . $type;
 		$index      = $this->search_client->initIndex(
-			\apply_filters( 'algolia_index_name', $index_name, $type ) // phpcs:ignore
+			apply_filters( 'algolia_index_name', $index_name, $type ) // phpcs:ignore
 		);
 
 		$index->clearObjects()->wait();
@@ -94,10 +94,10 @@ class ReindexPosts extends AlgoliaCLI {
 				if ( $assoc_args['verbose'] ) {
 					WP_CLI::line( 'Indexing [' . $post->post_title . ']' );
 				}
-				$record = (array) \apply_filters( $type . '_to_record', $post ); // phpcs:ignore
+				$record = (array) apply_filters( $type . '_to_record', $post ); // phpcs:ignore
 
 				if ( ! isset( $record['objectID'] ) ) {
-					$record['objectID'] = \implode( '#', [ $post->post_type, $post->ID ] );
+					$record['objectID'] = implode( '#', [ $post->post_type, $post->ID ] );
 				}
 
 				$records[] = $record;

@@ -13,8 +13,8 @@ namespace WebDevStudios\WPSWA\CLI\Commands;
 use \WP_CLI;
 use \WP_CLI_Command;
 use function \WP_CLI\Utils\format_items;
-use \WebDevStudios\WPSWA\CLI\AlgoliaCLI;
-use \WDS_WPSWA_Vendor\Algolia\AlgoliaSearch\SearchClient;
+use WebDevStudios\WPSWA\CLI\AlgoliaCLI;
+use WDS_WPSWA_Vendor\Algolia\AlgoliaSearch\SearchClient;
 
 /**
  * List indices.
@@ -122,8 +122,8 @@ class ListIndices extends AlgoliaCLI {
 		$fields = [];
 
 		if ( ! empty( $assoc_args['fields'] ) ) {
-			$fields = \explode( ',', $assoc_args['fields'] );
-			$fields = \array_intersect( $fields, $index_fields );
+			$fields = explode( ',', $assoc_args['fields'] );
+			$fields = array_intersect( $fields, $index_fields );
 		}
 
 		if ( empty( $fields ) ) {
@@ -152,7 +152,7 @@ class ListIndices extends AlgoliaCLI {
 			'yaml',
 		];
 
-		if ( ! \in_array( $format, $allowed_formats, true ) ) {
+		if ( ! in_array( $format, $allowed_formats, true ) ) {
 			$format = 'table';
 		}
 

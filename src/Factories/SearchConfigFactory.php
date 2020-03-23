@@ -8,13 +8,13 @@
 
 namespace WebDevStudios\WPSWA\Factories;
 
-use \WDS_WPSWA_Vendor\Algolia\AlgoliaSearch\Algolia;
-use \WDS_WPSWA_Vendor\Algolia\AlgoliaSearch\Config\SearchConfig;
-use \WDS_WPSWA_Vendor\Algolia\AlgoliaSearch\Http\Guzzle6HttpClient;
-use \WDS_WPSWA_Vendor\Algolia\AlgoliaSearch\Http\HttpClientInterface;
-use \WDS_WPSWA_Vendor\GuzzleHttp\Client as GuzzleClient;
+use WDS_WPSWA_Vendor\Algolia\AlgoliaSearch\Algolia;
+use WDS_WPSWA_Vendor\Algolia\AlgoliaSearch\Config\SearchConfig;
+use WDS_WPSWA_Vendor\Algolia\AlgoliaSearch\Http\Guzzle6HttpClient;
+use WDS_WPSWA_Vendor\Algolia\AlgoliaSearch\Http\HttpClientInterface;
+use WDS_WPSWA_Vendor\GuzzleHttp\Client as GuzzleClient;
 
-use \WebDevStudios\WPSWA\Utility\AlgoliaSettings;
+use WebDevStudios\WPSWA\Utility\AlgoliaSettings;
 
 /**
  * Class SearchConfigFactory
