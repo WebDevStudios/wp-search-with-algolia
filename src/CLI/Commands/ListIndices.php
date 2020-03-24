@@ -15,6 +15,8 @@ use \WP_CLI_Command;
 use function \WP_CLI\Utils\format_items;
 use WebDevStudios\WPSWA\CLI\AlgoliaCLI;
 use WDS_WPSWA_Vendor\Algolia\AlgoliaSearch\SearchClient;
+use WDS_WPSWA_Vendor\Algolia\AlgoliaSearch\Exceptions\BadRequestException;
+use WDS_WPSWA_Vendor\Algolia\AlgoliaSearch\Exceptions\UnreachableException;
 
 /**
  * List indices.
@@ -132,7 +134,17 @@ class ListIndices extends AlgoliaCLI {
 
 		$items = [];
 
-		$indices = $this->search_client->listIndices();
+		try {
+			$indices = $this->search_client->listIndices();
+		} catch ( UnreachableException $e ) {
+			WP_CLI::error(
+				$e->getMessage()
+			);
+		} catch ( BadRequestException $e ) {
+			WP_CLI::error(
+				$e->getMessage()
+			);
+		}
 
 		if ( ! empty( $indices['items'] ) ) {
 			$items = $indices['items'];
