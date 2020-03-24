@@ -9,7 +9,7 @@
  * @link http://php-di.org/doc/php-definitions.html
  */
 
-use function \WDS_WPSWA_Vendor\DI\{
+use function WDS_WPSWA_Vendor\DI\{
 	autowire,
 	create,
 	factory,
@@ -30,7 +30,6 @@ use WebDevStudios\WPSWA\Services\Admin\Settings\AlgoliaApiKey;
 use WebDevStudios\WPSWA\Services\Admin\Settings\AlgoliaApplicationId;
 use WebDevStudios\WPSWA\Services\Admin\Settings\AlgoliaIndexNamePrefix;
 use WebDevStudios\WPSWA\Services\Admin\Settings\AlgoliaPoweredByEnabled;
-
 
 use WebDevStudios\WPSWA\Services\LoadTextDomain;
 use WebDevStudios\WPSWA\Services\Assets\Scripts\AlgoliaBundleScript;
@@ -80,9 +79,9 @@ return [
 	 */
 	'cli_commands'                 => [
 		AlgoliaCLI::class,
+		CopyIndex::class,
 		Hello::class,
 		ListIndices::class,
-		CopyIndex::class,
 	],
 	/**
 	 * The HTTP Client for Algolia PHP SearchClient to use.
@@ -120,11 +119,7 @@ return [
 	/**
 	 * Requirements checking.
 	 */
-	Requirements::class            => autowire()
-		->constructor(
-			get( AlgoliaSettings::class ),
-			get( SearchClient::class )
-		),
+	Requirements::class            => autowire(),
 	/**
 	 * The Algolia CLI command.
 	 */
@@ -150,4 +145,5 @@ return [
 	AlgoliaSearchApiKey::class     => autowire(),
 	AlgoliaIndexNamePrefix::class  => autowire(),
 	AlgoliaPoweredByEnabled::class => autowire(),
+	AlgoliaBundleScript::class     => autowire(),
 ];
