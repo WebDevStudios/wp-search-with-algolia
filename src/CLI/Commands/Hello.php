@@ -87,38 +87,8 @@ class Hello extends AlgoliaCLI {
 			return;
 		}
 
-		$errors = [];
-
-		if ( false === $this->requirements_utility->has_app_id() ) {
-			$errors[] = 'Algolia Application ID not configured.';
-		}
-
-		if ( false === $this->requirements_utility->has_admin_api_key() ) {
-			$errors[] = 'Algolia Admin API key not configured.';
-		}
-
-		if ( false === $this->requirements_utility->meets_php_version() ) {
-			$errors[] = 'WP Search with Algolia requires at least PHP ' . WPSWA_MIN_PHP_VERSION . '.';
-		}
-
-		if ( false === $this->requirements_utility->meets_wp_version() ) {
-			$errors[] = 'WP Search with Algolia requires at least WP ' . WPSWA_MIN_WP_VERSION . '.';
-		}
-
-		if ( false === $this->requirements_utility->has_curl() ) {
-			$errors[] = 'WP Search with Algolia requires the cURL PHP extension.';
-		}
-
-		if ( false === $this->requirements_utility->has_json() ) {
-			$errors[] = 'WP Search with Algolia requires the JSON PHP extension.';
-		}
-
-		if ( false === $this->requirements_utility->has_mbstring() ) {
-			$errors[] = 'WP Search with Algolia requires the mbstring PHP extension.';
-		}
-
 		// Does not exit script.
-		WP_CLI::error_multi_line( $errors );
+		WP_CLI::error_multi_line( $this->requirements_utility->get_errors() );
 
 		WP_CLI::error( 'One ore more errors were found with WP Search with Algolia settings or environment.' );
 	}
