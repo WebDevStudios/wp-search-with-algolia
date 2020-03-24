@@ -8,9 +8,9 @@
 
 namespace WebDevStudios\WPSWA\Services\Admin;
 
-use \WebDevStudios\WPSWA\Services\Admin\Settings\AlgoliaApplicationId;
-use \WebDevStudios\WPSWA\Utility\AlgoliaSettings;
-use \WDS_WPSWA_Vendor\WebDevStudios\OopsWP\Structure\Service;
+use WDS_WPSWA_Vendor\WebDevStudios\OopsWP\Structure\Service;
+use WebDevStudios\WPSWA\Services\Admin\Settings\AlgoliaApplicationId;
+use WebDevStudios\WPSWA\Utility\Requirements;
 
 /**
  * Class Options
@@ -56,14 +56,14 @@ class Options extends Service {
 	protected $option_group = 'algolia_settings';
 
 	/**
-	 * The AlgoliaSettings object.
+	 * Requirements utlity.
 	 *
-	 * @since  2.0.0
+	 * @since 2.0.0
 	 *
 	 * @Inject
-	 * @var AlgoliaSettings
+	 * @var Requirements
 	 */
-	protected $algolia_settings;
+	public $requirements_utility;
 
 	/**
 	 * Options constructor.
@@ -71,10 +71,10 @@ class Options extends Service {
 	 * @since  2.0.0
 	 * @author WebDevStudios <contact@webdevstudios.com>
 	 *
-	 * @param AlgoliaSettings $algolia_settings The AlgoliaSettings object.
+	 * @param Requirements $requirements_utility Requirements Utility object.
 	 */
-	public function __construct( AlgoliaSettings $algolia_settings ) {
-		$this->algolia_settings = $algolia_settings;
+	public function __construct( Requirements $requirements_utility ) {
+		$this->requirements_utility = $requirements_utility;
 	}
 
 	/**
@@ -84,11 +84,11 @@ class Options extends Service {
 	 * @author WebDevStudios <contact@webdevstudios.com>
 	 */
 	public function register_hooks(): void {
-		\add_action( 'admin_menu', [ $this, 'admin_menu' ] );
-		\add_action( 'admin_init', [ $this, 'add_settings_section' ] );
-		\add_action( 'admin_notices', array( $this, 'settings_errors' ) );
-		\add_filter(
-			'plugin_action_links_' . \plugin_basename( WPSWA_PLUGIN_FILE ),
+		add_action( 'admin_menu', [ $this, 'admin_menu' ] );
+		add_action( 'admin_init', [ $this, 'add_settings_section' ] );
+		add_action( 'admin_notices', [ $this, 'settings_errors' ] );
+		add_filter(
+			'plugin_action_links_' . plugin_basename( WPSWA_PLUGIN_FILE ),
 			[ $this, 'add_plugin_settings_action_link' ]
 		);
 	}
@@ -100,7 +100,7 @@ class Options extends Service {
 	 * @author WebDevStudios <contact@webdevstudios.com>
 	 */
 	public function settings_errors(): void {
-		\settings_errors( $this->option_group );
+		settings_errors( $this->option_group );
 	}
 
 	/**
@@ -115,18 +115,18 @@ class Options extends Service {
 	 */
 	public function add_plugin_settings_action_link( array $actions ): array {
 
-		$settings_url = \add_query_arg(
+		$settings_url = add_query_arg(
 			[
 				'page' => $this->slug,
 			],
-			\admin_url( 'admin.php' )
+			admin_url( 'admin.php' )
 		);
 
-		return \array_merge(
+		return array_merge(
 			$actions,
 			[
-				'<a href="' . \esc_url( $settings_url ) . '">'
-				. \esc_html__( 'Settings', 'wp-search-with-algolia' )
+				'<a href="' . esc_url( $settings_url ) . '">'
+				. esc_html__( 'Settings', 'wp-search-with-algolia' )
 				. '</a>',
 			]
 		);
@@ -139,9 +139,9 @@ class Options extends Service {
 	 * @author WebDevStudios <contact@webdevstudios.com>
 	 */
 	public function admin_menu(): void {
-		\add_menu_page(
-			\esc_html__( 'WP Search with Algolia', 'wp-search-with-algolia' ),
-			\esc_html__( 'Algolia Settings', 'wp-search-with-algolia' ),
+		add_menu_page(
+			esc_html__( 'WP Search with Algolia', 'wp-search-with-algolia' ),
+			esc_html__( 'Algolia Settings', 'wp-search-with-algolia' ),
 			'manage_options',
 			$this->slug,
 			[ $this, 'render_page' ],
@@ -157,7 +157,7 @@ class Options extends Service {
 	 * @author WebDevStudios <contact@webdevstudios.com>
 	 */
 	public function add_settings_section(): void {
-		\add_settings_section(
+		add_settings_section(
 			$this->section,
 			null,
 			[ $this, 'render_settings_section' ],
@@ -182,25 +182,43 @@ class Options extends Service {
 	 * @author WebDevStudios <contact@webdevstudios.com>
 	 */
 	public function render_settings_section(): void {
+
 		?>
 
+		<?php if ( ! $this->requirements_utility->has_app_id() || ! $this->requirements_utility->has_admin_api_key() ) : ?>
+
 		<p>
-			<?php \esc_html_e( 'Configure your Algolia account credentials. You can find them in the "API Keys" section of your Algolia dashboard.', 'wp-search-with-algolia' ); ?>
+			<?php esc_html_e( 'Configure your Algolia account credentials. You can find them in the "API Keys" section of your Algolia dashboard.', 'wp-search-with-algolia' ); ?>
 		</p>
 		<p>
-			<?php \esc_html_e( 'Once you provide your Algolia Application ID and API key, this plugin will be able to securely communicate with Algolia servers. We ensure your information is correct by testing them against the Algolia servers upon save.', 'wp-search-with-algolia' ); ?>
+			<?php esc_html_e( 'Once you provide your Algolia Application ID and API key, this plugin will be able to securely communicate with Algolia servers. We ensure your information is correct by testing them against the Algolia servers upon save.', 'wp-search-with-algolia' ); ?>
 		</p>
 		<p>
 			<?php
-			echo \wp_kses_post(
-				\sprintf(
+			echo wp_kses_post(
+				sprintf(
 					/* translators: the placeholder contains the URL to Algolia's website. */
-					\__( 'No Algolia account yet? <a href="%s">Follow this link</a> to create one for free in a couple of minutes!', 'wp-search-with-algolia' ),
+					__( 'No Algolia account yet? <a href="%s">Follow this link</a> to create one for free in a couple of minutes!', 'wp-search-with-algolia' ),
 					'https://www.algolia.com/users/sign_up'
 				)
 			);
 			?>
 		</p>
+
+		<?php elseif ( ! $this->requirements_utility->search_client_can_connect() ) : ?>
+
+			<p>
+				<?php esc_html_e( 'It appears that the Algolia API server cannot be reached.', 'wp-search-with-algolia' ); ?>
+			</p>
+			<pre>
+				<?php
+				foreach ( $this->requirements_utility->get_errors() as $error_message ) {
+					echo wp_kses_post( $error_message );
+				}
+				?>
+			</pre>
+
+		<?php endif; ?>
 
 		<?php
 	}
