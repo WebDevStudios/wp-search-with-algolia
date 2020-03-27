@@ -151,16 +151,25 @@ class Algolia_Plugin {
 	public function register_assets() {
 		$suffix = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ? '' : '.min';
 
+		/**
+		 * Filters the `$in_footer` argument to `wp_register_script()` for Algolia Scripts.
+		 *
+		 * @since  1.3.0
+		 *
+		 * @param bool $in_footer Whether to enqueue the script before </body> instead of in the <head>. Default 'false'.
+		 */
+		$in_footer = (bool) apply_filters( 'algolia_load_scripts_in_footer', false );
+
 		// CSS.
 		wp_register_style( 'algolia-autocomplete', ALGOLIA_PLUGIN_URL . 'css/algolia-autocomplete.css', array(), ALGOLIA_VERSION, 'screen' );
 		wp_register_style( 'algolia-instantsearch', ALGOLIA_PLUGIN_URL . 'css/algolia-instantsearch.css', array(), ALGOLIA_VERSION, 'screen' );
 
 		// JS.
-		wp_register_script( 'algolia-search', ALGOLIA_PLUGIN_URL . 'js/algoliasearch/algoliasearch.jquery' . $suffix . '.js', array( 'jquery', 'underscore', 'wp-util' ), ALGOLIA_VERSION );
-		wp_register_script( 'algolia-autocomplete', ALGOLIA_PLUGIN_URL . 'js/autocomplete.js/autocomplete' . $suffix . '.js', array( 'jquery', 'underscore', 'wp-util' ), ALGOLIA_VERSION );
-		wp_register_script( 'algolia-autocomplete-noconflict', ALGOLIA_PLUGIN_URL . 'js/autocomplete-noconflict.js', array( 'algolia-autocomplete' ), ALGOLIA_VERSION );
+		wp_register_script( 'algolia-search', ALGOLIA_PLUGIN_URL . 'js/algoliasearch/algoliasearch.jquery' . $suffix . '.js', array( 'jquery', 'underscore', 'wp-util' ), ALGOLIA_VERSION, $in_footer );
+		wp_register_script( 'algolia-autocomplete', ALGOLIA_PLUGIN_URL . 'js/autocomplete.js/autocomplete' . $suffix . '.js', array( 'jquery', 'underscore', 'wp-util' ), ALGOLIA_VERSION, $in_footer );
+		wp_register_script( 'algolia-autocomplete-noconflict', ALGOLIA_PLUGIN_URL . 'js/autocomplete-noconflict.js', array( 'algolia-autocomplete' ), ALGOLIA_VERSION, $in_footer );
 
-		wp_register_script( 'algolia-instantsearch', ALGOLIA_PLUGIN_URL . 'js/instantsearch.js/instantsearch-preact' . $suffix . '.js', array( 'jquery', 'underscore', 'wp-util' ), ALGOLIA_VERSION );
+		wp_register_script( 'algolia-instantsearch', ALGOLIA_PLUGIN_URL . 'js/instantsearch.js/instantsearch-preact' . $suffix . '.js', array( 'jquery', 'underscore', 'wp-util' ), ALGOLIA_VERSION, $in_footer );
 	}
 
 	/**
