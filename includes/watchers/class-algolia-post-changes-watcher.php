@@ -77,7 +77,7 @@ class Algolia_Post_Changes_Watcher implements Algolia_Changes_Watcher {
 
 		try {
 			$this->index->delete_item( $post );
-			$this->postsDeleted[] = $post->ID; 
+			$this->posts_deleted[] = $post->ID;
 		} catch ( AlgoliaException $exception ) {
 			error_log( $exception->getMessage() );
 		}
