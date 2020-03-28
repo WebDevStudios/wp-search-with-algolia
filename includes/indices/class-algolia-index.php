@@ -277,18 +277,34 @@ abstract class Algolia_Index {
 
 		if ( true === $index_exists ) {
 
-			$clear_if_existing = (bool) apply_filters( 'algolia_clear_index_if_existing', $clear_if_existing, $this->get_id() );
+			/**
+			 * Allow developers to skip clearing the index.
+			 *
+			 * @since 1.3.0
+			 *
+			 * @param bool   $clear_if_existing Whether to clear the existing index or not.
+			 * @param string $index_id          The index ID without prefix.
+			 */
+			$clear_if_existing = (bool) apply_filters(
+				'algolia_clear_index_if_existing',
+				$clear_if_existing,
+				$this->get_id()
+			);
+
 			if ( true === $clear_if_existing ) {
 				$index->clearIndex();
 			}
 
 			$force_settings_update = (bool) apply_filters( 'algolia_should_force_settings_update', false, $this->get_id() );
+
+			/*
+			 * No need to go further in this case.
+			 * We don't change anything when the index already exists.
+			 * This means that to override, or go back to default settings you have to
+			 * clear the index and re-index again or use the
+			 * 'algolia_force_settings_update' filter to force a settings update.
+			 */
 			if ( false === $force_settings_update ) {
-				// No need to go further in this case.
-				// We don't change anything when the index already exists.
-				// This means that to override, or go back to default settings you have to
-				// Clear the index and re-index again or use the 'algolia_force_settings_update' filter
-				// to force a settings update
 				return;
 			}
 		}
