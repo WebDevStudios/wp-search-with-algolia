@@ -221,13 +221,29 @@ final class Algolia_Searchable_Posts_Index extends Algolia_Index {
 	}
 
 	/**
-	 * @param int $post_id
-	 * @param int $record_index
+	 * Get post object ID.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param int $post_id      The WP_Post ID.
+	 * @param int $record_index The split record index.
 	 *
 	 * @return string
 	 */
 	private function get_post_object_id( $post_id, $record_index ) {
-		return (string) apply_filters( 'algolia_get_post_object_id', $post_id . '-' . $record_index, $post_id, $record_index );
+		/**
+		 * This filter is documented in includes/indices/class-algolia-posts-index.php
+		 *
+		 * @since 1.3.0
+		 *
+		 * @see Algolia_Posts_Index::get_post_object_id()
+		 */
+		return apply_filters(
+			'algolia_get_post_object_id',
+			$post_id . '-' . $record_index,
+			$post_id,
+			$record_index
+		);
 	}
 
 	/**
