@@ -3,9 +3,9 @@
 Contributors: WebDevStudios, williamsba1, gregrickaby, tw2113, richaber
 Tags: Search, Algolia, Autocomplete, instant-search, relevant search, search highlight, faceted search, find-as-you-type search, suggest, search by category, ajax search, better search, custom search
 Requires at least: 5.0
-Tested up to: 5.3
+Tested up to: 5.4
 Requires PHP: 7.2
-Stable tag: 1.2.0
+Stable tag: 1.3.0
 License: GNU General Public License v2.0, MIT License
 
 Improve search on your site. Autocomplete is included, along with full control over look, feel and relevance.
@@ -108,6 +108,11 @@ WebDevStudios provides end-to-end WordPress opportunities from strategy and plan
 == Changelog ==
 
 Follow along with the changelog on [Github](https://github.com/WebDevStudios/wp-search-with-algolia/releases).
+
+= 1.3.0 =
+* Add algolia_load_scripts_in_footer filter to allow enqueueing the scripts in the footer instead of in the head
+* Fix an issue where, under some circumstances, when a post with a featured image was deleted, the post might be accidentally re-indexed
+* Add new filters for multisite developers
 
 = 1.2.0 =
 * Use filtered value of 'hitsPerPage' as 'posts_per_page' query param
