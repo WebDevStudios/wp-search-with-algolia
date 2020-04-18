@@ -110,8 +110,9 @@ WebDevStudios provides end-to-end WordPress opportunities from strategy and plan
 Follow along with the changelog on [Github](https://github.com/WebDevStudios/wp-search-with-algolia/releases).
 
 = 1.3.0 =
-* Add algolia_load_scripts_in_footer filter to allow enqueueing the scripts in the footer instead of in the head
 * Fix an issue where, under some circumstances, when a post with a featured image was deleted, the post might be accidentally re-indexed
+* Fix bug that prevented reindex display notices
+* Add algolia_load_scripts_in_footer filter to allow enqueueing the scripts in the footer instead of in the head
 * Add new filters for multisite developers
 
 = 1.2.0 =
