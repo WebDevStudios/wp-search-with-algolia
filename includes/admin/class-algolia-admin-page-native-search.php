@@ -131,8 +131,10 @@ class Algolia_Admin_Page_Native_Search {
 			return;
 		}
 
+		$maybe_get_page = filter_input( INPUT_GET, 'page', FILTER_SANITIZE_STRING );
+
 		$searchable_posts_index = $this->plugin->get_index( 'searchable_posts' );
-		if ( false === $searchable_posts_index->is_enabled() && isset( $_GET['page'] ) && $_GET['page'] === $this->slug ) {
+		if ( false === $searchable_posts_index->is_enabled() && ( ! empty( $maybe_get_page ) ) && $maybe_get_page === $this->slug ) {
 			/* translators: placeholder contains the link to the indexing page. */
 			$message = sprintf( __( 'Searchable posts index needs to be checked on the <a href="%s">Algolia: Indexing page</a> for the search results to be powered by Algolia.', 'wp-search-with-algolia' ), esc_url( admin_url( 'admin.php?page=algolia-indexing' ) ) );
 			echo '<div class="error notice">
