@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: WP Search with Algolia\n"
-"POT-Creation-Date: 2019-11-01 15:07-0500\n"
-"PO-Revision-Date: 2019-11-01 15:07-0500\n"
+"POT-Creation-Date: 2020-04-17 19:07-0500\n"
+"PO-Revision-Date: 2020-04-17 19:11-0500\n"
 "Last-Translator: Richard Aber <richard.aber@webdevstudios.com>\n"
 "Language-Team: \n"
 "Language: it_IT\n"
@@ -10,7 +10,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Poedit 2.2.4\n"
+"X-Generator: Poedit 2.3\n"
 "X-Poedit-Basepath: ..\n"
 "X-Poedit-Flags-xgettext: --add-comments=translators:\n"
 "X-Poedit-WPHeader: algolia.php\n"
@@ -120,7 +120,7 @@ msgstr ""
 "ricerca nativa di Wordpress."
 
 #. translators: placeholder contains the link to the indexing page.
-#: includes/admin/class-algolia-admin-page-native-search.php:137
+#: includes/admin/class-algolia-admin-page-native-search.php:139
 #, php-format
 msgid ""
 "Searchable posts index needs to be checked on the <a href=\"%s\">Algolia: "
@@ -130,7 +130,7 @@ msgstr ""
 "<a href=\"%s\">Algolia: Pagina di indicizzazione</a> affinchè i risultati di "
 "ricerca siano offerti da Algolia."
 
-#: includes/admin/class-algolia-admin-page-native-search.php:148
+#: includes/admin/class-algolia-admin-page-native-search.php:150
 msgid ""
 "By enabling this plugin to override the native WordPress search, your search "
 "results will be powered by Algolia's typo-tolerant & relevant search "
@@ -139,7 +139,7 @@ msgstr ""
 "Abilitando questo plugin verrà sovrascritta la ricerca nativa di Wordpress, "
 "i tuoi risultati di ricerca saranno offerti dagli algoritmi di Algolia."
 
-#: includes/admin/class-algolia-admin-page-native-search.php:160
+#: includes/admin/class-algolia-admin-page-native-search.php:162
 msgid ""
 "You have no index containing only posts yet. Please index some content on "
 "the `Indexing` page."
@@ -281,7 +281,7 @@ msgstr ""
 "Non hai ancora un account Algolia? <a href=\"%s\"> Segui questo link </a> "
 "per crearne uno in pochi minuti!"
 
-#: includes/admin/class-algolia-admin.php:56
+#: includes/admin/class-algolia-admin.php:57
 msgid ""
 "Algolia Search requires the \"mbstring\" PHP extension to be enabled. Please "
 "contact your hosting provider."
@@ -289,7 +289,7 @@ msgstr ""
 "Algolia Search richiede che l'estensione PHP \"mbstring\" sia abilitata. "
 "Contatta il tuo fornitore dell'hosting."
 
-#: includes/admin/class-algolia-admin.php:60
+#: includes/admin/class-algolia-admin.php:61
 msgid ""
 "Algolia needs \"mbregex\" NOT to be disabled. Please contact your hosting "
 "provider."
@@ -297,7 +297,7 @@ msgstr ""
 "Algolia ha bisogno che \"mbregex\" NON sia disabilitato. Contatta il tuo "
 "fornitore dell'hosting."
 
-#: includes/admin/class-algolia-admin.php:66
+#: includes/admin/class-algolia-admin.php:67
 msgid ""
 "Algolia Search requires the \"cURL\" PHP extension to be enabled. Please "
 "contact your hosting provider."
@@ -306,7 +306,7 @@ msgstr ""
 "Contatta il tuo fornitore dell'hosting."
 
 #. translators: placeholder contains the URL to the caching plugin's config page.
-#: includes/admin/class-algolia-admin.php:89
+#: includes/admin/class-algolia-admin.php:90
 #, php-format
 msgid ""
 "In order for <strong>database caching</strong> to work with Algolia you must "
@@ -316,6 +316,18 @@ msgstr ""
 "Affinché il <strong>database caching</strong> funzioni con Algolia devi "
 "aggiungere <code>algolia_</code> nell'opzione \"Ignored Query Stems\" nelle "
 "impostazioni di W3 Total Cache <a href=\"%s\">qui</a>."
+
+#: includes/admin/class-algolia-admin.php:124
+#, php-format
+msgid ""
+"For Algolia search to work properly, you need to index: <strong>%1$s</strong>"
+msgstr ""
+"Affinché la ricerca in Algolia funzioni correttamente, è necessario "
+"indicizzare: <strong>%1$s</strong>"
+
+#: includes/admin/class-algolia-admin.php:133
+msgid "Index now"
+msgstr "Indice ora"
 
 #: includes/admin/partials/form-override-search-option.php:5
 msgid "Do not use Algolia"

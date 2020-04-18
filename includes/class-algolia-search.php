@@ -137,8 +137,11 @@ class Algolia_Search {
 		$query->set( 'offset', 0 );
 
 		$post_types = 'any';
-		if ( isset( $_GET['post_type'] ) ) {
-			$post_type = get_post_type_object( $_GET['post_type'] );
+
+		$maybe_post_type = filter_input( INPUT_GET, 'post_type', FILTER_SANITIZE_STRING );
+
+		if ( ! empty( $maybe_post_type ) ) {
+			$post_type = get_post_type_object( $maybe_post_type );
 			if ( null !== $post_type ) {
 				$post_types = $post_type->name;
 			}
