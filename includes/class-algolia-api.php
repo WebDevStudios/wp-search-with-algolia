@@ -1,13 +1,12 @@
 <?php
 
-use AlgoliaSearch\AlgoliaException;
-use AlgoliaSearch\Client;
-use AlgoliaSearch\Version;
+use Algolia\AlgoliaSearch\Exceptions\AlgoliaException;
+use Algolia\AlgoliaSearch\SearchClient;
 
 class Algolia_API {
 
 	/**
-	 * @var Client
+	 * @var SearchClient
 	 */
 	private $client;
 
@@ -29,7 +28,7 @@ class Algolia_API {
 		}
 
 		try {
-			// Here we check that all requirements for the PHP API Client are met
+			// Here we check that all requirements for the PHP API SearchClient are met
 			// If they are not, instantiating the client will throw exceptions.
 			$client = $this->get_client();
 		} catch ( Exception $e ) {
@@ -40,20 +39,10 @@ class Algolia_API {
 	}
 
 	/**
-	 * @return Client|null
+	 * @return SearchClient|null
 	 */
 	public function get_client() {
 		global $wp_version;
-
-		$integration_name    = (string) apply_filters( 'algolia_ua_integration_name', 'WordPress' );
-		$integration_version = (string) apply_filters( 'algolia_ua_integration_version', ALGOLIA_VERSION );
-
-		// Build the UserAgent.
-		$ua = '; ' . $integration_name . ' integration (' . $integration_version . ')'
-			. '; PHP (' . phpversion() . ')'
-			. '; WordPress (' . $wp_version . ')';
-
-		Version::$custom_value = $ua;
 
 		$application_id = $this->settings->get_application_id();
 		$api_key        = $this->settings->get_api_key();
@@ -64,7 +53,7 @@ class Algolia_API {
 		}
 
 		if ( null === $this->client ) {
-			$this->client = new Client( $this->settings->get_application_id(), $this->settings->get_api_key() );
+			$this->client = SearchClient::create( $this->settings->get_application_id(), $this->settings->get_api_key() );
 		}
 
 		return $this->client;
@@ -77,12 +66,12 @@ class Algolia_API {
 	 * @throws Exception
 	 */
 	public static function assert_valid_credentials( $application_id, $api_key ) {
-		$client = new Client( (string) $application_id, (string) $api_key );
+		$client = SearchClient::create( (string) $application_id, (string) $api_key );
 
 		// This checks if the API Key is an Admin API key.
 		// Admin API keys have no scopes so we need a separate check here.
 		try {
-			$client->listUserKeys();
+			$client->listApiKeys();
 
 			return;
 		} catch ( Exception $exception ) {
@@ -90,7 +79,7 @@ class Algolia_API {
 
 		// If this call does not succeed, then the application_ID or API_key is/are wrong.
 		// This will raise an exception.
-		$key = $client->getUserKeyACL( (string) $api_key );
+		$key = $client->getApiKey( (string) $api_key );
 
 		$required_acls = array(
 			'addObject',
@@ -136,7 +125,7 @@ class Algolia_API {
 	 * @return bool
 	 */
 	public static function is_valid_search_api_key( $application_id, $search_api_key ) {
-		$client = new Client( (string) $application_id, (string) $search_api_key );
+		$client = SearchClient::create( (string) $application_id, (string) $search_api_key );
 		try {
 			// If this call does not succeed, then the application_ID or API_key is/are wrong.
 			$acl = $client->getApiKey( $search_api_key );

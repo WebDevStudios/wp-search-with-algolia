@@ -103,7 +103,7 @@ class Algolia_Search {
 
 		try {
 			$results = $this->index->search( $query->query['s'], $params, $order_by, $order );
-		} catch ( \AlgoliaSearch\AlgoliaException $exception ) {
+		} catch ( \Algolia\AlgoliaSearch\Exceptions\AlgoliaException $exception ) {
 			error_log( $exception->getMessage() );
 
 			return;
