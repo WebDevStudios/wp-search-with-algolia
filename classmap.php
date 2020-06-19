@@ -4,8 +4,11 @@ if ( ! defined( 'ALGOLIA_PATH' ) ) {
 	exit();
 }
 
+require_once __DIR__ . '/vendor/autoload.php';
+
 // The Algolia Search PHP API Client.
-if ( apply_filters( 'algolia_should_require_search_client', true ) ) {
+if ( apply_filters( 'algolia_should_require_search_client', true )
+     && file_exists(ALGOLIA_PATH . 'includes/libraries/algoliasearch-client-php/algoliasearch.php')) {
 	require_once ALGOLIA_PATH . 'includes/libraries/algoliasearch-client-php/algoliasearch.php';
 }
 
@@ -15,7 +18,6 @@ require_once ALGOLIA_PATH . 'includes/class-algolia-compatibility.php';
 require_once ALGOLIA_PATH . 'includes/class-algolia-plugin.php';
 require_once ALGOLIA_PATH . 'includes/class-algolia-search.php';
 require_once ALGOLIA_PATH . 'includes/class-algolia-settings.php';
-require_once ALGOLIA_PATH . 'includes/class-algolia-template-loader.php';
 require_once ALGOLIA_PATH . 'includes/class-algolia-utils.php';
 
 require_once ALGOLIA_PATH . 'includes/indices/class-algolia-index.php';

@@ -35,11 +35,6 @@ class Algolia_Plugin {
 	private $changes_watchers;
 
 	/**
-	 * @var Algolia_Template_Loader
-	 */
-	private $template_loader;
-
-	/**
 	 * @var Algolia_Compatibility
 	 */
 	private $compatibility;
@@ -78,7 +73,6 @@ class Algolia_Plugin {
 			$this->load_indices();
 			$this->override_wordpress_search();
 			$this->autocomplete_config = new Algolia_Autocomplete_Config( $this );
-			$this->template_loader     = new Algolia_Template_Loader( $this );
 		}
 
 		// Load admin or public part of the plugin.
@@ -290,28 +284,5 @@ class Algolia_Plugin {
 		}
 
 		return null;
-	}
-
-	/**
-	 * Get the plugin path.
-	 *
-	 * @return string
-	 */
-	public function get_path() {
-		return untrailingslashit( ALGOLIA_PATH );
-	}
-
-	/**
-	 * @return string
-	 */
-	public function get_templates_path() {
-		return (string) apply_filters( 'algolia_templates_path', 'algolia/' );
-	}
-
-	/**
-	 * @return Algolia_Template_Loader
-	 */
-	public function get_template_loader() {
-		return $this->template_loader;
 	}
 }

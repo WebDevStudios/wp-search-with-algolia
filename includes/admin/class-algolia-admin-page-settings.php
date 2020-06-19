@@ -118,19 +118,10 @@ class Algolia_Admin_Page_Settings {
 			$this->section
 		);
 
-		add_settings_field(
-			'algolia_powered_by_enabled',
-			esc_html__( 'Remove Algolia powered by logo', 'wp-search-with-algolia' ),
-			array( $this, 'powered_by_enabled_callback' ),
-			$this->slug,
-			$this->section
-		);
-
 		register_setting( $this->option_group, 'algolia_application_id', array( $this, 'sanitize_application_id' ) );
 		register_setting( $this->option_group, 'algolia_search_api_key', array( $this, 'sanitize_search_api_key' ) );
 		register_setting( $this->option_group, 'algolia_api_key', array( $this, 'sanitize_api_key' ) );
 		register_setting( $this->option_group, 'algolia_index_name_prefix', array( $this, 'sanitize_index_name_prefix' ) );
-		register_setting( $this->option_group, 'algolia_powered_by_enabled', array( $this, 'sanitize_powered_by_enabled' ) );
 	}
 
 	public function application_id_callback() {
@@ -173,16 +164,6 @@ class Algolia_Admin_Page_Settings {
 		<input type="text" name="algolia_index_name_prefix" value="<?php echo esc_attr( $index_name_prefix ); ?>" <?php echo esc_html( $disabled_html ); ?>/>
 		<p class="description" id="home-description"><?php esc_html_e( 'This prefix will be prepended to your index names.', 'wp-search-with-algolia' ); ?></p>
 <?php
-	}
-
-	public function powered_by_enabled_callback() {
-		$powered_by_enabled = $this->plugin->get_settings()->is_powered_by_enabled();
-		$checked            = '';
-		if ( ! $powered_by_enabled ) {
-			$checked = ' checked';
-		}
-		echo "<input type='checkbox' name='algolia_powered_by_enabled' value='no' " . esc_html( $checked ) . ' />' .
-			'<p class="description" id="home-description">' . esc_html( __( 'This will remove the Algolia logo from the autocomplete and the search page. We require that you keep the Algolia logo if you are using a free plan.', 'wp-search-with-algolia' ) ) . '</p>';
 	}
 
 	public function sanitize_application_id( $value ) {
@@ -321,15 +302,6 @@ class Algolia_Admin_Page_Settings {
 		$value = get_option( 'algolia_index_name_prefix' );
 
 		return $this->is_valid_index_name_prefix( $value ) ? $value : 'wp_';
-	}
-
-	/**
-	 * @param $value
-	 *
-	 * @return string
-	 */
-	public function sanitize_powered_by_enabled( $value ) {
-		return 'no' === $value ? 'no' : 'yes';
 	}
 
 	/**
