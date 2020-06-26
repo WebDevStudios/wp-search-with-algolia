@@ -1,0 +1,30 @@
+{
+  "name": "wp-search-with-algolia",
+  "version": "1.4.0",
+  "description": "Integrate the powerful Algolia search service with WordPress.",
+  "author": "WebDevStudios",
+  "license": "GPL-3.0",
+  "keywords": [
+    "algolia"
+  ],
+  "homepage": "https://github.com/WebDevStudios/wp-search-with-algolia",
+  "dependencies": {
+    "algoliasearch": "^3.22.1",
+    "autocomplete.js": "^0.28.1",
+    "instantsearch.js": "^1.11.7"
+  },
+  "devDependencies": {
+    "frontend-dependencies": "^1.1.8"
+  },
+  "frontendDependencies": {
+    "target": "js/",
+    "packages": {
+      "algoliasearch": "^3.22.1",
+      "autocomplete.js": "^0.28.1",
+      "instantsearch.js": "^1.11.7"
+    }
+  },
+  "scripts": {
+    "postinstall": "node ./node_modules/frontend-dependencies/index.js"
+  }
+}
