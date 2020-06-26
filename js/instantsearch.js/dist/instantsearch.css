@@ -1,4 +1,4 @@
-/*! instantsearch.js 1.11.15 | © Algolia Inc. and other contributors; Licensed MIT | github.com/algolia/instantsearch.js */
+/*! instantsearch.js 1.12.1 | © Algolia Inc. and other contributors; Licensed MIT | github.com/algolia/instantsearch.js */
 
 .ais-search-box--input {
   /* search input */
@@ -40,7 +40,6 @@
 
 .sbx-sffv__input {
   display: inline-block;
-  -webkit-transition: box-shadow .4s ease, background .4s ease;
   transition: box-shadow .4s ease, background .4s ease;
   border: 0;
   border-radius: 4px;
@@ -74,10 +73,6 @@
 }
 
 .sbx-sffv__input::-webkit-input-placeholder {
-  color: #BBBBBB;
-}
-
-.sbx-sffv__input::-moz-placeholder {
   color: #BBBBBB;
 }
 

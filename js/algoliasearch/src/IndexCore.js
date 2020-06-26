@@ -132,7 +132,13 @@ IndexCore.prototype.search = buildSearchMethod('query');
 *   All search parameters are supported (see search function), restrictSearchableAttributes and facetFilters
 *   are the two most useful to restrict the similar results and get more relevant content
 */
-IndexCore.prototype.similarSearch = buildSearchMethod('similarQuery');
+IndexCore.prototype.similarSearch = deprecate(
+  buildSearchMethod('similarQuery'),
+  deprecatedMessage(
+    'index.similarSearch(query[, callback])',
+    'index.search({ similarQuery: query }[, callback])'
+  )
+);
 
 /*
 * Browse index content. The response content will have a `cursor` property that you can use
@@ -302,7 +308,7 @@ IndexCore.prototype._search = function(params, url, callback, additionalUA) {
 * @param attrs (optional) if set, contains the array of attribute names to retrieve
 * @param callback (optional) the result callback called with two arguments
 *  error: null or Error('message')
-*  content: the object to retrieve or the error message if a failure occured
+*  content: the object to retrieve or the error message if a failure occurred
 */
 IndexCore.prototype.getObject = function(objectID, attrs, callback) {
   var indexObj = this;

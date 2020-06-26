@@ -21,13 +21,7 @@ module.exports = function createAlgoliasearch(AlgoliaSearch, uaSuffix) {
   function algoliasearch(applicationID, apiKey, opts) {
     var cloneDeep = require('../clone.js');
 
-    var getDocumentProtocol = require('./get-document-protocol');
-
     opts = cloneDeep(opts || {});
-
-    if (opts.protocol === undefined) {
-      opts.protocol = getDocumentProtocol();
-    }
 
     opts._ua = opts._ua || algoliasearch.ua;
 
@@ -35,7 +29,10 @@ module.exports = function createAlgoliasearch(AlgoliaSearch, uaSuffix) {
   }
 
   algoliasearch.version = require('../version.js');
-  algoliasearch.ua = 'Algolia for vanilla JavaScript ' + uaSuffix + algoliasearch.version;
+
+  algoliasearch.ua =
+    'Algolia for JavaScript (' + algoliasearch.version + '); ' + uaSuffix;
+
   algoliasearch.initPlaces = places(algoliasearch);
 
   // we expose into window no matter how we are used, this will allow
@@ -93,6 +90,19 @@ module.exports = function createAlgoliasearch(AlgoliaSearch, uaSuffix) {
       // breaks it and set it to false by default
       if (req instanceof XMLHttpRequest) {
         req.open(opts.method, url, true);
+
+        // The Analytics API never accepts Auth headers as query string
+        // this option exists specifically for them.
+        if (opts.forceAuthHeaders) {
+          req.setRequestHeader(
+            'x-algolia-application-id',
+            opts.headers['x-algolia-application-id']
+          );
+          req.setRequestHeader(
+            'x-algolia-api-key',
+            opts.headers['x-algolia-api-key']
+          );
+        }
       } else {
         req.open(opts.method, url);
       }
@@ -110,7 +120,11 @@ module.exports = function createAlgoliasearch(AlgoliaSearch, uaSuffix) {
         req.setRequestHeader('accept', 'application/json');
       }
 
-      req.send(body);
+      if (body) {
+        req.send(body);
+      } else {
+        req.send();
+      }
 
       // event object not received in IE8, at least
       // but we do not use it, still important to note
@@ -212,6 +226,9 @@ module.exports = function createAlgoliasearch(AlgoliaSearch, uaSuffix) {
       return new Promise(function resolveOnTimeout(resolve/* , reject*/) {
         setTimeout(resolve, ms);
       });
+    },
+    all: function all(promises) {
+      return Promise.all(promises);
     }
   };
 

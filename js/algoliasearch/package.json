@@ -1,27 +1,27 @@
 {
-  "_from": "algoliasearch@~3.22.1",
-  "_id": "algoliasearch@3.22.3",
+  "_from": "algoliasearch@^3.22.1",
+  "_id": "algoliasearch@3.35.1",
   "_inBundle": false,
-  "_integrity": "sha1-xj7ZV27lKQjRPrBN3uTV8EyyQiI=",
+  "_integrity": "sha512-K4yKVhaHkXfJ/xcUnil04xiSrB8B8yHZoFEhWNpXg23eiCnqvTZw1tn/SqvdsANlYHLJlKl0qi3I/Q2Sqo7LwQ==",
   "_location": "/algoliasearch",
   "_phantomChildren": {},
   "_requested": {
     "type": "range",
     "registry": true,
-    "raw": "algoliasearch@~3.22.1",
+    "raw": "algoliasearch@^3.22.1",
     "name": "algoliasearch",
     "escapedName": "algoliasearch",
-    "rawSpec": "~3.22.1",
+    "rawSpec": "^3.22.1",
     "saveSpec": null,
-    "fetchSpec": "~3.22.1"
+    "fetchSpec": "^3.22.1"
   },
   "_requiredBy": [
     "#USER",
     "/instantsearch.js"
   ],
-  "_resolved": "https://registry.npmjs.org/algoliasearch/-/algoliasearch-3.22.3.tgz",
-  "_shasum": "c63ed9576ee52908d13eb04ddee4d5f04cb24222",
-  "_spec": "algoliasearch@~3.22.1",
+  "_resolved": "https://registry.npmjs.org/algoliasearch/-/algoliasearch-3.35.1.tgz",
+  "_shasum": "297d15f534a3507cab2f5dfb996019cac7568f0c",
+  "_spec": "algoliasearch@^3.22.1",
   "_where": "/Users/raber/Local Sites/algolia/app/public/wp-content/plugins/wp-search-with-algolia-v1",
   "author": {
     "name": "Algolia SAS",
@@ -40,6 +40,16 @@
     "url": "https://github.com/algolia/algoliasearch-client-js/issues"
   },
   "bundleDependencies": false,
+  "bundlesize": [
+    {
+      "path": "./dist/algoliasearch.?(jquery|angular).min.js",
+      "maxSize": "20 kB"
+    },
+    {
+      "path": "./dist/algoliasearchLite.min.js",
+      "maxSize": "13 kB"
+    }
+  ],
   "contributors": [
     {
       "name": "Algolia Team",
@@ -49,7 +59,7 @@
   ],
   "dependencies": {
     "agentkeepalive": "^2.2.0",
-    "debug": "^2.6.8",
+    "debug": "^2.6.9",
     "envify": "^4.0.0",
     "es6-promise": "^4.1.0",
     "events": "^1.1.0",
@@ -68,14 +78,15 @@
   "description": "AlgoliaSearch API JavaScript client",
   "devDependencies": {
     "angular": "^1.6.4",
+    "array.from": "^1.0.3",
     "async": "^1.5.2",
     "babel-eslint": "^4.1.6",
-    "bowser": "^1.7.0",
-    "browserify": "^13.3.0",
-    "browzers": "^1.3.0",
+    "bowser": "1.9.3",
+    "browserify": "^14.5.0",
     "bulk-require": "^1.0.0",
     "bulkify": "^1.2.0",
     "bundle-collapser": "^1.2.1",
+    "bundlesize": "^0.15.3",
     "chance": "^1.0.9",
     "compression": "^1.6.2",
     "deumdify": "^1.2.4",
@@ -99,7 +110,6 @@
     "self-signed": "^1.3.1",
     "server-destroy-vvo": "^1.0.1",
     "sinon": "^1.17.7",
-    "superagent": "^3.5.2",
     "tap-bail": "^1.0.0",
     "tap-dot": "^1.0.5",
     "tape": "^4.5.1",
@@ -108,8 +118,7 @@
     "watchify": "^3.9.0",
     "webpack": "^1.13.1",
     "xhr": "^2.4.0",
-    "zuul": "^3.10.1",
-    "zuul-ngrok": "^4.0.0"
+    "zuul": "^3.12.0"
   },
   "engines": {
     "node": ">=0.8"
@@ -124,6 +133,7 @@
     "bower.json"
   ],
   "homepage": "https://www.algolia.com/doc/api-client/javascript/",
+  "jsdelivr": "./dist/algoliasearch.min.js",
   "keywords": [
     "algolia",
     "search",
@@ -147,8 +157,13 @@
     "lint": "./scripts/lint",
     "release": "git clean dist/ -f && git checkout dist/ && yarn && ./scripts/release && APP_ENV=production npm run build",
     "test": "./scripts/test",
-    "test-ci": "./scripts/test-ci",
+    "test-ci:bundlesize": "./scripts/bundlesize",
+    "test-ci:integration-browsers": "./scripts/test-browser integration",
+    "test-ci:integration-node": "./scripts/test-node-integration",
+    "test-ci:lint": "./scripts/lint",
+    "test-ci:unit-browsers": "./scripts/test-browser unit",
+    "test-ci:unit-node": "./scripts/test-node-unit",
     "watch": "watchify index.js -d -v -s algoliasearch -o dist/algoliasearch.js"
   },
-  "version": "3.22.3"
+  "version": "3.35.1"
 }
