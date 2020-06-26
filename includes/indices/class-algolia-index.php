@@ -1,7 +1,7 @@
 <?php
 
 use Algolia\AlgoliaSearch\SearchClient;
-use AlgoliaSearch\Index;
+use Algolia\AlgoliaSearch\SearchIndex;
 
 abstract class Algolia_Index {
 
@@ -197,7 +197,7 @@ abstract class Algolia_Index {
 	}
 
 	/**
-	 * @return Index
+	 * @return SearchIndex
 	 */
 	public function get_index() {
 		return $this->client->initIndex( (string) $this->get_name() );
