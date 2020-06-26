@@ -37,7 +37,7 @@ define( 'ALGOLIA_PLUGIN_BASENAME', plugin_basename( __FILE__ ) );
 define( 'ALGOLIA_PLUGIN_URL', plugins_url( '/', __FILE__ ) );
 
 if ( ! defined( 'ALGOLIA_PATH' ) ) {
-	define( 'ALGOLIA_PATH', plugin_dir_path( __FILE__ ) );
+	define( 'ALGOLIA_PATH', __DIR__ . '/' );
 }
 
 /**
