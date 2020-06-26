@@ -4,9 +4,9 @@ if ( ! defined( 'ALGOLIA_PATH' ) ) {
 	exit();
 }
 
-// The Algolia Search PHP API Client.
+// The Algolia Search PHP API SearchClient.
 if ( apply_filters( 'algolia_should_require_search_client', true ) ) {
-	require_once ALGOLIA_PATH . 'includes/libraries/algoliasearch-client-php/algoliasearch.php';
+	require_once ALGOLIA_PATH . 'includes/libraries/algoliasearch-client-php/autoload.php';
 }
 
 require_once ALGOLIA_PATH . 'includes/class-algolia-api.php';
