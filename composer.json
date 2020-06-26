@@ -1,0 +1,49 @@
+{
+  "name": "webdevstudios/wp-search-with-algolia",
+  "version": "1.4.0",
+  "description": "Integrate the powerful Algolia search service with WordPress.",
+  "authors": [
+    {
+      "name": "WebDevStudios",
+      "email": "contact@webdevstudios.com"
+    }
+  ],
+  "license": "GPL-3.0",
+  "keywords": [
+    "algolia"
+  ],
+  "homepage": "https://github.com/WebDevStudios/wp-search-with-algolia",
+  "type": "wordpress-plugin",
+  "minimum-stability": "dev",
+  "prefer-stable": true,
+  "require": {
+    "php": ">=7.2",
+    "composer/installers": "~1.0"
+  },
+  "require-dev": {
+    "algolia/algoliasearch-client-php": "~1.23.0",
+    "webdevstudios/php-coding-standards": "^1.0.0",
+    "phpcompatibility/phpcompatibility-wp": "^2.0.0",
+    "slowprog/composer-copy-file": "^0.3.2"
+  },
+  "extra": {
+    "installer-name": "wp-search-with-algolia",
+    "phpcodesniffer-search-depth": 5,
+    "copy-file": {
+      "vendor/algolia": "includes/libraries"
+    },
+    "copy-file-dev": {
+      "vendor/algolia": "includes/libraries"
+    }
+  },
+  "scripts": {
+    "lint": "vendor/bin/phpcs",
+    "lint:fix": "vendor/bin/phpcbf",
+    "post-install-cmd": [
+      "SlowProg\\CopyFile\\ScriptHandler::copy"
+    ],
+    "post-update-cmd": [
+      "SlowProg\\CopyFile\\ScriptHandler::copy"
+    ]
+  }
+}
