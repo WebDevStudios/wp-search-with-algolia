@@ -1,6 +1,6 @@
 <?php
 
-use AlgoliaSearch\AlgoliaException;
+use Algolia\AlgoliaSearch\Exceptions\AlgoliaException;
 
 class Algolia_Term_Changes_Watcher implements Algolia_Changes_Watcher {
 
