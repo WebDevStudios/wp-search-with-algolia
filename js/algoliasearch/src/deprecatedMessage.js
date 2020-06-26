@@ -1,8 +1,7 @@
 module.exports = function deprecatedMessage(previousUsage, newUsage) {
   var githubAnchorLink = previousUsage.toLowerCase()
-    .replace('.', '')
-    .replace('()', '');
+    .replace(/[\.\(\)]/g, '');
 
   return 'algoliasearch: `' + previousUsage + '` was replaced by `' + newUsage +
-    '`. Please see https://github.com/algolia/algoliasearch-client-js/wiki/Deprecated#' + githubAnchorLink;
+    '`. Please see https://github.com/algolia/algoliasearch-client-javascript/wiki/Deprecated#' + githubAnchorLink;
 };

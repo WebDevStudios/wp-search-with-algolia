@@ -57,7 +57,7 @@ module.exports = {
   ),
   RequestTimeout: createCustomError(
     'RequestTimeout',
-    'Request timedout before getting a response'
+    'Request timed out before getting a response'
   ),
   Network: createCustomError(
     'Network',
@@ -67,9 +67,17 @@ module.exports = {
     'JSONPScriptFail',
     '<script> was loaded but did not call our provided callback'
   ),
+  ValidUntilNotFound: createCustomError(
+    'ValidUntilNotFound',
+    'The SecuredAPIKey does not have a validUntil parameter.'
+  ),
   JSONPScriptError: createCustomError(
     'JSONPScriptError',
     '<script> unable to load due to an `error` event on it'
+  ),
+  ObjectNotFound: createCustomError(
+    'ObjectNotFound',
+    'Object not found'
   ),
   Unknown: createCustomError(
     'Unknown',

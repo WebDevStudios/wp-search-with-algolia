@@ -223,7 +223,11 @@ Index.prototype.saveObjects = function(objects, callback) {
 */
 Index.prototype.deleteObject = function(objectID, callback) {
   if (typeof objectID === 'function' || typeof objectID !== 'string' && typeof objectID !== 'number') {
-    var err = new errors.AlgoliaSearchError('Cannot delete an object without an objectID');
+    var err = new errors.AlgoliaSearchError(
+      objectID && typeof objectID !== 'function'
+      ? 'ObjectID must be a string'
+      : 'Cannot delete an object without an objectID'
+    );
     callback = objectID;
     if (typeof callback === 'function') {
       return callback(err);
@@ -288,8 +292,9 @@ Index.prototype.deleteObjects = function(objectIDs, callback) {
 * @param params the optional query parameters
 * @param callback (optional) the result callback called with one argument
 *  error: null or Error('message')
+* @deprecated see index.deleteBy
 */
-Index.prototype.deleteByQuery = function(query, params, callback) {
+Index.prototype.deleteByQuery = deprecate(function(query, params, callback) {
   var clone = require('./clone.js');
   var map = require('./map.js');
 
@@ -360,6 +365,30 @@ Index.prototype.deleteByQuery = function(query, params, callback) {
       callback(err);
     }, client._setTimeout || setTimeout);
   }
+}, deprecatedMessage('index.deleteByQuery()', 'index.deleteBy()'));
+
+/**
+* Delete all objects matching a query
+*
+* the query parameters that can be used are:
+* - filters (numeric, facet, tag)
+* - geo
+*
+* you can not send an empty query or filters
+*
+* @param params the optional query parameters
+* @param callback (optional) the result callback called with one argument
+*  error: null or Error('message')
+*/
+Index.prototype.deleteBy = function(params, callback) {
+  var indexObj = this;
+  return this.as._jsonRequest({
+    method: 'POST',
+    url: '/1/indexes/' + encodeURIComponent(indexObj.indexName) + '/deleteByQuery',
+    body: {params: indexObj.as._getSearchParams(params, '')},
+    hostType: 'write',
+    callback: callback
+  });
 };
 
 /*
@@ -471,7 +500,7 @@ Index.prototype.browseAll = function(query, queryParameters) {
 * Get a Typeahead.js adapter
 * @param searchParams contains an object with query parameters (see search for details)
 */
-Index.prototype.ttAdapter = function(params) {
+Index.prototype.ttAdapter = deprecate(function(params) {
   var self = this;
   return function ttAdapter(query, syncCb, asyncCb) {
     var cb;
@@ -493,7 +522,9 @@ Index.prototype.ttAdapter = function(params) {
       cb(content.hits);
     });
   };
-};
+},
+'ttAdapter is not necessary anymore and will be removed in the next version,\n' +
+'have a look at autocomplete.js (https://github.com/algolia/autocomplete.js)');
 
 /*
 * Wait the publication of a task on the server.
@@ -562,7 +593,7 @@ Index.prototype.waitTask = function(taskID, callback) {
 *
 * @param callback (optional) the result callback called with two arguments
 *  error: null or Error('message')
-*  content: the settings object or the error message if a failure occured
+*  content: the settings object or the error message if a failure occurred
 */
 Index.prototype.clearIndex = function(callback) {
   var indexObj = this;
@@ -577,15 +608,27 @@ Index.prototype.clearIndex = function(callback) {
 /*
 * Get settings of this index
 *
+* @param opts an object of options to add
+* @param opts.advanced get more settings like nbShards (useful for Enterprise)
 * @param callback (optional) the result callback called with two arguments
 *  error: null or Error('message')
-*  content: the settings object or the error message if a failure occured
+*  content: the settings object or the error message if a failure occurred
 */
-Index.prototype.getSettings = function(callback) {
-  var indexObj = this;
+Index.prototype.getSettings = function(opts, callback) {
+  if (arguments.length === 1 && typeof opts === 'function') {
+    callback = opts;
+    opts = {};
+  }
+  opts = opts || {};
+
+  var indexName = encodeURIComponent(this.indexName);
   return this.as._jsonRequest({
     method: 'GET',
-    url: '/1/indexes/' + encodeURIComponent(indexObj.indexName) + '/settings?getVersion=2',
+    url:
+      '/1/indexes/' +
+      indexName +
+      '/settings?getVersion=2' +
+      (opts.advanced ? '&advanced=' + opts.advanced : ''),
     hostType: 'read',
     callback: callback
   });
@@ -606,6 +649,46 @@ Index.prototype.searchSynonyms = function(params, callback) {
     hostType: 'read',
     callback: callback
   });
+};
+
+function exportData(method, _hitsPerPage, callback) {
+  function search(page, _previous) {
+    var options = {
+      page: page || 0,
+      hitsPerPage: _hitsPerPage || 100
+    };
+    var previous = _previous || [];
+
+    return method(options).then(function(result) {
+      var hits = result.hits;
+      var nbHits = result.nbHits;
+      var current = hits.map(function(s) {
+        delete s._highlightResult;
+        return s;
+      });
+      var synonyms = previous.concat(current);
+      if (synonyms.length < nbHits) {
+        return search(options.page + 1, synonyms);
+      }
+      return synonyms;
+    });
+  }
+  return search().then(function(data) {
+    if (typeof callback === 'function') {
+      callback(data);
+      return undefined;
+    }
+    return data;
+  });
+}
+
+/**
+ * Retrieve all the synonyms in an index
+ * @param [number=100] hitsPerPage The amount of synonyms to retrieve per batch
+ * @param [function] callback will be called after all synonyms are retrieved
+ */
+Index.prototype.exportSynonyms = function(hitsPerPage, callback) {
+  return exportData(this.searchSynonyms.bind(this), hitsPerPage, callback);
 };
 
 Index.prototype.saveSynonym = function(synonym, opts, callback) {
@@ -700,10 +783,213 @@ Index.prototype.batchSynonyms = function(synonyms, opts, callback) {
   });
 };
 
+Index.prototype.searchRules = function(params, callback) {
+  if (typeof params === 'function') {
+    callback = params;
+    params = {};
+  } else if (params === undefined) {
+    params = {};
+  }
+
+  return this.as._jsonRequest({
+    method: 'POST',
+    url: '/1/indexes/' + encodeURIComponent(this.indexName) + '/rules/search',
+    body: params,
+    hostType: 'read',
+    callback: callback
+  });
+};
+/**
+ * Retrieve all the query rules in an index
+ * @param [number=100] hitsPerPage The amount of query rules to retrieve per batch
+ * @param [function] callback will be called after all query rules are retrieved
+ *  error: null or Error('message')
+ */
+Index.prototype.exportRules = function(hitsPerPage, callback) {
+  return exportData(this.searchRules.bind(this), hitsPerPage, callback);
+};
+
+Index.prototype.saveRule = function(rule, opts, callback) {
+  if (typeof opts === 'function') {
+    callback = opts;
+    opts = {};
+  } else if (opts === undefined) {
+    opts = {};
+  }
+
+  if (!rule.objectID) {
+    throw new errors.AlgoliaSearchError('Missing or empty objectID field for rule');
+  }
+
+  var forwardToReplicas = opts.forwardToReplicas === true ? 'true' : 'false';
+
+  return this.as._jsonRequest({
+    method: 'PUT',
+    url: '/1/indexes/' + encodeURIComponent(this.indexName) + '/rules/' + encodeURIComponent(rule.objectID) +
+      '?forwardToReplicas=' + forwardToReplicas,
+    body: rule,
+    hostType: 'write',
+    callback: callback
+  });
+};
+
+Index.prototype.getRule = function(objectID, callback) {
+  return this.as._jsonRequest({
+    method: 'GET',
+    url: '/1/indexes/' + encodeURIComponent(this.indexName) + '/rules/' + encodeURIComponent(objectID),
+    hostType: 'read',
+    callback: callback
+  });
+};
+
+Index.prototype.deleteRule = function(objectID, opts, callback) {
+  if (typeof opts === 'function') {
+    callback = opts;
+    opts = {};
+  } else if (opts === undefined) {
+    opts = {};
+  }
+
+  var forwardToReplicas = opts.forwardToReplicas === true ? 'true' : 'false';
+
+  return this.as._jsonRequest({
+    method: 'DELETE',
+    url: '/1/indexes/' + encodeURIComponent(this.indexName) + '/rules/' + encodeURIComponent(objectID) +
+      '?forwardToReplicas=' + forwardToReplicas,
+    hostType: 'write',
+    callback: callback
+  });
+};
+
+Index.prototype.clearRules = function(opts, callback) {
+  if (typeof opts === 'function') {
+    callback = opts;
+    opts = {};
+  } else if (opts === undefined) {
+    opts = {};
+  }
+
+  var forwardToReplicas = opts.forwardToReplicas === true ? 'true' : 'false';
+
+  return this.as._jsonRequest({
+    method: 'POST',
+    url: '/1/indexes/' + encodeURIComponent(this.indexName) + '/rules/clear' +
+      '?forwardToReplicas=' + forwardToReplicas,
+    hostType: 'write',
+    callback: callback
+  });
+};
+
+Index.prototype.batchRules = function(rules, opts, callback) {
+  if (typeof opts === 'function') {
+    callback = opts;
+    opts = {};
+  } else if (opts === undefined) {
+    opts = {};
+  }
+
+  var forwardToReplicas = opts.forwardToReplicas === true ? 'true' : 'false';
+
+  return this.as._jsonRequest({
+    method: 'POST',
+    url: '/1/indexes/' + encodeURIComponent(this.indexName) + '/rules/batch' +
+      '?forwardToReplicas=' + forwardToReplicas +
+      '&clearExistingRules=' + (opts.clearExistingRules === true ? 'true' : 'false'),
+    hostType: 'write',
+    body: rules,
+    callback: callback
+  });
+};
+
+Index.prototype.exists = function(callback) {
+  var result = this.getSettings().then(function() {
+    return true;
+  }).catch(function(err) {
+    if (err instanceof errors.AlgoliaSearchError && err.statusCode === 404) {
+      return false;
+    }
+
+    throw err;
+  });
+
+  if (typeof callback !== 'function') {
+    return result;
+  }
+
+  result.then(function(res) {
+    callback(null, res);
+  }).catch(function(err) {
+    callback(err);
+  });
+};
+
+Index.prototype.findObject = function(findCallback, requestOptions, callback) {
+  requestOptions = requestOptions === undefined ? {} : requestOptions;
+  var paginate = requestOptions.paginate !== undefined ? requestOptions.paginate : true;
+  var query = requestOptions.query !== undefined ? requestOptions.query : '';
+
+  var that = this;
+  var page = 0;
+
+  var paginateLoop = function() {
+    requestOptions.page = page;
+
+    return that.search(query, requestOptions).then(function(result) {
+      var hits = result.hits;
+
+      for (var position = 0; position < hits.length; position++) {
+        var hit = hits[position];
+        if (findCallback(hit)) {
+          return {
+            object: hit,
+            position: position,
+            page: page
+          };
+        }
+      }
+
+      page += 1;
+
+      // paginate if option was set and has next page
+      if (!paginate || page >= result.nbPages) {
+        throw new errors.ObjectNotFound('Object not found');
+      }
+
+      return paginateLoop();
+    });
+  };
+
+  var promise = paginateLoop(page);
+
+  if (callback === undefined) {
+    return promise;
+  }
+
+  promise
+    .then(function(res) {
+      callback(null, res);
+    })
+    .catch(function(err) {
+      callback(err);
+    });
+};
+
+Index.prototype.getObjectPosition = function(result, objectID) {
+  var hits = result.hits;
+
+  for (var position = 0; position < hits.length; position++) {
+    if (hits[position].objectID === objectID) {
+      return position;
+    }
+  }
+
+  return -1;
+};
+
 /*
 * Set settings for this index
 *
-* @param settigns the settings object that can contains :
+* @param settings the settings object that can contains :
 * - minWordSizefor1Typo: (integer) the minimum number of characters to accept one typo (default = 3).
 * - minWordSizefor2Typos: (integer) the minimum number of characters to accept two typos (default = 7).
 * - hitsPerPage: (integer) the number of hits per page (default = 10).
@@ -769,7 +1055,7 @@ Index.prototype.batchSynonyms = function(synonyms, opts, callback) {
 * be considered as optional when found in the query.
 * @param callback (optional) the result callback called with two arguments
 *  error: null or Error('message')
-*  content: the server answer or the error message if a failure occured
+*  content: the server answer or the error message if a failure occurred
 */
 Index.prototype.setSettings = function(settings, opts, callback) {
   if (arguments.length === 1 || typeof opts === 'function') {
@@ -792,11 +1078,11 @@ Index.prototype.setSettings = function(settings, opts, callback) {
 };
 
 /*
- @deprecated see index.listApiKeys
- */
+* @deprecated see client.listApiKeys()
+*/
 Index.prototype.listUserKeys = deprecate(function(callback) {
   return this.listApiKeys(callback);
-}, deprecatedMessage('index.listUserKeys()', 'index.listApiKeys()'));
+}, deprecatedMessage('index.listUserKeys()', 'client.listApiKeys()'));
 
 /*
 * List all existing API keys to this index
@@ -804,8 +1090,10 @@ Index.prototype.listUserKeys = deprecate(function(callback) {
 * @param callback the result callback called with two arguments
 *  error: null or Error('message')
 *  content: the server answer with API keys belonging to the index
+*
+* @deprecated see client.listApiKeys()
 */
-Index.prototype.listApiKeys = function(callback) {
+Index.prototype.listApiKeys = deprecate(function(callback) {
   var indexObj = this;
   return this.as._jsonRequest({
     method: 'GET',
@@ -813,14 +1101,14 @@ Index.prototype.listApiKeys = function(callback) {
     hostType: 'read',
     callback: callback
   });
-};
+}, deprecatedMessage('index.listApiKeys()', 'client.listApiKeys()'));
 
 /*
- @deprecated see index.getApiKey
- */
+* @deprecated see client.getApiKey()
+*/
 Index.prototype.getUserKeyACL = deprecate(function(key, callback) {
   return this.getApiKey(key, callback);
-}, deprecatedMessage('index.getUserKeyACL()', 'index.getApiKey()'));
+}, deprecatedMessage('index.getUserKeyACL()', 'client.getApiKey()'));
 
 
 /*
@@ -830,8 +1118,10 @@ Index.prototype.getUserKeyACL = deprecate(function(key, callback) {
 * @param callback the result callback called with two arguments
 *  error: null or Error('message')
 *  content: the server answer with the right API key
+*
+* @deprecated see client.getApiKey()
 */
-Index.prototype.getApiKey = function(key, callback) {
+Index.prototype.getApiKey = deprecate(function(key, callback) {
   var indexObj = this;
   return this.as._jsonRequest({
     method: 'GET',
@@ -839,14 +1129,14 @@ Index.prototype.getApiKey = function(key, callback) {
     hostType: 'read',
     callback: callback
   });
-};
+}, deprecatedMessage('index.getApiKey()', 'client.getApiKey()'));
 
 /*
- @deprecated see index.deleteApiKey
- */
+* @deprecated see client.deleteApiKey()
+*/
 Index.prototype.deleteUserKey = deprecate(function(key, callback) {
   return this.deleteApiKey(key, callback);
-}, deprecatedMessage('index.deleteUserKey()', 'index.deleteApiKey()'));
+}, deprecatedMessage('index.deleteUserKey()', 'client.deleteApiKey()'));
 
 /*
 * Delete an existing API key associated to this index
@@ -855,8 +1145,10 @@ Index.prototype.deleteUserKey = deprecate(function(key, callback) {
 * @param callback the result callback called with two arguments
 *  error: null or Error('message')
 *  content: the server answer with the deletion date
+*
+* @deprecated see client.deleteApiKey()
 */
-Index.prototype.deleteApiKey = function(key, callback) {
+Index.prototype.deleteApiKey = deprecate(function(key, callback) {
   var indexObj = this;
   return this.as._jsonRequest({
     method: 'DELETE',
@@ -864,14 +1156,14 @@ Index.prototype.deleteApiKey = function(key, callback) {
     hostType: 'write',
     callback: callback
   });
-};
+}, deprecatedMessage('index.deleteApiKey()', 'client.deleteApiKey()'));
 
 /*
- @deprecated see index.addApiKey
- */
+* @deprecated see client.addApiKey()
+*/
 Index.prototype.addUserKey = deprecate(function(acls, params, callback) {
   return this.addApiKey(acls, params, callback);
-}, deprecatedMessage('index.addUserKey()', 'index.addApiKey()'));
+}, deprecatedMessage('index.addUserKey()', 'client.addApiKey()'));
 
 /*
 * Add a new API key to this index
@@ -908,8 +1200,10 @@ Index.prototype.addUserKey = deprecate(function(acls, params, callback) {
 *   }
 * })
 * @see {@link https://www.algolia.com/doc/rest_api#AddIndexKey|Algolia REST API Documentation}
+*
+* @deprecated see client.addApiKey()
 */
-Index.prototype.addApiKey = function(acls, params, callback) {
+Index.prototype.addApiKey = deprecate(function(acls, params, callback) {
   var isArray = require('isarray');
   var usage = 'Usage: index.addApiKey(arrayOfAcls[, params, callback])';
 
@@ -946,21 +1240,21 @@ Index.prototype.addApiKey = function(acls, params, callback) {
     hostType: 'write',
     callback: callback
   });
-};
+}, deprecatedMessage('index.addApiKey()', 'client.addApiKey()'));
 
 /**
-* @deprecated use index.addApiKey()
+* @deprecated use client.addApiKey()
 */
 Index.prototype.addUserKeyWithValidity = deprecate(function deprecatedAddUserKeyWithValidity(acls, params, callback) {
   return this.addApiKey(acls, params, callback);
-}, deprecatedMessage('index.addUserKeyWithValidity()', 'index.addApiKey()'));
+}, deprecatedMessage('index.addUserKeyWithValidity()', 'client.addApiKey()'));
 
 /*
- @deprecated see index.updateApiKey
- */
+* @deprecated see client.updateApiKey()
+*/
 Index.prototype.updateUserKey = deprecate(function(key, acls, params, callback) {
   return this.updateApiKey(key, acls, params, callback);
-}, deprecatedMessage('index.updateUserKey()', 'index.updateApiKey()'));
+}, deprecatedMessage('index.updateUserKey()', 'client.updateApiKey()'));
 
 /**
 * Update an existing API key of this index
@@ -997,8 +1291,10 @@ Index.prototype.updateUserKey = deprecate(function(key, acls, params, callback) 
 *   }
 * })
 * @see {@link https://www.algolia.com/doc/rest_api#UpdateIndexKey|Algolia REST API Documentation}
+*
+* @deprecated see client.updateApiKey()
 */
-Index.prototype.updateApiKey = function(key, acls, params, callback) {
+Index.prototype.updateApiKey = deprecate(function(key, acls, params, callback) {
   var isArray = require('isarray');
   var usage = 'Usage: index.updateApiKey(key, arrayOfAcls[, params, callback])';
 
@@ -1035,4 +1331,4 @@ Index.prototype.updateApiKey = function(key, acls, params, callback) {
     hostType: 'write',
     callback: callback
   });
-};
+}, deprecatedMessage('index.updateApiKey()', 'client.updateApiKey()'));

@@ -34,7 +34,10 @@ function algoliasearch(applicationID, apiKey, opts) {
 }
 
 algoliasearch.version = require('../../version.js');
-algoliasearch.ua = 'Algolia for ReactNative ' + algoliasearch.version;
+
+algoliasearch.ua =
+  'Algolia for JavaScript (' + algoliasearch.version + '); React Native';
+
 algoliasearch.initPlaces = places(algoliasearch);
 
 // we expose into window no matter how we are used, this will allow
@@ -168,5 +171,8 @@ AlgoliaSearchReactNative.prototype._promise = {
     return new Promise(function resolveOnTimeout(resolve/* , reject*/) {
       setTimeout(resolve, ms);
     });
+  },
+  all: function all(promises) {
+    return Promise.all(promises);
   }
 };

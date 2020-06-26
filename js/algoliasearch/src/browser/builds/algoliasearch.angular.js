@@ -26,13 +26,7 @@ window.angular.module('algoliasearch', [])
     function algoliasearch(applicationID, apiKey, opts) {
       var cloneDeep = require('../../clone.js');
 
-      var getDocumentProtocol = require('../get-document-protocol');
-
       opts = cloneDeep(opts || {});
-
-      if (opts.protocol === undefined) {
-        opts.protocol = getDocumentProtocol();
-      }
 
       opts._ua = opts._ua || algoliasearch.ua;
 
@@ -40,7 +34,11 @@ window.angular.module('algoliasearch', [])
     }
 
     algoliasearch.version = require('../../version.js');
-    algoliasearch.ua = 'Algolia for AngularJS ' + algoliasearch.version;
+
+    algoliasearch.ua =
+      'Algolia for JavaScript (' + algoliasearch.version + '); ' +
+      'AngularJS (' + window.angular.version.full + ')';
+
     algoliasearch.initPlaces = places(algoliasearch);
 
     // we expose into window no matter how we are used, this will allow
@@ -191,6 +189,9 @@ window.angular.module('algoliasearch', [])
         $timeout(resolve, ms);
 
         return deferred.promise;
+      },
+      all: function(promises) {
+        return $q.all(promises);
       }
     };
 
