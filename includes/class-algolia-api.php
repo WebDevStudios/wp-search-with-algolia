@@ -156,6 +156,11 @@ class Algolia_API {
 				unset( $scopes['listIndexes'] );
 			}
 
+			// Short circuit ACL checks for local development.
+			if ( defined( 'WP_LOCAL_DEV' ) && WP_LOCAL_DEV ) {
+				return true;
+			}
+
 			if ( ! empty( $scopes ) ) {
 				// The API key has more permissions than allowed.
 				return false;
