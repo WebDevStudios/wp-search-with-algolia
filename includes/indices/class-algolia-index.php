@@ -1,12 +1,12 @@
 <?php
 
-use AlgoliaSearch\Client;
-use AlgoliaSearch\Index;
+use Algolia\AlgoliaSearch\SearchClient;
+use Algolia\AlgoliaSearch\SearchIndex;
 
 abstract class Algolia_Index {
 
 	/**
-	 * @var Client
+	 * @var SearchClient
 	 */
 	private $client;
 
@@ -62,18 +62,18 @@ abstract class Algolia_Index {
 	}
 
 	/**
-	 * @param Client $client
+	 * @param SearchClient $client
 	 */
-	final public function set_client( Client $client ) {
+	final public function set_client( SearchClient $client ) {
 		$this->client = $client;
 	}
 
 	/**
-	 * @return Client
+	 * @return SearchClient
 	 */
 	final protected function get_client() {
 		if ( null === $this->client ) {
-			throw new LogicException( 'Client has not been set.' );
+			throw new LogicException( 'SearchClient has not been set.' );
 		}
 
 		return $this->client;
@@ -193,11 +193,11 @@ abstract class Algolia_Index {
 
 		$index   = $this->get_index();
 		$records = $this->sanitize_json_data( $records );
-		$index->addObjects( $records );
+		$index->saveObjects( $records );
 	}
 
 	/**
-	 * @return Index
+	 * @return SearchIndex
 	 */
 	public function get_index() {
 		return $this->client->initIndex( (string) $this->get_name() );
@@ -257,7 +257,7 @@ abstract class Algolia_Index {
 
 			$records = $this->sanitize_json_data( $records );
 
-			$index->addObjects( $records );
+			$index->saveObjects( $records );
 		}
 
 		if ( $page === $max_num_pages ) {
@@ -271,7 +271,7 @@ abstract class Algolia_Index {
 		try {
 			$index->getSettings();
 			$index_exists = true;
-		} catch ( \AlgoliaSearch\AlgoliaException $exception ) {
+		} catch ( \Algolia\AlgoliaSearch\Exceptions\AlgoliaException $exception ) {
 			$index_exists = false;
 		}
 
@@ -292,7 +292,7 @@ abstract class Algolia_Index {
 			);
 
 			if ( true === $clear_if_existing ) {
-				$index->clearIndex();
+				$index->clearObjects();
 			}
 
 			$force_settings_update = (bool) apply_filters( 'algolia_should_force_settings_update', false, $this->get_id() );
@@ -322,7 +322,7 @@ abstract class Algolia_Index {
 		// Push synonyms.
 		$synonyms = $this->get_synonyms();
 		if ( ! empty( $synonyms ) ) {
-			$index->batchSynonyms( $synonyms );
+			$index->saveSynonyms( $synonyms );
 		}
 
 		$this->sync_replicas();
@@ -503,12 +503,12 @@ abstract class Algolia_Index {
 	 * false otherwise.
 	 *
 	 * @return bool
-	 * @throws \AlgoliaSearch\AlgoliaException
+	 * @throws \Algolia\AlgoliaSearch\Exceptions\AlgoliaException
 	 */
 	public function exists() {
 		try {
 			$this->get_index()->getSettings();
-		} catch ( \AlgoliaSearch\AlgoliaException $exception ) {
+		} catch ( \Algolia\AlgoliaSearch\Exceptions\AlgoliaException $exception ) {
 			if ( $exception->getMessage() === 'Index does not exist' ) {
 				return false;
 			}
@@ -522,7 +522,7 @@ abstract class Algolia_Index {
 	}
 
 	public function clear() {
-		$this->get_index()->clearIndex();
+		$this->get_index()->clearObjects();
 	}
 
 }
