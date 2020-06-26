@@ -19,9 +19,9 @@
   "frontendDependencies": {
     "target": "js/",
     "packages": {
-      "algoliasearch": "^3.22.1",
-      "autocomplete.js": "^0.28.1",
-      "instantsearch.js": "^1.11.7"
+      "algoliasearch": "~3.22.1",
+      "autocomplete.js": "~0.28.1",
+      "instantsearch.js": "~1.11.7"
     }
   },
   "scripts": {

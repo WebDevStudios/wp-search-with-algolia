@@ -1,5 +1,5 @@
 {
-  "_from": "autocomplete.js@^0.28.1",
+  "_from": "autocomplete.js@~0.28.1",
   "_id": "autocomplete.js@0.28.3",
   "_inBundle": false,
   "_integrity": "sha512-hW3Qz0gMOkkx59PdCLHtXz52FRKdk0gypsraRZW0Fp5407MykimPs6+Afovl630mnstbmTrjVqz+l2WckfE75w==",
@@ -8,19 +8,19 @@
   "_requested": {
     "type": "range",
     "registry": true,
-    "raw": "autocomplete.js@^0.28.1",
+    "raw": "autocomplete.js@~0.28.1",
     "name": "autocomplete.js",
     "escapedName": "autocomplete.js",
-    "rawSpec": "^0.28.1",
+    "rawSpec": "~0.28.1",
     "saveSpec": null,
-    "fetchSpec": "^0.28.1"
+    "fetchSpec": "~0.28.1"
   },
   "_requiredBy": [
     "#USER"
   ],
   "_resolved": "https://registry.npmjs.org/autocomplete.js/-/autocomplete.js-0.28.3.tgz",
   "_shasum": "b90dc01688613ab16488bbb6f5314fd2a365ec4b",
-  "_spec": "autocomplete.js@^0.28.1",
+  "_spec": "autocomplete.js@~0.28.1",
   "_where": "/Users/raber/Local Sites/algolia/app/public/wp-content/plugins/wp-search-with-algolia-v1",
   "bugs": {
     "url": "https://github.com/algolia/autocomplete.js/issues"

@@ -22,8 +22,9 @@ var RESET_APP_DATA_TIMER =
  * @param {Object} [opts]
  * @param {number} [opts.timeout=2000] - The request timeout set in milliseconds,
  * another request will be issued after this timeout
- * @param {string} [opts.protocol='https:'] - The protocol used to query Algolia Search API.
- *                                        Set to 'http:' to force using http.
+ * @param {string} [opts.protocol='http:'] - The protocol used to query Algolia Search API.
+ *                                        Set to 'https:' to force using https.
+ *                                        Default to document.location.protocol in browsers
  * @param {Object|Array} [opts.hosts={
  *           read: [this.applicationID + '-dsn.algolia.net'].concat([
  *             this.applicationID + '-1.algolianet.com',
@@ -64,6 +65,7 @@ function AlgoliaSearchCore(applicationID, apiKey, opts) {
 
   opts = opts || {};
 
+  var protocol = opts.protocol || 'https:';
   this._timeouts = opts.timeouts || {
     connect: 1 * 1000, // 500ms connect is GPRS latency
     read: 2 * 1000,
@@ -75,14 +77,13 @@ function AlgoliaSearchCore(applicationID, apiKey, opts) {
     this._timeouts.connect = this._timeouts.read = this._timeouts.write = opts.timeout;
   }
 
-  var protocol = opts.protocol || 'https:';
   // while we advocate for colon-at-the-end values: 'http:' for `opts.protocol`
   // we also accept `http` and `https`. It's a common error.
   if (!/:$/.test(protocol)) {
     protocol = protocol + ':';
   }
 
-  if (protocol !== 'http:' && protocol !== 'https:') {
+  if (opts.protocol !== 'http:' && opts.protocol !== 'https:') {
     throw new errors.AlgoliaSearchError('protocol must be `http:` or `https:` (was `' + opts.protocol + '`)');
   }
 
@@ -94,8 +95,7 @@ function AlgoliaSearchCore(applicationID, apiKey, opts) {
     });
 
     // no hosts given, compute defaults
-    var mainSuffix = (opts.dsn === false ? '' : '-dsn') + '.algolia.net';
-    this.hosts.read = [this.applicationID + mainSuffix].concat(defaultHosts);
+    this.hosts.read = [this.applicationID + '-dsn.algolia.net'].concat(defaultHosts);
     this.hosts.write = [this.applicationID + '.algolia.net'].concat(defaultHosts);
   } else if (isArray(opts.hosts)) {
     // when passing custom hosts, we need to have a different host index if the number
@@ -111,14 +111,13 @@ function AlgoliaSearchCore(applicationID, apiKey, opts) {
   this.hosts.read = map(this.hosts.read, prepareHost(protocol));
   this.hosts.write = map(this.hosts.write, prepareHost(protocol));
 
-  this.extraHeaders = {};
+  this.extraHeaders = [];
 
   // In some situations you might want to warm the cache
   this.cache = opts._cache || {};
 
   this._ua = opts._ua;
   this._useCache = opts._useCache === undefined || opts._cache ? true : opts._useCache;
-  this._useRequestCache = this._useCache && opts._useRequestCache;
   this._useFallback = opts.useFallback === undefined ? true : opts.useFallback;
 
   this._setTimeout = opts._setTimeout;
@@ -143,25 +142,9 @@ AlgoliaSearchCore.prototype.initIndex = function(indexName) {
 * @param value the header field value
 */
 AlgoliaSearchCore.prototype.setExtraHeader = function(name, value) {
-  this.extraHeaders[name.toLowerCase()] = value;
-};
-
-/**
-* Get the value of an extra HTTP header
-*
-* @param name the header field name
-*/
-AlgoliaSearchCore.prototype.getExtraHeader = function(name) {
-  return this.extraHeaders[name.toLowerCase()];
-};
-
-/**
-* Remove an extra field from the HTTP request
-*
-* @param name the header field name
-*/
-AlgoliaSearchCore.prototype.unsetExtraHeader = function(name) {
-  delete this.extraHeaders[name.toLowerCase()];
+  this.extraHeaders.push({
+    name: name.toLowerCase(), value: value
+  });
 };
 
 /**
@@ -171,10 +154,8 @@ AlgoliaSearchCore.prototype.unsetExtraHeader = function(name) {
 * @param algoliaAgent the agent to add
 */
 AlgoliaSearchCore.prototype.addAlgoliaAgent = function(algoliaAgent) {
-  var algoliaAgentWithDelimiter = '; ' + algoliaAgent;
-
-  if (this._ua.indexOf(algoliaAgentWithDelimiter) === -1) {
-    this._ua += algoliaAgentWithDelimiter;
+  if (this._ua.indexOf(';' + algoliaAgent) === -1) {
+    this._ua += ';' + algoliaAgent;
   }
 };
 
@@ -186,9 +167,7 @@ AlgoliaSearchCore.prototype._jsonRequest = function(initialOpts) {
 
   var requestDebug = require('debug')('algoliasearch:' + initialOpts.url);
 
-
   var body;
-  var cacheID;
   var additionalUA = initialOpts.additionalUA || '';
   var cache = initialOpts.cache;
   var client = this;
@@ -204,16 +183,9 @@ AlgoliaSearchCore.prototype._jsonRequest = function(initialOpts) {
     initialOpts.body.requests !== undefined) // client.search()
   ) {
     initialOpts.body.apiKey = this.apiKey;
-    headers = this._computeRequestHeaders({
-      additionalUA: additionalUA,
-      withApiKey: false,
-      headers: initialOpts.headers
-    });
+    headers = this._computeRequestHeaders(additionalUA, false);
   } else {
-    headers = this._computeRequestHeaders({
-      additionalUA: additionalUA,
-      headers: initialOpts.headers
-    });
+    headers = this._computeRequestHeaders(additionalUA);
   }
 
   if (initialOpts.body !== undefined) {
@@ -223,33 +195,26 @@ AlgoliaSearchCore.prototype._jsonRequest = function(initialOpts) {
   requestDebug('request start');
   var debugData = [];
 
-
   function doRequest(requester, reqOpts) {
     client._checkAppIdData();
 
     var startTime = new Date();
+    var cacheID;
 
-    if (client._useCache && !client._useRequestCache) {
+    if (client._useCache) {
       cacheID = initialOpts.url;
     }
 
     // as we sometime use POST requests to pass parameters (like query='aa'),
     // the cacheID must also include the body to be different between calls
-    if (client._useCache && !client._useRequestCache && body) {
+    if (client._useCache && body) {
       cacheID += '_body_' + reqOpts.body;
     }
 
     // handle cache existence
-    if (isCacheValidWithCurrentID(!client._useRequestCache, cache, cacheID)) {
+    if (client._useCache && cache && cache[cacheID] !== undefined) {
       requestDebug('serving response from cache');
-
-      var responseText = cache[cacheID];
-
-      // Cache response must match the type of the original one
-      return client._promise.resolve({
-        body: JSON.parse(responseText),
-        responseText: responseText
-      });
+      return client._promise.resolve(JSON.parse(cache[cacheID]));
     }
 
     // if we reached max tries
@@ -277,10 +242,7 @@ AlgoliaSearchCore.prototype._jsonRequest = function(initialOpts) {
         reqOpts.body = safeJSONStringify(reqOpts.jsonBody);
       }
       // re-compute headers, they could be omitting the API KEY
-      headers = client._computeRequestHeaders({
-        additionalUA: additionalUA,
-        headers: initialOpts.headers
-      });
+      headers = client._computeRequestHeaders(additionalUA);
 
       reqOpts.timeouts = client._getTimeoutsForRequest(initialOpts.hostType);
       client._setHostIndexByType(0, initialOpts.hostType);
@@ -297,8 +259,7 @@ AlgoliaSearchCore.prototype._jsonRequest = function(initialOpts) {
       method: reqOpts.method,
       headers: headers,
       timeouts: reqOpts.timeouts,
-      debug: requestDebug,
-      forceAuthHeaders: reqOpts.forceAuthHeaders
+      debug: requestDebug
     };
 
     requestDebug('method: %s, url: %s, headers: %j, timeouts: %d',
@@ -354,14 +315,11 @@ AlgoliaSearchCore.prototype._jsonRequest = function(initialOpts) {
       });
 
       if (httpResponseOk) {
-        if (client._useCache && !client._useRequestCache && cache) {
+        if (client._useCache && cache) {
           cache[cacheID] = httpResponse.responseText;
         }
 
-        return {
-          responseText: httpResponse.responseText,
-          body: httpResponse.body
-        };
+        return httpResponse.body;
       }
 
       var shouldRetry = Math.floor(status / 100) !== 4;
@@ -431,7 +389,7 @@ AlgoliaSearchCore.prototype._jsonRequest = function(initialOpts) {
         return client._promise.reject(err);
       }
 
-      // When a timeout occurred, retry by raising timeout
+      // When a timeout occured, retry by raising timeout
       if (err instanceof errors.RequestTimeout) {
         return retryRequestWithHigherTimeout();
       }
@@ -454,90 +412,31 @@ AlgoliaSearchCore.prototype._jsonRequest = function(initialOpts) {
     }
   }
 
-  function isCacheValidWithCurrentID(
-    useRequestCache,
-    currentCache,
-    currentCacheID
-  ) {
-    return (
-      client._useCache &&
-      useRequestCache &&
-      currentCache &&
-      currentCache[currentCacheID] !== undefined
-    );
-  }
-
-
-  function interopCallbackReturn(request, callback) {
-    if (isCacheValidWithCurrentID(client._useRequestCache, cache, cacheID)) {
-      request.catch(function() {
-        // Release the cache on error
-        delete cache[cacheID];
-      });
-    }
-
-    if (typeof initialOpts.callback === 'function') {
-      // either we have a callback
-      request.then(function okCb(content) {
-        exitPromise(function() {
-          initialOpts.callback(null, callback(content));
-        }, client._setTimeout || setTimeout);
-      }, function nookCb(err) {
-        exitPromise(function() {
-          initialOpts.callback(err);
-        }, client._setTimeout || setTimeout);
-      });
-    } else {
-      // either we are using promises
-      return request.then(callback);
-    }
-  }
-
-  if (client._useCache && client._useRequestCache) {
-    cacheID = initialOpts.url;
-  }
-
-  // as we sometime use POST requests to pass parameters (like query='aa'),
-  // the cacheID must also include the body to be different between calls
-  if (client._useCache && client._useRequestCache && body) {
-    cacheID += '_body_' + body;
-  }
-
-  if (isCacheValidWithCurrentID(client._useRequestCache, cache, cacheID)) {
-    requestDebug('serving request from cache');
-
-    var maybePromiseForCache = cache[cacheID];
-
-    // In case the cache is warmup with value that is not a promise
-    var promiseForCache = typeof maybePromiseForCache.then !== 'function'
-      ? client._promise.resolve({responseText: maybePromiseForCache})
-      : maybePromiseForCache;
-
-    return interopCallbackReturn(promiseForCache, function(content) {
-      // In case of the cache request, return the original value
-      return JSON.parse(content.responseText);
-    });
-  }
-
-  var request = doRequest(
+  var promise = doRequest(
     client._request, {
       url: initialOpts.url,
       method: initialOpts.method,
       body: body,
       jsonBody: initialOpts.body,
-      timeouts: client._getTimeoutsForRequest(initialOpts.hostType),
-      forceAuthHeaders: initialOpts.forceAuthHeaders
+      timeouts: client._getTimeoutsForRequest(initialOpts.hostType)
     }
   );
 
-  if (client._useCache && client._useRequestCache && cache) {
-    cache[cacheID] = request;
+  // either we have a callback
+  // either we are using promises
+  if (initialOpts.callback) {
+    promise.then(function okCb(content) {
+      exitPromise(function() {
+        initialOpts.callback(null, content);
+      }, client._setTimeout || setTimeout);
+    }, function nookCb(err) {
+      exitPromise(function() {
+        initialOpts.callback(err);
+      }, client._setTimeout || setTimeout);
+    });
+  } else {
+    return promise;
   }
-
-  return interopCallbackReturn(request, function(content) {
-    // In case of the first request, return the JSON value
-    return content.body;
-  });
 };
 
 /*
@@ -559,18 +458,11 @@ AlgoliaSearchCore.prototype._getSearchParams = function(args, params) {
   return params;
 };
 
-/**
- * Compute the headers for a request
- *
- * @param [string] options.additionalUA semi-colon separated string with other user agents to add
- * @param [boolean=true] options.withApiKey Send the api key as a header
- * @param [Object] options.headers Extra headers to send
- */
-AlgoliaSearchCore.prototype._computeRequestHeaders = function(options) {
+AlgoliaSearchCore.prototype._computeRequestHeaders = function(additionalUA, withAPIKey) {
   var forEach = require('foreach');
 
-  var ua = options.additionalUA ?
-    this._ua + '; ' + options.additionalUA :
+  var ua = additionalUA ?
+    this._ua + ';' + additionalUA :
     this._ua;
 
   var requestHeaders = {
@@ -582,7 +474,7 @@ AlgoliaSearchCore.prototype._computeRequestHeaders = function(options) {
   // but in some situations, the API KEY will be too long (big secured API keys)
   // so if the request is a POST and the KEY is very long, we will be asked to not put
   // it into headers but in the JSON body
-  if (options.withApiKey !== false) {
+  if (withAPIKey !== false) {
     requestHeaders['x-algolia-api-key'] = this.apiKey;
   }
 
@@ -594,13 +486,9 @@ AlgoliaSearchCore.prototype._computeRequestHeaders = function(options) {
     requestHeaders['x-algolia-tagfilters'] = this.securityTags;
   }
 
-  forEach(this.extraHeaders, function addToRequestHeaders(value, key) {
-    requestHeaders[key] = value;
-  });
-
-  if (options.headers) {
-    forEach(options.headers, function addToRequestHeaders(value, key) {
-      requestHeaders[key] = value;
+  if (this.extraHeaders) {
+    forEach(this.extraHeaders, function addToRequestHeaders(header) {
+      requestHeaders[header.name] = header.value;
     });
   }
 
@@ -664,7 +552,7 @@ AlgoliaSearchCore.prototype.search = function(queries, opts, callback) {
   var url = '/1/indexes/*/queries';
 
   if (opts.strategy !== undefined) {
-    postObj.strategy = opts.strategy;
+    url += '?strategy=' + opts.strategy;
   }
 
   return this._jsonRequest({
@@ -682,70 +570,6 @@ AlgoliaSearchCore.prototype.search = function(queries, opts, callback) {
     },
     callback: callback
   });
-};
-
-/**
-* Search for facet values
-* https://www.algolia.com/doc/rest-api/search#search-for-facet-values
-* This is the top-level API for SFFV.
-*
-* @param {object[]} queries An array of queries to run.
-* @param {string} queries[].indexName Index name, name of the index to search.
-* @param {object} queries[].params Query parameters.
-* @param {string} queries[].params.facetName Facet name, name of the attribute to search for values in.
-* Must be declared as a facet
-* @param {string} queries[].params.facetQuery Query for the facet search
-* @param {string} [queries[].params.*] Any search parameter of Algolia,
-* see https://www.algolia.com/doc/api-client/javascript/search#search-parameters
-* Pagination is not supported. The page and hitsPerPage parameters will be ignored.
-*/
-AlgoliaSearchCore.prototype.searchForFacetValues = function(queries) {
-  var isArray = require('isarray');
-  var map = require('./map.js');
-
-  var usage = 'Usage: client.searchForFacetValues([{indexName, params: {facetName, facetQuery, ...params}}, ...queries])'; // eslint-disable-line max-len
-
-  if (!isArray(queries)) {
-    throw new Error(usage);
-  }
-
-  var client = this;
-
-  return client._promise.all(map(queries, function performQuery(query) {
-    if (
-      !query ||
-      query.indexName === undefined ||
-      query.params.facetName === undefined ||
-      query.params.facetQuery === undefined
-    ) {
-      throw new Error(usage);
-    }
-
-    var clone = require('./clone.js');
-    var omit = require('./omit.js');
-
-    var indexName = query.indexName;
-    var params = query.params;
-
-    var facetName = params.facetName;
-    var filteredParams = omit(clone(params), function(keyName) {
-      return keyName === 'facetName';
-    });
-    var searchParameters = client._getSearchParams(filteredParams, '');
-
-    return client._jsonRequest({
-      cache: client.cache,
-      method: 'POST',
-      url:
-        '/1/indexes/' +
-        encodeURIComponent(indexName) +
-        '/facets/' +
-        encodeURIComponent(facetName) +
-        '/query',
-      hostType: 'read',
-      body: {params: searchParameters}
-    });
-  }));
 };
 
 /**

@@ -69,11 +69,7 @@ function algoliasearch(applicationID, apiKey, opts) {
 }
 
 algoliasearch.version = require('../../version.js');
-
-algoliasearch.ua =
-  'Algolia for JavaScript (' + algoliasearch.version + '); ' +
-  'Node.js (' + process.versions.node + ')';
-
+algoliasearch.ua = 'Algolia for Node.js ' + algoliasearch.version;
 algoliasearch.initPlaces = places(algoliasearch);
 
 function AlgoliaSearchNodeJS(applicationID, apiKey, opts) {
@@ -179,7 +175,6 @@ AlgoliaSearchNodeJS.prototype._request = function request(rawUrl, opts) {
 
       res
         .on('data', onData)
-        .once('error', reject)
         .once('end', onEnd);
 
       function onData(chunk) {
@@ -195,7 +190,6 @@ AlgoliaSearchNodeJS.prototype._request = function request(rawUrl, opts) {
         try {
           out = {
             body: JSON.parse(data),
-            responseText: data,
             statusCode: statusCode,
             headers: headers
           };
@@ -262,9 +256,6 @@ AlgoliaSearchNodeJS.prototype._promise = {
     return new Promise(function resolveOnTimeout(resolve/* , reject */) {
       setTimeout(resolve, ms);
     });
-  },
-  all: function all(promises) {
-    return Promise.all(promises);
   }
 };
 
@@ -319,20 +310,4 @@ AlgoliaSearchNodeJS.prototype.generateSecuredApiKey = function generateSecuredAp
     .digest('hex');
 
   return new Buffer(securedKey + searchParams).toString('base64');
-};
-
-AlgoliaSearchNodeJS.prototype.getSecuredApiKeyRemainingValidity = function getSecuredApiKeyRemainingValidity(securedAPIKey) {
-  var decodedString = new Buffer(securedAPIKey, 'base64').toString('ascii');
-
-  var regex = /validUntil=(\d+)/;
-
-  var match = decodedString.match(regex);
-
-  if (match === null) {
-    throw new errors.ValidUntilNotFound('ValidUntil not found in api key.');
-  }
-
-  var validUntilMatch = decodedString.match(regex)[1];
-
-  return validUntilMatch - Math.round(new Date().getTime() / 1000);
 };
