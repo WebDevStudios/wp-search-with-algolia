@@ -1,4 +1,12 @@
 <?php
+/**
+ * Algolia_CLI class file.
+ *
+ * @author  WebDevStudios <contact@webdevstudios.com>
+ * @since   1.0.0
+ *
+ * @package WebDevStudios\WPSWA
+ */
 
 /**
  * Push and re-index records into Algolia indices.

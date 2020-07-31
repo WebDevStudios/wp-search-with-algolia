@@ -1,4 +1,12 @@
 <?php
+/**
+ * Algolia_Terms_Index class file.
+ *
+ * @author  WebDevStudios <contact@webdevstudios.com>
+ * @since   1.0.0
+ *
+ * @package WebDevStudios\WPSWA
+ */
 
 final class Algolia_Terms_Index extends Algolia_Index {
 

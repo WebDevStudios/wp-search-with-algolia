@@ -1,4 +1,12 @@
 <?php
+/**
+ * WP Search With Algolia "Classmap" file.
+ *
+ * @author  WebDevStudios <contact@webdevstudios.com>
+ * @since   1.0.0
+ *
+ * @package WebDevStudios\WPSWA
+ */
 
 if ( ! defined( 'ALGOLIA_PATH' ) ) {
 	exit();

@@ -1,4 +1,16 @@
-<?php get_header(); ?>
+<?php
+/**
+ * WP Search With Algolia instantsearch template file.
+ *
+ * @author  WebDevStudios <contact@webdevstudios.com>
+ * @since   1.0.0
+ *
+ * @package WebDevStudios\WPSWA
+ */
+
+get_header();
+
+?>
 
 	<div id="ais-wrapper">
 		<main id="ais-main">
@@ -184,4 +196,6 @@
 		});
 	</script>
 
-<?php get_footer(); ?>
+<?php
+
+get_footer();

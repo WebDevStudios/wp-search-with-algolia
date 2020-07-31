@@ -1,3 +1,15 @@
+<?php
+/**
+ * WP Search With Algolia autocomplete template file.
+ *
+ * @author  WebDevStudios <contact@webdevstudios.com>
+ * @since   1.0.0
+ *
+ * @package WebDevStudios\WPSWA
+ */
+
+?>
+
 <script type="text/html" id="tmpl-autocomplete-header">
   <div class="autocomplete-header">
 	<div class="autocomplete-header-title">{{{ data.label }}}</div>

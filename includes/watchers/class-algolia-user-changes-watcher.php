@@ -1,4 +1,12 @@
 <?php
+/**
+ * Algolia_User_Changes_Watcher class file.
+ *
+ * @author  WebDevStudios <contact@webdevstudios.com>
+ * @since   1.0.0
+ *
+ * @package WebDevStudios\WPSWA
+ */
 
 use Algolia\AlgoliaSearch\Exceptions\AlgoliaException;
 

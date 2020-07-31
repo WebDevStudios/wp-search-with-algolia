@@ -1,4 +1,12 @@
 <?php
+/**
+ * Algolia_Searchable_Posts_Index class file.
+ *
+ * @author  WebDevStudios <contact@webdevstudios.com>
+ * @since   1.0.0
+ *
+ * @package WebDevStudios\WPSWA
+ */
 
 final class Algolia_Searchable_Posts_Index extends Algolia_Index {
 

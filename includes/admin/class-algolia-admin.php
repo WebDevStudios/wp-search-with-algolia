@@ -1,4 +1,12 @@
 <?php
+/**
+ * Algolia_Admin class file.
+ *
+ * @author  WebDevStudios <contact@webdevstudios.com>
+ * @since   1.0.0
+ *
+ * @package WebDevStudios\WPSWA
+ */
 
 class Algolia_Admin {
 

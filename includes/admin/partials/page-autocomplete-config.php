@@ -1,3 +1,15 @@
+<?php
+/**
+ * Autocomplete config admin template partial.
+ *
+ * @author  WebDevStudios <contact@webdevstudios.com>
+ * @since   1.0.0
+ *
+ * @package WebDevStudios\WPSWA
+ */
+
+?>
+
 <table class="widefat table-autocomplete">
 	<thead>
 		<tr>

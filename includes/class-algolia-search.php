@@ -1,4 +1,12 @@
 <?php
+/**
+ * Algolia_Search class file.
+ *
+ * @author  WebDevStudios <contact@webdevstudios.com>
+ * @since   1.0.0
+ *
+ * @package WebDevStudios\WPSWA
+ */
 
 class Algolia_Search {
 
