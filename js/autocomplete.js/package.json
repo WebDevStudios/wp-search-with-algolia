@@ -1,26 +1,26 @@
 {
-  "_from": "autocomplete.js@^0.28.1",
-  "_id": "autocomplete.js@0.28.3",
+  "_from": "autocomplete.js@^0.37.1",
+  "_id": "autocomplete.js@0.37.1",
   "_inBundle": false,
-  "_integrity": "sha512-hW3Qz0gMOkkx59PdCLHtXz52FRKdk0gypsraRZW0Fp5407MykimPs6+Afovl630mnstbmTrjVqz+l2WckfE75w==",
+  "_integrity": "sha512-PgSe9fHYhZEsm/9jggbjtVsGXJkPLvd+9mC7gZJ662vVL5CRWEtm/mIrrzCx0MrNxHVwxD5d00UOn6NsmL2LUQ==",
   "_location": "/autocomplete.js",
   "_phantomChildren": {},
   "_requested": {
     "type": "range",
     "registry": true,
-    "raw": "autocomplete.js@^0.28.1",
+    "raw": "autocomplete.js@^0.37.1",
     "name": "autocomplete.js",
     "escapedName": "autocomplete.js",
-    "rawSpec": "^0.28.1",
+    "rawSpec": "^0.37.1",
     "saveSpec": null,
-    "fetchSpec": "^0.28.1"
+    "fetchSpec": "^0.37.1"
   },
   "_requiredBy": [
     "#USER"
   ],
-  "_resolved": "https://registry.npmjs.org/autocomplete.js/-/autocomplete.js-0.28.3.tgz",
-  "_shasum": "b90dc01688613ab16488bbb6f5314fd2a365ec4b",
-  "_spec": "autocomplete.js@^0.28.1",
+  "_resolved": "https://registry.npmjs.org/autocomplete.js/-/autocomplete.js-0.37.1.tgz",
+  "_shasum": "a29a048d827e7d2bf8f7df8b831766e5cc97df01",
+  "_spec": "autocomplete.js@^0.37.1",
   "_where": "/Users/raber/Local Sites/algolia/app/public/wp-content/plugins/wp-search-with-algolia-v1",
   "bugs": {
     "url": "https://github.com/algolia/autocomplete.js/issues"
@@ -42,6 +42,7 @@
     "eslint": "1.5.1",
     "eslint-config-airbnb": "0.1.0",
     "eslint-config-algolia": "3.0.0",
+    "execa": "^1.0.0",
     "grunt": "^1.0.1",
     "grunt-banner": "^0.6.0",
     "grunt-cli": "1.2.0",
@@ -75,9 +76,11 @@
     "karma-sourcemap-loader": "^0.3.7",
     "karma-webpack": "^2.0.3",
     "mocha": "^3.4.1",
-    "mversion": "^1.10.1",
+    "mversion": "^1.12.0",
+    "netlify": "^2.0.1",
     "node-static": "^0.7.8",
     "phantomjs-prebuilt": "^2.1.12",
+    "replace-in-file": "^3.4.2",
     "semver": "^5.3.0",
     "sinon": "^1.17.6",
     "webpack": "^1.13.2",
@@ -99,12 +102,13 @@
   "scripts": {
     "build": "grunt",
     "dev": "grunt dev",
+    "docs:netlify": "./scripts/netlify-deploy.js",
     "lint": "grunt lint",
-    "release": "./release.sh",
+    "release": "./scripts/release.sh",
     "server": "grunt server",
     "test": "karma start --single-run && grunt lint",
     "test:ci": "./test/ci.sh",
     "test:watch": "karma start"
   },
-  "version": "0.28.3"
+  "version": "0.37.1"
 }

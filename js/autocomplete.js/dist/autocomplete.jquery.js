@@ -1,7 +1,7 @@
 /*!
- * autocomplete.js 0.28.3
+ * autocomplete.js 0.37.1
  * https://github.com/algolia/autocomplete.js
- * Copyright 2017 Algolia, Inc. and other contributors; Licensed MIT
+ * Copyright 2020 Algolia, Inc. and other contributors; Licensed MIT
  */
 /******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
@@ -117,9 +117,11 @@
 	        minLength: o.minLength,
 	        autoselect: o.autoselect,
 	        autoselectOnBlur: o.autoselectOnBlur,
+	        tabAutocomplete: o.tabAutocomplete,
 	        openOnFocus: o.openOnFocus,
 	        templates: o.templates,
 	        debug: o.debug,
+	        clearOnSelected: o.clearOnSelected,
 	        cssClasses: o.cssClasses,
 	        datasets: datasets,
 	        keyboardShortcuts: o.keyboardShortcuts,
@@ -262,10 +264,14 @@
 	  map: null,
 	  mixin: null,
 
-	  isMsie: function() {
+	  isMsie: function(agentString) {
+	    if (agentString === undefined) { agentString = navigator.userAgent; }
 	    // from https://github.com/ded/bowser/blob/master/bowser.js
-	    return (/(msie|trident)/i).test(navigator.userAgent) ?
-	      navigator.userAgent.match(/(msie |rv:)(\d+(.\d+)?)/i)[2] : false;
+	    if ((/(msie|trident)/i).test(agentString)) {
+	      var match = agentString.match(/(msie |rv:)(\d+(.\d+)?)/i);
+	      if (match) { return match[2]; }
+	    }
+	    return false;
 	  },
 
 	  // http://stackoverflow.com/a/6969486
@@ -304,9 +310,8 @@
 	      return result;
 	    }
 	    this.each(obj, function(val, key) {
-	      result = test.call(null, val, key, obj);
-	      if (!result) {
-	        return false;
+	      if (result) {
+	        result = test.call(null, val, key, obj) && result;
 	      }
 	    });
 	    return !!result;
@@ -409,6 +414,8 @@
 	  this.openOnFocus = !!o.openOnFocus;
 	  this.minLength = _.isNumber(o.minLength) ? o.minLength : 1;
 	  this.autoWidth = (o.autoWidth === undefined) ? true : !!o.autoWidth;
+	  this.clearOnSelected = !!o.clearOnSelected;
+	  this.tabAutocomplete = (o.tabAutocomplete === undefined) ? true : !!o.tabAutocomplete;
 
 	  o.hint = !!o.hint;
 
@@ -532,9 +539,10 @@
 
 	  _onSuggestionClicked: function onSuggestionClicked(type, $el) {
 	    var datum;
+	    var context = {selectionMethod: 'click'};
 
 	    if (datum = this.dropdown.getDatumForSuggestion($el)) {
-	      this._select(datum);
+	      this._select(datum, context);
 	    }
 	  },
 
@@ -631,12 +639,13 @@
 
 	    cursorDatum = this.dropdown.getDatumForCursor();
 	    topSuggestionDatum = this.dropdown.getDatumForTopSuggestion();
+	    var context = {selectionMethod: 'blur'};
 
 	    if (!this.debug) {
 	      if (this.autoselectOnBlur && cursorDatum) {
-	        this._select(cursorDatum);
+	        this._select(cursorDatum, context);
 	      } else if (this.autoselectOnBlur && topSuggestionDatum) {
-	        this._select(topSuggestionDatum);
+	        this._select(topSuggestionDatum, context);
 	      } else {
 	        this.isActivated = false;
 	        this.dropdown.empty();
@@ -651,21 +660,29 @@
 
 	    cursorDatum = this.dropdown.getDatumForCursor();
 	    topSuggestionDatum = this.dropdown.getDatumForTopSuggestion();
+	    var context = {selectionMethod: 'enterKey'};
 
 	    if (cursorDatum) {
-	      this._select(cursorDatum);
+	      this._select(cursorDatum, context);
 	      $e.preventDefault();
 	    } else if (this.autoselect && topSuggestionDatum) {
-	      this._select(topSuggestionDatum);
+	      this._select(topSuggestionDatum, context);
 	      $e.preventDefault();
 	    }
 	  },
 
 	  _onTabKeyed: function onTabKeyed(type, $e) {
+	    if (!this.tabAutocomplete) {
+	      // Closing the dropdown enables further tabbing
+	      this.dropdown.close();
+	      return;
+	    }
+
 	    var datum;
+	    var context = {selectionMethod: 'tabKey'};
 
 	    if (datum = this.dropdown.getDatumForCursor()) {
-	      this._select(datum);
+	      this._select(datum, context);
 	      $e.preventDefault();
 	    } else {
 	      this._autocomplete(true);
@@ -791,15 +808,19 @@
 	    }
 	  },
 
-	  _select: function select(datum) {
+	  _select: function select(datum, context) {
 	    if (typeof datum.value !== 'undefined') {
 	      this.input.setQuery(datum.value);
 	    }
-	    this.input.setInputValue(datum.value, true);
+	    if (this.clearOnSelected) {
+	      this.setVal('');
+	    } else {
+	      this.input.setInputValue(datum.value, true);
+	    }
 
 	    this._setLanguageDirection();
 
-	    var event = this.eventBus.trigger('selected', datum.raw, datum.datasetName);
+	    var event = this.eventBus.trigger('selected', datum.raw, datum.datasetName, context);
 	    if (event.isDefaultPrevented() === false) {
 	      this.dropdown.close();
 
@@ -940,9 +961,7 @@
 	        options.datasets[0] && options.datasets[0].displayKey ? 'both' : 'list'),
 	      // Indicates whether the dropdown it controls is currently expanded or collapsed
 	      'aria-expanded': 'false',
-	      // If a placeholder is set, label this field with itself, which in this case,
-	      // is an explicit pointer to use the placeholder attribute value.
-	      'aria-labelledby': ($input.attr('placeholder') ? $input.attr('id') : null),
+	      'aria-label': options.ariaLabel,
 	      // Explicitly point to the listbox,
 	      // which is a list of suggestions (aka options)
 	      'aria-owns': options.listboxId
@@ -1047,11 +1066,9 @@
 
 	  // ### public
 
-	  trigger: function(type) {
-	    var args = [].slice.call(arguments, 1);
-
+	  trigger: function(type, suggestion, dataset, context) {
 	    var event = _.Event(namespace + type);
-	    this.$el.trigger(event, args);
+	    this.$el.trigger(event, [suggestion, dataset, context]);
 	    return event;
 	  }
 	});
@@ -2195,8 +2212,8 @@
 	      parseInt($el.css('margin-bottom'), 10);
 	    menuScrollTop = this.$menu.scrollTop();
 	    menuHeight = this.$menu.height() +
-	      parseInt(this.$menu.css('paddingTop'), 10) +
-	      parseInt(this.$menu.css('paddingBottom'), 10);
+	      parseInt(this.$menu.css('padding-top'), 10) +
+	      parseInt(this.$menu.css('padding-bottom'), 10);
 
 	    if (elTop < 0) {
 	      this.$menu.scrollTop(menuScrollTop + elTop);
@@ -2358,6 +2375,10 @@
 	  this.source = o.source;
 	  this.displayFn = getDisplayFn(o.display || o.displayKey);
 
+	  this.debounce = o.debounce;
+
+	  this.cache = o.cache !== false;
+
 	  this.templates = getTemplates(o.templates, this.displayFn);
 
 	  this.css = _.mixin({}, css, o.appendTo ? css.appendTo : {});
@@ -2429,6 +2450,8 @@
 	        .html(getSuggestionsHtml.apply(this, renderArgs))
 	        .prepend(that.templates.header ? getHeaderHtml.apply(this, renderArgs) : null)
 	        .append(that.templates.footer ? getFooterHtml.apply(this, renderArgs) : null);
+	    } else if (suggestions && !Array.isArray(suggestions)) {
+	      throw new TypeError('suggestions must be an array');
 	    }
 
 	    if (this.$menu) {
@@ -2527,7 +2550,25 @@
 	    if (this.shouldFetchFromCache(query)) {
 	      handleSuggestions.apply(this, [this.cachedSuggestions].concat(this.cachedRenderExtraArgs));
 	    } else {
-	      this.source(query, handleSuggestions.bind(this));
+	      var that = this;
+	      var execSource = function() {
+	        // When the call is debounced the condition avoid to do a useless
+	        // request with the last character when the input has been cleared
+	        if (!that.canceled) {
+	          that.source(query, handleSuggestions.bind(that));
+	        }
+	      };
+
+	      if (this.debounce) {
+	        var later = function() {
+	          that.debounceTimeout = null;
+	          execSource();
+	        };
+	        clearTimeout(this.debounceTimeout);
+	        this.debounceTimeout = setTimeout(later, this.debounce);
+	      } else {
+	        execSource();
+	      }
 	    }
 	  },
 
@@ -2538,7 +2579,10 @@
 	  },
 
 	  shouldFetchFromCache: function shouldFetchFromCache(query) {
-	    return this.cachedQuery === query && this.cachedSuggestions && this.cachedSuggestions.length;
+	    return this.cache &&
+	      this.cachedQuery === query &&
+	      this.cachedSuggestions &&
+	      this.cachedSuggestions.length;
 	  },
 
 	  clearCachedSuggestions: function clearCachedSuggestions() {
@@ -2552,9 +2596,11 @@
 	  },
 
 	  clear: function clear() {
-	    this.cancel();
-	    this.$el.empty();
-	    this.trigger('rendered', '');
+	    if (this.$el) {
+	      this.cancel();
+	      this.$el.empty();
+	      this.trigger('rendered', '');
+	    }
 	  },
 
 	  isEmpty: function isEmpty() {
@@ -2765,7 +2811,7 @@
 /* 22 */
 /***/ function(module, exports) {
 
-	module.exports = "0.28.3";
+	module.exports = "0.37.1";
 
 
 /***/ },
@@ -2773,9 +2819,18 @@
 /***/ function(module, exports) {
 
 	'use strict';
+
 	module.exports = function parseAlgoliaClientVersion(agent) {
-	  var parsed = agent.match(/Algolia for vanilla JavaScript (\d+\.)(\d+\.)(\d+)/);
-	  if (parsed) return [parsed[1], parsed[2], parsed[3]];
+	  var parsed =
+	    // User agent for algoliasearch >= 3.33.0
+	    agent.match(/Algolia for JavaScript \((\d+\.)(\d+\.)(\d+)\)/) ||
+	    // User agent for algoliasearch < 3.33.0
+	    agent.match(/Algolia for vanilla JavaScript (\d+\.)(\d+\.)(\d+)/);
+
+	  if (parsed) {
+	    return [parsed[1], parsed[2], parsed[3]];
+	  }
+
 	  return undefined;
 	};
 

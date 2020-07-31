@@ -95,6 +95,22 @@ describe('Typeahead', function() {
       waitsForAndRuns(function() { return that.dropdown.close.calls.count(); }, done, 100);
     });
 
+    it('should pass the selection method as part of the context ', function(done) {
+      var spy;
+
+      this.$input.on('autocomplete:selected', spy = jasmine.createSpy());
+      this.dropdown.trigger('suggestionClicked');
+
+      expect(spy).toHaveBeenCalledWith(
+        jasmine.any(Object),
+        undefined,
+        undefined,
+        { selectionMethod: 'click' }
+      );
+
+      var that = this;
+      waitsForAndRuns(function() { return that.dropdown.close.calls.count(); }, done, 100);
+    });
   });
 
   describe('when dropdown triggers suggestionClicked with undefined displayKey', function() {
@@ -340,10 +356,26 @@ describe('Typeahead', function() {
       expect(this.input.setQuery).toHaveBeenCalledWith(fixtures.data.simple[1].value);
       expect(this.input.setInputValue).toHaveBeenCalledWith(fixtures.data.simple[1].value, true);
     });
+
+    it('should pass the selectionMethod as part of the context', function() {
+      this.view.autoselectOnBlur = true;
+      this.dropdown.getDatumForTopSuggestion.and.returnValue(testDatum);
+
+      var spy;
+
+      this.$input.on('autocomplete:selected', spy = jasmine.createSpy());
+      this.input.trigger('blurred');
+
+      expect(spy).toHaveBeenCalledWith(
+        jasmine.any(Object),
+        undefined,
+        undefined,
+        { selectionMethod: 'blur' }
+      );
+    });
   });
 
   describe('when debug flag is set', function() {
-
     beforeEach(function() {
       this.view = new Typeahead({
         input: this.$input,
@@ -366,6 +398,37 @@ describe('Typeahead', function() {
 
         expect(this.dropdown.close).not.toHaveBeenCalled();
       });
+    });
+  });
+
+  describe('when clearOnSelected flag is set to true', function() {
+    it('clears input when selected', function() {
+      var spy = jasmine.createSpy();
+      var view = new Typeahead({
+        input: this.$input,
+        clearOnSelected: true,
+        hint: true,
+        datasets: {}
+      });
+      view.dropdown.getDatumForCursor.and.returnValue(testDatum);
+
+      // select something, and clear
+      var $e = jasmine.createSpyObj('event', ['preventDefault']);
+      view.$input.on('autocomplete:selected', spy);
+      view.input.trigger('enterKeyed', $e);
+
+      expect(spy).toHaveBeenCalledTimes(1);
+      expect(spy).toHaveBeenCalledWith(jasmine.objectContaining({
+        type: 'autocomplete:selected',
+        target: jasmine.any(Object),
+        delegateTarget: jasmine.any(Object),
+        currentTarget: jasmine.any(Object),
+        handleObj: jasmine.objectContaining({
+          type: 'autocomplete:selected'
+        })
+      }), undefined, undefined, jasmine.any(Object));
+      expect(view.input.setQuery).toHaveBeenCalledWith('');
+      expect(view.input.setInputValue).toHaveBeenCalledWith('', true);
     });
   });
 
@@ -396,8 +459,27 @@ describe('Typeahead', function() {
 
       $e = jasmine.createSpyObj('event', ['preventDefault']);
       this.input.trigger('enterKeyed', $e);
-
       expect($e.preventDefault).toHaveBeenCalled();
+    });
+
+    it('should pass the selection method as part of the context ', function(done) {
+      var $e;
+      var spy;
+      var anything = jasmine.any(Object);
+
+      $e = jasmine.createSpyObj('event', ['preventDefault']);
+      this.$input.on('autocomplete:selected', spy = jasmine.createSpy());
+      this.input.trigger('enterKeyed', $e);
+
+      expect(spy).toHaveBeenCalledWith(
+        anything,
+        undefined,
+        undefined,
+        {selectionMethod: 'enterKey'}
+      );
+
+      var that = this;
+      waitsForAndRuns(function() { return that.dropdown.close.calls.count(); }, done, 100);
     });
   });
 
@@ -432,10 +514,29 @@ describe('Typeahead', function() {
 
         expect($e.preventDefault).toHaveBeenCalled();
       });
+
+      it('should pass the selectionMethod as part of the context', function(done) {
+        var $e;
+        var spy;
+
+        $e = jasmine.createSpyObj('event', ['preventDefault']);
+        this.$input.on('autocomplete:selected', spy = jasmine.createSpy());
+        this.input.trigger('tabKeyed', $e);
+
+        expect(spy).toHaveBeenCalledWith(
+          jasmine.any(Object),
+          undefined,
+          undefined,
+          {selectionMethod: 'tabKey'}
+        );
+
+        var that = this;
+        waitsForAndRuns(function() { return that.dropdown.close.calls.count(); }, done, 100);
+      });
     });
 
     describe('when cursor is not in use', function() {
-      it('should autocomplete', function() {
+      it('should autocomplete if tabAutocomplete is true', function() {
         var spy;
 
         this.input.getQuery.and.returnValue('bi');
@@ -448,6 +549,34 @@ describe('Typeahead', function() {
 
         expect(this.input.setInputValue).toHaveBeenCalledWith(testDatum.value);
         expect(spy).toHaveBeenCalled();
+      });
+
+      it('should not autocomplete if tabAutocomplete is false', function() {
+        this.view.tabAutocomplete = false;
+        var spy;
+
+        this.input.getQuery.and.returnValue('bi');
+        this.input.getHint.and.returnValue(testDatum.value);
+        this.input.isCursorAtEnd.and.returnValue(true);
+        this.dropdown.getDatumForTopSuggestion.and.returnValue(testDatum);
+        this.$input.on('autocomplete:autocompleted', spy = jasmine.createSpy());
+
+        this.input.trigger('tabKeyed');
+
+        expect(this.input.setInputValue).not.toHaveBeenCalledWith(testDatum.value);
+        expect(spy).not.toHaveBeenCalled();
+      });
+
+      it('should close the dropdown if tabAutocomplete is false', function() {
+        this.view.tabAutocomplete = false;
+
+        this.input.getQuery.and.returnValue('bi');
+        this.input.getHint.and.returnValue(testDatum.value);
+        this.input.isCursorAtEnd.and.returnValue(true);
+
+        this.input.trigger('tabKeyed');
+
+        expect(this.dropdown.close).toHaveBeenCalled();
       });
     });
   });
@@ -871,17 +1000,40 @@ describe('Typeahead', function() {
   });
 
   describe('when set autoWidth option', function() {
-    it ('should set default to true', function() {
+    it('should set default to true', function() {
       this.dropdown.trigger('redrawn');
       expect(this.view.autoWidth).toBeTruthy();
       expect(/\d{3}px/.test(this.view.$node[0].style.width)).toBeTruthy();
     });
 
-    it ('should not put width style when autoWidth is false', function() {
+    it('should not put width style when autoWidth is false', function() {
       this.view.autoWidth = false;
       this.dropdown.trigger('redrawn');
       expect(this.view.autoWidth).toBeFalsy();
       expect(this.view.$node[0].style.width).toBeFalsy();
+    });
+  });
+
+  describe('when aria-label is set', function() {
+    beforeEach(function() {
+      this.view.destroy();
+    });
+
+    it('should set aria-label to the specified string', function() {
+      this.view = new Typeahead({
+        input: this.$input,
+        ariaLabel: 'custom-aria-label'
+      });
+
+      expect(this.$input.attr('aria-label')).toBe('custom-aria-label');
+    });
+
+    it('should not set an aria-label if no value is specified', function() {
+      this.view = new Typeahead({
+        input: this.$input
+      });
+
+      expect(this.$input.attr('aria-label')).toBeUndefined();
     });
   });
 });

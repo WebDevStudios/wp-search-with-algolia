@@ -6,9 +6,12 @@ This JavaScript library adds a fast and fully-featured auto-completion menu to y
 [![build status](https://travis-ci.org/algolia/algoliasearch-client-node.svg?branch=master)](http://travis-ci.org/algolia/autocomplete.js)
 [![NPM version](https://badge.fury.io/js/autocomplete.js.svg)](http://badge.fury.io/js/autocomplete.js)
 [![Coverage Status](https://coveralls.io/repos/algolia/autocomplete.js/badge.svg?branch=master)](https://coveralls.io/r/algolia/autocomplete.js?branch=master)
+[![jsDelivr Hits](https://data.jsdelivr.com/v1/package/npm/autocomplete.js/badge?style=rounded)](https://www.jsdelivr.com/package/npm/autocomplete.js)
 ![jQuery](https://img.shields.io/badge/jQuery-OK-blue.svg)
 ![Zepto.js](https://img.shields.io/badge/Zepto.js-OK-blue.svg)
 ![Angular.js](https://img.shields.io/badge/Angular.js-OK-blue.svg)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
 
 [![Browser tests](https://saucelabs.com/browser-matrix/opensauce-algolia.svg)](https://saucelabs.com/u/opensauce-algolia)
 
@@ -31,7 +34,7 @@ This JavaScript library adds a fast and fully-featured auto-completion menu to y
   - [jQuery](#jquery)
   - [Angular.JS](#angularjs)
 - [Look and Feel](#look-and-feel)
-- [Options](#options)
+- [Global Options](#global-options)
 - [Datasets](#datasets)
 - [Sources](#sources)
   - [Hits](#hits)
@@ -39,14 +42,13 @@ This JavaScript library adds a fast and fully-featured auto-completion menu to y
   - [Custom source](#custom-source)
 - [Security](#security)
   - [User-generated data: protecting against XSS](#user-generated-data-protecting-against-xss)
+- [FAQ](#faq)
+  - [How can I `Control`-click on results and have them open in a new tab?](#how-can-i-control-click-on-results-and-have-them-open-in-a-new-tab)
 - [Events](#events)
 - [API](#api)
   - [jQuery](#jquery-1)
   - [Standalone](#standalone-1)
-- [Development](#development)
-- [Tests](#tests)
-  - [Testing accessibility](#testing-accessibility)
-- [Release](#release)
+- [Contributing & releasing](#contributing--releasing)
 - [Credits](#credits)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
@@ -122,7 +124,7 @@ var autocomplete = require('autocomplete.js');
 <script src="https://cdn.jsdelivr.net/algoliasearch/3/algoliasearch.min.js"></script>
 <script src="https://cdn.jsdelivr.net/autocomplete.js/0/autocomplete.min.js"></script>
 <script>
-  var client = algoliasearch('YourApplicationID', 'YourSearchOnlyAPIKey')
+  var client = algoliasearch('YourApplicationID', 'YourSearchOnlyAPIKey');
   var index = client.initIndex('YourIndex');
   autocomplete('#search-input', { hint: false }, [
     {
@@ -134,8 +136,8 @@ var autocomplete = require('autocomplete.js');
         }
       }
     }
-  ]).on('autocomplete:selected', function(event, suggestion, dataset) {
-    console.log(suggestion, dataset);
+  ]).on('autocomplete:selected', function(event, suggestion, dataset, context) {
+    console.log(event, suggestion, dataset, context);
   });
 </script>
 ```
@@ -164,8 +166,8 @@ var autocomplete = require('autocomplete.js');
         }
       }
     }
-  ]).on('autocomplete:selected', function(event, suggestion, dataset) {
-    console.log(suggestion, dataset);
+  ]).on('autocomplete:selected', function(event, suggestion, dataset, context) {
+    console.log(event, suggestion, dataset, context);
   });
 </script>
 ```
@@ -203,7 +205,7 @@ var autocomplete = require('autocomplete.js');
       };
 
       $scope.$on('autocomplete:selected', function(event, suggestion, dataset) {
-        console.log(suggestion, dataset);
+        console.log(event, suggestion, dataset, context);
       });
     }]);
 </script>
@@ -275,17 +277,21 @@ Here is what the [basic example](https://github.com/algolia/autocomplete.js/tree
 
 ![Basic example](./examples/basic.gif)
 
-## Options
+## Global Options
 
-When initializing an autocomplete, there are a number of options you can configure.
+When initializing an autocomplete, there are a number of global options you can configure.
 
 * `autoselect` – If `true`, the first rendered suggestion in the dropdown will automatically have the `cursor` class, and pressing `<ENTER>` will select it.
 
 * `autoselectOnBlur` – If `true`, when the input is blurred, the first rendered suggestion in the dropdown will automatically have the `cursor` class, and pressing `<ENTER>` will select it. This option should be used on mobile, see [#113](https://github.com/algolia/autocomplete.js/issues/113)
 
+* `tabAutocomplete` – If `true`, pressing tab will select the first rendered suggestion in the dropdown. Defaults to `true`.
+
 * `hint` – If `false`, the autocomplete will not show a hint. Defaults to `true`.
 
 * `debug` – If `true`, the autocomplete will not close on `blur`. Defaults to `false`.
+
+* `clearOnSelected` – If `true`, the autocomplete will empty the search box when a suggestion is selected. This is useful if you want to use this as a way to input tags using the `selected` event.
 
 * `openOnFocus` – If `true`, the dropdown menu will open when the input is focused. Defaults to `false`.
 
@@ -315,6 +321,8 @@ When initializing an autocomplete, there are a number of options you can configu
 
 * `keyboardShortcuts` - Array of shortcut that will focus the input. For example if you want to bind `s` and `/`
  you can specify: `keyboardShortcuts: ['s', '/']`
+
+* `ariaLabel` - An optional string that will populate the `aria-label` attribute.
 
 ```html
 <script type="text/template" id="my-custom-menu-template">
@@ -475,6 +483,10 @@ Datasets can be configured using the following options.
   been forwarded by the source: `function suggestionTemplate(suggestion, [forwarded args])`.
   Defaults to the value of `displayKey` wrapped in a `p` tag i.e. `<p>{{value}}</p>`.
 
+* `debounce` – If set, will postpone the source execution until after `debounce` milliseconds
+have elapsed since the last time it was invoked.
+
+* `cache` - If set to `false`, subsequent identical queries will always execute the source function for suggestions. Defaults to `true`.
 
 ## Sources
 
@@ -582,6 +594,35 @@ If you did specify custom highlighting pre/post tags, you can specify them as 2n
   }
 ```
 
+## FAQ
+
+### How can I `Control`-click on results and have them open in a new tab?
+
+You'll need to update your suggestion templates to make them as `<a href>` links
+and not simple divs. `Control`-clicking on them will trigger the default browser
+behavior and open suggestions in a new tab.
+
+To also support keyboard navigation, you'll need to listen to the
+`autocomplete:selected` event and change `window.location` to the destination
+URL.
+
+Note that you might need to check the value of `context.selectionMethod` in
+`autocomplete:selected` first. If it's equal to `click`, you should `return`
+early, otherwise your main window will **also** follow the link.
+
+Here is an example of how it would look like:
+
+```javascript
+autocomplete(…).on('autocomplete:selected', function(event, suggestion, dataset, context) {
+  // Do nothing on click, as the browser will already do it
+  if (context.selectionMethod === 'click') {
+    return;
+  }
+  // Change the page, for example, on other events
+  window.location.assign(suggestion.url);
+});
+```
+
 ## Events
 
 The autocomplete component triggers the following custom events.
@@ -605,9 +646,11 @@ The autocomplete component triggers the following custom events.
   the dataset the suggestion belongs to.
 
 * `autocomplete:selected` – Triggered when a suggestion from the dropdown menu is
-  selected. The event handler will be invoked with 3 arguments: the jQuery
-  event object, the suggestion object, and the name of the dataset the
-  suggestion belongs to.
+  selected. The event handler will be invoked with the following arguments: the jQuery
+  event object, the suggestion object, the name of the dataset the
+  suggestion belongs to and a `context` object. The `context` contains
+  a `.selectionMethod` key that can be either `click`, `enterKey`, `tabKey` or
+  `blur`, depending how the suggestion was selected.
 
 * `autocomplete:cursorremoved` – Triggered when the cursor leaves the selections
   or its current index is lower than 0
@@ -625,11 +668,17 @@ All custom events are triggered on the element initialized as the autocomplete.
 
 ### jQuery
 
-Turns any `input[type="text"]` element into an auto-completion menu. `options` is an
+Turns any `input[type="text"]` element into an auto-completion menu. `globalOptions` is an
 options hash that's used to configure the autocomplete to your liking. Refer to
-[Options](#options) for more info regarding the available configs. Subsequent
+[Global Options](#global-options) for more info regarding the available configs. Subsequent
 arguments (`*datasets`), are individual option hashes for datasets. For more
 details regarding datasets, refer to [Datasets](#datasets).
+
+```
+$(selector).autocomplete(globalOptions, datasets)
+```
+
+Example:
 
 ```js
 $('.search-input').autocomplete({
@@ -699,8 +748,14 @@ jQuery.fn._autocomplete = autocomplete;
 The standalone version API is similiar to jQuery's:
 
 ```js
+var search = autocomplete(containerSelector, globalOptions, datasets);
+```
+
+Example:
+
+```js
 var search = autocomplete('#search', { hint: false }, [{
-  source: autocomplete.sources.hits(index, { hitsPerPage: 5 }
+  source: autocomplete.sources.hits(index, { hitsPerPage: 5 })
 }]);
 
 search.autocomplete.open();
@@ -726,75 +781,9 @@ to its previous value. Can be used to avoid naming collisions.
 var algoliaAutocomplete = autocomplete.noConflict();
 ```
 
-## Development
+## Contributing & releasing
 
-To start developing, you can use the following commands:
-
-```sh
-yarn
-yarn dev
-open http://localhost:8888/test/playground.html
-```
-
-Linting is done with [eslint](http://eslint.org/) and [Algolia's configuration](https://github.com/algolia/eslint-config-algolia) and can be run with:
-
-```sh
-yarn lint
-```
-
-## Tests
-
-Unit tests are written using [Jasmine](http://jasmine.github.io/) and ran with [Karma](http://karma-runner.github.io/). Integration tests are using [Mocha](http://mochajs.org/) and [Saucelabs](https://saucelabs.com/).
-
-To run the unit tests suite run:
-
-```sh
-yarn test
-```
-
-To run the integration tests suite run:
-
-```sh
-yarn build
-yarn server
-ngrok 8888
-TEST_HOST=http://YOUR_NGROK_ID.ngrok.com SAUCE_ACCESS_KEY=YOUR_KEY SAUCE_USERNAME=YOUR_USERNAME./node_modules/mocha/bin/mocha --harmony -R spec ./test/integration/test.js
-```
-
-### Testing accessibility
-
-Autocomplete.js is accessible to screen readers, and here's how to test how most blind users will experience it:
-
-#### Steps
-
-1. Run `yarn dev` on your development machine
-1. Start the screen reader
-1. Open a browser to http://YOUR_IP:8888/test/playground.html
-1. Tab to the field
-1. Type a search query
-1. Use the arrow keys to navigate through the results
-
-✔ SUCCESS: results are read (not necessarily in sync with the visually selected cursor)  
-𐄂 FAIL: no text is read or the screen reader keeps reading the typed query
-
-#### Recommended testing platforms
-
-- VoiceOver (CMD+F5 in macOS): Safari, Chrome
-- [JAWS](http://www.freedomscientific.com/Products/Blindness/JAWS): IE11, Chrome (Windows 7 VM available at [modern.ie](https://modern.ie))
-- [NVDA](http://www.nvaccess.org/): IE11, Chrome (Windows 8.1 VM available at [modern.ie](https://modern.ie))
-
-#### Tips
-
-- All screen readers work slightly differently - which makes making accessible pages tricky.
-- Don't worry if the usability isn't 100% perfect, but make sure the functionality is there.
-
-## Release
-
-Decide if this is a patch, minor or major release, have a look at [semver.org](http://semver.org/).
-
-```sh
-npm run release [major|minor|patch|x.x.x]
-```
+see [CONTRIBUTING.md](./CONTRIBUTING.md)
 
 ## Credits
 

@@ -1,3 +1,121 @@
+<a name="0.37.1"></a>
+## [0.37.1](https://github.com/algolia/autocomplete.js/compare/v0.37.0...v0.37.1) (2020-01-27)
+
+
+### Bug Fixes
+
+* **algolia:** parse user agents with new search clients ([#302](https://github.com/algolia/autocomplete.js/issues/302)) ([2f32ffb](https://github.com/algolia/autocomplete.js/commit/2f32ffb))
+* **zepto:** catch exceptions while assigning ([#298](https://github.com/algolia/autocomplete.js/issues/298)) ([652bde4](https://github.com/algolia/autocomplete.js/commit/652bde4))
+
+
+
+<a name="0.37.0"></a>
+# [0.37.0](https://github.com/algolia/autocomplete.js/compare/v0.36.0...v0.37.0) (2019-08-30)
+
+
+### Bug Fixes
+
+* **clear:** Avoid error when clear is called after destroy ([#287](https://github.com/algolia/autocomplete.js/issues/287)) ([244425d](https://github.com/algolia/autocomplete.js/commit/244425d))
+
+
+
+<a name="0.36.0"></a>
+# [0.36.0](https://github.com/algolia/autocomplete.js/compare/v0.35.0...v0.36.0) (2019-02-21)
+
+
+### Bug Fixes
+
+* **standalone:** use aria label from input ([#276](https://github.com/algolia/autocomplete.js/issues/276)) ([4b94466](https://github.com/algolia/autocomplete.js/commit/4b94466))
+
+
+
+<a name="0.35.0"></a>
+# [0.35.0](https://github.com/algolia/autocomplete.js/compare/v0.34.0...v0.35.0) (2018-12-17)
+
+
+### Bug Fixes
+
+* **chrome-only:** Change autocomplete from 'nope' to 'off' ([#273](https://github.com/algolia/autocomplete.js/issues/273)) ([892a8f0](https://github.com/algolia/autocomplete.js/commit/892a8f0))
+* **utils:** correct _.every method ([#274](https://github.com/algolia/autocomplete.js/issues/274)) ([55af1e3](https://github.com/algolia/autocomplete.js/commit/55af1e3))
+
+
+
+<a name="0.34.0"></a>
+# [0.34.0](https://github.com/algolia/autocomplete.js/compare/v0.33.0...v0.34.0) (2018-12-04)
+
+
+### Features
+
+* change autocomplete from 'off' to 'nope' ([#250](https://github.com/algolia/autocomplete.js/issues/250)) ([fbbed04](https://github.com/algolia/autocomplete.js/commit/fbbed04))
+
+
+
+<a name="0.33.0"></a>
+# [0.33.0](https://github.com/algolia/autocomplete.js/compare/v0.32.0...v0.33.0) (2018-11-19)
+
+
+### Bug Fixes
+
+* **release:** Update mversion to 1.12 ([#268](https://github.com/algolia/autocomplete.js/issues/268)) ([08b8e30](https://github.com/algolia/autocomplete.js/commit/08b8e30))
+
+
+### Features
+
+* **selected:** Adding context.selectionMethod to selected event ([#267](https://github.com/algolia/autocomplete.js/issues/267)) ([36028a6](https://github.com/algolia/autocomplete.js/commit/36028a6))
+
+
+
+<a name="0.32.0"></a>
+# [0.32.0](https://github.com/algolia/autocomplete.js/compare/v0.31.0...v0.32.0) (2018-11-06)
+
+
+### Bug Fixes
+
+* **zepto:** apply patch to prevent an error ([#263](https://github.com/algolia/autocomplete.js/issues/263)) ([917d5a7](https://github.com/algolia/autocomplete.js/commit/917d5a7))
+
+
+### Features
+
+* **source:** add cache disabling for datasets ([#254](https://github.com/algolia/autocomplete.js/issues/254)) ([0e65fee](https://github.com/algolia/autocomplete.js/commit/0e65fee))
+* add flag for toggling tab autocompletion ([#260](https://github.com/algolia/autocomplete.js/issues/260)) ([4dc7c52](https://github.com/algolia/autocomplete.js/commit/4dc7c52))
+* Throw err on update if suggestions are invalid type ([#256](https://github.com/algolia/autocomplete.js/issues/256)) ([179febf](https://github.com/algolia/autocomplete.js/commit/179febf)), closes [#131](https://github.com/algolia/autocomplete.js/issues/131)
+
+
+
+<a name="0.31.0"></a>
+# [0.31.0](https://github.com/algolia/autocomplete.js/compare/v0.30.0...v0.31.0) (2018-08-08)
+
+
+### Bug Fixes
+
+* **dataset:** avoid to call the source when upadte is canceled ([a47696d](https://github.com/algolia/autocomplete.js/commit/a47696d))
+* **dataset:** avoid usage of callNow for debounce ([1a0ce74](https://github.com/algolia/autocomplete.js/commit/1a0ce74))
+* Handle an odd case with the user agent ([#242](https://github.com/algolia/autocomplete.js/issues/242)) ([c194736](https://github.com/algolia/autocomplete.js/commit/c194736))
+
+
+### Features
+
+* update dist files ([9babf2e](https://github.com/algolia/autocomplete.js/commit/9babf2e))
+* **clearOnSelected:** allow users to clear the input instead of filling ([#244](https://github.com/algolia/autocomplete.js/issues/244)) ([aa2edbb](https://github.com/algolia/autocomplete.js/commit/aa2edbb)), closes [#241](https://github.com/algolia/autocomplete.js/issues/241)
+
+
+
+<a name="0.30.0"></a>
+# [0.30.0](https://github.com/algolia/autocomplete.js/compare/v0.29.0...v0.30.0) (2018-04-30)
+
+
+
+<a name="0.29.0"></a>
+# [0.29.0](https://github.com/algolia/autocomplete.js/compare/v0.28.3...v0.29.0) (2017-10-12)
+
+
+### Features
+
+* **a11y:** Add ariaLabel option. ([6db8e1b](https://github.com/algolia/autocomplete.js/commit/6db8e1b))
+* **a11y:** Add option to control `aria-labelledby` attribute. ([0491c43](https://github.com/algolia/autocomplete.js/commit/0491c43))
+
+
+
 <a name="0.28.3"></a>
 ## [0.28.3](https://github.com/algolia/autocomplete.js/compare/v0.28.2...v0.28.3) (2017-07-31)
 
