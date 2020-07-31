@@ -16,32 +16,62 @@
 class Algolia_Admin_Page_Native_Search {
 
 	/**
+	 * Admin page slug.
+	 *
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 * @since  1.0.0
+	 *
 	 * @var string
 	 */
 	private $slug = 'algolia-search-page';
 
 	/**
+	 * Admin page capabilities.
+	 *
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 * @since  1.0.0
+	 *
 	 * @var string
 	 */
 	private $capability = 'manage_options';
 
 	/**
+	 * Admin page section.
+	 *
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 * @since  1.0.0
+	 *
 	 * @var string
 	 */
 	private $section = 'algolia_section_native_search';
 
 	/**
+	 * Admin page option group.
+	 *
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 * @since  1.0.0
+	 *
 	 * @var string
 	 */
 	private $option_group = 'algolia_native_search';
 
 	/**
+	 * The Algolia_Plugin instance.
+	 *
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 * @since  1.0.0
+	 *
 	 * @var Algolia_Plugin
 	 */
 	private $plugin;
 
 	/**
-	 * @param Algolia_Plugin $plugin
+	 * Algolia_Admin_Page_Native_Search constructor.
+	 *
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 * @since  1.0.0
+	 *
+	 * @param Algolia_Plugin $plugin The Algolia_Plugin instance.
 	 */
 	public function __construct( Algolia_Plugin $plugin ) {
 		$this->plugin = $plugin;
@@ -51,6 +81,12 @@ class Algolia_Admin_Page_Native_Search {
 		add_action( 'admin_notices', array( $this, 'display_errors' ) );
 	}
 
+	/**
+	 * Add submenu page.
+	 *
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 * @since  1.0.0
+	 */
 	public function add_page() {
 		add_submenu_page(
 			'algolia',
@@ -62,6 +98,12 @@ class Algolia_Admin_Page_Native_Search {
 		);
 	}
 
+	/**
+	 * Add settings.
+	 *
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 * @since  1.0.0
+	 */
 	public function add_settings() {
 		add_settings_section(
 			$this->section,
@@ -81,6 +123,12 @@ class Algolia_Admin_Page_Native_Search {
 		register_setting( $this->option_group, 'algolia_override_native_search', array( $this, 'sanitize_override_native_search' ) );
 	}
 
+	/**
+	 * Override native search callback.
+	 *
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 * @since  1.0.0
+	 */
 	public function override_native_search_callback() {
 		$value = $this->plugin->get_settings()->get_override_native_search();
 
@@ -88,7 +136,12 @@ class Algolia_Admin_Page_Native_Search {
 	}
 
 	/**
-	 * @param $value
+	 * Sanitize override native search.
+	 *
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 * @since  1.0.0
+	 *
+	 * @param string $value The value to sanitize.
 	 *
 	 * @return array
 	 */
@@ -123,6 +176,9 @@ class Algolia_Admin_Page_Native_Search {
 
 	/**
 	 * Display the page.
+	 *
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 * @since  1.0.0
 	 */
 	public function display_page() {
 		require_once dirname( __FILE__ ) . '/partials/page-search.php';
@@ -130,6 +186,11 @@ class Algolia_Admin_Page_Native_Search {
 
 	/**
 	 * Display the errors.
+	 *
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 * @since  1.0.0
+	 *
+	 * @return void
 	 */
 	public function display_errors() {
 		settings_errors( $this->option_group );
@@ -158,11 +219,14 @@ class Algolia_Admin_Page_Native_Search {
 
 	/**
 	 * Prints the section text.
+	 *
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 * @since  1.0.0
 	 */
 	public function print_section_settings() {
 		echo '<p>' . esc_html__( 'By enabling this plugin to override the native WordPress search, your search results will be powered by Algolia\'s typo-tolerant & relevant search algorithms.', 'wp-search-with-algolia' ) . '</p>';
 
-		// todo: replace this with a check on the searchable_posts_index
+		// @Todo: replace this with a check on the searchable_posts_index.
 		$indices = $this->plugin->get_indices(
 			array(
 				'enabled'  => true,

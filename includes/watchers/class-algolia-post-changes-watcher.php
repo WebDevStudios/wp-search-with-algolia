@@ -18,22 +18,43 @@ use Algolia\AlgoliaSearch\Exceptions\AlgoliaException;
 class Algolia_Post_Changes_Watcher implements Algolia_Changes_Watcher {
 
 	/**
+	 * Algolia_Index instance.
+	 *
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 * @since  1.0.0
+	 *
 	 * @var Algolia_Index
 	 */
 	private $index;
 
 	/**
+	 * Deleted posts array.
+	 *
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 * @since  1.0.0
+	 *
 	 * @var Array
 	 */
 	private $posts_deleted = array();
 
 	/**
-	 * @param Algolia_Index $index
+	 * Algolia_Post_Changes_Watcher constructor.
+	 *
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 * @since  1.0.0
+	 *
+	 * @param Algolia_Index $index Algolia_Index instance.
 	 */
 	public function __construct( Algolia_Index $index ) {
 		$this->index = $index;
 	}
 
+	/**
+	 * Watch WordPress events.
+	 *
+	 * @author  WebDevStudios <contact@webdevstudios.com>
+	 * @since   1.0.0
+	 */
 	public function watch() {
 		// Fires once a post has been saved.
 		add_action( 'save_post', array( $this, 'sync_item' ) );
@@ -54,7 +75,14 @@ class Algolia_Post_Changes_Watcher implements Algolia_Changes_Watcher {
 	}
 
 	/**
-	 * @param int $post_id
+	 * Sync item.
+	 *
+	 * @author  WebDevStudios <contact@webdevstudios.com>
+	 * @since   1.0.0
+	 *
+	 * @param int $post_id The post ID to sync.
+	 *
+	 * @return void
 	 */
 	public function sync_item( $post_id ) {
 
@@ -79,7 +107,14 @@ class Algolia_Post_Changes_Watcher implements Algolia_Changes_Watcher {
 	}
 
 	/**
-	 * @param int $post_id
+	 * Delete item.
+	 *
+	 * @author  WebDevStudios <contact@webdevstudios.com>
+	 * @since   1.0.0
+	 *
+	 * @param int $post_id The post ID to delete.
+	 *
+	 * @return void
 	 */
 	public function delete_item( $post_id ) {
 
@@ -97,9 +132,16 @@ class Algolia_Post_Changes_Watcher implements Algolia_Changes_Watcher {
 	}
 
 	/**
-	 * @param string|array $meta_id
-	 * @param int          $object_id
-	 * @param string       $meta_key
+	 * Watch meta changes for item.
+	 *
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 * @since  1.0.0
+	 *
+	 * @param string|array $meta_id   The meta ID.
+	 * @param int          $object_id The post ID.
+	 * @param string       $meta_key  The meta key.
+	 *
+	 * @return void
 	 */
 	public function on_meta_change( $meta_id, $object_id, $meta_key ) {
 		$keys = array( '_thumbnail_id' );

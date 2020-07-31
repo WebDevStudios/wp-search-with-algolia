@@ -15,5 +15,11 @@
  */
 interface Algolia_Changes_Watcher {
 
+	/**
+	 * Watch WordPress events.
+	 *
+	 * @author  WebDevStudios <contact@webdevstudios.com>
+	 * @since   1.0.0
+	 */
 	public function watch();
 }

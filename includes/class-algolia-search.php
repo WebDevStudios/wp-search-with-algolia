@@ -16,22 +16,42 @@
 class Algolia_Search {
 
 	/**
+	 * Current page hits.
+	 *
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 * @since  1.0.0
+	 *
 	 * @var array
 	 */
 	private $current_page_hits = [];
 
 	/**
+	 * Total hits.
+	 *
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 * @since  1.0.0
+	 *
 	 * @var int
 	 */
 	private $total_hits;
 
 	/**
+	 * Instance of Algolia_Index.
+	 *
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 * @since  1.0.0
+	 *
 	 * @var Algolia_Index
 	 */
 	private $index;
 
 	/**
-	 * @param Algolia_Index $index
+	 * Algolia_Search constructor.
+	 *
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 * @since  1.0.0
+	 *
+	 * @param Algolia_Index $index Instance of Algolia_Index.
 	 */
 	public function __construct( Algolia_Index $index ) {
 		$this->index = $index;
@@ -44,7 +64,10 @@ class Algolia_Search {
 	/**
 	 * Determines if we should filter the query passed as argument.
 	 *
-	 * @param WP_Query $query
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 * @since  1.0.0
+	 *
+	 * @param WP_Query $query The WP_Query to check.
 	 *
 	 * @return bool
 	 */
@@ -69,7 +92,12 @@ class Algolia_Search {
 	/**
 	 * We force the WP_Query to only return records according to Algolia's ranking.
 	 *
-	 * @param WP_Query $query
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 * @since  1.0.0
+	 *
+	 * @param WP_Query $query The WP_Query being filtered.
+	 *
+	 * @return void
 	 */
 	public function pre_get_posts( WP_Query $query ) {
 		if ( ! $this->should_filter_query( $query ) ) {
@@ -164,15 +192,18 @@ class Algolia_Search {
 		$query->set( 'post__in', $post_ids );
 		$query->set( 'orderby', 'post__in' );
 
-		// Todo: this actually still excludes trash and auto-drafts.
+		// @todo: This actually still excludes trash and auto-drafts.
 		$query->set( 'post_status', 'any' );
 	}
 
 	/**
 	 * This hook returns the actual real number of results available in Algolia.
 	 *
-	 * @param int      $found_posts
-	 * @param WP_Query $query
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 * @since  1.0.0
+	 *
+	 * @param int      $found_posts The number of posts found.
+	 * @param WP_Query $query       The WP_Query instance (passed by reference).
 	 *
 	 * @return int
 	 */
@@ -186,8 +217,11 @@ class Algolia_Search {
 	 * We don't want to filter by anything but the actual list of post_ids resulting
 	 * from the Algolia search.
 	 *
-	 * @param string   $search
-	 * @param WP_Query $query
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 * @since  1.0.0
+	 *
+	 * @param string   $search Search SQL for WHERE clause.
+	 * @param WP_Query $query  The current WP_Query object.
 	 *
 	 * @return string
 	 */
@@ -197,6 +231,11 @@ class Algolia_Search {
 
 	/**
 	 * Output the bundled styles for highlighting search result matches, if enabled.
+	 *
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 * @since  1.0.0
+	 *
+	 * @return void
 	 */
 	public function output_highlighting_bundled_styles() {
 		if ( ! $this->highlighting_enabled() ) {
@@ -223,7 +262,12 @@ class Algolia_Search {
 	 *
 	 * This method is called on the loop_start action, where we want to begin highlighting search result matches.
 	 *
-	 * @param WP_Query $query
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 * @since  1.0.0
+	 *
+	 * @param WP_Query $query The WP_Query.
+	 *
+	 * @return void
 	 */
 	public function begin_highlighting( $query ) {
 		if ( ! $this->should_filter_query( $query ) ) {
@@ -245,7 +289,10 @@ class Algolia_Search {
 	 *
 	 * This method is called on the loop_end action, where we want to stop highlighting search result matches.
 	 *
-	 * @param WP_Query $query
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 * @since  1.0.0
+	 *
+	 * @param WP_Query $query The WP_Query.
 	 */
 	public function end_highlighting( $query ) {
 		remove_filter( 'the_title', [ $this, 'highlight_the_title' ], 10 );
@@ -257,8 +304,11 @@ class Algolia_Search {
 	/**
 	 * Filter the_title, replacing it with the highlighted title from the Algolia index.
 	 *
-	 * @param string $title
-	 * @param int    $post_id
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 * @since  1.0.0
+	 *
+	 * @param string $title   The title string.
+	 * @param int    $post_id The post ID.
 	 *
 	 * @return string
 	 */
@@ -275,8 +325,11 @@ class Algolia_Search {
 	/**
 	 * Filter get_the_excerpt, replacing it with the highlighted excerpt from the Algolia index.
 	 *
-	 * @param string  $excerpt
-	 * @param WP_Post $post
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 * @since  1.0.0
+	 *
+	 * @param string  $excerpt The excerpt string.
+	 * @param WP_Post $post    The post object.
 	 *
 	 * @return string
 	 */
@@ -292,6 +345,9 @@ class Algolia_Search {
 
 	/**
 	 * Determine whether highlighting is enabled.
+	 *
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 * @since  1.0.0
 	 *
 	 * @return bool
 	 */

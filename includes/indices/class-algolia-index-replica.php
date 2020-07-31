@@ -19,18 +19,35 @@ class Algolia_Index_Replica {
 	const ORDER_DESC = 'desc';
 
 	/**
+	 * The attribute name.
+	 *
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 * @since  1.0.0
+	 *
 	 * @var string
 	 */
 	private $attribute_name;
 
 	/**
+	 * The order.
+	 *
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 * @since  1.0.0
+	 *
 	 * @var string
 	 */
 	private $order;
 
 	/**
-	 * @param string $attribute_name
-	 * @param string $order
+	 * Algolia_Index_Replica constructor.
+	 *
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 * @since  1.0.0
+	 *
+	 * @param string $attribute_name The attribute name.
+	 * @param string $order          The order.
+	 *
+	 * @throws InvalidArgumentException If order is not `asc` or `desc`.
 	 */
 	public function __construct( $attribute_name, $order ) {
 		$this->attribute_name = (string) $attribute_name;
@@ -43,7 +60,12 @@ class Algolia_Index_Replica {
 	}
 
 	/**
-	 * @param Algolia_Index $index
+	 * Get replica index name.
+	 *
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 * @since  1.0.0
+	 *
+	 * @param Algolia_Index $index The Algolia_Index instance.
 	 *
 	 * @return string
 	 */
@@ -52,6 +74,11 @@ class Algolia_Index_Replica {
 	}
 
 	/**
+	 * Get ranking.
+	 *
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 * @since  1.0.0
+	 *
 	 * @return array
 	 */
 	public function get_ranking() {
@@ -59,6 +86,11 @@ class Algolia_Index_Replica {
 	}
 
 	/**
+	 * Get attribute name.
+	 *
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 * @since  1.0.0
+	 *
 	 * @return string
 	 */
 	public function get_attribute_name() {
@@ -66,6 +98,11 @@ class Algolia_Index_Replica {
 	}
 
 	/**
+	 * Get order.
+	 *
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 * @since  1.0.0
+	 *
 	 * @return string
 	 */
 	public function get_order() {

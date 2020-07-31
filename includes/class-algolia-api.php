@@ -19,29 +19,52 @@ use Algolia\AlgoliaSearch\SearchClient;
 class Algolia_API {
 
 	/**
+	 * The SearchClient instance.
+	 *
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 * @since  1.0.0
+	 *
 	 * @var SearchClient
 	 */
 	private $client;
 
 	/**
+	 * The Algolia_Settings instance.
+	 *
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 * @since  1.0.0
+	 *
 	 * @var Algolia_Settings
 	 */
 	private $settings;
 
 	/**
-	 * @param Algolia_Settings $settings
+	 * Algolia_API constructor.
+	 *
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 * @since  1.0.0
+	 *
+	 * @param Algolia_Settings $settings The Algolia_Settings instance.
 	 */
 	public function __construct( Algolia_Settings $settings ) {
 		$this->settings = $settings;
 	}
 
+	/**
+	 * Check if the Aloglia API is reachable.
+	 *
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 * @since  1.0.0
+	 *
+	 * @return bool
+	 */
 	public function is_reachable() {
 		if ( ! $this->settings->get_api_is_reachable() ) {
 			return false;
 		}
 
 		try {
-			// Here we check that all requirements for the PHP API SearchClient are met
+			// Here we check that all requirements for the PHP API SearchClient are met.
 			// If they are not, instantiating the client will throw exceptions.
 			$client = $this->get_client();
 		} catch ( Exception $e ) {
@@ -52,6 +75,11 @@ class Algolia_API {
 	}
 
 	/**
+	 * Get the SearchClient.
+	 *
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 * @since  1.0.0
+	 *
 	 * @return SearchClient|null
 	 */
 	public function get_client() {
@@ -81,10 +109,17 @@ class Algolia_API {
 	}
 
 	/**
-	 * @param string $application_id
-	 * @param string $api_key
+	 * Assert that the credentials are valid.
 	 *
-	 * @throws Exception
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 * @since  1.0.0
+	 *
+	 * @param string $application_id The Algolia Application ID.
+	 * @param string $api_key        The Algolia Admin API Key.
+	 *
+	 * @return void
+	 *
+	 * @throws Exception If the Algolia Admin API Key does not have correct ACLs.
 	 */
 	public static function assert_valid_credentials( $application_id, $api_key ) {
 		$client = SearchClient::create( (string) $application_id, (string) $api_key );
@@ -124,8 +159,13 @@ class Algolia_API {
 	}
 
 	/**
-	 * @param string $application_id
-	 * @param string $api_key
+	 * Check if the credentials are valid.
+	 *
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 * @since  1.0.0
+	 *
+	 * @param string $application_id The Algolia Application ID.
+	 * @param string $api_key        The Algolia Admin API Key.
 	 *
 	 * @return bool
 	 */
@@ -140,8 +180,13 @@ class Algolia_API {
 	}
 
 	/**
-	 * @param string $application_id
-	 * @param string $search_api_key
+	 * Check if the Search API Key is valid.
+	 *
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 * @since  1.0.0
+	 *
+	 * @param string $application_id The Algolia Application ID.
+	 * @param string $search_api_key The Algolia Search API Key.
 	 *
 	 * @return bool
 	 */

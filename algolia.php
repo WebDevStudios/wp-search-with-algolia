@@ -45,6 +45,9 @@ if ( ! defined( 'ALGOLIA_PATH' ) ) {
 /**
  * Check for required PHP version.
  *
+ * @author  WebDevStudios <contact@webdevstudios.com>
+ * @since   1.1.0
+ *
  * @return bool
  */
 function algolia_php_version_check() {
@@ -57,6 +60,9 @@ function algolia_php_version_check() {
 /**
  * Check for required WordPress version.
  *
+ * @author  WebDevStudios <contact@webdevstudios.com>
+ * @since   1.1.0
+ *
  * @return bool
  */
 function algolia_wp_version_check() {
@@ -68,6 +74,9 @@ function algolia_wp_version_check() {
 
 /**
  * Admin notices if requirements aren't met.
+ *
+ * @author  WebDevStudios <contact@webdevstudios.com>
+ * @since   1.1.0
  */
 function algolia_requirements_error_notice() {
 
@@ -98,6 +107,9 @@ function algolia_requirements_error_notice() {
 
 /**
  * I18n.
+ *
+ * @author  WebDevStudios <contact@webdevstudios.com>
+ * @since   1.0.0
  */
 function algolia_load_textdomain() {
 
@@ -117,7 +129,7 @@ if ( algolia_php_version_check() && algolia_wp_version_check() ) {
 	$algolia = Algolia_Plugin::get_instance();
 
 	if ( defined( 'WP_CLI' ) && WP_CLI ) {
-		include ALGOLIA_PATH . '/includes/class-algolia-cli.php';
+		include ALGOLIA_PATH . 'includes/class-algolia-cli.php';
 		WP_CLI::add_command( 'algolia', new Algolia_CLI() );
 	}
 } else {

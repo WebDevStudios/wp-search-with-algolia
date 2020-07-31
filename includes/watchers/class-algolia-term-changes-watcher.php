@@ -18,17 +18,33 @@ use Algolia\AlgoliaSearch\Exceptions\AlgoliaException;
 class Algolia_Term_Changes_Watcher implements Algolia_Changes_Watcher {
 
 	/**
+	 * Algolia_Index instance.
+	 *
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 * @since  1.0.0
+	 *
 	 * @var Algolia_Index
 	 */
 	private $index;
 
 	/**
-	 * @param Algolia_Index $index
+	 * Algolia_Term_Changes_Watcher constructor.
+	 *
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 * @since  1.0.0
+	 *
+	 * @param Algolia_Index $index Algolia_Index instance.
 	 */
 	public function __construct( Algolia_Index $index ) {
 		$this->index = $index;
 	}
 
+	/**
+	 * Watch WordPress events.
+	 *
+	 * @author  WebDevStudios <contact@webdevstudios.com>
+	 * @since   1.0.0
+	 */
 	public function watch() {
 		// Fires immediately after the given terms are edited.
 		add_action( 'edited_term', array( $this, 'sync_item' ) );
@@ -42,7 +58,14 @@ class Algolia_Term_Changes_Watcher implements Algolia_Changes_Watcher {
 	}
 
 	/**
-	 * @param int $term_id
+	 * Sync item.
+	 *
+	 * @author  WebDevStudios <contact@webdevstudios.com>
+	 * @since   1.0.0
+	 *
+	 * @param int $term_id The term ID to sync.
+	 *
+	 * @return void
 	 */
 	public function sync_item( $term_id ) {
 		if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) {
@@ -63,12 +86,17 @@ class Algolia_Term_Changes_Watcher implements Algolia_Changes_Watcher {
 	}
 
 	/**
-	 * @param $object_id
-	 * @param $terms
-	 * @param $tt_ids
-	 * @param $taxonomy
-	 * @param $append
-	 * @param $old_tt_ids
+	 * Handle term changes.
+	 *
+	 * @author  WebDevStudios <contact@webdevstudios.com>
+	 * @since   1.0.0
+	 *
+	 * @param int    $object_id  Object ID.
+	 * @param array  $terms      An array of object terms.
+	 * @param array  $tt_ids     An array of term taxonomy IDs.
+	 * @param string $taxonomy   Taxonomy slug.
+	 * @param bool   $append     Whether to append new terms to the old terms.
+	 * @param array  $old_tt_ids Old array of term taxonomy IDs.
 	 */
 	public function handle_changes( $object_id, $terms, $tt_ids, $taxonomy, $append, $old_tt_ids ) {
 		$terms_to_sync = array_unique( array_merge( $terms, $old_tt_ids ) );
@@ -79,10 +107,18 @@ class Algolia_Term_Changes_Watcher implements Algolia_Changes_Watcher {
 	}
 
 	/**
-	 * @param $term
-	 * @param $tt_id
-	 * @param $taxonomy
-	 * @param $deleted_term
+	 * Delete item.
+	 *
+	 * @author  WebDevStudios <contact@webdevstudios.com>
+	 * @since   1.0.0
+	 *
+	 * @param int    $term         Term ID.
+	 * @param int    $tt_id        Term taxonomy ID.
+	 * @param string $taxonomy     Taxonomy slug.
+	 * @param mixed  $deleted_term Copy of the already-deleted term, in the form specified
+	 *                             by the parent function. WP_Error otherwise.
+	 *
+	 * @return void
 	 */
 	public function on_delete_term( $term, $tt_id, $taxonomy, $deleted_term ) {
 		if ( ! $this->index->supports( $deleted_term ) ) {

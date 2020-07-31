@@ -16,12 +16,21 @@
 class Algolia_Admin {
 
 	/**
+	 * The Algolia Plugin.
+	 *
+	 * @since   1.0.0
+	 *
 	 * @var Algolia_Plugin
 	 */
 	private $plugin;
 
 	/**
-	 * @param Algolia_Plugin $plugin
+	 * Algolia_Admin constructor.
+	 *
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 * @since  1.0.0
+	 *
+	 * @param Algolia_Plugin $plugin The Algolia Plugin.
 	 */
 	public function __construct( Algolia_Plugin $plugin ) {
 		$this->plugin = $plugin;
@@ -48,12 +57,21 @@ class Algolia_Admin {
 		add_action( 'admin_notices', array( $this, 'display_unmet_requirements_notices' ) );
 	}
 
+	/**
+	 * Enqueue styles.
+	 *
+	 * @author  WebDevStudios <contact@webdevstudios.com>
+	 * @since   1.0.0
+	 */
 	public function enqueue_styles() {
 		wp_enqueue_style( 'algolia-admin', plugin_dir_url( __FILE__ ) . 'css/algolia-admin.css', array(), ALGOLIA_VERSION );
 	}
 
 	/**
 	 * Enqueue scripts.
+	 *
+	 * @author  WebDevStudios <contact@webdevstudios.com>
+	 * @since   1.0.0
 	 */
 	public function enqueue_scripts() {
 		wp_enqueue_script( 'algolia-admin', plugin_dir_url( __FILE__ ) . 'js/algolia-admin.js', array( 'jquery', 'jquery-ui-sortable' ), ALGOLIA_VERSION );
@@ -63,6 +81,11 @@ class Algolia_Admin {
 
 	/**
 	 * Displays an error notice for every unmet requirement.
+	 *
+	 * @author  WebDevStudios <contact@webdevstudios.com>
+	 * @since   1.0.0
+	 *
+	 * @return void
 	 */
 	public function display_unmet_requirements_notices() {
 		if ( ! extension_loaded( 'mbstring' ) ) {
@@ -88,6 +111,11 @@ class Algolia_Admin {
 
 	/**
 	 * Display notice to help users adding 'algolia_' as an ignored query string to the db caching configuration.
+	 *
+	 * @author  WebDevStudios <contact@webdevstudios.com>
+	 * @since   1.0.0
+	 *
+	 * @return void
 	 */
 	public function w3tc_notice() {
 		if ( ! function_exists( 'w3tc_pgcache_flush' ) || ! function_exists( 'w3_instance' ) ) {
@@ -111,6 +139,9 @@ class Algolia_Admin {
 
 	/**
 	 * Display reindexing notices.
+	 *
+	 * @author  WebDevStudios <contact@webdevstudios.com>
+	 * @since   1.0.0
 	 */
 	public function display_reindexing_notices() {
 		$indices = $this->plugin->get_indices(
@@ -151,6 +182,15 @@ class Algolia_Admin {
 		}
 	}
 
+	/**
+	 * Re index.
+	 *
+	 * @author  WebDevStudios <contact@webdevstudios.com>
+	 * @since   1.0.0
+	 *
+	 * @throws RuntimeException If index ID or page are not provided, or index name dies not exist.
+	 * @throws Exception If index ID or page are not provided, or index name dies not exist.
+	 */
 	public function re_index() {
 
 		$index_id = filter_input( INPUT_POST, 'index_id', FILTER_SANITIZE_STRING );
@@ -191,6 +231,15 @@ class Algolia_Admin {
 		}
 	}
 
+	/**
+	 * Push settings.
+	 *
+	 * @author  WebDevStudios <contact@webdevstudios.com>
+	 * @since   1.0.0
+	 *
+	 * @throws RuntimeException If index_id is not provided or if the corresponding index is null.
+	 * @throws Exception If index_id is not provided or if the corresponding index is null.
+	 */
 	public function push_settings() {
 
 		$index_id = filter_input( INPUT_POST, 'index_id', FILTER_SANITIZE_STRING );

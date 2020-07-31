@@ -18,11 +18,15 @@ class Algolia_Utils {
 	/**
 	 * Retrieve term parents with separator.
 	 *
-	 * @param int    $id Term ID.
-	 * @param string $taxonomy
+	 * @author  WebDevStudios <contact@webdevstudios.com>
+	 * @since   1.0.0
+	 *
+	 * @param int    $id        Term ID.
+	 * @param string $taxonomy  The taxonomy.
 	 * @param string $separator Optional, default is '/'. How to separate terms.
-	 * @param bool   $nicename Optional, default is false. Whether to use nice name for display.
-	 * @param array  $visited Optional. Already linked to terms to prevent duplicates.
+	 * @param bool   $nicename  Optional, default is false. Whether to use nice name for display.
+	 * @param array  $visited   Optional. Already linked to terms to prevent duplicates.
+	 *
 	 * @return string|WP_Error A list of terms parents on success, WP_Error on failure.
 	 */
 	public static function get_term_parents( $id, $taxonomy, $separator = '/', $nicename = false, $visited = array() ) {
@@ -49,6 +53,10 @@ class Algolia_Utils {
 	}
 
 	/**
+	 * Get taxonomy tree.
+	 *
+	 * This is useful when building hierarchical menus.
+	 *
 	 * Returns an array like:
 	 * array(
 	 *    'lvl0' => ['Sales', 'Marketing'],
@@ -56,13 +64,14 @@ class Algolia_Utils {
 	 *    ...
 	 * );.
 	 *
-	 * This is useful when building hierarchical menus.
+	 * @link    https://community.algolia.com/instantsearch.js/documentation/#hierarchicalmenu
 	 *
-	 * @see https://community.algolia.com/instantsearch.js/documentation/#hierarchicalmenu
+	 * @author  WebDevStudios <contact@webdevstudios.com>
+	 * @since   1.0.0
 	 *
-	 * @param array  $terms
-	 * @param string $taxonomy
-	 * @param string $separator
+	 * @param array  $terms     The terms.
+	 * @param string $taxonomy  The taxonomy.
+	 * @param string $separator The separator.
 	 *
 	 * @return array
 	 */
@@ -94,7 +103,12 @@ class Algolia_Utils {
 	}
 
 	/**
-	 * @param int $post_id
+	 * Get post images.
+	 *
+	 * @author  WebDevStudios <contact@webdevstudios.com>
+	 * @since   1.0.0
+	 *
+	 * @param int $post_id The post ID.
 	 *
 	 * @return array
 	 */
@@ -126,12 +140,32 @@ class Algolia_Utils {
 		return (array) apply_filters( 'algolia_get_post_images', $images );
 	}
 
+	/**
+	 * Prepare content.
+	 *
+	 * @author  WebDevStudios <contact@webdevstudios.com>
+	 * @since   1.0.0
+	 *
+	 * @param string $content The content to prepare.
+	 *
+	 * @return string
+	 */
 	public static function prepare_content( $content ) {
 		$content = self::remove_content_noise( $content );
 
 		return strip_tags( $content );
 	}
 
+	/**
+	 * Remove noise from content.
+	 *
+	 * @author  WebDevStudios <contact@webdevstudios.com>
+	 * @since   1.0.0
+	 *
+	 * @param string $content The content to remove noise from.
+	 *
+	 * @return string
+	 */
 	public static function remove_content_noise( $content ) {
 		$noise_patterns = array(
 			// strip out comments.
@@ -170,7 +204,12 @@ class Algolia_Utils {
 	}
 
 	/**
-	 * @param string $content
+	 * Explode content.
+	 *
+	 * @author  WebDevStudios <contact@webdevstudios.com>
+	 * @since   1.0.0
+	 *
+	 * @param string $content The content to explode.
 	 *
 	 * @return array
 	 */

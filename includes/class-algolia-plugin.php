@@ -18,46 +18,91 @@ class Algolia_Plugin {
 	const NAME = 'algolia';
 
 	/**
+	 * Singleton instance of the Algolia_Plugin.
+	 *
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 * @since  1.0.0
+	 *
 	 * @var Algolia_Plugin
 	 */
 	static private $instance;
 
 	/**
+	 * Instance of Algolia_API.
+	 *
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 * @since  1.0.0
+	 *
 	 * @var Algolia_API
 	 */
 	protected $api;
 
 	/**
+	 * Instance of Algolia_Settings.
+	 *
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 * @since  1.0.0
+	 *
 	 * @var Algolia_Settings
 	 */
 	private $settings;
 
 	/**
+	 * Instance of Algolia_Autocomplete_Config.
+	 *
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 * @since  1.0.0
+	 *
 	 * @var Algolia_Autocomplete_Config
 	 */
 	private $autocomplete_config;
 
 	/**
+	 * Array of indices.
+	 *
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 * @since  1.0.0
+	 *
 	 * @var array
 	 */
 	private $indices;
 
 	/**
+	 * Array of watchers.
+	 *
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 * @since  1.0.0
+	 *
 	 * @var array
 	 */
 	private $changes_watchers;
 
 	/**
+	 * Instance of Algolia_Template_Loader.
+	 *
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 * @since  1.0.0
+	 *
 	 * @var Algolia_Template_Loader
 	 */
 	private $template_loader;
 
 	/**
+	 * Instance of Algolia_Compatibility.
+	 *
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 * @since  1.0.0
+	 *
 	 * @var Algolia_Compatibility
 	 */
 	private $compatibility;
 
 	/**
+	 * Get the singleton instance of Algolia_Plugin.
+	 *
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 * @since  1.0.0
+	 *
 	 * @return Algolia_Plugin
 	 */
 	public static function get_instance() {
@@ -69,7 +114,10 @@ class Algolia_Plugin {
 	}
 
 	/**
-	 * Loads the plugin.
+	 * Algolia_Plugin constructor.
+	 *
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 * @since  1.0.0
 	 */
 	private function __construct() {
 		// Register the assets so that they can be used in other plugins outside of the context of the core features.
@@ -85,7 +133,12 @@ class Algolia_Plugin {
 		add_action( 'init', array( $this, 'load' ), 20 );
 	}
 
-
+	/**
+	 * Load.
+	 *
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 * @since  1.0.0
+	 */
 	public function load() {
 		if ( $this->api->is_reachable() ) {
 			$this->load_indices();
@@ -101,11 +154,15 @@ class Algolia_Plugin {
 	}
 
 	/**
+	 * Get the plugin name.
+	 *
 	 * The name of the plugin used to uniquely identify it within the context of
 	 * WordPress and to define internationalization functionality.
 	 *
-	 * @since     1.0.0
-	 * @return    string    The name of the plugin.
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 * @since  1.0.0
+	 *
+	 * @return string The name of the plugin.
 	 */
 	public function get_name() {
 		return self::NAME;
@@ -114,14 +171,21 @@ class Algolia_Plugin {
 	/**
 	 * Retrieve the version number of the plugin.
 	 *
-	 * @since     1.0.0
-	 * @return    string    The version number of the plugin.
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 * @since  1.0.0
+	 *
+	 * @return string The version number of the plugin.
 	 */
 	public function get_version() {
 		return ALGOLIA_VERSION;
 	}
 
 	/**
+	 * Get the Aloglia_API.
+	 *
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 * @since  1.0.0
+	 *
 	 * @return Algolia_API
 	 */
 	public function get_api() {
@@ -129,6 +193,11 @@ class Algolia_Plugin {
 	}
 
 	/**
+	 * Get the Algolia_Settings.
+	 *
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 * @since  1.0.0
+	 *
 	 * @return Algolia_Settings
 	 */
 	public function get_settings() {
@@ -136,7 +205,14 @@ class Algolia_Plugin {
 	}
 
 	/**
+	 * Override WordPress native search.
+	 *
 	 * Replaces native WordPress search results by Algolia ranked results.
+	 *
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 * @since  1.0.0
+	 *
+	 * @return void
 	 */
 	private function override_wordpress_search() {
 		// Do not override native search if the feature is not enabled.
@@ -155,6 +231,11 @@ class Algolia_Plugin {
 	}
 
 	/**
+	 * Get the Algolia_Autocomplete_Config.
+	 *
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 * @since  1.0.0
+	 *
 	 * @return Algolia_Autocomplete_Config
 	 */
 	public function get_autocomplete_config() {
@@ -243,7 +324,10 @@ class Algolia_Plugin {
 	}
 
 	/**
-	 * @return array
+	 * Load indices.
+	 *
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 * @since  1.0.0
 	 */
 	public function load_indices() {
 		$synced_indices_ids = $this->settings->get_synced_indices_ids();
@@ -316,7 +400,12 @@ class Algolia_Plugin {
 	}
 
 	/**
-	 * @param array $args
+	 * Get indices.
+	 *
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 * @since  1.0.0
+	 *
+	 * @param array $args Array of arguments.
 	 *
 	 * @return array
 	 */
@@ -348,7 +437,12 @@ class Algolia_Plugin {
 	}
 
 	/**
-	 * @param string $index_id
+	 * Get index.
+	 *
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 * @since  1.0.0
+	 *
+	 * @param string $index_id The ID of the index to get.
 	 *
 	 * @return Algolia_Index|null
 	 */
@@ -365,6 +459,9 @@ class Algolia_Plugin {
 	/**
 	 * Get the plugin path.
 	 *
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 * @since  1.0.0
+	 *
 	 * @return string
 	 */
 	public function get_path() {
@@ -372,6 +469,11 @@ class Algolia_Plugin {
 	}
 
 	/**
+	 * Get the templates path.
+	 *
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 * @since  1.0.0
+	 *
 	 * @return string
 	 */
 	public function get_templates_path() {
@@ -379,6 +481,11 @@ class Algolia_Plugin {
 	}
 
 	/**
+	 * Get the Algolia_Template_Loader.
+	 *
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 * @since  1.0.0
+	 *
 	 * @return Algolia_Template_Loader
 	 */
 	public function get_template_loader() {
