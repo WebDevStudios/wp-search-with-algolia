@@ -9,4 +9,4 @@ public
 node_modules
 tests
 tmp
-vendor
+/vendor
