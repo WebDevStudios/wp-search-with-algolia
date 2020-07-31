@@ -11,6 +11,11 @@
 use Algolia\AlgoliaSearch\Exceptions\AlgoliaException;
 use Algolia\AlgoliaSearch\SearchClient;
 
+/**
+ * Class Algolia_API
+ *
+ * @since 1.0.0
+ */
 class Algolia_API {
 
 	/**

@@ -8,6 +8,11 @@
  * @package WebDevStudios\WPSWA
  */
 
+/**
+ * Class Algolia_Settings
+ *
+ * @since 1.0.0
+ */
 class Algolia_Settings {
 
 	/**

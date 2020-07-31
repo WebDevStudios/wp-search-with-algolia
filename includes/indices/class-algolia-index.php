@@ -11,6 +11,11 @@
 use Algolia\AlgoliaSearch\SearchClient;
 use Algolia\AlgoliaSearch\SearchIndex;
 
+/**
+ * Class Algolia_Index
+ *
+ * @since 1.0.0
+ */
 abstract class Algolia_Index {
 
 	/**

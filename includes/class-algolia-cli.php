@@ -9,7 +9,11 @@
  */
 
 /**
+ * Class Algolia_CLI
+ *
  * Push and re-index records into Algolia indices.
+ *
+ * @since 1.0.0
  */
 class Algolia_CLI extends \WP_CLI_Command {
 

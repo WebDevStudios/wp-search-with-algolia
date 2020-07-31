@@ -8,6 +8,11 @@
  * @package WebDevStudios\WPSWA
  */
 
+/**
+ * Class Algolia_Searchable_Posts_Index
+ *
+ * @since 1.0.0
+ */
 final class Algolia_Searchable_Posts_Index extends Algolia_Index {
 
 	/**

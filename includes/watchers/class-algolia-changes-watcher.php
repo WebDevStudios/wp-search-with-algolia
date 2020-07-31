@@ -8,6 +8,11 @@
  * @package WebDevStudios\WPSWA
  */
 
+/**
+ * Interface Algolia_Changes_Watcher
+ *
+ * @since 1.0.0
+ */
 interface Algolia_Changes_Watcher {
 
 	public function watch();

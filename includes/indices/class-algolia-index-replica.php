@@ -8,6 +8,11 @@
  * @package WebDevStudios\WPSWA
  */
 
+/**
+ * Class Algolia_Index_Replica
+ *
+ * @since 1.0.0
+ */
 class Algolia_Index_Replica {
 
 	const ORDER_ASC  = 'asc';

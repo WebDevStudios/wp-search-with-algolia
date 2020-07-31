@@ -8,6 +8,11 @@
  * @package WebDevStudios\WPSWA
  */
 
+/**
+ * Class Algolia_Users_Index
+ *
+ * @since 1.0.0
+ */
 final class Algolia_Users_Index extends Algolia_Index {
 
 	/**

@@ -8,6 +8,11 @@
  * @package WebDevStudios\WPSWA
  */
 
+/**
+ * Class Algolia_Autocomplete_Config
+ *
+ * @since 1.0.0
+ */
 class Algolia_Autocomplete_Config {
 
 	/**

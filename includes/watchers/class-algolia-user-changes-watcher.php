@@ -10,6 +10,11 @@
 
 use Algolia\AlgoliaSearch\Exceptions\AlgoliaException;
 
+/**
+ * Class Algolia_User_Changes_Watcher
+ *
+ * @since 1.0.0
+ */
 class Algolia_User_Changes_Watcher implements Algolia_Changes_Watcher {
 
 	/**

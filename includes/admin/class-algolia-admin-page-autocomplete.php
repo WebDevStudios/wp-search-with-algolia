@@ -8,6 +8,11 @@
  * @package WebDevStudios\WPSWA
  */
 
+/**
+ * Class Algolia_Admin_Page_Autocomplete
+ *
+ * @since 1.0.0
+ */
 class Algolia_Admin_Page_Autocomplete {
 
 	/**

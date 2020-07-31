@@ -8,6 +8,11 @@
  * @package WebDevStudios\WPSWA
  */
 
+/**
+ * Class Algolia_Plugin
+ *
+ * @since 1.0.0
+ */
 class Algolia_Plugin {
 
 	const NAME = 'algolia';

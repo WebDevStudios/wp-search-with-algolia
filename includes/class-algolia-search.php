@@ -8,6 +8,11 @@
  * @package WebDevStudios\WPSWA
  */
 
+/**
+ * Class Algolia_Search
+ *
+ * @since 1.0.0
+ */
 class Algolia_Search {
 
 	/**

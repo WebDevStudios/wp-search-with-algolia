@@ -8,6 +8,11 @@
  * @package WebDevStudios\WPSWA
  */
 
+/**
+ * Class Algolia_Compatibility
+ *
+ * @since 1.0.0
+ */
 class Algolia_Compatibility {
 
 	private $current_language;
