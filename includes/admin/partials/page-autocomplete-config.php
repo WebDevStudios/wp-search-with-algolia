@@ -22,7 +22,7 @@
 		</tr>
 	</thead>
 	<tbody>
-		<?php foreach ( $indices as $index ) : ?>
+		<?php foreach ( $indices as $index ) : // phpcs:ignore -- This is an admin partial.  ?>
 		<tr>
 	  <td>
 		<span class="dashicons dashicons-move"></span>
