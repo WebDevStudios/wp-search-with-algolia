@@ -87,7 +87,7 @@ class Algolia_User_Changes_Watcher implements Algolia_Changes_Watcher {
 		try {
 			$this->index->sync( $user );
 		} catch ( AlgoliaException $exception ) {
-			error_log( $exception->getMessage() );
+			error_log( $exception->getMessage() ); // phpcs:ignore -- Legacy.
 		}
 	}
 
@@ -111,7 +111,7 @@ class Algolia_User_Changes_Watcher implements Algolia_Changes_Watcher {
 		try {
 			$this->index->delete_item( $user );
 		} catch ( AlgoliaException $exception ) {
-			error_log( $exception->getMessage() );
+			error_log( $exception->getMessage() ); // phpcs:ignore -- Legacy.
 		}
 	}
 

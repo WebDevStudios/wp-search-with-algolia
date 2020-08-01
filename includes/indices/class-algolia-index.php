@@ -781,7 +781,7 @@ abstract class Algolia_Index {
 				return false;
 			}
 
-			error_log( $exception->getMessage() );
+			error_log( $exception->getMessage() ); // phpcs:ignore -- Legacy.
 
 			return false;
 		}

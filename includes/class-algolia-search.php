@@ -145,7 +145,7 @@ class Algolia_Search {
 		try {
 			$results = $this->index->search( $query->query['s'], $params, $order_by, $order );
 		} catch ( \Algolia\AlgoliaSearch\Exceptions\AlgoliaException $exception ) {
-			error_log( $exception->getMessage() );
+			error_log( $exception->getMessage() ); // phpcs:ignore -- Legacy.
 
 			return;
 		}

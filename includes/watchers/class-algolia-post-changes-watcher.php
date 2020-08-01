@@ -102,7 +102,7 @@ class Algolia_Post_Changes_Watcher implements Algolia_Changes_Watcher {
 		try {
 			$this->index->sync( $post );
 		} catch ( AlgoliaException $exception ) {
-			error_log( $exception->getMessage() );
+			error_log( $exception->getMessage() ); // phpcs:ignore -- Legacy.
 		}
 	}
 
@@ -127,7 +127,7 @@ class Algolia_Post_Changes_Watcher implements Algolia_Changes_Watcher {
 			$this->index->delete_item( $post );
 			$this->posts_deleted[] = $post->ID;
 		} catch ( AlgoliaException $exception ) {
-			error_log( $exception->getMessage() );
+			error_log( $exception->getMessage() ); // phpcs:ignore -- Legacy.
 		}
 	}
 
