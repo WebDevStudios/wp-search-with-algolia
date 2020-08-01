@@ -130,7 +130,7 @@ class Algolia_API {
 			$client->listApiKeys();
 
 			return;
-		} catch ( Exception $exception ) {
+		} catch ( Exception $exception ) { // phpcs:ignore --- intentionally empty catch.
 		}
 
 		// If this call does not succeed, then the application_ID or API_key is/are wrong.
@@ -148,7 +148,7 @@ class Algolia_API {
 
 		$missing_acls = array();
 		foreach ( $required_acls as $required_acl ) {
-			if ( ! in_array( $required_acl, $key['acl'] ) ) {
+			if ( ! in_array( $required_acl, $key['acl'], true ) ) {
 				$missing_acls[] = $required_acl;
 			}
 		}
