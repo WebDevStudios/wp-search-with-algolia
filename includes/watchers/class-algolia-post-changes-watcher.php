@@ -147,7 +147,7 @@ class Algolia_Post_Changes_Watcher implements Algolia_Changes_Watcher {
 		$keys = array( '_thumbnail_id' );
 		$keys = (array) apply_filters( 'algolia_watch_post_meta_keys', $keys, $object_id );
 
-		if ( !in_array( $meta_key, $keys ) ) {
+		if ( ! in_array( $meta_key, $keys, true ) ) {
 			return;
 		}
 
