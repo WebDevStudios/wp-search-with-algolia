@@ -223,7 +223,7 @@ class Algolia_Plugin {
 		$index_id = $this->settings->get_native_search_index_id();
 		$index    = $this->get_index( $index_id );
 
-		if ( null == $index ) {
+		if ( null === $index ) {
 			return;
 		}
 
@@ -379,7 +379,7 @@ class Algolia_Plugin {
 			$index->set_name_prefix( $index_name_prefix );
 			$index->set_client( $client );
 
-			if ( in_array( $index->get_id(), $synced_indices_ids ) ) {
+			if ( in_array( $index->get_id(), $synced_indices_ids, true ) ) {
 				$index->set_enabled( true );
 
 				if ( $index->contains_only( 'posts' ) ) {
