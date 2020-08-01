@@ -380,7 +380,7 @@ class Algolia_Admin_Page_Settings {
 				'no_connection',
 				esc_html__(
 					'We were unable to authenticate you against the Algolia servers with the provided information. Please ensure that you used an the Admin API key and a valid Application ID.',
-					'algolia'
+					'wp-search-with-algolia'
 				)
 			);
 			$settings->set_api_is_reachable( false );
@@ -391,7 +391,7 @@ class Algolia_Admin_Page_Settings {
 					'wrong_search_API_key',
 					esc_html__(
 						'It looks like your search API key is wrong. Ensure that the key you entered has only the search capability and nothing else. Also ensure that the key has no limited time validity.',
-						'algolia'
+						'wp-search-with-algolia'
 					)
 				);
 				$settings->set_api_is_reachable( false );
