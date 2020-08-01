@@ -54,7 +54,6 @@ class Algolia_Term_Changes_Watcher implements Algolia_Changes_Watcher {
 
 		// Fires after a term is deleted from the database and the cache is cleaned.
 		add_action( 'delete_term', array( $this, 'on_delete_term' ), 10, 4 );
-
 	}
 
 	/**
@@ -81,7 +80,7 @@ class Algolia_Term_Changes_Watcher implements Algolia_Changes_Watcher {
 		try {
 			$this->index->sync( $term );
 		} catch ( AlgoliaException $exception ) {
-			error_log( $exception->getMessage() );
+			error_log( $exception->getMessage() ); // phpcs:ignore -- Legacy.
 		}
 	}
 
@@ -128,7 +127,7 @@ class Algolia_Term_Changes_Watcher implements Algolia_Changes_Watcher {
 		try {
 			$this->index->delete_item( $deleted_term );
 		} catch ( AlgoliaException $exception ) {
-			error_log( $exception->getMessage() );
+			error_log( $exception->getMessage() ); // phpcs:ignore -- Legacy.
 		}
 	}
 }
