@@ -42,7 +42,7 @@ class Algolia_Utils {
 			$name = $parent->name;
 		}
 
-		if ( $parent->parent && ( $parent->parent != $parent->term_id ) && ! in_array( $parent->parent, $visited ) ) {
+		if ( $parent->parent && ( $parent->parent !== $parent->term_id ) && ! in_array( $parent->parent, $visited, true ) ) {
 			$visited[] = $parent->parent;
 			$chain    .= self::get_term_parents( $parent->parent, $taxonomy, $separator, $nicename, $visited );
 		}
@@ -153,7 +153,7 @@ class Algolia_Utils {
 	public static function prepare_content( $content ) {
 		$content = self::remove_content_noise( $content );
 
-		return strip_tags( $content );
+		return wp_strip_all_tags( $content );
 	}
 
 	/**
