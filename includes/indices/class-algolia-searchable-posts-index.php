@@ -143,7 +143,7 @@ final class Algolia_Searchable_Posts_Index extends Algolia_Index {
 		$removed = remove_filter( 'the_content', 'wptexturize', 10 );
 
 		$post_content = apply_filters( 'algolia_searchable_post_content', $post->post_content, $post );
-		$post_content = apply_filters( 'the_content', $post_content );
+		$post_content = apply_filters( 'the_content', $post_content ); // phpcs:ignore -- Legitimate use of Core hook.
 
 		if ( true === $removed ) {
 			add_filter( 'the_content', 'wptexturize', 10 );
@@ -194,7 +194,7 @@ final class Algolia_Searchable_Posts_Index extends Algolia_Index {
 		}
 		$shared_attributes['post_type_label']     = $post_type->labels->name;
 		$shared_attributes['post_title']          = $post->post_title;
-		$shared_attributes['post_excerpt']        = apply_filters( 'the_excerpt', $post->post_excerpt );
+		$shared_attributes['post_excerpt']        = apply_filters( 'the_excerpt', $post->post_excerpt ); // phpcs:ignore -- Legitimate use of Core hook.
 		$shared_attributes['post_date']           = get_post_time( 'U', false, $post );
 		$shared_attributes['post_date_formatted'] = get_the_date( '', $post );
 		$shared_attributes['post_modified']       = get_post_modified_time( 'U', false, $post );
@@ -276,7 +276,7 @@ final class Algolia_Searchable_Posts_Index extends Algolia_Index {
 			),
 			'attributesToSnippet'   => array(
 				'post_title:30',
-				'content:' . intval( apply_filters( 'excerpt_length', 55 ) ),
+				'content:' . intval( apply_filters( 'excerpt_length', 55 ) ), // phpcs:ignore -- Legitimate use of Core hook.
 			),
 			'snippetEllipsisText'   => '…',
 		);
