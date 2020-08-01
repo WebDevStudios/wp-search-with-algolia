@@ -34,7 +34,7 @@ final class Algolia_Users_Index extends Algolia_Index {
 	 * @return string The name displayed in the admin UI.
 	 */
 	public function get_admin_name() {
-		return __( 'Users' );
+		return __( 'Users', 'wp-search-with-algolia' );
 	}
 
 	/**
