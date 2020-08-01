@@ -25,7 +25,7 @@ class Algolia_Plugin {
 	 *
 	 * @var Algolia_Plugin
 	 */
-	static private $instance;
+	private static $instance;
 
 	/**
 	 * Instance of Algolia_API.
