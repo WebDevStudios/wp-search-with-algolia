@@ -8,6 +8,8 @@
  * @package WebDevStudios\WPSWA
  */
 
+use Algolia\AlgoliaSearch\Exceptions\AlgoliaException;
+
 /**
  * Class Algolia_Search
  *
@@ -144,7 +146,7 @@ class Algolia_Search {
 
 		try {
 			$results = $this->index->search( $query->query['s'], $params, $order_by, $order );
-		} catch ( \Algolia\AlgoliaSearch\Exceptions\AlgoliaException $exception ) {
+		} catch ( AlgoliaException $exception ) {
 			error_log( $exception->getMessage() ); // phpcs:ignore -- Legacy.
 
 			return;

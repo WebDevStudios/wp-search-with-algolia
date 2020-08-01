@@ -8,6 +8,7 @@
  * @package WebDevStudios\WPSWA
  */
 
+use Algolia\AlgoliaSearch\Exceptions\AlgoliaException;
 use Algolia\AlgoliaSearch\SearchClient;
 use Algolia\AlgoliaSearch\SearchIndex;
 
@@ -431,7 +432,7 @@ abstract class Algolia_Index {
 		try {
 			$index->getSettings();
 			$index_exists = true;
-		} catch ( \Algolia\AlgoliaSearch\Exceptions\AlgoliaException $exception ) {
+		} catch ( AlgoliaException $exception ) {
 			$index_exists = false;
 		}
 
@@ -776,7 +777,7 @@ abstract class Algolia_Index {
 	public function exists() {
 		try {
 			$this->get_index()->getSettings();
-		} catch ( \Algolia\AlgoliaSearch\Exceptions\AlgoliaException $exception ) {
+		} catch ( AlgoliaException $exception ) {
 			if ( $exception->getMessage() === 'Index does not exist' ) {
 				return false;
 			}

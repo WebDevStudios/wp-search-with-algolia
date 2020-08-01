@@ -243,7 +243,7 @@ class Algolia_Admin {
 			);
 
 			wp_send_json( $response );
-		} catch ( \Exception $exception ) {
+		} catch ( Exception $exception ) {
 			echo esc_html( $exception->getMessage() );
 			throw $exception;
 		}
@@ -278,7 +278,7 @@ class Algolia_Admin {
 				'success' => true,
 			);
 			wp_send_json( $response );
-		} catch ( \Exception $exception ) {
+		} catch ( Exception $exception ) {
 			echo esc_html( $exception->getMessage() );
 			throw $exception;
 		}
