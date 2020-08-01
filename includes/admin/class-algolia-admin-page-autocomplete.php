@@ -61,7 +61,7 @@ class Algolia_Admin_Page_Autocomplete {
 	 * @author WebDevStudios <contact@webdevstudios.com>
 	 * @since  1.0.0
 	 *
-	 * @var Algolia_Plugin
+	 * @var Algolia_Settings
 	 */
 	private $settings;
 
