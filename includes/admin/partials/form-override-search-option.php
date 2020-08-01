@@ -1,3 +1,15 @@
+<?php
+/**
+ * Form override search option admin template partial.
+ *
+ * @author  WebDevStudios <contact@webdevstudios.com>
+ * @since   1.0.0
+ *
+ * @package WebDevStudios\WPSWA
+ */
+
+?>
+
 <div class="input-radio">
 	<label>
 		<input type="radio" value="native"

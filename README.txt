@@ -3,9 +3,9 @@
 Contributors: WebDevStudios, williamsba1, gregrickaby, tw2113, richaber
 Tags: Search, Algolia, Autocomplete, instant-search, relevant search, search highlight, faceted search, find-as-you-type search, suggest, search by category, ajax search, better search, custom search
 Requires at least: 5.0
-Tested up to: 5.4
+Tested up to: 5.5
 Requires PHP: 7.2
-Stable tag: 1.3.0
+Stable tag: 1.4.0
 License: GNU General Public License v2.0, MIT License
 
 Improve search on your site. Autocomplete is included, along with full control over look, feel and relevance.
@@ -108,6 +108,13 @@ WebDevStudios provides end-to-end WordPress opportunities from strategy and plan
 == Changelog ==
 
 Follow along with the changelog on [Github](https://github.com/WebDevStudios/wp-search-with-algolia/releases).
+
+= 1.4.0 =
+* Update Algolia PHP Search Client version 2.7.0.
+* Update Algolia JS libraries to most recent compatible (non-breaking) versions
+ * Updates autocomplete.js to 0.37.1 (current release as of 2020-01-27)
+ * Updates algoliasearch to 3.35.1 (last of the 3.x series)
+ * Updates instantsearch.js to 1.12.1 (last of the 1.x series)
 
 = 1.3.0 =
 * Fix an issue where, under some circumstances, when a post with a featured image was deleted, the post might be accidentally re-indexed

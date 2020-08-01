@@ -10,7 +10,7 @@
   "homepage": "https://github.com/WebDevStudios/wp-search-with-algolia",
   "dependencies": {
     "algoliasearch": "^3.22.1",
-    "autocomplete.js": "^0.28.1",
+    "autocomplete.js": "^0.37.1",
     "instantsearch.js": "^1.11.7"
   },
   "devDependencies": {
@@ -20,7 +20,7 @@
     "target": "js/",
     "packages": {
       "algoliasearch": "^3.22.1",
-      "autocomplete.js": "^0.28.1",
+      "autocomplete.js": "^0.37.1",
       "instantsearch.js": "^1.11.7"
     }
   },

@@ -42,14 +42,17 @@ function autocomplete(selector, options, datasets, typeaheadObject) {
       minLength: options.minLength,
       autoselect: options.autoselect,
       autoselectOnBlur: options.autoselectOnBlur,
+      tabAutocomplete: options.tabAutocomplete,
       openOnFocus: options.openOnFocus,
       templates: options.templates,
       debug: options.debug,
+      clearOnSelected: options.clearOnSelected,
       cssClasses: options.cssClasses,
       datasets: datasets,
       keyboardShortcuts: options.keyboardShortcuts,
       appendTo: options.appendTo,
-      autoWidth: options.autoWidth
+      autoWidth: options.autoWidth,
+      ariaLabel: options.ariaLabel || input.getAttribute('aria-label')
     });
     $input.data(typeaheadKey, typeahead);
   });

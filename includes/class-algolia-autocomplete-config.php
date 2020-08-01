@@ -1,20 +1,48 @@
 <?php
+/**
+ * Algolia_Autocomplete_Config class file.
+ *
+ * @author  WebDevStudios <contact@webdevstudios.com>
+ * @since   1.0.0
+ *
+ * @package WebDevStudios\WPSWA
+ */
 
+/**
+ * Class Algolia_Autocomplete_Config
+ *
+ * @since 1.0.0
+ */
 class Algolia_Autocomplete_Config {
 
 	/**
+	 * The Algolia_Plugin instance.
+	 *
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 * @since  1.0.0
+	 *
 	 * @var Algolia_Plugin
 	 */
 	private $plugin;
 
 	/**
-	 * @param Algolia_Plugin $plugin
+	 * Algolia_Autocomplete_Config constructor.
+	 *
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 * @since  1.0.0
+	 *
+	 * @param Algolia_Plugin $plugin The Algolia_Plugin instance.
 	 */
 	public function __construct( Algolia_Plugin $plugin ) {
 		$this->plugin = $plugin;
 	}
 
 	/**
+	 * Get form data.
+	 *
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 * @since  1.0.0
+	 *
 	 * @return array
 	 */
 	public function get_form_data() {
@@ -22,8 +50,16 @@ class Algolia_Autocomplete_Config {
 		$config  = array();
 
 		$existing_config = $this->get_config();
+
+		/**
+		 * Loop over the indices.
+		 *
+		 * @author WebDevStudios <contact@webdevstudios.com>
+		 * @since  1.0.0
+		 *
+		 * @var Algolia_Index $index
+		 */
 		foreach ( $indices as $index ) {
-			/** @var Algolia_Index $index */
 			$index_config = $this->extract_index_config( $existing_config, $index->get_id() );
 			if ( $index_config ) {
 				// If there is an existing configuration, add it.
@@ -47,7 +83,12 @@ class Algolia_Autocomplete_Config {
 	}
 
 	/**
-	 * @param $data
+	 * Sanitize form data.
+	 *
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 * @since  1.0.0
+	 *
+	 * @param array $data The data to sanitize.
 	 *
 	 * @return mixed
 	 */
@@ -86,8 +127,13 @@ class Algolia_Autocomplete_Config {
 	}
 
 	/**
-	 * @param array  $config
-	 * @param string $index_id
+	 * Extract index config.
+	 *
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 * @since  1.0.0
+	 *
+	 * @param array  $config   The config.
+	 * @param string $index_id The index id.
 	 *
 	 * @return mixed|void
 	 */
@@ -100,6 +146,11 @@ class Algolia_Autocomplete_Config {
 	}
 
 	/**
+	 * Get config.
+	 *
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 * @since  1.0.0
+	 *
 	 * @return array
 	 */
 	public function get_config() {

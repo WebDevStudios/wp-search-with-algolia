@@ -1,15 +1,38 @@
 <?php
+/**
+ * Algolia_CLI class file.
+ *
+ * @author  WebDevStudios <contact@webdevstudios.com>
+ * @since   1.0.0
+ *
+ * @package WebDevStudios\WPSWA
+ */
 
 /**
+ * Class Algolia_CLI
+ *
  * Push and re-index records into Algolia indices.
+ *
+ * @since 1.0.0
  */
 class Algolia_CLI extends \WP_CLI_Command {
 
 	/**
+	 * The Algolia_Plugin instance.
+	 *
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 * @since  1.0.0
+	 *
 	 * @var Algolia_Plugin
 	 */
 	private $plugin;
 
+	/**
+	 * Algolia_CLI constructor.
+	 *
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 * @since  1.0.0
+	 */
 	public function __construct() {
 		$this->plugin = Algolia_Plugin::get_instance();
 	}
@@ -33,6 +56,12 @@ class Algolia_CLI extends \WP_CLI_Command {
 	 *     wp algolia re-index
 	 *
 	 * @alias re-index
+	 *
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 * @since  1.0.0
+	 *
+	 * @param array $args       Positional arguments.
+	 * @param array $assoc_args Associative arguments.
 	 */
 	public function reindex( $args, $assoc_args ) {
 		if ( ! $this->plugin->get_api()->is_reachable() ) {
@@ -70,6 +99,17 @@ class Algolia_CLI extends \WP_CLI_Command {
 		}
 	}
 
+	/**
+	 * Do reindex.
+	 *
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 * @since  1.0.0
+	 *
+	 * @param Algolia_Index $index Algolia_Index instance.
+	 * @param bool          $clear Clear all existing records prior to pushing the records.
+	 *
+	 * @return void
+	 */
 	private function do_reindex( Algolia_Index $index, $clear ) {
 
 		if ( $clear ) {

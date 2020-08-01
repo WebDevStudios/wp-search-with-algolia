@@ -1,10 +1,9 @@
 <?php
 /**
- * @wordpress-plugin
  * Plugin Name:       WP Search with Algolia
  * Plugin URI:        https://github.com/WebDevStudios/wp-search-with-algolia
  * Description:       Integrate the powerful Algolia search service with WordPress
- * Version:           1.3.0
+ * Version:           1.4.0
  * Requires at least: 5.0
  * Requires PHP:      7.2
  * Author:            WebDevStudios
@@ -12,6 +11,9 @@
  * License:           GNU General Public License v2.0 / MIT License
  * Text Domain:       wp-search-with-algolia
  * Domain Path:       /languages
+ *
+ * @since   1.0.0
+ * @package WebDevStudios\WPSWA
  */
 
 // The following code is a derivative work of the code from the
@@ -24,7 +26,7 @@ if ( ! defined( 'WPINC' ) ) {
 }
 
 // The Algolia Search plugin version.
-define( 'ALGOLIA_VERSION', '1.3.0' );
+define( 'ALGOLIA_VERSION', '1.4.0' );
 
 // The minmum required PHP version.
 define( 'ALGOLIA_MIN_PHP_VERSION', '7.2' );
@@ -43,6 +45,9 @@ if ( ! defined( 'ALGOLIA_PATH' ) ) {
 /**
  * Check for required PHP version.
  *
+ * @author  WebDevStudios <contact@webdevstudios.com>
+ * @since   1.1.0
+ *
  * @return bool
  */
 function algolia_php_version_check() {
@@ -55,6 +60,9 @@ function algolia_php_version_check() {
 /**
  * Check for required WordPress version.
  *
+ * @author  WebDevStudios <contact@webdevstudios.com>
+ * @since   1.1.0
+ *
  * @return bool
  */
 function algolia_wp_version_check() {
@@ -66,6 +74,9 @@ function algolia_wp_version_check() {
 
 /**
  * Admin notices if requirements aren't met.
+ *
+ * @author  WebDevStudios <contact@webdevstudios.com>
+ * @since   1.1.0
  */
 function algolia_requirements_error_notice() {
 
@@ -96,6 +107,9 @@ function algolia_requirements_error_notice() {
 
 /**
  * I18n.
+ *
+ * @author  WebDevStudios <contact@webdevstudios.com>
+ * @since   1.0.0
  */
 function algolia_load_textdomain() {
 
@@ -115,7 +129,7 @@ if ( algolia_php_version_check() && algolia_wp_version_check() ) {
 	$algolia = Algolia_Plugin::get_instance();
 
 	if ( defined( 'WP_CLI' ) && WP_CLI ) {
-		include ALGOLIA_PATH . '/includes/class-algolia-cli.php';
+		include ALGOLIA_PATH . 'includes/class-algolia-cli.php';
 		WP_CLI::add_command( 'algolia', new Algolia_CLI() );
 	}
 } else {

@@ -1,21 +1,50 @@
 <?php
+/**
+ * Algolia_User_Changes_Watcher class file.
+ *
+ * @author  WebDevStudios <contact@webdevstudios.com>
+ * @since   1.0.0
+ *
+ * @package WebDevStudios\WPSWA
+ */
 
 use Algolia\AlgoliaSearch\Exceptions\AlgoliaException;
 
+/**
+ * Class Algolia_User_Changes_Watcher
+ *
+ * @since 1.0.0
+ */
 class Algolia_User_Changes_Watcher implements Algolia_Changes_Watcher {
 
 	/**
+	 * Algolia_Index instance.
+	 *
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 * @since  1.0.0
+	 *
 	 * @var Algolia_Index
 	 */
 	private $index;
 
 	/**
-	 * @param Algolia_Index $index
+	 * Algolia_User_Changes_Watcher constructor.
+	 *
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 * @since  1.0.0
+	 *
+	 * @param Algolia_Index $index Algolia_Index instance.
 	 */
 	public function __construct( Algolia_Index $index ) {
 		$this->index = $index;
 	}
 
+	/**
+	 * Watch WordPress events.
+	 *
+	 * @author  WebDevStudios <contact@webdevstudios.com>
+	 * @since   1.0.0
+	 */
 	public function watch() {
 		// Fires immediately after an existing user is updated.
 		add_action( 'profile_update', array( $this, 'sync_item' ) );
@@ -35,7 +64,14 @@ class Algolia_User_Changes_Watcher implements Algolia_Changes_Watcher {
 	}
 
 	/**
-	 * @param $user_id
+	 * Sync item.
+	 *
+	 * @author  WebDevStudios <contact@webdevstudios.com>
+	 * @since   1.0.0
+	 *
+	 * @param int $user_id User ID.
+	 *
+	 * @return void
 	 */
 	public function sync_item( $user_id ) {
 		if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) {
@@ -51,12 +87,19 @@ class Algolia_User_Changes_Watcher implements Algolia_Changes_Watcher {
 		try {
 			$this->index->sync( $user );
 		} catch ( AlgoliaException $exception ) {
-			error_log( $exception->getMessage() );
+			error_log( $exception->getMessage() ); // phpcs:ignore -- Legacy.
 		}
 	}
 
 	/**
-	 * @param int $user_id
+	 * Delete item.
+	 *
+	 * @author  WebDevStudios <contact@webdevstudios.com>
+	 * @since   1.0.0
+	 *
+	 * @param int $user_id ID of the user to delete.
+	 *
+	 * @return void
 	 */
 	public function delete_item( $user_id ) {
 		$user = get_user_by( 'id', $user_id );
@@ -68,15 +111,18 @@ class Algolia_User_Changes_Watcher implements Algolia_Changes_Watcher {
 		try {
 			$this->index->delete_item( $user );
 		} catch ( AlgoliaException $exception ) {
-			error_log( $exception->getMessage() );
+			error_log( $exception->getMessage() ); // phpcs:ignore -- Legacy.
 		}
 	}
 
 	/**
 	 * Ensures that the user post count gets updated.
 	 *
-	 * @param int     $post_id
-	 * @param WP_Post $post
+	 * @author  WebDevStudios <contact@webdevstudios.com>
+	 * @since   1.0.0
+	 *
+	 * @param int     $post_id Post ID.
+	 * @param WP_Post $post    Post object.
 	 */
 	public function on_save_post( $post_id, WP_Post $post ) {
 		$this->sync_item( (int) $post->post_author );
@@ -85,7 +131,12 @@ class Algolia_User_Changes_Watcher implements Algolia_Changes_Watcher {
 	/**
 	 * Ensures that the user post count gets updated.
 	 *
-	 * @param int $post_id
+	 * @author  WebDevStudios <contact@webdevstudios.com>
+	 * @since   1.0.0
+	 *
+	 * @param int $post_id Post ID.
+	 *
+	 * @return void
 	 */
 	public function on_delete_post( $post_id ) {
 		$post = get_post( (int) $post_id );

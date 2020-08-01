@@ -1,26 +1,64 @@
 <?php
+/**
+ * Algolia_Searchable_Posts_Index class file.
+ *
+ * @author  WebDevStudios <contact@webdevstudios.com>
+ * @since   1.0.0
+ *
+ * @package WebDevStudios\WPSWA
+ */
 
+/**
+ * Class Algolia_Searchable_Posts_Index
+ *
+ * @since 1.0.0
+ */
 final class Algolia_Searchable_Posts_Index extends Algolia_Index {
 
 	/**
+	 * What this index contains.
+	 *
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 * @since  1.0.0
+	 *
 	 * @var string
 	 */
 	protected $contains_only = 'posts';
 
 	/**
+	 * Array of post types for the searchable posts index.
+	 *
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 * @since  1.0.0
+	 *
 	 * @var array
 	 */
 	private $post_types;
 
 	/**
-	 * @param array $post_types
+	 * Algolia_Searchable_Posts_Index constructor.
+	 *
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 * @since  1.0.0
+	 *
+	 * @param array $post_types The post types.
 	 */
 	public function __construct( array $post_types ) {
 		$this->post_types = $post_types;
 	}
 
 	/**
-	 * @param mixed $item
+	 * Check if this index supports the given item.
+	 *
+	 * A performing function that return true if the item can potentially
+	 * be subject for indexation or not. This will be used to determine if an item is part of the index
+	 * As this function will be called synchronously during other operations,
+	 * it has to be as lightweight as possible. No db calls or huge loops.
+	 *
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 * @since  1.0.0
+	 *
+	 * @param mixed $item The item to check against.
 	 *
 	 * @return bool
 	 */
@@ -29,6 +67,11 @@ final class Algolia_Searchable_Posts_Index extends Algolia_Index {
 	}
 
 	/**
+	 * Get the admin name for this index.
+	 *
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 * @since  1.0.0
+	 *
 	 * @return string The name displayed in the admin UI.
 	 */
 	public function get_admin_name() {
@@ -36,7 +79,12 @@ final class Algolia_Searchable_Posts_Index extends Algolia_Index {
 	}
 
 	/**
-	 * @param $item
+	 * Check if the item should be indexed.
+	 *
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 * @since  1.0.0
+	 *
+	 * @param mixed $item The item to check.
 	 *
 	 * @return bool
 	 */
@@ -45,7 +93,12 @@ final class Algolia_Searchable_Posts_Index extends Algolia_Index {
 	}
 
 	/**
-	 * @param WP_Post $post
+	 * Check if the post should be indexed.
+	 *
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 * @since  1.0.0
+	 *
+	 * @param WP_Post $post The post to check.
 	 *
 	 * @return bool
 	 */
@@ -56,7 +109,12 @@ final class Algolia_Searchable_Posts_Index extends Algolia_Index {
 	}
 
 	/**
-	 * @param $item
+	 * Get records for the item.
+	 *
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 * @since  1.0.0
+	 *
+	 * @param mixed $item The item to get records for.
 	 *
 	 * @return array
 	 */
@@ -65,12 +123,17 @@ final class Algolia_Searchable_Posts_Index extends Algolia_Index {
 	}
 
 	/**
+	 * Get records for the post.
+	 *
 	 * Turns a WP_Post in a collection of records to be pushed to Algolia.
 	 * Given every single post is splitted into several Algolia records,
 	 * we also attribute an objectID that follows a naming convention for
 	 * every record.
 	 *
-	 * @param WP_Post $post
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 * @since  1.0.0
+	 *
+	 * @param WP_Post $post The post to get records for.
 	 *
 	 * @return array
 	 */
@@ -80,7 +143,7 @@ final class Algolia_Searchable_Posts_Index extends Algolia_Index {
 		$removed = remove_filter( 'the_content', 'wptexturize', 10 );
 
 		$post_content = apply_filters( 'algolia_searchable_post_content', $post->post_content, $post );
-		$post_content = apply_filters( 'the_content', $post_content );
+		$post_content = apply_filters( 'the_content', $post_content ); // phpcs:ignore -- Legitimate use of Core hook.
 
 		if ( true === $removed ) {
 			add_filter( 'the_content', 'wptexturize', 10 );
@@ -109,9 +172,16 @@ final class Algolia_Searchable_Posts_Index extends Algolia_Index {
 	}
 
 	/**
-	 * @param WP_Post $post
+	 * Get post shared attributes.
+	 *
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 * @since  1.0.0
+	 *
+	 * @param WP_Post $post The post to get shared attributes for.
 	 *
 	 * @return array
+	 *
+	 * @throws RuntimeException If post type information unknown.
 	 */
 	private function get_post_shared_attributes( WP_Post $post ) {
 		$shared_attributes              = array();
@@ -124,7 +194,7 @@ final class Algolia_Searchable_Posts_Index extends Algolia_Index {
 		}
 		$shared_attributes['post_type_label']     = $post_type->labels->name;
 		$shared_attributes['post_title']          = $post->post_title;
-		$shared_attributes['post_excerpt']        = apply_filters( 'the_excerpt', $post->post_excerpt );
+		$shared_attributes['post_excerpt']        = apply_filters( 'the_excerpt', $post->post_excerpt ); // phpcs:ignore -- Legitimate use of Core hook.
 		$shared_attributes['post_date']           = get_post_time( 'U', false, $post );
 		$shared_attributes['post_date_formatted'] = get_the_date( '', $post );
 		$shared_attributes['post_modified']       = get_post_modified_time( 'U', false, $post );
@@ -177,6 +247,11 @@ final class Algolia_Searchable_Posts_Index extends Algolia_Index {
 	}
 
 	/**
+	 * Get settings.
+	 *
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 * @since  1.0.0
+	 *
 	 * @return array
 	 */
 	protected function get_settings() {
@@ -201,7 +276,7 @@ final class Algolia_Searchable_Posts_Index extends Algolia_Index {
 			),
 			'attributesToSnippet'   => array(
 				'post_title:30',
-				'content:' . intval( apply_filters( 'excerpt_length', 55 ) ),
+				'content:' . intval( apply_filters( 'excerpt_length', 55 ) ), // phpcs:ignore -- Legitimate use of Core hook.
 			),
 			'snippetEllipsisText'   => '…',
 		);
@@ -212,6 +287,11 @@ final class Algolia_Searchable_Posts_Index extends Algolia_Index {
 	}
 
 	/**
+	 * Get synonyms.
+	 *
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 * @since  1.0.0
+	 *
 	 * @return array
 	 */
 	protected function get_synonyms() {
@@ -223,7 +303,8 @@ final class Algolia_Searchable_Posts_Index extends Algolia_Index {
 	/**
 	 * Get post object ID.
 	 *
-	 * @since 1.0.0
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 * @since  1.0.0
 	 *
 	 * @param int $post_id      The WP_Post ID.
 	 * @param int $record_index The split record index.
@@ -247,16 +328,26 @@ final class Algolia_Searchable_Posts_Index extends Algolia_Index {
 	}
 
 	/**
-	 * @param mixed $item
-	 * @param array $records
+	 * Update records.
+	 *
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 * @since  1.0.0
+	 *
+	 * @param mixed $item    The item to update records for.
+	 * @param array $records The records.
 	 */
 	protected function update_records( $item, array $records ) {
 		$this->update_post_records( $item, $records );
 	}
 
 	/**
-	 * @param WP_Post $post
-	 * @param array   $records
+	 * Update post records.
+	 *
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 * @since  1.0.0
+	 *
+	 * @param WP_Post $post    The post to update records for.
+	 * @param array   $records The records.
 	 */
 	private function update_post_records( WP_Post $post, array $records ) {
 		// If there are no records, parent `update_records` will take care of the deletion.
@@ -276,6 +367,11 @@ final class Algolia_Searchable_Posts_Index extends Algolia_Index {
 	}
 
 	/**
+	 * Get ID.
+	 *
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 * @since  1.0.0
+	 *
 	 * @return string
 	 */
 	public function get_id() {
@@ -283,6 +379,11 @@ final class Algolia_Searchable_Posts_Index extends Algolia_Index {
 	}
 
 	/**
+	 * Get re-index items count.
+	 *
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 * @since  1.0.0
+	 *
 	 * @return int
 	 */
 	protected function get_re_index_items_count() {
@@ -301,8 +402,13 @@ final class Algolia_Searchable_Posts_Index extends Algolia_Index {
 	}
 
 	/**
-	 * @param int $page
-	 * @param int $batch_size
+	 * Get items.
+	 *
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 * @since  1.0.0
+	 *
+	 * @param int $page       The page.
+	 * @param int $batch_size The batch size.
 	 *
 	 * @return array
 	 */
@@ -326,7 +432,12 @@ final class Algolia_Searchable_Posts_Index extends Algolia_Index {
 	}
 
 	/**
-	 * @param mixed $item
+	 * Delete item.
+	 *
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 * @since  1.0.0
+	 *
+	 * @param mixed $item The item to delete.
 	 */
 	public function delete_item( $item ) {
 		$this->assert_is_supported( $item );
@@ -343,7 +454,12 @@ final class Algolia_Searchable_Posts_Index extends Algolia_Index {
 	}
 
 	/**
-	 * @param int $post_id
+	 * Get post records count.
+	 *
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 * @since  1.0.0
+	 *
+	 * @param int $post_id The post ID.
 	 *
 	 * @return int
 	 */
@@ -351,8 +467,13 @@ final class Algolia_Searchable_Posts_Index extends Algolia_Index {
 		return (int) get_post_meta( (int) $post_id, 'algolia_' . $this->get_id() . '_records_count', true );
 	}
 	/**
-	 * @param WP_Post $post
-	 * @param int     $count
+	 * Get post records count.
+	 *
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 * @since  1.0.0
+	 *
+	 * @param WP_Post $post  The post.
+	 * @param int     $count The count of records.
 	 */
 	private function set_post_records_count( WP_Post $post, $count ) {
 		update_post_meta( (int) $post->ID, 'algolia_' . $this->get_id() . '_records_count', (int) $count );

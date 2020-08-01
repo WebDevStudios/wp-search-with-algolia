@@ -1,34 +1,77 @@
 <?php
+/**
+ * Algolia_Admin_Page_Settings class file.
+ *
+ * @author  WebDevStudios <contact@webdevstudios.com>
+ * @since   1.0.0
+ *
+ * @package WebDevStudios\WPSWA
+ */
 
+/**
+ * Class Algolia_Admin_Page_Settings
+ *
+ * @since 1.0.0
+ */
 class Algolia_Admin_Page_Settings {
 
 	/**
+	 * Admin page slug.
+	 *
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 * @since  1.0.0
+	 *
 	 * @var string
 	 */
 	private $slug = 'algolia-account-settings';
 
 	/**
+	 * Admin page capabilities.
+	 *
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 * @since  1.0.0
+	 *
 	 * @var string
 	 */
 	private $capability = 'manage_options';
 
 	/**
+	 * Admin page section.
+	 *
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 * @since  1.0.0
+	 *
 	 * @var string
 	 */
 	private $section = 'algolia_section_settings';
 
 	/**
+	 * Admin page option group.
+	 *
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 * @since  1.0.0
+	 *
 	 * @var string
 	 */
 	private $option_group = 'algolia_settings';
 
 	/**
+	 * The Algolia_Plugin instance.
+	 *
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 * @since  1.0.0
+	 *
 	 * @var Algolia_Plugin
 	 */
 	private $plugin;
 
 	/**
-	 * @param Algolia_Plugin $plugin
+	 * Algolia_Admin_Page_Settings constructor.
+	 *
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 * @since  1.0.0
+	 *
+	 * @param Algolia_Plugin $plugin The Algolia_Plugin instance.
 	 */
 	public function __construct( Algolia_Plugin $plugin ) {
 		$this->plugin = $plugin;
@@ -42,7 +85,12 @@ class Algolia_Admin_Page_Settings {
 	}
 
 	/**
-	 * @param array $links
+	 * Add action links.
+	 *
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 * @since  1.0.0
+	 *
+	 * @param array $links Array of action links.
 	 *
 	 * @return array
 	 */
@@ -54,6 +102,14 @@ class Algolia_Admin_Page_Settings {
 		);
 	}
 
+	/**
+	 * Add admin menu page.
+	 *
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 * @since  1.0.0
+	 *
+	 * @return string|void The resulting page's hook_suffix.
+	 */
 	public function add_page() {
 		$api = $this->plugin->get_api();
 		if ( ! $api->is_reachable() ) {
@@ -78,6 +134,12 @@ class Algolia_Admin_Page_Settings {
 		);
 	}
 
+	/**
+	 * Add settings.
+	 *
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 * @since  1.0.0
+	 */
 	public function add_settings() {
 		add_settings_section(
 			$this->section,
@@ -133,6 +195,12 @@ class Algolia_Admin_Page_Settings {
 		register_setting( $this->option_group, 'algolia_powered_by_enabled', array( $this, 'sanitize_powered_by_enabled' ) );
 	}
 
+	/**
+	 * Application ID callback.
+	 *
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 * @since  1.0.0
+	 */
 	public function application_id_callback() {
 
 		$settings      = $this->plugin->get_settings();
@@ -144,6 +212,12 @@ class Algolia_Admin_Page_Settings {
 <?php
 	}
 
+	/**
+	 * Search API key callback.
+	 *
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 * @since  1.0.0
+	 */
 	public function search_api_key_callback() {
 		$settings      = $this->plugin->get_settings();
 		$setting       = $settings->get_search_api_key();
@@ -155,6 +229,12 @@ class Algolia_Admin_Page_Settings {
 <?php
 	}
 
+	/**
+	 * Admin API key callback.
+	 *
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 * @since  1.0.0
+	 */
 	public function api_key_callback() {
 		$settings      = $this->plugin->get_settings();
 		$setting       = $settings->get_api_key();
@@ -165,6 +245,12 @@ class Algolia_Admin_Page_Settings {
 <?php
 	}
 
+	/**
+	 * Index name prefix callback.
+	 *
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 * @since  1.0.0
+	 */
 	public function index_name_prefix_callback() {
 		$settings          = $this->plugin->get_settings();
 		$index_name_prefix = $settings->get_index_name_prefix();
@@ -175,6 +261,12 @@ class Algolia_Admin_Page_Settings {
 <?php
 	}
 
+	/**
+	 * Powered by enabled callback.
+	 *
+	 * @author Richard Aber <richard.aber@webdevstudios.com>
+	 * @since  2020-07-24
+	 */
 	public function powered_by_enabled_callback() {
 		$powered_by_enabled = $this->plugin->get_settings()->is_powered_by_enabled();
 		$checked            = '';
@@ -185,6 +277,16 @@ class Algolia_Admin_Page_Settings {
 			'<p class="description" id="home-description">' . esc_html( __( 'This will remove the Algolia logo from the autocomplete and the search page. We require that you keep the Algolia logo if you are using a free plan.', 'wp-search-with-algolia' ) ) . '</p>';
 	}
 
+	/**
+	 * Sanitize application ID.
+	 *
+	 * @author Richard Aber <richard.aber@webdevstudios.com>
+	 * @since  2020-07-24
+	 *
+	 * @param string $value The value to sanitize.
+	 *
+	 * @return string
+	 */
 	public function sanitize_application_id( $value ) {
 		if ( $this->plugin->get_settings()->is_application_id_in_config() ) {
 			$value = $this->plugin->get_settings()->get_application_id();
@@ -203,6 +305,16 @@ class Algolia_Admin_Page_Settings {
 		return $value;
 	}
 
+	/**
+	 * Sanitize search API key.
+	 *
+	 * @author Richard Aber <richard.aber@webdevstudios.com>
+	 * @since  2020-07-24
+	 *
+	 * @param string $value The value to sanitize.
+	 *
+	 * @return string
+	 */
 	public function sanitize_search_api_key( $value ) {
 		if ( $this->plugin->get_settings()->is_search_api_key_in_config() ) {
 			$value = $this->plugin->get_settings()->get_search_api_key();
@@ -220,6 +332,16 @@ class Algolia_Admin_Page_Settings {
 		return $value;
 	}
 
+	/**
+	 * Sanitize Admin API key.
+	 *
+	 * @author Richard Aber <richard.aber@webdevstudios.com>
+	 * @since  2020-07-24
+	 *
+	 * @param string $value The value to sanitize.
+	 *
+	 * @return string
+	 */
 	public function sanitize_api_key( $value ) {
 		if ( $this->plugin->get_settings()->is_api_key_in_config() ) {
 			$value = $this->plugin->get_settings()->get_api_key();
@@ -258,7 +380,7 @@ class Algolia_Admin_Page_Settings {
 				'no_connection',
 				esc_html__(
 					'We were unable to authenticate you against the Algolia servers with the provided information. Please ensure that you used an the Admin API key and a valid Application ID.',
-					'algolia'
+					'wp-search-with-algolia'
 				)
 			);
 			$settings->set_api_is_reachable( false );
@@ -269,7 +391,7 @@ class Algolia_Admin_Page_Settings {
 					'wrong_search_API_key',
 					esc_html__(
 						'It looks like your search API key is wrong. Ensure that the key you entered has only the search capability and nothing else. Also ensure that the key has no limited time validity.',
-						'algolia'
+						'wp-search-with-algolia'
 					)
 				);
 				$settings->set_api_is_reachable( false );
@@ -288,9 +410,14 @@ class Algolia_Admin_Page_Settings {
 	}
 
 	/**
-	 * @param $index_name_prefix
+	 * Determine if the index name prefix is valid.
 	 *
-	 * @return string
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 * @since  1.0.0
+	 *
+	 * @param string $index_name_prefix The index name prefix.
+	 *
+	 * @return bool
 	 */
 	public function is_valid_index_name_prefix( $index_name_prefix ) {
 		$to_validate = str_replace( '_', '', $index_name_prefix );
@@ -299,9 +426,14 @@ class Algolia_Admin_Page_Settings {
 	}
 
 	/**
-	 * @param $value
+	 * Sanitize the index name prefix.
 	 *
-	 * @return array
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 * @since  1.0.0
+	 *
+	 * @param string $value The value to sanitize.
+	 *
+	 * @return bool|mixed|string|void
 	 */
 	public function sanitize_index_name_prefix( $value ) {
 		if ( $this->plugin->get_settings()->is_index_name_prefix_in_config() ) {
@@ -324,7 +456,12 @@ class Algolia_Admin_Page_Settings {
 	}
 
 	/**
-	 * @param $value
+	 * Sanitize the powered by enabled setting.
+	 *
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 * @since  1.0.0
+	 *
+	 * @param string $value The value to sanitize.
 	 *
 	 * @return string
 	 */
@@ -334,15 +471,30 @@ class Algolia_Admin_Page_Settings {
 
 	/**
 	 * Display the page.
+	 *
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 * @since  1.0.0
 	 */
 	public function display_page() {
 		require_once dirname( __FILE__ ) . '/partials/form-options.php';
 	}
 
+	/**
+	 * Display errors.
+	 *
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 * @since  1.0.0
+	 */
 	public function display_errors() {
 		settings_errors( $this->option_group );
 	}
 
+	/**
+	 * Print the settings section.
+	 *
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 * @since  1.0.0
+	 */
 	public function print_section_settings() {
 		echo '<p>' . esc_html__( 'Configure your Algolia account credentials. You can find them in the "API Keys" section of your Algolia dashboard.', 'wp-search-with-algolia' ) . '</p>';
 		echo '<p>' . esc_html__( 'Once you provide your Algolia Application ID and API key, this plugin will be able to securely communicate with Algolia servers.', 'wp-search-with-algolia' ) . ' ' . esc_html__( 'We ensure your information is correct by testing them against the Algolia servers upon save.', 'wp-search-with-algolia' ) . '</p>';

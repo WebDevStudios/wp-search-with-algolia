@@ -1,9 +1,25 @@
 <?php
+/**
+ * Algolia_Settings class file.
+ *
+ * @author  WebDevStudios <contact@webdevstudios.com>
+ * @since   1.0.0
+ *
+ * @package WebDevStudios\WPSWA
+ */
 
+/**
+ * Class Algolia_Settings
+ *
+ * @since 1.0.0
+ */
 class Algolia_Settings {
 
 	/**
 	 * Algolia_Settings constructor.
+	 *
+	 * @author  WebDevStudios <contact@webdevstudios.com>
+	 * @since   1.0.0
 	 */
 	public function __construct() {
 		add_option( 'algolia_application_id', '' );
@@ -19,6 +35,11 @@ class Algolia_Settings {
 	}
 
 	/**
+	 * Get the Algolia Application ID.
+	 *
+	 * @author  WebDevStudios <contact@webdevstudios.com>
+	 * @since   1.0.0
+	 *
 	 * @return string
 	 */
 	public function get_application_id() {
@@ -33,6 +54,11 @@ class Algolia_Settings {
 	}
 
 	/**
+	 * Get the Algolia Search-Only API Key.
+	 *
+	 * @author  WebDevStudios <contact@webdevstudios.com>
+	 * @since   1.0.0
+	 *
 	 * @return string
 	 */
 	public function get_search_api_key() {
@@ -47,6 +73,11 @@ class Algolia_Settings {
 	}
 
 	/**
+	 * Get the Algolia Admin API Key
+	 *
+	 * @author  WebDevStudios <contact@webdevstudios.com>
+	 * @since   1.0.0
+	 *
 	 * @return string
 	 */
 	public function get_api_key() {
@@ -61,6 +92,11 @@ class Algolia_Settings {
 	}
 
 	/**
+	 * Get the post types blacklist.
+	 *
+	 * @author  WebDevStudios <contact@webdevstudios.com>
+	 * @since   1.0.0
+	 *
 	 * @return array
 	 */
 	public function get_post_types_blacklist() {
@@ -84,6 +120,11 @@ class Algolia_Settings {
 	}
 
 	/**
+	 * Get synced indices IDs.
+	 *
+	 * @author  WebDevStudios <contact@webdevstudios.com>
+	 * @since   1.0.0
+	 *
 	 * @return array
 	 */
 	public function get_synced_indices_ids() {
@@ -106,8 +147,12 @@ class Algolia_Settings {
 		return (array) apply_filters( 'algolia_get_synced_indices_ids', $ids );
 	}
 
-
 	/**
+	 * Get taxonomies blacklist.
+	 *
+	 * @author  WebDevStudios <contact@webdevstudios.com>
+	 * @since   1.0.0
+	 *
 	 * @return array
 	 */
 	public function get_taxonomies_blacklist() {
@@ -115,6 +160,11 @@ class Algolia_Settings {
 	}
 
 	/**
+	 * Get the autocomplete enabled option setting.
+	 *
+	 * @author  WebDevStudios <contact@webdevstudios.com>
+	 * @since   1.0.0
+	 *
 	 * @return string Can be 'yes' or 'no'.
 	 */
 	public function get_autocomplete_enabled() {
@@ -122,6 +172,11 @@ class Algolia_Settings {
 	}
 
 	/**
+	 * Get the autocomplete config.
+	 *
+	 * @author  WebDevStudios <contact@webdevstudios.com>
+	 * @since   1.0.0
+	 *
 	 * @return array
 	 */
 	public function get_autocomplete_config() {
@@ -129,6 +184,11 @@ class Algolia_Settings {
 	}
 
 	/**
+	 * Get the override native search option setting.
+	 *
+	 * @author  WebDevStudios <contact@webdevstudios.com>
+	 * @since   1.0.0
+	 *
 	 * @return string Can be 'native' 'backend' or 'instantsearch'.
 	 */
 	public function get_override_native_search() {
@@ -143,6 +203,11 @@ class Algolia_Settings {
 	}
 
 	/**
+	 * Determines whether we should override search in backend.
+	 *
+	 * @author  WebDevStudios <contact@webdevstudios.com>
+	 * @since   1.0.0
+	 *
 	 * @return bool
 	 */
 	public function should_override_search_in_backend() {
@@ -150,6 +215,11 @@ class Algolia_Settings {
 	}
 
 	/**
+	 * Determines whether we should override search with instantsearch.js.
+	 *
+	 * @author  WebDevStudios <contact@webdevstudios.com>
+	 * @since   1.0.0
+	 *
 	 * @return bool
 	 */
 	public function should_override_search_with_instantsearch() {
@@ -159,6 +229,11 @@ class Algolia_Settings {
 	}
 
 	/**
+	 * Get native search index ID.
+	 *
+	 * @author  WebDevStudios <contact@webdevstudios.com>
+	 * @since   1.0.0
+	 *
 	 * @return string
 	 */
 	public function get_native_search_index_id() {
@@ -166,6 +241,11 @@ class Algolia_Settings {
 	}
 
 	/**
+	 * Get the index name prefix.
+	 *
+	 * @author  WebDevStudios <contact@webdevstudios.com>
+	 * @since   1.0.0
+	 *
 	 * @return string
 	 */
 	public function get_index_name_prefix() {
@@ -181,10 +261,16 @@ class Algolia_Settings {
 
 	/**
 	 * Makes sure that constants are non empty strings.
+	 *
 	 * This makes sure that we fail early if the environment configuration is wrong.
 	 *
-	 * @param $value
-	 * @param $constant_name
+	 * @author  WebDevStudios <contact@webdevstudios.com>
+	 * @since   1.0.0
+	 *
+	 * @param mixed  $value         The constant value to check.
+	 * @param string $constant_name The constant name to check.
+	 *
+	 * @throws RuntimeException If the constant is not a string or is empty.
 	 */
 	protected function assert_constant_is_non_empty_string( $value, $constant_name ) {
 		if ( ! is_string( $value ) ) {
@@ -197,6 +283,11 @@ class Algolia_Settings {
 	}
 
 	/**
+	 * Determines if the ALGOLIA_APPLICATION_ID is defined.
+	 *
+	 * @author  WebDevStudios <contact@webdevstudios.com>
+	 * @since   1.0.0
+	 *
 	 * @return bool
 	 */
 	public function is_application_id_in_config() {
@@ -204,6 +295,11 @@ class Algolia_Settings {
 	}
 
 	/**
+	 * Determines if the ALGOLIA_SEARCH_API_KEY is defined.
+	 *
+	 * @author  WebDevStudios <contact@webdevstudios.com>
+	 * @since   1.0.0
+	 *
 	 * @return bool
 	 */
 	public function is_search_api_key_in_config() {
@@ -211,6 +307,11 @@ class Algolia_Settings {
 	}
 
 	/**
+	 * Determines if the ALGOLIA_API_KEY is defined.
+	 *
+	 * @author  WebDevStudios <contact@webdevstudios.com>
+	 * @since   1.0.0
+	 *
 	 * @return bool
 	 */
 	public function is_api_key_in_config() {
@@ -218,6 +319,10 @@ class Algolia_Settings {
 	}
 
 	/**
+	 * Determines if the ALGOLIA_INDEX_NAME_PREFIX is defined.
+	 *
+	 * @author  WebDevStudios <contact@webdevstudios.com>
+	 * @since   1.0.0
 	 * @return bool
 	 */
 	public function is_index_name_prefix_in_config() {
@@ -225,6 +330,11 @@ class Algolia_Settings {
 	}
 
 	/**
+	 * Get the API is reachable option setting.
+	 *
+	 * @author  WebDevStudios <contact@webdevstudios.com>
+	 * @since   1.0.0
+	 *
 	 * @return bool
 	 */
 	public function get_api_is_reachable() {
@@ -234,7 +344,12 @@ class Algolia_Settings {
 	}
 
 	/**
-	 * @param bool $flag
+	 * Set the API is reachable option setting.
+	 *
+	 * @author  WebDevStudios <contact@webdevstudios.com>
+	 * @since   1.0.0
+	 *
+	 * @param bool $flag If the API is reachable or not, 'yes' or 'no'.
 	 */
 	public function set_api_is_reachable( $flag ) {
 		$value = (bool) true === $flag ? 'yes' : 'no';
@@ -242,6 +357,11 @@ class Algolia_Settings {
 	}
 
 	/**
+	 * Determine if powered by is enabled.
+	 *
+	 * @author  WebDevStudios <contact@webdevstudios.com>
+	 * @since   1.0.0
+	 *
 	 * @return bool
 	 */
 	public function is_powered_by_enabled() {
@@ -250,10 +370,22 @@ class Algolia_Settings {
 		return 'yes' === $enabled;
 	}
 
+	/**
+	 * Enable the powered by option setting.
+	 *
+	 * @author  WebDevStudios <contact@webdevstudios.com>
+	 * @since   1.0.0
+	 */
 	public function enable_powered_by() {
 		update_option( 'algolia_powered_by_enabled', 'yes' );
 	}
 
+	/**
+	 * Disable the powered by option setting.
+	 *
+	 * @author  WebDevStudios <contact@webdevstudios.com>
+	 * @since   1.0.0
+	 */
 	public function disable_powered_by() {
 		update_option( 'algolia_powered_by_enabled', 'no' );
 	}

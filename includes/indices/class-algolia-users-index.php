@@ -1,21 +1,49 @@
 <?php
+/**
+ * Algolia_Users_Index class file.
+ *
+ * @author  WebDevStudios <contact@webdevstudios.com>
+ * @since   1.0.0
+ *
+ * @package WebDevStudios\WPSWA
+ */
 
+/**
+ * Class Algolia_Users_Index
+ *
+ * @since 1.0.0
+ */
 final class Algolia_Users_Index extends Algolia_Index {
 
 	/**
+	 * What this index contains.
+	 *
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 * @since  1.0.0
+	 *
 	 * @var string
 	 */
 	protected $contains_only = 'users';
 
 	/**
+	 * Get the admin name for this index.
+	 *
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 * @since  1.0.0
+	 *
 	 * @return string The name displayed in the admin UI.
 	 */
 	public function get_admin_name() {
-		return __( 'Users' );
+		return __( 'Users', 'wp-search-with-algolia' );
 	}
 
 	/**
-	 * @param $item
+	 * Check if the item should be indexed.
+	 *
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 * @since  1.0.0
+	 *
+	 * @param mixed $item The item to check.
 	 *
 	 * @return bool
 	 */
@@ -30,7 +58,12 @@ final class Algolia_Users_Index extends Algolia_Index {
 	}
 
 	/**
-	 * @param $item
+	 * Get records for the item.
+	 *
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 * @since  1.0.0
+	 *
+	 * @param mixed $item The item to get records for.
 	 *
 	 * @return array
 	 */
@@ -66,6 +99,11 @@ final class Algolia_Users_Index extends Algolia_Index {
 	}
 
 	/**
+	 * Get re-index items count.
+	 *
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 * @since  1.0.0
+	 *
 	 * @return int
 	 */
 	protected function get_re_index_items_count() {
@@ -75,6 +113,11 @@ final class Algolia_Users_Index extends Algolia_Index {
 	}
 
 	/**
+	 * Get settings.
+	 *
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 * @since  1.0.0
+	 *
 	 * @return array
 	 */
 	protected function get_settings() {
@@ -91,6 +134,11 @@ final class Algolia_Users_Index extends Algolia_Index {
 	}
 
 	/**
+	 * Get synonyms.
+	 *
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 * @since  1.0.0
+	 *
 	 * @return array
 	 */
 	protected function get_synonyms() {
@@ -98,6 +146,11 @@ final class Algolia_Users_Index extends Algolia_Index {
 	}
 
 	/**
+	 * Get ID.
+	 *
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 * @since  1.0.0
+	 *
 	 * @return string
 	 */
 	public function get_id() {
@@ -106,8 +159,13 @@ final class Algolia_Users_Index extends Algolia_Index {
 
 
 	/**
-	 * @param int $page
-	 * @param int $batch_size
+	 * Get items.
+	 *
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 * @since  1.0.0
+	 *
+	 * @param int $page       The page.
+	 * @param int $batch_size The batch size.
 	 *
 	 * @return array
 	 */
@@ -126,12 +184,17 @@ final class Algolia_Users_Index extends Algolia_Index {
 	}
 
 	/**
+	 * Check if this index supports the given item.
+	 *
 	 * A performing function that return true if the item can potentially
 	 * be subject for indexation or not. This will be used to determine if an item is part of the index
 	 * As this function will be called synchronously during other operations,
 	 * it has to be as lightweight as possible. No db calls or huge loops.
 	 *
-	 * @param mixed $item
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 * @since  1.0.0
+	 *
+	 * @param mixed $item The item to check against.
 	 *
 	 * @return bool
 	 */
@@ -139,6 +202,14 @@ final class Algolia_Users_Index extends Algolia_Index {
 		return $item instanceof WP_User;
 	}
 
+	/**
+	 * Get default autocomplete config.
+	 *
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 * @since  1.0.0
+	 *
+	 * @return array
+	 */
 	public function get_default_autocomplete_config() {
 		$config = array(
 			'position'        => 30,
@@ -150,7 +221,12 @@ final class Algolia_Users_Index extends Algolia_Index {
 	}
 
 	/**
-	 * @param mixed $item
+	 * Delete item.
+	 *
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 * @since  1.0.0
+	 *
+	 * @param mixed $item The item to delete.
 	 */
 	public function delete_item( $item ) {
 		$this->assert_is_supported( $item );
