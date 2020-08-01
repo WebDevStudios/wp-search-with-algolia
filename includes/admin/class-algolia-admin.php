@@ -74,9 +74,27 @@ class Algolia_Admin {
 	 * @since   1.0.0
 	 */
 	public function enqueue_scripts() {
-		wp_enqueue_script( 'algolia-admin', plugin_dir_url( __FILE__ ) . 'js/algolia-admin.js', array( 'jquery', 'jquery-ui-sortable' ), ALGOLIA_VERSION );
-		wp_enqueue_script( 'algolia-admin-reindex-button', plugin_dir_url( __FILE__ ) . 'js/reindex-button.js', array( 'jquery' ), ALGOLIA_VERSION );
-		wp_enqueue_script( 'algolia-admin-push-settings-button', plugin_dir_url( __FILE__ ) . 'js/push-settings-button.js', array( 'jquery' ), ALGOLIA_VERSION );
+		wp_enqueue_script(
+			'algolia-admin',
+			plugin_dir_url( __FILE__ ) . 'js/algolia-admin.js',
+			array( 'jquery', 'jquery-ui-sortable' ),
+			ALGOLIA_VERSION,
+			false
+		);
+		wp_enqueue_script(
+			'algolia-admin-reindex-button',
+			plugin_dir_url( __FILE__ ) . 'js/reindex-button.js',
+			array( 'jquery' ),
+			ALGOLIA_VERSION,
+			false
+		);
+		wp_enqueue_script(
+			'algolia-admin-push-settings-button',
+			plugin_dir_url( __FILE__ ) . 'js/push-settings-button.js',
+			array( 'jquery' ),
+			ALGOLIA_VERSION,
+			false
+		);
 	}
 
 	/**
@@ -126,7 +144,7 @@ class Algolia_Admin {
 		$enabled  = $config->get_integer( 'dbcache.enabled' );
 		$settings = array_map( 'trim', $config->get_array( 'dbcache.reject.sql' ) );
 
-		if ( $enabled && ! in_array( 'algolia_', $settings ) ) {
+		if ( $enabled && ! in_array( 'algolia_', $settings, true ) ) {
 			/* translators: placeholder contains the URL to the caching plugin's config page. */
 			$message = sprintf( __( 'In order for <strong>database caching</strong> to work with Algolia you must add <code>algolia_</code> to the "Ignored Query Stems" option in W3 Total Cache settings <a href="%s">here</a>.', 'wp-search-with-algolia' ), esc_url( admin_url( 'admin.php?page=w3tc_dbcache' ) ) );
 			?>
