@@ -266,4 +266,46 @@ class Algolia_Utils {
 			true
 		);
 	}
+
+	/**
+	 * Get display size.
+	 *
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 * @since  1.5.0
+	 *
+	 * @param int $size_in_bytes Number of bytes.
+	 * @return string
+	 */
+	public static function get_display_size( $size_in_bytes ) {
+	        switch ( $size_in_bytes ) {
+				case $size_in_bytes < 1024:
+					$display_size = "{$size_in_bytes} bytes";
+					break;
+				case $size_in_bytes < 1048576:
+					$size         = round( $size_in_bytes / 1024 );
+					$display_size = "{$size} KB";
+					break;
+				default:
+					$size         = round( $size_in_bytes / 1048576, 1 );
+					$display_size = "{$size} MB";
+				break;
+			}
+		return $display_size;
+	}
+
+	/**
+	 * Format datetime string.
+	 *
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 * @since  1.5.0
+	 *
+	 * @param string $datetime Datetime string.
+	 * @return string|false
+	 */
+	public static function format_datetime( $datetime ) {
+		$timestamp   = strtotime( $datetime );
+		$date_format = get_option( 'date_format', 'F j, Y' );
+		$time_format = get_option( 'time_format', 'g:i a' );
+		return date( $date_format . ' ' . $time_format, $timestamp );
+	}
 }
