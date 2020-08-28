@@ -50,6 +50,7 @@ require_once ALGOLIA_PATH . 'includes/utilities/class-algolia-update-messages.ph
 
 if ( is_admin() ) {
 	require_once ALGOLIA_PATH . 'includes/admin/class-algolia-admin.php';
+	require_once ALGOLIA_PATH . 'includes/admin/class-algolia-admin-dashboard-widget.php';
 	require_once ALGOLIA_PATH . 'includes/admin/class-algolia-admin-page-autocomplete.php';
 	require_once ALGOLIA_PATH . 'includes/admin/class-algolia-admin-page-native-search.php';
 	require_once ALGOLIA_PATH . 'includes/admin/class-algolia-admin-page-settings.php';
