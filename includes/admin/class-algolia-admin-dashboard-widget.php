@@ -8,7 +8,6 @@
  * @package WebDevStudios\WPSWA
  */
 
-
 /**
  * Algolia admin dashboard widget class.
  *
