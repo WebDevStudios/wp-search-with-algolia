@@ -9,17 +9,20 @@
  */
 
 if ( $is_reachable ) {
-	$api_status = esc_html__( 'Reachable', 'wp-search-with-algolia' );
+	$api_status = __( 'Reachable', 'wp-search-with-algolia' ); // @codingStandardsIgnoreLine WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
 } else {
-	$api_status = esc_html__( 'Not reachable', 'wp-search-with-algolia' );
+	$api_status = __( 'Not reachable', 'wp-search-with-algolia' ); // @codingStandardsIgnoreLine WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
 }
 ?>
 
 <div class="main">
 	<p>
 		<?php
-		/* translators: API status */
-		echo sprintf( esc_html__( 'Algolia API Status: %s', 'wp-search-with-algolia' ), $api_status );
+		echo sprintf(
+			/* translators: API status */
+			esc_html__( 'Algolia API Status: %s', 'wp-search-with-algolia' ),
+			esc_html( $api_status )
+		);
 		?>
 	</p>
 	<?php if ( ! empty( $indices['items'] ) ) : ?>
@@ -32,7 +35,9 @@ if ( $is_reachable ) {
 					<td><?php esc_html_e( 'Last Updated', 'wp-search-with-algolia' ); ?></td>
 				</tr>
 			</thead>
-			<?php foreach ( $indices['items'] as $index ) : ?>
+			<?php
+			foreach ( $indices['items'] as $index ) : // @codingStandardsIgnoreLine WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
+				?>
 				<tr>
 					<td><?php echo esc_html( $index['name'] ); ?></td>
 					<td><?php echo esc_html( $index['entries'] ); ?></td>
