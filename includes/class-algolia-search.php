@@ -210,7 +210,7 @@ class Algolia_Search {
 	 * @return int
 	 */
 	public function found_posts( $found_posts, WP_Query $query ) {
-		return $this->should_filter_query( $query ) ? $this->total_hits : $found_posts;
+		return $this->total_hits;
 	}
 
 	/**
