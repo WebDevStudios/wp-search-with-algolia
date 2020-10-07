@@ -109,6 +109,9 @@ WebDevStudios provides end-to-end WordPress opportunities from strategy and plan
 
 Follow along with the changelog on [Github](https://github.com/WebDevStudios/wp-search-with-algolia/releases).
 
+= 1.5.0-dev =
+* Hopefully resolving Pinterest scraper issue
+
 = 1.4.0 =
 * Update Algolia PHP Search Client version 2.7.0.
 * Update Algolia JS libraries to most recent compatible (non-breaking) versions
