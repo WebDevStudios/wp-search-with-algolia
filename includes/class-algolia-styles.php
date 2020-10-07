@@ -22,7 +22,7 @@ class Algolia_Styles {
 	 * @since  1.5.0-dev
 	 */
 	public function __construct() {
-		add_action( 'wp_enqueue_scripts', [ $this, 'register_styles'] );
+		add_action( 'wp_enqueue_scripts', [ $this, 'register_styles' ] );
 	}
 
 	/**
