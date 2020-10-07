@@ -3,7 +3,7 @@
  * Algolia_Styles class file.
  *
  * @author  WebDevStudios <contact@webdevstudios.com>
- * @since   1.5.0-dev
+ * @since   1.5.0
  *
  * @package WebDevStudios\WPSWA
  */
@@ -11,7 +11,7 @@
 /**
  * Class Algolia_Styles
  *
- * @since 1.5.0-dev
+ * @since 1.5.0
  */
 class Algolia_Styles {
 
@@ -19,7 +19,7 @@ class Algolia_Styles {
 	 * Algolia_Styles constructor.
 	 *
 	 * @author WebDevStudios <contact@webdevstudios.com>
-	 * @since  1.5.0-dev
+	 * @since  1.5.0
 	 */
 	public function __construct() {
 		add_action( 'wp_enqueue_scripts', [ $this, 'register_styles' ] );
@@ -29,7 +29,7 @@ class Algolia_Styles {
 	 * Register styles.
 	 *
 	 * @author WebDevStudios <contact@webdevstudios.com>
-	 * @since  1.5.0-dev
+	 * @since  1.5.0
 	 */
 	public function register_styles() {
 

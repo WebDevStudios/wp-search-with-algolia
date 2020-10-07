@@ -1,6 +1,6 @@
 {
   "name": "wp-search-with-algolia",
-  "version": "1.5.0-dev",
+  "version": "1.5.0",
   "description": "Integrate the powerful Algolia search service with WordPress.",
   "author": "WebDevStudios",
   "license": "GPL-3.0",

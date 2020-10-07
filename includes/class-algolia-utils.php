@@ -248,7 +248,7 @@ class Algolia_Utils {
 	 * Get the `$in_footer` argument for registering scripts.
 	 *
 	 * @author WebDevStudios <contact@webdevstudios.com>
-	 * @since  1.5.0-dev
+	 * @since  1.5.0
 	 *
 	 * @return bool
 	 */
@@ -257,7 +257,7 @@ class Algolia_Utils {
 		 * Filters the `$in_footer` argument to `wp_register_script()` for Algolia Scripts.
 		 *
 		 * @since 1.3.0
-		 * @since 1.5.0-dev The default changed from 'false' to 'true'.
+		 * @since 1.5.0 The default changed from 'false' to 'true'.
 		 *
 		 * @param bool $in_footer Whether to enqueue the script before </body> instead of in the <head>. Default 'true'.
 		 */

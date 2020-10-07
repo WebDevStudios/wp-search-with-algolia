@@ -81,7 +81,7 @@ class Algolia_Plugin {
 	 * Instance of Algolia_Styles.
 	 *
 	 * @author WebDevStudios <contact@webdevstudios.com>
-	 * @since  1.5.0-dev
+	 * @since  1.5.0
 	 *
 	 * @var Algolia_Styles
 	 */
@@ -91,7 +91,7 @@ class Algolia_Plugin {
 	 * Instance of Algolia_Scripts.
 	 *
 	 * @author WebDevStudios <contact@webdevstudios.com>
-	 * @since  1.5.0-dev
+	 * @since  1.5.0
 	 *
 	 * @var Algolia_Scripts
 	 */
@@ -430,7 +430,7 @@ class Algolia_Plugin {
 	 * Get the Algolia_Styles.
 	 *
 	 * @author WebDevStudios <contact@webdevstudios.com>
-	 * @since  1.5.0-dev
+	 * @since  1.5.0
 	 *
 	 * @return Algolia_Styles
 	 */
@@ -442,7 +442,7 @@ class Algolia_Plugin {
 	 * Get the Algolia_Scripts.
 	 *
 	 * @author WebDevStudios <contact@webdevstudios.com>
-	 * @since  1.5.0-dev
+	 * @since  1.5.0
 	 *
 	 * @return Algolia_Scripts
 	 */

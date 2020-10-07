@@ -109,8 +109,11 @@ WebDevStudios provides end-to-end WordPress opportunities from strategy and plan
 
 Follow along with the changelog on [Github](https://github.com/WebDevStudios/wp-search-with-algolia/releases).
 
-= 1.5.0-dev =
-* Hopefully resolving Pinterest scraper issue
+= 1.5.0 =
+* Fix an issue where Pinterest follows a link to the Algolia domain to source text and/or images
+ * Move Algolia scripts to footer by default
+  * Changes algolia_load_scripts_in_footer filter default argument to "true"
+ * Move autocomplete.php template output to footer by default
 
 = 1.4.0 =
 * Update Algolia PHP Search Client version 2.7.0.
