@@ -35,8 +35,20 @@ class Algolia_Template_Loader {
 	public function __construct( Algolia_Plugin $plugin ) {
 		$this->plugin = $plugin;
 
+		$in_footer = Algolia_Utils::get_scripts_in_footer_argument();
+
 		// Inject Algolia configuration in a JavaScript variable.
-		add_filter( 'wp_head', array( $this, 'load_algolia_config' ) );
+		if ( true === $in_footer ) {
+			add_filter(
+				'wp_footer',
+				[ $this, 'load_algolia_config' ]
+			);
+		} else {
+			add_filter(
+				'wp_head',
+				[ $this, 'load_algolia_config' ]
+			);
+		}
 
 		// Listen for native templates to override.
 		add_filter( 'template_include', array( $this, 'template_loader' ) );
@@ -44,7 +56,12 @@ class Algolia_Template_Loader {
 		// Load autocomplete.js search experience if its enabled.
 		if ( $this->should_load_autocomplete() ) {
 			add_filter( 'wp_enqueue_scripts', array( $this, 'enqueue_autocomplete_scripts' ) );
-			add_filter( 'wp_head', array( $this, 'load_autocomplete_template' ), PHP_INT_MAX );
+
+			if ( true === $in_footer ) {
+				add_filter( 'wp_footer', array( $this, 'load_autocomplete_template' ) );
+			} else {
+				add_filter( 'wp_head', array( $this, 'load_autocomplete_template' ) );
+			}
 		}
 	}
 
