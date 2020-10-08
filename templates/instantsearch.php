@@ -44,7 +44,7 @@ get_header();
 				<div class="excerpt">
 					<p>
 			<# if ( data._snippetResult['content'] ) { #>
-			  <span class="suggestion-post-content" class="ais-hits--content-snippet">{{{ data._snippetResult['content'].value }}}</span>
+			  <span class="suggestion-post-content ais-hits--content-snippet">{{{ data._snippetResult['content'].value }}}</span>
 			<# } #>
 					</p>
 				</div>
