@@ -28,6 +28,8 @@ require_once ALGOLIA_PATH . 'includes/class-algolia-search.php';
 require_once ALGOLIA_PATH . 'includes/class-algolia-settings.php';
 require_once ALGOLIA_PATH . 'includes/class-algolia-template-loader.php';
 require_once ALGOLIA_PATH . 'includes/class-algolia-utils.php';
+require_once ALGOLIA_PATH . 'includes/class-algolia-styles.php';
+require_once ALGOLIA_PATH . 'includes/class-algolia-scripts.php';
 
 require_once ALGOLIA_PATH . 'includes/indices/class-algolia-index.php';
 require_once ALGOLIA_PATH . 'includes/indices/class-algolia-index-replica.php';
