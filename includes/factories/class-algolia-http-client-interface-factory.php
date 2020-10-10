@@ -2,7 +2,7 @@
 /**
  * Algolia_Http_Client_Interface_Factory class file.
  *
- * @since   1.5.0-dev
+ * @since   1.6.0-dev
  * @package WebDevStudios\WPSWA
  */
 
@@ -15,7 +15,7 @@ use Algolia\AlgoliaSearch\Http\Php53HttpClient;
  *
  * Responsible for creating a shared instance of the HttpClientInterface object.
  *
- * @since 1.5.0-dev
+ * @since 1.6.0-dev
  */
 class Algolia_Http_Client_Interface_Factory {
 
@@ -23,7 +23,7 @@ class Algolia_Http_Client_Interface_Factory {
 	 * Create and return an instance of the HttpClientInterface.
 	 *
 	 * @author WebDevStudios <contact@webdevstudios.com>
-	 * @since  1.5.0-dev
+	 * @since  1.6.0-dev
 	 *
 	 * @return HttpClientInterface The shared HttpClientInterface instance.
 	 */
@@ -31,7 +31,7 @@ class Algolia_Http_Client_Interface_Factory {
 		/**
 		 * The static instance to share, else null.
 		 *
-		 * @since 1.5.0-dev
+		 * @since 1.6.0-dev
 		 *
 		 * @var null|HttpClientInterface $http_client
 		 */
