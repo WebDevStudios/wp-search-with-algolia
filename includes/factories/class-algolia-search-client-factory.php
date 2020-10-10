@@ -30,13 +30,6 @@ class Algolia_Search_Client_Factory {
 	 */
 	public static function create( string $app_id, string $api_key ): ?SearchClient {
 
-		if (
-			empty( $app_id ) ||
-			empty( $api_key )
-		) {
-			return null;
-		}
-
 		$integration_name = (string) apply_filters(
 			'algolia_ua_integration_name',
 			'WP Search with Algolia'
