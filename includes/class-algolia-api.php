@@ -154,8 +154,9 @@ class Algolia_API {
 		}
 
 		if ( ! empty( $missing_acls ) ) {
-			throw new Exception( 'Your admin API key is missing the following ACLs: ' . implode( ', ',
-					$missing_acls ) );
+			throw new Exception(
+				'Your admin API key is missing the following ACLs: ' . implode( ', ', $missing_acls )
+			);
 		}
 	}
 
