@@ -20,7 +20,7 @@ use Algolia\AlgoliaSearch\Http\Php53HttpClient;
 class Algolia_Http_Client_Interface_Factory {
 
 	/**
-	 * Create and return an instance of the HttpClientInterface.
+	 * Create and return a shared instance of the HttpClientInterface.
 	 *
 	 * @author WebDevStudios <contact@webdevstudios.com>
 	 * @since  1.6.0-dev
@@ -59,6 +59,8 @@ class Algolia_Http_Client_Interface_Factory {
 		/**
 		 * Allow developers to override the Php53HttpClient cURL options.
 		 *
+		 * @link   https://www.algolia.com/doc/api-client/advanced/pass-options-to-the-http-client/php/?language=php#using-the-default-php53httpclient
+		 * @link   https://www.algolia.com/doc/api-client/getting-started/upgrade-guides/php/#curl-options
 		 * @link   https://curl.haxx.se/libcurl/c/curl_easy_setopt.html
 		 *
 		 * @author WebDevStudios <contact@webdevstudios.com>
