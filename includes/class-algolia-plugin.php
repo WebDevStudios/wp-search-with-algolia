@@ -18,16 +18,6 @@ class Algolia_Plugin {
 	const NAME = 'algolia';
 
 	/**
-	 * Singleton instance of the Algolia_Plugin.
-	 *
-	 * @author WebDevStudios <contact@webdevstudios.com>
-	 * @since  1.0.0
-	 *
-	 * @var Algolia_Plugin
-	 */
-	private static $instance;
-
-	/**
 	 * Instance of Algolia_API.
 	 *
 	 * @author WebDevStudios <contact@webdevstudios.com>
