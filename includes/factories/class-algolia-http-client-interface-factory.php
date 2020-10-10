@@ -67,10 +67,8 @@ class Algolia_Http_Client_Interface_Factory {
 		 * @param array $options Curl options for Php53HttpClient construction.
 		 */
 		$options = apply_filters(
-			'algolia_php_http_client_options',
-			[
-				'CURLOPT_CAINFO' => ALGOLIA_PATH . 'resources/cacert.pem',
-			]
+			'algolia_php_53_http_client_options',
+			[]
 		);
 
 		return new Php53HttpClient( $options );
