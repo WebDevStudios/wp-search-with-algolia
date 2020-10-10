@@ -126,7 +126,7 @@ add_action( 'init', 'algolia_load_textdomain' );
 if ( algolia_php_version_check() && algolia_wp_version_check() ) {
 	require_once ALGOLIA_PATH . 'classmap.php';
 
-	$algolia = Algolia_Plugin::get_instance();
+	$algolia = Algolia_Plugin_Factory::create();
 
 	if ( defined( 'WP_CLI' ) && WP_CLI ) {
 		include ALGOLIA_PATH . 'includes/class-algolia-cli.php';
