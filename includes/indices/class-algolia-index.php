@@ -403,7 +403,7 @@ abstract class Algolia_Index {
 
 			do_action( 'algolia_before_get_records', $item );
 			$item_records = $this->get_records( $item );
-			$records = array_merge( $records, $item_records );
+			$records      = array_merge( $records, $item_records );
 			do_action( 'algolia_after_get_records', $item );
 
 			$this->update_records( $item, $item_records );
