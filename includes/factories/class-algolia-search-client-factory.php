@@ -2,7 +2,7 @@
 /**
  * Algolia_Search_Client_Factory class file.
  *
- * @since   1.6.0-dev
+ * @since   1.6.0
  * @package WebDevStudios\WPSWA
  */
 
@@ -13,7 +13,7 @@ use Algolia\AlgoliaSearch\Support\UserAgent;
 /**
  * Class Algolia_Search_Client_Factory
  *
- * @since 1.6.0-dev
+ * @since 1.6.0
  */
 class Algolia_Search_Client_Factory {
 
@@ -21,7 +21,7 @@ class Algolia_Search_Client_Factory {
 	 * Create an Algolia SearchClient.
 	 *
 	 * @author WebDevStudios <contact@webdevstudios.com>
-	 * @since  1.6.0-dev
+	 * @since  1.6.0
 	 *
 	 * @param string $app_id  The Algolia Application ID.
 	 * @param string $api_key The Algolia API Key.

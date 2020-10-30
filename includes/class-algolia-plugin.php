@@ -112,13 +112,13 @@ class Algolia_Plugin {
 	 *
 	 * @author     WebDevStudios <contact@webdevstudios.com>
 	 * @since      1.0.0
-	 * @deprecated 1.6.0-dev Use Algolia_Plugin_Factory::create()
+	 * @deprecated 1.6.0 Use Algolia_Plugin_Factory::create()
 	 * @see        Algolia_Plugin_Factory::create()
 	 *
 	 * @return Algolia_Plugin
 	 */
 	public static function get_instance() {
-		_deprecated_function( __METHOD__, '1.6.0-dev', 'Algolia_Plugin_Factory::create();' );
+		_deprecated_function( __METHOD__, '1.6.0', 'Algolia_Plugin_Factory::create();' );
 		return Algolia_Plugin_Factory::create();
 	}
 

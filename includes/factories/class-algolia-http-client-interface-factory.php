@@ -2,7 +2,7 @@
 /**
  * Algolia_Http_Client_Interface_Factory class file.
  *
- * @since   1.6.0-dev
+ * @since   1.6.0
  * @package WebDevStudios\WPSWA
  */
 
@@ -15,7 +15,7 @@ use Algolia\AlgoliaSearch\Http\Php53HttpClient;
  *
  * Responsible for creating a shared instance of the HttpClientInterface object.
  *
- * @since 1.6.0-dev
+ * @since 1.6.0
  */
 class Algolia_Http_Client_Interface_Factory {
 
@@ -23,7 +23,7 @@ class Algolia_Http_Client_Interface_Factory {
 	 * Create and return a shared instance of the HttpClientInterface.
 	 *
 	 * @author WebDevStudios <contact@webdevstudios.com>
-	 * @since  1.6.0-dev
+	 * @since  1.6.0
 	 *
 	 * @return HttpClientInterface The shared HttpClientInterface instance.
 	 */
@@ -31,7 +31,7 @@ class Algolia_Http_Client_Interface_Factory {
 		/**
 		 * The static instance to share, else null.
 		 *
-		 * @since 1.6.0-dev
+		 * @since 1.6.0
 		 *
 		 * @var null|HttpClientInterface $http_client
 		 */
@@ -50,7 +50,7 @@ class Algolia_Http_Client_Interface_Factory {
 	 * Create a Php53HttpClient client.
 	 *
 	 * @author WebDevStudios <contact@webdevstudios.com>
-	 * @since  1.6.0-dev
+	 * @since  1.6.0
 	 *
 	 * @return Php53HttpClient
 	 */
@@ -64,7 +64,7 @@ class Algolia_Http_Client_Interface_Factory {
 		 * @link   https://curl.haxx.se/libcurl/c/curl_easy_setopt.html
 		 *
 		 * @author WebDevStudios <contact@webdevstudios.com>
-		 * @since  1.6.0-dev
+		 * @since  1.6.0
 		 *
 		 * @param array $options Curl options for Php53HttpClient construction.
 		 */
