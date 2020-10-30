@@ -26,9 +26,9 @@ class Algolia_Search_Client_Factory {
 	 * @param string $app_id  The Algolia Application ID.
 	 * @param string $api_key The Algolia API Key.
 	 *
-	 * @return SearchClient|null
+	 * @return SearchClient
 	 */
-	public static function create( string $app_id, string $api_key ): ?SearchClient {
+	public static function create( string $app_id, string $api_key ): SearchClient {
 
 		$integration_name = (string) apply_filters(
 			'algolia_ua_integration_name',
