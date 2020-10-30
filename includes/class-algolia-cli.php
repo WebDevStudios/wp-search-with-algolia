@@ -34,7 +34,7 @@ class Algolia_CLI extends \WP_CLI_Command {
 	 * @since  1.0.0
 	 */
 	public function __construct() {
-		$this->plugin = Algolia_Plugin::get_instance();
+		$this->plugin = Algolia_Plugin_Factory::create();
 	}
 
 	/**

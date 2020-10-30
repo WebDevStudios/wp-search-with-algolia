@@ -82,27 +82,23 @@ class Algolia_API {
 	 *
 	 * @return SearchClient|null
 	 */
-	public function get_client() {
-		global $wp_version;
-
-		$integration_name    = (string) apply_filters( 'algolia_ua_integration_name', 'WordPress' );
-		$integration_version = (string) apply_filters( 'algolia_ua_integration_version', ALGOLIA_VERSION );
-
-		// Build the UserAgent.
-		$ua = '; ' . $integration_name . ' integration (' . $integration_version . ')'
-			. '; PHP (' . phpversion() . ')'
-			. '; WordPress (' . $wp_version . ')';
+	public function get_client(): ?SearchClient {
 
 		$application_id = $this->settings->get_application_id();
 		$api_key        = $this->settings->get_api_key();
-		$search_api_key = $this->settings->get_search_api_key();
 
-		if ( empty( $application_id ) || empty( $api_key ) || empty( $search_api_key ) ) {
-			return;
+		if (
+			empty( $application_id ) ||
+			empty( $api_key )
+		) {
+			return null;
 		}
 
 		if ( null === $this->client ) {
-			$this->client = SearchClient::create( $this->settings->get_application_id(), $this->settings->get_api_key() );
+			$this->client = Algolia_Search_Client_Factory::create(
+				(string) $this->settings->get_application_id(),
+				(string) $this->settings->get_api_key()
+			);
 		}
 
 		return $this->client;
@@ -122,7 +118,11 @@ class Algolia_API {
 	 * @throws Exception If the Algolia Admin API Key does not have correct ACLs.
 	 */
 	public static function assert_valid_credentials( $application_id, $api_key ) {
-		$client = SearchClient::create( (string) $application_id, (string) $api_key );
+
+		$client = Algolia_Search_Client_Factory::create(
+			(string) $application_id,
+			(string) $api_key
+		);
 
 		// This checks if the API Key is an Admin API key.
 		// Admin API keys have no scopes so we need a separate check here.
@@ -154,7 +154,9 @@ class Algolia_API {
 		}
 
 		if ( ! empty( $missing_acls ) ) {
-			throw new Exception( 'Your admin API key is missing the following ACLs: ' . implode( ', ', $missing_acls ) );
+			throw new Exception(
+				'Your admin API key is missing the following ACLs: ' . implode( ', ', $missing_acls )
+			);
 		}
 	}
 
@@ -191,41 +193,46 @@ class Algolia_API {
 	 * @return bool
 	 */
 	public static function is_valid_search_api_key( $application_id, $search_api_key ) {
-		$client = SearchClient::create( (string) $application_id, (string) $search_api_key );
+
+		$client = Algolia_Search_Client_Factory::create(
+			(string) $application_id,
+			(string) $search_api_key
+		);
+
+		// If this call does not succeed, the application_ID and/or API_key are wrong.
 		try {
-			// If this call does not succeed, then the application_ID or API_key is/are wrong.
 			$acl = $client->getApiKey( $search_api_key );
-
-			// We expect a search only key for security reasons. Will be used in front.
-			$scopes = array_flip( $acl['acl'] );
-			if ( ! isset( $scopes['search'] ) ) {
-				return false;
-			}
-			unset( $scopes['search'] );
-
-			if ( isset( $scopes['settings'] ) ) {
-				unset( $scopes['settings'] );
-			}
-
-			if ( isset( $scopes['listIndexes'] ) ) {
-				unset( $scopes['listIndexes'] );
-			}
-
-			// Short circuit ACL checks for local development.
-			if ( defined( 'WP_LOCAL_DEV' ) && WP_LOCAL_DEV ) {
-				return true;
-			}
-
-			if ( ! empty( $scopes ) ) {
-				// The API key has more permissions than allowed.
-				return false;
-			}
-
-			// We do expect a search key without unlimited TTL.
-			if ( 0 !== $acl['validity'] ) {
-				return false;
-			}
 		} catch ( AlgoliaException $e ) {
+			return false;
+		}
+
+		// We expect a search only key for security reasons. Will be used in front.
+		$scopes = array_flip( $acl['acl'] );
+		if ( ! isset( $scopes['search'] ) ) {
+			return false;
+		}
+		unset( $scopes['search'] );
+
+		if ( isset( $scopes['settings'] ) ) {
+			unset( $scopes['settings'] );
+		}
+
+		if ( isset( $scopes['listIndexes'] ) ) {
+			unset( $scopes['listIndexes'] );
+		}
+
+		// Short circuit ACL checks for local development.
+		if ( defined( 'WP_LOCAL_DEV' ) && WP_LOCAL_DEV ) {
+			return true;
+		}
+
+		if ( ! empty( $scopes ) ) {
+			// The API key has more permissions than allowed.
+			return false;
+		}
+
+		// We do expect a search key without unlimited TTL.
+		if ( 0 !== $acl['validity'] ) {
 			return false;
 		}
 
