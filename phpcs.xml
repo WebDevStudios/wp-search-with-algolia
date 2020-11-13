@@ -94,4 +94,8 @@
 		</properties>
 	</rule>
 
+	<rule ref="Generic.Arrays.DisallowShortArraySyntax">
+		<severity>0</severity>
+	</rule>
+
 </ruleset>

@@ -33,18 +33,18 @@ get_header();
 		<article itemtype="http://schema.org/Article">
 			<# if ( data.images.thumbnail ) { #>
 			<div class="ais-hits--thumbnail">
-				<a href="{{ data.permalink }}" title="{{ data.post_title }}">
+				<a href="{{ data.permalink }}" title="{{ data.post_title }}" class="ais-hits--thumbnail-link">
 					<img src="{{ data.images.thumbnail.url }}" alt="{{ data.post_title }}" title="{{ data.post_title }}" itemprop="image" />
 				</a>
 			</div>
 			<# } #>
 
 			<div class="ais-hits--content">
-				<h2 itemprop="name headline"><a href="{{ data.permalink }}" title="{{ data.post_title }}" itemprop="url">{{{ data._highlightResult.post_title.value }}}</a></h2>
+				<h2 itemprop="name headline"><a href="{{ data.permalink }}" title="{{ data.post_title }}" class="ais-hits--title-link" itemprop="url">{{{ data._highlightResult.post_title.value }}}</a></h2>
 				<div class="excerpt">
 					<p>
 			<# if ( data._snippetResult['content'] ) { #>
-			  <span class="suggestion-post-content">{{{ data._snippetResult['content'].value }}}</span>
+			  <span class="suggestion-post-content ais-hits--content-snippet">{{{ data._snippetResult['content'].value }}}</span>
 			<# } #>
 					</p>
 				</div>

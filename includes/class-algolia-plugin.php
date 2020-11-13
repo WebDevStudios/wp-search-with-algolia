@@ -18,16 +18,6 @@ class Algolia_Plugin {
 	const NAME = 'algolia';
 
 	/**
-	 * Singleton instance of the Algolia_Plugin.
-	 *
-	 * @author WebDevStudios <contact@webdevstudios.com>
-	 * @since  1.0.0
-	 *
-	 * @var Algolia_Plugin
-	 */
-	private static $instance;
-
-	/**
 	 * Instance of Algolia_API.
 	 *
 	 * @author WebDevStudios <contact@webdevstudios.com>
@@ -120,17 +110,16 @@ class Algolia_Plugin {
 	/**
 	 * Get the singleton instance of Algolia_Plugin.
 	 *
-	 * @author WebDevStudios <contact@webdevstudios.com>
-	 * @since  1.0.0
+	 * @author     WebDevStudios <contact@webdevstudios.com>
+	 * @since      1.0.0
+	 * @deprecated 1.6.0 Use Algolia_Plugin_Factory::create()
+	 * @see        Algolia_Plugin_Factory::create()
 	 *
 	 * @return Algolia_Plugin
 	 */
 	public static function get_instance() {
-		if ( null === self::$instance ) {
-			self::$instance = new Algolia_Plugin();
-		}
-
-		return self::$instance;
+		_deprecated_function( __METHOD__, '1.6.0', 'Algolia_Plugin_Factory::create();' );
+		return Algolia_Plugin_Factory::create();
 	}
 
 	/**
@@ -139,7 +128,7 @@ class Algolia_Plugin {
 	 * @author WebDevStudios <contact@webdevstudios.com>
 	 * @since  1.0.0
 	 */
-	private function __construct() {
+	public function __construct() {
 		$this->settings      = new Algolia_Settings();
 		$this->api           = new Algolia_API( $this->settings );
 		$this->compatibility = new Algolia_Compatibility();

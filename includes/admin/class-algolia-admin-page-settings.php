@@ -355,7 +355,10 @@ class Algolia_Admin_Page_Settings {
 				esc_html__( 'API key should not be empty', 'wp-search-with-algolia' )
 			);
 		}
+
 		$errors = get_settings_errors( $this->option_group );
+
+		// @todo Not 100% clear why this is returning here.
 		if ( ! empty( $errors ) ) {
 			return $value;
 		}
@@ -379,7 +382,7 @@ class Algolia_Admin_Page_Settings {
 				$this->option_group,
 				'no_connection',
 				esc_html__(
-					'We were unable to authenticate you against the Algolia servers with the provided information. Please ensure that you used an the Admin API key and a valid Application ID.',
+					'We were unable to authenticate you against the Algolia servers with the provided information. Please ensure that you used a valid Application ID and Admin API key.',
 					'wp-search-with-algolia'
 				)
 			);
