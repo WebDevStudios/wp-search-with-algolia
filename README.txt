@@ -1,11 +1,11 @@
 
 === WP Search with Algolia ===
-Contributors: WebDevStudios, williamsba1, gregrickaby, tw2113, richaber
+Contributors: WebDevStudios, williamsba1, gregrickaby, tw2113, richaber, mrasharirfan
 Tags: Search, Algolia, Autocomplete, instant-search, relevant search, search highlight, faceted search, find-as-you-type search, suggest, search by category, ajax search, better search, custom search
 Requires at least: 5.0
 Tested up to: 5.5
 Requires PHP: 7.2
-Stable tag: 1.5.0
+Stable tag: 1.6.0
 License: GNU General Public License v2.0, MIT License
 
 Improve search on your site. Autocomplete is included, along with full control over look, feel and relevance.
@@ -109,8 +109,14 @@ WebDevStudios provides end-to-end WordPress opportunities from strategy and plan
 
 Follow along with the changelog on [Github](https://github.com/WebDevStudios/wp-search-with-algolia/releases).
 
-= 1.6.0-dev =
-* Add HttpClientInterface support
+= 1.6.0 =
+* Fix deletion of post records created before indexing was enabled
+* Update Algolia PHP Search Client to version 2.7.1.
+* Add Algolia_Plugin_Factory to create and return a shared Algolia_Plugin instance
+* Add Algolia_Search_Client_Factory to return a new Algolia\AlgoliaSearch\SearchClient instance
+* Add Algolia_Http_Client_Interface_Factory to create and return a shared Php53HttpClient instance
+* Add algolia_php_53_http_client_options filter to supply cURL options to Php53HttpClient instance
+* Deprecate Algolia_Plugin:get_instance() which will be removed in an upcoming release
 
 = 1.5.0 =
 * Fix an issue where Pinterest follows a link to the Algolia domain to source text and/or images
