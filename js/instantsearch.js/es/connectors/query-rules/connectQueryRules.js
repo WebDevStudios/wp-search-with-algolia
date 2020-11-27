@@ -1,0 +1,173 @@
+function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
+
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(source, true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _nonIterableSpread(); }
+
+function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance"); }
+
+function _iterableToArray(iter) { if (Symbol.iterator in Object(iter) || Object.prototype.toString.call(iter) === "[object Arguments]") return Array.from(iter); }
+
+function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } }
+
+import { checkRendering, createDocumentationMessageGenerator, warning, getRefinements, isEqual, noop } from '../../lib/utils';
+var withUsage = createDocumentationMessageGenerator({
+  name: 'query-rules',
+  connector: true
+});
+
+function hasStateRefinements(state) {
+  return [state.disjunctiveFacetsRefinements, state.facetsRefinements, state.hierarchicalFacetsRefinements, state.numericRefinements].some(function (refinement) {
+    return Boolean(refinement && Object.keys(refinement).length > 0);
+  });
+} // A context rule must consist only of alphanumeric characters, hyphens, and underscores.
+// See https://www.algolia.com/doc/guides/managing-results/refine-results/merchandising-and-promoting/in-depth/implementing-query-rules/#context
+
+
+function escapeRuleContext(ruleName) {
+  return ruleName.replace(/[^a-z0-9-_]+/gi, '_');
+}
+
+function getRuleContextsFromTrackedFilters(_ref) {
+  var helper = _ref.helper,
+      sharedHelperState = _ref.sharedHelperState,
+      trackedFilters = _ref.trackedFilters;
+  var ruleContexts = Object.keys(trackedFilters).reduce(function (facets, facetName) {
+    var facetRefinements = getRefinements(helper.lastResults || {}, sharedHelperState).filter(function (refinement) {
+      return refinement.attributeName === facetName;
+    }).map(function (refinement) {
+      return refinement.numericValue || refinement.name;
+    });
+    var getTrackedFacetValues = trackedFilters[facetName];
+    var trackedFacetValues = getTrackedFacetValues(facetRefinements);
+    return [].concat(_toConsumableArray(facets), _toConsumableArray(facetRefinements.filter(function (facetRefinement) {
+      return trackedFacetValues.includes(facetRefinement);
+    }).map(function (facetValue) {
+      return escapeRuleContext("ais-".concat(facetName, "-").concat(facetValue));
+    })));
+  }, []);
+  return ruleContexts;
+}
+
+function applyRuleContexts(sharedHelperState) {
+  var helper = this.helper,
+      initialRuleContexts = this.initialRuleContexts,
+      trackedFilters = this.trackedFilters,
+      transformRuleContexts = this.transformRuleContexts;
+  var previousRuleContexts = sharedHelperState.ruleContexts || [];
+  var newRuleContexts = getRuleContextsFromTrackedFilters({
+    helper: helper,
+    sharedHelperState: sharedHelperState,
+    trackedFilters: trackedFilters
+  });
+  var nextRuleContexts = [].concat(_toConsumableArray(initialRuleContexts), _toConsumableArray(newRuleContexts));
+  warning(nextRuleContexts.length <= 10, "\nThe maximum number of `ruleContexts` is 10. They have been sliced to that limit.\nConsider using `transformRuleContexts` to minimize the number of rules sent to Algolia.\n");
+  var ruleContexts = transformRuleContexts(nextRuleContexts).slice(0, 10);
+
+  if (!isEqual(previousRuleContexts, ruleContexts)) {
+    helper.overrideStateWithoutTriggeringChangeEvent(_objectSpread({}, sharedHelperState, {
+      ruleContexts: ruleContexts
+    }));
+  }
+}
+
+var connectQueryRules = function connectQueryRules(render) {
+  var unmount = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : noop;
+  checkRendering(render, withUsage());
+  return function (widgetParams) {
+    var _ref2 = widgetParams || {},
+        _ref2$trackedFilters = _ref2.trackedFilters,
+        trackedFilters = _ref2$trackedFilters === void 0 ? {} : _ref2$trackedFilters,
+        _ref2$transformRuleCo = _ref2.transformRuleContexts,
+        transformRuleContexts = _ref2$transformRuleCo === void 0 ? function (rules) {
+      return rules;
+    } : _ref2$transformRuleCo,
+        _ref2$transformItems = _ref2.transformItems,
+        transformItems = _ref2$transformItems === void 0 ? function (items) {
+      return items;
+    } : _ref2$transformItems;
+
+    Object.keys(trackedFilters).forEach(function (facetName) {
+      if (typeof trackedFilters[facetName] !== 'function') {
+        throw new Error(withUsage("'The \"".concat(facetName, "\" filter value in the `trackedFilters` option expects a function.")));
+      }
+    });
+    var hasTrackedFilters = Object.keys(trackedFilters).length > 0; // We store the initial rule contexts applied before creating the widget
+    // so that we do not override them with the rules created from `trackedFilters`.
+
+    var initialRuleContexts = [];
+    var onHelperChange;
+    return {
+      init: function init(_ref3) {
+        var helper = _ref3.helper,
+            state = _ref3.state,
+            instantSearchInstance = _ref3.instantSearchInstance;
+        initialRuleContexts = state.ruleContexts || [];
+        onHelperChange = applyRuleContexts.bind({
+          helper: helper,
+          initialRuleContexts: initialRuleContexts,
+          trackedFilters: trackedFilters,
+          transformRuleContexts: transformRuleContexts
+        });
+
+        if (hasTrackedFilters) {
+          // We need to apply the `ruleContexts` based on the `trackedFilters`
+          // before the helper changes state in some cases:
+          //   - Some filters are applied on the first load (e.g. using `configure`)
+          //   - The `transformRuleContexts` option sets initial `ruleContexts`.
+          if (hasStateRefinements(state) || Boolean(widgetParams.transformRuleContexts)) {
+            onHelperChange(state);
+          } // We track every change in the helper to override its state and add
+          // any `ruleContexts` needed based on the `trackedFilters`.
+
+
+          helper.on('change', onHelperChange);
+        }
+
+        render({
+          items: [],
+          instantSearchInstance: instantSearchInstance,
+          widgetParams: widgetParams
+        }, true);
+      },
+      render: function (_render) {
+        function render(_x) {
+          return _render.apply(this, arguments);
+        }
+
+        render.toString = function () {
+          return _render.toString();
+        };
+
+        return render;
+      }(function (_ref4) {
+        var results = _ref4.results,
+            instantSearchInstance = _ref4.instantSearchInstance;
+        var _results$userData = results.userData,
+            userData = _results$userData === void 0 ? [] : _results$userData;
+        var items = transformItems(userData);
+        render({
+          items: items,
+          instantSearchInstance: instantSearchInstance,
+          widgetParams: widgetParams
+        }, false);
+      }),
+      dispose: function dispose(_ref5) {
+        var helper = _ref5.helper,
+            state = _ref5.state;
+        unmount();
+
+        if (hasTrackedFilters) {
+          helper.removeListener('change', onHelperChange);
+          return state.setQueryParameter('ruleContexts', initialRuleContexts);
+        }
+
+        return state;
+      }
+    };
+  };
+};
+
+export default connectQueryRules;
