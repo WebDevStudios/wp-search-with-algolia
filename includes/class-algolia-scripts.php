@@ -73,7 +73,7 @@ class Algolia_Scripts {
 
 		wp_register_script(
 			'algolia-instantsearch',
-			ALGOLIA_PLUGIN_URL . 'js/instantsearch.js/dist/instantsearch-preact' . $suffix . '.js',
+			ALGOLIA_PLUGIN_URL . 'js/instantsearch.js/dist/instantsearch.production.min.js',
 			[
 				'jquery',
 				'underscore',
