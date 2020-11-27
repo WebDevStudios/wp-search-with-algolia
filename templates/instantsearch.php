@@ -58,7 +58,7 @@ get_header();
 				<div class="excerpt">
 					<p>
 			<# if ( data._snippetResult['content'] ) { #>
-			  <span class="suggestion-post-content ais-hits--content-snippet">{{{ data._snippetResult['content'].value }}}</span>
+				<span class="suggestion-post-content ais-hits--content-snippet">{{{ data._snippetResult['content'].value }}}</span>
 			<# } #>
 					</p>
 				</div>
@@ -135,15 +135,15 @@ get_header();
 							item: function (hit) {
 
 								function replace_highlights_recursive (item) {
-								  if( item instanceof Object && item.hasOwnProperty('value')) {
-									  item.value = _.escape(item.value);
-									  item.value = item.value.replace(/__ais-highlight__/g, '<em>').replace(/__\/ais-highlight__/g, '</em>');
-								  } else {
-									  for (var key in item) {
-										  item[key] = replace_highlights_recursive(item[key]);
-									  }
-								  }
-								  return item;
+									if (item instanceof Object && item.hasOwnProperty('value')) {
+										item.value = _.escape(item.value);
+										item.value = item.value.replace(/__ais-highlight__/g, '<em>').replace(/__\/ais-highlight__/g, '</em>');
+									} else {
+										for (var key in item) {
+											item[key] = replace_highlights_recursive(item[key]);
+										}
+									}
+									return item;
 								}
 
 								hit._highlightResult = replace_highlights_recursive(hit._highlightResult);
