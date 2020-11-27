@@ -39,7 +39,7 @@ class Algolia_Scripts {
 
 		wp_register_script(
 			'algolia-search',
-			ALGOLIA_PLUGIN_URL . 'js/algoliasearch/dist/algoliasearch.jquery' . $suffix . '.js',
+			ALGOLIA_PLUGIN_URL . 'js/algoliasearch/dist/algoliasearch-lite.umd.js',
 			[
 				'jquery',
 				'underscore',
