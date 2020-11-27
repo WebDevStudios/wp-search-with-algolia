@@ -199,6 +199,18 @@ get_header();
 						limit: 10,
 					})
 				);
+
+				/* Search stats widget */
+				search.addWidget(
+					instantsearch.widgets.stats({
+						container: '#algolia-stats'
+					})
+				);
+
+				/* Search powered-by widget */
+				search.addWidget(
+					instantsearch.widgets.poweredBy({
+						container: '#algolia-powered-by'
 					})
 				);
 
