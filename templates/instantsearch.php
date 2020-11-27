@@ -76,17 +76,29 @@ get_header();
 
 				/* Instantiate instantsearch.js */
 				var search = instantsearch({
-					appId: algolia.application_id,
-					apiKey: algolia.search_api_key,
 					indexName: algolia.indices.searchable_posts.name,
-					urlSync: {
-						mapping: {'q': 's'},
-						trackedParameters: ['query']
+					searchClient: algoliasearch( algolia.application_id, algolia.search_api_key ),
+					routing: {
+						router: instantsearch.routers.history({ writeDelay: 1000 }),
+						stateMapping: {
+							stateToRoute( indexUiState ) {
+								return {
+									s: indexUiState.query,
+									paged: indexUiState.page
+								}
+							},
+							routeToState( routeState ) {
+								return {
+									query: routeState.s,
+									page: routeState.paged
+								}
+							}
+						}
 					},
 					searchParameters: {
 						facetingAfterDistinct: true,
-			highlightPreTag: '__ais-highlight__',
-			highlightPostTag: '__/ais-highlight__'
+						highlightPreTag: '__ais-highlight__',
+						highlightPostTag: '__/ais-highlight__'
 					}
 				});
 
