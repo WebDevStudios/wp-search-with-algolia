@@ -22,10 +22,22 @@ get_header();
 			<div id="algolia-pagination"></div>
 		</main>
 		<aside id="ais-facets">
-			<section class="ais-facets" id="facet-post-types"></section>
-			<section class="ais-facets" id="facet-categories"></section>
-			<section class="ais-facets" id="facet-tags"></section>
-			<section class="ais-facets" id="facet-users"></section>
+			<div>
+				<h3 class="widgettitle"><?php esc_html_e( 'Post Types', 'wp-search-with-algolia' ); ?></h3>
+				<section class="ais-facets" id="facet-post-types"></section>
+			</div>
+			<div>
+				<h3 class="widgettitle"><?php esc_html_e( 'Categories', 'wp-search-with-algolia' ); ?></h3>
+				<section class="ais-facets" id="facet-categories"></section>
+			</div>
+			<div>
+				<h3 class="widgettitle"><?php esc_html_e( 'Tags', 'wp-search-with-algolia' ); ?></h3>
+				<section class="ais-facets" id="facet-tags"></section>
+			</div>
+			<div>
+				<h3 class="widgettitle"><?php esc_html_e( 'Users', 'wp-search-with-algolia' ); ?></h3>
+				<section class="ais-facets" id="facet-users"></section>
+			</div>
 		</aside>
 	</div>
 
@@ -139,12 +151,9 @@ get_header();
 				search.addWidget(
 					instantsearch.widgets.menu({
 						container: '#facet-post-types',
-						attributeName: 'post_type_label',
+						attribute: 'post_type_label',
 						sortBy: ['isRefined:desc', 'count:desc', 'name:asc'],
 						limit: 10,
-						templates: {
-							header: '<h3 class="widgettitle">Post Type</h3>'
-						},
 					})
 				);
 
@@ -155,9 +164,6 @@ get_header();
 						separator: ' > ',
 						sortBy: ['count'],
 						attributes: ['taxonomies_hierarchical.category.lvl0', 'taxonomies_hierarchical.category.lvl1', 'taxonomies_hierarchical.category.lvl2'],
-						templates: {
-							header: '<h3 class="widgettitle">Categories</h3>'
-						}
 					})
 				);
 
@@ -165,13 +171,10 @@ get_header();
 				search.addWidget(
 					instantsearch.widgets.refinementList({
 						container: '#facet-tags',
-						attributeName: 'taxonomies.post_tag',
+						attribute: 'taxonomies.post_tag',
 						operator: 'and',
 						limit: 15,
 						sortBy: ['isRefined:desc', 'count:desc', 'name:asc'],
-						templates: {
-							header: '<h3 class="widgettitle">Tags</h3>'
-						}
 					})
 				);
 
@@ -179,12 +182,11 @@ get_header();
 				search.addWidget(
 					instantsearch.widgets.menu({
 						container: '#facet-users',
-						attributeName: 'post_author.display_name',
+						attribute: 'post_author.display_name',
 						sortBy: ['isRefined:desc', 'count:desc', 'name:asc'],
 						limit: 10,
-						templates: {
-							header: '<h3 class="widgettitle">Authors</h3>'
-						}
+					})
+				);
 					})
 				);
 
