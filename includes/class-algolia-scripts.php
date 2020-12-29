@@ -37,6 +37,10 @@ class Algolia_Scripts {
 
 		$suffix = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ? '' : '.min';
 
+		$ais_suffix = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG
+			? '.development'
+			: '.production';
+
 		wp_register_script(
 			'algolia-search',
 			ALGOLIA_PLUGIN_URL . 'js/algoliasearch/dist/algoliasearch-lite.umd.js',
@@ -73,7 +77,7 @@ class Algolia_Scripts {
 
 		wp_register_script(
 			'algolia-instantsearch',
-			ALGOLIA_PLUGIN_URL . 'js/instantsearch.js/dist/instantsearch.production.min.js',
+			ALGOLIA_PLUGIN_URL . 'js/instantsearch.js/dist/instantsearch' . $ais_suffix . $suffix . '.js',
 			[
 				'jquery',
 				'underscore',
