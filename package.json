@@ -9,7 +9,7 @@
   ],
   "homepage": "https://github.com/WebDevStudios/wp-search-with-algolia",
   "dependencies": {
-    "algoliasearch": "^4.8.2",
+    "algoliasearch": "^4.8.3",
     "autocomplete.js": "^0.37.1",
     "instantsearch.js": "^3.5.3"
   },
@@ -19,7 +19,7 @@
   "frontendDependencies": {
     "target": "js/",
     "packages": {
-      "algoliasearch": "^4.8.2",
+      "algoliasearch": "^4.8.3",
       "autocomplete.js": "^0.37.1",
       "instantsearch.js": "^3.5.3"
     }

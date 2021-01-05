@@ -1,5 +1,5 @@
 {
-  "_from": "algoliasearch@^4.8.2",
+  "_from": "algoliasearch@^4.8.3",
   "_id": "algoliasearch@4.8.3",
   "_inBundle": false,
   "_integrity": "sha512-pljX9jEE2TQ3i1JayhG8afNdE8UuJg3O9c7unW6QO67yRWCKr6b0t5aKC3hSVtjt7pA2TQXLKoAISb4SHx9ozQ==",
@@ -8,20 +8,20 @@
   "_requested": {
     "type": "range",
     "registry": true,
-    "raw": "algoliasearch@^4.8.2",
+    "raw": "algoliasearch@^4.8.3",
     "name": "algoliasearch",
     "escapedName": "algoliasearch",
-    "rawSpec": "^4.8.2",
+    "rawSpec": "^4.8.3",
     "saveSpec": null,
-    "fetchSpec": "^4.8.2"
+    "fetchSpec": "^4.8.3"
   },
   "_requiredBy": [
     "#USER"
   ],
   "_resolved": "https://registry.npmjs.org/algoliasearch/-/algoliasearch-4.8.3.tgz",
   "_shasum": "f76b824423e4264506fb6ba6a6709feb08ab9954",
-  "_spec": "algoliasearch@^4.8.2",
-  "_where": "/Users/raber/Local Sites/algolia/app/public/wp-content/plugins/wp-search-with-algolia",
+  "_spec": "algoliasearch@^4.8.3",
+  "_where": "/Users/asharirfan/Documents/code/wp-algolia/app/public/wp-content/plugins/wp-search-with-algolia",
   "browser": {
     "./index.js": "./dist/algoliasearch.umd.js",
     "./lite.js": "./dist/algoliasearch-lite.umd.js"

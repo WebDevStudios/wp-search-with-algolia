@@ -21,7 +21,7 @@
   "_resolved": "https://registry.npmjs.org/instantsearch.js/-/instantsearch.js-3.7.0.tgz",
   "_shasum": "6768c7270415867f7777fc9a4e7231791d015079",
   "_spec": "instantsearch.js@^3.5.3",
-  "_where": "/Users/raber/Local Sites/algolia/app/public/wp-content/plugins/wp-search-with-algolia",
+  "_where": "/Users/asharirfan/Documents/code/wp-algolia/app/public/wp-content/plugins/wp-search-with-algolia",
   "author": {
     "name": "Algolia",
     "email": "support@algolia.com"

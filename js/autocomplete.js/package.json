@@ -21,7 +21,7 @@
   "_resolved": "https://registry.npmjs.org/autocomplete.js/-/autocomplete.js-0.37.1.tgz",
   "_shasum": "a29a048d827e7d2bf8f7df8b831766e5cc97df01",
   "_spec": "autocomplete.js@^0.37.1",
-  "_where": "/Users/raber/Local Sites/algolia/app/public/wp-content/plugins/wp-search-with-algolia",
+  "_where": "/Users/asharirfan/Documents/code/wp-algolia/app/public/wp-content/plugins/wp-search-with-algolia",
   "bugs": {
     "url": "https://github.com/algolia/autocomplete.js/issues"
   },
