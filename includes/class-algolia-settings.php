@@ -92,31 +92,42 @@ class Algolia_Settings {
 	}
 
 	/**
-	 * Get the post types blacklist.
+	 * Get the excluded post types.
 	 *
 	 * @author  WebDevStudios <contact@webdevstudios.com>
 	 * @since   1.0.0
 	 *
 	 * @return array
 	 */
-	public function get_post_types_blacklist() {
-		$blacklist = (array) apply_filters( 'algolia_post_types_blacklist', array( 'nav_menu_item' ) );
+	public function get_excluded_post_types() {
+
+		// Default array of excluded post types.
+		$excluded = array( 'nav_menu_item' );		
+
+		if ( has_filter( 'algolia_excluded_post_types' ) ) {
+			$excluded = (array) apply_filters( 'algolia_excluded_post_types', $excluded );
+		}
+
+		// Deprecated filter, but will maintain backwards compat.
+		if ( has_filter( 'algolia_post_types_blacklist' ) ) {
+			$excluded = (array) apply_filters( 'algolia_post_types_blacklist', $excluded );
+		}
 
 		// Native WordPress.
-		$blacklist[] = 'revision';
+		$excluded[] = 'revision';
 
 		// Native to Algolia Search plugin.
-		$blacklist[] = 'algolia_task';
-		$blacklist[] = 'algolia_log';
+		$excluded[] = 'algolia_task';
+		$excluded[] = 'algolia_log';
 
 		// Native to WordPress VIP platform.
-		$blacklist[] = 'kr_request_token';
-		$blacklist[] = 'kr_access_token';
-		$blacklist[] = 'deprecated_log';
-		$blacklist[] = 'async-scan-result';
-		$blacklist[] = 'scanresult';
+		$excluded[] = 'kr_request_token';
+		$excluded[] = 'kr_access_token';
+		$excluded[] = 'deprecated_log';
+		$excluded[] = 'async-scan-result';
+		$excluded[] = 'scanresult';
 
-		return array_unique( $blacklist );
+		return array_unique( $excluded );
 	}
 
 	/**
@@ -155,8 +166,21 @@ class Algolia_Settings {
 	 *
 	 * @return array
 	 */
-	public function get_taxonomies_blacklist() {
-		return (array) apply_filters( 'algolia_taxonomies_blacklist', array( 'nav_menu', 'link_category', 'post_format' ) );
+	public function get_excluded_taxonomies() {
+
+		// Default array of excluded taxonomies.
+		$excluded = array( 'nav_menu', 'link_category', 'post_format' );
+
+		if ( has_filter( 'algolia_excluded_taxonomies' ) ) {
+			$excluded = (array) apply_filters( 'algolia_excluded_taxonomies', $excluded );
+		}
+
+		// Deprecated filter, but will maintain backwards compat.
+		if ( has_filter( 'algolia_taxonomies_blacklist' ) ) {
+			$excluded = (array) apply_filters( 'algolia_taxonomies_blacklist', $excluded );
+		}
+
+		return $excluded;
 	}
 
 	/**
