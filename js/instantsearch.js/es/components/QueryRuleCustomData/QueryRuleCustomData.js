@@ -1,11 +1,12 @@
-import React from 'preact-compat';
+/** @jsx h */
+import { h } from 'preact';
 import Template from '../Template/Template';
 
 var QueryRuleCustomData = function QueryRuleCustomData(_ref) {
   var cssClasses = _ref.cssClasses,
       templates = _ref.templates,
       items = _ref.items;
-  return React.createElement(Template, {
+  return h(Template, {
     templateKey: "default",
     templates: templates,
     rootProps: {

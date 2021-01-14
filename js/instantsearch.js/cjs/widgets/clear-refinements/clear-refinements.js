@@ -3,9 +3,9 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.default = clearRefinements;
+exports.default = void 0;
 
-var _preactCompat = _interopRequireWildcard(require("preact-compat"));
+var _preact = require("preact");
 
 var _ClearRefinements = _interopRequireDefault(require("../../components/ClearRefinements/ClearRefinements"));
 
@@ -21,8 +21,7 @@ var _suit = require("../../lib/suit");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = Object.defineProperty && Object.getOwnPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : {}; if (desc.get || desc.set) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } } newObj.default = obj; return newObj; } }
-
+/** @jsx h */
 var withUsage = (0, _utils.createDocumentationMessageGenerator)({
   name: 'clear-refinements'
 });
@@ -47,7 +46,7 @@ var renderer = function renderer(_ref) {
       return;
     }
 
-    (0, _preactCompat.render)(_preactCompat.default.createElement(_ClearRefinements.default, {
+    (0, _preact.render)((0, _preact.h)(_ClearRefinements.default, {
       refine: refine,
       cssClasses: cssClasses,
       hasRefinements: hasRefinements,
@@ -55,52 +54,10 @@ var renderer = function renderer(_ref) {
     }), containerNode);
   };
 };
-/**
- * @typedef {Object} ClearRefinementsCSSClasses
- * @property {string|string[]} [root] CSS class to add to the wrapper element.
- * @property {string|string[]} [button] CSS class to add to the button of the widget.
- * @property {string|string[]} [disabledButton] CSS class to add to the button when there are no refinements.
- */
 
-/**
- * @typedef {Object} ClearRefinementsTemplates
- * @property {string|string[]} [resetLabel] Template for the content of the button
- */
-
-/**
- * @typedef {Object} ClearRefinementsWidgetOptions
- * @property {string|HTMLElement} container CSS Selector or HTMLElement to insert the widget.
- * @property {string[]} [includedAttributes = []] The attributes to include in the refinements to clear (all by default). Cannot be used with `excludedAttributes`.
- * @property {string[]} [excludedAttributes = ['query']] The attributes to exclude from the refinements to clear. Cannot be used with `includedAttributes`.
- * @property {function(object[]):object[]} [transformItems] Function to transform the items passed to the templates.
- * @property {ClearRefinementsTemplates} [templates] Templates to use for the widget.
- * @property {ClearRefinementsCSSClasses} [cssClasses] CSS classes to be added.
- */
-
-/**
- * The clear all widget gives the user the ability to clear all the refinements currently
- * applied on the results. It is equivalent to the reset button of a form.
- *
- * The current refined values widget can display a button that has the same behavior.
- * @type {WidgetFactory}
- * @devNovel ClearRefinements
- * @category clear-filter
- * @param {ClearRefinementsWidgetOptions} $0 The ClearRefinements widget options.
- * @returns {Widget} A new instance of the ClearRefinements widget.
- * @example
- * search.addWidget(
- *   instantsearch.widgets.clearRefinements({
- *     container: '#clear-all',
- *     templates: {
- *       resetLabel: 'Reset everything'
- *     },
- *   })
- * );
- */
-
-
-function clearRefinements(_ref3) {
-  var container = _ref3.container,
+var clearRefinements = function clearRefinements(widgetOptions) {
+  var _ref3 = widgetOptions || {},
+      container = _ref3.container,
       _ref3$templates = _ref3.templates,
       templates = _ref3$templates === void 0 ? _defaultTemplates.default : _ref3$templates,
       includedAttributes = _ref3.includedAttributes,
@@ -131,11 +88,14 @@ function clearRefinements(_ref3) {
     templates: templates
   });
   var makeWidget = (0, _connectClearRefinements.default)(specializedRenderer, function () {
-    return (0, _preactCompat.unmountComponentAtNode)(containerNode);
+    return (0, _preact.render)(null, containerNode);
   });
   return makeWidget({
     includedAttributes: includedAttributes,
     excludedAttributes: excludedAttributes,
     transformItems: transformItems
   });
-}
+};
+
+var _default = clearRefinements;
+exports.default = _default;

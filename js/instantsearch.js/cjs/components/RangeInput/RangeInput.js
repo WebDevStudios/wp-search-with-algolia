@@ -5,17 +5,13 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = void 0;
 
-var _preactCompat = _interopRequireWildcard(require("preact-compat"));
-
-var _propTypes = _interopRequireDefault(require("prop-types"));
+var _preact = require("preact");
 
 var _classnames = _interopRequireDefault(require("classnames"));
 
 var _Template = _interopRequireDefault(require("../Template/Template"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = Object.defineProperty && Object.getOwnPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : {}; if (desc.get || desc.set) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } } newObj.default = obj; return newObj; } }
 
 function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
@@ -51,7 +47,7 @@ function (_Component) {
 
     _this = _possibleConstructorReturn(this, _getPrototypeOf(RangeInput).call(this, props));
 
-    _defineProperty(_assertThisInitialized(_this), "onChange", function (name) {
+    _defineProperty(_assertThisInitialized(_this), "onInput", function (name) {
       return function (event) {
         _this.setState(_defineProperty({}, name, event.currentTarget.value));
       };
@@ -60,7 +56,7 @@ function (_Component) {
     _defineProperty(_assertThisInitialized(_this), "onSubmit", function (event) {
       event.preventDefault();
 
-      _this.props.refine([_this.state.min, _this.state.max]);
+      _this.props.refine([_this.state.min && Number(_this.state.min), _this.state.max && Number(_this.state.max)]);
     });
 
     _this.state = {
@@ -93,42 +89,42 @@ function (_Component) {
       var isDisabled = min >= max;
       var hasRefinements = Boolean(minValue || maxValue);
       var rootClassNames = (0, _classnames.default)(cssClasses.root, _defineProperty({}, cssClasses.noRefinement, !hasRefinements));
-      return _preactCompat.default.createElement("div", {
+      return (0, _preact.h)("div", {
         className: rootClassNames
-      }, _preactCompat.default.createElement("form", {
+      }, (0, _preact.h)("form", {
         className: cssClasses.form,
         onSubmit: this.onSubmit
-      }, _preactCompat.default.createElement("label", {
+      }, (0, _preact.h)("label", {
         className: cssClasses.label
-      }, _preactCompat.default.createElement("input", {
+      }, (0, _preact.h)("input", {
         className: (0, _classnames.default)(cssClasses.input, cssClasses.inputMin),
         type: "number",
         min: min,
         max: max,
         step: step,
-        value: minValue,
-        onChange: this.onChange('min'),
+        value: minValue !== null && minValue !== void 0 ? minValue : '',
+        onInput: this.onInput('min'),
         placeholder: min,
         disabled: isDisabled
-      })), _preactCompat.default.createElement(_Template.default, _extends({}, templateProps, {
+      })), (0, _preact.h)(_Template.default, _extends({}, templateProps, {
         templateKey: "separatorText",
         rootTagName: "span",
         rootProps: {
           className: cssClasses.separator
         }
-      })), _preactCompat.default.createElement("label", {
+      })), (0, _preact.h)("label", {
         className: cssClasses.label
-      }, _preactCompat.default.createElement("input", {
+      }, (0, _preact.h)("input", {
         className: (0, _classnames.default)(cssClasses.input, cssClasses.inputMax),
         type: "number",
         min: min,
         max: max,
         step: step,
-        value: maxValue,
-        onChange: this.onChange('max'),
+        value: maxValue !== null && maxValue !== void 0 ? maxValue : '',
+        onInput: this.onInput('max'),
         placeholder: max,
         disabled: isDisabled
-      })), _preactCompat.default.createElement(_Template.default, _extends({}, templateProps, {
+      })), (0, _preact.h)(_Template.default, _extends({}, templateProps, {
         templateKey: "submitText",
         rootTagName: "button",
         rootProps: {
@@ -141,7 +137,7 @@ function (_Component) {
   }]);
 
   return RangeInput;
-}(_preactCompat.Component);
+}(_preact.Component);
 
 var _default = RangeInput;
 exports.default = _default;

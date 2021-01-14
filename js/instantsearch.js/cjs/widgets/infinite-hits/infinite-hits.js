@@ -5,13 +5,11 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = void 0;
 
-var _preactCompat = _interopRequireWildcard(require("preact-compat"));
+var _preact = require("preact");
 
 var _classnames = _interopRequireDefault(require("classnames"));
 
 var _InfiniteHits = _interopRequireDefault(require("../../components/InfiniteHits/InfiniteHits"));
-
-var _defaultTemplates = _interopRequireDefault(require("./defaultTemplates"));
 
 var _connectInfiniteHits = _interopRequireDefault(require("../../connectors/infinite-hits/connectInfiniteHits"));
 
@@ -21,10 +19,11 @@ var _suit = require("../../lib/suit");
 
 var _insights = require("../../lib/insights");
 
+var _defaultTemplates = _interopRequireDefault(require("./defaultTemplates"));
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = Object.defineProperty && Object.getOwnPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : {}; if (desc.get || desc.set) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } } newObj.default = obj; return newObj; } }
-
+/** @jsx h */
 var withUsage = (0, _utils.createDocumentationMessageGenerator)({
   name: 'infinite-hits'
 });
@@ -45,7 +44,8 @@ var renderer = function renderer(_ref) {
         isFirstPage = _ref2.isFirstPage,
         isLastPage = _ref2.isLastPage,
         instantSearchInstance = _ref2.instantSearchInstance,
-        insights = _ref2.insights;
+        insights = _ref2.insights,
+        bindEvent = _ref2.bindEvent;
 
     if (isFirstRendering) {
       renderState.templateProps = (0, _utils.prepareTemplateProps)({
@@ -56,7 +56,7 @@ var renderer = function renderer(_ref) {
       return;
     }
 
-    (0, _preactCompat.render)(_preactCompat.default.createElement(InfiniteHitsWithInsightsListener, {
+    (0, _preact.render)((0, _preact.h)(InfiniteHitsWithInsightsListener, {
       cssClasses: cssClasses,
       hits: hits,
       results: results,
@@ -66,7 +66,11 @@ var renderer = function renderer(_ref) {
       templateProps: renderState.templateProps,
       isFirstPage: isFirstPage,
       isLastPage: isLastPage,
-      insights: insights
+      insights: insights,
+      sendEvent: function sendEvent(event) {
+        instantSearchInstance.sendEventToInsights(event);
+      },
+      bindEvent: bindEvent
     }), containerNode);
   };
 };
@@ -80,18 +84,13 @@ var infiniteHits = function infiniteHits() {
       templates = _ref3$templates === void 0 ? _defaultTemplates.default : _ref3$templates,
       _ref3$cssClasses = _ref3.cssClasses,
       userCssClasses = _ref3$cssClasses === void 0 ? {} : _ref3$cssClasses,
-      showPrevious = _ref3.showPrevious;
+      showPrevious = _ref3.showPrevious,
+      cache = _ref3.cache;
 
   if (!container) {
     throw new Error(withUsage('The `container` option is required.'));
   }
 
-  (0, _utils.warning)( // @ts-ignore: We have this specific check because unlike `hits`, `infiniteHits` does not support
-  // the `allItems` template. This can be misleading as they are very similar.
-  typeof templates.allItems === 'undefined', "The template `allItems` does not exist since InstantSearch.js 3.\n\n You may want to migrate using `connectInfiniteHits`: ".concat((0, _utils.createDocumentationLink)({
-    name: 'infinite-hits',
-    connector: true
-  }), "."));
   var containerNode = (0, _utils.getContainerNode)(container);
   var cssClasses = {
     root: (0, _classnames.default)(suit(), userCssClasses.root),
@@ -127,12 +126,13 @@ var infiniteHits = function infiniteHits() {
     renderState: {}
   });
   var makeInfiniteHits = (0, _insights.withInsights)(_connectInfiniteHits.default)(specializedRenderer, function () {
-    return (0, _preactCompat.unmountComponentAtNode)(containerNode);
+    return (0, _preact.render)(null, containerNode);
   });
   return makeInfiniteHits({
     escapeHTML: escapeHTML,
     transformItems: transformItems,
-    showPrevious: showPrevious
+    showPrevious: showPrevious,
+    cache: cache
   });
 };
 

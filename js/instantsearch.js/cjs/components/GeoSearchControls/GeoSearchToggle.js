@@ -5,21 +5,18 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = void 0;
 
-var _preactCompat = _interopRequireDefault(require("preact-compat"));
+var _preact = require("preact");
 
-var _propTypes = _interopRequireDefault(require("prop-types"));
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
+/** @jsx h */
 var GeoSearchToggle = function GeoSearchToggle(_ref) {
   var classNameLabel = _ref.classNameLabel,
       classNameInput = _ref.classNameInput,
       checked = _ref.checked,
       onToggle = _ref.onToggle,
       children = _ref.children;
-  return _preactCompat.default.createElement("label", {
+  return (0, _preact.h)("label", {
     className: classNameLabel
-  }, _preactCompat.default.createElement("input", {
+  }, (0, _preact.h)("input", {
     className: classNameInput,
     type: "checkbox",
     checked: checked,

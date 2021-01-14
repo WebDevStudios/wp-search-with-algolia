@@ -18,8 +18,8 @@ function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || func
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
-import React, { Component } from 'preact-compat';
-import PropTypes from 'prop-types';
+/** @jsx h */
+import { h, Component } from 'preact';
 import { noop } from '../../lib/utils';
 import Template from '../Template/Template';
 
@@ -42,10 +42,11 @@ function (_Component) {
     _this = _possibleConstructorReturn(this, (_getPrototypeOf2 = _getPrototypeOf(SearchBox)).call.apply(_getPrototypeOf2, [this].concat(args)));
 
     _defineProperty(_assertThisInitialized(_this), "state", {
-      query: _this.props.searchAsYouType ? '' : _this.props.query
+      query: _this.props.query,
+      focused: false
     });
 
-    _defineProperty(_assertThisInitialized(_this), "onChange", function (event) {
+    _defineProperty(_assertThisInitialized(_this), "onInput", function (event) {
       var _this$props = _this.props,
           searchAsYouType = _this$props.searchAsYouType,
           refine = _this$props.refine,
@@ -54,11 +55,11 @@ function (_Component) {
 
       if (searchAsYouType) {
         refine(query);
-      } else {
-        _this.setState({
-          query: query
-        });
       }
+
+      _this.setState({
+        query: query
+      });
 
       onChange(event);
     });
@@ -83,7 +84,6 @@ function (_Component) {
 
     _defineProperty(_assertThisInitialized(_this), "onReset", function (event) {
       var _this$props3 = _this.props,
-          searchAsYouType = _this$props3.searchAsYouType,
           refine = _this$props3.refine,
           onReset = _this$props3.onReset;
       var query = '';
@@ -92,13 +92,23 @@ function (_Component) {
 
       refine(query);
 
-      if (!searchAsYouType) {
-        _this.setState({
-          query: query
-        });
-      }
+      _this.setState({
+        query: query
+      });
 
       onReset(event);
+    });
+
+    _defineProperty(_assertThisInitialized(_this), "onBlur", function () {
+      _this.setState({
+        focused: false
+      });
+    });
+
+    _defineProperty(_assertThisInitialized(_this), "onFocus", function () {
+      _this.setState({
+        focused: true
+      });
     });
 
     return _this;
@@ -120,6 +130,20 @@ function (_Component) {
       });
     }
   }, {
+    key: "componentWillReceiveProps",
+    value: function componentWillReceiveProps(nextProps) {
+      /**
+       * when the user is typing, we don't want to replace the query typed
+       * by the user (state.query) with the query exposed by the connector (props.query)
+       * see: https://github.com/algolia/instantsearch.js/issues/4141
+       */
+      if (!this.state.focused && nextProps.query !== this.state.query) {
+        this.setState({
+          query: nextProps.query
+        });
+      }
+    }
+  }, {
     key: "render",
     value: function render() {
       var _this2 = this;
@@ -132,23 +156,21 @@ function (_Component) {
           showReset = _this$props4.showReset,
           showLoadingIndicator = _this$props4.showLoadingIndicator,
           templates = _this$props4.templates,
-          isSearchStalled = _this$props4.isSearchStalled,
-          searchAsYouType = _this$props4.searchAsYouType;
-      var query = searchAsYouType ? this.props.query : this.state.query;
-      return React.createElement("div", {
+          isSearchStalled = _this$props4.isSearchStalled;
+      return h("div", {
         className: cssClasses.root
-      }, React.createElement("form", {
+      }, h("form", {
         action: "",
         role: "search",
         className: cssClasses.form,
         noValidate: true,
         onSubmit: this.onSubmit,
         onReset: this.onReset
-      }, React.createElement("input", {
+      }, h("input", {
         ref: function ref(inputRef) {
           return _this2.input = inputRef;
         },
-        value: query,
+        value: this.state.query,
         disabled: this.props.disabled,
         className: cssClasses.input,
         type: "search",
@@ -157,10 +179,12 @@ function (_Component) {
         autoComplete: "off",
         autoCorrect: "off",
         autoCapitalize: "off",
-        spellCheck: false,
+        spellCheck: "false",
         maxLength: 512,
-        onChange: this.onChange
-      }), React.createElement(Template, {
+        onInput: this.onInput,
+        onBlur: this.onBlur,
+        onFocus: this.onFocus
+      }), h(Template, {
         templateKey: "submit",
         rootTagName: "button",
         rootProps: {
@@ -173,20 +197,20 @@ function (_Component) {
         data: {
           cssClasses: cssClasses
         }
-      }), React.createElement(Template, {
+      }), h(Template, {
         templateKey: "reset",
         rootTagName: "button",
         rootProps: {
           className: cssClasses.reset,
           type: 'reset',
           title: 'Clear the search query.',
-          hidden: !(showReset && query.trim() && !isSearchStalled)
+          hidden: !(showReset && this.state.query.trim() && !isSearchStalled)
         },
         templates: templates,
         data: {
           cssClasses: cssClasses
         }
-      }), showLoadingIndicator && React.createElement(Template, {
+      }), showLoadingIndicator && h(Template, {
         templateKey: "loadingIndicator",
         rootTagName: "span",
         rootProps: {

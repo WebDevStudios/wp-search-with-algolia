@@ -1,5 +1,5 @@
-import React from 'preact-compat';
-import PropTypes from 'prop-types';
+/** @jsx h */
+import { h } from 'preact';
 
 var GeoSearchToggle = function GeoSearchToggle(_ref) {
   var classNameLabel = _ref.classNameLabel,
@@ -7,9 +7,9 @@ var GeoSearchToggle = function GeoSearchToggle(_ref) {
       checked = _ref.checked,
       onToggle = _ref.onToggle,
       children = _ref.children;
-  return React.createElement("label", {
+  return h("label", {
     className: classNameLabel
-  }, React.createElement("input", {
+  }, h("input", {
     className: classNameInput,
     type: "checkbox",
     checked: checked,

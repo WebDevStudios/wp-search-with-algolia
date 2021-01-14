@@ -5,12 +5,13 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = void 0;
 
-var _preactCompat = _interopRequireDefault(require("preact-compat"));
+var _preact = require("preact");
 
 var _Template = _interopRequireDefault(require("../Template/Template"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+/** @jsx h */
 var VoiceSearch = function VoiceSearch(_ref) {
   var cssClasses = _ref.cssClasses,
       isBrowserSupported = _ref.isBrowserSupported,
@@ -28,9 +29,9 @@ var VoiceSearch = function VoiceSearch(_ref) {
       transcript = voiceListeningState.transcript,
       isSpeechFinal = voiceListeningState.isSpeechFinal,
       errorCode = voiceListeningState.errorCode;
-  return _preactCompat.default.createElement("div", {
+  return (0, _preact.h)("div", {
     className: cssClasses.root
-  }, _preactCompat.default.createElement(_Template.default, {
+  }, (0, _preact.h)(_Template.default, {
     templateKey: "buttonText",
     rootTagName: "button",
     rootProps: {
@@ -49,7 +50,7 @@ var VoiceSearch = function VoiceSearch(_ref) {
       isBrowserSupported: isBrowserSupported
     },
     templates: templates
-  }), _preactCompat.default.createElement(_Template.default, {
+  }), (0, _preact.h)(_Template.default, {
     templateKey: "status",
     rootProps: {
       className: cssClasses.status

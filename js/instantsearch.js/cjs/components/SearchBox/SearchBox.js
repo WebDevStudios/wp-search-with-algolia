@@ -5,17 +5,13 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = void 0;
 
-var _preactCompat = _interopRequireWildcard(require("preact-compat"));
-
-var _propTypes = _interopRequireDefault(require("prop-types"));
+var _preact = require("preact");
 
 var _utils = require("../../lib/utils");
 
 var _Template = _interopRequireDefault(require("../Template/Template"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = Object.defineProperty && Object.getOwnPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : {}; if (desc.get || desc.set) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } } newObj.default = obj; return newObj; } }
 
 function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
@@ -56,10 +52,11 @@ function (_Component) {
     _this = _possibleConstructorReturn(this, (_getPrototypeOf2 = _getPrototypeOf(SearchBox)).call.apply(_getPrototypeOf2, [this].concat(args)));
 
     _defineProperty(_assertThisInitialized(_this), "state", {
-      query: _this.props.searchAsYouType ? '' : _this.props.query
+      query: _this.props.query,
+      focused: false
     });
 
-    _defineProperty(_assertThisInitialized(_this), "onChange", function (event) {
+    _defineProperty(_assertThisInitialized(_this), "onInput", function (event) {
       var _this$props = _this.props,
           searchAsYouType = _this$props.searchAsYouType,
           refine = _this$props.refine,
@@ -68,11 +65,11 @@ function (_Component) {
 
       if (searchAsYouType) {
         refine(query);
-      } else {
-        _this.setState({
-          query: query
-        });
       }
+
+      _this.setState({
+        query: query
+      });
 
       onChange(event);
     });
@@ -97,7 +94,6 @@ function (_Component) {
 
     _defineProperty(_assertThisInitialized(_this), "onReset", function (event) {
       var _this$props3 = _this.props,
-          searchAsYouType = _this$props3.searchAsYouType,
           refine = _this$props3.refine,
           onReset = _this$props3.onReset;
       var query = '';
@@ -106,13 +102,23 @@ function (_Component) {
 
       refine(query);
 
-      if (!searchAsYouType) {
-        _this.setState({
-          query: query
-        });
-      }
+      _this.setState({
+        query: query
+      });
 
       onReset(event);
+    });
+
+    _defineProperty(_assertThisInitialized(_this), "onBlur", function () {
+      _this.setState({
+        focused: false
+      });
+    });
+
+    _defineProperty(_assertThisInitialized(_this), "onFocus", function () {
+      _this.setState({
+        focused: true
+      });
     });
 
     return _this;
@@ -134,6 +140,20 @@ function (_Component) {
       });
     }
   }, {
+    key: "componentWillReceiveProps",
+    value: function componentWillReceiveProps(nextProps) {
+      /**
+       * when the user is typing, we don't want to replace the query typed
+       * by the user (state.query) with the query exposed by the connector (props.query)
+       * see: https://github.com/algolia/instantsearch.js/issues/4141
+       */
+      if (!this.state.focused && nextProps.query !== this.state.query) {
+        this.setState({
+          query: nextProps.query
+        });
+      }
+    }
+  }, {
     key: "render",
     value: function render() {
       var _this2 = this;
@@ -146,23 +166,21 @@ function (_Component) {
           showReset = _this$props4.showReset,
           showLoadingIndicator = _this$props4.showLoadingIndicator,
           templates = _this$props4.templates,
-          isSearchStalled = _this$props4.isSearchStalled,
-          searchAsYouType = _this$props4.searchAsYouType;
-      var query = searchAsYouType ? this.props.query : this.state.query;
-      return _preactCompat.default.createElement("div", {
+          isSearchStalled = _this$props4.isSearchStalled;
+      return (0, _preact.h)("div", {
         className: cssClasses.root
-      }, _preactCompat.default.createElement("form", {
+      }, (0, _preact.h)("form", {
         action: "",
         role: "search",
         className: cssClasses.form,
         noValidate: true,
         onSubmit: this.onSubmit,
         onReset: this.onReset
-      }, _preactCompat.default.createElement("input", {
+      }, (0, _preact.h)("input", {
         ref: function ref(inputRef) {
           return _this2.input = inputRef;
         },
-        value: query,
+        value: this.state.query,
         disabled: this.props.disabled,
         className: cssClasses.input,
         type: "search",
@@ -171,10 +189,12 @@ function (_Component) {
         autoComplete: "off",
         autoCorrect: "off",
         autoCapitalize: "off",
-        spellCheck: false,
+        spellCheck: "false",
         maxLength: 512,
-        onChange: this.onChange
-      }), _preactCompat.default.createElement(_Template.default, {
+        onInput: this.onInput,
+        onBlur: this.onBlur,
+        onFocus: this.onFocus
+      }), (0, _preact.h)(_Template.default, {
         templateKey: "submit",
         rootTagName: "button",
         rootProps: {
@@ -187,20 +207,20 @@ function (_Component) {
         data: {
           cssClasses: cssClasses
         }
-      }), _preactCompat.default.createElement(_Template.default, {
+      }), (0, _preact.h)(_Template.default, {
         templateKey: "reset",
         rootTagName: "button",
         rootProps: {
           className: cssClasses.reset,
           type: 'reset',
           title: 'Clear the search query.',
-          hidden: !(showReset && query.trim() && !isSearchStalled)
+          hidden: !(showReset && this.state.query.trim() && !isSearchStalled)
         },
         templates: templates,
         data: {
           cssClasses: cssClasses
         }
-      }), showLoadingIndicator && _preactCompat.default.createElement(_Template.default, {
+      }), showLoadingIndicator && (0, _preact.h)(_Template.default, {
         templateKey: "loadingIndicator",
         rootTagName: "span",
         rootProps: {
@@ -216,7 +236,7 @@ function (_Component) {
   }]);
 
   return SearchBox;
-}(_preactCompat.Component);
+}(_preact.Component);
 
 _defineProperty(SearchBox, "defaultProps", {
   query: '',

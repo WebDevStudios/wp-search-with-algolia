@@ -18,8 +18,8 @@ function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || func
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
-import React, { Component } from 'preact-compat';
-import PropTypes from 'prop-types';
+/** @jsx h */
+import { h, Component } from 'preact';
 import cx from 'classnames';
 import PaginationLink from './PaginationLink';
 import { isSpecialClick } from '../../lib/utils';
@@ -82,7 +82,7 @@ function (_Component) {
       }
 
       var url = createURL && !isDisabled ? createURL(pageNumber) : '#';
-      return React.createElement(PaginationLink, {
+      return h(PaginationLink, {
         ariaLabel: ariaLabel,
         cssClasses: cssClasses,
         handleClick: this.handleClick,
@@ -102,7 +102,7 @@ function (_Component) {
       return this.pageLink({
         ariaLabel: 'Previous',
         additionalClassName: this.props.cssClasses.previousPageItem,
-        isDisabled: this.props.nbHits === 0 || isFirstPage,
+        isDisabled: isFirstPage,
         label: this.props.templates.previous,
         pageNumber: currentPage - 1,
         createURL: createURL
@@ -117,7 +117,7 @@ function (_Component) {
       return this.pageLink({
         ariaLabel: 'Next',
         additionalClassName: this.props.cssClasses.nextPageItem,
-        isDisabled: this.props.nbHits === 0 || isLastPage,
+        isDisabled: isLastPage,
         label: this.props.templates.next,
         pageNumber: currentPage + 1,
         createURL: createURL
@@ -131,7 +131,7 @@ function (_Component) {
       return this.pageLink({
         ariaLabel: 'First',
         additionalClassName: this.props.cssClasses.firstPageItem,
-        isDisabled: this.props.nbHits === 0 || isFirstPage,
+        isDisabled: isFirstPage,
         label: this.props.templates.first,
         pageNumber: 0,
         createURL: createURL
@@ -146,7 +146,7 @@ function (_Component) {
       return this.pageLink({
         ariaLabel: 'Last',
         additionalClassName: this.props.cssClasses.lastPageItem,
-        isDisabled: this.props.nbHits === 0 || isLastPage,
+        isDisabled: isLastPage,
         label: this.props.templates.last,
         pageNumber: nbPages - 1,
         createURL: createURL
@@ -174,9 +174,9 @@ function (_Component) {
   }, {
     key: "render",
     value: function render() {
-      return React.createElement("div", {
-        className: cx(this.props.cssClasses.root, _defineProperty({}, this.props.cssClasses.noRefinementRoot, this.props.isFirstPage))
-      }, React.createElement("ul", {
+      return h("div", {
+        className: cx(this.props.cssClasses.root, _defineProperty({}, this.props.cssClasses.noRefinementRoot, this.props.nbPages <= 1))
+      }, h("ul", {
         className: this.props.cssClasses.list
       }, this.props.showFirst && this.firstPageLink(this.props), this.props.showPrevious && this.previousPageLink(this.props), this.pages(this.props), this.props.showNext && this.nextPageLink(this.props), this.props.showLast && this.lastPageLink(this.props)));
     }

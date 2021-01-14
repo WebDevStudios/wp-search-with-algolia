@@ -9,7 +9,7 @@ var _utils = require("../../lib/utils");
 
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(source, true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
@@ -83,7 +83,7 @@ var withUsage = (0, _utils.createDocumentationMessageGenerator)({
  * var customSortBy = instantsearch.connectors.connectSortBy(renderFn);
  *
  * // mount widget on the page
- * search.addWidget(
+ * search.addWidgets([
  *   customSortBy({
  *     containerNode: $('#custom-sort-by-container'),
  *     items: [
@@ -92,7 +92,7 @@ var withUsage = (0, _utils.createDocumentationMessageGenerator)({
  *       { value: 'instant_search_price_desc', label: 'Highest price' },
  *     ],
  *   })
- * );
+ * ]);
  */
 
 function connectSortBy(renderFn) {
@@ -111,73 +111,74 @@ function connectSortBy(renderFn) {
     }
 
     return {
-      init: function init(_ref) {
-        var helper = _ref.helper,
-            instantSearchInstance = _ref.instantSearchInstance;
-        var currentIndex = helper.state.index;
+      $$type: 'ais.sortBy',
+      init: function init(initOptions) {
+        var instantSearchInstance = initOptions.instantSearchInstance;
+        var widgetRenderState = this.getWidgetRenderState(initOptions);
+        var currentIndex = widgetRenderState.currentRefinement;
         var isCurrentIndexInItems = (0, _utils.find)(items, function (item) {
           return item.value === currentIndex;
-        }); // The `initialIndex` is the one set at the top level not the one used
-        // at `init`. The value of `index` at `init` could come from the URL. We
-        // want the "real" initial value, this one should never change. If it changes
-        // between the lifecycles of the widget the current refinement won't be
-        // pushed into the `uiState`. Because we never push the "initial" value to
-        // avoid to pollute the URL.
-        // Note that it might be interesting to manage this at the state mapping
-        // level and always push the index value into  the `uiState`. It is a
-        // breaking change.
-        // @MAJOR
-
-        this.initialIndex = instantSearchInstance.indexName;
-
-        this.setIndex = function (indexName) {
-          helper.setIndex(indexName).search();
-        };
-
-        (0, _utils.warning)(isCurrentIndexInItems, "The index named \"".concat(currentIndex, "\" is not listed in the `items` of `sortBy`."));
-        renderFn({
-          currentRefinement: currentIndex,
-          options: transformItems(items),
-          refine: this.setIndex,
-          hasNoResults: true,
-          widgetParams: widgetParams,
+        });
+        process.env.NODE_ENV === 'development' ? (0, _utils.warning)(isCurrentIndexInItems, "The index named \"".concat(currentIndex, "\" is not listed in the `items` of `sortBy`.")) : void 0;
+        renderFn(_objectSpread({}, widgetRenderState, {
           instantSearchInstance: instantSearchInstance
-        }, true);
+        }), true);
       },
-      render: function render(_ref2) {
-        var helper = _ref2.helper,
-            results = _ref2.results,
-            instantSearchInstance = _ref2.instantSearchInstance;
-        renderFn({
-          currentRefinement: helper.state.index,
-          options: transformItems(items),
-          refine: this.setIndex,
-          hasNoResults: results.nbHits === 0,
-          widgetParams: widgetParams,
+      render: function render(renderOptions) {
+        var instantSearchInstance = renderOptions.instantSearchInstance;
+        renderFn(_objectSpread({}, this.getWidgetRenderState(renderOptions), {
           instantSearchInstance: instantSearchInstance
-        }, false);
+        }), false);
       },
-      dispose: function dispose(_ref3) {
-        var state = _ref3.state;
+      dispose: function dispose(_ref) {
+        var state = _ref.state;
         unmountFn();
         return state.setIndex(this.initialIndex);
       },
-      getWidgetState: function getWidgetState(uiState, _ref4) {
-        var searchParameters = _ref4.searchParameters;
-        var currentIndex = searchParameters.getQueryParameter('index');
+      getRenderState: function getRenderState(renderState, renderOptions) {
+        return _objectSpread({}, renderState, {
+          sortBy: this.getWidgetRenderState(renderOptions)
+        });
+      },
+      getWidgetRenderState: function getWidgetRenderState(_ref2) {
+        var results = _ref2.results,
+            helper = _ref2.helper,
+            parent = _ref2.parent;
+
+        if (!this.initialIndex) {
+          this.initialIndex = parent.getIndexName();
+        }
+
+        if (!this.setIndex) {
+          this.setIndex = function (indexName) {
+            helper.setIndex(indexName).search();
+          };
+        }
+
+        return {
+          currentRefinement: helper.state.index,
+          options: transformItems(items),
+          refine: this.setIndex,
+          hasNoResults: results ? results.nbHits === 0 : true,
+          widgetParams: widgetParams
+        };
+      },
+      getWidgetUiState: function getWidgetUiState(uiState, _ref3) {
+        var searchParameters = _ref3.searchParameters;
+        var currentIndex = searchParameters.index;
         var isInitialIndex = currentIndex === this.initialIndex;
 
-        if (isInitialIndex || uiState && uiState.sortBy === currentIndex) {
+        if (isInitialIndex) {
           return uiState;
         }
 
         return _objectSpread({}, uiState, {
-          sortBy: searchParameters.getQueryParameter('index')
+          sortBy: currentIndex
         });
       },
-      getWidgetSearchParameters: function getWidgetSearchParameters(searchParameters, _ref5) {
-        var uiState = _ref5.uiState;
-        return searchParameters.setQueryParameter('index', uiState.sortBy || this.initialIndex);
+      getWidgetSearchParameters: function getWidgetSearchParameters(searchParameters, _ref4) {
+        var uiState = _ref4.uiState;
+        return searchParameters.setQueryParameter('index', uiState.sortBy || this.initialIndex || searchParameters.index);
       }
     };
   };

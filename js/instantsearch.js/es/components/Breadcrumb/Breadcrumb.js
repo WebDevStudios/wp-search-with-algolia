@@ -2,69 +2,55 @@ function _extends() { _extends = Object.assign || function (target) { for (var i
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
-import React from 'preact-compat';
+/** @jsx h */
+import { h } from 'preact';
 import cx from 'classnames';
-import PropTypes from 'prop-types';
 import Template from '../Template/Template';
 
-var renderLink = function renderLink(_ref) {
-  var cssClasses = _ref.cssClasses,
+var Breadcrumb = function Breadcrumb(_ref) {
+  var items = _ref.items,
+      cssClasses = _ref.cssClasses,
+      templateProps = _ref.templateProps,
       createURL = _ref.createURL,
-      refine = _ref.refine,
-      templateProps = _ref.templateProps;
-  return function (item, idx, items) {
-    var isLast = idx === items.length - 1;
-    var link = isLast ? item.label : React.createElement("a", {
+      refine = _ref.refine;
+  return h("div", {
+    className: cx(cssClasses.root, _defineProperty({}, cssClasses.noRefinementRoot, items.length === 0))
+  }, h("ul", {
+    className: cssClasses.list
+  }, h("li", {
+    className: cx(cssClasses.item, _defineProperty({}, cssClasses.selectedItem, items.length === 0))
+  }, h(Template, _extends({}, templateProps, {
+    templateKey: "home",
+    rootTagName: "a",
+    rootProps: {
       className: cssClasses.link,
-      href: createURL(item.value),
+      href: createURL(undefined),
       onClick: function onClick(event) {
         event.preventDefault();
-        refine(item.value);
+        refine(undefined);
       }
-    }, item.label);
-    return React.createElement("li", {
+    }
+  }))), items.map(function (item, idx) {
+    var isLast = idx === items.length - 1;
+    return h("li", {
       key: item.label + idx,
       className: cx(cssClasses.item, _defineProperty({}, cssClasses.selectedItem, isLast))
-    }, React.createElement(Template, _extends({}, templateProps, {
+    }, h(Template, _extends({}, templateProps, {
       templateKey: "separator",
       rootTagName: "span",
       rootProps: {
         className: cssClasses.separator,
         'aria-hidden': true
       }
-    })), link);
-  };
-};
-
-var Breadcrumb = function Breadcrumb(_ref2) {
-  var createURL = _ref2.createURL,
-      items = _ref2.items,
-      refine = _ref2.refine,
-      cssClasses = _ref2.cssClasses,
-      templateProps = _ref2.templateProps;
-  return React.createElement("div", {
-    className: cx(cssClasses.root, _defineProperty({}, cssClasses.noRefinementRoot, items.length === 0))
-  }, React.createElement("ul", {
-    className: cssClasses.list
-  }, React.createElement("li", {
-    className: cx(cssClasses.item, _defineProperty({}, cssClasses.selectedItem, items.length === 0))
-  }, React.createElement(Template, _extends({}, templateProps, {
-    templateKey: "home",
-    rootTagName: "a",
-    rootProps: {
+    })), isLast ? item.label : h("a", {
       className: cssClasses.link,
-      href: createURL(null),
+      href: createURL(item.value),
       onClick: function onClick(event) {
         event.preventDefault();
-        refine(null);
+        refine(item.value);
       }
-    }
-  }))), items.map(renderLink({
-    cssClasses: cssClasses,
-    createURL: createURL,
-    refine: refine,
-    templateProps: templateProps
-  }))));
+    }, item.label));
+  })));
 };
 
 export default Breadcrumb;

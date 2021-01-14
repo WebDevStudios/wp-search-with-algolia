@@ -2,8 +2,8 @@ function _extends() { _extends = Object.assign || function (target) { for (var i
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
-import React from 'preact-compat';
-import PropTypes from 'prop-types';
+/** @jsx h */
+import { h } from 'preact';
 import cx from 'classnames';
 import Template from '../Template/Template';
 
@@ -12,9 +12,9 @@ var ClearRefinements = function ClearRefinements(_ref) {
       refine = _ref.refine,
       cssClasses = _ref.cssClasses,
       templateProps = _ref.templateProps;
-  return React.createElement("div", {
+  return h("div", {
     className: cssClasses.root
-  }, React.createElement(Template, _extends({}, templateProps, {
+  }, h(Template, _extends({}, templateProps, {
     templateKey: "resetLabel",
     rootTagName: "button",
     rootProps: {

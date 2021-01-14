@@ -1,53 +1,58 @@
+function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
+
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
 import { checkRendering, createDocumentationMessageGenerator, noop } from '../../lib/utils';
 var withUsage = createDocumentationMessageGenerator({
   name: 'powered-by',
   connector: true
 });
-/**
- * @typedef {Object} PoweredByWidgetOptions
- * @property {string} [theme] The theme of the logo ("light" or "dark").
- * @property {string} [url] The URL to redirect to.
- */
-
-/**
- * @typedef {Object} PoweredByRenderingOptions
- * @property {Object} widgetParams All original `PoweredByWidgetOptions` forwarded to the `renderFn`.
- */
 
 /**
  * **PoweredBy** connector provides the logic to build a custom widget that will displays
  * the logo to redirect to Algolia.
- *
- * @type {Connector}
- * @param {function(PoweredByRenderingOptions, boolean)} renderFn Rendering function for the custom **PoweredBy** widget.
- * @param {function} unmountFn Unmount function called when the widget is disposed.
- * @return {function} Re-usable widget factory for a custom **PoweredBy** widget.
  */
-
-export default function connectPoweredBy(renderFn) {
+var connectPoweredBy = function connectPoweredBy(renderFn) {
   var unmountFn = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : noop;
   checkRendering(renderFn, withUsage());
   var defaultUrl = 'https://www.algolia.com/?' + 'utm_source=instantsearch.js&' + 'utm_medium=website&' + "utm_content=".concat(typeof window !== 'undefined' && window.location ? window.location.hostname : '', "&") + 'utm_campaign=poweredby';
-  return function () {
-    var widgetParams = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-    var _widgetParams$url = widgetParams.url,
-        url = _widgetParams$url === void 0 ? defaultUrl : _widgetParams$url;
+  return function (widgetParams) {
+    var _ref = widgetParams || {},
+        _ref$url = _ref.url,
+        url = _ref$url === void 0 ? defaultUrl : _ref$url;
+
     return {
-      init: function init() {
-        renderFn({
-          url: url,
-          widgetParams: widgetParams
-        }, true);
+      $$type: 'ais.poweredBy',
+      init: function init(initOptions) {
+        var instantSearchInstance = initOptions.instantSearchInstance;
+        renderFn(_objectSpread({}, this.getWidgetRenderState(initOptions), {
+          instantSearchInstance: instantSearchInstance
+        }), true);
       },
-      render: function render() {
-        renderFn({
+      render: function render(renderOptions) {
+        var instantSearchInstance = renderOptions.instantSearchInstance;
+        renderFn(_objectSpread({}, this.getWidgetRenderState(renderOptions), {
+          instantSearchInstance: instantSearchInstance
+        }), false);
+      },
+      getRenderState: function getRenderState(renderState, renderOptions) {
+        return _objectSpread({}, renderState, {
+          poweredBy: this.getWidgetRenderState(renderOptions)
+        });
+      },
+      getWidgetRenderState: function getWidgetRenderState() {
+        return {
           url: url,
           widgetParams: widgetParams
-        }, false);
+        };
       },
       dispose: function dispose() {
         unmountFn();
       }
     };
   };
-}
+};
+
+export default connectPoweredBy;

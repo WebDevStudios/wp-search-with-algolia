@@ -5,7 +5,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = sortBy;
 
-var _preactCompat = _interopRequireWildcard(require("preact-compat"));
+var _preact = require("preact");
 
 var _classnames = _interopRequireDefault(require("classnames"));
 
@@ -19,8 +19,7 @@ var _suit = require("../../lib/suit");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = Object.defineProperty && Object.getOwnPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : {}; if (desc.get || desc.set) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } } newObj.default = obj; return newObj; } }
-
+/** @jsx h */
 var withUsage = (0, _utils.createDocumentationMessageGenerator)({
   name: 'sort-by'
 });
@@ -38,9 +37,9 @@ var renderer = function renderer(_ref) {
       return;
     }
 
-    (0, _preactCompat.render)(_preactCompat.default.createElement("div", {
+    (0, _preact.render)((0, _preact.h)("div", {
       className: cssClasses.root
-    }, _preactCompat.default.createElement(_Selector.default, {
+    }, (0, _preact.h)(_Selector.default, {
       cssClasses: cssClasses,
       currentValue: currentRefinement,
       options: options,
@@ -80,7 +79,7 @@ var renderer = function renderer(_ref) {
  * @param {SortByWidgetOptions} $0 Options for the SortBy widget
  * @return {Widget} Creates a new instance of the SortBy widget.
  * @example
- * search.addWidget(
+ * search.addWidgets([
  *   instantsearch.widgets.sortBy({
  *     container: '#sort-by-container',
  *     items: [
@@ -89,7 +88,7 @@ var renderer = function renderer(_ref) {
  *       {value: 'instant_search_price_desc', label: 'Highest price'}
  *     ]
  *   })
- * );
+ * ]);
  */
 
 
@@ -120,7 +119,7 @@ function sortBy() {
     cssClasses: cssClasses
   });
   var makeWidget = (0, _connectSortBy.default)(specializedRenderer, function () {
-    return (0, _preactCompat.unmountComponentAtNode)(containerNode);
+    return (0, _preact.render)(null, containerNode);
   });
   return makeWidget({
     items: items,

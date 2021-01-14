@@ -28,9 +28,9 @@ function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || func
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
-import React, { Component } from 'preact-compat';
-import Rheostat from 'preact-rheostat';
-import PropTypes from 'prop-types';
+/** @jsx h */
+import { h, Component } from 'preact';
+import Rheostat from './Rheostat';
 import cx from 'classnames';
 import { range } from '../../lib/utils';
 import Pit from './Pit';
@@ -71,9 +71,9 @@ function (_Component) {
           'rheostat-handle-lower': props['data-handle-key'] === 0,
           'rheostat-handle-upper': props['data-handle-key'] === 1
         });
-        return React.createElement("div", _extends({}, props, {
+        return h("div", _extends({}, props, {
           className: className
-        }), tooltips && React.createElement("div", {
+        }), tooltips && h("div", {
           className: "rheostat-tooltip"
         }, value));
       };
@@ -138,9 +138,9 @@ function (_Component) {
         min: min,
         max: max
       });
-      return React.createElement("div", {
+      return h("div", {
         className: cx(cssClasses.root, _defineProperty({}, cssClasses.disabledRoot, this.isDisabled))
-      }, React.createElement(Rheostat, {
+      }, h(Rheostat, {
         handle: this.createHandleComponent(tooltips),
         onChange: this.handleChange,
         min: min,

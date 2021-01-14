@@ -5,9 +5,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = void 0;
 
-var _preactCompat = _interopRequireWildcard(require("preact-compat"));
-
-var _propTypes = _interopRequireDefault(require("prop-types"));
+var _preact = require("preact");
 
 var _classnames = _interopRequireDefault(require("classnames"));
 
@@ -21,17 +19,19 @@ var _SearchBox = _interopRequireDefault(require("../SearchBox/SearchBox"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = Object.defineProperty && Object.getOwnPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : {}; if (desc.get || desc.set) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } } newObj.default = obj; return newObj; } }
-
 function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(source, true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 function _extends() { _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; return _extends.apply(this, arguments); }
+
+function _objectWithoutProperties(source, excluded) { if (source == null) return {}; var target = _objectWithoutPropertiesLoose(source, excluded); var key, i; if (Object.getOwnPropertySymbols) { var sourceSymbolKeys = Object.getOwnPropertySymbols(source); for (i = 0; i < sourceSymbolKeys.length; i++) { key = sourceSymbolKeys[i]; if (excluded.indexOf(key) >= 0) continue; if (!Object.prototype.propertyIsEnumerable.call(source, key)) continue; target[key] = source[key]; } } return target; }
+
+function _objectWithoutPropertiesLoose(source, excluded) { if (source == null) return {}; var target = {}; var sourceKeys = Object.keys(source); var key, i; for (i = 0; i < sourceKeys.length; i++) { key = sourceKeys[i]; if (excluded.indexOf(key) >= 0) continue; target[key] = source[key]; } return target; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -67,10 +67,9 @@ function (_Component) {
   _createClass(RefinementList, [{
     key: "shouldComponentUpdate",
     value: function shouldComponentUpdate(nextProps, nextState) {
-      var isStateDifferent = nextState !== this.state;
-      var isFacetValuesDifferent = !(0, _utils.isEqual)(this.props.facetValues, nextProps.facetValues);
-      var shouldUpdate = isStateDifferent || isFacetValuesDifferent;
-      return shouldUpdate;
+      var isStateDifferent = this.state !== nextState;
+      var areFacetValuesDifferent = !(0, _utils.isEqual)(this.props.facetValues, nextProps.facetValues);
+      return isStateDifferent || areFacetValuesDifferent;
     }
   }, {
     key: "refine",
@@ -86,7 +85,12 @@ function (_Component) {
       var hasChildren = facetValue.data && facetValue.data.length > 0;
 
       if (hasChildren) {
-        subItems = _preactCompat.default.createElement(RefinementList, _extends({}, this.props, {
+        var _this$props$cssClasse = this.props.cssClasses,
+            root = _this$props$cssClasse.root,
+            cssClasses = _objectWithoutProperties(_this$props$cssClasse, ["root"]);
+
+        subItems = (0, _preact.h)(RefinementList, _extends({}, this.props, {
+          cssClasses: cssClasses,
           depth: this.props.depth + 1,
           facetValues: facetValue.data,
           showMore: false,
@@ -99,7 +103,8 @@ function (_Component) {
       var templateData = _objectSpread({}, facetValue, {
         url: url,
         attribute: this.props.attribute,
-        cssClasses: this.props.cssClasses
+        cssClasses: this.props.cssClasses,
+        isFromSearch: this.props.isFromSearch
       });
 
       var key = facetValue.value;
@@ -112,7 +117,7 @@ function (_Component) {
         key += "/".concat(facetValue.count);
       }
 
-      return _preactCompat.default.createElement(_RefinementListItem.default, {
+      return (0, _preact.h)(_RefinementListItem.default, {
         templateKey: "item",
         key: key,
         facetValueToRefine: facetValue.value,
@@ -204,8 +209,7 @@ function (_Component) {
       // Adding `-lvl0` classes
       var cssClassList = (0, _classnames.default)(this.props.cssClasses.list, _defineProperty({}, "".concat(this.props.cssClasses.depth).concat(this.props.depth), this.props.cssClasses.depth));
       var showMoreButtonClassName = (0, _classnames.default)(this.props.cssClasses.showMore, _defineProperty({}, this.props.cssClasses.disabledShowMore, !(this.props.showMore === true && this.props.canToggleShowMore)));
-
-      var showMoreButton = this.props.showMore === true && _preactCompat.default.createElement(_Template.default, _extends({}, this.props.templateProps, {
+      var showMoreButton = this.props.showMore === true && (0, _preact.h)(_Template.default, _extends({}, this.props.templateProps, {
         templateKey: "showMoreText",
         rootTagName: "button",
         rootProps: {
@@ -217,12 +221,10 @@ function (_Component) {
           isShowingMore: this.props.isShowingMore
         }
       }));
-
       var shouldDisableSearchBox = this.props.searchIsAlwaysActive !== true && !(this.props.isFromSearch || !this.props.hasExhaustiveItems);
-
-      var searchBox = this.props.searchFacetValues && _preactCompat.default.createElement("div", {
+      var searchBox = this.props.searchFacetValues && (0, _preact.h)("div", {
         className: this.props.cssClasses.searchBox
-      }, _preactCompat.default.createElement(_SearchBox.default, {
+      }, (0, _preact.h)(_SearchBox.default, {
         ref: function ref(searchBoxRef) {
           return _this2.searchBox = searchBoxRef;
         },
@@ -243,26 +245,23 @@ function (_Component) {
         ,
         searchAsYouType: false
       }));
-
-      var facetValues = this.props.facetValues && this.props.facetValues.length > 0 && _preactCompat.default.createElement("ul", {
+      var facetValues = this.props.facetValues && this.props.facetValues.length > 0 && (0, _preact.h)("ul", {
         className: cssClassList
       }, this.props.facetValues.map(this._generateFacetItem, this));
-
-      var noResults = this.props.searchFacetValues && this.props.isFromSearch && this.props.facetValues.length === 0 && _preactCompat.default.createElement(_Template.default, _extends({}, this.props.templateProps, {
+      var noResults = this.props.searchFacetValues && this.props.isFromSearch && this.props.facetValues.length === 0 && (0, _preact.h)(_Template.default, _extends({}, this.props.templateProps, {
         templateKey: "searchableNoResults",
         rootProps: {
           className: this.props.cssClasses.noResults
         }
       }));
-
-      return _preactCompat.default.createElement("div", {
+      return (0, _preact.h)("div", {
         className: (0, _classnames.default)(this.props.cssClasses.root, _defineProperty({}, this.props.cssClasses.noRefinementRoot, !this.props.facetValues || this.props.facetValues.length === 0), this.props.className)
       }, this.props.children, searchBox, facetValues, noResults, showMoreButton);
     }
   }]);
 
   return RefinementList;
-}(_preactCompat.Component);
+}(_preact.Component);
 
 RefinementList.defaultProps = {
   cssClasses: {},

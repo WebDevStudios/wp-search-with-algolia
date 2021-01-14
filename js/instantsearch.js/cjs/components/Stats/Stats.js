@@ -5,9 +5,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = void 0;
 
-var _preactCompat = _interopRequireDefault(require("preact-compat"));
-
-var _propTypes = _interopRequireDefault(require("prop-types"));
+var _preact = require("preact");
 
 var _Template = _interopRequireDefault(require("../Template/Template"));
 
@@ -24,9 +22,9 @@ var Stats = function Stats(_ref) {
       query = _ref.query,
       templateProps = _ref.templateProps,
       cssClasses = _ref.cssClasses;
-  return _preactCompat.default.createElement("div", {
+  return (0, _preact.h)("div", {
     className: cssClasses.root
-  }, _preactCompat.default.createElement(_Template.default, _extends({}, templateProps, {
+  }, (0, _preact.h)(_Template.default, _extends({}, templateProps, {
     templateKey: "text",
     rootTagName: "span",
     rootProps: {

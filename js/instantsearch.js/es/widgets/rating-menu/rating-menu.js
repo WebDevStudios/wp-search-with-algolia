@@ -1,4 +1,5 @@
-import React, { render, unmountComponentAtNode } from 'preact-compat';
+/** @jsx h */
+import { h, render } from 'preact';
 import cx from 'classnames';
 import RefinementList from '../../components/RefinementList/RefinementList';
 import connectRatingMenu from '../../connectors/rating-menu/connectRatingMenu';
@@ -12,13 +13,13 @@ var suit = component('RatingMenu');
 
 var _ref3 =
 /*#__PURE__*/
-React.createElement("path", {
+h("path", {
   d: "M12 .288l2.833 8.718h9.167l-7.417 5.389 2.833 8.718-7.416-5.388-7.417 5.388 2.833-8.718-7.416-5.389h9.167z"
 });
 
 var _ref4 =
 /*#__PURE__*/
-React.createElement("path", {
+h("path", {
   d: "M12 6.76l1.379 4.246h4.465l-3.612 2.625 1.379 4.246-3.611-2.625-3.612 2.625 1.379-4.246-3.612-2.625h4.465l1.38-4.246zm0-6.472l-2.833 8.718h-9.167l7.416 5.389-2.833 8.718 7.417-5.388 7.416 5.388-2.833-8.718 7.417-5.389h-9.167l-2.833-8.718z"
 });
 
@@ -42,21 +43,21 @@ var renderer = function renderer(_ref) {
       return;
     }
 
-    render(React.createElement(RefinementList, {
+    render(h(RefinementList, {
       createURL: createURL,
       cssClasses: cssClasses,
       facetValues: items,
       templateProps: renderState.templateProps,
       toggleRefinement: refine
-    }, React.createElement("svg", {
+    }, h("svg", {
       xmlns: "http://www.w3.org/2000/svg",
       style: "display:none;"
-    }, React.createElement("symbol", {
+    }, h("symbol", {
       id: suit({
         descendantName: 'starSymbol'
       }),
       viewBox: "0 0 24 24"
-    }, _ref3), React.createElement("symbol", {
+    }, _ref3), h("symbol", {
       id: suit({
         descendantName: 'starEmptySymbol'
       }),
@@ -112,13 +113,13 @@ var renderer = function renderer(_ref) {
  * @param {RatingMenuWidgetOptions} $0 RatingMenu widget options.
  * @return {Widget} A new RatingMenu widget instance.
  * @example
- * search.addWidget(
+ * search.addWidgets([
  *   instantsearch.widgets.ratingMenu({
  *     container: '#stars',
  *     attribute: 'rating',
  *     max: 5,
  *   })
- * );
+ * ]);
  */
 
 
@@ -185,7 +186,7 @@ export default function ratingMenu() {
     templates: templates
   });
   var makeWidget = connectRatingMenu(specializedRenderer, function () {
-    return unmountComponentAtNode(containerNode);
+    return render(null, containerNode);
   });
   return makeWidget({
     attribute: attribute,

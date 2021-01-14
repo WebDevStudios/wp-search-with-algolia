@@ -21,7 +21,7 @@ function range(_ref) {
 
   var arrayLength = Math.round((end - start) / limitStep);
   return _toConsumableArray(Array(arrayLength)).map(function (_, current) {
-    return (start + current) * limitStep;
+    return start + current * limitStep;
   });
 }
 

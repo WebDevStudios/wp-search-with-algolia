@@ -1,6 +1,6 @@
 <p align="center">
   <a href="https://www.algolia.com/doc/guides/building-search-ui/what-is-instantsearch/js/">
-    <img alt="InstantSearch.js" src="https://community.algolia.com/instantsearch.js/v2/assets/img/instantsearch-medal.svg" width="250">
+    <img alt="InstantSearch.js" src=".github/banner.png">
   </a>
 
   <p align="center">
@@ -33,6 +33,7 @@ InstantSearch.js is a vanilla JavaScript library that lets you create an instant
 - [Demos](#demos)
 - [Playground](#playground)
 - [Browser support](#browser-support)
+- [Troubleshooting](#troubleshooting)
 - [Contributing](#contributing)
 - [License](#license)
 
@@ -59,31 +60,27 @@ const search = instantsearch({
   searchClient: algoliasearch('latency', '6be0576ff61c053d5f9a3225e2a90f76'),
 });
 
-// 2. Create an interactive search box
-search.addWidget(
+search.addWidgets([
+  // 2. Create an interactive search box
   instantsearch.widgets.searchBox({
     container: '#searchbox',
     placeholder: 'Search for products',
-  })
-);
+  }),
 
-// 3. Plug the search results into the product container
-search.addWidget(
+  // 3. Plug the search results into the product container
   instantsearch.widgets.hits({
     container: '#products',
     templates: {
       item: '{{#helpers.highlight}}{ "attribute": "name" }{{/helpers.highlight}}',
     },
-  })
-);
+  }),
 
-// 4. Make the brands refinable
-search.addWidget(
+  // 4. Make the brands refinable
   instantsearch.widgets.refinementList({
     container: '#brand',
     attribute: 'brand',
-  })
-);
+  }),
+]);
 
 // 5. Start the search!
 search.start();
@@ -128,6 +125,10 @@ Start by [adding widgets](https://www.algolia.com/doc/guides/building-search-ui/
 We support the **last two versions of major browsers** (Chrome, Edge, Firefox, Safari).
 
 Please refer to the [browser support](https://www.algolia.com/doc/guides/building-search-ui/installation/js/#browser-support) section in the documentation to use InstantSearch.js on other browsers.
+
+## Troubleshooting
+
+Encountering an issue? Before reaching out to support, we recommend heading to our [FAQ](https://www.algolia.com/doc/guides/building-search-ui/troubleshooting/faq/js/) where you will find answers for the most common issues and gotchas with the library.
 
 ## Contributing
 

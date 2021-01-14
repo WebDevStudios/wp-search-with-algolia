@@ -28,7 +28,6 @@ function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || func
 
 /** @jsx h */
 import { h, Component } from 'preact';
-import PropTypes from 'prop-types';
 var KEYS = {
   DOWN: 40,
   END: 35,

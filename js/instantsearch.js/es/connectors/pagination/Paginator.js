@@ -4,6 +4,8 @@ function _defineProperties(target, props) { for (var i = 0; i < props.length; i+
 
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
 import { range } from '../../lib/utils';
 
 var Paginator =
@@ -11,6 +13,12 @@ var Paginator =
 function () {
   function Paginator(params) {
     _classCallCheck(this, Paginator);
+
+    _defineProperty(this, "currentPage", void 0);
+
+    _defineProperty(this, "total", void 0);
+
+    _defineProperty(this, "padding", void 0);
 
     this.currentPage = params.currentPage;
     this.total = params.total;
@@ -62,7 +70,7 @@ function () {
   }, {
     key: "isLastPage",
     value: function isLastPage() {
-      return this.currentPage === this.total - 1;
+      return this.currentPage === this.total - 1 || this.total === 0;
     }
   }, {
     key: "isFirstPage",

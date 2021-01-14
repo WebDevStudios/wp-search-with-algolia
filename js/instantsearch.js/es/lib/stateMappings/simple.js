@@ -1,31 +1,35 @@
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
-function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
 
-function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
-var SimpleUIStateMapping =
-/*#__PURE__*/
-function () {
-  function SimpleUIStateMapping() {
-    _classCallCheck(this, SimpleUIStateMapping);
-  }
+function _objectWithoutProperties(source, excluded) { if (source == null) return {}; var target = _objectWithoutPropertiesLoose(source, excluded); var key, i; if (Object.getOwnPropertySymbols) { var sourceSymbolKeys = Object.getOwnPropertySymbols(source); for (i = 0; i < sourceSymbolKeys.length; i++) { key = sourceSymbolKeys[i]; if (excluded.indexOf(key) >= 0) continue; if (!Object.prototype.propertyIsEnumerable.call(source, key)) continue; target[key] = source[key]; } } return target; }
 
-  _createClass(SimpleUIStateMapping, [{
-    key: "stateToRoute",
-    value: function stateToRoute(uiState) {
-      return uiState;
+function _objectWithoutPropertiesLoose(source, excluded) { if (source == null) return {}; var target = {}; var sourceKeys = Object.keys(source); var key, i; for (i = 0; i < sourceKeys.length; i++) { key = sourceKeys[i]; if (excluded.indexOf(key) >= 0) continue; target[key] = source[key]; } return target; }
+
+function getIndexStateWithoutConfigure(uiState) {
+  var configure = uiState.configure,
+      trackedUiState = _objectWithoutProperties(uiState, ["configure"]);
+
+  return trackedUiState;
+} // technically a URL could contain any key, since users provide it,
+// which is why the input to this function is UiState, not something
+// which excludes "configure" as this function does.
+
+
+export default function simpleStateMapping() {
+  return {
+    stateToRoute: function stateToRoute(uiState) {
+      return Object.keys(uiState).reduce(function (state, indexId) {
+        return _objectSpread({}, state, _defineProperty({}, indexId, getIndexStateWithoutConfigure(uiState[indexId])));
+      }, {});
+    },
+    routeToState: function routeToState() {
+      var routeState = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+      return Object.keys(routeState).reduce(function (state, indexId) {
+        return _objectSpread({}, state, _defineProperty({}, indexId, getIndexStateWithoutConfigure(routeState[indexId])));
+      }, {});
     }
-  }, {
-    key: "routeToState",
-    value: function routeToState(routeState) {
-      return routeState;
-    }
-  }]);
-
-  return SimpleUIStateMapping;
-}();
-
-export default function () {
-  return new SimpleUIStateMapping();
+  };
 }

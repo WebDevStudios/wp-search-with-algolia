@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.default = connectNumericMenu;
+exports.default = void 0;
 
 var _utils = require("../../lib/utils");
 
@@ -11,13 +11,13 @@ function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArra
 
 function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance"); }
 
-function _iterableToArrayLimit(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"] != null) _i["return"](); } finally { if (_d) throw _e; } } return _arr; }
+function _iterableToArrayLimit(arr, i) { if (!(Symbol.iterator in Object(arr) || Object.prototype.toString.call(arr) === "[object Arguments]")) { return; } var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"] != null) _i["return"](); } finally { if (_d) throw _e; } } return _arr; }
 
 function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(source, true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
@@ -25,236 +25,213 @@ var withUsage = (0, _utils.createDocumentationMessageGenerator)({
   name: 'numeric-menu',
   connector: true
 });
-/**
- * @typedef {Object} NumericMenuOption
- * @property {string} name Name of the option.
- * @property {number} start Lower bound of the option (>=).
- * @property {number} end Higher bound of the option (<=).
- */
+var $$type = 'ais.numericMenu';
 
-/**
- * @typedef {Object} NumericMenuItem
- * @property {string} label Name of the option.
- * @property {string} value URL encoded of the bounds object with the form `{start, end}`. This value can be used verbatim in the webpage and can be read by `refine` directly. If you want to inspect the value, you can do `JSON.parse(window.decodeURI(value))` to get the object.
- * @property {boolean} isRefined True if the value is selected.
- */
+var createSendEvent = function createSendEvent(_ref) {
+  var instantSearchInstance = _ref.instantSearchInstance,
+      helper = _ref.helper,
+      attribute = _ref.attribute;
+  return function () {
+    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
 
-/**
- * @typedef {Object} CustomNumericMenuWidgetOptions
- * @property {string} attribute Name of the attribute for filtering.
- * @property {NumericMenuOption[]} items List of all the items.
- * @property {function(object[]):object[]} [transformItems] Function to transform the items passed to the templates.
- */
+    if (args.length === 1) {
+      instantSearchInstance.sendEventToInsights(args[0]);
+      return;
+    }
 
-/**
- * @typedef {Object} NumericMenuRenderingOptions
- * @property {function(item.value): string} createURL Creates URLs for the next state, the string is the name of the selected option.
- * @property {NumericMenuItem[]} items The list of available choices.
- * @property {boolean} hasNoResults `true` if the last search contains no result.
- * @property {function(item.value)} refine Sets the selected value and trigger a new search.
- * @property {Object} widgetParams All original `CustomNumericMenuWidgetOptions` forwarded to the `renderFn`.
- */
+    var eventType = args[0],
+        facetValue = args[1],
+        _args$ = args[2],
+        eventName = _args$ === void 0 ? 'Filter Applied' : _args$;
 
-/**
- * **NumericMenu** connector provides the logic to build a custom widget that will give the user the ability to choose a range on to refine the search results.
- *
- * It provides a `refine(item)` function to refine on the selected range.
- *
- * **Requirement:** the attribute passed as `attribute` must be present in "attributes for faceting" on the Algolia dashboard or configured as attributesForFaceting via a set settings call to the Algolia API.
- * @function connectNumericMenu
- * @type {Connector}
- * @param {function(NumericMenuRenderingOptions, boolean)} renderFn Rendering function for the custom **NumericMenu** widget.
- * @param {function} unmountFn Unmount function called when the widget is disposed.
- * @return {function(CustomNumericMenuWidgetOptions)} Re-usable widget factory for a custom **NumericMenu** widget.
- * @example
- * // custom `renderFn` to render the custom NumericMenu widget
- * function renderFn(NumericMenuRenderingOptions, isFirstRendering) {
- *   if (isFirstRendering) {
- *     NumericMenuRenderingOptions.widgetParams.containerNode.html('<ul></ul>');
- *   }
- *
- *   NumericMenuRenderingOptions.widgetParams.containerNode
- *     .find('li[data-refine-value]')
- *     .each(function() { $(this).off('click'); });
- *
- *   var list = NumericMenuRenderingOptions.items.map(function(item) {
- *     return '<li data-refine-value="' + item.value + '">' +
- *       '<input type="radio"' + (item.isRefined ? ' checked' : '') + '/> ' +
- *       item.label + '</li>';
- *   });
- *
- *   NumericMenuRenderingOptions.widgetParams.containerNode.find('ul').html(list);
- *   NumericMenuRenderingOptions.widgetParams.containerNode
- *     .find('li[data-refine-value]')
- *     .each(function() {
- *       $(this).on('click', function(event) {
- *         event.preventDefault();
- *         event.stopPropagation();
- *         NumericMenuRenderingOptions.refine($(this).data('refine-value'));
- *       });
- *     });
- * }
- *
- * // connect `renderFn` to NumericMenu logic
- * var customNumericMenu = instantsearch.connectors.connectNumericMenu(renderFn);
- *
- * // mount widget on the page
- * search.addWidget(
- *   customNumericMenu({
- *     containerNode: $('#custom-numeric-menu-container'),
- *     attribute: 'price',
- *     items: [
- *       {name: 'All'},
- *       {end: 4, name: 'less than 4'},
- *       {start: 4, end: 4, name: '4'},
- *       {start: 5, end: 10, name: 'between 5 and 10'},
- *       {start: 10, name: 'more than 10'},
- *     ],
- *   })
- * );
- */
+    if (eventType !== 'click') {
+      return;
+    } // facetValue === "%7B%22start%22:5,%22end%22:10%7D"
 
-function connectNumericMenu(renderFn) {
+
+    var filters = (0, _utils.convertNumericRefinementsToFilters)(getRefinedState(helper.state, attribute, facetValue), attribute);
+
+    if (filters && filters.length > 0) {
+      /*
+          filters === ["price<=10", "price>=5"]
+        */
+      instantSearchInstance.sendEventToInsights({
+        insightsMethod: 'clickedFilters',
+        widgetType: $$type,
+        eventType: eventType,
+        payload: {
+          eventName: eventName,
+          index: helper.getIndex(),
+          filters: filters
+        }
+      });
+    }
+  };
+};
+
+var connectNumericMenu = function connectNumericMenu(renderFn) {
   var unmountFn = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : _utils.noop;
   (0, _utils.checkRendering)(renderFn, withUsage());
-  return function () {
-    var widgetParams = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-    var attribute = widgetParams.attribute,
-        items = widgetParams.items,
-        _widgetParams$transfo = widgetParams.transformItems,
-        transformItems = _widgetParams$transfo === void 0 ? function (x) {
+  return function (widgetParams) {
+    var _ref2 = widgetParams || {},
+        _ref2$attribute = _ref2.attribute,
+        attribute = _ref2$attribute === void 0 ? '' : _ref2$attribute,
+        _ref2$items = _ref2.items,
+        items = _ref2$items === void 0 ? [] : _ref2$items,
+        _ref2$transformItems = _ref2.transformItems,
+        transformItems = _ref2$transformItems === void 0 ? function (x) {
       return x;
-    } : _widgetParams$transfo;
+    } : _ref2$transformItems;
 
-    if (!attribute) {
+    if (attribute === '') {
       throw new Error(withUsage('The `attribute` option is required.'));
     }
 
-    if (!items) {
+    if (!items || items.length === 0) {
       throw new Error(withUsage('The `items` option expects an array of objects.'));
     }
 
+    var prepareItems = function prepareItems(state) {
+      return items.map(function (_ref3) {
+        var start = _ref3.start,
+            end = _ref3.end,
+            label = _ref3.label;
+        return {
+          label: label,
+          value: window.encodeURI(JSON.stringify({
+            start: start,
+            end: end
+          })),
+          isRefined: isRefined(state, attribute, {
+            start: start,
+            end: end,
+            label: label
+          })
+        };
+      });
+    };
+
+    var connectorState = {};
     return {
-      init: function init(_ref) {
-        var helper = _ref.helper,
-            createURL = _ref.createURL,
-            instantSearchInstance = _ref.instantSearchInstance;
-
-        this._refine = function (facetValue) {
-          var refinedState = refine(helper.state, attribute, items, facetValue);
-          helper.setState(refinedState).search();
-        };
-
-        this._createURL = function (state) {
-          return function (facetValue) {
-            return createURL(refine(state, attribute, items, facetValue));
-          };
-        };
-
-        this._prepareItems = function (state) {
-          return items.map(function (_ref2) {
-            var start = _ref2.start,
-                end = _ref2.end,
-                label = _ref2.label;
-            return {
-              label: label,
-              value: window.encodeURI(JSON.stringify({
-                start: start,
-                end: end
-              })),
-              isRefined: isRefined(state, attribute, {
-                start: start,
-                end: end
-              })
-            };
-          });
-        };
-
-        renderFn({
-          createURL: this._createURL(helper.state),
-          items: transformItems(this._prepareItems(helper.state)),
-          hasNoResults: true,
-          refine: this._refine,
-          instantSearchInstance: instantSearchInstance,
-          widgetParams: widgetParams
-        }, true);
+      $$type: $$type,
+      init: function init(initOptions) {
+        var instantSearchInstance = initOptions.instantSearchInstance;
+        renderFn(_objectSpread({}, this.getWidgetRenderState(initOptions), {
+          instantSearchInstance: instantSearchInstance
+        }), true);
       },
-      render: function render(_ref3) {
-        var results = _ref3.results,
-            state = _ref3.state,
-            instantSearchInstance = _ref3.instantSearchInstance;
-        renderFn({
-          createURL: this._createURL(state),
-          items: transformItems(this._prepareItems(state)),
-          hasNoResults: results.nbHits === 0,
-          refine: this._refine,
-          instantSearchInstance: instantSearchInstance,
-          widgetParams: widgetParams
-        }, false);
+      render: function render(renderOptions) {
+        var instantSearchInstance = renderOptions.instantSearchInstance;
+        renderFn(_objectSpread({}, this.getWidgetRenderState(renderOptions), {
+          instantSearchInstance: instantSearchInstance
+        }), false);
       },
       dispose: function dispose(_ref4) {
         var state = _ref4.state;
         unmountFn();
         return state.clearRefinements(attribute);
       },
-      getWidgetState: function getWidgetState(uiState, _ref5) {
+      getWidgetUiState: function getWidgetUiState(uiState, _ref5) {
         var searchParameters = _ref5.searchParameters;
-        var currentRefinements = searchParameters.getNumericRefinements(attribute);
-        var equal = currentRefinements['='] && currentRefinements['='][0];
+        var values = searchParameters.getNumericRefinements(attribute);
+        var equal = values['='] && values['='][0];
 
         if (equal || equal === 0) {
           return _objectSpread({}, uiState, {
-            numericMenu: _objectSpread({}, uiState.numericMenu, _defineProperty({}, attribute, "".concat(currentRefinements['='])))
+            numericMenu: _objectSpread({}, uiState.numericMenu, _defineProperty({}, attribute, "".concat(values['='])))
           });
         }
 
-        var lowerBound = currentRefinements['>='] && currentRefinements['>='][0] || '';
-        var upperBound = currentRefinements['<='] && currentRefinements['<='][0] || '';
+        var min = values['>='] && values['>='][0] || '';
+        var max = values['<='] && values['<='][0] || '';
 
-        if (lowerBound !== '' || upperBound !== '') {
-          if (uiState.numericMenu && uiState.numericMenu[attribute] === "".concat(lowerBound, ":").concat(upperBound)) return uiState;
-          return _objectSpread({}, uiState, {
-            numericMenu: _objectSpread({}, uiState.numericMenu, _defineProperty({}, attribute, "".concat(lowerBound, ":").concat(upperBound)))
-          });
+        if (min === '' && max === '') {
+          return uiState;
         }
 
-        return uiState;
+        return _objectSpread({}, uiState, {
+          numericMenu: _objectSpread({}, uiState.numericMenu, _defineProperty({}, attribute, "".concat(min, ":").concat(max)))
+        });
       },
       getWidgetSearchParameters: function getWidgetSearchParameters(searchParameters, _ref6) {
         var uiState = _ref6.uiState;
-        var clearedParams = searchParameters.clearRefinements(attribute);
         var value = uiState.numericMenu && uiState.numericMenu[attribute];
+        var withoutRefinements = searchParameters.clearRefinements(attribute);
 
         if (!value) {
-          return clearedParams;
+          return withoutRefinements.setQueryParameters({
+            numericRefinements: _objectSpread({}, withoutRefinements.numericRefinements, _defineProperty({}, attribute, {}))
+          });
         }
 
-        var valueAsEqual = value.indexOf(':') === -1 && value;
+        var isExact = value.indexOf(':') === -1;
 
-        if (valueAsEqual) {
-          return clearedParams.addNumericRefinement(attribute, '=', valueAsEqual);
+        if (isExact) {
+          return withoutRefinements.addNumericRefinement(attribute, '=', Number(value));
         }
 
         var _value$split$map = value.split(':').map(parseFloat),
             _value$split$map2 = _slicedToArray(_value$split$map, 2),
-            lowerBound = _value$split$map2[0],
-            upperBound = _value$split$map2[1];
+            min = _value$split$map2[0],
+            max = _value$split$map2[1];
 
-        if ((0, _utils.isFiniteNumber)(lowerBound)) {
-          clearedParams = clearedParams.addNumericRefinement(attribute, '>=', lowerBound);
+        var withMinRefinement = (0, _utils.isFiniteNumber)(min) ? withoutRefinements.addNumericRefinement(attribute, '>=', min) : withoutRefinements;
+        var withMaxRefinement = (0, _utils.isFiniteNumber)(max) ? withMinRefinement.addNumericRefinement(attribute, '<=', max) : withMinRefinement;
+        return withMaxRefinement;
+      },
+      getRenderState: function getRenderState(renderState, renderOptions) {
+        return _objectSpread({}, renderState, {
+          numericMenu: _objectSpread({}, renderState.numericMenu, _defineProperty({}, attribute, this.getWidgetRenderState(renderOptions)))
+        });
+      },
+      getWidgetRenderState: function getWidgetRenderState(_ref7) {
+        var results = _ref7.results,
+            state = _ref7.state,
+            instantSearchInstance = _ref7.instantSearchInstance,
+            helper = _ref7.helper,
+            createURL = _ref7.createURL;
+
+        if (!connectorState.refine) {
+          connectorState.refine = function (facetValue) {
+            var refinedState = getRefinedState(helper.state, attribute, facetValue);
+            connectorState.sendEvent('click', facetValue);
+            helper.setState(refinedState).search();
+          };
         }
 
-        if ((0, _utils.isFiniteNumber)(upperBound)) {
-          clearedParams = clearedParams.addNumericRefinement(attribute, '<=', upperBound);
+        if (!connectorState.createURL) {
+          connectorState.createURL = function (newState) {
+            return function (facetValue) {
+              return createURL(getRefinedState(newState, attribute, facetValue));
+            };
+          };
         }
 
-        return clearedParams;
+        if (!connectorState.sendEvent) {
+          connectorState.sendEvent = createSendEvent({
+            instantSearchInstance: instantSearchInstance,
+            helper: helper,
+            attribute: attribute
+          });
+        }
+
+        return {
+          createURL: connectorState.createURL(state),
+          items: transformItems(prepareItems(state)),
+          hasNoResults: results ? results.nbHits === 0 : true,
+          refine: connectorState.refine,
+          sendEvent: connectorState.sendEvent,
+          widgetParams: widgetParams
+        };
       }
     };
   };
-}
+};
 
 function isRefined(state, attribute, option) {
+  // @TODO: same as another spot, why is this mixing arrays & elements?
   var currentRefinements = state.getNumericRefinements(attribute);
 
   if (option.start !== undefined && option.end !== undefined) {
@@ -272,23 +249,26 @@ function isRefined(state, attribute, option) {
   }
 
   if (option.start === undefined && option.end === undefined) {
-    return Object.keys(currentRefinements).length === 0;
+    return Object.keys(currentRefinements).every(function (operator) {
+      return (currentRefinements[operator] || []).length === 0;
+    });
   }
 
-  return undefined;
+  return false;
 }
 
-function refine(state, attribute, items, facetValue) {
+function getRefinedState(state, attribute, facetValue) {
   var resolvedState = state;
-  var refinedOption = JSON.parse(window.decodeURI(facetValue));
+  var refinedOption = JSON.parse(window.decodeURI(facetValue)); // @TODO: why is array / element mixed here & hasRefinements; seems wrong?
+
   var currentRefinements = resolvedState.getNumericRefinements(attribute);
 
   if (refinedOption.start === undefined && refinedOption.end === undefined) {
-    return resolvedState.clearRefinements(attribute);
+    return resolvedState.removeNumericRefinement(attribute);
   }
 
   if (!isRefined(resolvedState, attribute, refinedOption)) {
-    resolvedState = resolvedState.clearRefinements(attribute);
+    resolvedState = resolvedState.removeNumericRefinement(attribute);
   }
 
   if (refinedOption.start !== undefined && refinedOption.end !== undefined) {
@@ -323,11 +303,16 @@ function refine(state, attribute, items, facetValue) {
     }
   }
 
-  resolvedState.page = 0;
+  if (typeof resolvedState.page === 'number') {
+    resolvedState.page = 0;
+  }
+
   return resolvedState;
 }
 
 function hasNumericRefinement(currentRefinements, operator, value) {
-  var hasOperatorRefinements = currentRefinements[operator] !== undefined;
-  return hasOperatorRefinements && currentRefinements[operator].includes(value);
+  return currentRefinements[operator] !== undefined && currentRefinements[operator].includes(value);
 }
+
+var _default = connectNumericMenu;
+exports.default = _default;

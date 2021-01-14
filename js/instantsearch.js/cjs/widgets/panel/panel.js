@@ -3,9 +3,9 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.default = panel;
+exports.default = void 0;
 
-var _preactCompat = _interopRequireWildcard(require("preact-compat"));
+var _preact = require("preact");
 
 var _classnames = _interopRequireDefault(require("classnames"));
 
@@ -17,15 +17,11 @@ var _Panel = _interopRequireDefault(require("../../components/Panel/Panel"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = Object.defineProperty && Object.getOwnPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : {}; if (desc.get || desc.set) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } } newObj.default = obj; return newObj; } }
-
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(source, true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 var withUsage = (0, _utils.createDocumentationMessageGenerator)({
   name: 'panel'
@@ -36,75 +32,30 @@ var renderer = function renderer(_ref) {
   var containerNode = _ref.containerNode,
       bodyContainerNode = _ref.bodyContainerNode,
       cssClasses = _ref.cssClasses,
-      templateProps = _ref.templateProps;
+      templates = _ref.templates;
   return function (_ref2) {
     var options = _ref2.options,
         hidden = _ref2.hidden,
         collapsible = _ref2.collapsible,
         collapsed = _ref2.collapsed;
-    (0, _preactCompat.render)(_preactCompat.default.createElement(_Panel.default, {
+    (0, _preact.render)((0, _preact.h)(_Panel.default, {
       cssClasses: cssClasses,
       hidden: hidden,
       collapsible: collapsible,
-      collapsed: collapsed,
-      templateProps: templateProps,
+      isCollapsed: collapsed,
+      templates: templates,
       data: options,
       bodyElement: bodyContainerNode
     }), containerNode);
   };
 };
-/**
- * @typedef {Object} PanelWidgetCSSClasses
- * @property  {string|string[]} [root] CSS classes added to the root element of the widget.
- * @property  {string|string[]} [noRefinementRoot] CSS classes added to the root element of the widget when there's no refinements.
- * @property  {string|string[]} [collapsibleRoot] CSS classes added to the root element when collapsible.
- * @property  {string|string[]} [collapsedRoot] CSS classes added to the root element when collapsed.
- * @property  {string|string[]} [collapseButton] CSS classes added to the collapse button element.
- * @property  {string|string[]} [collapseIcon] CSS classes added to the collapse icon of the button.
- * @property  {string|string[]} [header] CSS class to add to the header.
- * @property  {string|string[]} [footer] CSS class to add to the SVG footer.
- */
 
 /**
- * @typedef {Object} PanelTemplates
- * @property {string|function} [header = ''] Template to use for the header.
- * @property {string|function} [footer = ''] Template to use for the footer.
- * @property {string|function} [collapseButtonText] Template to use for collapse button. It is given the collapsed state.
+ * The panel widget wraps other widgets in a consistent panel design.
+ * It also reacts, indicates and sets CSS classes when widgets are no longer relevant for refining.
  */
-
-/**
- * @typedef {Object} PanelWidgetOptions
- * @property {function} [hidden] This function is called on each render to determine from the render options if the panel have to be hidden or not. If the value is `true` the CSS class `noRefinementRoot` is applied and the wrapper is hidden.
- * @property {PanelTemplates} [templates] Templates to use for the widgets.
- * @property {PanelWidgetCSSClasses} [cssClasses] CSS classes to add.
- */
-
-/**
- * The panel widget wraps other widgets in a consistent panel design. It also reacts, indicates and sets CSS classes when widgets are no more relevant for refining.
- *
- * @type {WidgetFactory}
- * @devNovel Panel
- * @category metadata
- * @param {PanelWidgetOptions} $0 Panel widget options.
- * @return {function} A new panel widget instance
- * @example
- * const refinementListWithPanel = instantsearch.widgets.panel({
- *   templates: {
- *     header: 'Brand',
- *   },
- * })(instantsearch.widgets.refinementList);
- *
- * search.addWidget(
- *   refinementListWithPanel({
- *     container: '#refinement-list',
- *     attribute: 'brand',
- *   })
- * );
- */
-
-
-function panel() {
-  var _ref3 = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
+var panel = function panel(widgetParams) {
+  var _ref3 = widgetParams || {},
       _ref3$templates = _ref3.templates,
       templates = _ref3$templates === void 0 ? {} : _ref3$templates,
       _ref3$hidden = _ref3.hidden,
@@ -115,8 +66,8 @@ function panel() {
       _ref3$cssClasses = _ref3.cssClasses,
       userCssClasses = _ref3$cssClasses === void 0 ? {} : _ref3$cssClasses;
 
-  (0, _utils.warning)(typeof hidden === 'function', "The `hidden` option in the \"panel\" widget expects a function returning a boolean (received \"".concat(_typeof(hidden), "\" type)."));
-  (0, _utils.warning)(typeof collapsed === 'undefined' || typeof collapsed === 'function', "The `collapsed` option in the \"panel\" widget expects a function returning a boolean (received \"".concat(_typeof(collapsed), "\" type)."));
+  process.env.NODE_ENV === 'development' ? (0, _utils.warning)(typeof hidden === 'function', "The `hidden` option in the \"panel\" widget expects a function returning a boolean (received type ".concat((0, _utils.getObjectType)(hidden), ").")) : void 0;
+  process.env.NODE_ENV === 'development' ? (0, _utils.warning)(typeof collapsed === 'undefined' || typeof collapsed === 'function', "The `collapsed` option in the \"panel\" widget expects a function returning a boolean (received type ".concat((0, _utils.getObjectType)(collapsed), ").")) : void 0;
   var bodyContainerNode = document.createElement('div');
   var collapsible = Boolean(collapsed);
   var collapsedFn = typeof collapsed === 'function' ? collapsed : function () {
@@ -150,9 +101,9 @@ function panel() {
     }), userCssClasses.footer)
   };
   return function (widgetFactory) {
-    return function () {
-      var widgetOptions = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-      var container = widgetOptions.container;
+    return function (widgetOptions) {
+      var _ref4 = widgetOptions || {},
+          container = _ref4.container;
 
       if (!container) {
         throw new Error(withUsage("The `container` option is required in the widget within the panel."));
@@ -161,20 +112,16 @@ function panel() {
       var defaultTemplates = {
         header: '',
         footer: '',
-        collapseButtonText: function collapseButtonText(_ref4) {
-          var isCollapsed = _ref4.collapsed;
+        collapseButtonText: function collapseButtonText(_ref5) {
+          var isCollapsed = _ref5.collapsed;
           return "<svg\n          class=\"".concat(cssClasses.collapseIcon, "\"\n          width=\"1em\"\n          height=\"1em\"\n          viewBox=\"0 0 500 500\"\n        >\n        <path d=\"").concat(isCollapsed ? 'M100 250l300-150v300z' : 'M250 400l150-300H100z', "\" fill=\"currentColor\" />\n        </svg>");
         }
       };
-      var templateProps = (0, _utils.prepareTemplateProps)({
-        defaultTemplates: defaultTemplates,
-        templates: templates
-      });
       var renderPanel = renderer({
         containerNode: (0, _utils.getContainerNode)(container),
         bodyContainerNode: bodyContainerNode,
         cssClasses: cssClasses,
-        templateProps: templateProps
+        templates: _objectSpread({}, defaultTemplates, {}, templates)
       });
       renderPanel({
         options: {},
@@ -187,7 +134,7 @@ function panel() {
       }));
       return _objectSpread({}, widget, {
         dispose: function dispose() {
-          (0, _preactCompat.unmountComponentAtNode)((0, _utils.getContainerNode)(container));
+          (0, _preact.render)(null, (0, _utils.getContainerNode)(container));
 
           if (typeof widget.dispose === 'function') {
             var _widget$dispose;
@@ -206,7 +153,10 @@ function panel() {
             args[_key2] = arguments[_key2];
           }
 
-          var options = args[0];
+          var renderOptions = args[0];
+
+          var options = _objectSpread({}, widget.getWidgetRenderState ? widget.getWidgetRenderState(renderOptions) : {}, {}, renderOptions);
+
           renderPanel({
             options: options,
             hidden: Boolean(hidden(options)),
@@ -223,4 +173,7 @@ function panel() {
       });
     };
   };
-}
+};
+
+var _default = panel;
+exports.default = _default;

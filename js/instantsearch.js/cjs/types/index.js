@@ -51,3 +51,39 @@ Object.keys(_insights).forEach(function (key) {
     }
   });
 });
+
+var _algoliasearch = require("./algoliasearch");
+
+Object.keys(_algoliasearch).forEach(function (key) {
+  if (key === "default" || key === "__esModule") return;
+  Object.defineProperty(exports, key, {
+    enumerable: true,
+    get: function get() {
+      return _algoliasearch[key];
+    }
+  });
+});
+
+var _middleware = require("./middleware");
+
+Object.keys(_middleware).forEach(function (key) {
+  if (key === "default" || key === "__esModule") return;
+  Object.defineProperty(exports, key, {
+    enumerable: true,
+    get: function get() {
+      return _middleware[key];
+    }
+  });
+});
+
+var _utils = require("./utils");
+
+Object.keys(_utils).forEach(function (key) {
+  if (key === "default" || key === "__esModule") return;
+  Object.defineProperty(exports, key, {
+    enumerable: true,
+    get: function get() {
+      return _utils[key];
+    }
+  });
+});

@@ -3,9 +3,9 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.default = currentRefinements;
+exports.default = void 0;
 
-var _preactCompat = _interopRequireWildcard(require("preact-compat"));
+var _preact = require("preact");
 
 var _classnames = _interopRequireDefault(require("classnames"));
 
@@ -19,81 +19,36 @@ var _suit = require("../../lib/suit");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = Object.defineProperty && Object.getOwnPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : {}; if (desc.get || desc.set) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } } newObj.default = obj; return newObj; } }
-
+/** @jsx h */
 var withUsage = (0, _utils.createDocumentationMessageGenerator)({
   name: 'current-refinements'
 });
 var suit = (0, _suit.component)('CurrentRefinements');
 
-var renderer = function renderer(_ref) {
-  var containerNode = _ref.containerNode,
-      cssClasses = _ref.cssClasses;
-  return function (_ref2, isFirstRendering) {
-    var items = _ref2.items;
+var renderer = function renderer(_ref, isFirstRender) {
+  var items = _ref.items,
+      widgetParams = _ref.widgetParams;
 
-    if (isFirstRendering) {
-      return;
-    }
+  if (isFirstRender) {
+    return;
+  }
 
-    (0, _preactCompat.render)(_preactCompat.default.createElement(_CurrentRefinements.default, {
-      cssClasses: cssClasses,
-      items: items
-    }), containerNode);
-  };
+  var container = widgetParams.container,
+      cssClasses = widgetParams.cssClasses;
+  (0, _preact.render)((0, _preact.h)(_CurrentRefinements.default, {
+    cssClasses: cssClasses,
+    items: items
+  }), container);
 };
-/**
- * @typedef {Object} CurrentRefinementsCSSClasses
- * @property {string} [root] CSS classes added to the root element.
- * @property {string} [list] CSS classes added to the list element.
- * @property {string} [item] CSS classes added to the item element.
- * @property {string} [label] CSS classes added to the label element.
- * @property {string} [category] CSS classes added to the category element.
- * @property {string} [categoryLabel] CSS classes added to the categoryLabel element.
- * @property {string} [delete] CSS classes added to the delete element.
- */
 
-/**
- * @typedef {Object} CurrentRefinementsWidgetOptions
- * @property {string|HTMLElement} container The CSS Selector or HTMLElement to insert the widget
- * @property {string[]} [includedAttributes] The attributes to include in the refinements (all by default)
- * @property {string[]} [excludedAttributes = ['query']] The attributes to exclude from the refinements
- * @property {CurrentRefinementsCSSClasses} [cssClasses] The CSS classes to be added
- * @property {function(object[]):object[]} [transformItems] Function to transform the items passed to the templates.
- */
-
-/**
- * The `currentRefinements` widget has two purposes give the user a synthetic view of the current filters
- * and the ability to remove a filter.
- *
- * This widget is usually in the top part of the search UI.
- * @type {WidgetFactory}
- * @devNovel CurrentRefinements
- * @category clear-filter
- * @param {CurrentRefinementsWidgetOptions} $0 The CurrentRefinements widget options.
- * @returns {Object} A new CurrentRefinements widget instance.
- * @example
- * search.addWidget(
- *   instantsearch.widgets.currentRefinements({
- *     container: '#current-refinements',
- *     includedAttributes: [
- *       'free_shipping',
- *       'price',
- *       'brand',
- *       'category',
- *     ],
- *   })
- * );
- */
-
-
-function currentRefinements(_ref3) {
-  var container = _ref3.container,
-      includedAttributes = _ref3.includedAttributes,
-      excludedAttributes = _ref3.excludedAttributes,
-      _ref3$cssClasses = _ref3.cssClasses,
-      userCssClasses = _ref3$cssClasses === void 0 ? {} : _ref3$cssClasses,
-      transformItems = _ref3.transformItems;
+var currentRefinements = function currentRefinements(widgetParams) {
+  var _ref2 = widgetParams || {},
+      container = _ref2.container,
+      includedAttributes = _ref2.includedAttributes,
+      excludedAttributes = _ref2.excludedAttributes,
+      _ref2$cssClasses = _ref2.cssClasses,
+      userCssClasses = _ref2$cssClasses === void 0 ? {} : _ref2$cssClasses,
+      transformItems = _ref2.transformItems;
 
   if (!container) {
     throw new Error(withUsage('The `container` option is required.'));
@@ -121,16 +76,17 @@ function currentRefinements(_ref3) {
       descendantName: 'delete'
     }), userCssClasses.delete)
   };
-  var specializedRenderer = renderer({
-    containerNode: containerNode,
-    cssClasses: cssClasses
-  });
-  var makeWidget = (0, _connectCurrentRefinements.default)(specializedRenderer, function () {
-    return (0, _preactCompat.unmountComponentAtNode)(containerNode);
+  var makeWidget = (0, _connectCurrentRefinements.default)(renderer, function () {
+    return (0, _preact.render)(null, containerNode);
   });
   return makeWidget({
+    container: containerNode,
+    cssClasses: cssClasses,
     includedAttributes: includedAttributes,
     excludedAttributes: excludedAttributes,
     transformItems: transformItems
   });
-}
+};
+
+var _default = currentRefinements;
+exports.default = _default;

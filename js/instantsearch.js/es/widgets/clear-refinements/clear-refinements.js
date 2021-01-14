@@ -1,4 +1,5 @@
-import React, { render, unmountComponentAtNode } from 'preact-compat';
+/** @jsx h */
+import { h, render } from 'preact';
 import ClearRefinements from '../../components/ClearRefinements/ClearRefinements';
 import cx from 'classnames';
 import connectClearRefinements from '../../connectors/clear-refinements/connectClearRefinements';
@@ -29,7 +30,7 @@ var renderer = function renderer(_ref) {
       return;
     }
 
-    render(React.createElement(ClearRefinements, {
+    render(h(ClearRefinements, {
       refine: refine,
       cssClasses: cssClasses,
       hasRefinements: hasRefinements,
@@ -37,52 +38,10 @@ var renderer = function renderer(_ref) {
     }), containerNode);
   };
 };
-/**
- * @typedef {Object} ClearRefinementsCSSClasses
- * @property {string|string[]} [root] CSS class to add to the wrapper element.
- * @property {string|string[]} [button] CSS class to add to the button of the widget.
- * @property {string|string[]} [disabledButton] CSS class to add to the button when there are no refinements.
- */
 
-/**
- * @typedef {Object} ClearRefinementsTemplates
- * @property {string|string[]} [resetLabel] Template for the content of the button
- */
-
-/**
- * @typedef {Object} ClearRefinementsWidgetOptions
- * @property {string|HTMLElement} container CSS Selector or HTMLElement to insert the widget.
- * @property {string[]} [includedAttributes = []] The attributes to include in the refinements to clear (all by default). Cannot be used with `excludedAttributes`.
- * @property {string[]} [excludedAttributes = ['query']] The attributes to exclude from the refinements to clear. Cannot be used with `includedAttributes`.
- * @property {function(object[]):object[]} [transformItems] Function to transform the items passed to the templates.
- * @property {ClearRefinementsTemplates} [templates] Templates to use for the widget.
- * @property {ClearRefinementsCSSClasses} [cssClasses] CSS classes to be added.
- */
-
-/**
- * The clear all widget gives the user the ability to clear all the refinements currently
- * applied on the results. It is equivalent to the reset button of a form.
- *
- * The current refined values widget can display a button that has the same behavior.
- * @type {WidgetFactory}
- * @devNovel ClearRefinements
- * @category clear-filter
- * @param {ClearRefinementsWidgetOptions} $0 The ClearRefinements widget options.
- * @returns {Widget} A new instance of the ClearRefinements widget.
- * @example
- * search.addWidget(
- *   instantsearch.widgets.clearRefinements({
- *     container: '#clear-all',
- *     templates: {
- *       resetLabel: 'Reset everything'
- *     },
- *   })
- * );
- */
-
-
-export default function clearRefinements(_ref3) {
-  var container = _ref3.container,
+var clearRefinements = function clearRefinements(widgetOptions) {
+  var _ref3 = widgetOptions || {},
+      container = _ref3.container,
       _ref3$templates = _ref3.templates,
       templates = _ref3$templates === void 0 ? defaultTemplates : _ref3$templates,
       includedAttributes = _ref3.includedAttributes,
@@ -113,11 +72,13 @@ export default function clearRefinements(_ref3) {
     templates: templates
   });
   var makeWidget = connectClearRefinements(specializedRenderer, function () {
-    return unmountComponentAtNode(containerNode);
+    return render(null, containerNode);
   });
   return makeWidget({
     includedAttributes: includedAttributes,
     excludedAttributes: excludedAttributes,
     transformItems: transformItems
   });
-}
+};
+
+export default clearRefinements;

@@ -11,21 +11,21 @@ var _unescapeRefinement = _interopRequireDefault(require("./unescapeRefinement")
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function getRefinement(state, type, attributeName, name) {
+function getRefinement(state, type, attribute, name) {
   var resultsFacets = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : [];
   var res = {
     type: type,
-    attributeName: attributeName,
+    attribute: attribute,
     name: name
   };
   var facet = (0, _find.default)(resultsFacets, function (resultsFacet) {
-    return resultsFacet.name === attributeName;
+    return resultsFacet.name === attribute;
   });
   var count;
 
   if (type === 'hierarchical') {
     (function () {
-      var facetDeclaration = state.getHierarchicalFacetByName(attributeName);
+      var facetDeclaration = state.getHierarchicalFacetByName(attribute);
       var nameParts = name.split(facetDeclaration.separator);
 
       var getFacetRefinement = function getFacetRefinement(facetData) {
@@ -65,7 +65,7 @@ function getRefinement(state, type, attributeName, name) {
 
 function getRefinements(results, state) {
   var clearsQuery = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
-  var res = [];
+  var refinements = [];
   var _state$facetsRefineme = state.facetsRefinements,
       facetsRefinements = _state$facetsRefineme === void 0 ? {} : _state$facetsRefineme,
       _state$facetsExcludes = state.facetsExcludes,
@@ -78,71 +78,72 @@ function getRefinements(results, state) {
       numericRefinements = _state$numericRefinem === void 0 ? {} : _state$numericRefinem,
       _state$tagRefinements = state.tagRefinements,
       tagRefinements = _state$tagRefinements === void 0 ? [] : _state$tagRefinements;
-  Object.keys(facetsRefinements).forEach(function (attributeName) {
-    var refinements = facetsRefinements[attributeName];
-    refinements.forEach(function (refinement) {
-      res.push(getRefinement(state, 'facet', attributeName, refinement, results.facets));
+  Object.keys(facetsRefinements).forEach(function (attribute) {
+    var refinementNames = facetsRefinements[attribute];
+    refinementNames.forEach(function (refinementName) {
+      refinements.push(getRefinement(state, 'facet', attribute, refinementName, results.facets));
     });
   });
-  Object.keys(facetsExcludes).forEach(function (attributeName) {
-    var refinements = facetsExcludes[attributeName];
-    refinements.forEach(function (refinement) {
-      res.push({
+  Object.keys(facetsExcludes).forEach(function (attribute) {
+    var refinementNames = facetsExcludes[attribute];
+    refinementNames.forEach(function (refinementName) {
+      refinements.push({
         type: 'exclude',
-        attributeName: attributeName,
-        name: refinement,
+        attribute: attribute,
+        name: refinementName,
         exclude: true
       });
     });
   });
-  Object.keys(disjunctiveFacetsRefinements).forEach(function (attributeName) {
-    var refinements = disjunctiveFacetsRefinements[attributeName];
-    refinements.forEach(function (refinement) {
-      res.push(getRefinement(state, 'disjunctive', attributeName, // We unescape any disjunctive refined values with `unescapeRefinement` because
+  Object.keys(disjunctiveFacetsRefinements).forEach(function (attribute) {
+    var refinementNames = disjunctiveFacetsRefinements[attribute];
+    refinementNames.forEach(function (refinementName) {
+      refinements.push(getRefinement(state, 'disjunctive', attribute, // We unescape any disjunctive refined values with `unescapeRefinement` because
       // they can be escaped on negative numeric values with `escapeRefinement`.
-      (0, _unescapeRefinement.default)(refinement), results.disjunctiveFacets));
+      (0, _unescapeRefinement.default)(refinementName), results.disjunctiveFacets));
     });
   });
-  Object.keys(hierarchicalFacetsRefinements).forEach(function (attributeName) {
-    var refinements = hierarchicalFacetsRefinements[attributeName];
-    refinements.forEach(function (refinement) {
-      res.push(getRefinement(state, 'hierarchical', attributeName, refinement, results.hierarchicalFacets));
+  Object.keys(hierarchicalFacetsRefinements).forEach(function (attribute) {
+    var refinementNames = hierarchicalFacetsRefinements[attribute];
+    refinementNames.forEach(function (refinement) {
+      refinements.push(getRefinement(state, 'hierarchical', attribute, refinement, results.hierarchicalFacets));
     });
   });
-  Object.keys(numericRefinements).forEach(function (attributeName) {
-    var operators = numericRefinements[attributeName];
-    Object.keys(operators).forEach(function (operator) {
+  Object.keys(numericRefinements).forEach(function (attribute) {
+    var operators = numericRefinements[attribute];
+    Object.keys(operators).forEach(function (operatorOriginal) {
+      var operator = operatorOriginal;
       var valueOrValues = operators[operator];
-      var refinements = Array.isArray(valueOrValues) ? valueOrValues : [valueOrValues];
-      refinements.forEach(function (refinement) {
-        res.push({
+      var refinementNames = Array.isArray(valueOrValues) ? valueOrValues : [valueOrValues];
+      refinementNames.forEach(function (refinementName) {
+        refinements.push({
           type: 'numeric',
-          attributeName: attributeName,
-          name: "".concat(refinement),
-          numericValue: refinement,
+          attribute: attribute,
+          name: "".concat(refinementName),
+          numericValue: refinementName,
           operator: operator
         });
       });
     });
   });
-  tagRefinements.forEach(function (refinement) {
-    res.push({
+  tagRefinements.forEach(function (refinementName) {
+    refinements.push({
       type: 'tag',
-      attributeName: '_tags',
-      name: refinement
+      attribute: '_tags',
+      name: refinementName
     });
   });
 
   if (clearsQuery && state.query && state.query.trim()) {
-    res.push({
-      attributeName: 'query',
+    refinements.push({
+      attribute: 'query',
       type: 'query',
       name: state.query,
       query: state.query
     });
   }
 
-  return res;
+  return refinements;
 }
 
 var _default = getRefinements;

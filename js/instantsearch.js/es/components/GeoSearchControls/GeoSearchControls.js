@@ -2,8 +2,8 @@ function _extends() { _extends = Object.assign || function (target) { for (var i
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
-import React from 'preact-compat';
-import PropTypes from 'prop-types';
+/** @jsx h */
+import { h } from 'preact';
 import cx from 'classnames';
 import Template from '../Template/Template';
 import GeoSearchButton from './GeoSearchButton';
@@ -21,36 +21,36 @@ var GeoSearchControls = function GeoSearchControls(_ref) {
       onRefineClick = _ref.onRefineClick,
       onClearClick = _ref.onClearClick,
       templateProps = _ref.templateProps;
-  return enableRefine && React.createElement("div", null, enableRefineControl && React.createElement("div", {
+  return enableRefine && h("div", null, enableRefineControl && h("div", {
     className: cssClasses.control
-  }, isRefineOnMapMove || !hasMapMoveSinceLastRefine ? React.createElement(GeoSearchToggle, {
+  }, isRefineOnMapMove || !hasMapMoveSinceLastRefine ? h(GeoSearchToggle, {
     classNameLabel: cx(cssClasses.label, _defineProperty({}, cssClasses.selectedLabel, isRefineOnMapMove)),
     classNameInput: cssClasses.input,
     checked: isRefineOnMapMove,
     onToggle: onRefineToggle
-  }, React.createElement(Template, _extends({}, templateProps, {
+  }, h(Template, _extends({}, templateProps, {
     templateKey: "toggle",
     rootTagName: "span"
-  }))) : React.createElement(GeoSearchButton, {
+  }))) : h(GeoSearchButton, {
     className: cssClasses.redo,
     disabled: !hasMapMoveSinceLastRefine,
     onClick: onRefineClick
-  }, React.createElement(Template, _extends({}, templateProps, {
+  }, h(Template, _extends({}, templateProps, {
     templateKey: "redo",
     rootTagName: "span"
-  })))), !enableRefineControl && !isRefineOnMapMove && React.createElement("div", {
+  })))), !enableRefineControl && !isRefineOnMapMove && h("div", {
     className: cssClasses.control
-  }, React.createElement(GeoSearchButton, {
+  }, h(GeoSearchButton, {
     className: cx(cssClasses.redo, _defineProperty({}, cssClasses.disabledRedo, !hasMapMoveSinceLastRefine)),
     disabled: !hasMapMoveSinceLastRefine,
     onClick: onRefineClick
-  }, React.createElement(Template, _extends({}, templateProps, {
+  }, h(Template, _extends({}, templateProps, {
     templateKey: "redo",
     rootTagName: "span"
-  })))), enableClearMapRefinement && isRefinedWithMap && React.createElement(GeoSearchButton, {
+  })))), enableClearMapRefinement && isRefinedWithMap && h(GeoSearchButton, {
     className: cssClasses.reset,
     onClick: onClearClick
-  }, React.createElement(Template, _extends({}, templateProps, {
+  }, h(Template, _extends({}, templateProps, {
     templateKey: "reset",
     rootTagName: "span"
   }))));

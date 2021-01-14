@@ -1,3 +1,9 @@
+function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
+
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
 function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _nonIterableSpread(); }
 
 function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance"); }
@@ -10,162 +16,234 @@ function _objectWithoutProperties(source, excluded) { if (source == null) return
 
 function _objectWithoutPropertiesLoose(source, excluded) { if (source == null) return {}; var target = {}; var sourceKeys = Object.keys(source); var key, i; for (i = 0; i < sourceKeys.length; i++) { key = sourceKeys[i]; if (excluded.indexOf(key) >= 0) continue; target[key] = source[key]; } return target; }
 
-function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
-
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(source, true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
 import escapeHits, { TAG_PLACEHOLDER } from '../../lib/escape-highlight';
-import { checkRendering, createDocumentationMessageGenerator, isEqual, addAbsolutePosition, addQueryID, noop } from '../../lib/utils';
+import { checkRendering, createDocumentationMessageGenerator, isEqual, addAbsolutePosition, addQueryID, noop, createSendEventForHits, createBindEventForHits } from '../../lib/utils';
 var withUsage = createDocumentationMessageGenerator({
   name: 'infinite-hits',
   connector: true
 });
 
+function getStateWithoutPage(state) {
+  var _ref = state || {},
+      page = _ref.page,
+      rest = _objectWithoutProperties(_ref, ["page"]);
+
+  return rest;
+}
+
+function getInMemoryCache() {
+  var cachedHits = null;
+  var cachedState = undefined;
+  return {
+    read: function read(_ref2) {
+      var state = _ref2.state;
+      return isEqual(cachedState, getStateWithoutPage(state)) ? cachedHits : null;
+    },
+    write: function write(_ref3) {
+      var state = _ref3.state,
+          hits = _ref3.hits;
+      cachedState = getStateWithoutPage(state);
+      cachedHits = hits;
+    }
+  };
+}
+
+function extractHitsFromCachedHits(cachedHits) {
+  return Object.keys(cachedHits).map(Number).sort(function (a, b) {
+    return a - b;
+  }).reduce(function (acc, page) {
+    return acc.concat(cachedHits[page]);
+  }, []);
+}
+
 var connectInfiniteHits = function connectInfiniteHits(renderFn) {
   var unmountFn = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : noop;
   checkRendering(renderFn, withUsage());
   return function (widgetParams) {
-    var _ref = widgetParams || {},
-        _ref$escapeHTML = _ref.escapeHTML,
-        escapeHTML = _ref$escapeHTML === void 0 ? true : _ref$escapeHTML,
-        _ref$transformItems = _ref.transformItems,
-        transformItems = _ref$transformItems === void 0 ? function (items) {
+    var _ref4 = widgetParams || {},
+        _ref4$escapeHTML = _ref4.escapeHTML,
+        escapeHTML = _ref4$escapeHTML === void 0 ? true : _ref4$escapeHTML,
+        _ref4$transformItems = _ref4.transformItems,
+        transformItems = _ref4$transformItems === void 0 ? function (items) {
       return items;
-    } : _ref$transformItems,
-        _ref$showPrevious = _ref.showPrevious,
-        hasShowPrevious = _ref$showPrevious === void 0 ? false : _ref$showPrevious;
+    } : _ref4$transformItems,
+        _ref4$cache = _ref4.cache,
+        cache = _ref4$cache === void 0 ? getInMemoryCache() : _ref4$cache;
 
-    var hitsCache = [];
-    var firstReceivedPage = Infinity;
-    var lastReceivedPage = -1;
-    var prevState;
     var showPrevious;
     var showMore;
+    var sendEvent;
+    var bindEvent;
 
-    var getShowPrevious = function getShowPrevious(helper) {
+    var getFirstReceivedPage = function getFirstReceivedPage(state, cachedHits) {
+      var _state$page = state.page,
+          page = _state$page === void 0 ? 0 : _state$page;
+      var pages = Object.keys(cachedHits).map(Number);
+
+      if (pages.length === 0) {
+        return page;
+      } else {
+        return Math.min.apply(Math, [page].concat(_toConsumableArray(pages)));
+      }
+    };
+
+    var getLastReceivedPage = function getLastReceivedPage(state, cachedHits) {
+      var _state$page2 = state.page,
+          page = _state$page2 === void 0 ? 0 : _state$page2;
+      var pages = Object.keys(cachedHits).map(Number);
+
+      if (pages.length === 0) {
+        return page;
+      } else {
+        return Math.max.apply(Math, [page].concat(_toConsumableArray(pages)));
+      }
+    };
+
+    var getShowPrevious = function getShowPrevious(helper, cachedHits) {
       return function () {
         // Using the helper's `overrideStateWithoutTriggeringChangeEvent` method
         // avoid updating the browser URL when the user displays the previous page.
         helper.overrideStateWithoutTriggeringChangeEvent(_objectSpread({}, helper.state, {
-          page: firstReceivedPage - 1
-        })).search();
+          page: getFirstReceivedPage(helper.state, cachedHits) - 1
+        })).searchWithoutTriggeringOnStateChange();
       };
     };
 
-    var getShowMore = function getShowMore(helper) {
+    var getShowMore = function getShowMore(helper, cachedHits) {
       return function () {
-        helper.setPage(lastReceivedPage + 1).search();
+        helper.setPage(getLastReceivedPage(helper.state, cachedHits) + 1).search();
       };
     };
 
     return {
-      getConfiguration: function getConfiguration() {
-        return escapeHTML ? TAG_PLACEHOLDER : {};
+      $$type: 'ais.infiniteHits',
+      init: function init(initOptions) {
+        renderFn(_objectSpread({}, this.getWidgetRenderState(initOptions), {
+          instantSearchInstance: initOptions.instantSearchInstance
+        }), true);
       },
-      init: function init(_ref2) {
-        var instantSearchInstance = _ref2.instantSearchInstance,
-            helper = _ref2.helper;
-        showPrevious = getShowPrevious(helper);
-        showMore = getShowMore(helper);
-        firstReceivedPage = helper.state.page;
-        lastReceivedPage = helper.state.page;
-        renderFn({
-          hits: hitsCache,
-          results: undefined,
-          showPrevious: showPrevious,
-          showMore: showMore,
-          isFirstPage: firstReceivedPage === 0,
-          isLastPage: true,
-          instantSearchInstance: instantSearchInstance,
-          widgetParams: widgetParams
-        }, true);
+      render: function render(renderOptions) {
+        var instantSearchInstance = renderOptions.instantSearchInstance;
+        var widgetRenderState = this.getWidgetRenderState(renderOptions);
+        sendEvent('view', widgetRenderState.currentPageHits);
+        renderFn(_objectSpread({}, widgetRenderState, {
+          instantSearchInstance: instantSearchInstance
+        }), false);
       },
-      render: function render(_ref3) {
-        var results = _ref3.results,
-            state = _ref3.state,
-            instantSearchInstance = _ref3.instantSearchInstance;
+      getRenderState: function getRenderState(renderState, renderOptions) {
+        return _objectSpread({}, renderState, {
+          infiniteHits: this.getWidgetRenderState(renderOptions)
+        });
+      },
+      getWidgetRenderState: function getWidgetRenderState(_ref5) {
+        var results = _ref5.results,
+            helper = _ref5.helper,
+            state = _ref5.state,
+            instantSearchInstance = _ref5.instantSearchInstance;
+        var isFirstPage;
+        var currentPageHits = [];
+        var cachedHits = cache.read({
+          state: state
+        }) || {};
 
-        // Reset cache and received pages if anything changes in the
-        // search state, except for the page.
-        //
-        // We're doing this to "reset" the widget if a refinement or the
-        // query changes between renders, but we want to keep it as is
-        // if we only change pages.
-        var page = state.page,
-            currentState = _objectWithoutProperties(state, ["page"]);
+        if (!results) {
+          showPrevious = getShowPrevious(helper, cachedHits);
+          showMore = getShowMore(helper, cachedHits);
+          sendEvent = createSendEventForHits({
+            instantSearchInstance: instantSearchInstance,
+            index: helper.getIndex(),
+            widgetType: this.$$type
+          });
+          bindEvent = createBindEventForHits({
+            index: helper.getIndex(),
+            widgetType: this.$$type
+          });
+          isFirstPage = helper.state.page === undefined || getFirstReceivedPage(helper.state, cachedHits) === 0;
+        } else {
+          var _state$page3 = state.page,
+              _page = _state$page3 === void 0 ? 0 : _state$page3;
 
-        if (!isEqual(currentState, prevState)) {
-          hitsCache = [];
-          firstReceivedPage = page;
-          lastReceivedPage = page;
-          prevState = currentState;
+          if (escapeHTML && results.hits.length > 0) {
+            results.hits = escapeHits(results.hits);
+          }
+
+          var initialEscaped = results.hits.__escaped;
+          results.hits = addAbsolutePosition(results.hits, results.page, results.hitsPerPage);
+          results.hits = addQueryID(results.hits, results.queryID);
+          results.hits = transformItems(results.hits); // Make sure the escaped tag stays after mapping over the hits.
+          // This prevents the hits from being double-escaped if there are multiple
+          // hits widgets mounted on the page.
+
+          results.hits.__escaped = initialEscaped;
+
+          if (cachedHits[_page] === undefined) {
+            cachedHits[_page] = results.hits;
+            cache.write({
+              state: state,
+              hits: cachedHits
+            });
+          }
+
+          currentPageHits = results.hits;
+          isFirstPage = getFirstReceivedPage(state, cachedHits) === 0;
         }
 
-        if (escapeHTML && results.hits.length > 0) {
-          results.hits = escapeHits(results.hits);
-        }
-
-        var initialEscaped = results.hits.__escaped;
-        results.hits = addAbsolutePosition(results.hits, results.page, results.hitsPerPage);
-        results.hits = addQueryID(results.hits, results.queryID);
-        results.hits = transformItems(results.hits); // Make sure the escaped tag stays after mapping over the hits.
-        // This prevents the hits from being double-escaped if there are multiple
-        // hits widgets mounted on the page.
-
-        results.hits.__escaped = initialEscaped;
-
-        if (lastReceivedPage < page || !hitsCache.length) {
-          hitsCache = [].concat(_toConsumableArray(hitsCache), _toConsumableArray(results.hits));
-          lastReceivedPage = page;
-        } else if (firstReceivedPage > page) {
-          hitsCache = [].concat(_toConsumableArray(results.hits), _toConsumableArray(hitsCache));
-          firstReceivedPage = page;
-        }
-
-        var isFirstPage = firstReceivedPage === 0;
-        var isLastPage = results.nbPages <= results.page + 1;
-        renderFn({
-          hits: hitsCache,
+        var hits = extractHitsFromCachedHits(cachedHits);
+        var isLastPage = results ? results.nbPages <= getLastReceivedPage(state, cachedHits) + 1 : true;
+        return {
+          hits: hits,
+          currentPageHits: currentPageHits,
+          sendEvent: sendEvent,
+          bindEvent: bindEvent,
           results: results,
           showPrevious: showPrevious,
           showMore: showMore,
           isFirstPage: isFirstPage,
           isLastPage: isLastPage,
-          instantSearchInstance: instantSearchInstance,
           widgetParams: widgetParams
-        }, false);
+        };
       },
-      dispose: function dispose() {
+      dispose: function dispose(_ref6) {
+        var state = _ref6.state;
         unmountFn();
-      },
-      getWidgetState: function getWidgetState(uiState, _ref4) {
-        var searchParameters = _ref4.searchParameters;
-        var page = searchParameters.page;
+        var stateWithoutPage = state.setQueryParameter('page', undefined);
 
-        if (!hasShowPrevious || page === 0 || page + 1 === uiState.page) {
+        if (!escapeHTML) {
+          return stateWithoutPage;
+        }
+
+        return stateWithoutPage.setQueryParameters(Object.keys(TAG_PLACEHOLDER).reduce(function (acc, key) {
+          return _objectSpread({}, acc, _defineProperty({}, key, undefined));
+        }, {}));
+      },
+      getWidgetUiState: function getWidgetUiState(uiState, _ref7) {
+        var searchParameters = _ref7.searchParameters;
+        var page = searchParameters.page || 0;
+
+        if (!page) {
+          // return without adding `page` to uiState
+          // because we don't want `page=1` in the URL
           return uiState;
         }
 
         return _objectSpread({}, uiState, {
+          // The page in the UI state is incremented by one
+          // to expose the user value (not `0`).
           page: page + 1
         });
       },
-      getWidgetSearchParameters: function getWidgetSearchParameters(searchParameters, _ref5) {
-        var uiState = _ref5.uiState;
+      getWidgetSearchParameters: function getWidgetSearchParameters(searchParameters, _ref8) {
+        var uiState = _ref8.uiState;
+        var widgetSearchParameters = searchParameters;
 
-        if (!hasShowPrevious) {
-          return searchParameters;
-        }
+        if (escapeHTML) {
+          widgetSearchParameters = searchParameters.setQueryParameters(TAG_PLACEHOLDER);
+        } // The page in the search parameters is decremented by one
+        // to get to the actual parameter value from the UI state.
 
-        var uiPage = uiState.page;
 
-        if (uiPage) {
-          return searchParameters.setQueryParameter('page', uiPage - 1);
-        }
-
-        return searchParameters.setQueryParameter('page', 0);
+        var page = uiState.page ? uiState.page - 1 : 0;
+        return widgetSearchParameters.setQueryParameter('page', page);
       }
     };
   };

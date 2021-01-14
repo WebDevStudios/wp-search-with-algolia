@@ -9,7 +9,7 @@ var _utils = require("../../lib/utils");
 
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(source, true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
@@ -43,8 +43,10 @@ function getRuleContextsFromTrackedFilters(_ref) {
       sharedHelperState = _ref.sharedHelperState,
       trackedFilters = _ref.trackedFilters;
   var ruleContexts = Object.keys(trackedFilters).reduce(function (facets, facetName) {
-    var facetRefinements = (0, _utils.getRefinements)(helper.lastResults || {}, sharedHelperState).filter(function (refinement) {
-      return refinement.attributeName === facetName;
+    var facetRefinements = (0, _utils.getRefinements)( // An empty object is technically not a `SearchResults` but `getRefinements`
+    // only accesses properties, meaning it will not throw with an empty object.
+    helper.lastResults || {}, sharedHelperState).filter(function (refinement) {
+      return refinement.attribute === facetName;
     }).map(function (refinement) {
       return refinement.numericValue || refinement.name;
     });
@@ -59,11 +61,12 @@ function getRuleContextsFromTrackedFilters(_ref) {
   return ruleContexts;
 }
 
-function applyRuleContexts(sharedHelperState) {
+function applyRuleContexts(event) {
   var helper = this.helper,
       initialRuleContexts = this.initialRuleContexts,
       trackedFilters = this.trackedFilters,
       transformRuleContexts = this.transformRuleContexts;
+  var sharedHelperState = event.state;
   var previousRuleContexts = sharedHelperState.ruleContexts || [];
   var newRuleContexts = getRuleContextsFromTrackedFilters({
     helper: helper,
@@ -71,7 +74,7 @@ function applyRuleContexts(sharedHelperState) {
     trackedFilters: trackedFilters
   });
   var nextRuleContexts = [].concat(_toConsumableArray(initialRuleContexts), _toConsumableArray(newRuleContexts));
-  (0, _utils.warning)(nextRuleContexts.length <= 10, "\nThe maximum number of `ruleContexts` is 10. They have been sliced to that limit.\nConsider using `transformRuleContexts` to minimize the number of rules sent to Algolia.\n");
+  process.env.NODE_ENV === 'development' ? (0, _utils.warning)(nextRuleContexts.length <= 10, "\nThe maximum number of `ruleContexts` is 10. They have been sliced to that limit.\nConsider using `transformRuleContexts` to minimize the number of rules sent to Algolia.\n") : void 0;
   var ruleContexts = transformRuleContexts(nextRuleContexts).slice(0, 10);
 
   if (!(0, _utils.isEqual)(previousRuleContexts, ruleContexts)) {
@@ -81,9 +84,9 @@ function applyRuleContexts(sharedHelperState) {
   }
 }
 
-var connectQueryRules = function connectQueryRules(render) {
+var connectQueryRules = function connectQueryRules(_render) {
   var unmount = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : _utils.noop;
-  (0, _utils.checkRendering)(render, withUsage());
+  (0, _utils.checkRendering)(_render, withUsage());
   return function (widgetParams) {
     var _ref2 = widgetParams || {},
         _ref2$trackedFilters = _ref2.trackedFilters,
@@ -108,10 +111,11 @@ var connectQueryRules = function connectQueryRules(render) {
     var initialRuleContexts = [];
     var onHelperChange;
     return {
-      init: function init(_ref3) {
-        var helper = _ref3.helper,
-            state = _ref3.state,
-            instantSearchInstance = _ref3.instantSearchInstance;
+      $$type: 'ais.queryRules',
+      init: function init(initOptions) {
+        var helper = initOptions.helper,
+            state = initOptions.state,
+            instantSearchInstance = initOptions.instantSearchInstance;
         initialRuleContexts = state.ruleContexts || [];
         onHelperChange = applyRuleContexts.bind({
           helper: helper,
@@ -126,7 +130,9 @@ var connectQueryRules = function connectQueryRules(render) {
           //   - Some filters are applied on the first load (e.g. using `configure`)
           //   - The `transformRuleContexts` option sets initial `ruleContexts`.
           if (hasStateRefinements(state) || Boolean(widgetParams.transformRuleContexts)) {
-            onHelperChange(state);
+            onHelperChange({
+              state: state
+            });
           } // We track every change in the helper to override its state and add
           // any `ruleContexts` needed based on the `trackedFilters`.
 
@@ -134,34 +140,35 @@ var connectQueryRules = function connectQueryRules(render) {
           helper.on('change', onHelperChange);
         }
 
-        render({
-          items: [],
-          instantSearchInstance: instantSearchInstance,
-          widgetParams: widgetParams
-        }, true);
+        _render(_objectSpread({}, this.getWidgetRenderState(initOptions), {
+          instantSearchInstance: instantSearchInstance
+        }), true);
       },
-      render: function (_render) {
-        function render(_x) {
-          return _render.apply(this, arguments);
-        }
+      render: function render(renderOptions) {
+        var instantSearchInstance = renderOptions.instantSearchInstance;
 
-        render.toString = function () {
-          return _render.toString();
-        };
+        _render(_objectSpread({}, this.getWidgetRenderState(renderOptions), {
+          instantSearchInstance: instantSearchInstance
+        }), false);
+      },
+      getWidgetRenderState: function getWidgetRenderState(_ref3) {
+        var results = _ref3.results;
 
-        return render;
-      }(function (_ref4) {
-        var results = _ref4.results,
-            instantSearchInstance = _ref4.instantSearchInstance;
-        var _results$userData = results.userData,
-            userData = _results$userData === void 0 ? [] : _results$userData;
+        var _ref4 = results || {},
+            _ref4$userData = _ref4.userData,
+            userData = _ref4$userData === void 0 ? [] : _ref4$userData;
+
         var items = transformItems(userData);
-        render({
+        return {
           items: items,
-          instantSearchInstance: instantSearchInstance,
           widgetParams: widgetParams
-        }, false);
-      }),
+        };
+      },
+      getRenderState: function getRenderState(renderState, renderOptions) {
+        return _objectSpread({}, renderState, {
+          queryRules: this.getWidgetRenderState(renderOptions)
+        });
+      },
       dispose: function dispose(_ref5) {
         var helper = _ref5.helper,
             state = _ref5.state;

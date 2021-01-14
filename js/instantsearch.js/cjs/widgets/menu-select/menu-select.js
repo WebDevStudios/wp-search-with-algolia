@@ -5,7 +5,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = menuSelect;
 
-var _preactCompat = _interopRequireWildcard(require("preact-compat"));
+var _preact = require("preact");
 
 var _classnames = _interopRequireDefault(require("classnames"));
 
@@ -21,8 +21,7 @@ var _suit = require("../../lib/suit");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = Object.defineProperty && Object.getOwnPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : {}; if (desc.get || desc.set) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } } newObj.default = obj; return newObj; } }
-
+/** @jsx h */
 var withUsage = (0, _utils.createDocumentationMessageGenerator)({
   name: 'menu-select'
 });
@@ -48,7 +47,7 @@ var renderer = function renderer(_ref) {
       return;
     }
 
-    (0, _preactCompat.render)(_preactCompat.default.createElement(_MenuSelect.default, {
+    (0, _preact.render)((0, _preact.h)(_MenuSelect.default, {
       cssClasses: cssClasses,
       items: items,
       refine: refine,
@@ -92,13 +91,13 @@ var renderer = function renderer(_ref) {
  * @param {MenuSelectWidgetOptions} $0 The Menu select widget options.
  * @return {Widget} Creates a new instance of the Menu select widget.
  * @example
- * search.addWidget(
+ * search.addWidgets([
  *   instantsearch.widgets.menuSelect({
  *     container: '#categories-menuSelect',
  *     attribute: 'hierarchicalCategories.lvl0',
  *     limit: 10,
  *   })
- * );
+ * ]);
  */
 
 
@@ -139,7 +138,7 @@ function menuSelect(_ref3) {
     templates: templates
   });
   var makeWidget = (0, _connectMenu.default)(specializedRenderer, function () {
-    return (0, _preactCompat.unmountComponentAtNode)(containerNode);
+    return (0, _preact.render)(null, containerNode);
   });
   return makeWidget({
     attribute: attribute,

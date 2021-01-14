@@ -12,13 +12,25 @@ function clearRefinements(_ref) {
       _ref$attributesToClea = _ref.attributesToClear,
       attributesToClear = _ref$attributesToClea === void 0 ? [] : _ref$attributesToClea;
   var finalState = helper.state.setPage(0);
-  attributesToClear.forEach(function (attribute) {
-    if (attribute === '_tags') {
-      finalState = finalState.clearTags();
-    } else {
-      finalState = finalState.clearRefinements(attribute);
+  finalState = attributesToClear.reduce(function (state, attribute) {
+    if (finalState.isNumericRefined(attribute)) {
+      return state.removeNumericRefinement(attribute);
     }
-  });
+
+    if (finalState.isHierarchicalFacet(attribute)) {
+      return state.removeHierarchicalFacetRefinement(attribute);
+    }
+
+    if (finalState.isDisjunctiveFacet(attribute)) {
+      return state.removeDisjunctiveFacetRefinement(attribute);
+    }
+
+    if (finalState.isConjunctiveFacet(attribute)) {
+      return state.removeFacetRefinement(attribute);
+    }
+
+    return state;
+  }, finalState);
 
   if (attributesToClear.indexOf('query') !== -1) {
     finalState = finalState.setQuery('');

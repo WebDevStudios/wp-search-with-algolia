@@ -5,14 +5,11 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = void 0;
 
-var _preactCompat = _interopRequireDefault(require("preact-compat"));
-
-var _propTypes = _interopRequireDefault(require("prop-types"));
+var _preact = require("preact");
 
 var _utils = require("../../lib/utils");
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
+/** @jsx h */
 var createItemKey = function createItemKey(_ref) {
   var attribute = _ref.attribute,
       value = _ref.value,
@@ -37,23 +34,23 @@ var handleClick = function handleClick(callback) {
 var CurrentRefinements = function CurrentRefinements(_ref2) {
   var items = _ref2.items,
       cssClasses = _ref2.cssClasses;
-  return _preactCompat.default.createElement("div", {
+  return (0, _preact.h)("div", {
     className: cssClasses.root
-  }, _preactCompat.default.createElement("ul", {
+  }, (0, _preact.h)("ul", {
     className: cssClasses.list
   }, items.map(function (item, index) {
-    return _preactCompat.default.createElement("li", {
-      key: "".concat(item.attribute, "-").concat(index),
+    return (0, _preact.h)("li", {
+      key: "".concat(item.indexName, "-").concat(item.attribute, "-").concat(index),
       className: cssClasses.item
-    }, _preactCompat.default.createElement("span", {
+    }, (0, _preact.h)("span", {
       className: cssClasses.label
     }, (0, _utils.capitalize)(item.label), ":"), item.refinements.map(function (refinement) {
-      return _preactCompat.default.createElement("span", {
+      return (0, _preact.h)("span", {
         key: createItemKey(refinement),
         className: cssClasses.category
-      }, _preactCompat.default.createElement("span", {
+      }, (0, _preact.h)("span", {
         className: cssClasses.categoryLabel
-      }, refinement.attribute === 'query' ? _preactCompat.default.createElement("q", null, refinement.label) : refinement.label), _preactCompat.default.createElement("button", {
+      }, refinement.attribute === 'query' ? (0, _preact.h)("q", null, refinement.label) : refinement.label), (0, _preact.h)("button", {
         className: cssClasses.delete,
         onClick: handleClick(item.refine.bind(null, refinement))
       }, "\u2715"));

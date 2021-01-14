@@ -7,7 +7,7 @@ exports.default = void 0;
 
 var _classnames = _interopRequireDefault(require("classnames"));
 
-var _preactCompat = require("preact-compat");
+var _preact = require("preact");
 
 var _utils = require("../../lib/utils");
 
@@ -25,7 +25,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(source, true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
@@ -115,17 +115,16 @@ var suit = (0, _suit.component)('GeoSearch');
  *
  * Don't forget to explicitly set the `height` of the map container (default class `.ais-geo-search--map`), otherwise it won't be shown (it's a requirement of Google Maps).
  *
- * @type {WidgetFactory}
  * @devNovel GeoSearch
  * @param {GeoSearchWidgetOptions} $0 Options of the GeoSearch widget.
  * @return {Widget} A new instance of GeoSearch widget.
  * @staticExample
- * search.addWidget(
+ * search.addWidgets([
  *   instantsearch.widgets.geoSearch({
  *     container: '#geo-search-container',
  *     googleReference: window.google,
  *   })
- * );
+ * ]);
  */
 
 var geoSearch = function geoSearch() {
@@ -248,11 +247,7 @@ var geoSearch = function geoSearch() {
 
   var markerOptions = !customHTMLMarker ? builtInMarker : customHTMLMarker;
   var makeGeoSearch = (0, _connectGeoSearch.default)(_GeoSearchRenderer.default, function () {
-    (0, _preactCompat.unmountComponentAtNode)(containerNode.querySelector(".".concat(cssClasses.tree)));
-
-    while (containerNode.firstChild) {
-      containerNode.removeChild(containerNode.firstChild);
-    }
+    return (0, _preact.render)(null, containerNode);
   });
   return makeGeoSearch(_objectSpread({}, widgetParams, {
     renderState: {},

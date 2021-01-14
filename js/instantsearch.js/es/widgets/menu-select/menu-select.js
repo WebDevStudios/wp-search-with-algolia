@@ -1,4 +1,5 @@
-import React, { render, unmountComponentAtNode } from 'preact-compat';
+/** @jsx h */
+import { h, render } from 'preact';
 import cx from 'classnames';
 import connectMenu from '../../connectors/menu/connectMenu';
 import MenuSelect from '../../components/MenuSelect/MenuSelect';
@@ -30,7 +31,7 @@ var renderer = function renderer(_ref) {
       return;
     }
 
-    render(React.createElement(MenuSelect, {
+    render(h(MenuSelect, {
       cssClasses: cssClasses,
       items: items,
       refine: refine,
@@ -74,13 +75,13 @@ var renderer = function renderer(_ref) {
  * @param {MenuSelectWidgetOptions} $0 The Menu select widget options.
  * @return {Widget} Creates a new instance of the Menu select widget.
  * @example
- * search.addWidget(
+ * search.addWidgets([
  *   instantsearch.widgets.menuSelect({
  *     container: '#categories-menuSelect',
  *     attribute: 'hierarchicalCategories.lvl0',
  *     limit: 10,
  *   })
- * );
+ * ]);
  */
 
 
@@ -121,7 +122,7 @@ export default function menuSelect(_ref3) {
     templates: templates
   });
   var makeWidget = connectMenu(specializedRenderer, function () {
-    return unmountComponentAtNode(containerNode);
+    return render(null, containerNode);
   });
   return makeWidget({
     attribute: attribute,

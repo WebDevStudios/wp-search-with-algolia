@@ -1,4 +1,5 @@
-import React, { render, unmountComponentAtNode } from 'preact-compat';
+/** @jsx h */
+import { h, render } from 'preact';
 import cx from 'classnames';
 import RefinementList from '../../components/RefinementList/RefinementList';
 import connectHierarchicalMenu from '../../connectors/hierarchical-menu/connectHierarchicalMenu';
@@ -34,7 +35,7 @@ var renderer = function renderer(_ref) {
       return;
     }
 
-    render(React.createElement(RefinementList, {
+    render(h(RefinementList, {
       createURL: createURL,
       cssClasses: cssClasses,
       facetValues: items,
@@ -152,12 +153,12 @@ var renderer = function renderer(_ref) {
  * @param {HierarchicalMenuWidgetOptions} $0 The HierarchicalMenu widget options.
  * @return {Widget} A new HierarchicalMenu widget instance.
  * @example
- * search.addWidget(
+ * search.addWidgets([
  *   instantsearch.widgets.hierarchicalMenu({
  *     container: '#hierarchical-categories',
  *     attributes: ['hierarchicalCategories.lvl0', 'hierarchicalCategories.lvl1', 'hierarchicalCategories.lvl2'],
  *   })
- * );
+ * ]);
  */
 
 
@@ -232,7 +233,7 @@ export default function hierarchicalMenu() {
     renderState: {}
   });
   var makeHierarchicalMenu = connectHierarchicalMenu(specializedRenderer, function () {
-    return unmountComponentAtNode(containerNode);
+    return render(null, containerNode);
   });
   return makeHierarchicalMenu({
     attributes: attributes,

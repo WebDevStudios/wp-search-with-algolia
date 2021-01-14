@@ -1,12 +1,12 @@
-import React from 'preact-compat';
-import PropTypes from 'prop-types';
+/** @jsx h */
+import { h } from 'preact';
 
 var GeoSearchButton = function GeoSearchButton(_ref) {
   var className = _ref.className,
       disabled = _ref.disabled,
       onClick = _ref.onClick,
       children = _ref.children;
-  return React.createElement("button", {
+  return h("button", {
     className: className,
     onClick: onClick,
     disabled: disabled

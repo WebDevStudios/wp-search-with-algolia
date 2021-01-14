@@ -8,14 +8,17 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
 
 function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
 
-function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
-
 function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
 
 function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
 
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+// eslint-disable-next-line no-undef
 var createHTMLMarker = function createHTMLMarker(googleReference) {
   var HTMLMarker =
   /*#__PURE__*/
@@ -39,6 +42,19 @@ var createHTMLMarker = function createHTMLMarker(googleReference) {
       _classCallCheck(this, HTMLMarker);
 
       _this = _possibleConstructorReturn(this, _getPrototypeOf(HTMLMarker).call(this));
+
+      _defineProperty(_assertThisInitialized(_this), "__id", void 0);
+
+      _defineProperty(_assertThisInitialized(_this), "anchor", void 0);
+
+      _defineProperty(_assertThisInitialized(_this), "offset", void 0);
+
+      _defineProperty(_assertThisInitialized(_this), "listeners", void 0);
+
+      _defineProperty(_assertThisInitialized(_this), "latLng", void 0);
+
+      _defineProperty(_assertThisInitialized(_this), "element", void 0);
+
       _this.__id = __id;
       _this.anchor = anchor;
       _this.listeners = {};
@@ -78,7 +94,7 @@ var createHTMLMarker = function createHTMLMarker(googleReference) {
         this.element.style.top = "".concat(Math.round(position.y - this.offset.y), "px"); // Markers to the south are in front of markers to the north
         // This is the default behaviour of Google Maps
 
-        this.element.style.zIndex = parseInt(this.element.style.top, 10);
+        this.element.style.zIndex = String(parseInt(this.element.style.top, 10));
       }
     }, {
       key: "onRemove",
@@ -98,7 +114,13 @@ var createHTMLMarker = function createHTMLMarker(googleReference) {
       key: "addListener",
       value: function addListener(eventName, listener) {
         this.listeners[eventName] = listener;
-        this.element.addEventListener(eventName, listener);
+        var element = this.element;
+        element.addEventListener(eventName, listener);
+        return {
+          remove: function remove() {
+            return element.removeEventListener(eventName, listener);
+          }
+        };
       }
     }, {
       key: "getPosition",
@@ -108,7 +130,9 @@ var createHTMLMarker = function createHTMLMarker(googleReference) {
     }]);
 
     return HTMLMarker;
-  }(googleReference.maps.OverlayView);
+  }(googleReference.maps.OverlayView); // we have to cast this to a regular OverlayView to prevent internal class being exposed
+  // which TypeScript doesn't allow.
+
 
   return HTMLMarker;
 };

@@ -1,162 +1,130 @@
+function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
+
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
 import escapeHits, { TAG_PLACEHOLDER } from '../../lib/escape-highlight';
-import { checkRendering, createDocumentationMessageGenerator, find, noop } from '../../lib/utils';
+import { checkRendering, createDocumentationMessageGenerator, createSendEventForHits, noop, warning } from '../../lib/utils';
 var withUsage = createDocumentationMessageGenerator({
   name: 'autocomplete',
   connector: true
 });
-/**
- * @typedef {Object} Index
- * @property {string} index Name of the index.
- * @property {string} label Label of the index (for display purpose).
- * @property {Object[]} hits The hits resolved from the index matching the query.
- * @property {Object} results The full results object from Algolia API.
- */
 
-/**
- * @typedef {Object} AutocompleteRenderingOptions
- * @property {Index[]} indices The indices you provided with their hits and results and the main index as first position.
- * @property {function(string)} refine Search into the indices with the query provided.
- * @property {string} currentRefinement The actual value of the query.
- * @property {Object} widgetParams All original widget options forwarded to the `renderFn`.
- */
-
-/**
- * @typedef {Object} CustomAutocompleteWidgetOptions
- * @property {{value: string, label: string}[]} [indices = []] Name of the others indices to search into.
- * @property {boolean} [escapeHTML = true] If true, escape HTML tags from `hits[i]._highlightResult`.
- */
-
-/**
- * **Autocomplete** connector provides the logic to build a widget that will give the user the ability to search into multiple indices.
- *
- * This connector provides a `refine()` function to search for a query and a `currentRefinement` as the current query used to search.
- * @type {Connector}
- * @param {function(AutocompleteRenderingOptions, boolean)} renderFn Rendering function for the custom **Autocomplete** widget.
- * @param {function} unmountFn Unmount function called when the widget is disposed.
- * @return {function(CustomAutocompleteWidgetOptions)} Re-usable widget factory for a custom **Autocomplete** widget.
- */
-
-export default function connectAutocomplete(renderFn) {
+var connectAutocomplete = function connectAutocomplete(renderFn) {
   var unmountFn = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : noop;
   checkRendering(renderFn, withUsage());
-  return function () {
-    var widgetParams = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-    var _widgetParams$escapeH = widgetParams.escapeHTML,
-        escapeHTML = _widgetParams$escapeH === void 0 ? true : _widgetParams$escapeH,
-        _widgetParams$indices = widgetParams.indices,
-        indices = _widgetParams$indices === void 0 ? [] : _widgetParams$indices; // user passed a wrong `indices` option type
+  return function (widgetParams) {
+    var _ref = widgetParams || {},
+        _ref$escapeHTML = _ref.escapeHTML,
+        escapeHTML = _ref$escapeHTML === void 0 ? true : _ref$escapeHTML;
 
-    if (!Array.isArray(indices)) {
-      throw new Error(withUsage('The `indices` option expects an array of objects.'));
-    }
-
+    process.env.NODE_ENV === 'development' ? warning(!widgetParams.indices, "\nThe option `indices` has been removed from the Autocomplete connector.\n\nThe indices to target are now inferred from the widgets tree.\n".concat(Array.isArray(widgetParams.indices) ? "\nAn alternative would be:\n\nconst autocomplete = connectAutocomplete(renderer);\n\nsearch.addWidgets([\n  ".concat(widgetParams.indices.map(function (_ref2) {
+      var value = _ref2.value;
+      return "index({ indexName: '".concat(value, "' }),");
+    }).join('\n  '), "\n  autocomplete()\n]);\n") : '', "\n      ")) : void 0;
+    var connectorState = {};
     return {
-      getConfiguration: function getConfiguration() {
-        return escapeHTML ? TAG_PLACEHOLDER : undefined;
+      $$type: 'ais.autocomplete',
+      init: function init(initOptions) {
+        var instantSearchInstance = initOptions.instantSearchInstance;
+        renderFn(_objectSpread({}, this.getWidgetRenderState(initOptions), {
+          instantSearchInstance: instantSearchInstance
+        }), true);
       },
-      init: function init(_ref) {
+      render: function render(renderOptions) {
+        var instantSearchInstance = renderOptions.instantSearchInstance;
+        var renderState = this.getWidgetRenderState(renderOptions);
+        renderState.indices.forEach(function (_ref3) {
+          var sendEvent = _ref3.sendEvent,
+              hits = _ref3.hits;
+          sendEvent('view', hits);
+        });
+        renderFn(_objectSpread({}, renderState, {
+          instantSearchInstance: instantSearchInstance
+        }), false);
+      },
+      getRenderState: function getRenderState(renderState, renderOptions) {
+        return _objectSpread({}, renderState, {
+          autocomplete: this.getWidgetRenderState(renderOptions)
+        });
+      },
+      getWidgetRenderState: function getWidgetRenderState(_ref4) {
         var _this = this;
 
-        var instantSearchInstance = _ref.instantSearchInstance,
-            helper = _ref.helper;
-        this._refine = this.refine(helper);
-        this.indices = [{
-          helper: helper,
-          label: 'primary',
-          index: helper.getIndex(),
-          results: undefined,
-          hits: []
-        }]; // add additionnal indices into `this.indices`
+        var helper = _ref4.helper,
+            scopedResults = _ref4.scopedResults,
+            instantSearchInstance = _ref4.instantSearchInstance;
 
-        indices.forEach(function (_ref2) {
-          var label = _ref2.label,
-              value = _ref2.value;
-          var derivedHelper = helper.derive(function (searchParameters) {
-            return searchParameters.setIndex(value);
-          });
-
-          _this.indices.push({
-            label: label,
-            index: value,
-            helper: derivedHelper,
-            results: undefined,
-            hits: []
-          }); // update results then trigger render after a search from any helper
-
-
-          derivedHelper.on('result', function (results) {
-            return _this.saveResults({
-              results: results,
-              label: label
-            });
-          });
-        });
-        this.instantSearchInstance = instantSearchInstance;
-        this.renderWithAllIndices({
-          isFirstRendering: true
-        });
-      },
-      saveResults: function saveResults(_ref3) {
-        var results = _ref3.results,
-            label = _ref3.label;
-        var derivedIndex = find(this.indices, function (i) {
-          return i.label === label;
-        });
-
-        if (escapeHTML && results && results.hits && results.hits.length > 0) {
-          results.hits = escapeHits(results.hits);
+        if (!connectorState.refine) {
+          connectorState.refine = function (query) {
+            helper.setQuery(query).search();
+          };
         }
 
-        derivedIndex.results = results;
-        derivedIndex.hits = results && results.hits && Array.isArray(results.hits) ? results.hits : [];
-        this.renderWithAllIndices();
-      },
-      refine: function refine(helper) {
-        return function (query) {
-          return helper.setQuery(query).search();
+        var indices = scopedResults.map(function (scopedResult) {
+          // We need to escape the hits because highlighting
+          // exposes HTML tags to the end-user.
+          scopedResult.results.hits = escapeHTML ? escapeHits(scopedResult.results.hits) : scopedResult.results.hits;
+          var sendEvent = createSendEventForHits({
+            instantSearchInstance: instantSearchInstance,
+            index: scopedResult.results.index,
+            widgetType: _this.$$type
+          });
+          return {
+            indexId: scopedResult.indexId,
+            indexName: scopedResult.results.index,
+            hits: scopedResult.results.hits,
+            results: scopedResult.results,
+            sendEvent: sendEvent
+          };
+        });
+        return {
+          currentRefinement: helper.state.query || '',
+          indices: indices,
+          refine: connectorState.refine,
+          widgetParams: widgetParams
         };
       },
-      render: function render(_ref4) {
-        var results = _ref4.results;
-        this.saveResults({
-          results: results,
-          label: this.indices[0].label
-        });
-      },
-      renderWithAllIndices: function renderWithAllIndices() {
-        var _ref5 = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
-            _ref5$isFirstRenderin = _ref5.isFirstRendering,
-            isFirstRendering = _ref5$isFirstRenderin === void 0 ? false : _ref5$isFirstRenderin;
+      getWidgetUiState: function getWidgetUiState(uiState, _ref5) {
+        var searchParameters = _ref5.searchParameters;
+        var query = searchParameters.query || '';
 
-        var currentRefinement = this.indices[0].helper.state.query;
-        renderFn({
-          widgetParams: widgetParams,
-          currentRefinement: currentRefinement,
-          // we do not want to provide the `helper` to the end-user
-          indices: this.indices.map(function (_ref6) {
-            var index = _ref6.index,
-                label = _ref6.label,
-                hits = _ref6.hits,
-                results = _ref6.results;
-            return {
-              index: index,
-              label: label,
-              hits: hits,
-              results: results
-            };
-          }),
-          instantSearchInstance: this.instantSearchInstance,
-          refine: this._refine
-        }, isFirstRendering);
-      },
-      dispose: function dispose() {
-        // detach every derived indices from the main helper instance
-        this.indices.slice(1).forEach(function (_ref7) {
-          var helper = _ref7.helper;
-          return helper.detach();
+        if (query === '' || uiState && uiState.query === query) {
+          return uiState;
+        }
+
+        return _objectSpread({}, uiState, {
+          query: query
         });
+      },
+      getWidgetSearchParameters: function getWidgetSearchParameters(searchParameters, _ref6) {
+        var uiState = _ref6.uiState;
+        var parameters = {
+          query: uiState.query || ''
+        };
+
+        if (!escapeHTML) {
+          return searchParameters.setQueryParameters(parameters);
+        }
+
+        return searchParameters.setQueryParameters(_objectSpread({}, parameters, {}, TAG_PLACEHOLDER));
+      },
+      dispose: function dispose(_ref7) {
+        var state = _ref7.state;
         unmountFn();
+        var stateWithoutQuery = state.setQueryParameter('query', undefined);
+
+        if (!escapeHTML) {
+          return stateWithoutQuery;
+        }
+
+        return stateWithoutQuery.setQueryParameters(Object.keys(TAG_PLACEHOLDER).reduce(function (acc, key) {
+          return _objectSpread({}, acc, _defineProperty({}, key, undefined));
+        }, {}));
       }
     };
   };
-}
+};
+
+export default connectAutocomplete;

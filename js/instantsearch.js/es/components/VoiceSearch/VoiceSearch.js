@@ -1,4 +1,5 @@
-import React from 'preact-compat';
+/** @jsx h */
+import { h } from 'preact';
 import Template from '../Template/Template';
 
 var VoiceSearch = function VoiceSearch(_ref) {
@@ -18,9 +19,9 @@ var VoiceSearch = function VoiceSearch(_ref) {
       transcript = voiceListeningState.transcript,
       isSpeechFinal = voiceListeningState.isSpeechFinal,
       errorCode = voiceListeningState.errorCode;
-  return React.createElement("div", {
+  return h("div", {
     className: cssClasses.root
-  }, React.createElement(Template, {
+  }, h(Template, {
     templateKey: "buttonText",
     rootTagName: "button",
     rootProps: {
@@ -39,7 +40,7 @@ var VoiceSearch = function VoiceSearch(_ref) {
       isBrowserSupported: isBrowserSupported
     },
     templates: templates
-  }), React.createElement(Template, {
+  }), h(Template, {
     templateKey: "status",
     rootProps: {
       className: cssClasses.status

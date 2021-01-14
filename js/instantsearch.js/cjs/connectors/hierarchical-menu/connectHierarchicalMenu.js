@@ -7,21 +7,21 @@ exports.default = connectHierarchicalMenu;
 
 var _utils = require("../../lib/utils");
 
-function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
-
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(source, true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
 function _objectWithoutProperties(source, excluded) { if (source == null) return {}; var target = _objectWithoutPropertiesLoose(source, excluded); var key, i; if (Object.getOwnPropertySymbols) { var sourceSymbolKeys = Object.getOwnPropertySymbols(source); for (i = 0; i < sourceSymbolKeys.length; i++) { key = sourceSymbolKeys[i]; if (excluded.indexOf(key) >= 0) continue; if (!Object.prototype.propertyIsEnumerable.call(source, key)) continue; target[key] = source[key]; } } return target; }
 
 function _objectWithoutPropertiesLoose(source, excluded) { if (source == null) return {}; var target = {}; var sourceKeys = Object.keys(source); var key, i; for (i = 0; i < sourceKeys.length; i++) { key = sourceKeys[i]; if (excluded.indexOf(key) >= 0) continue; target[key] = source[key]; } return target; }
+
+function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
+
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _nonIterableRest(); }
 
 function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance"); }
 
-function _iterableToArrayLimit(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"] != null) _i["return"](); } finally { if (_d) throw _e; } } return _arr; }
+function _iterableToArrayLimit(arr, i) { if (!(Symbol.iterator in Object(arr) || Object.prototype.toString.call(arr) === "[object Arguments]")) { return; } var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"] != null) _i["return"](); } finally { if (_d) throw _e; } } return _arr; }
 
 function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 
@@ -70,10 +70,8 @@ var withUsage = (0, _utils.createDocumentationMessageGenerator)({
  * websites. From a UX point of view, we suggest not displaying more than two
  * levels deep.
  *
- * There's a complete example available on how to write a custom **HierarchicalMenu**:
- *  [hierarchicalMenu.js](https://github.com/algolia/instantsearch.js/blob/develop/storybook/app/jquery/widgets/hierarchicalMenu.js)
  * @type {Connector}
- * @param {function(HierarchicalMenuRenderingOptions)} renderFn Rendering function for the custom **HierarchicalMenu** widget.
+ * @param {function(HierarchicalMenuRenderingOptions, boolean)} renderFn Rendering function for the custom **HierarchicalMenu** widget.
  * @param {function} unmountFn Unmount function called when the widget is disposed.
  * @return {function(CustomHierarchicalMenuWidgetOptions)} Re-usable widget factory for a custom **HierarchicalMenu** widget.
  */
@@ -117,14 +115,18 @@ function connectHierarchicalMenu(renderFn) {
     var _attributes = _slicedToArray(attributes, 1),
         hierarchicalFacetName = _attributes[0];
 
+    var sendEvent; // Provide the same function to the `renderFn` so that way the user
+    // has to only bind it once when `isFirstRendering` for instance
+
+    var toggleShowMore = function toggleShowMore() {};
+
+    function cachedToggleShowMore() {
+      toggleShowMore();
+    }
+
     return {
+      $$type: 'ais.hierarchicalMenu',
       isShowingMore: false,
-      // Provide the same function to the `renderFn` so that way the user
-      // has to only bind it once when `isFirstRendering` for instance
-      toggleShowMore: function toggleShowMore() {},
-      cachedToggleShowMore: function cachedToggleShowMore() {
-        this.toggleShowMore();
-      },
       createToggleShowMore: function createToggleShowMore(renderOptions) {
         var _this = this;
 
@@ -137,72 +139,22 @@ function connectHierarchicalMenu(renderFn) {
       getLimit: function getLimit() {
         return this.isShowingMore ? showMoreLimit : limit;
       },
-      getConfiguration: function getConfiguration(currentConfiguration) {
-        if (currentConfiguration.hierarchicalFacets) {
-          var isFacetSet = (0, _utils.find)(currentConfiguration.hierarchicalFacets, function (_ref) {
-            var name = _ref.name;
-            return name === hierarchicalFacetName;
-          });
-          var isAttributesEqual = isFacetSet && (0, _utils.isEqual)(isFacetSet.attributes, attributes);
-          var isSeparatorEqual = isFacetSet && isFacetSet.separator === separator;
-          var isRootPathEqual = isFacetSet && isFacetSet.rootPath === rootPath;
-          var isHierarchicalOptionsEqual = isAttributesEqual && isSeparatorEqual && isRootPathEqual;
-
-          if (isFacetSet && !isHierarchicalOptionsEqual) {
-            (0, _utils.warning)(false, 'Using Breadcrumb and HierarchicalMenu on the same facet with different options overrides the configuration of the HierarchicalMenu.');
-            return {};
-          }
-        }
-
-        var widgetConfiguration = {
-          hierarchicalFacets: [{
-            name: hierarchicalFacetName,
-            attributes: attributes,
-            separator: separator,
-            rootPath: rootPath,
-            showParentLevel: showParentLevel
-          }]
-        };
-        var currentMaxValuesPerFacet = currentConfiguration.maxValuesPerFacet || 0;
-        widgetConfiguration.maxValuesPerFacet = Math.max(currentMaxValuesPerFacet, showMore ? showMoreLimit : limit);
-        return widgetConfiguration;
+      init: function init(initOptions) {
+        var instantSearchInstance = initOptions.instantSearchInstance;
+        renderFn(_objectSpread({}, this.getWidgetRenderState(initOptions), {
+          instantSearchInstance: instantSearchInstance
+        }), true);
       },
-      init: function init(_ref2) {
-        var helper = _ref2.helper,
-            createURL = _ref2.createURL,
-            instantSearchInstance = _ref2.instantSearchInstance;
-        this.cachedToggleShowMore = this.cachedToggleShowMore.bind(this);
-
-        this._refine = function (facetValue) {
-          helper.toggleRefinement(hierarchicalFacetName, facetValue).search();
-        }; // Bind createURL to this specific attribute
-
-
-        function _createURL(facetValue) {
-          return createURL(helper.state.toggleRefinement(hierarchicalFacetName, facetValue));
-        }
-
-        renderFn({
-          items: [],
-          createURL: _createURL,
-          refine: this._refine,
-          instantSearchInstance: instantSearchInstance,
-          widgetParams: widgetParams,
-          isShowingMore: false,
-          toggleShowMore: this.cachedToggleShowMore,
-          canToggleShowMore: false
-        }, true);
-      },
-      _prepareFacetValues: function _prepareFacetValues(facetValues, state) {
+      _prepareFacetValues: function _prepareFacetValues(facetValues) {
         var _this2 = this;
 
-        return facetValues.slice(0, this.getLimit()).map(function (_ref3) {
-          var label = _ref3.name,
-              value = _ref3.path,
-              subValue = _objectWithoutProperties(_ref3, ["name", "path"]);
+        return facetValues.slice(0, this.getLimit()).map(function (_ref) {
+          var label = _ref.name,
+              value = _ref.path,
+              subValue = _objectWithoutProperties(_ref, ["name", "path"]);
 
           if (Array.isArray(subValue.data)) {
-            subValue.data = _this2._prepareFacetValues(subValue.data, state);
+            subValue.data = _this2._prepareFacetValues(subValue.data);
           }
 
           return _objectSpread({}, subValue, {
@@ -212,65 +164,95 @@ function connectHierarchicalMenu(renderFn) {
         });
       },
       render: function render(renderOptions) {
-        var results = renderOptions.results,
-            state = renderOptions.state,
-            createURL = renderOptions.createURL,
-            instantSearchInstance = renderOptions.instantSearchInstance;
-        var facetValues = results.getFacetValues(hierarchicalFacetName, {
-          sortBy: sortBy
-        }).data || [];
-        var items = transformItems(this._prepareFacetValues(facetValues), state); // Bind createURL to this specific attribute
+        var instantSearchInstance = renderOptions.instantSearchInstance;
+        toggleShowMore = this.createToggleShowMore(renderOptions);
+        renderFn(_objectSpread({}, this.getWidgetRenderState(renderOptions), {
+          instantSearchInstance: instantSearchInstance
+        }), false);
+      },
 
+      /**
+       * @param {Object} param0 cleanup arguments
+       * @param {any} param0.state current search parameters
+       * @returns {any} next search parameters
+       */
+      dispose: function dispose(_ref2) {
+        var state = _ref2.state;
+        unmountFn();
+        return state.removeHierarchicalFacet(hierarchicalFacetName).setQueryParameter('maxValuesPerFacet', undefined);
+      },
+      getRenderState: function getRenderState(renderState, renderOptions) {
+        return _objectSpread({}, renderState, {
+          hierarchicalMenu: _objectSpread({}, renderState.hierarchicalMenu, _defineProperty({}, hierarchicalFacetName, this.getWidgetRenderState(renderOptions)))
+        });
+      },
+      getWidgetRenderState: function getWidgetRenderState(_ref3) {
+        var _this3 = this;
+
+        var results = _ref3.results,
+            state = _ref3.state,
+            createURL = _ref3.createURL,
+            instantSearchInstance = _ref3.instantSearchInstance,
+            helper = _ref3.helper;
+
+        // Bind createURL to this specific attribute
         function _createURL(facetValue) {
           return createURL(state.toggleRefinement(hierarchicalFacetName, facetValue));
         }
 
-        var maxValuesPerFacetConfig = state.getQueryParameter('maxValuesPerFacet');
-        var currentLimit = this.getLimit(); // If the limit is the max number of facet retrieved it is impossible to know
-        // if the facets are exhaustive. The only moment we are sure it is exhaustive
-        // is when it is strictly under the number requested unless we know that another
-        // widget has requested more values (maxValuesPerFacet > getLimit()).
-        // Because this is used for making the search of facets unable or not, it is important
-        // to be conservative here.
+        if (!sendEvent) {
+          sendEvent = (0, _utils.createSendEventForFacet)({
+            instantSearchInstance: instantSearchInstance,
+            helper: helper,
+            attribute: hierarchicalFacetName,
+            widgetType: this.$$type
+          });
+        }
 
-        var hasExhaustiveItems = maxValuesPerFacetConfig > currentLimit ? facetValues.length <= currentLimit : facetValues.length < currentLimit;
-        this.toggleShowMore = this.createToggleShowMore(renderOptions);
-        renderFn({
+        if (!this._refine) {
+          this._refine = function (facetValue) {
+            sendEvent('click', facetValue);
+            helper.toggleRefinement(hierarchicalFacetName, facetValue).search();
+          };
+        }
+
+        var facetValues = results ? results.getFacetValues(hierarchicalFacetName, {
+          sortBy: sortBy
+        }).data || [] : [];
+        var items = transformItems(results ? this._prepareFacetValues(facetValues) : []);
+
+        var getHasExhaustiveItems = function getHasExhaustiveItems() {
+          if (!results) {
+            return false;
+          }
+
+          var currentLimit = _this3.getLimit(); // If the limit is the max number of facet retrieved it is impossible to know
+          // if the facets are exhaustive. The only moment we are sure it is exhaustive
+          // is when it is strictly under the number requested unless we know that another
+          // widget has requested more values (maxValuesPerFacet > getLimit()).
+          // Because this is used for making the search of facets unable or not, it is important
+          // to be conservative here.
+
+
+          return state.maxValuesPerFacet > currentLimit ? facetValues.length <= currentLimit : facetValues.length < currentLimit;
+        };
+
+        return {
           items: items,
           refine: this._refine,
           createURL: _createURL,
-          instantSearchInstance: instantSearchInstance,
+          sendEvent: sendEvent,
           widgetParams: widgetParams,
           isShowingMore: this.isShowingMore,
-          toggleShowMore: this.cachedToggleShowMore,
-          canToggleShowMore: showMore && (this.isShowingMore || !hasExhaustiveItems)
-        }, false);
+          toggleShowMore: cachedToggleShowMore,
+          canToggleShowMore: showMore && (this.isShowingMore || !getHasExhaustiveItems())
+        };
       },
-      dispose: function dispose(_ref4) {
-        var state = _ref4.state;
-        // unmount widget from DOM
-        unmountFn(); // compute nextState for the search
-
-        var nextState = state;
-
-        if (state.isHierarchicalFacetRefined(hierarchicalFacetName)) {
-          nextState = state.removeHierarchicalFacetRefinement(hierarchicalFacetName);
-        }
-
-        nextState = nextState.removeHierarchicalFacet(hierarchicalFacetName);
-
-        if (nextState.maxValuesPerFacet === limit) {
-          nextState.setQueryParameters('maxValuesPerFacet', undefined);
-        }
-
-        return nextState;
-      },
-      getWidgetState: function getWidgetState(uiState, _ref5) {
-        var searchParameters = _ref5.searchParameters;
+      getWidgetUiState: function getWidgetUiState(uiState, _ref4) {
+        var searchParameters = _ref4.searchParameters;
         var path = searchParameters.getHierarchicalFacetBreadcrumb(hierarchicalFacetName);
-        if (!path || path.length === 0) return uiState;
 
-        if (uiState.hierarchicalMenu && (0, _utils.isEqual)(path, uiState.hierarchicalMenu[hierarchicalFacetName])) {
+        if (!path.length) {
           return uiState;
         }
 
@@ -278,14 +260,33 @@ function connectHierarchicalMenu(renderFn) {
           hierarchicalMenu: _objectSpread({}, uiState.hierarchicalMenu, _defineProperty({}, hierarchicalFacetName, path))
         });
       },
-      getWidgetSearchParameters: function getWidgetSearchParameters(searchParameters, _ref6) {
-        var uiState = _ref6.uiState;
+      getWidgetSearchParameters: function getWidgetSearchParameters(searchParameters, _ref5) {
+        var uiState = _ref5.uiState;
+        var values = uiState.hierarchicalMenu && uiState.hierarchicalMenu[hierarchicalFacetName];
 
-        if (uiState.hierarchicalMenu && uiState.hierarchicalMenu[hierarchicalFacetName]) {
-          return searchParameters.clearRefinements(hierarchicalFacetName).toggleRefinement(hierarchicalFacetName, uiState.hierarchicalMenu[hierarchicalFacetName].join(separator));
-        } else {
-          return searchParameters;
+        if (searchParameters.isHierarchicalFacet(hierarchicalFacetName)) {
+          var facet = searchParameters.getHierarchicalFacetByName(hierarchicalFacetName);
+          process.env.NODE_ENV === 'development' ? (0, _utils.warning)((0, _utils.isEqual)(facet.attributes, attributes) && facet.separator === separator && facet.rootPath === rootPath, 'Using Breadcrumb and HierarchicalMenu on the same facet with different options overrides the configuration of the HierarchicalMenu.') : void 0;
         }
+
+        var withFacetConfiguration = searchParameters.removeHierarchicalFacet(hierarchicalFacetName).addHierarchicalFacet({
+          name: hierarchicalFacetName,
+          attributes: attributes,
+          separator: separator,
+          rootPath: rootPath,
+          showParentLevel: showParentLevel
+        });
+        var currentMaxValuesPerFacet = withFacetConfiguration.maxValuesPerFacet || 0;
+        var nextMaxValuesPerFacet = Math.max(currentMaxValuesPerFacet, showMore ? showMoreLimit : limit);
+        var withMaxValuesPerFacet = withFacetConfiguration.setQueryParameter('maxValuesPerFacet', nextMaxValuesPerFacet);
+
+        if (!values) {
+          return withMaxValuesPerFacet.setQueryParameters({
+            hierarchicalFacetsRefinements: _objectSpread({}, withMaxValuesPerFacet.hierarchicalFacetsRefinements, _defineProperty({}, hierarchicalFacetName, []))
+          });
+        }
+
+        return withMaxValuesPerFacet.addHierarchicalFacetRefinement(hierarchicalFacetName, values.join(separator));
       }
     };
   };

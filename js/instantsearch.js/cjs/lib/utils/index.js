@@ -3,10 +3,61 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+var _exportNames = {
+  capitalize: true,
+  defer: true,
+  isDomElement: true,
+  getContainerNode: true,
+  isSpecialClick: true,
+  prepareTemplateProps: true,
+  renderTemplate: true,
+  getRefinements: true,
+  clearRefinements: true,
+  escapeRefinement: true,
+  unescapeRefinement: true,
+  checkRendering: true,
+  checkIndexUiState: true,
+  getPropertyByPath: true,
+  getObjectType: true,
+  noop: true,
+  isFiniteNumber: true,
+  isPlainObject: true,
+  uniq: true,
+  range: true,
+  isEqual: true,
+  escape: true,
+  unescape: true,
+  concatHighlightedParts: true,
+  getHighlightedParts: true,
+  getHighlightFromSiblings: true,
+  reverseHighlightedParts: true,
+  find: true,
+  findIndex: true,
+  mergeSearchParameters: true,
+  resolveSearchParameters: true,
+  toArray: true,
+  warning: true,
+  deprecate: true,
+  createDocumentationLink: true,
+  createDocumentationMessageGenerator: true,
+  aroundLatLngToPosition: true,
+  insideBoundingBoxToBoundingBox: true,
+  addAbsolutePosition: true,
+  addQueryID: true,
+  isFacetRefined: true,
+  getAppIdAndApiKey: true,
+  convertNumericRefinementsToFilters: true
+};
 Object.defineProperty(exports, "capitalize", {
   enumerable: true,
   get: function get() {
     return _capitalize.default;
+  }
+});
+Object.defineProperty(exports, "defer", {
+  enumerable: true,
+  get: function get() {
+    return _defer.default;
   }
 });
 Object.defineProperty(exports, "isDomElement", {
@@ -69,10 +120,22 @@ Object.defineProperty(exports, "checkRendering", {
     return _checkRendering.default;
   }
 });
+Object.defineProperty(exports, "checkIndexUiState", {
+  enumerable: true,
+  get: function get() {
+    return _checkIndexUiState.checkIndexUiState;
+  }
+});
 Object.defineProperty(exports, "getPropertyByPath", {
   enumerable: true,
   get: function get() {
     return _getPropertyByPath.default;
+  }
+});
+Object.defineProperty(exports, "getObjectType", {
+  enumerable: true,
+  get: function get() {
+    return _getObjectType.default;
   }
 });
 Object.defineProperty(exports, "noop", {
@@ -117,6 +180,36 @@ Object.defineProperty(exports, "escape", {
     return _escape.default;
   }
 });
+Object.defineProperty(exports, "unescape", {
+  enumerable: true,
+  get: function get() {
+    return _unescape.default;
+  }
+});
+Object.defineProperty(exports, "concatHighlightedParts", {
+  enumerable: true,
+  get: function get() {
+    return _concatHighlightedParts.default;
+  }
+});
+Object.defineProperty(exports, "getHighlightedParts", {
+  enumerable: true,
+  get: function get() {
+    return _getHighlightedParts.default;
+  }
+});
+Object.defineProperty(exports, "getHighlightFromSiblings", {
+  enumerable: true,
+  get: function get() {
+    return _getHighlightFromSiblings.default;
+  }
+});
+Object.defineProperty(exports, "reverseHighlightedParts", {
+  enumerable: true,
+  get: function get() {
+    return _reverseHighlightedParts.default;
+  }
+});
 Object.defineProperty(exports, "find", {
   enumerable: true,
   get: function get() {
@@ -129,10 +222,22 @@ Object.defineProperty(exports, "findIndex", {
     return _findIndex.default;
   }
 });
-Object.defineProperty(exports, "mergeDeep", {
+Object.defineProperty(exports, "mergeSearchParameters", {
   enumerable: true,
   get: function get() {
-    return _mergeDeep.default;
+    return _mergeSearchParameters.default;
+  }
+});
+Object.defineProperty(exports, "resolveSearchParameters", {
+  enumerable: true,
+  get: function get() {
+    return _resolveSearchParameters.default;
+  }
+});
+Object.defineProperty(exports, "toArray", {
+  enumerable: true,
+  get: function get() {
+    return _toArray.default;
   }
 });
 Object.defineProperty(exports, "warning", {
@@ -183,8 +288,28 @@ Object.defineProperty(exports, "addQueryID", {
     return _hitsQueryId.addQueryID;
   }
 });
+Object.defineProperty(exports, "isFacetRefined", {
+  enumerable: true,
+  get: function get() {
+    return _isFacetRefined.default;
+  }
+});
+Object.defineProperty(exports, "getAppIdAndApiKey", {
+  enumerable: true,
+  get: function get() {
+    return _getAppIdAndApiKey.getAppIdAndApiKey;
+  }
+});
+Object.defineProperty(exports, "convertNumericRefinementsToFilters", {
+  enumerable: true,
+  get: function get() {
+    return _convertNumericRefinementsToFilters.convertNumericRefinementsToFilters;
+  }
+});
 
 var _capitalize = _interopRequireDefault(require("./capitalize"));
+
+var _defer = _interopRequireDefault(require("./defer"));
 
 var _isDomElement = _interopRequireDefault(require("./isDomElement"));
 
@@ -206,7 +331,11 @@ var _unescapeRefinement = _interopRequireDefault(require("./unescapeRefinement")
 
 var _checkRendering = _interopRequireDefault(require("./checkRendering"));
 
+var _checkIndexUiState = require("./checkIndexUiState");
+
 var _getPropertyByPath = _interopRequireDefault(require("./getPropertyByPath"));
+
+var _getObjectType = _interopRequireDefault(require("./getObjectType"));
 
 var _noop = _interopRequireDefault(require("./noop"));
 
@@ -222,11 +351,25 @@ var _isEqual = _interopRequireDefault(require("./isEqual"));
 
 var _escape = _interopRequireDefault(require("./escape"));
 
+var _unescape = _interopRequireDefault(require("./unescape"));
+
+var _concatHighlightedParts = _interopRequireDefault(require("./concatHighlightedParts"));
+
+var _getHighlightedParts = _interopRequireDefault(require("./getHighlightedParts"));
+
+var _getHighlightFromSiblings = _interopRequireDefault(require("./getHighlightFromSiblings"));
+
+var _reverseHighlightedParts = _interopRequireDefault(require("./reverseHighlightedParts"));
+
 var _find = _interopRequireDefault(require("./find"));
 
 var _findIndex = _interopRequireDefault(require("./findIndex"));
 
-var _mergeDeep = _interopRequireDefault(require("./mergeDeep"));
+var _mergeSearchParameters = _interopRequireDefault(require("./mergeSearchParameters"));
+
+var _resolveSearchParameters = _interopRequireDefault(require("./resolveSearchParameters"));
+
+var _toArray = _interopRequireDefault(require("./toArray"));
 
 var _logger = require("./logger");
 
@@ -237,5 +380,37 @@ var _geoSearch = require("./geo-search");
 var _hitsAbsolutePosition = require("./hits-absolute-position");
 
 var _hitsQueryId = require("./hits-query-id");
+
+var _isFacetRefined = _interopRequireDefault(require("./isFacetRefined"));
+
+var _createSendEventForFacet = require("./createSendEventForFacet");
+
+Object.keys(_createSendEventForFacet).forEach(function (key) {
+  if (key === "default" || key === "__esModule") return;
+  if (Object.prototype.hasOwnProperty.call(_exportNames, key)) return;
+  Object.defineProperty(exports, key, {
+    enumerable: true,
+    get: function get() {
+      return _createSendEventForFacet[key];
+    }
+  });
+});
+
+var _createSendEventForHits = require("./createSendEventForHits");
+
+Object.keys(_createSendEventForHits).forEach(function (key) {
+  if (key === "default" || key === "__esModule") return;
+  if (Object.prototype.hasOwnProperty.call(_exportNames, key)) return;
+  Object.defineProperty(exports, key, {
+    enumerable: true,
+    get: function get() {
+      return _createSendEventForHits[key];
+    }
+  });
+});
+
+var _getAppIdAndApiKey = require("./getAppIdAndApiKey");
+
+var _convertNumericRefinementsToFilters = require("./convertNumericRefinementsToFilters");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }

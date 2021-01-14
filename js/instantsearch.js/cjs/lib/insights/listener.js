@@ -5,36 +5,75 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = void 0;
 
-var _preactCompat = _interopRequireDefault(require("preact-compat"));
+var _preact = require("preact");
 
 var _insights = require("../../helpers/insights");
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+/** @jsx h */
+var findInsightsTarget = function findInsightsTarget(startElement, endElement, validator) {
+  var element = startElement;
 
-var _default = function _default(BaseComponent) {
+  while (element && !validator(element)) {
+    if (element === endElement) {
+      return null;
+    }
+
+    element = element.parentElement;
+  }
+
+  return element;
+};
+
+var parseInsightsEvent = function parseInsightsEvent(element) {
+  var serializedPayload = element.getAttribute('data-insights-event');
+
+  if (typeof serializedPayload !== 'string') {
+    throw new Error('The insights middleware expects `data-insights-event` to be a base64-encoded JSON string.');
+  }
+
+  try {
+    return JSON.parse(atob(serializedPayload));
+  } catch (error) {
+    throw new Error('The insights middleware was unable to parse `data-insights-event`.');
+  }
+};
+
+var insightsListener = function insightsListener(BaseComponent) {
   function WithInsightsListener(props) {
     var handleClick = function handleClick(event) {
-      if (!(0, _insights.hasDataAttributes)(event.target)) {
-        return;
+      if (props.sendEvent) {
+        // new way with insights middleware
+        var targetWithEvent = findInsightsTarget(event.target, event.currentTarget, function (element) {
+          return element.hasAttribute('data-insights-event');
+        });
+
+        if (targetWithEvent) {
+          var payload = parseInsightsEvent(targetWithEvent);
+          props.sendEvent(payload);
+        }
+      } // old way, e.g. instantsearch.insights("clickedObjectIDsAfterSearch", { .. })
+
+
+      var insightsTarget = findInsightsTarget(event.target, event.currentTarget, function (element) {
+        return (0, _insights.hasDataAttributes)(element);
+      });
+
+      if (insightsTarget) {
+        var _readDataAttributes = (0, _insights.readDataAttributes)(insightsTarget),
+            method = _readDataAttributes.method,
+            _payload = _readDataAttributes.payload;
+
+        props.insights(method, _payload);
       }
-
-      if (!props.insights) {
-        throw new Error('The `insightsClient` option has not been provided to `instantsearch`.');
-      }
-
-      var _readDataAttributes = (0, _insights.readDataAttributes)(event.target),
-          method = _readDataAttributes.method,
-          payload = _readDataAttributes.payload;
-
-      props.insights(method, payload);
     };
 
-    return _preactCompat.default.createElement("div", {
+    return (0, _preact.h)("div", {
       onClick: handleClick
-    }, _preactCompat.default.createElement(BaseComponent, props));
+    }, (0, _preact.h)(BaseComponent, props));
   }
 
   return WithInsightsListener;
 };
 
+var _default = insightsListener;
 exports.default = _default;

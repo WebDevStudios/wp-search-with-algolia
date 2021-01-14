@@ -5,7 +5,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = hierarchicalMenu;
 
-var _preactCompat = _interopRequireWildcard(require("preact-compat"));
+var _preact = require("preact");
 
 var _classnames = _interopRequireDefault(require("classnames"));
 
@@ -21,8 +21,7 @@ var _suit = require("../../lib/suit");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = Object.defineProperty && Object.getOwnPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : {}; if (desc.get || desc.set) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } } newObj.default = obj; return newObj; } }
-
+/** @jsx h */
 var withUsage = (0, _utils.createDocumentationMessageGenerator)({
   name: 'hierarchical-menu'
 });
@@ -52,7 +51,7 @@ var renderer = function renderer(_ref) {
       return;
     }
 
-    (0, _preactCompat.render)(_preactCompat.default.createElement(_RefinementList.default, {
+    (0, _preact.render)((0, _preact.h)(_RefinementList.default, {
       createURL: createURL,
       cssClasses: cssClasses,
       facetValues: items,
@@ -170,12 +169,12 @@ var renderer = function renderer(_ref) {
  * @param {HierarchicalMenuWidgetOptions} $0 The HierarchicalMenu widget options.
  * @return {Widget} A new HierarchicalMenu widget instance.
  * @example
- * search.addWidget(
+ * search.addWidgets([
  *   instantsearch.widgets.hierarchicalMenu({
  *     container: '#hierarchical-categories',
  *     attributes: ['hierarchicalCategories.lvl0', 'hierarchicalCategories.lvl1', 'hierarchicalCategories.lvl2'],
  *   })
- * );
+ * ]);
  */
 
 
@@ -250,7 +249,7 @@ function hierarchicalMenu() {
     renderState: {}
   });
   var makeHierarchicalMenu = (0, _connectHierarchicalMenu.default)(specializedRenderer, function () {
-    return (0, _preactCompat.unmountComponentAtNode)(containerNode);
+    return (0, _preact.render)(null, containerNode);
   });
   return makeHierarchicalMenu({
     attributes: attributes,

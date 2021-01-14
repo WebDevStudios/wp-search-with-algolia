@@ -1,128 +1,86 @@
-function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
-
-function _extends() { _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; return _extends.apply(this, arguments); }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
-
-function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
-
-function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
-
-function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
-
-function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
-
-function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
-
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
-import React, { Component } from 'preact-compat';
-import PropTypes from 'prop-types';
+function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _nonIterableRest(); }
+
+function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance"); }
+
+function _iterableToArrayLimit(arr, i) { if (!(Symbol.iterator in Object(arr) || Object.prototype.toString.call(arr) === "[object Arguments]")) { return; } var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"] != null) _i["return"](); } finally { if (_d) throw _e; } } return _arr; }
+
+function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
+
+/** @jsx h */
+import { h } from 'preact';
+import { useState, useEffect, useRef } from 'preact/hooks';
 import cx from 'classnames';
 import Template from '../Template/Template';
 
-var Panel =
-/*#__PURE__*/
-function (_Component) {
-  _inherits(Panel, _Component);
+function Panel(props) {
+  var _cx;
 
-  function Panel() {
-    var _getPrototypeOf2;
+  var _useState = useState(props.isCollapsed),
+      _useState2 = _slicedToArray(_useState, 2),
+      isCollapsed = _useState2[0],
+      setIsCollapsed = _useState2[1];
 
-    var _this;
+  var _useState3 = useState(false),
+      _useState4 = _slicedToArray(_useState3, 2),
+      isControlled = _useState4[0],
+      setIsControlled = _useState4[1];
 
-    _classCallCheck(this, Panel);
-
-    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
-      args[_key] = arguments[_key];
+  var bodyRef = useRef(null);
+  useEffect(function () {
+    if (!bodyRef.current) {
+      return undefined;
     }
 
-    _this = _possibleConstructorReturn(this, (_getPrototypeOf2 = _getPrototypeOf(Panel)).call.apply(_getPrototypeOf2, [this].concat(args)));
+    bodyRef.current.appendChild(props.bodyElement);
+    return function () {
+      bodyRef.current.removeChild(props.bodyElement);
+    };
+  }, [bodyRef, props.bodyElement]);
 
-    _defineProperty(_assertThisInitialized(_this), "state", {
-      collapsed: _this.props.collapsed,
-      controlled: false
-    });
-
-    return _this;
+  if (!isControlled && props.isCollapsed !== isCollapsed) {
+    setIsCollapsed(props.isCollapsed);
   }
 
-  _createClass(Panel, [{
-    key: "componentDidMount",
-    value: function componentDidMount() {
-      this.bodyRef.appendChild(this.props.bodyElement);
+  return h("div", {
+    className: cx(props.cssClasses.root, (_cx = {}, _defineProperty(_cx, props.cssClasses.noRefinementRoot, props.hidden), _defineProperty(_cx, props.cssClasses.collapsibleRoot, props.collapsible), _defineProperty(_cx, props.cssClasses.collapsedRoot, isCollapsed), _cx)),
+    hidden: props.hidden
+  }, props.templates.header && h("div", {
+    className: props.cssClasses.header
+  }, h(Template, {
+    templates: props.templates,
+    templateKey: "header",
+    rootTagName: "span",
+    data: props.data
+  }), props.collapsible && h("button", {
+    className: props.cssClasses.collapseButton,
+    "aria-expanded": !isCollapsed,
+    onClick: function onClick(event) {
+      event.preventDefault();
+      setIsControlled(true);
+      setIsCollapsed(function (prevIsCollapsed) {
+        return !prevIsCollapsed;
+      });
     }
-  }, {
-    key: "render",
-    value: function render() {
-      var _cx,
-          _this2 = this;
-
-      var _this$props = this.props,
-          cssClasses = _this$props.cssClasses,
-          hidden = _this$props.hidden,
-          collapsible = _this$props.collapsible,
-          templateProps = _this$props.templateProps,
-          data = _this$props.data;
-      return React.createElement("div", {
-        className: cx(cssClasses.root, (_cx = {}, _defineProperty(_cx, cssClasses.noRefinementRoot, hidden), _defineProperty(_cx, cssClasses.collapsibleRoot, collapsible), _defineProperty(_cx, cssClasses.collapsedRoot, this.state.collapsed), _cx)),
-        hidden: hidden
-      }, templateProps.templates.header && React.createElement("div", {
-        className: cssClasses.header
-      }, React.createElement(Template, _extends({}, templateProps, {
-        templateKey: "header",
-        rootTagName: "span",
-        data: data
-      })), collapsible && React.createElement("button", {
-        className: cssClasses.collapseButton,
-        "aria-expanded": !this.state.collapsed,
-        onClick: function onClick(event) {
-          event.preventDefault();
-
-          _this2.setState(function (previousState) {
-            return {
-              controlled: true,
-              collapsed: !previousState.collapsed
-            };
-          });
-        }
-      }, React.createElement(Template, _extends({}, templateProps, {
-        templateKey: "collapseButtonText",
-        rootTagName: "span",
-        data: {
-          collapsed: this.state.collapsed
-        }
-      })))), React.createElement("div", {
-        className: cssClasses.body,
-        ref: function ref(node) {
-          return _this2.bodyRef = node;
-        }
-      }), templateProps.templates.footer && React.createElement(Template, _extends({}, templateProps, {
-        templateKey: "footer",
-        rootProps: {
-          className: cssClasses.footer
-        },
-        data: data
-      })));
+  }, h(Template, {
+    templates: props.templates,
+    templateKey: "collapseButtonText",
+    rootTagName: "span",
+    data: {
+      collapsed: isCollapsed
     }
-  }], [{
-    key: "getDerivedStateFromProps",
-    value: function getDerivedStateFromProps(nextProps, prevState) {
-      if (!prevState.controlled && nextProps.collapsed !== prevState.collapsed) {
-        return {
-          collapsed: nextProps.collapsed
-        };
-      }
-
-      return null;
-    }
-  }]);
-
-  return Panel;
-}(Component);
+  }))), h("div", {
+    className: props.cssClasses.body,
+    ref: bodyRef
+  }), props.templates.footer && h(Template, {
+    templates: props.templates,
+    templateKey: "footer",
+    rootProps: {
+      className: props.cssClasses.footer
+    },
+    data: props.data
+  }));
+}
 
 export default Panel;

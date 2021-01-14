@@ -1,6 +1,6 @@
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(source, true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
@@ -9,7 +9,7 @@ function _objectWithoutProperties(source, excluded) { if (source == null) return
 function _objectWithoutPropertiesLoose(source, excluded) { if (source == null) return {}; var target = {}; var sourceKeys = Object.keys(source); var key, i; for (i = 0; i < sourceKeys.length; i++) { key = sourceKeys[i]; if (excluded.indexOf(key) >= 0) continue; target[key] = source[key]; } return target; }
 
 import cx from 'classnames';
-import { unmountComponentAtNode } from 'preact-compat';
+import { render } from 'preact';
 import { getContainerNode, renderTemplate, createDocumentationMessageGenerator, noop } from '../../lib/utils';
 import { component } from '../../lib/suit';
 import connectGeoSearch from '../../connectors/geo-search/connectGeoSearch';
@@ -98,17 +98,16 @@ var suit = component('GeoSearch');
  *
  * Don't forget to explicitly set the `height` of the map container (default class `.ais-geo-search--map`), otherwise it won't be shown (it's a requirement of Google Maps).
  *
- * @type {WidgetFactory}
  * @devNovel GeoSearch
  * @param {GeoSearchWidgetOptions} $0 Options of the GeoSearch widget.
  * @return {Widget} A new instance of GeoSearch widget.
  * @staticExample
- * search.addWidget(
+ * search.addWidgets([
  *   instantsearch.widgets.geoSearch({
  *     container: '#geo-search-container',
  *     googleReference: window.google,
  *   })
- * );
+ * ]);
  */
 
 var geoSearch = function geoSearch() {
@@ -231,11 +230,7 @@ var geoSearch = function geoSearch() {
 
   var markerOptions = !customHTMLMarker ? builtInMarker : customHTMLMarker;
   var makeGeoSearch = connectGeoSearch(renderer, function () {
-    unmountComponentAtNode(containerNode.querySelector(".".concat(cssClasses.tree)));
-
-    while (containerNode.firstChild) {
-      containerNode.removeChild(containerNode.firstChild);
-    }
+    return render(null, containerNode);
   });
   return makeGeoSearch(_objectSpread({}, widgetParams, {
     renderState: {},

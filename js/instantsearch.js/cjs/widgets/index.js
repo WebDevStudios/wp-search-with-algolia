@@ -15,6 +15,12 @@ Object.defineProperty(exports, "configure", {
     return _configure.default;
   }
 });
+Object.defineProperty(exports, "EXPERIMENTAL_configureRelatedItems", {
+  enumerable: true,
+  get: function get() {
+    return _configureRelatedItems.default;
+  }
+});
 Object.defineProperty(exports, "currentRefinements", {
   enumerable: true,
   get: function get() {
@@ -165,10 +171,24 @@ Object.defineProperty(exports, "queryRuleContext", {
     return _queryRuleContext.default;
   }
 });
+Object.defineProperty(exports, "index", {
+  enumerable: true,
+  get: function get() {
+    return _index.default;
+  }
+});
+Object.defineProperty(exports, "places", {
+  enumerable: true,
+  get: function get() {
+    return _places.default;
+  }
+});
 
 var _clearRefinements = _interopRequireDefault(require("./clear-refinements/clear-refinements"));
 
 var _configure = _interopRequireDefault(require("./configure/configure"));
+
+var _configureRelatedItems = _interopRequireDefault(require("./configure-related-items/configure-related-items"));
 
 var _currentRefinements = _interopRequireDefault(require("./current-refinements/current-refinements"));
 
@@ -202,7 +222,7 @@ var _ratingMenu = _interopRequireDefault(require("./rating-menu/rating-menu"));
 
 var _stats = _interopRequireDefault(require("./stats/stats"));
 
-var _toggleRefinement = _interopRequireDefault(require("./toggleRefinement/toggleRefinement"));
+var _toggleRefinement = _interopRequireDefault(require("./toggle-refinement/toggle-refinement"));
 
 var _analytics = _interopRequireDefault(require("./analytics/analytics"));
 
@@ -219,5 +239,9 @@ var _voiceSearch = _interopRequireDefault(require("./voice-search/voice-search")
 var _queryRuleCustomData = _interopRequireDefault(require("./query-rule-custom-data/query-rule-custom-data"));
 
 var _queryRuleContext = _interopRequireDefault(require("./query-rule-context/query-rule-context"));
+
+var _index = _interopRequireDefault(require("./index/index"));
+
+var _places = _interopRequireDefault(require("./places/places"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }

@@ -4,12 +4,18 @@
 // was decided as too risky.
 // @MAJOR Replace with the native `Array.prototype.find` method
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/find
-function find(items, predicate, thisArg) {
-  if (!Array.prototype.find) {
-    return items.filter(predicate, thisArg)[0];
+function find(items, predicate) {
+  var value;
+
+  for (var i = 0; i < items.length; i++) {
+    value = items[i]; // inlined for performance: if (Call(predicate, thisArg, [value, i, list])) {
+
+    if (predicate(value, i, items)) {
+      return value;
+    }
   }
 
-  return items.find(predicate, thisArg);
+  return undefined;
 }
 
 export default find;

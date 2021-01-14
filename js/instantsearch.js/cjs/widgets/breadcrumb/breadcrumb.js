@@ -3,9 +3,9 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.default = breadcrumb;
+exports.default = void 0;
 
-var _preactCompat = _interopRequireWildcard(require("preact-compat"));
+var _preact = require("preact");
 
 var _classnames = _interopRequireDefault(require("classnames"));
 
@@ -21,8 +21,7 @@ var _suit = require("../../lib/suit");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = Object.defineProperty && Object.getOwnPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : {}; if (desc.get || desc.set) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } } newObj.default = obj; return newObj; } }
-
+/** @jsx h */
 var withUsage = (0, _utils.createDocumentationMessageGenerator)({
   name: 'breadcrumb'
 });
@@ -49,7 +48,7 @@ var renderer = function renderer(_ref) {
       return;
     }
 
-    (0, _preactCompat.render)(_preactCompat.default.createElement(_Breadcrumb.default, {
+    (0, _preact.render)((0, _preact.h)(_Breadcrumb.default, {
       canRefine: canRefine,
       cssClasses: cssClasses,
       createURL: createURL,
@@ -59,96 +58,13 @@ var renderer = function renderer(_ref) {
     }), containerNode);
   };
 };
-/**
- * @typedef {Object} BreadcrumbCSSClasses
- * @property {string|string[]} [root] CSS class to add to the root element of the widget.
- * @property {string|string[]} [noRefinementRoot] CSS class to add to the root element of the widget if there are no refinements.
- * @property {string|string[]} [list] CSS class to add to the list element.
- * @property {string|string[]} [item] CSS class to add to the items of the list. The items contains the link and the separator.
- * @property {string|string[]} [selectedItem] CSS class to add to the selected item in the list: the last one or the home if there are no refinements.
- * @property {string|string[]} [separator] CSS class to add to the separator.
- * @property {string|string[]} [link] CSS class to add to the links in the items.
- */
 
-/**
- * @typedef {Object} BreadcrumbTemplates
- * @property {string|function(object):string} [home = 'Home'] Label of the breadcrumb's first element.
- * @property {string|function(object):string} [separator = '>'] Symbol used to separate the elements of the breadcrumb.
- */
-
-/**
- * @typedef {Object} BreadcrumbWidgetOptions
- * @property {string|HTMLElement} container CSS Selector or HTMLElement to insert the widget.
- * @property {string[]} attributes Array of attributes to use to generate the breadcrumb.
- * @property {string} [separator = ' > '] The level separator used in the records.
- * @property {string} [rootPath = null] Prefix path to use if the first level is not the root level.
- * @property {BreadcrumbTemplates} [templates] Templates to use for the widget.
- * @property {function(object[]):object[]} [transformItems] Function to transform the items passed to the templates.
- * @property {BreadcrumbCSSClasses} [cssClasses] CSS classes to add to the wrapping elements.
- */
-
-/**
- * The breadcrumb widget is a secondary navigation scheme that allows the user to see where the current page is in relation to the facet's hierarchy.
- *
- * It reduces the number of actions a user needs to take in order to get to a higher-level page and improve the discoverability of the app or website's sections and pages.
- * It is commonly used for websites with a large amount of data organized into categories with subcategories.
- *
- * All attributes (lvl0, lvl1 in this case) must be declared as [attributes for faceting](https://www.algolia.com/doc/guides/searching/faceting/#declaring-attributes-for-faceting) in your
- * Algolia settings.
- *
- * @requirements
- * Your objects must be formatted in a specific way to be
- * able to display a breadcrumb. Here's an example:
- *
- * ```javascript
- * {
- *   "objectID": "123",
- *   "name": "orange",
- *   "categories": {
- *     "lvl0": "fruits",
- *     "lvl1": "fruits > citrus"
- *   }
- * }
- * ```
- *
- * Each level must be specified entirely.
- * It's also possible to have multiple values per level, for instance:
- *
- * ```javascript
- * {
- *   "objectID": "123",
- *   "name": "orange",
- *   "categories": {
- *     "lvl0": ["fruits", "vitamins"],
- *     "lvl1": ["fruits > citrus", "vitamins > C"]
- *   }
- * }
- * ```
- * @type {WidgetFactory}
- * @devNovel Breadcrumb
- * @category navigation
- * @param {BreadcrumbWidgetOptions} $0 The Breadcrumb widget options.
- * @return {Widget} A new Breadcrumb widget instance.
- * @example
- * search.addWidget(
- *   instantsearch.widgets.breadcrumb({
- *     container: '#breadcrumb',
- *     attributes: ['hierarchicalCategories.lvl0', 'hierarchicalCategories.lvl1', 'hierarchicalCategories.lvl2'],
- *     templates: { home: 'Home Page' },
- *     separator: ' / ',
- *     rootPath: 'Cameras & Camcorders > Digital Cameras',
- *   })
- * );
- */
-
-
-function breadcrumb() {
-  var _ref3 = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
+var breadcrumb = function breadcrumb(widgetOptions) {
+  var _ref3 = widgetOptions || {},
       container = _ref3.container,
       attributes = _ref3.attributes,
       separator = _ref3.separator,
-      _ref3$rootPath = _ref3.rootPath,
-      rootPath = _ref3$rootPath === void 0 ? null : _ref3$rootPath,
+      rootPath = _ref3.rootPath,
       transformItems = _ref3.transformItems,
       _ref3$templates = _ref3.templates,
       templates = _ref3$templates === void 0 ? _defaultTemplates.default : _ref3$templates,
@@ -189,7 +105,7 @@ function breadcrumb() {
     templates: templates
   });
   var makeBreadcrumb = (0, _connectBreadcrumb.default)(specializedRenderer, function () {
-    return (0, _preactCompat.unmountComponentAtNode)(containerNode);
+    return (0, _preact.render)(null, containerNode);
   });
   return makeBreadcrumb({
     attributes: attributes,
@@ -197,4 +113,7 @@ function breadcrumb() {
     rootPath: rootPath,
     transformItems: transformItems
   });
-}
+};
+
+var _default = breadcrumb;
+exports.default = _default;

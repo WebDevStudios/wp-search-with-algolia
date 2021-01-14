@@ -3,18 +3,13 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.enhanceConfiguration = enhanceConfiguration;
 exports.default = void 0;
 
 var _algoliasearchHelper = _interopRequireDefault(require("algoliasearch-helper"));
 
 var _events = _interopRequireDefault(require("events"));
 
-var _RoutingManager = _interopRequireDefault(require("./RoutingManager"));
-
-var _simple = _interopRequireDefault(require("./stateMappings/simple"));
-
-var _history = _interopRequireDefault(require("./routers/history"));
+var _index = _interopRequireWildcard(require("../widgets/index/index"));
 
 var _version = _interopRequireDefault(require("./version"));
 
@@ -22,19 +17,15 @@ var _createHelpers = _interopRequireDefault(require("./createHelpers"));
 
 var _utils = require("./utils");
 
+var _createRouterMiddleware = require("../middlewares/createRouterMiddleware");
+
+function _getRequireWildcardCache() { if (typeof WeakMap !== "function") return null; var cache = new WeakMap(); _getRequireWildcardCache = function _getRequireWildcardCache() { return cache; }; return cache; }
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } if (obj === null || _typeof(obj) !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function _objectWithoutProperties(source, excluded) { if (source == null) return {}; var target = _objectWithoutPropertiesLoose(source, excluded); var key, i; if (Object.getOwnPropertySymbols) { var sourceSymbolKeys = Object.getOwnPropertySymbols(source); for (i = 0; i < sourceSymbolKeys.length; i++) { key = sourceSymbolKeys[i]; if (excluded.indexOf(key) >= 0) continue; if (!Object.prototype.propertyIsEnumerable.call(source, key)) continue; target[key] = source[key]; } } return target; }
-
-function _objectWithoutPropertiesLoose(source, excluded) { if (source == null) return {}; var target = {}; var sourceKeys = Object.keys(source); var key, i; for (i = 0; i < sourceKeys.length; i++) { key = sourceKeys[i]; if (excluded.indexOf(key) >= 0) continue; target[key] = source[key]; } return target; }
-
 function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
-
-function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
-
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(source, true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -44,42 +35,33 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
 
 function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
 
-function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
-
 function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
 
 function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
 
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
 var withUsage = (0, _utils.createDocumentationMessageGenerator)({
   name: 'instantsearch'
 });
-var ROUTING_DEFAULT_OPTIONS = {
-  stateMapping: (0, _simple.default)(),
-  router: (0, _history.default)()
-};
 
 function defaultCreateURL() {
   return '#';
 }
 /**
- * Widgets are the building blocks of InstantSearch.js. Any
- * valid widget must have at least a `render` or a `init` function.
- * @typedef {Object} Widget
- * @property {function} [render] Called after each search response has been received
- * @property {function} [getConfiguration] Let the widget update the configuration
- * of the search with new parameters
- * @property {function} [init] Called once before the first search
+ * Global options for an InstantSearch instance.
  */
+
 
 /**
  * The actual implementation of the InstantSearch. This is
  * created using the `instantsearch` factory function.
- * @fires Instantsearch#render This event is triggered each time a render is done
+ * It emits the 'render' event every time a search is done
  */
-
-
 var InstantSearch =
 /*#__PURE__*/
 function (_EventEmitter) {
@@ -91,10 +73,80 @@ function (_EventEmitter) {
     _classCallCheck(this, InstantSearch);
 
     _this = _possibleConstructorReturn(this, _getPrototypeOf(InstantSearch).call(this));
+
+    _defineProperty(_assertThisInitialized(_this), "client", void 0);
+
+    _defineProperty(_assertThisInitialized(_this), "indexName", void 0);
+
+    _defineProperty(_assertThisInitialized(_this), "insightsClient", void 0);
+
+    _defineProperty(_assertThisInitialized(_this), "onStateChange", null);
+
+    _defineProperty(_assertThisInitialized(_this), "helper", void 0);
+
+    _defineProperty(_assertThisInitialized(_this), "mainHelper", void 0);
+
+    _defineProperty(_assertThisInitialized(_this), "mainIndex", void 0);
+
+    _defineProperty(_assertThisInitialized(_this), "started", void 0);
+
+    _defineProperty(_assertThisInitialized(_this), "templatesConfig", void 0);
+
+    _defineProperty(_assertThisInitialized(_this), "renderState", {});
+
+    _defineProperty(_assertThisInitialized(_this), "_stalledSearchDelay", void 0);
+
+    _defineProperty(_assertThisInitialized(_this), "_searchStalledTimer", void 0);
+
+    _defineProperty(_assertThisInitialized(_this), "_isSearchStalled", void 0);
+
+    _defineProperty(_assertThisInitialized(_this), "_initialUiState", void 0);
+
+    _defineProperty(_assertThisInitialized(_this), "_createURL", void 0);
+
+    _defineProperty(_assertThisInitialized(_this), "_searchFunction", void 0);
+
+    _defineProperty(_assertThisInitialized(_this), "_mainHelperSearch", void 0);
+
+    _defineProperty(_assertThisInitialized(_this), "middleware", []);
+
+    _defineProperty(_assertThisInitialized(_this), "sendEventToInsights", void 0);
+
+    _defineProperty(_assertThisInitialized(_this), "scheduleSearch", (0, _utils.defer)(function () {
+      if (_this.started) {
+        _this.mainHelper.search();
+      }
+    }));
+
+    _defineProperty(_assertThisInitialized(_this), "scheduleRender", (0, _utils.defer)(function () {
+      if (!_this.mainHelper.hasPendingRequests()) {
+        clearTimeout(_this._searchStalledTimer);
+        _this._searchStalledTimer = null;
+        _this._isSearchStalled = false;
+      }
+
+      _this.mainIndex.render({
+        instantSearchInstance: _assertThisInitialized(_this)
+      });
+
+      _this.emit('render');
+    }));
+
+    _defineProperty(_assertThisInitialized(_this), "onInternalStateChange", function () {
+      var nextUiState = _this.mainIndex.getWidgetUiState({});
+
+      _this.middleware.forEach(function (m) {
+        m.onStateChange({
+          uiState: nextUiState
+        });
+      });
+    });
+
     var _options$indexName = options.indexName,
         indexName = _options$indexName === void 0 ? null : _options$indexName,
         numberLocale = options.numberLocale,
-        searchParameters = options.searchParameters,
+        _options$initialUiSta = options.initialUiState,
+        initialUiState = _options$initialUiSta === void 0 ? {} : _options$initialUiSta,
         _options$routing = options.routing,
         routing = _options$routing === void 0 ? null : _options$routing,
         searchFunction = options.searchFunction,
@@ -103,7 +155,9 @@ function (_EventEmitter) {
         _options$searchClient = options.searchClient,
         searchClient = _options$searchClient === void 0 ? null : _options$searchClient,
         _options$insightsClie = options.insightsClient,
-        insightsClient = _options$insightsClie === void 0 ? null : _options$insightsClie;
+        insightsClient = _options$insightsClie === void 0 ? null : _options$insightsClie,
+        _options$onStateChang = options.onStateChange,
+        onStateChange = _options$onStateChang === void 0 ? null : _options$onStateChang;
 
     if (indexName === null) {
       throw new Error(withUsage('The `indexName` option is required.'));
@@ -111,10 +165,6 @@ function (_EventEmitter) {
 
     if (searchClient === null) {
       throw new Error(withUsage('The `searchClient` option is required.'));
-    }
-
-    if (typeof options.urlSync !== 'undefined') {
-      throw new Error(withUsage('The `urlSync` option was removed in InstantSearch.js 3. You may want to use the `routing` option.'));
     }
 
     if (typeof searchClient.search !== 'function') {
@@ -125,21 +175,25 @@ function (_EventEmitter) {
       searchClient.addAlgoliaAgent("instantsearch.js (".concat(_version.default, ")"));
     }
 
+    process.env.NODE_ENV === 'development' ? (0, _utils.warning)(insightsClient === null, "`insightsClient` property has been deprecated. It is still supported in 4.x releases, but not further. It is replaced by the `insights` middleware.\n\nFor more information, visit https://www.algolia.com/doc/guides/getting-insights-and-analytics/search-analytics/click-through-and-conversions/how-to/send-click-and-conversion-events-with-instantsearch/js/") : void 0;
+
     if (insightsClient && typeof insightsClient !== 'function') {
-      throw new Error('The provided `insightsClient` must be a function.');
+      throw new Error(withUsage('The `insightsClient` option should be a function.'));
     }
 
-    (0, _utils.warning)(!searchParameters, "The `searchParameters` option is deprecated and will not be supported in InstantSearch.js 4.x.\n\nYou can replace it with the `configure` widget:\n\n```\nsearch.addWidgets([\n  configure(".concat(JSON.stringify(searchParameters, null, 2), ")\n]);\n```\n\nSee ").concat((0, _utils.createDocumentationLink)({
+    process.env.NODE_ENV === 'development' ? (0, _utils.warning)(!options.searchParameters, "The `searchParameters` option is deprecated and will not be supported in InstantSearch.js 4.x.\n\nYou can replace it with the `configure` widget:\n\n```\nsearch.addWidgets([\n  configure(".concat(JSON.stringify(options.searchParameters, null, 2), ")\n]);\n```\n\nSee ").concat((0, _utils.createDocumentationLink)({
       name: 'configure'
-    })));
+    }))) : void 0;
     _this.client = searchClient;
     _this.insightsClient = insightsClient;
-    _this.helper = null;
     _this.indexName = indexName;
-    _this.searchParameters = _objectSpread({}, searchParameters, {
-      index: indexName
+    _this.helper = null;
+    _this.mainHelper = null;
+    _this.mainIndex = (0, _index.default)({
+      indexName: indexName
     });
-    _this.widgets = [];
+    _this.onStateChange = onStateChange;
+    _this.started = false;
     _this.templatesConfig = {
       helpers: (0, _createHelpers.default)({
         numberLocale: numberLocale
@@ -147,230 +201,224 @@ function (_EventEmitter) {
       compileOptions: {}
     };
     _this._stalledSearchDelay = stalledSearchDelay;
+    _this._searchStalledTimer = null;
+    _this._isSearchStalled = false;
+    _this._createURL = defaultCreateURL;
+    _this._initialUiState = initialUiState;
 
     if (searchFunction) {
       _this._searchFunction = searchFunction;
     }
 
-    if (routing === true) _this.routing = ROUTING_DEFAULT_OPTIONS;else if ((0, _utils.isPlainObject)(routing)) _this.routing = _objectSpread({}, ROUTING_DEFAULT_OPTIONS, {}, routing);
+    _this.sendEventToInsights = _utils.noop;
+
+    if (routing) {
+      var routerOptions = typeof routing === 'boolean' ? undefined : routing;
+
+      _this.use((0, _createRouterMiddleware.createRouterMiddleware)(routerOptions));
+    }
+
     return _this;
   }
   /**
-   * Adds a widget. This can be done before and after InstantSearch has been started. Adding a
-   * widget after InstantSearch started is considered **EXPERIMENTAL** and therefore
-   * it is possibly buggy, if you find anything please
-   * [open an issue](https://github.com/algolia/instantsearch.js/issues/new?title=Problem%20with%20hot%20addWidget).
-   * @param  {Widget} widget The widget to add to InstantSearch. Widgets are simple objects
-   * that have methods that map the search life cycle in a UI perspective. Usually widgets are
-   * created by [widget factories](widgets.html) like the one provided with InstantSearch.js.
-   * @return {undefined} This method does not return anything
+   * Hooks a middleware into the InstantSearch lifecycle.
+   *
+   * This method is considered as experimental and is subject to change in
+   * minor versions.
    */
 
 
   _createClass(InstantSearch, [{
-    key: "addWidget",
-    value: function addWidget(widget) {
-      this.addWidgets([widget]);
+    key: "use",
+    value: function use() {
+      var _this2 = this;
+
+      for (var _len = arguments.length, middleware = new Array(_len), _key = 0; _key < _len; _key++) {
+        middleware[_key] = arguments[_key];
+      }
+
+      var newMiddlewareList = middleware.map(function (fn) {
+        var newMiddleware = fn({
+          instantSearchInstance: _this2
+        });
+
+        _this2.middleware.push(newMiddleware);
+
+        return newMiddleware;
+      }); // If the instance has already started, we directly subscribe the
+      // middleware so they're notified of changes.
+
+      if (this.started) {
+        newMiddlewareList.forEach(function (m) {
+          m.subscribe();
+        });
+      }
+
+      return this;
+    } // @major we shipped with EXPERIMENTAL_use, but have changed that to just `use` now
+
+  }, {
+    key: "EXPERIMENTAL_use",
+    value: function EXPERIMENTAL_use() {
+      process.env.NODE_ENV === 'development' ? (0, _utils.warning)(false, 'The middleware API is now considered stable, so we recommend replacing `EXPERIMENTAL_use` with `use` before upgrading to the next major version.') : void 0;
+      return this.use.apply(this, arguments);
     }
     /**
-     * Adds multiple widgets. This can be done before and after the InstantSearch has been started. This feature
-     * is considered **EXPERIMENTAL** and therefore it is possibly buggy, if you find anything please
-     * [open an issue](https://github.com/algolia/instantsearch.js/issues/new?title=Problem%20with%20addWidgets).
-     * @param  {Widget[]} widgets The array of widgets to add to InstantSearch.
-     * @return {undefined} This method does not return anything
+     * Adds a widget to the search instance.
+     * A widget can be added either before or after InstantSearch has started.
+     * @param widget The widget to add to InstantSearch.
+     *
+     * @deprecated This method will still be supported in 4.x releases, but not further. It is replaced by `addWidgets([widget])`.
+     */
+
+  }, {
+    key: "addWidget",
+    value: function addWidget(widget) {
+      process.env.NODE_ENV === 'development' ? (0, _utils.warning)(false, 'addWidget will still be supported in 4.x releases, but not further. It is replaced by `addWidgets([widget])`') : void 0;
+      return this.addWidgets([widget]);
+    }
+    /**
+     * Adds multiple widgets to the search instance.
+     * Widgets can be added either before or after InstantSearch has started.
+     * @param widgets The array of widgets to add to InstantSearch.
      */
 
   }, {
     key: "addWidgets",
     value: function addWidgets(widgets) {
-      var _this2 = this;
-
       if (!Array.isArray(widgets)) {
         throw new Error(withUsage('The `addWidgets` method expects an array of widgets. Please use `addWidget`.'));
-      } // The routing manager widget is always added manually at the last position.
-      // By removing it from the last position and adding it back after, we ensure
-      // it keeps this position.
-      // fixes #3148
-
-
-      var lastWidget = this.widgets.pop();
-      widgets.forEach(function (widget) {
-        // Add the widget to the list of widget
-        if (widget.render === undefined && widget.init === undefined) {
-          throw new Error("The widget definition expects a `render` and/or an `init` method.\n\nSee: https://www.algolia.com/doc/guides/building-search-ui/widgets/create-your-own-widgets/js/");
-        }
-
-        _this2.widgets.push(widget);
-      }); // Second part of the fix for #3148
-
-      if (lastWidget) this.widgets.push(lastWidget); // Init the widget directly if instantsearch has been already started
-
-      if (this.started && Boolean(widgets.length)) {
-        this.searchParameters = this.widgets.reduce(enhanceConfiguration, _objectSpread({}, this.helper.state));
-        this.helper.setState(this.searchParameters);
-        widgets.forEach(function (widget) {
-          if (widget.init) {
-            widget.init({
-              state: _this2.helper.state,
-              helper: _this2.helper,
-              templatesConfig: _this2.templatesConfig,
-              createURL: _this2._createAbsoluteURL,
-              onHistoryChange: _this2._onHistoryChange,
-              instantSearchInstance: _this2
-            });
-          }
-        });
-        this.helper.search();
       }
+
+      if (widgets.some(function (widget) {
+        return typeof widget.init !== 'function' && typeof widget.render !== 'function';
+      })) {
+        throw new Error(withUsage('The widget definition expects a `render` and/or an `init` method.'));
+      }
+
+      this.mainIndex.addWidgets(widgets);
+      return this;
     }
     /**
-     * Removes a widget. This can be done after the InstantSearch has been started. This feature
-     * is considered **EXPERIMENTAL** and therefore it is possibly buggy, if you find anything please
-     * [open an issue](https://github.com/algolia/instantsearch.js/issues/new?title=Problem%20with%20removeWidget).
-     * @param  {Widget} widget The widget instance to remove from InstantSearch. This widget must implement a `dispose()` method in order to be gracefully removed.
-     * @return {undefined} This method does not return anything
+     * Removes a widget from the search instance.
+     * @deprecated This method will still be supported in 4.x releases, but not further. It is replaced by `removeWidgets([widget])`
+     * @param widget The widget instance to remove from InstantSearch.
+     *
+     * The widget must implement a `dispose()` method to clear its state.
      */
 
   }, {
     key: "removeWidget",
     value: function removeWidget(widget) {
-      this.removeWidgets([widget]);
+      process.env.NODE_ENV === 'development' ? (0, _utils.warning)(false, 'removeWidget will still be supported in 4.x releases, but not further. It is replaced by `removeWidgets([widget])`') : void 0;
+      return this.removeWidgets([widget]);
     }
     /**
-     * Removes multiple widgets. This can be done only after the InstantSearch has been started. This feature
-     * is considered **EXPERIMENTAL** and therefore it is possibly buggy, if you find anything please
-     * [open an issue](https://github.com/algolia/instantsearch.js/issues/new?title=Problem%20with%20addWidgets).
-     * @param  {Widget[]} widgets Array of widgets instances to remove from InstantSearch.
-     * @return {undefined} This method does not return anything
+     * Removes multiple widgets from the search instance.
+     * @param widgets Array of widgets instances to remove from InstantSearch.
+     *
+     * The widgets must implement a `dispose()` method to clear their states.
      */
 
   }, {
     key: "removeWidgets",
     value: function removeWidgets(widgets) {
-      var _this3 = this;
-
       if (!Array.isArray(widgets)) {
         throw new Error(withUsage('The `removeWidgets` method expects an array of widgets. Please use `removeWidget`.'));
       }
 
-      widgets.forEach(function (widget) {
-        if (!_this3.widgets.includes(widget) || typeof widget.dispose !== 'function') {
-          throw new Error("The `dispose` method is required to remove the widget.\n\nSee: https://www.algolia.com/doc/guides/building-search-ui/widgets/create-your-own-widgets/js/#the-widget-lifecycle-and-api");
-        }
-
-        _this3.widgets = _this3.widgets.filter(function (w) {
-          return w !== widget;
-        });
-        var nextState = widget.dispose({
-          helper: _this3.helper,
-          state: _this3.helper.state
-        }); // re-compute remaining widgets to the state
-        // in a case two widgets were using the same configuration but we removed one
-
-        if (nextState) {
-          _this3.searchParameters = _this3.widgets.reduce(enhanceConfiguration, _objectSpread({}, nextState));
-
-          _this3.helper.setState(_this3.searchParameters);
-        }
-      }); // If there's multiple call to `removeWidget()` let's wait until they are all made
-      // and then check for widgets.length & make a search on next tick
-      //
-      // This solves an issue where you unmount a page and removing widget by widget
-
-      setTimeout(function () {
-        // no need to trigger a search if we don't have any widgets left
-        if (_this3.widgets.length > 0) {
-          _this3.helper.search();
-        }
-      }, 0);
-    }
-    /**
-     * Clears the cached answers from Algolia and triggers a new search.
-     *
-     * @return {undefined} Does not return anything
-     */
-
-  }, {
-    key: "refresh",
-    value: function refresh() {
-      if (this.helper) {
-        this.helper.clearCache().search();
+      if (widgets.some(function (widget) {
+        return typeof widget.dispose !== 'function';
+      })) {
+        throw new Error(withUsage('The widget definition expects a `dispose` method.'));
       }
+
+      this.mainIndex.removeWidgets(widgets);
+      return this;
     }
     /**
      * Ends the initialization of InstantSearch.js and triggers the
      * first search. This method should be called after all widgets have been added
      * to the instance of InstantSearch.js. InstantSearch.js also supports adding and removing
      * widgets after the start as an **EXPERIMENTAL** feature.
-     *
-     * @return {undefined} Does not return anything
      */
 
   }, {
     key: "start",
     value: function start() {
-      var _this4 = this;
+      var _this3 = this;
 
       if (this.started) {
         throw new Error(withUsage('The `start` method has already been called once.'));
-      }
+      } // This Helper is used for the queries, we don't care about its state. The
+      // states are managed at the `index` level. We use this Helper to create
+      // DerivedHelper scoped into the `index` widgets.
 
-      if (this.routing) {
-        var routingManager = new _RoutingManager.default(_objectSpread({}, this.routing, {
-          instantSearchInstance: this
-        }));
-        this._onHistoryChange = routingManager.onHistoryChange.bind(routingManager);
-        this._createURL = routingManager.createURL.bind(routingManager);
-        this._createAbsoluteURL = this._createURL;
-        this.widgets.push(routingManager);
-      } else {
-        this._createURL = defaultCreateURL;
-        this._createAbsoluteURL = defaultCreateURL;
-        this._onHistoryChange = _utils.noop;
-      }
 
-      this.searchParameters = this.widgets.reduce(enhanceConfiguration, this.searchParameters);
-      var helper = (0, _algoliasearchHelper.default)(this.client, this.searchParameters.index || this.indexName, this.searchParameters);
+      var mainHelper = (0, _algoliasearchHelper.default)(this.client, this.indexName);
+
+      mainHelper.search = function () {
+        // This solution allows us to keep the exact same API for the users but
+        // under the hood, we have a different implementation. It should be
+        // completely transparent for the rest of the codebase. Only this module
+        // is impacted.
+        return mainHelper.searchOnlyWithDerivedHelpers();
+      };
 
       if (this._searchFunction) {
-        this._mainHelperSearch = helper.search.bind(helper);
+        // this client isn't used to actually search, but required for the helper
+        // to not throw errors
+        var fakeClient = {
+          search: function search() {
+            return new Promise(_utils.noop);
+          }
+        };
+        this._mainHelperSearch = mainHelper.search.bind(mainHelper);
 
-        helper.search = function () {
-          var helperSearchFunction = (0, _algoliasearchHelper.default)({
-            search: function search() {
-              return new Promise(_utils.noop);
-            }
-          }, helper.state.index, helper.state);
-          helperSearchFunction.once('search', function (state) {
-            helper.overrideStateWithoutTriggeringChangeEvent(state);
+        mainHelper.search = function () {
+          var mainIndexHelper = _this3.mainIndex.getHelper();
 
-            _this4._mainHelperSearch();
+          var searchFunctionHelper = (0, _algoliasearchHelper.default)(fakeClient, mainIndexHelper.state.index, mainIndexHelper.state);
+          searchFunctionHelper.once('search', function (_ref) {
+            var state = _ref.state;
+            mainIndexHelper.overrideStateWithoutTriggeringChangeEvent(state);
+
+            _this3._mainHelperSearch();
+          }); // Forward state changes from `searchFunctionHelper` to `mainIndexHelper`
+
+          searchFunctionHelper.on('change', function (_ref2) {
+            var state = _ref2.state;
+            mainIndexHelper.setState(state);
           });
 
-          _this4._searchFunction(helperSearchFunction);
+          _this3._searchFunction(searchFunctionHelper);
+
+          return mainHelper;
         };
-      }
+      } // Only the "main" Helper emits the `error` event vs the one for `search`
+      // and `results` that are also emitted on the derived one.
 
-      this.helper = helper;
 
-      this._init(helper.state, this.helper);
+      mainHelper.on('error', function (_ref3) {
+        var error = _ref3.error;
 
-      this.helper.on('result', this._render.bind(this, this.helper));
-      this.helper.on('error', function (e) {
-        _this4.emit('error', e);
+        _this3.emit('error', {
+          error: error
+        });
       });
-      this._searchStalledTimer = null;
-      this._isSearchStalled = true;
-      this.helper.search();
-      this.helper.on('search', function () {
-        if (!_this4._isSearchStalled && !_this4._searchStalledTimer) {
-          _this4._searchStalledTimer = setTimeout(function () {
-            _this4._isSearchStalled = true;
+      this.mainHelper = mainHelper;
+      this.mainIndex.init({
+        instantSearchInstance: this,
+        parent: null,
+        uiState: this._initialUiState
+      });
+      this.middleware.forEach(function (m) {
+        m.subscribe();
+      });
+      mainHelper.search(); // Keep the previous reference for legacy purpose, some pattern use
+      // the direct Helper access `search.helper` (e.g multi-index).
 
-            _this4._render(_this4.helper, _this4.helper.lastResults, _this4.helper.lastResults._state);
-          }, _this4._stalledSearchDelay);
-        }
-      }); // track we started the search if we add more widgets,
+      this.helper = this.mainIndex.getHelper(); // track we started the search if we add more widgets,
       // to init them directly after add
 
       this.started = true;
@@ -385,127 +433,92 @@ function (_EventEmitter) {
   }, {
     key: "dispose",
     value: function dispose() {
-      this.removeWidgets(this.widgets); // You can not start an instance two times, therefore a disposed instance needs to set started as false
-      // otherwise this can not be restarted at a later point.
+      this.scheduleSearch.cancel();
+      this.scheduleRender.cancel();
+      clearTimeout(this._searchStalledTimer);
+      this.removeWidgets(this.mainIndex.getWidgets());
+      this.mainIndex.dispose(); // You can not start an instance two times, therefore a disposed instance
+      // needs to set started as false otherwise this can not be restarted at a
+      // later point.
 
       this.started = false; // The helper needs to be reset to perform the next search from a fresh state.
       // If not reset, it would use the state stored before calling `dispose()`.
 
-      this.helper.removeAllListeners();
+      this.removeAllListeners();
+      this.mainHelper.removeAllListeners();
+      this.mainHelper = null;
       this.helper = null;
+      this.middleware.forEach(function (m) {
+        m.unsubscribe();
+      });
+    }
+  }, {
+    key: "scheduleStalledRender",
+    value: function scheduleStalledRender() {
+      var _this4 = this;
+
+      if (!this._searchStalledTimer) {
+        this._searchStalledTimer = setTimeout(function () {
+          _this4._isSearchStalled = true;
+
+          _this4.scheduleRender();
+        }, this._stalledSearchDelay);
+      }
+    }
+  }, {
+    key: "setUiState",
+    value: function setUiState(uiState) {
+      if (!this.mainHelper) {
+        throw new Error(withUsage('The `start` method needs to be called before `setUiState`.'));
+      } // We refresh the index UI state to update the local UI state that the
+      // main index passes to the function form of `setUiState`.
+
+
+      this.mainIndex.refreshUiState();
+      var nextUiState = typeof uiState === 'function' ? uiState(this.mainIndex.getWidgetUiState({})) : uiState;
+
+      var setIndexHelperState = function setIndexHelperState(indexWidget) {
+        if (process.env.NODE_ENV === 'development') {
+          (0, _utils.checkIndexUiState)({
+            index: indexWidget,
+            indexUiState: nextUiState[indexWidget.getIndexId()]
+          });
+        }
+
+        indexWidget.getHelper().overrideStateWithoutTriggeringChangeEvent(indexWidget.getWidgetSearchParameters(indexWidget.getHelper().state, {
+          uiState: nextUiState[indexWidget.getIndexId()]
+        }));
+        indexWidget.getWidgets().filter(_index.isIndexWidget).forEach(setIndexHelperState);
+      };
+
+      setIndexHelperState(this.mainIndex);
+      this.scheduleSearch();
+      this.onInternalStateChange();
     }
   }, {
     key: "createURL",
-    value: function createURL(params) {
-      if (!this._createURL) {
-        throw new Error('The `start` method needs to be called before `createURL`.');
+    value: function createURL() {
+      var nextState = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+
+      if (!this.started) {
+        throw new Error(withUsage('The `start` method needs to be called before `createURL`.'));
       }
 
-      return this._createURL(this.helper.state.setQueryParameters(params));
+      return this._createURL(nextState);
     }
   }, {
-    key: "_render",
-    value: function _render(helper, results, state) {
-      var _this5 = this;
-
-      if (!this.helper.hasPendingRequests()) {
-        clearTimeout(this._searchStalledTimer);
-        this._searchStalledTimer = null;
-        this._isSearchStalled = false;
+    key: "refresh",
+    value: function refresh() {
+      if (!this.mainHelper) {
+        throw new Error(withUsage('The `start` method needs to be called before `refresh`.'));
       }
 
-      this.widgets.forEach(function (widget) {
-        if (!widget.render) {
-          return;
-        }
-
-        widget.render({
-          templatesConfig: _this5.templatesConfig,
-          results: results,
-          state: state,
-          helper: helper,
-          createURL: _this5._createAbsoluteURL,
-          instantSearchInstance: _this5,
-          searchMetadata: {
-            isSearchStalled: _this5._isSearchStalled
-          }
-        });
-      });
-      /**
-       * Render is triggered when the rendering of the widgets has been completed
-       * after a search.
-       * @event InstantSearch#render
-       */
-
-      this.emit('render');
-    }
-  }, {
-    key: "_init",
-    value: function _init(state, helper) {
-      var _this6 = this;
-
-      this.widgets.forEach(function (widget) {
-        if (widget.init) {
-          widget.init({
-            state: state,
-            helper: helper,
-            templatesConfig: _this6.templatesConfig,
-            createURL: _this6._createAbsoluteURL,
-            onHistoryChange: _this6._onHistoryChange,
-            instantSearchInstance: _this6
-          });
-        }
-      });
+      this.mainHelper.clearCache().search();
     }
   }]);
 
   return InstantSearch;
 }(_events.default);
-
-function enhanceConfiguration(configuration, widgetDefinition) {
-  if (!widgetDefinition.getConfiguration) {
-    return configuration;
-  } // Get the relevant partial configuration asked by the widget
-
-
-  var partialConfiguration = widgetDefinition.getConfiguration(configuration);
-
-  if (!partialConfiguration) {
-    return configuration;
-  }
-
-  if (!partialConfiguration.hierarchicalFacets) {
-    return (0, _utils.mergeDeep)(configuration, partialConfiguration);
-  }
-
-  var hierarchicalFacets = partialConfiguration.hierarchicalFacets,
-      partialWithoutHierarchcialFacets = _objectWithoutProperties(partialConfiguration, ["hierarchicalFacets"]); // The `mergeDeep` function uses a `uniq` function under the hood, but the
-  // implementation does not support arrays of objects (we also had the issue
-  // with the Lodash version). The `hierarchicalFacets` attribute is an array
-  // of objects, which means that this attribute is never deduplicated. It
-  // becomes problematic when widgets are frequently added/removed, since the
-  // function `enhanceConfiguration` is called at each operation.
-  // https://github.com/algolia/instantsearch.js/issues/3278
-
-
-  var configurationWithHierarchicalFacets = _objectSpread({}, configuration, {
-    hierarchicalFacets: hierarchicalFacets.reduce(function (facets, facet) {
-      var index = (0, _utils.findIndex)(facets, function (_) {
-        return _.name === facet.name;
-      });
-
-      if (index === -1) {
-        return facets.concat(facet);
-      }
-
-      var nextFacets = facets.slice();
-      nextFacets.splice(index, 1, facet);
-      return nextFacets;
-    }, configuration.hierarchicalFacets || [])
-  });
-
-  return (0, _utils.mergeDeep)(configurationWithHierarchicalFacets, partialWithoutHierarchcialFacets);
-}
 
 var _default = InstantSearch;
 exports.default = _default;

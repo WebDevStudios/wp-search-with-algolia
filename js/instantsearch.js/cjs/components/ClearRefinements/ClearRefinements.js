@@ -5,9 +5,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = void 0;
 
-var _preactCompat = _interopRequireDefault(require("preact-compat"));
-
-var _propTypes = _interopRequireDefault(require("prop-types"));
+var _preact = require("preact");
 
 var _classnames = _interopRequireDefault(require("classnames"));
 
@@ -24,9 +22,9 @@ var ClearRefinements = function ClearRefinements(_ref) {
       refine = _ref.refine,
       cssClasses = _ref.cssClasses,
       templateProps = _ref.templateProps;
-  return _preactCompat.default.createElement("div", {
+  return (0, _preact.h)("div", {
     className: cssClasses.root
-  }, _preactCompat.default.createElement(_Template.default, _extends({}, templateProps, {
+  }, (0, _preact.h)(_Template.default, _extends({}, templateProps, {
     templateKey: "resetLabel",
     rootTagName: "button",
     rootProps: {

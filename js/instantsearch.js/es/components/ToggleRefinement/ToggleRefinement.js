@@ -1,7 +1,7 @@
 function _extends() { _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; return _extends.apply(this, arguments); }
 
-import React from 'preact-compat';
-import PropTypes from 'prop-types';
+/** @jsx h */
+import { h } from 'preact';
 import Template from '../Template/Template';
 
 var ToggleRefinement = function ToggleRefinement(_ref) {
@@ -9,18 +9,18 @@ var ToggleRefinement = function ToggleRefinement(_ref) {
       refine = _ref.refine,
       cssClasses = _ref.cssClasses,
       templateProps = _ref.templateProps;
-  return React.createElement("div", {
+  return h("div", {
     className: cssClasses.root
-  }, React.createElement("label", {
+  }, h("label", {
     className: cssClasses.label
-  }, React.createElement("input", {
+  }, h("input", {
     className: cssClasses.checkbox,
     type: "checkbox",
     checked: currentRefinement.isRefined,
     onChange: function onChange(event) {
       return refine(!event.target.checked);
     }
-  }), React.createElement(Template, _extends({}, templateProps, {
+  }), h(Template, _extends({}, templateProps, {
     rootTagName: "span",
     rootProps: {
       className: cssClasses.labelText

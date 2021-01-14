@@ -1,14 +1,64 @@
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(source, true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
-import { checkRendering, createDocumentationMessageGenerator, noop } from '../../lib/utils';
+function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _nonIterableSpread(); }
+
+function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance"); }
+
+function _iterableToArray(iter) { if (Symbol.iterator in Object(iter) || Object.prototype.toString.call(iter) === "[object Arguments]") return Array.from(iter); }
+
+function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } }
+
+import { checkRendering, createDocumentationMessageGenerator, range, noop } from '../../lib/utils';
 var withUsage = createDocumentationMessageGenerator({
   name: 'rating-menu',
   connector: true
 });
+var $$type = 'ais.ratingMenu';
+
+var createSendEvent = function createSendEvent(_ref) {
+  var instantSearchInstance = _ref.instantSearchInstance,
+      helper = _ref.helper,
+      getRefinedStar = _ref.getRefinedStar,
+      attribute = _ref.attribute;
+  return function () {
+    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
+
+    if (args.length === 1) {
+      instantSearchInstance.sendEventToInsights(args[0]);
+      return;
+    }
+
+    var eventType = args[0],
+        facetValue = args[1],
+        _args$ = args[2],
+        eventName = _args$ === void 0 ? 'Filter Applied' : _args$;
+
+    if (eventType !== 'click') {
+      return;
+    }
+
+    var isRefined = getRefinedStar() === Number(facetValue);
+
+    if (!isRefined) {
+      instantSearchInstance.sendEventToInsights({
+        insightsMethod: 'clickedFilters',
+        widgetType: $$type,
+        eventType: eventType,
+        payload: {
+          eventName: eventName,
+          index: helper.getIndex(),
+          filters: ["".concat(attribute, ">=").concat(facetValue)]
+        }
+      });
+    }
+  };
+};
 /**
  * @typedef {Object} StarRatingItems
  * @property {string} name Name corresponding to the number of stars.
@@ -85,16 +135,19 @@ var withUsage = createDocumentationMessageGenerator({
  * var customStarRating = instantsearch.connectors.connectRatingMenu(renderFn);
  *
  * // mount widget on the page
- * search.addWidget(
+ * search.addWidgets([
  *   customStarRating({
  *     containerNode: $('#custom-rating-menu-container'),
  *     attribute: 'rating',
  *     max: 5,
  *   })
- * );
+ * ]);
  */
 
+
 export default function connectRatingMenu(renderFn) {
+  var _this = this;
+
   var unmountFn = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : noop;
   checkRendering(renderFn, withUsage());
   return function () {
@@ -102,151 +155,180 @@ export default function connectRatingMenu(renderFn) {
     var attribute = widgetParams.attribute,
         _widgetParams$max = widgetParams.max,
         max = _widgetParams$max === void 0 ? 5 : _widgetParams$max;
+    var sendEvent;
 
     if (!attribute) {
       throw new Error(withUsage('The `attribute` option is required.'));
     }
 
-    return {
-      getConfiguration: function getConfiguration() {
-        return {
-          disjunctiveFacets: [attribute]
-        };
-      },
-      init: function init(_ref) {
-        var helper = _ref.helper,
-            createURL = _ref.createURL,
-            instantSearchInstance = _ref.instantSearchInstance;
-        this._toggleRefinement = this._toggleRefinement.bind(this, helper);
+    var _getRefinedStar = function getRefinedStar(state) {
+      var refinements = state.getDisjunctiveRefinements(attribute);
 
-        this._createURL = function (state) {
-          return function (facetValue) {
-            return createURL(state.toggleRefinement(attribute, facetValue));
-          };
-        };
+      if (!refinements.length) {
+        return undefined;
+      }
 
-        renderFn({
-          instantSearchInstance: instantSearchInstance,
-          items: [],
-          hasNoResults: true,
-          refine: this._toggleRefinement,
-          createURL: this._createURL(helper.state),
-          widgetParams: widgetParams
-        }, true);
-      },
-      render: function render(_ref2) {
-        var helper = _ref2.helper,
-            results = _ref2.results,
-            state = _ref2.state,
-            instantSearchInstance = _ref2.instantSearchInstance;
-        var facetValues = [];
-        var allValues = {};
+      return Math.min.apply(Math, _toConsumableArray(refinements.map(Number)));
+    };
 
-        for (var v = max; v >= 0; --v) {
-          allValues[v] = 0;
+    var toggleRefinement = function toggleRefinement(helper, facetValue) {
+      sendEvent('click', facetValue);
+      var isRefined = _getRefinedStar(helper.state) === Number(facetValue);
+      helper.removeDisjunctiveFacetRefinement(attribute);
+
+      if (!isRefined) {
+        for (var val = Number(facetValue); val <= max; ++val) {
+          helper.addDisjunctiveFacetRefinement(attribute, val);
         }
+      }
 
-        results.getFacetValues(attribute).forEach(function (facet) {
-          var val = Math.round(facet.name);
+      helper.search();
+    };
 
-          if (!val || val > max) {
-            return;
-          }
-
-          for (var _v = val; _v >= 1; --_v) {
-            allValues[_v] += facet.count;
-          }
+    var connectorState = {
+      toggleRefinementFactory: function toggleRefinementFactory(helper) {
+        return toggleRefinement.bind(_this, helper);
+      },
+      createURLFactory: function createURLFactory(_ref2) {
+        var state = _ref2.state,
+            createURL = _ref2.createURL;
+        return function (value) {
+          return createURL(state.toggleRefinement(attribute, value));
+        };
+      }
+    };
+    return {
+      $$type: $$type,
+      init: function init(initOptions) {
+        var instantSearchInstance = initOptions.instantSearchInstance;
+        renderFn(_objectSpread({}, this.getWidgetRenderState(initOptions), {
+          instantSearchInstance: instantSearchInstance
+        }), true);
+      },
+      render: function render(renderOptions) {
+        var instantSearchInstance = renderOptions.instantSearchInstance;
+        renderFn(_objectSpread({}, this.getWidgetRenderState(renderOptions), {
+          instantSearchInstance: instantSearchInstance
+        }), false);
+      },
+      getRenderState: function getRenderState(renderState, renderOptions) {
+        return _objectSpread({}, renderState, {
+          ratingMenu: _objectSpread({}, renderState.ratingMenu, _defineProperty({}, attribute, this.getWidgetRenderState(renderOptions)))
         });
+      },
+      getWidgetRenderState: function getWidgetRenderState(_ref3) {
+        var helper = _ref3.helper,
+            results = _ref3.results,
+            state = _ref3.state,
+            instantSearchInstance = _ref3.instantSearchInstance,
+            createURL = _ref3.createURL;
+        var facetValues = [];
 
-        var refinedStar = this._getRefinedStar(helper.state);
-
-        for (var star = max - 1; star >= 1; --star) {
-          var count = allValues[star];
-
-          if (refinedStar && star !== refinedStar && count === 0) {
-            // skip count==0 when at least 1 refinement is enabled
-            // eslint-disable-next-line no-continue
-            continue;
-          }
-
-          var stars = [];
-
-          for (var i = 1; i <= max; ++i) {
-            stars.push(i <= star);
-          }
-
-          facetValues.push({
-            stars: stars,
-            name: String(star),
-            value: String(star),
-            count: count,
-            isRefined: refinedStar === star
+        if (!sendEvent) {
+          sendEvent = createSendEvent({
+            instantSearchInstance: instantSearchInstance,
+            helper: helper,
+            getRefinedStar: function getRefinedStar() {
+              return _getRefinedStar(helper.state);
+            },
+            attribute: attribute
           });
         }
 
-        renderFn({
-          instantSearchInstance: instantSearchInstance,
+        if (results) {
+          var allValues = {};
+
+          for (var v = max; v >= 0; --v) {
+            allValues[v] = 0;
+          }
+
+          (results.getFacetValues(attribute) || []).forEach(function (facet) {
+            var val = Math.round(facet.name);
+
+            if (!val || val > max) {
+              return;
+            }
+
+            for (var _v = val; _v >= 1; --_v) {
+              allValues[_v] += facet.count;
+            }
+          });
+
+          var refinedStar = _getRefinedStar(state);
+
+          for (var star = max - 1; star >= 1; --star) {
+            var count = allValues[star];
+
+            if (refinedStar && star !== refinedStar && count === 0) {
+              // skip count==0 when at least 1 refinement is enabled
+              // eslint-disable-next-line no-continue
+              continue;
+            }
+
+            var stars = [];
+
+            for (var i = 1; i <= max; ++i) {
+              stars.push(i <= star);
+            }
+
+            facetValues.push({
+              stars: stars,
+              name: String(star),
+              value: String(star),
+              count: count,
+              isRefined: refinedStar === star
+            });
+          }
+        }
+
+        return {
           items: facetValues,
-          hasNoResults: results.nbHits === 0,
-          refine: this._toggleRefinement,
-          createURL: this._createURL(state),
+          hasNoResults: results ? results.nbHits === 0 : true,
+          refine: connectorState.toggleRefinementFactory(helper),
+          sendEvent: sendEvent,
+          createURL: connectorState.createURLFactory({
+            state: state,
+            createURL: createURL
+          }),
           widgetParams: widgetParams
-        }, false);
+        };
       },
-      dispose: function dispose(_ref3) {
-        var state = _ref3.state;
+      dispose: function dispose(_ref4) {
+        var state = _ref4.state;
         unmountFn();
-        var nextState = state.removeDisjunctiveFacetRefinement(attribute).removeDisjunctiveFacet(attribute);
-        return nextState;
+        return state.removeDisjunctiveFacet(attribute);
       },
-      getWidgetState: function getWidgetState(uiState, _ref4) {
-        var searchParameters = _ref4.searchParameters;
+      getWidgetUiState: function getWidgetUiState(uiState, _ref5) {
+        var searchParameters = _ref5.searchParameters;
 
-        var refinedStar = this._getRefinedStar(searchParameters);
+        var value = _getRefinedStar(searchParameters);
 
-        if (refinedStar === undefined || uiState && uiState.ratingMenu && uiState.ratingMenu[attribute] === refinedStar) return uiState;
+        if (typeof value !== 'number') {
+          return uiState;
+        }
+
         return _objectSpread({}, uiState, {
-          ratingMenu: _objectSpread({}, uiState.ratingMenu, _defineProperty({}, attribute, refinedStar))
+          ratingMenu: _objectSpread({}, uiState.ratingMenu, _defineProperty({}, attribute, value))
         });
       },
-      getWidgetSearchParameters: function getWidgetSearchParameters(searchParameters, _ref5) {
-        var uiState = _ref5.uiState;
-        var starRatingFromURL = uiState.ratingMenu && uiState.ratingMenu[attribute];
+      getWidgetSearchParameters: function getWidgetSearchParameters(searchParameters, _ref6) {
+        var uiState = _ref6.uiState;
+        var value = uiState.ratingMenu && uiState.ratingMenu[attribute];
+        var withoutRefinements = searchParameters.clearRefinements(attribute);
+        var withDisjunctiveFacet = withoutRefinements.addDisjunctiveFacet(attribute);
 
-        var refinedStar = this._getRefinedStar(searchParameters);
-
-        if (starRatingFromURL === refinedStar) return searchParameters;
-        var clearedSearchParam = searchParameters.clearRefinements(attribute);
-
-        if (starRatingFromURL !== undefined) {
-          for (var val = Number(starRatingFromURL); val <= max; ++val) {
-            clearedSearchParam = clearedSearchParam.addDisjunctiveFacetRefinement(attribute, val);
-          }
+        if (!value) {
+          return withDisjunctiveFacet.setQueryParameters({
+            disjunctiveFacetsRefinements: _objectSpread({}, withDisjunctiveFacet.disjunctiveFacetsRefinements, _defineProperty({}, attribute, []))
+          });
         }
 
-        return clearedSearchParam;
-      },
-      _toggleRefinement: function _toggleRefinement(helper, facetValue) {
-        var isRefined = this._getRefinedStar(helper.state) === Number(facetValue);
-        helper.clearRefinements(attribute);
-
-        if (!isRefined) {
-          for (var val = Number(facetValue); val <= max; ++val) {
-            helper.addDisjunctiveFacetRefinement(attribute, val);
-          }
-        }
-
-        helper.search();
-      },
-      _getRefinedStar: function _getRefinedStar(searchParameters) {
-        var refinedStar = undefined;
-        var refinements = searchParameters.getDisjunctiveRefinements(attribute);
-        refinements.forEach(function (r) {
-          if (!refinedStar || Number(r) < refinedStar) {
-            refinedStar = Number(r);
-          }
-        });
-        return refinedStar;
+        return range({
+          start: Number(value),
+          end: max + 1
+        }).reduce(function (parameters, number) {
+          return parameters.addDisjunctiveFacetRefinement(attribute, number);
+        }, withDisjunctiveFacet);
       }
     };
   };

@@ -1,11 +1,21 @@
 import noop from './noop';
-var deprecate = noop;
+
+/**
+ * Logs a warning when this function is called, in development environment only.
+ */
+var deprecate = function deprecate(fn) {
+  return fn;
+};
+/**
+ * Logs a warning
+ * This is used to log issues in development environment only.
+ */
+
+
 var warn = noop;
 /**
  * Logs a warning if the condition is not met.
  * This is used to log issues in development environment only.
- *
- * @returns {undefined}
  */
 
 var _warning = noop;

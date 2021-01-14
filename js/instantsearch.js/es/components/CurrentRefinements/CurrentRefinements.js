@@ -1,5 +1,5 @@
-import React from 'preact-compat';
-import PropTypes from 'prop-types';
+/** @jsx h */
+import { h } from 'preact';
 import { isSpecialClick, capitalize } from '../../lib/utils';
 
 var createItemKey = function createItemKey(_ref) {
@@ -26,23 +26,23 @@ var handleClick = function handleClick(callback) {
 var CurrentRefinements = function CurrentRefinements(_ref2) {
   var items = _ref2.items,
       cssClasses = _ref2.cssClasses;
-  return React.createElement("div", {
+  return h("div", {
     className: cssClasses.root
-  }, React.createElement("ul", {
+  }, h("ul", {
     className: cssClasses.list
   }, items.map(function (item, index) {
-    return React.createElement("li", {
-      key: "".concat(item.attribute, "-").concat(index),
+    return h("li", {
+      key: "".concat(item.indexName, "-").concat(item.attribute, "-").concat(index),
       className: cssClasses.item
-    }, React.createElement("span", {
+    }, h("span", {
       className: cssClasses.label
     }, capitalize(item.label), ":"), item.refinements.map(function (refinement) {
-      return React.createElement("span", {
+      return h("span", {
         key: createItemKey(refinement),
         className: cssClasses.category
-      }, React.createElement("span", {
+      }, h("span", {
         className: cssClasses.categoryLabel
-      }, refinement.attribute === 'query' ? React.createElement("q", null, refinement.label) : refinement.label), React.createElement("button", {
+      }, refinement.attribute === 'query' ? h("q", null, refinement.label) : refinement.label), h("button", {
         className: cssClasses.delete,
         onClick: handleClick(item.refine.bind(null, refinement))
       }, "\u2715"));

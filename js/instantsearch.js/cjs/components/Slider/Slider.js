@@ -5,11 +5,9 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = void 0;
 
-var _preactCompat = _interopRequireWildcard(require("preact-compat"));
+var _preact = require("preact");
 
-var _preactRheostat = _interopRequireDefault(require("preact-rheostat"));
-
-var _propTypes = _interopRequireDefault(require("prop-types"));
+var _Rheostat = _interopRequireDefault(require("./Rheostat"));
 
 var _classnames = _interopRequireDefault(require("classnames"));
 
@@ -18,8 +16,6 @@ var _utils = require("../../lib/utils");
 var _Pit = _interopRequireDefault(require("./Pit"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = Object.defineProperty && Object.getOwnPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : {}; if (desc.get || desc.set) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } } newObj.default = obj; return newObj; } }
 
 function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
@@ -87,9 +83,9 @@ function (_Component) {
           'rheostat-handle-lower': props['data-handle-key'] === 0,
           'rheostat-handle-upper': props['data-handle-key'] === 1
         });
-        return _preactCompat.default.createElement("div", _extends({}, props, {
+        return (0, _preact.h)("div", _extends({}, props, {
           className: className
-        }), tooltips && _preactCompat.default.createElement("div", {
+        }), tooltips && (0, _preact.h)("div", {
           className: "rheostat-tooltip"
         }, value));
       };
@@ -154,9 +150,9 @@ function (_Component) {
         min: min,
         max: max
       });
-      return _preactCompat.default.createElement("div", {
+      return (0, _preact.h)("div", {
         className: (0, _classnames.default)(cssClasses.root, _defineProperty({}, cssClasses.disabledRoot, this.isDisabled))
-      }, _preactCompat.default.createElement(_preactRheostat.default, {
+      }, (0, _preact.h)(_Rheostat.default, {
         handle: this.createHandleComponent(tooltips),
         onChange: this.handleChange,
         min: min,
@@ -177,7 +173,7 @@ function (_Component) {
   }]);
 
   return Slider;
-}(_preactCompat.Component);
+}(_preact.Component);
 
 var _default = Slider;
 exports.default = _default;

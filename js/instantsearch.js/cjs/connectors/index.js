@@ -135,6 +135,12 @@ Object.defineProperty(exports, "connectConfigure", {
     return _connectConfigure.default;
   }
 });
+Object.defineProperty(exports, "EXPERIMENTAL_connectConfigureRelatedItems", {
+  enumerable: true,
+  get: function get() {
+    return _connectConfigureRelatedItems.default;
+  }
+});
 Object.defineProperty(exports, "connectAutocomplete", {
   enumerable: true,
   get: function get() {
@@ -188,7 +194,7 @@ var _connectRatingMenu = _interopRequireDefault(require("./rating-menu/connectRa
 
 var _connectStats = _interopRequireDefault(require("./stats/connectStats"));
 
-var _connectToggleRefinement = _interopRequireDefault(require("./toggleRefinement/connectToggleRefinement"));
+var _connectToggleRefinement = _interopRequireDefault(require("./toggle-refinement/connectToggleRefinement"));
 
 var _connectBreadcrumb = _interopRequireDefault(require("./breadcrumb/connectBreadcrumb"));
 
@@ -197,6 +203,8 @@ var _connectGeoSearch = _interopRequireDefault(require("./geo-search/connectGeoS
 var _connectPoweredBy = _interopRequireDefault(require("./powered-by/connectPoweredBy"));
 
 var _connectConfigure = _interopRequireDefault(require("./configure/connectConfigure"));
+
+var _connectConfigureRelatedItems = _interopRequireDefault(require("./configure-related-items/connectConfigureRelatedItems"));
 
 var _connectAutocomplete = _interopRequireDefault(require("./autocomplete/connectAutocomplete"));
 

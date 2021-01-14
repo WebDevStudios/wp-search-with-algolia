@@ -1,7 +1,7 @@
 function _extends() { _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; return _extends.apply(this, arguments); }
 
-import React from 'preact-compat';
-import PropTypes from 'prop-types';
+/** @jsx h */
+import { h } from 'preact';
 import Template from '../Template/Template';
 
 var Stats = function Stats(_ref) {
@@ -13,9 +13,9 @@ var Stats = function Stats(_ref) {
       query = _ref.query,
       templateProps = _ref.templateProps,
       cssClasses = _ref.cssClasses;
-  return React.createElement("div", {
+  return h("div", {
     className: cssClasses.root
-  }, React.createElement(Template, _extends({}, templateProps, {
+  }, h(Template, _extends({}, templateProps, {
     templateKey: "text",
     rootTagName: "span",
     rootProps: {

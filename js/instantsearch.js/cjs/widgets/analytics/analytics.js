@@ -9,7 +9,7 @@ var _utils = require("../../lib/utils");
 
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(source, true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
@@ -17,8 +17,9 @@ var withUsage = (0, _utils.createDocumentationMessageGenerator)({
   name: 'analytics'
 });
 
-function analytics() {
-  var _ref = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
+// @major this widget will be removed from the next major version.
+var analytics = function analytics(widgetParams) {
+  var _ref = widgetParams || {},
       pushFunction = _ref.pushFunction,
       _ref$delay = _ref.delay,
       delay = _ref$delay === void 0 ? 3000 : _ref$delay,
@@ -33,6 +34,7 @@ function analytics() {
     throw new Error(withUsage('The `pushFunction` option is required.'));
   }
 
+  process.env.NODE_ENV === 'development' ? (0, _utils.warning)(false, "`analytics` widget has been deprecated. It is still supported in 4.x releases, but not further. It is replaced by the `insights` middleware.\n\nFor the migration, visit https://www.algolia.com/doc/guides/building-search-ui/upgrade-guides/js/#analytics-widget") : void 0;
   var cachedState = null;
 
   var serializeRefinements = function serializeRefinements(parameters) {
@@ -103,10 +105,10 @@ function analytics() {
     }
 
     var stringifiedParams = serializedParams.join('&');
-    var dataToSend = "Query: ".concat(analyticsState.state.query, ", ").concat(stringifiedParams);
+    var dataToSend = "Query: ".concat(analyticsState.state.query || '', ", ").concat(stringifiedParams);
 
     if (pushPagination === true) {
-      dataToSend += ", Page: ".concat(analyticsState.state.page);
+      dataToSend += ", Page: ".concat(analyticsState.state.page || 0);
     }
 
     if (lastSentData !== dataToSend) {
@@ -164,9 +166,19 @@ function analytics() {
         document.removeEventListener('click', onClick);
         window.removeEventListener('beforeunload', onUnload);
       }
+    },
+    getRenderState: function getRenderState(renderState, renderOptions) {
+      return _objectSpread({}, renderState, {
+        analytics: this.getWidgetRenderState(renderOptions)
+      });
+    },
+    getWidgetRenderState: function getWidgetRenderState() {
+      return {
+        widgetParams: widgetParams
+      };
     }
   };
-}
+};
 
 var _default = analytics;
 exports.default = _default;

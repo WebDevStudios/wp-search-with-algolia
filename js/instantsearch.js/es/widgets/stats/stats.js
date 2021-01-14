@@ -1,4 +1,5 @@
-import React, { render, unmountComponentAtNode } from 'preact-compat';
+/** @jsx h */
+import { h, render } from 'preact';
 import cx from 'classnames';
 import Stats from '../../components/Stats/Stats';
 import connectStats from '../../connectors/stats/connectStats';
@@ -33,7 +34,7 @@ var renderer = function renderer(_ref) {
       return;
     }
 
-    render(React.createElement(Stats, {
+    render(h(Stats, {
       cssClasses: cssClasses,
       hitsPerPage: hitsPerPage,
       nbHits: nbHits,
@@ -88,11 +89,11 @@ var renderer = function renderer(_ref) {
  * @param {StatsWidgetOptions} $0 Stats widget options. Some keys are mandatory: `container`,
  * @return {Widget} A new stats widget instance
  * @example
- * search.addWidget(
+ * search.addWidgets([
  *   instantsearch.widgets.stats({
  *     container: '#stats-container'
  *   })
- * );
+ * ]);
  */
 
 
@@ -122,7 +123,7 @@ export default function stats() {
     templates: templates
   });
   var makeWidget = connectStats(specializedRenderer, function () {
-    return unmountComponentAtNode(containerNode);
+    return render(null, containerNode);
   });
   return makeWidget();
 }

@@ -18,8 +18,8 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
 
-import React, { Component } from 'preact-compat';
-import PropTypes from 'prop-types';
+/** @jsx h */
+import { h, Component } from 'preact';
 import { renderTemplate, isEqual } from '../../lib/utils';
 
 var Template =
@@ -49,7 +49,8 @@ function (_Component) {
         templateKey: this.props.templateKey,
         compileOptions: compileOptions,
         helpers: this.props.templatesConfig.helpers,
-        data: this.props.data
+        data: this.props.data,
+        bindEvent: this.props.bindEvent
       });
 
       if (content === null) {
@@ -58,7 +59,7 @@ function (_Component) {
         return null;
       }
 
-      return React.createElement(RootTagName, _extends({}, this.props.rootProps, {
+      return h(RootTagName, _extends({}, this.props.rootProps, {
         dangerouslySetInnerHTML: {
           __html: content
         }

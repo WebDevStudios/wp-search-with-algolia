@@ -20,8 +20,8 @@ function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || func
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
-import React, { Component } from 'preact-compat';
-import PropTypes from 'prop-types';
+/** @jsx h */
+import { h, Component } from 'preact';
 import cx from 'classnames';
 import Template from '../Template/Template';
 
@@ -37,7 +37,7 @@ function (_Component) {
 
     _this = _possibleConstructorReturn(this, _getPrototypeOf(RangeInput).call(this, props));
 
-    _defineProperty(_assertThisInitialized(_this), "onChange", function (name) {
+    _defineProperty(_assertThisInitialized(_this), "onInput", function (name) {
       return function (event) {
         _this.setState(_defineProperty({}, name, event.currentTarget.value));
       };
@@ -46,7 +46,7 @@ function (_Component) {
     _defineProperty(_assertThisInitialized(_this), "onSubmit", function (event) {
       event.preventDefault();
 
-      _this.props.refine([_this.state.min, _this.state.max]);
+      _this.props.refine([_this.state.min && Number(_this.state.min), _this.state.max && Number(_this.state.max)]);
     });
 
     _this.state = {
@@ -79,42 +79,42 @@ function (_Component) {
       var isDisabled = min >= max;
       var hasRefinements = Boolean(minValue || maxValue);
       var rootClassNames = cx(cssClasses.root, _defineProperty({}, cssClasses.noRefinement, !hasRefinements));
-      return React.createElement("div", {
+      return h("div", {
         className: rootClassNames
-      }, React.createElement("form", {
+      }, h("form", {
         className: cssClasses.form,
         onSubmit: this.onSubmit
-      }, React.createElement("label", {
+      }, h("label", {
         className: cssClasses.label
-      }, React.createElement("input", {
+      }, h("input", {
         className: cx(cssClasses.input, cssClasses.inputMin),
         type: "number",
         min: min,
         max: max,
         step: step,
-        value: minValue,
-        onChange: this.onChange('min'),
+        value: minValue !== null && minValue !== void 0 ? minValue : '',
+        onInput: this.onInput('min'),
         placeholder: min,
         disabled: isDisabled
-      })), React.createElement(Template, _extends({}, templateProps, {
+      })), h(Template, _extends({}, templateProps, {
         templateKey: "separatorText",
         rootTagName: "span",
         rootProps: {
           className: cssClasses.separator
         }
-      })), React.createElement("label", {
+      })), h("label", {
         className: cssClasses.label
-      }, React.createElement("input", {
+      }, h("input", {
         className: cx(cssClasses.input, cssClasses.inputMax),
         type: "number",
         min: min,
         max: max,
         step: step,
-        value: maxValue,
-        onChange: this.onChange('max'),
+        value: maxValue !== null && maxValue !== void 0 ? maxValue : '',
+        onInput: this.onInput('max'),
         placeholder: max,
         disabled: isDisabled
-      })), React.createElement(Template, _extends({}, templateProps, {
+      })), h(Template, _extends({}, templateProps, {
         templateKey: "submitText",
         rootTagName: "button",
         rootProps: {

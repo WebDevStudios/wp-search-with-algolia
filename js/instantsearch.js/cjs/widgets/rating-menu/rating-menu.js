@@ -5,7 +5,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = ratingMenu;
 
-var _preactCompat = _interopRequireWildcard(require("preact-compat"));
+var _preact = require("preact");
 
 var _classnames = _interopRequireDefault(require("classnames"));
 
@@ -21,8 +21,7 @@ var _suit = require("../../lib/suit");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = Object.defineProperty && Object.getOwnPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : {}; if (desc.get || desc.set) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } } newObj.default = obj; return newObj; } }
-
+/** @jsx h */
 var withUsage = (0, _utils.createDocumentationMessageGenerator)({
   name: 'rating-menu'
 });
@@ -30,13 +29,13 @@ var suit = (0, _suit.component)('RatingMenu');
 
 var _ref3 =
 /*#__PURE__*/
-_preactCompat.default.createElement("path", {
+(0, _preact.h)("path", {
   d: "M12 .288l2.833 8.718h9.167l-7.417 5.389 2.833 8.718-7.416-5.388-7.417 5.388 2.833-8.718-7.416-5.389h9.167z"
 });
 
 var _ref4 =
 /*#__PURE__*/
-_preactCompat.default.createElement("path", {
+(0, _preact.h)("path", {
   d: "M12 6.76l1.379 4.246h4.465l-3.612 2.625 1.379 4.246-3.611-2.625-3.612 2.625 1.379-4.246-3.612-2.625h4.465l1.38-4.246zm0-6.472l-2.833 8.718h-9.167l7.416 5.389-2.833 8.718 7.417-5.388 7.416 5.388-2.833-8.718 7.417-5.389h-9.167l-2.833-8.718z"
 });
 
@@ -60,21 +59,21 @@ var renderer = function renderer(_ref) {
       return;
     }
 
-    (0, _preactCompat.render)(_preactCompat.default.createElement(_RefinementList.default, {
+    (0, _preact.render)((0, _preact.h)(_RefinementList.default, {
       createURL: createURL,
       cssClasses: cssClasses,
       facetValues: items,
       templateProps: renderState.templateProps,
       toggleRefinement: refine
-    }, _preactCompat.default.createElement("svg", {
+    }, (0, _preact.h)("svg", {
       xmlns: "http://www.w3.org/2000/svg",
       style: "display:none;"
-    }, _preactCompat.default.createElement("symbol", {
+    }, (0, _preact.h)("symbol", {
       id: suit({
         descendantName: 'starSymbol'
       }),
       viewBox: "0 0 24 24"
-    }, _ref3), _preactCompat.default.createElement("symbol", {
+    }, _ref3), (0, _preact.h)("symbol", {
       id: suit({
         descendantName: 'starEmptySymbol'
       }),
@@ -130,13 +129,13 @@ var renderer = function renderer(_ref) {
  * @param {RatingMenuWidgetOptions} $0 RatingMenu widget options.
  * @return {Widget} A new RatingMenu widget instance.
  * @example
- * search.addWidget(
+ * search.addWidgets([
  *   instantsearch.widgets.ratingMenu({
  *     container: '#stars',
  *     attribute: 'rating',
  *     max: 5,
  *   })
- * );
+ * ]);
  */
 
 
@@ -203,7 +202,7 @@ function ratingMenu() {
     templates: templates
   });
   var makeWidget = (0, _connectRatingMenu.default)(specializedRenderer, function () {
-    return (0, _preactCompat.unmountComponentAtNode)(containerNode);
+    return (0, _preact.render)(null, containerNode);
   });
   return makeWidget({
     attribute: attribute,

@@ -10,7 +10,7 @@ var _utils = require("../utils");
 
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(source, true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
@@ -40,7 +40,7 @@ var getQueryID = function getQueryID(selectedHits) {
   var queryID = queryIDs[0];
 
   if (typeof queryID !== 'string') {
-    throw new Error('Could not infer `queryID`. Ensure InstantSearch is configured with `clickAnalytics: true`');
+    throw new Error("Could not infer `queryID`. Ensure InstantSearch `clickAnalytics: true` was added with the Configure widget.\n\nSee: https://alg.li/lNiZZ7");
   }
 
   return queryID;
@@ -89,6 +89,15 @@ exports.inferPayload = inferPayload;
 
 var wrapInsightsClient = function wrapInsightsClient(aa, results, hits) {
   return function (method, payload) {
+    process.env.NODE_ENV === 'development' ? (0, _utils.warning)(false, "`insights` function has been deprecated. It is still supported in 4.x releases, but not further. It is replaced by the `insights` middleware.\n\nFor more information, visit https://www.algolia.com/doc/guides/getting-insights-and-analytics/search-analytics/click-through-and-conversions/how-to/send-click-and-conversion-events-with-instantsearch/js/") : void 0;
+
+    if (!aa) {
+      var withInstantSearchUsage = (0, _utils.createDocumentationMessageGenerator)({
+        name: 'instantsearch'
+      });
+      throw new Error(withInstantSearchUsage('The `insightsClient` option has not been provided to `instantsearch`.'));
+    }
+
     if (!Array.isArray(payload.objectIDs)) {
       throw new TypeError('Expected `objectIDs` to be an array.');
     }
@@ -102,6 +111,11 @@ var wrapInsightsClient = function wrapInsightsClient(aa, results, hits) {
     aa(method, _objectSpread({}, inferredPayload, {}, payload));
   };
 };
+/**
+ * @deprecated This function will be still supported in 4.x releases, but not further. It is replaced by the `insights` middleware. For more information, visit https://www.algolia.com/doc/guides/getting-insights-and-analytics/search-analytics/click-through-and-conversions/how-to/send-click-and-conversion-events-with-instantsearch/js/
+ * It passes `insights` to `HitsWithInsightsListener` and `InfiniteHitsWithInsightsListener`.
+ */
+
 
 function withInsights(connector) {
   var wrapRenderFn = function wrapRenderFn(renderFn) {
@@ -110,14 +124,12 @@ function withInsights(connector) {
           hits = renderOptions.hits,
           instantSearchInstance = renderOptions.instantSearchInstance;
 
-      if (results && hits && instantSearchInstance && instantSearchInstance.insightsClient
-      /* providing the insightsClient is optional */
-      ) {
-          var insights = wrapInsightsClient(instantSearchInstance.insightsClient, results, hits);
-          return renderFn(_objectSpread({}, renderOptions, {
-            insights: insights
-          }), isFirstRender);
-        }
+      if (results && hits && instantSearchInstance) {
+        var insights = wrapInsightsClient(instantSearchInstance.insightsClient, results, hits);
+        return renderFn(_objectSpread({}, renderOptions, {
+          insights: insights
+        }), isFirstRender);
+      }
 
       return renderFn(renderOptions, isFirstRender);
     };

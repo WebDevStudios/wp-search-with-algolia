@@ -5,9 +5,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = void 0;
 
-var _preactCompat = _interopRequireWildcard(require("preact-compat"));
-
-var _propTypes = _interopRequireDefault(require("prop-types"));
+var _preact = require("preact");
 
 var _classnames = _interopRequireDefault(require("classnames"));
 
@@ -16,8 +14,6 @@ var _PaginationLink = _interopRequireDefault(require("./PaginationLink"));
 var _utils = require("../../lib/utils");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = Object.defineProperty && Object.getOwnPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : {}; if (desc.get || desc.set) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } } newObj.default = obj; return newObj; } }
 
 function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
@@ -97,7 +93,7 @@ function (_Component) {
       }
 
       var url = createURL && !isDisabled ? createURL(pageNumber) : '#';
-      return _preactCompat.default.createElement(_PaginationLink.default, {
+      return (0, _preact.h)(_PaginationLink.default, {
         ariaLabel: ariaLabel,
         cssClasses: cssClasses,
         handleClick: this.handleClick,
@@ -117,7 +113,7 @@ function (_Component) {
       return this.pageLink({
         ariaLabel: 'Previous',
         additionalClassName: this.props.cssClasses.previousPageItem,
-        isDisabled: this.props.nbHits === 0 || isFirstPage,
+        isDisabled: isFirstPage,
         label: this.props.templates.previous,
         pageNumber: currentPage - 1,
         createURL: createURL
@@ -132,7 +128,7 @@ function (_Component) {
       return this.pageLink({
         ariaLabel: 'Next',
         additionalClassName: this.props.cssClasses.nextPageItem,
-        isDisabled: this.props.nbHits === 0 || isLastPage,
+        isDisabled: isLastPage,
         label: this.props.templates.next,
         pageNumber: currentPage + 1,
         createURL: createURL
@@ -146,7 +142,7 @@ function (_Component) {
       return this.pageLink({
         ariaLabel: 'First',
         additionalClassName: this.props.cssClasses.firstPageItem,
-        isDisabled: this.props.nbHits === 0 || isFirstPage,
+        isDisabled: isFirstPage,
         label: this.props.templates.first,
         pageNumber: 0,
         createURL: createURL
@@ -161,7 +157,7 @@ function (_Component) {
       return this.pageLink({
         ariaLabel: 'Last',
         additionalClassName: this.props.cssClasses.lastPageItem,
-        isDisabled: this.props.nbHits === 0 || isLastPage,
+        isDisabled: isLastPage,
         label: this.props.templates.last,
         pageNumber: nbPages - 1,
         createURL: createURL
@@ -189,16 +185,16 @@ function (_Component) {
   }, {
     key: "render",
     value: function render() {
-      return _preactCompat.default.createElement("div", {
-        className: (0, _classnames.default)(this.props.cssClasses.root, _defineProperty({}, this.props.cssClasses.noRefinementRoot, this.props.isFirstPage))
-      }, _preactCompat.default.createElement("ul", {
+      return (0, _preact.h)("div", {
+        className: (0, _classnames.default)(this.props.cssClasses.root, _defineProperty({}, this.props.cssClasses.noRefinementRoot, this.props.nbPages <= 1))
+      }, (0, _preact.h)("ul", {
         className: this.props.cssClasses.list
       }, this.props.showFirst && this.firstPageLink(this.props), this.props.showPrevious && this.previousPageLink(this.props), this.pages(this.props), this.props.showNext && this.nextPageLink(this.props), this.props.showLast && this.lastPageLink(this.props)));
     }
   }]);
 
   return Pagination;
-}(_preactCompat.Component);
+}(_preact.Component);
 
 Pagination.defaultProps = {
   nbHits: 0,

@@ -2,11 +2,15 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
 
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(source, true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 function _extends() { _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; return _extends.apply(this, arguments); }
+
+function _objectWithoutProperties(source, excluded) { if (source == null) return {}; var target = _objectWithoutPropertiesLoose(source, excluded); var key, i; if (Object.getOwnPropertySymbols) { var sourceSymbolKeys = Object.getOwnPropertySymbols(source); for (i = 0; i < sourceSymbolKeys.length; i++) { key = sourceSymbolKeys[i]; if (excluded.indexOf(key) >= 0) continue; if (!Object.prototype.propertyIsEnumerable.call(source, key)) continue; target[key] = source[key]; } } return target; }
+
+function _objectWithoutPropertiesLoose(source, excluded) { if (source == null) return {}; var target = {}; var sourceKeys = Object.keys(source); var key, i; for (i = 0; i < sourceKeys.length; i++) { key = sourceKeys[i]; if (excluded.indexOf(key) >= 0) continue; target[key] = source[key]; } return target; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -24,8 +28,8 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
 
-import React, { Component } from 'preact-compat';
-import PropTypes from 'prop-types';
+/** @jsx h */
+import { h, Component } from 'preact';
 import cx from 'classnames';
 import { isSpecialClick, isEqual } from '../../lib/utils';
 import Template from '../Template/Template';
@@ -50,10 +54,9 @@ function (_Component) {
   _createClass(RefinementList, [{
     key: "shouldComponentUpdate",
     value: function shouldComponentUpdate(nextProps, nextState) {
-      var isStateDifferent = nextState !== this.state;
-      var isFacetValuesDifferent = !isEqual(this.props.facetValues, nextProps.facetValues);
-      var shouldUpdate = isStateDifferent || isFacetValuesDifferent;
-      return shouldUpdate;
+      var isStateDifferent = this.state !== nextState;
+      var areFacetValuesDifferent = !isEqual(this.props.facetValues, nextProps.facetValues);
+      return isStateDifferent || areFacetValuesDifferent;
     }
   }, {
     key: "refine",
@@ -69,7 +72,12 @@ function (_Component) {
       var hasChildren = facetValue.data && facetValue.data.length > 0;
 
       if (hasChildren) {
-        subItems = React.createElement(RefinementList, _extends({}, this.props, {
+        var _this$props$cssClasse = this.props.cssClasses,
+            root = _this$props$cssClasse.root,
+            cssClasses = _objectWithoutProperties(_this$props$cssClasse, ["root"]);
+
+        subItems = h(RefinementList, _extends({}, this.props, {
+          cssClasses: cssClasses,
           depth: this.props.depth + 1,
           facetValues: facetValue.data,
           showMore: false,
@@ -82,7 +90,8 @@ function (_Component) {
       var templateData = _objectSpread({}, facetValue, {
         url: url,
         attribute: this.props.attribute,
-        cssClasses: this.props.cssClasses
+        cssClasses: this.props.cssClasses,
+        isFromSearch: this.props.isFromSearch
       });
 
       var key = facetValue.value;
@@ -95,7 +104,7 @@ function (_Component) {
         key += "/".concat(facetValue.count);
       }
 
-      return React.createElement(RefinementListItem, {
+      return h(RefinementListItem, {
         templateKey: "item",
         key: key,
         facetValueToRefine: facetValue.value,
@@ -187,7 +196,7 @@ function (_Component) {
       // Adding `-lvl0` classes
       var cssClassList = cx(this.props.cssClasses.list, _defineProperty({}, "".concat(this.props.cssClasses.depth).concat(this.props.depth), this.props.cssClasses.depth));
       var showMoreButtonClassName = cx(this.props.cssClasses.showMore, _defineProperty({}, this.props.cssClasses.disabledShowMore, !(this.props.showMore === true && this.props.canToggleShowMore)));
-      var showMoreButton = this.props.showMore === true && React.createElement(Template, _extends({}, this.props.templateProps, {
+      var showMoreButton = this.props.showMore === true && h(Template, _extends({}, this.props.templateProps, {
         templateKey: "showMoreText",
         rootTagName: "button",
         rootProps: {
@@ -200,9 +209,9 @@ function (_Component) {
         }
       }));
       var shouldDisableSearchBox = this.props.searchIsAlwaysActive !== true && !(this.props.isFromSearch || !this.props.hasExhaustiveItems);
-      var searchBox = this.props.searchFacetValues && React.createElement("div", {
+      var searchBox = this.props.searchFacetValues && h("div", {
         className: this.props.cssClasses.searchBox
-      }, React.createElement(SearchBox, {
+      }, h(SearchBox, {
         ref: function ref(searchBoxRef) {
           return _this2.searchBox = searchBoxRef;
         },
@@ -223,16 +232,16 @@ function (_Component) {
         ,
         searchAsYouType: false
       }));
-      var facetValues = this.props.facetValues && this.props.facetValues.length > 0 && React.createElement("ul", {
+      var facetValues = this.props.facetValues && this.props.facetValues.length > 0 && h("ul", {
         className: cssClassList
       }, this.props.facetValues.map(this._generateFacetItem, this));
-      var noResults = this.props.searchFacetValues && this.props.isFromSearch && this.props.facetValues.length === 0 && React.createElement(Template, _extends({}, this.props.templateProps, {
+      var noResults = this.props.searchFacetValues && this.props.isFromSearch && this.props.facetValues.length === 0 && h(Template, _extends({}, this.props.templateProps, {
         templateKey: "searchableNoResults",
         rootProps: {
           className: this.props.cssClasses.noResults
         }
       }));
-      return React.createElement("div", {
+      return h("div", {
         className: cx(this.props.cssClasses.root, _defineProperty({}, this.props.cssClasses.noRefinementRoot, !this.props.facetValues || this.props.facetValues.length === 0), this.props.className)
       }, this.props.children, searchBox, facetValues, noResults, showMoreButton);
     }

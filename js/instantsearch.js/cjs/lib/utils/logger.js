@@ -9,14 +9,23 @@ var _noop = _interopRequireDefault(require("./noop"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var deprecate = _noop.default;
+/**
+ * Logs a warning when this function is called, in development environment only.
+ */
+var deprecate = function deprecate(fn) {
+  return fn;
+};
+/**
+ * Logs a warning
+ * This is used to log issues in development environment only.
+ */
+
+
 exports.deprecate = deprecate;
 var warn = _noop.default;
 /**
  * Logs a warning if the condition is not met.
  * This is used to log issues in development environment only.
- *
- * @returns {undefined}
  */
 
 exports.warn = warn;

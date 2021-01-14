@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.default = connectCurrentRefinements;
+exports.default = void 0;
 
 var _utils = require("../../lib/utils");
 
@@ -15,216 +15,155 @@ function _iterableToArray(iter) { if (Symbol.iterator in Object(iter) || Object.
 
 function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } }
 
+function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
+
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
 var withUsage = (0, _utils.createDocumentationMessageGenerator)({
   name: 'current-refinements',
   connector: true
 });
-/**
- * @typedef {Object} Refinement
- * @property {"facet"|"exclude"|"disjunctive"|"hierarchical"|"numeric"|"query"} type The type of the refinement
- * @property {string} attribute The attribute on which the refinement is applied
- * @property {string} label The label of the refinement to display
- * @property {string} value The raw value of the refinement
- * @property {string} [operator] The value of the operator, only if applicable
- * @property {boolean} [exhaustive] Whether the count is exhaustive, only if applicable
- * @property {number} [count] number of items found, if applicable
- */
 
-/**
- * @typedef {Object} RefinementItem
- * @property {string} attribute The attribute on which the refinement is applied
- * @property {function} refine The function to remove the refinement
- * @property {Refinement[]} refinements The current refinements
- */
-
-/**
- * @typedef {Object} CurrentRefinementsRenderingOptions
- * @property {function(item)} refine Clears a single refinement
- * @property {function(item): string} createURL Creates an individual URL where a single refinement is cleared
- * @property {RefinementItem[]} items All the refinement items
- * @property {Object} widgetParams All original `CustomCurrentRefinementsWidgetOptions` forwarded to the `renderFn`.
- */
-
-/**
- * @typedef {Object} CustomCurrentRefinementsWidgetOptions
- * @property {string[]} [includedAttributes] The attributes to include in the refinements (all by default). Cannot be used with `excludedAttributes`.
- * @property {string[]} [excludedAttributes = ["query"]] The attributes to exclude from the refinements. Cannot be used with `includedAttributes`.
- * @property {function(object[]):object[]} [transformItems] Function to transform the items passed to the templates.
- */
-
-/**
- * **CurrentRefinements** connector provides the logic to build a widget that will give
- * the user the ability to see all the currently applied filters and, remove some or all of
- * them.
- *
- * This provides a `refine(item)` function to remove a selected refinement.
- * Those functions can see their behaviour change based on the widget options used.
- * @type {Connector}
- * @param {function(CurrentRefinementsRenderingOptions)} renderFn Rendering function for the custom **CurrentRefinements** widget.
- * @param {function} unmountFn Unmount function called when the widget is disposed.
- * @return {function(CustomCurrentRefinementsWidgetOptions)} Re-usable widget factory for a custom **CurrentRefinements** widget.
- * @example
- * // custom `renderFn` to render the custom ClearRefinements widget
- * function renderFn(currentRefinementsRenderingOptions, isFirstRendering) {
- *   var containerNode = currentRefinementsRenderingOptions.widgetParams.containerNode;
- *   if (isFirstRendering) {
- *     containerNode
- *       .html('<ul id="refinements"></ul><div id="cta-container"></div>');
- *   }
- *
- *   containerNode
- *     .find('#cta-container > a')
- *     .off('click');
- *
- *   containerNode
- *     .find('li > a')
- *     .each(function() { $(this).off('click') });
- *
- *   if (currentRefinementsRenderingOptions.items
- *       && currentRefinementsRenderingOptions.items.length > 0) {
- *     var list = currentRefinementsRenderingOptions.items.map(function(item) {
- *       return '<li>' + item.attribute +
- *          '<ul>' +
- *            item.refinements.map(function (refinement) {
- *              return <a href="' + currentRefinementsRenderingOptions.createURL(refinement) + '" data-attribute="' + item.attribute + '">'
- *                + refinement.label + '</a>'
- *              }).join('') +
- *            '</ul>'
- *        '</li>';
- *     });
- *
- *     currentRefinementsRenderingOptions.find('ul').html(list);
- *   } else {
- *     containerNode.find('#cta-container').html('');
- *     containerNode.find('ul').html('');
- *   }
- * }
- *
- * // connect `renderFn` to CurrentRefinements logic
- * var customCurrentRefinements = instantsearch.connectors.connectCurrentRefinements(renderFn);
- *
- * // mount widget on the page
- * search.addWidget(
- *   customCurrentRefinements({
- *     containerNode: $('#custom-crv-container'),
- *   })
- * );
- */
-
-function connectCurrentRefinements(renderFn) {
+var connectCurrentRefinements = function connectCurrentRefinements(renderFn) {
   var unmountFn = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : _utils.noop;
   (0, _utils.checkRendering)(renderFn, withUsage());
-  return function () {
-    var widgetParams = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-
-    if (widgetParams.includedAttributes && widgetParams.excludedAttributes) {
+  return function (widgetParams) {
+    if ((widgetParams || {}).includedAttributes && (widgetParams || {}).excludedAttributes) {
       throw new Error(withUsage('The options `includedAttributes` and `excludedAttributes` cannot be used together.'));
     }
 
-    var includedAttributes = widgetParams.includedAttributes,
-        _widgetParams$exclude = widgetParams.excludedAttributes,
-        excludedAttributes = _widgetParams$exclude === void 0 ? ['query'] : _widgetParams$exclude,
-        _widgetParams$transfo = widgetParams.transformItems,
-        transformItems = _widgetParams$transfo === void 0 ? function (items) {
+    var _ref = widgetParams || {},
+        includedAttributes = _ref.includedAttributes,
+        _ref$excludedAttribut = _ref.excludedAttributes,
+        excludedAttributes = _ref$excludedAttribut === void 0 ? ['query'] : _ref$excludedAttribut,
+        _ref$transformItems = _ref.transformItems,
+        transformItems = _ref$transformItems === void 0 ? function (items) {
       return items;
-    } : _widgetParams$transfo;
+    } : _ref$transformItems;
+
     return {
-      init: function init(_ref) {
-        var helper = _ref.helper,
-            _createURL = _ref.createURL,
-            instantSearchInstance = _ref.instantSearchInstance;
-        var items = transformItems(getFilteredRefinements({
-          results: {},
-          state: helper.state,
-          helper: helper,
-          includedAttributes: includedAttributes,
-          excludedAttributes: excludedAttributes
-        }));
-        renderFn({
-          items: items,
+      $$type: 'ais.currentRefinements',
+      init: function init(initOptions) {
+        var instantSearchInstance = initOptions.instantSearchInstance;
+        renderFn(_objectSpread({}, this.getWidgetRenderState(initOptions), {
+          instantSearchInstance: instantSearchInstance
+        }), true);
+      },
+      render: function render(renderOptions) {
+        var instantSearchInstance = renderOptions.instantSearchInstance;
+        renderFn(_objectSpread({}, this.getWidgetRenderState(renderOptions), {
+          instantSearchInstance: instantSearchInstance
+        }), false);
+      },
+      dispose: function dispose() {
+        unmountFn();
+      },
+      getRenderState: function getRenderState(renderState, renderOptions) {
+        return _objectSpread({}, renderState, {
+          currentRefinements: this.getWidgetRenderState(renderOptions)
+        });
+      },
+      getWidgetRenderState: function getWidgetRenderState(_ref2) {
+        var results = _ref2.results,
+            scopedResults = _ref2.scopedResults,
+            _createURL = _ref2.createURL,
+            helper = _ref2.helper;
+
+        function getItems() {
+          if (!results) {
+            return transformItems(getRefinementsItems({
+              results: {},
+              helper: helper,
+              includedAttributes: includedAttributes,
+              excludedAttributes: excludedAttributes
+            }));
+          }
+
+          return scopedResults.reduce(function (accResults, scopedResult) {
+            return accResults.concat(transformItems(getRefinementsItems({
+              results: scopedResult.results,
+              helper: scopedResult.helper,
+              includedAttributes: includedAttributes,
+              excludedAttributes: excludedAttributes
+            })));
+          }, []);
+        }
+
+        return {
+          items: getItems(),
           refine: function refine(refinement) {
             return clearRefinement(helper, refinement);
           },
           createURL: function createURL(refinement) {
             return _createURL(clearRefinementFromState(helper.state, refinement));
           },
-          instantSearchInstance: instantSearchInstance,
           widgetParams: widgetParams
-        }, true);
-      },
-      render: function render(_ref2) {
-        var results = _ref2.results,
-            helper = _ref2.helper,
-            state = _ref2.state,
-            _createURL2 = _ref2.createURL,
-            instantSearchInstance = _ref2.instantSearchInstance;
-        var items = transformItems(getFilteredRefinements({
-          results: results,
-          state: state,
-          helper: helper,
-          includedAttributes: includedAttributes,
-          excludedAttributes: excludedAttributes
-        }));
-        renderFn({
-          items: items,
-          refine: function refine(refinement) {
-            return clearRefinement(helper, refinement);
-          },
-          createURL: function createURL(refinement) {
-            return _createURL2(clearRefinementFromState(helper.state, refinement));
-          },
-          instantSearchInstance: instantSearchInstance,
-          widgetParams: widgetParams
-        }, false);
-      },
-      dispose: function dispose() {
-        unmountFn();
+        };
       }
     };
   };
-}
+};
 
-function getFilteredRefinements(_ref3) {
+function getRefinementsItems(_ref3) {
   var results = _ref3.results,
-      state = _ref3.state,
       helper = _ref3.helper,
       includedAttributes = _ref3.includedAttributes,
       excludedAttributes = _ref3.excludedAttributes;
   var clearsQuery = (includedAttributes || []).indexOf('query') !== -1 || (excludedAttributes || []).indexOf('query') === -1;
   var filterFunction = includedAttributes ? function (item) {
-    return includedAttributes.indexOf(item.attributeName) !== -1;
+    return includedAttributes.indexOf(item.attribute) !== -1;
   } : function (item) {
-    return excludedAttributes.indexOf(item.attributeName) === -1;
+    return excludedAttributes.indexOf(item.attribute) === -1;
   };
-  var items = (0, _utils.getRefinements)(results, state, clearsQuery).filter(filterFunction).map(normalizeRefinement);
-  return groupItemsByRefinements(items, helper);
+  var items = (0, _utils.getRefinements)(results, helper.state, clearsQuery).map(normalizeRefinement).filter(filterFunction);
+  return items.reduce(function (allItems, currentItem) {
+    return [].concat(_toConsumableArray(allItems.filter(function (item) {
+      return item.attribute !== currentItem.attribute;
+    })), [{
+      indexName: helper.state.index,
+      attribute: currentItem.attribute,
+      label: currentItem.attribute,
+      refinements: items.filter(function (result) {
+        return result.attribute === currentItem.attribute;
+      }) // We want to keep the order of refinements except the numeric ones.
+      .sort(function (a, b) {
+        return a.type === 'numeric' ? a.value - b.value : 0;
+      }),
+      refine: function refine(refinement) {
+        return clearRefinement(helper, refinement);
+      }
+    }]);
+  }, []);
 }
 
 function clearRefinementFromState(state, refinement) {
   switch (refinement.type) {
     case 'facet':
-      return state.removeFacetRefinement(refinement.attribute, refinement.value);
+      return state.removeFacetRefinement(refinement.attribute, String(refinement.value));
 
     case 'disjunctive':
-      return state.removeDisjunctiveFacetRefinement(refinement.attribute, refinement.value);
+      return state.removeDisjunctiveFacetRefinement(refinement.attribute, String(refinement.value));
 
     case 'hierarchical':
       return state.removeHierarchicalFacetRefinement(refinement.attribute);
 
     case 'exclude':
-      return state.removeExcludeRefinement(refinement.attribute, refinement.value);
+      return state.removeExcludeRefinement(refinement.attribute, String(refinement.value));
 
     case 'numeric':
-      return state.removeNumericRefinement(refinement.attribute, refinement.operator, refinement.value);
+      return state.removeNumericRefinement(refinement.attribute, refinement.operator, String(refinement.value));
 
     case 'tag':
-      return state.removeTagRefinement(refinement.value);
+      return state.removeTagRefinement(String(refinement.value));
 
     case 'query':
       return state.setQueryParameter('query', '');
 
     default:
-      throw new Error("clearRefinement: type ".concat(refinement.type, " is not handled"));
+      process.env.NODE_ENV === 'development' ? (0, _utils.warning)(false, "The refinement type \"".concat(refinement.type, "\" does not exist and cannot be cleared from the current refinements.")) : void 0;
+      return state;
   }
 }
 
@@ -249,7 +188,7 @@ function normalizeRefinement(refinement) {
   var value = refinement.type === 'numeric' ? Number(refinement.name) : refinement.name;
   var label = refinement.operator ? "".concat(getOperatorSymbol(refinement.operator), " ").concat(refinement.name) : refinement.name;
   var normalizedRefinement = {
-    attribute: refinement.attributeName,
+    attribute: refinement.attribute,
     type: refinement.type,
     value: value,
     label: label
@@ -270,22 +209,5 @@ function normalizeRefinement(refinement) {
   return normalizedRefinement;
 }
 
-function groupItemsByRefinements(items, helper) {
-  return items.reduce(function (results, currentItem) {
-    return [].concat(_toConsumableArray(results.filter(function (result) {
-      return result.attribute !== currentItem.attribute;
-    })), [{
-      attribute: currentItem.attribute,
-      label: currentItem.attribute,
-      refinements: items.filter(function (result) {
-        return result.attribute === currentItem.attribute;
-      }) // We want to keep the order of refinements except the numeric ones.
-      .sort(function (a, b) {
-        return a.type === 'numeric' ? a.value - b.value : 0;
-      }),
-      refine: function refine(refinement) {
-        return clearRefinement(helper, refinement);
-      }
-    }]);
-  }, []);
-}
+var _default = connectCurrentRefinements;
+exports.default = _default;

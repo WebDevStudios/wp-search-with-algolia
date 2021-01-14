@@ -1,76 +1,78 @@
+function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
+
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
 import escapeHits, { TAG_PLACEHOLDER } from '../../lib/escape-highlight';
-import { checkRendering, createDocumentationMessageGenerator, addAbsolutePosition, addQueryID, noop } from '../../lib/utils';
+import { checkRendering, createDocumentationMessageGenerator, addAbsolutePosition, addQueryID, createSendEventForHits, createBindEventForHits, noop } from '../../lib/utils';
 var withUsage = createDocumentationMessageGenerator({
   name: 'hits',
   connector: true
 });
-/**
- * @typedef {Object} HitsRenderingOptions
- * @property {Object[]} hits The matched hits from Algolia API.
- * @property {Object} results The complete results response from Algolia API.
- * @property {Object} widgetParams All original widget options forwarded to the `renderFn`.
- */
 
-/**
- * @typedef {Object} CustomHitsWidgetOptions
- * @property {boolean} [escapeHTML = true] Whether to escape HTML tags from `hits[i]._highlightResult`.
- * @property {function(Object[]):Object[]} [transformItems] Function to transform the items passed to the templates.
- */
-
-/**
- * **Hits** connector provides the logic to create custom widgets that will render the results retrieved from Algolia.
- * @type {Connector}
- * @param {function(HitsRenderingOptions, boolean)} renderFn Rendering function for the custom **Hits** widget.
- * @param {function} unmountFn Unmount function called when the widget is disposed.
- * @return {function(CustomHitsWidgetOptions)} Re-usable widget factory for a custom **Hits** widget.
- * @example
- * // custom `renderFn` to render the custom Hits widget
- * function renderFn(HitsRenderingOptions) {
- *   HitsRenderingOptions.widgetParams.containerNode.html(
- *     HitsRenderingOptions.hits.map(function(hit) {
- *       return '<div>' + hit._highlightResult.name.value + '</div>';
- *     })
- *   );
- * }
- *
- * // connect `renderFn` to Hits logic
- * var customHits = instantsearch.connectors.connectHits(renderFn);
- *
- * // mount widget on the page
- * search.addWidget(
- *   customHits({
- *     containerNode: $('#custom-hits-container'),
- *   })
- * );
- */
-
-export default function connectHits(renderFn) {
+var connectHits = function connectHits(renderFn) {
   var unmountFn = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : noop;
   checkRendering(renderFn, withUsage());
-  return function () {
-    var widgetParams = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-    var _widgetParams$escapeH = widgetParams.escapeHTML,
-        escapeHTML = _widgetParams$escapeH === void 0 ? true : _widgetParams$escapeH,
-        _widgetParams$transfo = widgetParams.transformItems,
-        transformItems = _widgetParams$transfo === void 0 ? function (items) {
+  return function (widgetParams) {
+    var _ref = widgetParams || {},
+        _ref$escapeHTML = _ref.escapeHTML,
+        escapeHTML = _ref$escapeHTML === void 0 ? true : _ref$escapeHTML,
+        _ref$transformItems = _ref.transformItems,
+        transformItems = _ref$transformItems === void 0 ? function (items) {
       return items;
-    } : _widgetParams$transfo;
+    } : _ref$transformItems;
+
+    var sendEvent;
+    var bindEvent;
     return {
-      getConfiguration: function getConfiguration() {
-        return escapeHTML ? TAG_PLACEHOLDER : undefined;
+      $$type: 'ais.hits',
+      init: function init(initOptions) {
+        renderFn(_objectSpread({}, this.getWidgetRenderState(initOptions), {
+          instantSearchInstance: initOptions.instantSearchInstance
+        }), true);
       },
-      init: function init(_ref) {
-        var instantSearchInstance = _ref.instantSearchInstance;
-        renderFn({
-          hits: [],
-          results: undefined,
-          instantSearchInstance: instantSearchInstance,
-          widgetParams: widgetParams
-        }, true);
+      render: function render(renderOptions) {
+        var renderState = this.getWidgetRenderState(renderOptions);
+        renderState.sendEvent('view', renderState.hits);
+        renderFn(_objectSpread({}, renderState, {
+          instantSearchInstance: renderOptions.instantSearchInstance
+        }), false);
       },
-      render: function render(_ref2) {
+      getRenderState: function getRenderState(renderState, renderOptions) {
+        return _objectSpread({}, renderState, {
+          hits: this.getWidgetRenderState(renderOptions)
+        });
+      },
+      getWidgetRenderState: function getWidgetRenderState(_ref2) {
         var results = _ref2.results,
+            helper = _ref2.helper,
             instantSearchInstance = _ref2.instantSearchInstance;
+
+        if (!sendEvent) {
+          sendEvent = createSendEventForHits({
+            instantSearchInstance: instantSearchInstance,
+            index: helper.getIndex(),
+            widgetType: this.$$type
+          });
+        }
+
+        if (!bindEvent) {
+          bindEvent = createBindEventForHits({
+            index: helper.getIndex(),
+            widgetType: this.$$type
+          });
+        }
+
+        if (!results) {
+          return {
+            hits: [],
+            results: undefined,
+            sendEvent: sendEvent,
+            bindEvent: bindEvent,
+            widgetParams: widgetParams
+          };
+        }
 
         if (escapeHTML && results.hits.length > 0) {
           results.hits = escapeHits(results.hits);
@@ -84,16 +86,35 @@ export default function connectHits(renderFn) {
         // hits widgets mounted on the page.
 
         results.hits.__escaped = initialEscaped;
-        renderFn({
+        return {
           hits: results.hits,
           results: results,
-          instantSearchInstance: instantSearchInstance,
+          sendEvent: sendEvent,
+          bindEvent: bindEvent,
           widgetParams: widgetParams
-        }, false);
+        };
       },
-      dispose: function dispose() {
+      dispose: function dispose(_ref3) {
+        var state = _ref3.state;
         unmountFn();
+
+        if (!escapeHTML) {
+          return state;
+        }
+
+        return state.setQueryParameters(Object.keys(TAG_PLACEHOLDER).reduce(function (acc, key) {
+          return _objectSpread({}, acc, _defineProperty({}, key, undefined));
+        }, {}));
+      },
+      getWidgetSearchParameters: function getWidgetSearchParameters(state) {
+        if (!escapeHTML) {
+          return state;
+        }
+
+        return state.setQueryParameters(TAG_PLACEHOLDER);
       }
     };
   };
-}
+};
+
+export default connectHits;

@@ -5,15 +5,9 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = void 0;
 
-var _preactCompat = _interopRequireWildcard(require("preact-compat"));
-
-var _propTypes = _interopRequireDefault(require("prop-types"));
+var _preact = require("preact");
 
 var _utils = require("../../lib/utils");
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = Object.defineProperty && Object.getOwnPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : {}; if (desc.get || desc.set) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } } newObj.default = obj; return newObj; } }
 
 function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
@@ -62,7 +56,8 @@ function (_Component) {
         templateKey: this.props.templateKey,
         compileOptions: compileOptions,
         helpers: this.props.templatesConfig.helpers,
-        data: this.props.data
+        data: this.props.data,
+        bindEvent: this.props.bindEvent
       });
 
       if (content === null) {
@@ -71,7 +66,7 @@ function (_Component) {
         return null;
       }
 
-      return _preactCompat.default.createElement(RootTagName, _extends({}, this.props.rootProps, {
+      return (0, _preact.h)(RootTagName, _extends({}, this.props.rootProps, {
         dangerouslySetInnerHTML: {
           __html: content
         }
@@ -80,7 +75,7 @@ function (_Component) {
   }]);
 
   return Template;
-}(_preactCompat.Component);
+}(_preact.Component);
 
 Template.defaultProps = {
   data: {},

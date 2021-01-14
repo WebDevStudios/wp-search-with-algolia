@@ -1,11 +1,12 @@
-import React, { render, unmountComponentAtNode } from 'preact-compat';
+/** @jsx h */
+import { h, render } from 'preact';
 import cx from 'classnames';
 import InfiniteHits from '../../components/InfiniteHits/InfiniteHits';
-import defaultTemplates from './defaultTemplates';
 import connectInfiniteHits from '../../connectors/infinite-hits/connectInfiniteHits';
-import { prepareTemplateProps, getContainerNode, warning, createDocumentationLink, createDocumentationMessageGenerator } from '../../lib/utils';
+import { prepareTemplateProps, getContainerNode, createDocumentationMessageGenerator } from '../../lib/utils';
 import { component } from '../../lib/suit';
 import { withInsights, withInsightsListener } from '../../lib/insights';
+import defaultTemplates from './defaultTemplates';
 var withUsage = createDocumentationMessageGenerator({
   name: 'infinite-hits'
 });
@@ -26,7 +27,8 @@ var renderer = function renderer(_ref) {
         isFirstPage = _ref2.isFirstPage,
         isLastPage = _ref2.isLastPage,
         instantSearchInstance = _ref2.instantSearchInstance,
-        insights = _ref2.insights;
+        insights = _ref2.insights,
+        bindEvent = _ref2.bindEvent;
 
     if (isFirstRendering) {
       renderState.templateProps = prepareTemplateProps({
@@ -37,7 +39,7 @@ var renderer = function renderer(_ref) {
       return;
     }
 
-    render(React.createElement(InfiniteHitsWithInsightsListener, {
+    render(h(InfiniteHitsWithInsightsListener, {
       cssClasses: cssClasses,
       hits: hits,
       results: results,
@@ -47,7 +49,11 @@ var renderer = function renderer(_ref) {
       templateProps: renderState.templateProps,
       isFirstPage: isFirstPage,
       isLastPage: isLastPage,
-      insights: insights
+      insights: insights,
+      sendEvent: function sendEvent(event) {
+        instantSearchInstance.sendEventToInsights(event);
+      },
+      bindEvent: bindEvent
     }), containerNode);
   };
 };
@@ -61,18 +67,13 @@ var infiniteHits = function infiniteHits() {
       templates = _ref3$templates === void 0 ? defaultTemplates : _ref3$templates,
       _ref3$cssClasses = _ref3.cssClasses,
       userCssClasses = _ref3$cssClasses === void 0 ? {} : _ref3$cssClasses,
-      showPrevious = _ref3.showPrevious;
+      showPrevious = _ref3.showPrevious,
+      cache = _ref3.cache;
 
   if (!container) {
     throw new Error(withUsage('The `container` option is required.'));
   }
 
-  warning( // @ts-ignore: We have this specific check because unlike `hits`, `infiniteHits` does not support
-  // the `allItems` template. This can be misleading as they are very similar.
-  typeof templates.allItems === 'undefined', "The template `allItems` does not exist since InstantSearch.js 3.\n\n You may want to migrate using `connectInfiniteHits`: ".concat(createDocumentationLink({
-    name: 'infinite-hits',
-    connector: true
-  }), "."));
   var containerNode = getContainerNode(container);
   var cssClasses = {
     root: cx(suit(), userCssClasses.root),
@@ -108,12 +109,13 @@ var infiniteHits = function infiniteHits() {
     renderState: {}
   });
   var makeInfiniteHits = withInsights(connectInfiniteHits)(specializedRenderer, function () {
-    return unmountComponentAtNode(containerNode);
+    return render(null, containerNode);
   });
   return makeInfiniteHits({
     escapeHTML: escapeHTML,
     transformItems: transformItems,
-    showPrevious: showPrevious
+    showPrevious: showPrevious,
+    cache: cache
   });
 };
 
