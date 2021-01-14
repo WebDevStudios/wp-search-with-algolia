@@ -85,40 +85,39 @@ get_header();
 						stateMapping: {
 							stateToRoute( indexUiState ) {
 								return {
-									s: indexUiState.query,
-									paged: indexUiState.page
+									s: indexUiState[ algolia.indices.searchable_posts.name ].query,
+									page: indexUiState[ algolia.indices.searchable_posts.name ].page
 								}
 							},
 							routeToState( routeState ) {
-								return {
+								const indexUiState = {};
+								indexUiState[ algolia.indices.searchable_posts.name ] = {
 									query: routeState.s,
-									page: routeState.paged
-								}
+									page: routeState.page
+								};
+								return indexUiState;
 							}
 						}
 					}
 				});
 
-				/* Search box widget */
-				search.addWidget(
+				search.addWidgets([
+
+					/* Search box widget */
 					instantsearch.widgets.searchBox({
 						container: '#algolia-search-box',
 						placeholder: 'Search for...',
 						showReset: false,
 						showSubmit: false,
 						showLoadingIndicator: false,
-					})
-				);
+					}),
 
-				/* Stats widget */
-				search.addWidget(
+					/* Stats widget */
 					instantsearch.widgets.stats({
 						container: '#algolia-stats'
-					})
-				);
+					}),
 
-				/* Hits widget */
-				search.addWidget(
+					/* Hits widget */
 					instantsearch.widgets.hits({
 						container: '#algolia-hits',
 						hitsPerPage: 10,
@@ -147,70 +146,55 @@ get_header();
 								return hit;
 							}
 						}
-					})
-				);
+					}),
 
-				/* Pagination widget */
-				search.addWidget(
+					/* Pagination widget */
+
 					instantsearch.widgets.pagination({
 						container: '#algolia-pagination'
-					})
-				);
+					}),
 
-				/* Post types refinement widget */
-				search.addWidget(
+					/* Post types refinement widget */
 					instantsearch.widgets.menu({
 						container: '#facet-post-types',
 						attribute: 'post_type_label',
 						sortBy: ['isRefined:desc', 'count:desc', 'name:asc'],
 						limit: 10,
-					})
-				);
+					}),
 
-				/* Categories refinement widget */
-				search.addWidget(
+					/* Categories refinement widget */
+
 					instantsearch.widgets.hierarchicalMenu({
 						container: '#facet-categories',
 						separator: ' > ',
 						sortBy: ['count'],
 						attributes: ['taxonomies_hierarchical.category.lvl0', 'taxonomies_hierarchical.category.lvl1', 'taxonomies_hierarchical.category.lvl2'],
-					})
-				);
+					}),
 
-				/* Tags refinement widget */
-				search.addWidget(
+					/* Tags refinement widget */
+
 					instantsearch.widgets.refinementList({
 						container: '#facet-tags',
 						attribute: 'taxonomies.post_tag',
 						operator: 'and',
 						limit: 15,
 						sortBy: ['isRefined:desc', 'count:desc', 'name:asc'],
-					})
-				);
+					}),
 
-				/* Users refinement widget */
-				search.addWidget(
+					/* Users refinement widget */
+
 					instantsearch.widgets.menu({
 						container: '#facet-users',
 						attribute: 'post_author.display_name',
 						sortBy: ['isRefined:desc', 'count:desc', 'name:asc'],
 						limit: 10,
-					})
-				);
+					}),
 
-				/* Search stats widget */
-				search.addWidget(
-					instantsearch.widgets.stats({
-						container: '#algolia-stats'
-					})
-				);
-
-				/* Search powered-by widget */
-				search.addWidget(
+					/* Search powered-by widget */
 					instantsearch.widgets.poweredBy({
 						container: '#algolia-powered-by'
 					})
-				);
+				]);
 
 				/* Start */
 				search.start();
