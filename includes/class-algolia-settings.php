@@ -94,24 +94,59 @@ class Algolia_Settings {
 	/**
 	 * Get the excluded post types.
 	 *
+	 * @author     WebDevStudios <contact@webdevstudios.com>
+	 * @since      1.0.0
+	 * @deprecated 1.7.0 Use Algolia_Settings::get_excluded_post_types()
+	 * @see        Algolia_Settings::get_excluded_post_types()
+	 *
+	 * @return array
+	 */
+	public function get_post_types_blacklist() {
+		_deprecated_function(
+			__METHOD__,
+			'1.7.0',
+			'Algolia_Settings::get_excluded_post_types();'
+		);
+
+		return $this->get_excluded_post_types();
+	}
+
+	/**
+	 * Get the excluded post types.
+	 *
 	 * @author  WebDevStudios <contact@webdevstudios.com>
-	 * @since   1.0.0
+	 * @since   1.7.0
 	 *
 	 * @return array
 	 */
 	public function get_excluded_post_types() {
 
 		// Default array of excluded post types.
-		$excluded = array( 'nav_menu_item' );		
+		$excluded = [ 'nav_menu_item' ];
 
-		if ( has_filter( 'algolia_excluded_post_types' ) ) {
-			$excluded = (array) apply_filters( 'algolia_excluded_post_types', $excluded );
-		}
+		/**
+		 * Filters excluded post types.
+		 *
+		 * @since      1.0.0
+		 * @deprecated 1.7.0 Use {@see 'algolia_excluded_post_types'} instead.
+		 *
+		 * @param array $excluded The excluded post types.
+		 */
+		$excluded = (array) apply_filters_deprecated(
+			'algolia_post_types_blacklist',
+			[ $excluded ],
+			'1.7.0',
+			'algolia_excluded_post_types'
+		);
 
-		// Deprecated filter, but will maintain backwards compat.
-		if ( has_filter( 'algolia_post_types_blacklist' ) ) {
-			$excluded = (array) apply_filters( 'algolia_post_types_blacklist', $excluded );
-		}
+		/**
+		 * Filters excluded post types.
+		 *
+		 * @since 1.7.0
+		 *
+		 * @param array $excluded The excluded post types.
+		 */
+		$excluded = (array) apply_filters( 'algolia_excluded_post_types', $excluded );
 
 		// Native WordPress.
 		$excluded[] = 'revision';
@@ -159,26 +194,58 @@ class Algolia_Settings {
 	}
 
 	/**
-	 * Get taxonomies blacklist.
+	 * Get excluded taxonomies.
 	 *
-	 * @author  WebDevStudios <contact@webdevstudios.com>
-	 * @since   1.0.0
+	 * @author     WebDevStudios <contact@webdevstudios.com>
+	 * @since      1.0.0
+	 * @deprecated 1.7.0 Use Algolia_Settings::get_excluded_taxonomies()
+	 * @see        Algolia_Settings::get_excluded_taxonomies()
+	 *
+	 * @return array
+	 */
+	public function get_taxonomies_blacklist() {
+		_deprecated_function(
+			__METHOD__,
+			'1.7.0',
+			'Algolia_Settings::get_excluded_taxonomies();'
+		);
+
+		return $this->get_excluded_taxonomies();
+	}
+
+	/**
+	 * Get excluded taxonomies.
+	 *
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 * @since  1.7.0
 	 *
 	 * @return array
 	 */
 	public function get_excluded_taxonomies() {
 
 		// Default array of excluded taxonomies.
-		$excluded = array( 'nav_menu', 'link_category', 'post_format' );
+		$excluded = [
+			'nav_menu',
+			'link_category',
+			'post_format',
+		];
 
-		if ( has_filter( 'algolia_excluded_taxonomies' ) ) {
-			$excluded = (array) apply_filters( 'algolia_excluded_taxonomies', $excluded );
-		}
+		/**
+		 * Filters excluded taxonomies.
+		 *
+		 * @since      1.0.0
+		 * @deprecated 1.7.0 Use {@see 'algolia_excluded_taxonomies'} instead.
+		 *
+		 * @param array $excluded The excluded taxonomies.
+		 */
+		$excluded = (array) apply_filters_deprecated(
+			'algolia_taxonomies_blacklist',
+			[ $excluded ],
+			'1.7.0',
+			'algolia_excluded_taxonomies'
+		);
 
-		// Deprecated filter, but will maintain backwards compat.
-		if ( has_filter( 'algolia_taxonomies_blacklist' ) ) {
-			$excluded = (array) apply_filters( 'algolia_taxonomies_blacklist', $excluded );
-		}
+		$excluded = (array) apply_filters( 'algolia_excluded_taxonomies', $excluded );
 
 		return $excluded;
 	}
