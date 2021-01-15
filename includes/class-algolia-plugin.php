@@ -281,7 +281,7 @@ class Algolia_Plugin {
 		}
 
 		// Add one terms index per taxonomy.
-		$taxonomies           = get_taxonomies();
+		$taxonomies          = get_taxonomies();
 		$excluded_taxonomies = $this->settings->get_excluded_taxonomies();
 		foreach ( $taxonomies as $taxonomy ) {
 			// Skip excluded taxonomies.
