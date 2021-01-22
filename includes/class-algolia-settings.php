@@ -92,31 +92,77 @@ class Algolia_Settings {
 	}
 
 	/**
-	 * Get the post types blacklist.
+	 * Get the excluded post types.
 	 *
-	 * @author  WebDevStudios <contact@webdevstudios.com>
-	 * @since   1.0.0
+	 * @author     WebDevStudios <contact@webdevstudios.com>
+	 * @since      1.0.0
+	 * @deprecated 1.7.0 Use Algolia_Settings::get_excluded_post_types()
+	 * @see        Algolia_Settings::get_excluded_post_types()
 	 *
 	 * @return array
 	 */
 	public function get_post_types_blacklist() {
-		$blacklist = (array) apply_filters( 'algolia_post_types_blacklist', array( 'nav_menu_item' ) );
+		_deprecated_function(
+			__METHOD__,
+			'1.7.0',
+			'Algolia_Settings::get_excluded_post_types();'
+		);
+
+		return $this->get_excluded_post_types();
+	}
+
+	/**
+	 * Get the excluded post types.
+	 *
+	 * @author  WebDevStudios <contact@webdevstudios.com>
+	 * @since   1.7.0
+	 *
+	 * @return array
+	 */
+	public function get_excluded_post_types() {
+
+		// Default array of excluded post types.
+		$excluded = [ 'nav_menu_item' ];
+
+		/**
+		 * Filters excluded post types.
+		 *
+		 * @since      1.0.0
+		 * @deprecated 1.7.0 Use {@see 'algolia_excluded_post_types'} instead.
+		 *
+		 * @param array $excluded The excluded post types.
+		 */
+		$excluded = (array) apply_filters_deprecated(
+			'algolia_post_types_blacklist',
+			[ $excluded ],
+			'1.7.0',
+			'algolia_excluded_post_types'
+		);
+
+		/**
+		 * Filters excluded post types.
+		 *
+		 * @since 1.7.0
+		 *
+		 * @param array $excluded The excluded post types.
+		 */
+		$excluded = (array) apply_filters( 'algolia_excluded_post_types', $excluded );
 
 		// Native WordPress.
-		$blacklist[] = 'revision';
+		$excluded[] = 'revision';
 
 		// Native to Algolia Search plugin.
-		$blacklist[] = 'algolia_task';
-		$blacklist[] = 'algolia_log';
+		$excluded[] = 'algolia_task';
+		$excluded[] = 'algolia_log';
 
 		// Native to WordPress VIP platform.
-		$blacklist[] = 'kr_request_token';
-		$blacklist[] = 'kr_access_token';
-		$blacklist[] = 'deprecated_log';
-		$blacklist[] = 'async-scan-result';
-		$blacklist[] = 'scanresult';
+		$excluded[] = 'kr_request_token';
+		$excluded[] = 'kr_access_token';
+		$excluded[] = 'deprecated_log';
+		$excluded[] = 'async-scan-result';
+		$excluded[] = 'scanresult';
 
-		return array_unique( $blacklist );
+		return array_unique( $excluded );
 	}
 
 	/**
@@ -148,15 +194,60 @@ class Algolia_Settings {
 	}
 
 	/**
-	 * Get taxonomies blacklist.
+	 * Get excluded taxonomies.
 	 *
-	 * @author  WebDevStudios <contact@webdevstudios.com>
-	 * @since   1.0.0
+	 * @author     WebDevStudios <contact@webdevstudios.com>
+	 * @since      1.0.0
+	 * @deprecated 1.7.0 Use Algolia_Settings::get_excluded_taxonomies()
+	 * @see        Algolia_Settings::get_excluded_taxonomies()
 	 *
 	 * @return array
 	 */
 	public function get_taxonomies_blacklist() {
-		return (array) apply_filters( 'algolia_taxonomies_blacklist', array( 'nav_menu', 'link_category', 'post_format' ) );
+		_deprecated_function(
+			__METHOD__,
+			'1.7.0',
+			'Algolia_Settings::get_excluded_taxonomies();'
+		);
+
+		return $this->get_excluded_taxonomies();
+	}
+
+	/**
+	 * Get excluded taxonomies.
+	 *
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 * @since  1.7.0
+	 *
+	 * @return array
+	 */
+	public function get_excluded_taxonomies() {
+
+		// Default array of excluded taxonomies.
+		$excluded = [
+			'nav_menu',
+			'link_category',
+			'post_format',
+		];
+
+		/**
+		 * Filters excluded taxonomies.
+		 *
+		 * @since      1.0.0
+		 * @deprecated 1.7.0 Use {@see 'algolia_excluded_taxonomies'} instead.
+		 *
+		 * @param array $excluded The excluded taxonomies.
+		 */
+		$excluded = (array) apply_filters_deprecated(
+			'algolia_taxonomies_blacklist',
+			[ $excluded ],
+			'1.7.0',
+			'algolia_excluded_taxonomies'
+		);
+
+		$excluded = (array) apply_filters( 'algolia_excluded_taxonomies', $excluded );
+
+		return $excluded;
 	}
 
 	/**
