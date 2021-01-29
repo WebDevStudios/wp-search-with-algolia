@@ -5,6 +5,7 @@
  * @author  WebDevStudios <contact@webdevstudios.com>
  * @since   1.0.0
  *
+ * @version 1.7.0
  * @package WebDevStudios\WPSWA
  */
 
@@ -73,8 +74,8 @@ get_header();
 					},
 					searchParameters: {
 						facetingAfterDistinct: true,
-			highlightPreTag: '__ais-highlight__',
-			highlightPostTag: '__/ais-highlight__'
+						highlightPreTag: '__ais-highlight__',
+						highlightPostTag: '__/ais-highlight__'
 					}
 				});
 
