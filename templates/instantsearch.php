@@ -191,7 +191,7 @@ get_header();
 				/* Start */
 				search.start();
 
-				jQuery('#algolia-search-box input').attr('type', 'search').select();
+				jQuery( '#algolia-search-box input' ).attr( 'type', 'search' ).trigger( 'select' );
 			}
 		});
 	</script>
