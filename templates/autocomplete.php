@@ -174,7 +174,7 @@
 				} );
 
 			/* Force the dropdown to be re-drawn on scroll to handle fixed containers. */
-			jQuery( window ).scroll( function () {
+			jQuery( window ).on( 'scroll', function() {
 				if ( autocomplete.autocomplete.getWrapper().style.display === "block" ) {
 					autocomplete.autocomplete.close();
 					autocomplete.autocomplete.open();
