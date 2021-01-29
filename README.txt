@@ -116,6 +116,7 @@ Follow along with the changelog on [Github](https://github.com/WebDevStudios/wp-
 * Deprecate "blacklist" methods and filters
 * Fix replica RequestOptions error
 * Fix PHP 8 usort deprecation warning
+* Fix JQMIGRATE event shorthand is deprecated warnings in instantsearch.php and autocomplete.php templates
 
 = 1.6.0 =
 * Fix deletion of post records created before indexing was enabled
