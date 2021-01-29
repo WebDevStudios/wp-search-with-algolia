@@ -137,23 +137,23 @@
     "packages-dev": [
         {
             "name": "algolia/algoliasearch-client-php",
-            "version": "2.7.1",
+            "version": "2.7.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/algolia/algoliasearch-client-php.git",
-                "reference": "19c0a6c1ef44c0aafaf6c6238c1509ebde2d1a35"
+                "reference": "142a382e4649db0cb64d9eb8893872f1a4ba8dd3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/algolia/algoliasearch-client-php/zipball/19c0a6c1ef44c0aafaf6c6238c1509ebde2d1a35",
-                "reference": "19c0a6c1ef44c0aafaf6c6238c1509ebde2d1a35",
+                "url": "https://api.github.com/repos/algolia/algoliasearch-client-php/zipball/142a382e4649db0cb64d9eb8893872f1a4ba8dd3",
+                "reference": "142a382e4649db0cb64d9eb8893872f1a4ba8dd3",
                 "shasum": ""
             },
             "require": {
                 "ext-curl": "*",
                 "ext-json": "*",
                 "ext-mbstring": "*",
-                "php": "^5.3 || ^7.0",
+                "php": "^5.3 || ^7.0 || ^8.0",
                 "psr/http-message": "^1.0",
                 "psr/log": "^1.0",
                 "psr/simple-cache": "^1.0"
@@ -161,7 +161,7 @@
             "require-dev": {
                 "friendsofphp/php-cs-fixer": "^2.0",
                 "fzaninotto/faker": "^1.8",
-                "phpunit/phpunit": "^4.8",
+                "julienbourdeau/phpunit": "4.8.37",
                 "symfony/yaml": "^2.0 || ^4.0"
             },
             "suggest": {
@@ -203,7 +203,7 @@
                 "php",
                 "search"
             ],
-            "time": "2020-11-12T13:52:28+00:00"
+            "time": "2020-12-22T11:27:03+00:00"
         },
         {
             "name": "dealerdirect/phpcodesniffer-composer-installer",
