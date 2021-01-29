@@ -97,12 +97,25 @@
 		/* init Algolia client */
 		var client = algoliasearch( algolia.application_id, algolia.search_api_key );
 
+		var algoliaHitsSource = function( index, params ) {
+			return function( query, callback ) {
+				index
+					.search( query, params )
+					.then( function( response ) {
+						callback( response.hits, response );
+					})
+					.catch( function( error ) {
+						callback( [] );
+					});
+			}
+		}
+
 		/* setup default sources */
 		var sources = [];
 		jQuery.each( algolia.autocomplete.sources, function ( i, config ) {
 			var suggestion_template = wp.template( config[ 'tmpl_suggestion' ] );
 			sources.push( {
-				source: algoliaAutocomplete.sources.hits( client.initIndex( config[ 'index_name' ] ), {
+				source: algoliaHitsSource( client.initIndex( config[ 'index_name' ] ), {
 					hitsPerPage: config[ 'max_suggestions' ],
 					attributesToSnippet: [
 						'content:10'
