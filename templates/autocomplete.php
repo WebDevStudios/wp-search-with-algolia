@@ -94,9 +94,19 @@
 
 <script type="text/javascript">
 	jQuery( function () {
-		/* init Algolia client */
+		/* Initialize Algolia client */
 		var client = algoliasearch( algolia.application_id, algolia.search_api_key );
 
+		/**
+		 * Algolia hits source method.
+		 *
+		 * This method defines a custom source to use with autocomplete.js
+		 * instead of using its default one. The default one throws errors
+		 * before initializing autocomplete.
+		 *
+		 * @param object $index Algolia index object.
+		 * @param object $params Options object to use in search.
+		 */
 		var algoliaHitsSource = function( index, params ) {
 			return function( query, callback ) {
 				index
@@ -110,7 +120,7 @@
 			}
 		}
 
-		/* setup default sources */
+		/* Setup autocomplete.js sources */
 		var sources = [];
 		jQuery.each( algolia.autocomplete.sources, function ( i, config ) {
 			var suggestion_template = wp.template( config[ 'tmpl_suggestion' ] );
