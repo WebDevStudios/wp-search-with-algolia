@@ -74,8 +74,8 @@ get_header();
 					},
 					searchParameters: {
 						facetingAfterDistinct: true,
-			highlightPreTag: '__ais-highlight__',
-			highlightPostTag: '__/ais-highlight__'
+						highlightPreTag: '__ais-highlight__',
+						highlightPostTag: '__/ais-highlight__'
 					}
 				});
 
