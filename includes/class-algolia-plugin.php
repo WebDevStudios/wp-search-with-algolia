@@ -270,10 +270,10 @@ class Algolia_Plugin {
 		// Add one posts index per post type.
 		$post_types = get_post_types();
 
-		$post_types_blacklist = $this->settings->get_post_types_blacklist();
+		$excluded_post_types = $this->settings->get_excluded_post_types();
 		foreach ( $post_types as $post_type ) {
-			// Skip blacklisted post types.
-			if ( in_array( $post_type, $post_types_blacklist, true ) ) {
+			// Skip excluded post types.
+			if ( in_array( $post_type, $excluded_post_types, true ) ) {
 				continue;
 			}
 
@@ -281,11 +281,11 @@ class Algolia_Plugin {
 		}
 
 		// Add one terms index per taxonomy.
-		$taxonomies           = get_taxonomies();
-		$taxonomies_blacklist = $this->settings->get_taxonomies_blacklist();
+		$taxonomies          = get_taxonomies();
+		$excluded_taxonomies = $this->settings->get_excluded_taxonomies();
 		foreach ( $taxonomies as $taxonomy ) {
-			// Skip blacklisted post types.
-			if ( in_array( $taxonomy, $taxonomies_blacklist, true ) ) {
+			// Skip excluded taxonomies.
+			if ( in_array( $taxonomy, $excluded_taxonomies, true ) ) {
 				continue;
 			}
 

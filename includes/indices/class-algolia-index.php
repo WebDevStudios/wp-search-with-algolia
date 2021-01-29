@@ -731,7 +731,7 @@ abstract class Algolia_Index {
 		$this->get_index()->setSettings(
 			array(
 				'replicas' => $replica_index_names,
-			), false
+			)
 		);
 
 		$client = $this->get_client();

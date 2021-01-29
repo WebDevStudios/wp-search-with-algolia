@@ -5,7 +5,7 @@ Tags: Search, Algolia, Autocomplete, instant-search, relevant search, search hig
 Requires at least: 5.0
 Tested up to: 5.5
 Requires PHP: 7.2
-Stable tag: 1.6.0
+Stable tag: 1.7.0
 License: GNU General Public License v2.0, MIT License
 
 Improve search on your site. Autocomplete is included, along with full control over look, feel and relevance.
@@ -108,6 +108,16 @@ WebDevStudios provides end-to-end WordPress opportunities from strategy and plan
 == Changelog ==
 
 Follow along with the changelog on [Github](https://github.com/WebDevStudios/wp-search-with-algolia/releases).
+
+= 1.7.0 =
+* Remove 'screen' media attribute from enqueued CSS
+* Update Algolia PHP Search Client to version 2.7.3.
+* Add "exclude" methods and filters
+* Deprecate "blacklist" methods and filters
+* Fix replica RequestOptions error
+* Fix PHP 8 usort deprecation warning
+* Fix JQMIGRATE event shorthand is deprecated warnings in instantsearch.php and autocomplete.php templates
+* Add "@version" to template file headers
 
 = 1.6.0 =
 * Fix deletion of post records created before indexing was enabled
