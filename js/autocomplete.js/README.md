@@ -64,7 +64,7 @@ This JavaScript library adds a fast and fully-featured auto-completion menu to y
 
 ## Installation
 
-The `autocomplete.js` library must be included **after** jQuery, Zepto or Angular.js (with jQuery).
+The `autocomplete.js` library must be included **after** jQuery, Zepto or Angular.js (with jQuery). Else, it will use the embedded Zepto.
 
 ### jsDelivr
 
@@ -117,18 +117,35 @@ var autocomplete = require('autocomplete.js');
  1. Include `autocomplete.min.js`
  1. Initialize the auto-completion menu calling the `autocomplete` function
 
+ **Warning**: `autocomplete.js` is not compatible with the latest version algoliasearch v4 out of the box, but you can create a compatibility source by yourself like this:
+
 ```html
 <input type="text" id="search-input" placeholder="Search unicorns..." />
 
 <!-- [ ... ] -->
-<script src="https://cdn.jsdelivr.net/algoliasearch/3/algoliasearch.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/algoliasearch@4/dist/algoliasearch.umd.min.js"></script>
 <script src="https://cdn.jsdelivr.net/autocomplete.js/0/autocomplete.min.js"></script>
 <script>
   var client = algoliasearch('YourApplicationID', 'YourSearchOnlyAPIKey');
   var index = client.initIndex('YourIndex');
+
+  function newHitsSource(index, params) {
+    return function doSearch(query, cb) {
+      index
+        .search(query, params)
+        .then(function(res) {
+          cb(res.hits, res);
+        })
+        .catch(function(err) {
+          console.error(err);
+          cb([]);
+        });
+    };
+  }
+
   autocomplete('#search-input', { hint: false }, [
     {
-      source: autocomplete.sources.hits(index, { hitsPerPage: 5 }),
+      source: newHitsSource(index, { hitsPerPage: 5 }),
       displayKey: 'my_attribute',
       templates: {
         suggestion: function(suggestion) {
@@ -146,6 +163,8 @@ var autocomplete = require('autocomplete.js');
 
  1. Include `autocomplete.jquery.min.js` after including `jQuery`
  1. Initialize the auto-completion menu calling the `autocomplete` jQuery plugin
+ 
+ **Warning**: `autocomplete.js` is not compatible with the latest version algoliasearch v4, therefore we highly recommend you use algoliasearch v3 as specified in the code snippet below.
 
 ```html
 <input type="text" id="search-input" />
@@ -177,6 +196,8 @@ var autocomplete = require('autocomplete.js');
  1. Include `autocomplete.angular.min.js` after including `jQuery` & `Angular.js`
  1. Inject the `algolia.autocomplete` module
  1. Add the `autocomplete`, `aa-datasets` and the optional `aa-options` attribute to your search bar
+
+ **Warning**: `autocomplete.js` is not compatible with the latest version algoliasearch v4, therefore we highly recommend you use algoliasearch v3 as specified in the code snippet below.
 
 ```html
 <div ng-controller="yourController">
