@@ -149,7 +149,6 @@ get_header();
 					}),
 
 					/* Pagination widget */
-
 					instantsearch.widgets.pagination({
 						container: '#algolia-pagination'
 					}),
@@ -163,7 +162,6 @@ get_header();
 					}),
 
 					/* Categories refinement widget */
-
 					instantsearch.widgets.hierarchicalMenu({
 						container: '#facet-categories',
 						separator: ' > ',
@@ -172,7 +170,6 @@ get_header();
 					}),
 
 					/* Tags refinement widget */
-
 					instantsearch.widgets.refinementList({
 						container: '#facet-tags',
 						attribute: 'taxonomies.post_tag',
@@ -182,7 +179,6 @@ get_header();
 					}),
 
 					/* Users refinement widget */
-
 					instantsearch.widgets.menu({
 						container: '#facet-users',
 						attribute: 'post_author.display_name',
