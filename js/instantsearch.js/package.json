@@ -1,5 +1,5 @@
 {
-  "_from": "instantsearch.js@^4.10.0",
+  "_from": "instantsearch.js@~4.10.0",
   "_id": "instantsearch.js@4.10.0",
   "_inBundle": false,
   "_integrity": "sha512-Opwo3yhuCU4X3AbQUfI9OR5fvfc9zhd3OhPsU54CmZxjrq4ViJ0ySAeX9CC+3zlJ6kunTJKhxjBHUKv37mv1yQ==",
@@ -8,19 +8,19 @@
   "_requested": {
     "type": "range",
     "registry": true,
-    "raw": "instantsearch.js@^4.10.0",
+    "raw": "instantsearch.js@~4.10.0",
     "name": "instantsearch.js",
     "escapedName": "instantsearch.js",
-    "rawSpec": "^4.10.0",
+    "rawSpec": "~4.10.0",
     "saveSpec": null,
-    "fetchSpec": "^4.10.0"
+    "fetchSpec": "~4.10.0"
   },
   "_requiredBy": [
     "#USER"
   ],
   "_resolved": "https://registry.npmjs.org/instantsearch.js/-/instantsearch.js-4.10.0.tgz",
   "_shasum": "74cb6b47f83e22d100aa7f9278bc70665fa098c2",
-  "_spec": "instantsearch.js@^4.10.0",
+  "_spec": "instantsearch.js@~4.10.0",
   "_where": "/Users/asharirfan/Documents/code/wp-algolia/app/public/wp-content/plugins/wp-search-with-algolia",
   "author": {
     "name": "Algolia",
