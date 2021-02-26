@@ -134,7 +134,33 @@ class Algolia_Plugin {
 		$this->compatibility = new Algolia_Compatibility();
 		$this->styles        = new Algolia_Styles();
 		$this->scripts       = new Algolia_Scripts();
+
 		add_action( 'init', array( $this, 'load' ), 20 );
+		add_action(
+			'in_plugin_update_message-' . ALGOLIA_PLUGIN_BASENAME,
+			array( $this, 'major_release_notice' ),
+			10,
+			2
+		);
+	}
+
+	/**
+	 * Major release notice for versions less than 2.0.0
+	 *
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 * @since  1.8.0
+	 *
+	 * @param array $plugin_data Plugin data.
+	 * @return void
+	 */
+	public function major_release_notice( $plugin_data ) {
+
+		// Bail if the version is greater or equal to 2.0.0
+		if ( version_compare( $plugin_data['Version'], '2.0.0', '>=' ) ) {
+			return;
+		}
+
+		// Show the major release message to inform users.
 	}
 
 	/**
