@@ -44,6 +44,8 @@ require_once ALGOLIA_PATH . 'includes/watchers/class-algolia-post-changes-watche
 require_once ALGOLIA_PATH . 'includes/watchers/class-algolia-term-changes-watcher.php';
 require_once ALGOLIA_PATH . 'includes/watchers/class-algolia-user-changes-watcher.php';
 
+require_once ALGOLIA_PATH . 'includes/utilities/class-algolia-template-utils.php';
+
 if ( is_admin() ) {
 	require_once ALGOLIA_PATH . 'includes/admin/class-algolia-admin.php';
 	require_once ALGOLIA_PATH . 'includes/admin/class-algolia-admin-page-autocomplete.php';
