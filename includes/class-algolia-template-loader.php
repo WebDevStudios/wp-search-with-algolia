@@ -198,7 +198,7 @@ class Algolia_Template_Loader {
 			}
 		);
 
-		return $this->locate_template( 'instantsearch.php' );
+		return Algolia_Template_Utils::locate_template( 'instantsearch.php' );
 	}
 
 	/**
