@@ -56,7 +56,7 @@ class Algolia_Template_Utils {
 	}
 
 	/**
-	 * Get the "filtered" theme templates directory with trailing slash.
+	 * Get the "filtered" theme templates directory name with trailing slash.
 	 *
 	 * @author WebDevStudios <contact@webdevstudios.com>
 	 * @since  1.8.0-dev
@@ -64,6 +64,24 @@ class Algolia_Template_Utils {
 	 * @return string The theme templates directory name with trailing slash.
 	 */
 	public static function get_filtered_theme_templates_dirname() {
+
+		$path = self::get_theme_templates_dirname();
+
+		/**
+		 * Allow developers to override the theme templates dirname.
+		 *
+		 * @since      1.0.0
+		 * @deprecated 1.8.0-dev Use {@see 'algolia_theme_templates_dirname'} instead.
+		 *
+		 * @param string $path The theme templates directory name with trailing slash.
+		 *                     Defaults to 'algolia/'.
+		 */
+		$path = (string) apply_filters_deprecated(
+			'algolia_templates_path',
+			[ $path ],
+			'1.8.0-dev',
+			'algolia_theme_templates_dirname'
+		);
 
 		/**
 		 * Allow developers to override the theme templates dirname.
@@ -75,7 +93,7 @@ class Algolia_Template_Utils {
 		 */
 		return (string) apply_filters(
 			'algolia_theme_templates_dirname',
-			self::get_theme_templates_dirname()
+			$path
 		);
 	}
 
