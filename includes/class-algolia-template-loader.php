@@ -214,29 +214,21 @@ class Algolia_Template_Loader {
 	/**
 	 * Locate a template.
 	 *
-	 * @author  WebDevStudios <contact@webdevstudios.com>
-	 * @since   1.0.0
+	 * @author     WebDevStudios <contact@webdevstudios.com>
+	 * @since      1.0.0
+	 * @deprecated 1.8.0-dev Use Algolia_Template_Utils::locate_template()
+	 * @see        Algolia_Template_Utils::locate_template()
 	 *
 	 * @param string $file The template file.
 	 *
 	 * @return string
 	 */
 	private function locate_template( $file ) {
-		$locations[] = $file;
-
-		$templates_path = $this->plugin->get_templates_path();
-		if ( 'algolia/' !== $templates_path ) {
-			$locations[] = 'algolia/' . $file;
-		}
-
-		$locations[] = $templates_path . $file;
-
-		$locations = (array) apply_filters( 'algolia_template_locations', $locations, $file );
-
-		$template = locate_template( array_unique( $locations ) );
-
-		$default_template = (string) apply_filters( 'algolia_default_template', $this->plugin->get_path() . '/templates/' . $file, $file );
-
-		return $template ? $template : $default_template;
+		_deprecated_function(
+			__METHOD__,
+			'1.8.0-dev',
+			'Algolia_Template_Utils::locate_template()'
+		);
+		return Algolia_Template_Utils::locate_template( $file );
 	}
 }
