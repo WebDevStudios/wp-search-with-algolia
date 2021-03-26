@@ -156,8 +156,8 @@ class Algolia_Template_Loader {
 	 *
 	 * Handles template usage so that we can use our own templates instead of the themes.
 	 *
-	 * Templates are in the 'templates' folder. algolia looks for theme.
-	 * overrides in /your-theme/algolia/ by default.
+	 * Plugin templates are located in the 'templates' directory.
+	 * Customized templates are in the theme's 'algolia' directory.
 	 *
 	 * @author  WebDevStudios <contact@webdevstudios.com>
 	 * @since   1.0.0
