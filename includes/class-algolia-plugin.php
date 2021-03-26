@@ -88,6 +88,16 @@ class Algolia_Plugin {
 	private $scripts;
 
 	/**
+	 * Instance of Algolia_Update_Messages.
+	 *
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 * @since  1.8.0-dev
+	 *
+	 * @var Algolia_Update_Messages
+	 */
+	private $update_messages;
+
+	/**
 	 * Instance of Algolia_Template_Loader.
 	 *
 	 * @author WebDevStudios <contact@webdevstudios.com>
@@ -129,38 +139,14 @@ class Algolia_Plugin {
 	 * @since  1.0.0
 	 */
 	public function __construct() {
-		$this->settings      = new Algolia_Settings();
-		$this->api           = new Algolia_API( $this->settings );
-		$this->compatibility = new Algolia_Compatibility();
-		$this->styles        = new Algolia_Styles();
-		$this->scripts       = new Algolia_Scripts();
+		$this->settings        = new Algolia_Settings();
+		$this->api             = new Algolia_API( $this->settings );
+		$this->compatibility   = new Algolia_Compatibility();
+		$this->styles          = new Algolia_Styles();
+		$this->scripts         = new Algolia_Scripts();
+		$this->update_messages = new Algolia_Update_Messages();
 
 		add_action( 'init', array( $this, 'load' ), 20 );
-		add_action(
-			'in_plugin_update_message-' . ALGOLIA_PLUGIN_BASENAME,
-			array( $this, 'major_release_notice' ),
-			10,
-			2
-		);
-	}
-
-	/**
-	 * Major release notice for versions less than 2.0.0
-	 *
-	 * @author WebDevStudios <contact@webdevstudios.com>
-	 * @since  1.8.0
-	 *
-	 * @param array $plugin_data Plugin data.
-	 * @return void
-	 */
-	public function major_release_notice( $plugin_data ) {
-
-		// Bail if the version is greater or equal to 2.0.0
-		if ( version_compare( $plugin_data['Version'], '2.0.0', '>=' ) ) {
-			return;
-		}
-
-		// Show the major release message to inform users.
 	}
 
 	/**
