@@ -394,13 +394,23 @@ class Algolia_Plugin {
 	/**
 	 * Get the templates path.
 	 *
-	 * @author WebDevStudios <contact@webdevstudios.com>
-	 * @since  1.0.0
+	 * Somewhat misleading method name.
+	 * Actually returns a path segment (directory name) with trailing slash.
+	 *
+	 * @author     WebDevStudios <contact@webdevstudios.com>
+	 * @since      1.0.0
+	 * @deprecated 1.8.0-dev Use Algolia_Template_Utils::get_filtered_theme_templates_dirname()
+	 * @see        Algolia_Template_Utils::get_filtered_theme_templates_dirname()
 	 *
 	 * @return string
 	 */
 	public function get_templates_path() {
-		return (string) apply_filters( 'algolia_templates_path', 'algolia/' );
+		_deprecated_function(
+			__METHOD__,
+			'1.8.0-dev',
+			'Algolia_Template_Utils::get_filtered_theme_templates_dirname()'
+		);
+		return (string) Algolia_Template_Utils::get_filtered_theme_templates_dirname();
 	}
 
 	/**
