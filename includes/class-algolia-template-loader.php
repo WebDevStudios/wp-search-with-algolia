@@ -206,9 +206,11 @@ class Algolia_Template_Loader {
 	 *
 	 * @author  WebDevStudios <contact@webdevstudios.com>
 	 * @since   1.0.0
+	 *
+	 * @return string
 	 */
 	public function load_autocomplete_template() {
-		require $this->locate_template( 'autocomplete.php' );
+		return Algolia_Template_Utils::locate_template( 'autocomplete.php' );
 	}
 
 	/**
