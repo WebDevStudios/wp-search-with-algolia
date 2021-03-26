@@ -41,7 +41,7 @@ class Algolia_Update_Messages {
 	 */
 	public function major_release_notice( $plugin_data ) {
 
-		// Bail if the version is greater or equal to 2.0.0
+		// Bail if the version is greater or equal to 2.0.0.
 		if ( version_compare( $plugin_data['Version'], '2.0.0', '>=' ) ) {
 			return;
 		}
