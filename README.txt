@@ -109,6 +109,12 @@ WebDevStudios provides end-to-end WordPress opportunities from strategy and plan
 
 Follow along with the changelog on [Github](https://github.com/WebDevStudios/wp-search-with-algolia/releases).
 
+= 1.8.0-dev =
+* Add Algolia_Template_Utils class
+* Deprecate Algolia_Template_Loader::locate_template
+* Deprecate Algolia_Plugin::get_templates_path method
+* Deprecate algolia_templates_path filter
+
 = 1.7.0 =
 * Remove 'screen' media attribute from enqueued CSS
 * Update Algolia PHP Search Client to version 2.7.3.
