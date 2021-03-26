@@ -20,7 +20,7 @@ class Algolia_Template_Utils {
 	 *
 	 * @var string
 	 */
-	const TEMPLATES_DIR = 'templates';
+	const PLUGIN_TEMPLATES_DIR = 'templates';
 
 	/**
 	 * The theme template directory name.
@@ -40,7 +40,7 @@ class Algolia_Template_Utils {
 	 * @return string The plugin templates directory name with trailing slash.
 	 */
 	public static function get_plugin_templates_dirname() {
-		return (string) self::TEMPLATES_DIR . '/';
+		return (string) self::PLUGIN_TEMPLATES_DIR . '/';
 	}
 
 	/**
