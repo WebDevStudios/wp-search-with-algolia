@@ -45,6 +45,7 @@ require_once ALGOLIA_PATH . 'includes/watchers/class-algolia-term-changes-watche
 require_once ALGOLIA_PATH . 'includes/watchers/class-algolia-user-changes-watcher.php';
 
 require_once ALGOLIA_PATH . 'includes/utilities/class-algolia-template-utils.php';
+require_once ALGOLIA_PATH . 'includes/utilities/class-algolia-version-utils.php';
 require_once ALGOLIA_PATH . 'includes/utilities/class-algolia-update-messages.php';
 
 if ( is_admin() ) {
@@ -52,4 +53,5 @@ if ( is_admin() ) {
 	require_once ALGOLIA_PATH . 'includes/admin/class-algolia-admin-page-autocomplete.php';
 	require_once ALGOLIA_PATH . 'includes/admin/class-algolia-admin-page-native-search.php';
 	require_once ALGOLIA_PATH . 'includes/admin/class-algolia-admin-page-settings.php';
+	require_once ALGOLIA_PATH . 'includes/admin/class-algolia-admin-template-notices.php';
 }
