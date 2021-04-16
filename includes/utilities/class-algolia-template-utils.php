@@ -32,6 +32,18 @@ class Algolia_Template_Utils {
 	const THEME_TEMPLATES_DIR = 'algolia';
 
 	/**
+	 * The template file names.
+	 *
+	 * @since 1.8.0-dev
+	 *
+	 * @var string[]
+	 */
+	const TEMPLATE_FILE_NAMES = [
+		'autocomplete.php',
+		'instantsearch.php',
+	];
+
+	/**
 	 * Get the plugin templates directory with trailing slash.
 	 *
 	 * @author WebDevStudios <contact@webdevstudios.com>
@@ -142,6 +154,10 @@ class Algolia_Template_Utils {
 	/**
 	 * Locate a template.
 	 *
+	 * There are numerous filters related to changing template locations,
+	 * which makes it a little more difficult than it should be
+	 * to find where a "customized" template actually exists.
+	 *
 	 * @author  WebDevStudios <contact@webdevstudios.com>
 	 * @since   1.8.0-dev
 	 *
@@ -198,9 +214,11 @@ class Algolia_Template_Utils {
 	 *
 	 * @param string $template Full path to the template file.
 	 *
-	 * @return string
+	 * @return null|string Template version number string if it exists,
+	 *                     empty string if no version number exists,
+	 *                     else null if template file is not found or can't be read.
 	 */
-	public static function get_version( $template ): ?string {
+	public static function get_template_version( $template ): ?string {
 
 		// Null, if template file does not exist or cannot be read.
 		if ( ! is_file( $template ) || ! is_readable( $template ) ) {
@@ -232,5 +250,85 @@ class Algolia_Template_Utils {
 		}
 
 		return _cleanup_header_comment( $matches[1] );
+	}
+
+	/**
+	 * Get the Alglia Template File Names.
+	 *
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 * @since  1.8.0-dev
+	 *
+	 * @return array
+	 */
+	public static function get_template_file_names(): array {
+		return (array) self::TEMPLATE_FILE_NAMES;
+	}
+
+	/**
+	 * Get unfiltered array of plugin's core template paths.
+	 *
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 * @since  1.8.0-dev
+	 *
+	 * @return array An array of the plugin's core template paths.
+	 */
+	public static function get_core_template_paths(): array {
+		$plugin_template_paths = [];
+		$template_filenames    = self::get_template_file_names();
+		foreach ( $template_filenames as $file ) {
+			$plugin_template_paths[ $file ] = self::get_default_template( $file );
+		}
+
+		return (array) $plugin_template_paths;
+	}
+
+	/**
+	 * Get array of located template paths.
+	 *
+	 * There are numerous filters related to changing template locations,
+	 * which makes it a little more difficult than it should be
+	 * to find where a "customized" template actually exists.
+	 * For that reason, we will call this "located template paths."
+	 * They aren't necessarily customized template paths from the theme,
+	 * they might be the same as the plugin's core templates.
+	 *
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 * @since  1.8.0-dev
+	 *
+	 * @return array
+	 */
+	public static function get_located_template_paths(): array {
+		$located_template_paths = [];
+		$template_filenames     = self::get_template_file_names();
+		foreach ( $template_filenames as $file ) {
+			$located_template_paths[ $file ] = self::locate_template( $file );
+		}
+
+		return (array) $located_template_paths;
+	}
+
+	/**
+	 * Get array of custom template paths.
+	 *
+	 * Diffs the plugin's core template paths against the located template paths.
+	 *
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 * @since  1.8.0-dev
+	 *
+	 * @return array Array of custom template paths,
+	 *               else empty array if no custom templates found.
+	 */
+	public static function get_custom_template_paths(): array {
+
+		$customized_template_paths = array_diff(
+			self::get_located_template_paths(),
+			self::get_core_template_paths()
+		);
+
+		if ( empty( $customized_template_paths ) ) {
+			return [];
+		}
+
+		return (array) $customized_template_paths;
 	}
 }
