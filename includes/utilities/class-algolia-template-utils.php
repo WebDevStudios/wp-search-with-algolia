@@ -154,6 +154,10 @@ class Algolia_Template_Utils {
 	/**
 	 * Locate a template.
 	 *
+	 * There are numerous filters related to changing template locations,
+	 * which makes it a little more difficult than it should be
+	 * to find where a "customized" template actually exists.
+	 *
 	 * @author  WebDevStudios <contact@webdevstudios.com>
 	 * @since   1.8.0-dev
 	 *
@@ -210,7 +214,9 @@ class Algolia_Template_Utils {
 	 *
 	 * @param string $template Full path to the template file.
 	 *
-	 * @return string
+	 * @return null|string Template version number string if it exists,
+	 *                     empty string if no version number exists,
+	 *                     else null if template file is not found or can't be read.
 	 */
 	public static function get_template_version( $template ): ?string {
 
