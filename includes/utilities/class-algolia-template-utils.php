@@ -212,7 +212,7 @@ class Algolia_Template_Utils {
 	 *
 	 * @return string
 	 */
-	public static function get_version( $template ): ?string {
+	public static function get_template_version( $template ): ?string {
 
 		// Null, if template file does not exist or cannot be read.
 		if ( ! is_file( $template ) || ! is_readable( $template ) ) {
