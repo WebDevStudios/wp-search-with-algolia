@@ -57,17 +57,8 @@ class Algolia_Admin_Template_Notices {
 		}
 
 		foreach ( $custom_template_versions as $filename => $file_version ) {
-
-			$core_major_version = Algolia_Version_Utils::get_major_version(
-				$core_template_versions[ $filename ]
-			);
-
-			$custom_major_version = Algolia_Version_Utils::get_major_version(
-				$file_version
-			);
-
-			// Error if MAJOR version does not match, or custom template version unknown.
-			if ( $custom_major_version !== $core_major_version ) {
+			// Error if versions do not match, or custom template version unknown.
+			if ( version_compare( $file_version, $core_template_versions[ $filename ], '!=' ) ) {
 				$error_notices[] = sprintf(
 					/* translators: placeholder 1 is template filename, placeholder 2 is custom template version, placeholder 3 is core template version. */
 					esc_html__(
