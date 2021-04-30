@@ -25,7 +25,7 @@ This plugin requires API keys from [Algolia](https://www.algolia.com/). API keys
 = Links =
 * [WebDevStudios](https://webdevstudios.com)
 * [Algolia](https://algolia.com)
-* [Documentation](https://community.algolia.com/wordpress/configuration.html)
+* [Documentation](https://github.com/WebDevStudios/wp-search-with-algolia/wiki)
 * [Support](https://github.com/WebDevStudios/wp-search-with-algolia/issues)
 
 *This plugin is a derivative work of the code from the [Search by Algolia – Instant & Relevant results](https://wordpress.org/plugins/search-by-algolia-instant-relevant-results/) plugin for WordPress, which is licensed under the GPLv2.*
@@ -40,7 +40,7 @@ From your WordPress dashboard:
 2. **Search** for "WP Search with Algolia"
 3. **Activate** WP Search with Algolia from your Plugins page
 4. **Click** on the new menu item "Algolia Search" and enter your API keys
-5. **Read** the step by step [configuration guide](https://community.algolia.com/wordpress/configuration.html)
+5. **Read** the step by step [configuration guide](https://github.com/WebDevStudios/wp-search-with-algolia/wiki/Getting-Started)
 
 == Frequently Asked Questions ==
 
@@ -70,17 +70,17 @@ Yes. Because Algolia no longer supports their plugin, you will no longer receive
 * OpenSSL greater than 1.0.1
 * Some payment gateways require fsockopen support (for IPN access)
 
-Visit the [Search by Algolia server requirements documentation](https://community.algolia.com/wordpress/installation.html) for a detailed list of server requirements.
+Visit the [Search by Algolia server requirements documentation](https://github.com/WebDevStudios/wp-search-with-algolia/wiki/WP-Search-with-Algolia-plugin-Installation) for a detailed list of server requirements.
 
 = Where can I find Algolia documentation and user guides? =
 
-- For help setting up and configuring Search by Algolia please refer to the [user guide](https://community.algolia.com/wordpress/installation.html).
-- For extending or theming the Autocomplete dropdown, see the [Autocomplete Customization guide](https://community.algolia.com/wordpress/customize-autocomplete.html).
-- For extending or theming the Instant Search results page, see the [Search Page Customization guide](https://community.algolia.com/wordpress/customize-search-page.html).
+- For help setting up and configuring WP Search with Algolia please refer to the [user guide](https://github.com/WebDevStudios/wp-search-with-algolia/wiki/WP-Search-with-Algolia-plugin-Installation).
+- For extending or theming the Autocomplete dropdown, see the [Autocomplete Customization guide](https://github.com/WebDevStudios/wp-search-with-algolia/wiki/Customize-the-Autocomplete-dropdown).
+- For extending or theming the Instant Search results page, see the [Search Page Customization guide](https://github.com/WebDevStudios/wp-search-with-algolia/wiki/Customize-your-search-page).
 
 = Will it work with my theme? =
 
-Yes. This plugin will work with any theme, but the Instant Search results page may require some styling to make it match nicely. See the [Search Page Customization](https://community.algolia.com/wordpress/customize-search-page.html).
+Yes. This plugin will work with any theme, but the Instant Search results page may require some styling to make it match nicely. See the [Search Page Customization](https://github.com/WebDevStudios/wp-search-with-algolia/wiki/Customize-your-search-page).
 
 = Where can I report bugs, request features, or contribute to the project? =
 
