@@ -65,13 +65,73 @@ class Algolia_Update_Messages {
 	 *
 	 * @return void
 	 */
-	public function major_release_notice( $plugin_data ) {
+	public function in_plugin_update_message( $plugin_data, $response ) {
 
-		// Bail if the version is greater or equal to 2.0.0.
-		if ( version_compare( $plugin_data['Version'], '2.0.0', '>=' ) ) {
+		$h4_open  = '<h4 class="update-available">';
+		$h4_close = '</h4>';
+
+		$update_title = __( 'Changes in this update:', 'wp-search-with-algolia' );
+
+		$ul_open  = '<ul class="update-available">';
+		$ul_close = '</ul>';
+
+		$changelist = '';
+
+		$current_major_version = Algolia_Version_Utils::get_major_version(
+			$plugin_data['Version']
+		);
+
+		$new_major_version = Algolia_Version_Utils::get_major_version(
+			$response->new_version
+		);
+
+		if ( $current_major_version < $new_major_version ) {
+			$update_title = sprintf(
+				/* translators: placeholder 1 is current plugin version, placeholder 2 is the available update version. */
+				esc_html__( 'This is a major version update, from %1$s to %2$s, which may contain backwards incompatible changes.', 'wp-search-with-algolia' ),
+				$plugin_data['Version'],
+				$response->new_version
+			);
+		}
+
+		require_once ABSPATH . 'wp-admin/includes/plugin-install.php';
+
+		$plugin_information = plugins_api(
+			'plugin_information',
+			[ 'slug' => $response->slug ]
+		);
+
+		if (
+			! $plugin_information
+			|| is_wp_error( $plugin_information )
+			|| empty( $plugin_information->sections['changelog'] )
+		) {
+			if ( $current_major_version < $new_major_version ) {
+				echo wp_kses_post( $h4_open . $update_title . $h4_close );
+			}
 			return;
 		}
 
-		// Show the major release message to inform users.
+		$changelog = $plugin_information->sections['changelog'];
+
+		$changes = preg_replace( '#<\s*?p\b[^>]*>(.*?)</p\b[^>]*>#s', '', $changelog );
+
+		$pos = stripos( $changes, '<h4>' . $plugin_data['Version'] . '</h4>' );
+
+		if ( false === $pos ) {
+			if ( $current_major_version < $new_major_version ) {
+				echo wp_kses_post( $h4_open . $update_title . $h4_close );
+			}
+			return;
+		}
+
+		$changes = trim( substr( $changes, 0, $pos ) );
+
+		$changes = preg_replace( '/<h4>(.*)<\/h4>.*/iU', '', $changes );
+
+		$changelist .= strip_tags( $changes, '<li>' );
+
+		echo wp_kses_post(
+			$h4_open . $update_title . $h4_close . $changelist );
 	}
 }
