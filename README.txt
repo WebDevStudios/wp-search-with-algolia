@@ -1,4 +1,3 @@
-
 === WP Search with Algolia ===
 Contributors: WebDevStudios, williamsba1, gregrickaby, tw2113, richaber, mrasharirfan
 Tags: Search, Algolia, Autocomplete, instant-search, relevant search, search highlight, faceted search, find-as-you-type search, suggest, search by category, ajax search, better search, custom search
