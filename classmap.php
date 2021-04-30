@@ -46,6 +46,7 @@ require_once ALGOLIA_PATH . 'includes/watchers/class-algolia-user-changes-watche
 
 require_once ALGOLIA_PATH . 'includes/utilities/class-algolia-template-utils.php';
 require_once ALGOLIA_PATH . 'includes/utilities/class-algolia-version-utils.php';
+require_once ALGOLIA_PATH . 'includes/utilities/class-algolia-update-messages.php';
 
 if ( is_admin() ) {
 	require_once ALGOLIA_PATH . 'includes/admin/class-algolia-admin.php';
