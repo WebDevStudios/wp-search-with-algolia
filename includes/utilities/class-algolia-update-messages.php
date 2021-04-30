@@ -70,8 +70,6 @@ class Algolia_Update_Messages {
 		$h4_open  = '<h4 class="update-available">';
 		$h4_close = '</h4>';
 
-		$update_title = __( 'Changes in this update:', 'wp-search-with-algolia' );
-
 		$ul_open  = '<ul class="update-available">';
 		$ul_close = '</ul>';
 
@@ -85,14 +83,16 @@ class Algolia_Update_Messages {
 			$response->new_version
 		);
 
-		if ( $current_major_version < $new_major_version ) {
-			$update_title = sprintf(
-				/* translators: placeholder 1 is current plugin version, placeholder 2 is the available update version. */
-				esc_html__( 'This is a major version update, from %1$s to %2$s, which may contain backwards incompatible changes.', 'wp-search-with-algolia' ),
-				$plugin_data['Version'],
-				$response->new_version
-			);
+		if ( $current_major_version === $new_major_version ) {
+			return;
 		}
+
+		$update_title = sprintf(
+			/* translators: placeholder 1 is current plugin version, placeholder 2 is the available update version. */
+			esc_html__( 'This is a major version update, from %1$s to %2$s, which may contain backwards incompatible changes.', 'wp-search-with-algolia' ),
+			$plugin_data['Version'],
+			$response->new_version
+		);
 
 		require_once ABSPATH . 'wp-admin/includes/plugin-install.php';
 
@@ -106,9 +106,7 @@ class Algolia_Update_Messages {
 			|| is_wp_error( $plugin_information )
 			|| empty( $plugin_information->sections['changelog'] )
 		) {
-			if ( $current_major_version < $new_major_version ) {
-				echo wp_kses_post( $h4_open . $update_title . $h4_close );
-			}
+			echo wp_kses_post( $h4_open . $update_title . $h4_close );
 			return;
 		}
 
@@ -119,9 +117,7 @@ class Algolia_Update_Messages {
 		$pos = stripos( $changes, '<h4>' . $plugin_data['Version'] . '</h4>' );
 
 		if ( false === $pos ) {
-			if ( $current_major_version < $new_major_version ) {
-				echo wp_kses_post( $h4_open . $update_title . $h4_close );
-			}
+			echo wp_kses_post( $h4_open . $update_title . $h4_close );
 			return;
 		}
 
@@ -131,7 +127,6 @@ class Algolia_Update_Messages {
 
 		$changelist .= strip_tags( $changes, '<li>' );
 
-		echo wp_kses_post(
-			$h4_open . $update_title . $h4_close . $changelist );
+		echo wp_kses_post( $h4_open . $update_title . $h4_close . $changelist );
 	}
 }
