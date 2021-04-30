@@ -80,7 +80,7 @@ Visit the [WP Search with Algolia server requirements documentation](https://git
 
 = Will it work with my theme? =
 
-Yes. This plugin will work with any theme, but the Instant Search results page may require some styling to make it match nicely. See the [Search Page Customization](https://github.com/WebDevStudios/wp-search-with-algolia/wiki/Customize-your-search-page).
+Yes. This plugin should work with most themes that do not override the default WordPress search behavior. Instant Search results page may require some styling to make it match nicely. See the [Search Page Customization](https://github.com/WebDevStudios/wp-search-with-algolia/wiki/Customize-your-search-page).
 
 = Where can I report bugs, request features, or contribute to the project? =
 
