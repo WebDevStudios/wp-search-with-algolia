@@ -125,7 +125,7 @@ class Algolia_Update_Messages {
 
 		$changes = preg_replace( '/<h4>(.*)<\/h4>.*/iU', '', $changes );
 
-		$changelist .= strip_tags( $changes, '<li>' );
+		$changelist .= $ul_open . strip_tags( $changes, '<li>' ) . $ul_close;
 
 		echo wp_kses_post( $h4_open . $update_title . $h4_close . $changelist );
 	}
