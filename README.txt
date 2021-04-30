@@ -70,7 +70,7 @@ Yes. Because Algolia no longer supports their plugin, you will no longer receive
 * OpenSSL greater than 1.0.1
 * Some payment gateways require fsockopen support (for IPN access)
 
-Visit the [Search by Algolia server requirements documentation](https://github.com/WebDevStudios/wp-search-with-algolia/wiki/WP-Search-with-Algolia-plugin-Installation) for a detailed list of server requirements.
+Visit the [WP Search with Algolia server requirements documentation](https://github.com/WebDevStudios/wp-search-with-algolia/wiki/WP-Search-with-Algolia-plugin-Installation) for a detailed list of server requirements.
 
 = Where can I find WP Search with Algolia documentation and user guides? =
 
