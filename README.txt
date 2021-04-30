@@ -72,7 +72,7 @@ Yes. Because Algolia no longer supports their plugin, you will no longer receive
 
 Visit the [Search by Algolia server requirements documentation](https://github.com/WebDevStudios/wp-search-with-algolia/wiki/WP-Search-with-Algolia-plugin-Installation) for a detailed list of server requirements.
 
-= Where can I find Algolia documentation and user guides? =
+= Where can I find WP Search with Algolia documentation and user guides? =
 
 - For help setting up and configuring WP Search with Algolia please refer to the [user guide](https://github.com/WebDevStudios/wp-search-with-algolia/wiki/WP-Search-with-Algolia-plugin-Installation).
 - For extending or theming the Autocomplete dropdown, see the [Autocomplete Customization guide](https://github.com/WebDevStudios/wp-search-with-algolia/wiki/Customize-the-Autocomplete-dropdown).
