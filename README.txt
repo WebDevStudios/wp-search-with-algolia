@@ -90,8 +90,6 @@ All development is handled on [GitHub](https://github.com/WebDevStudios/wp-searc
 
 Algolia offers its Search as a Service provider on a incremental payment program, including a free Community Plan which includes 10,000 records & 50,000 operations per month. Beyond that, [plans](https://www.algolia.com/pricing/) start at $29/month.
 
-*Note: there isn't a direct correlation between the number of posts in WordPress and the number of records in Algolia. Also note that we only offer support starting from the PRO plan.On average, you can expect to have about 10 times more records than you have posts, though this is not a golden rule and you could end up with more records.*
-
 = About WebDevStudios =
 
 WebDevStudios provides end-to-end WordPress opportunities from strategy and planning to website design and development, as well as full data migration, extensive API integrations, scalability, performance and long-term guidance and maintenance. We have service options and solutions for start-ups, small to mid-size businesses, enterprise organizations and marketing agencies.
