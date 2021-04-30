@@ -24,7 +24,7 @@ class Algolia_Update_Messages {
 	public function __construct() {
 		add_action(
 			'in_plugin_update_message-' . ALGOLIA_PLUGIN_BASENAME,
-			array( $this, 'major_release_notice' ),
+			[ $this, 'in_plugin_update_message' ],
 			10,
 			2
 		);
