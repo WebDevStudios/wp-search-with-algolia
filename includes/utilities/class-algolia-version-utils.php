@@ -3,7 +3,7 @@
  * Algolia_Version_Utils class file.
  *
  * @author  WebDevStudios <contact@webdevstudios.com>
- * @since   1.8.0-dev
+ * @since   1.8.0
  *
  * @package WebDevStudios\WPSWA
  */
@@ -11,7 +11,7 @@
 /**
  * Class Algolia_Version_Utils
  *
- * @since 1.8.0-dev
+ * @since 1.8.0
  */
 class Algolia_Version_Utils {
 
@@ -21,7 +21,7 @@ class Algolia_Version_Utils {
 	 * @link https://semver.org/#is-there-a-suggested-regular-expression-regex-to-check-a-semver-string
 	 * @link https://regex101.com/r/Ly7O1x/3/
 	 *
-	 * @since   1.8.0-dev
+	 * @since   1.8.0
 	 *
 	 * @var string
 	 */
@@ -51,7 +51,7 @@ class Algolia_Version_Utils {
 	 * @link https://semver.org/#is-there-a-suggested-regular-expression-regex-to-check-a-semver-string
 	 *
 	 * @author WebDevStudios <contact@webdevstudios.com>
-	 * @since  1.8.0-dev
+	 * @since  1.8.0
 	 *
 	 * @param string $version Version number string.
 	 *
@@ -72,7 +72,7 @@ class Algolia_Version_Utils {
 	 * Get the MAJOR version number from version string.
 	 *
 	 * @author WebDevStudios <contact@webdevstudios.com>
-	 * @since  1.8.0-dev
+	 * @since  1.8.0
 	 *
 	 * @param string $version Version number string.
 	 *
@@ -91,7 +91,7 @@ class Algolia_Version_Utils {
 	 * Get the MINOR version number from version string.
 	 *
 	 * @author WebDevStudios <contact@webdevstudios.com>
-	 * @since  1.8.0-dev
+	 * @since  1.8.0
 	 *
 	 * @param string $version Version number string.
 	 *
@@ -110,7 +110,7 @@ class Algolia_Version_Utils {
 	 * Get the PATCH version number from version string.
 	 *
 	 * @author WebDevStudios <contact@webdevstudios.com>
-	 * @since  1.8.0-dev
+	 * @since  1.8.0
 	 *
 	 * @param string $version Version number string.
 	 *

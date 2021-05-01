@@ -3,7 +3,7 @@
  * Algolia_Admin_Template_Notices class file.
  *
  * @author  WebDevStudios <contact@webdevstudios.com>
- * @since   1.8.0-dev
+ * @since   1.8.0
  *
  * @package WebDevStudios\WPSWA
  */
@@ -11,7 +11,7 @@
 /**
  * Class Algolia_Admin_Template_Notices
  *
- * @since 1.8.0-dev
+ * @since 1.8.0
  */
 class Algolia_Admin_Template_Notices {
 
@@ -19,7 +19,7 @@ class Algolia_Admin_Template_Notices {
 	 * Algolia_Admin_Template_Notices constructor.
 	 *
 	 * @author  WebDevStudios <contact@webdevstudios.com>
-	 * @since   1.8.0-dev
+	 * @since   1.8.0
 	 */
 	public function __construct() {
 		add_action( 'admin_notices', [ $this, 'template_version_notices' ] );
@@ -29,7 +29,7 @@ class Algolia_Admin_Template_Notices {
 	 * Display template version discrepencany notices.
 	 *
 	 * @author  WebDevStudios <contact@webdevstudios.com>
-	 * @since   1.8.0-dev
+	 * @since   1.8.0
 	 *
 	 * @return void
 	 */

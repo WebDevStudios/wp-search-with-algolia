@@ -3,7 +3,7 @@
  * Algolia_Update_Messages class file.
  *
  * @author  WebDevStudios <contact@webdevstudios.com>
- * @since   1.8.0-dev
+ * @since   1.8.0
  *
  * @package WebDevStudios\WPSWA
  */
@@ -11,7 +11,7 @@
 /**
  * Class Algolia_Update_Messages
  *
- * @since 1.8.0-dev
+ * @since 1.8.0
  */
 class Algolia_Update_Messages {
 
@@ -19,7 +19,7 @@ class Algolia_Update_Messages {
 	 * Constructor.
 	 *
 	 * @author WebDevStudios <contact@webdevstudios.com>
-	 * @since  1.8.0-dev
+	 * @since  1.8.0
 	 */
 	public function __construct() {
 		add_action(
@@ -34,7 +34,7 @@ class Algolia_Update_Messages {
 	 * Update notice.
 	 *
 	 * @author WebDevStudios <contact@webdevstudios.com>
-	 * @since  1.8.0-dev
+	 * @since  1.8.0
 	 *
 	 * @param array  $plugin_data {
 	 *     An array of plugin metadata.

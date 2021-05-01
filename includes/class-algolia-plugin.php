@@ -91,7 +91,7 @@ class Algolia_Plugin {
 	 * Instance of Algolia_Update_Messages.
 	 *
 	 * @author WebDevStudios <contact@webdevstudios.com>
-	 * @since  1.8.0-dev
+	 * @since  1.8.0
 	 *
 	 * @var Algolia_Update_Messages
 	 */
@@ -411,7 +411,7 @@ class Algolia_Plugin {
 	 *
 	 * @author     WebDevStudios <contact@webdevstudios.com>
 	 * @since      1.0.0
-	 * @deprecated 1.8.0-dev Use Algolia_Template_Utils::get_filtered_theme_templates_dirname()
+	 * @deprecated 1.8.0 Use Algolia_Template_Utils::get_filtered_theme_templates_dirname()
 	 * @see        Algolia_Template_Utils::get_filtered_theme_templates_dirname()
 	 *
 	 * @return string
@@ -419,7 +419,7 @@ class Algolia_Plugin {
 	public function get_templates_path() {
 		_deprecated_function(
 			__METHOD__,
-			'1.8.0-dev',
+			'1.8.0',
 			'Algolia_Template_Utils::get_filtered_theme_templates_dirname()'
 		);
 		return (string) Algolia_Template_Utils::get_filtered_theme_templates_dirname();

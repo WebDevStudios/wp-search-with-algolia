@@ -2,21 +2,21 @@
 /**
  * Algolia_Template_Utils class file.
  *
- * @since   1.8.0-dev
+ * @since   1.8.0
  * @package WebDevStudios\WPSWA
  */
 
 /**
  * Class Algolia_Template_Utils
  *
- * @since 1.8.0-dev
+ * @since 1.8.0
  */
 class Algolia_Template_Utils {
 
 	/**
 	 * The plugin template directory name.
 	 *
-	 * @since 1.8.0-dev
+	 * @since 1.8.0
 	 *
 	 * @var string
 	 */
@@ -25,7 +25,7 @@ class Algolia_Template_Utils {
 	/**
 	 * The theme template directory name.
 	 *
-	 * @since 1.8.0-dev
+	 * @since 1.8.0
 	 *
 	 * @var string
 	 */
@@ -34,7 +34,7 @@ class Algolia_Template_Utils {
 	/**
 	 * The template file names.
 	 *
-	 * @since 1.8.0-dev
+	 * @since 1.8.0
 	 *
 	 * @var string[]
 	 */
@@ -47,7 +47,7 @@ class Algolia_Template_Utils {
 	 * Get the plugin templates directory with trailing slash.
 	 *
 	 * @author WebDevStudios <contact@webdevstudios.com>
-	 * @since  1.8.0-dev
+	 * @since  1.8.0
 	 *
 	 * @return string The plugin templates directory name with trailing slash.
 	 */
@@ -59,7 +59,7 @@ class Algolia_Template_Utils {
 	 * Get the "unfiltered" theme templates directory with trailing slash.
 	 *
 	 * @author WebDevStudios <contact@webdevstudios.com>
-	 * @since  1.8.0-dev
+	 * @since  1.8.0
 	 *
 	 * @return string The theme templates directory name with trailing slash.
 	 */
@@ -71,7 +71,7 @@ class Algolia_Template_Utils {
 	 * Get the "filtered" theme templates directory name with trailing slash.
 	 *
 	 * @author WebDevStudios <contact@webdevstudios.com>
-	 * @since  1.8.0-dev
+	 * @since  1.8.0
 	 *
 	 * @return string The theme templates directory name with trailing slash.
 	 */
@@ -83,7 +83,7 @@ class Algolia_Template_Utils {
 		 * Allow developers to override the theme templates dirname.
 		 *
 		 * @since      1.0.0
-		 * @deprecated 1.8.0-dev Use {@see 'algolia_theme_templates_dirname'} instead.
+		 * @deprecated 1.8.0 Use {@see 'algolia_theme_templates_dirname'} instead.
 		 *
 		 * @param string $path The theme templates directory name with trailing slash.
 		 *                     Defaults to 'algolia/'.
@@ -91,14 +91,14 @@ class Algolia_Template_Utils {
 		$path = (string) apply_filters_deprecated(
 			'algolia_templates_path',
 			[ $path ],
-			'1.8.0-dev',
+			'1.8.0',
 			'algolia_theme_templates_dirname'
 		);
 
 		/**
 		 * Allow developers to override the theme templates dirname.
 		 *
-		 * @since  1.8.0-dev
+		 * @since  1.8.0
 		 *
 		 * @param string $path The theme templates directory name with trailing slash.
 		 *                     Defaults to 'algolia/'.
@@ -113,7 +113,7 @@ class Algolia_Template_Utils {
 	 * Get the "unfiltered" full path to the default template file in the plugin.
 	 *
 	 * @author  WebDevStudios <contact@webdevstudios.com>
-	 * @since   1.8.0-dev
+	 * @since   1.8.0
 	 *
 	 * @param string $file The template filename.
 	 *
@@ -127,7 +127,7 @@ class Algolia_Template_Utils {
 	 * Get the "filtered" full path to the default template file in the plugin.
 	 *
 	 * @author  WebDevStudios <contact@webdevstudios.com>
-	 * @since   1.8.0-dev
+	 * @since   1.8.0
 	 *
 	 * @param string $file The template filename.
 	 *
@@ -159,7 +159,7 @@ class Algolia_Template_Utils {
 	 * to find where a "customized" template actually exists.
 	 *
 	 * @author  WebDevStudios <contact@webdevstudios.com>
-	 * @since   1.8.0-dev
+	 * @since   1.8.0
 	 *
 	 * @param string $file The template file.
 	 *
@@ -210,7 +210,7 @@ class Algolia_Template_Utils {
 	 * Based on WooCommerce's WC_Admin_Status::get_file_version() method.
 	 *
 	 * @author WebDevStudios <contact@webdevstudios.com>
-	 * @since  1.8.0-dev
+	 * @since  1.8.0
 	 *
 	 * @param string $template Full path to the template file.
 	 *
@@ -256,7 +256,7 @@ class Algolia_Template_Utils {
 	 * Get the Alglia Template File Names.
 	 *
 	 * @author WebDevStudios <contact@webdevstudios.com>
-	 * @since  1.8.0-dev
+	 * @since  1.8.0
 	 *
 	 * @return array
 	 */
@@ -268,7 +268,7 @@ class Algolia_Template_Utils {
 	 * Get unfiltered array of plugin's core template paths.
 	 *
 	 * @author WebDevStudios <contact@webdevstudios.com>
-	 * @since  1.8.0-dev
+	 * @since  1.8.0
 	 *
 	 * @return array An array of the plugin's core template paths.
 	 */
@@ -293,7 +293,7 @@ class Algolia_Template_Utils {
 	 * they might be the same as the plugin's core templates.
 	 *
 	 * @author WebDevStudios <contact@webdevstudios.com>
-	 * @since  1.8.0-dev
+	 * @since  1.8.0
 	 *
 	 * @return array
 	 */
@@ -313,7 +313,7 @@ class Algolia_Template_Utils {
 	 * Diffs the plugin's core template paths against the located template paths.
 	 *
 	 * @author WebDevStudios <contact@webdevstudios.com>
-	 * @since  1.8.0-dev
+	 * @since  1.8.0
 	 *
 	 * @return array Array of custom template paths,
 	 *               else empty array if no custom templates found.

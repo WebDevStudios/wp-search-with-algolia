@@ -216,7 +216,7 @@ class Algolia_Template_Loader {
 	 *
 	 * @author     WebDevStudios <contact@webdevstudios.com>
 	 * @since      1.0.0
-	 * @deprecated 1.8.0-dev Use Algolia_Template_Utils::locate_template()
+	 * @deprecated 1.8.0 Use Algolia_Template_Utils::locate_template()
 	 * @see        Algolia_Template_Utils::locate_template()
 	 *
 	 * @param string $file The template file.
@@ -226,7 +226,7 @@ class Algolia_Template_Loader {
 	private function locate_template( $file ) {
 		_deprecated_function(
 			__METHOD__,
-			'1.8.0-dev',
+			'1.8.0',
 			'Algolia_Template_Utils::locate_template()'
 		);
 		return Algolia_Template_Utils::locate_template( $file );
