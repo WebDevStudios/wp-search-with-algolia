@@ -88,6 +88,16 @@ class Algolia_Plugin {
 	private $scripts;
 
 	/**
+	 * Instance of Algolia_Update_Messages.
+	 *
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 * @since  1.8.0
+	 *
+	 * @var Algolia_Update_Messages
+	 */
+	private $update_messages;
+
+	/**
 	 * Instance of Algolia_Template_Loader.
 	 *
 	 * @author WebDevStudios <contact@webdevstudios.com>
@@ -129,11 +139,13 @@ class Algolia_Plugin {
 	 * @since  1.0.0
 	 */
 	public function __construct() {
-		$this->settings      = new Algolia_Settings();
-		$this->api           = new Algolia_API( $this->settings );
-		$this->compatibility = new Algolia_Compatibility();
-		$this->styles        = new Algolia_Styles();
-		$this->scripts       = new Algolia_Scripts();
+		$this->settings        = new Algolia_Settings();
+		$this->api             = new Algolia_API( $this->settings );
+		$this->compatibility   = new Algolia_Compatibility();
+		$this->styles          = new Algolia_Styles();
+		$this->scripts         = new Algolia_Scripts();
+		$this->update_messages = new Algolia_Update_Messages();
+
 		add_action( 'init', array( $this, 'load' ), 20 );
 	}
 
@@ -394,13 +406,23 @@ class Algolia_Plugin {
 	/**
 	 * Get the templates path.
 	 *
-	 * @author WebDevStudios <contact@webdevstudios.com>
-	 * @since  1.0.0
+	 * Somewhat misleading method name.
+	 * Actually returns a path segment (directory name) with trailing slash.
+	 *
+	 * @author     WebDevStudios <contact@webdevstudios.com>
+	 * @since      1.0.0
+	 * @deprecated 1.8.0 Use Algolia_Template_Utils::get_filtered_theme_templates_dirname()
+	 * @see        Algolia_Template_Utils::get_filtered_theme_templates_dirname()
 	 *
 	 * @return string
 	 */
 	public function get_templates_path() {
-		return (string) apply_filters( 'algolia_templates_path', 'algolia/' );
+		_deprecated_function(
+			__METHOD__,
+			'1.8.0',
+			'Algolia_Template_Utils::get_filtered_theme_templates_dirname()'
+		);
+		return (string) Algolia_Template_Utils::get_filtered_theme_templates_dirname();
 	}
 
 	/**
