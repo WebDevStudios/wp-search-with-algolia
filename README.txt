@@ -4,7 +4,7 @@ Tags: Search, Algolia, Autocomplete, instant-search, relevant search, search hig
 Requires at least: 5.0
 Tested up to: 5.7
 Requires PHP: 7.2
-Stable tag: 1.7.0
+Stable tag: 1.8.0
 License: GNU General Public License v2.0, MIT License
 
 Improve search on your site. Autocomplete is included, along with full control over look, feel and relevance.
@@ -106,7 +106,7 @@ WebDevStudios provides end-to-end WordPress opportunities from strategy and plan
 
 Follow along with the changelog on [Github](https://github.com/WebDevStudios/wp-search-with-algolia/releases).
 
-= 1.8.0-dev =
+= 1.8.0 =
 * Focus on template versioning and update messaging
 * Add Algolia_Template_Utils class
 * Deprecate Algolia_Template_Loader::locate_template method
