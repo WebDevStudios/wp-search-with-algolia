@@ -52,6 +52,8 @@ class Algolia_Admin {
 			}
 		}
 
+		new Algolia_Admin_Template_Notices();
+
 		new Algolia_Admin_Page_Settings( $plugin );
 
 		add_action( 'admin_notices', array( $this, 'display_unmet_requirements_notices' ) );

@@ -74,8 +74,8 @@ class Algolia_Autocomplete_Config {
 		}
 
 		usort(
-			$config, function( $a, $b ) {
-				return $a['position'] > $b['position'];
+			$config, function( $a, $b ):int {
+				return $a['position'] <=> $b['position'];
 			}
 		);
 
@@ -182,8 +182,8 @@ class Algolia_Autocomplete_Config {
 
 		// Sort the indices.
 		usort(
-			$config, function( $a, $b ) {
-				return $a['position'] > $b['position'];
+			$config, function( $a, $b ):int {
+				return $a['position'] <=> $b['position'];
 			}
 		);
 

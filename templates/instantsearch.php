@@ -5,6 +5,7 @@
  * @author  WebDevStudios <contact@webdevstudios.com>
  * @since   1.0.0
  *
+ * @version 1.7.0
  * @package WebDevStudios\WPSWA
  */
 
@@ -195,7 +196,7 @@ get_header();
 				/* Start */
 				search.start();
 
-				jQuery('#algolia-search-box input').attr('type', 'search').select();
+				jQuery( '#algolia-search-box input' ).attr( 'type', 'search' ).trigger( 'select' );
 			}
 		});
 	</script>

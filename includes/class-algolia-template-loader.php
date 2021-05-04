@@ -156,8 +156,8 @@ class Algolia_Template_Loader {
 	 *
 	 * Handles template usage so that we can use our own templates instead of the themes.
 	 *
-	 * Templates are in the 'templates' folder. algolia looks for theme.
-	 * overrides in /your-theme/algolia/ by default.
+	 * Plugin templates are located in the 'templates' directory.
+	 * Customized templates are in the theme's 'algolia' directory.
 	 *
 	 * @author  WebDevStudios <contact@webdevstudios.com>
 	 * @since   1.0.0
@@ -198,7 +198,7 @@ class Algolia_Template_Loader {
 			}
 		);
 
-		return $this->locate_template( 'instantsearch.php' );
+		return Algolia_Template_Utils::locate_template( 'instantsearch.php' );
 	}
 
 	/**
@@ -208,35 +208,27 @@ class Algolia_Template_Loader {
 	 * @since   1.0.0
 	 */
 	public function load_autocomplete_template() {
-		require $this->locate_template( 'autocomplete.php' );
+		require Algolia_Template_Utils::locate_template( 'autocomplete.php' );
 	}
 
 	/**
 	 * Locate a template.
 	 *
-	 * @author  WebDevStudios <contact@webdevstudios.com>
-	 * @since   1.0.0
+	 * @author     WebDevStudios <contact@webdevstudios.com>
+	 * @since      1.0.0
+	 * @deprecated 1.8.0 Use Algolia_Template_Utils::locate_template()
+	 * @see        Algolia_Template_Utils::locate_template()
 	 *
 	 * @param string $file The template file.
 	 *
 	 * @return string
 	 */
 	private function locate_template( $file ) {
-		$locations[] = $file;
-
-		$templates_path = $this->plugin->get_templates_path();
-		if ( 'algolia/' !== $templates_path ) {
-			$locations[] = 'algolia/' . $file;
-		}
-
-		$locations[] = $templates_path . $file;
-
-		$locations = (array) apply_filters( 'algolia_template_locations', $locations, $file );
-
-		$template = locate_template( array_unique( $locations ) );
-
-		$default_template = (string) apply_filters( 'algolia_default_template', $this->plugin->get_path() . '/templates/' . $file, $file );
-
-		return $template ? $template : $default_template;
+		_deprecated_function(
+			__METHOD__,
+			'1.8.0',
+			'Algolia_Template_Utils::locate_template()'
+		);
+		return Algolia_Template_Utils::locate_template( $file );
 	}
 }

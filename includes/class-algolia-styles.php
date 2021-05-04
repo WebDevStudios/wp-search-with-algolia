@@ -37,16 +37,14 @@ class Algolia_Styles {
 			'algolia-autocomplete',
 			ALGOLIA_PLUGIN_URL . 'css/algolia-autocomplete.css',
 			[],
-			ALGOLIA_VERSION,
-			'screen'
+			ALGOLIA_VERSION
 		);
 
 		wp_register_style(
 			'algolia-instantsearch',
 			ALGOLIA_PLUGIN_URL . 'css/algolia-instantsearch.css',
 			[],
-			ALGOLIA_VERSION,
-			'screen'
+			ALGOLIA_VERSION
 		);
 	}
 }
