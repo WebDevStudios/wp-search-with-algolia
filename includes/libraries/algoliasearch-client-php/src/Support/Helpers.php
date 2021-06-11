@@ -66,10 +66,10 @@ final class Helpers
     public static function buildBatch($items, $action)
     {
         return array_map(function ($item) use ($action) {
-            return array(
+            return [
                 'action' => $action,
                 'body' => $item,
-            );
+            ];
         }, $items);
     }
 
@@ -125,5 +125,20 @@ final class Helpers
 
             return $object;
         }, $objects);
+    }
+
+    public static function serializeQueryParameters($parameters)
+    {
+        if (is_string($parameters)) {
+            return $parameters;
+        }
+
+        foreach ($parameters as $key => $value) {
+            if (is_array($value)) {
+                $parameters[$key] = json_encode($value, JSON_THROW_ON_ERROR);
+            }
+        }
+
+        return http_build_query($parameters);
     }
 }
