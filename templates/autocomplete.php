@@ -5,7 +5,7 @@
  * @author  WebDevStudios <contact@webdevstudios.com>
  * @since   1.0.0
  *
- * @version 1.7.0
+ * @version 2.0.0
  * @package WebDevStudios\WPSWA
  */
 
@@ -95,15 +95,38 @@
 
 <script type="text/javascript">
 	jQuery( function () {
-		/* init Algolia client */
+		/* Initialize Algolia client */
 		var client = algoliasearch( algolia.application_id, algolia.search_api_key );
 
-		/* setup default sources */
+		/**
+		 * Algolia hits source method.
+		 *
+		 * This method defines a custom source to use with autocomplete.js
+		 * instead of using its default one. The default one throws errors
+		 * before initializing autocomplete.
+		 *
+		 * @param object $index Algolia index object.
+		 * @param object $params Options object to use in search.
+		 */
+		var algoliaHitsSource = function( index, params ) {
+			return function( query, callback ) {
+				index
+					.search( query, params )
+					.then( function( response ) {
+						callback( response.hits, response );
+					})
+					.catch( function( error ) {
+						callback( [] );
+					});
+			}
+		}
+
+		/* Setup autocomplete.js sources */
 		var sources = [];
 		jQuery.each( algolia.autocomplete.sources, function ( i, config ) {
 			var suggestion_template = wp.template( config[ 'tmpl_suggestion' ] );
 			sources.push( {
-				source: algoliaAutocomplete.sources.hits( client.initIndex( config[ 'index_name' ] ), {
+				source: algoliaHitsSource( client.initIndex( config[ 'index_name' ] ), {
 					hitsPerPage: config[ 'max_suggestions' ],
 					attributesToSnippet: [
 						'content:10'

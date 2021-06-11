@@ -5,7 +5,7 @@
  * @author  WebDevStudios <contact@webdevstudios.com>
  * @since   1.0.0
  *
- * @version 1.7.0
+ * @version 2.0.0
  * @package WebDevStudios\WPSWA
  */
 
@@ -15,18 +15,32 @@ get_header();
 
 	<div id="ais-wrapper">
 		<main id="ais-main">
-			<div id="algolia-search-box">
-				<div id="algolia-stats"></div>
+			<div class="algolia-search-box-wrapper">
+				<div id="algolia-search-box"></div>
 				<svg class="search-icon" width="25" height="25" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg"><path d="M24.828 31.657a16.76 16.76 0 0 1-7.992 2.015C7.538 33.672 0 26.134 0 16.836 0 7.538 7.538 0 16.836 0c9.298 0 16.836 7.538 16.836 16.836 0 3.22-.905 6.23-2.475 8.79.288.18.56.395.81.645l5.985 5.986A4.54 4.54 0 0 1 38 38.673a4.535 4.535 0 0 1-6.417-.007l-5.986-5.986a4.545 4.545 0 0 1-.77-1.023zm-7.992-4.046c5.95 0 10.775-4.823 10.775-10.774 0-5.95-4.823-10.775-10.774-10.775-5.95 0-10.775 4.825-10.775 10.776 0 5.95 4.825 10.775 10.776 10.775z" fill-rule="evenodd"></path></svg>
+				<div id="algolia-stats"></div>
+				<div id="algolia-powered-by"></div>
 			</div>
 			<div id="algolia-hits"></div>
 			<div id="algolia-pagination"></div>
 		</main>
 		<aside id="ais-facets">
-			<section class="ais-facets" id="facet-post-types"></section>
-			<section class="ais-facets" id="facet-categories"></section>
-			<section class="ais-facets" id="facet-tags"></section>
-			<section class="ais-facets" id="facet-users"></section>
+			<div>
+				<h3 class="widgettitle"><?php esc_html_e( 'Post Types', 'wp-search-with-algolia' ); ?></h3>
+				<section class="ais-facets" id="facet-post-types"></section>
+			</div>
+			<div>
+				<h3 class="widgettitle"><?php esc_html_e( 'Categories', 'wp-search-with-algolia' ); ?></h3>
+				<section class="ais-facets" id="facet-categories"></section>
+			</div>
+			<div>
+				<h3 class="widgettitle"><?php esc_html_e( 'Tags', 'wp-search-with-algolia' ); ?></h3>
+				<section class="ais-facets" id="facet-tags"></section>
+			</div>
+			<div>
+				<h3 class="widgettitle"><?php esc_html_e( 'Users', 'wp-search-with-algolia' ); ?></h3>
+				<section class="ais-facets" id="facet-users"></section>
+			</div>
 		</aside>
 	</div>
 
@@ -45,7 +59,7 @@ get_header();
 				<div class="excerpt">
 					<p>
 			<# if ( data._snippetResult['content'] ) { #>
-			  <span class="suggestion-post-content ais-hits--content-snippet">{{{ data._snippetResult['content'].value }}}</span>
+				<span class="suggestion-post-content ais-hits--content-snippet">{{{ data._snippetResult['content'].value }}}</span>
 			<# } #>
 					</p>
 				</div>
@@ -65,39 +79,46 @@ get_header();
 
 				/* Instantiate instantsearch.js */
 				var search = instantsearch({
-					appId: algolia.application_id,
-					apiKey: algolia.search_api_key,
 					indexName: algolia.indices.searchable_posts.name,
-					urlSync: {
-						mapping: {'q': 's'},
-						trackedParameters: ['query']
-					},
-					searchParameters: {
-						facetingAfterDistinct: true,
-						highlightPreTag: '__ais-highlight__',
-						highlightPostTag: '__/ais-highlight__'
+					searchClient: algoliasearch( algolia.application_id, algolia.search_api_key ),
+					routing: {
+						router: instantsearch.routers.history({ writeDelay: 1000 }),
+						stateMapping: {
+							stateToRoute( indexUiState ) {
+								return {
+									s: indexUiState[ algolia.indices.searchable_posts.name ].query,
+									page: indexUiState[ algolia.indices.searchable_posts.name ].page
+								}
+							},
+							routeToState( routeState ) {
+								const indexUiState = {};
+								indexUiState[ algolia.indices.searchable_posts.name ] = {
+									query: routeState.s,
+									page: routeState.page
+								};
+								return indexUiState;
+							}
+						}
 					}
 				});
 
-				/* Search box widget */
-				search.addWidget(
+				search.addWidgets([
+
+					/* Search box widget */
 					instantsearch.widgets.searchBox({
 						container: '#algolia-search-box',
 						placeholder: 'Search for...',
-						wrapInput: false,
-						poweredBy: algolia.powered_by_enabled
-					})
-				);
+						showReset: false,
+						showSubmit: false,
+						showLoadingIndicator: false,
+					}),
 
-				/* Stats widget */
-				search.addWidget(
+					/* Stats widget */
 					instantsearch.widgets.stats({
 						container: '#algolia-stats'
-					})
-				);
+					}),
 
-				/* Hits widget */
-				search.addWidget(
+					/* Hits widget */
 					instantsearch.widgets.hits({
 						container: '#algolia-hits',
 						hitsPerPage: 10,
@@ -109,15 +130,15 @@ get_header();
 							item: function (hit) {
 
 								function replace_highlights_recursive (item) {
-								  if( item instanceof Object && item.hasOwnProperty('value')) {
-									  item.value = _.escape(item.value);
-									  item.value = item.value.replace(/__ais-highlight__/g, '<em>').replace(/__\/ais-highlight__/g, '</em>');
-								  } else {
-									  for (var key in item) {
-										  item[key] = replace_highlights_recursive(item[key]);
-									  }
-								  }
-								  return item;
+									if (item instanceof Object && item.hasOwnProperty('value')) {
+										item.value = _.escape(item.value);
+										item.value = item.value.replace(/__ais-highlight__/g, '<em>').replace(/__\/ais-highlight__/g, '</em>');
+									} else {
+										for (var key in item) {
+											item[key] = replace_highlights_recursive(item[key]);
+										}
+									}
+									return item;
 								}
 
 								hit._highlightResult = replace_highlights_recursive(hit._highlightResult);
@@ -126,68 +147,51 @@ get_header();
 								return hit;
 							}
 						}
-					})
-				);
+					}),
 
-				/* Pagination widget */
-				search.addWidget(
+					/* Pagination widget */
 					instantsearch.widgets.pagination({
 						container: '#algolia-pagination'
-					})
-				);
+					}),
 
-				/* Post types refinement widget */
-				search.addWidget(
+					/* Post types refinement widget */
 					instantsearch.widgets.menu({
 						container: '#facet-post-types',
-						attributeName: 'post_type_label',
+						attribute: 'post_type_label',
 						sortBy: ['isRefined:desc', 'count:desc', 'name:asc'],
 						limit: 10,
-						templates: {
-							header: '<h3 class="widgettitle">Post Type</h3>'
-						},
-					})
-				);
+					}),
 
-				/* Categories refinement widget */
-				search.addWidget(
+					/* Categories refinement widget */
 					instantsearch.widgets.hierarchicalMenu({
 						container: '#facet-categories',
 						separator: ' > ',
 						sortBy: ['count'],
 						attributes: ['taxonomies_hierarchical.category.lvl0', 'taxonomies_hierarchical.category.lvl1', 'taxonomies_hierarchical.category.lvl2'],
-						templates: {
-							header: '<h3 class="widgettitle">Categories</h3>'
-						}
-					})
-				);
+					}),
 
-				/* Tags refinement widget */
-				search.addWidget(
+					/* Tags refinement widget */
 					instantsearch.widgets.refinementList({
 						container: '#facet-tags',
-						attributeName: 'taxonomies.post_tag',
+						attribute: 'taxonomies.post_tag',
 						operator: 'and',
 						limit: 15,
 						sortBy: ['isRefined:desc', 'count:desc', 'name:asc'],
-						templates: {
-							header: '<h3 class="widgettitle">Tags</h3>'
-						}
-					})
-				);
+					}),
 
-				/* Users refinement widget */
-				search.addWidget(
+					/* Users refinement widget */
 					instantsearch.widgets.menu({
 						container: '#facet-users',
-						attributeName: 'post_author.display_name',
+						attribute: 'post_author.display_name',
 						sortBy: ['isRefined:desc', 'count:desc', 'name:asc'],
 						limit: 10,
-						templates: {
-							header: '<h3 class="widgettitle">Authors</h3>'
-						}
+					}),
+
+					/* Search powered-by widget */
+					instantsearch.widgets.poweredBy({
+						container: '#algolia-powered-by'
 					})
-				);
+				]);
 
 				/* Start */
 				search.start();
