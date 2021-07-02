@@ -4,8 +4,7 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
-import escapeHits, { TAG_PLACEHOLDER } from '../../lib/escape-highlight';
-import { checkRendering, createDocumentationMessageGenerator, addAbsolutePosition, addQueryID, createSendEventForHits, createBindEventForHits, noop } from '../../lib/utils';
+import { escapeHits, TAG_PLACEHOLDER, checkRendering, createDocumentationMessageGenerator, addAbsolutePosition, addQueryID, createSendEventForHits, createBindEventForHits, noop } from '../../lib/utils';
 var withUsage = createDocumentationMessageGenerator({
   name: 'hits',
   connector: true
@@ -28,19 +27,19 @@ var connectHits = function connectHits(renderFn) {
     return {
       $$type: 'ais.hits',
       init: function init(initOptions) {
-        renderFn(_objectSpread({}, this.getWidgetRenderState(initOptions), {
+        renderFn(_objectSpread(_objectSpread({}, this.getWidgetRenderState(initOptions)), {}, {
           instantSearchInstance: initOptions.instantSearchInstance
         }), true);
       },
       render: function render(renderOptions) {
         var renderState = this.getWidgetRenderState(renderOptions);
         renderState.sendEvent('view', renderState.hits);
-        renderFn(_objectSpread({}, renderState, {
+        renderFn(_objectSpread(_objectSpread({}, renderState), {}, {
           instantSearchInstance: renderOptions.instantSearchInstance
         }), false);
       },
       getRenderState: function getRenderState(renderState, renderOptions) {
-        return _objectSpread({}, renderState, {
+        return _objectSpread(_objectSpread({}, renderState), {}, {
           hits: this.getWidgetRenderState(renderOptions)
         });
       },
@@ -103,7 +102,7 @@ var connectHits = function connectHits(renderFn) {
         }
 
         return state.setQueryParameters(Object.keys(TAG_PLACEHOLDER).reduce(function (acc, key) {
-          return _objectSpread({}, acc, _defineProperty({}, key, undefined));
+          return _objectSpread(_objectSpread({}, acc), {}, _defineProperty({}, key, undefined));
         }, {}));
       },
       getWidgetSearchParameters: function getWidgetSearchParameters(state) {

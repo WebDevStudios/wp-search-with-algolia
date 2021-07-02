@@ -1,3 +1,9 @@
+function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
+
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
 /** @jsx h */
 import { h, render } from 'preact';
 import cx from 'classnames';
@@ -11,15 +17,11 @@ var withUsage = createDocumentationMessageGenerator({
 });
 var suit = component('RatingMenu');
 
-var _ref3 =
-/*#__PURE__*/
-h("path", {
+var _ref3 = h("path", {
   d: "M12 .288l2.833 8.718h9.167l-7.417 5.389 2.833 8.718-7.416-5.388-7.417 5.388 2.833-8.718-7.416-5.389h9.167z"
 });
 
-var _ref4 =
-/*#__PURE__*/
-h("path", {
+var _ref4 = h("path", {
   d: "M12 6.76l1.379 4.246h4.465l-3.612 2.625 1.379 4.246-3.611-2.625-3.612 2.625 1.379-4.246-3.612-2.625h4.465l1.38-4.246zm0-6.472l-2.833 8.718h-9.167l7.416 5.389-2.833 8.718 7.417-5.388 7.416 5.388-2.833-8.718 7.417-5.389h-9.167l-2.833-8.718z"
 });
 
@@ -66,36 +68,6 @@ var renderer = function renderer(_ref) {
   };
 };
 /**
- * @typedef {Object} RatingMenuWidgetTemplates
- * @property  {string|function} [item] Item template, provided with `name`, `count`, `isRefined`, `url` data properties.
- */
-
-/**
- * @typedef {Object} RatingMenuWidgetCssClasses
- * @property  {string|string[]} [root] CSS class to add to the root element.
- * @property  {string|string[]} [noRefinementRoot] CSS class to add to the root element when there's no refinements.
- * @property  {string|string[]} [list] CSS class to add to the list element.
- * @property  {string|string[]} [item] CSS class to add to each item element.
- * @property  {string|string[]} [selectedItem] CSS class to add the selected item element.
- * @property  {string|string[]} [disabledItem] CSS class to add a disabled item element.
- * @property  {string|string[]} [link] CSS class to add to each link element.
- * @property  {string|string[]} [starIcon] CSS class to add to each star element (when using the default template).
- * @property  {string|string[]} [fullStarIcon] CSS class to add to each full star element (when using the default template).
- * @property  {string|string[]} [emptyStarIcon] CSS class to add to each empty star element (when using the default template).
- * @property  {string|string[]} [label] CSS class to add to each label.
- * @property  {string|string[]} [count] CSS class to add to each counter.
- */
-
-/**
- * @typedef {Object} RatingMenuWidgetOptions
- * @property {string|HTMLElement} container Place where to insert the widget in your webpage.
- * @property {string} attribute Name of the attribute in your records that contains the ratings.
- * @property {number} [max = 5] The maximum rating value.
- * @property {RatingMenuWidgetTemplates} [templates] Templates to use for the widget.
- * @property {RatingMenuWidgetCssClasses} [cssClasses] CSS classes to add.
- */
-
-/**
  * Rating menu is used for displaying grade like filters. The values are normalized within boundaries.
  *
  * The maximum value can be set (with `max`), the minimum is always 0.
@@ -110,7 +82,7 @@ var renderer = function renderer(_ref) {
  * @type {WidgetFactory}
  * @devNovel RatingMenu
  * @category filter
- * @param {RatingMenuWidgetOptions} $0 RatingMenu widget options.
+ * @param {RatingMenuWidgetParams} widgetParams RatingMenu widget options.
  * @return {Widget} A new RatingMenu widget instance.
  * @example
  * search.addWidgets([
@@ -123,8 +95,8 @@ var renderer = function renderer(_ref) {
  */
 
 
-export default function ratingMenu() {
-  var _ref5 = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
+var ratingMenu = function ratingMenu(widgetParams) {
+  var _ref5 = widgetParams || {},
       container = _ref5.container,
       attribute = _ref5.attribute,
       _ref5$max = _ref5.max,
@@ -188,8 +160,12 @@ export default function ratingMenu() {
   var makeWidget = connectRatingMenu(specializedRenderer, function () {
     return render(null, containerNode);
   });
-  return makeWidget({
+  return _objectSpread(_objectSpread({}, makeWidget({
     attribute: attribute,
     max: max
+  })), {}, {
+    $$widgetType: 'ais.ratingMenu'
   });
-}
+};
+
+export default ratingMenu;

@@ -4,6 +4,7 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
+/* global SpeechRecognition SpeechRecognitionEvent */
 var createVoiceSearchHelper = function createVoiceSearchHelper(_ref) {
   var searchAsYouSpeak = _ref.searchAsYouSpeak,
       language = _ref.language,
@@ -33,7 +34,7 @@ var createVoiceSearchHelper = function createVoiceSearchHelper(_ref) {
 
   var setState = function setState() {
     var newState = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-    state = _objectSpread({}, state, {}, newState);
+    state = _objectSpread(_objectSpread({}, state), newState);
     onStateChange();
   };
 

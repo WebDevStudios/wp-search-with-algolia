@@ -77,31 +77,31 @@ var mergeTagRefinements = function mergeTagRefinements(left, right) {
 
 var mergeFacetRefinements = function mergeFacetRefinements(left, right) {
   return left.setQueryParameters({
-    facetsRefinements: _objectSpread({}, left.facetsRefinements, {}, right.facetsRefinements)
+    facetsRefinements: _objectSpread(_objectSpread({}, left.facetsRefinements), right.facetsRefinements)
   });
 };
 
 var mergeFacetsExcludes = function mergeFacetsExcludes(left, right) {
   return left.setQueryParameters({
-    facetsExcludes: _objectSpread({}, left.facetsExcludes, {}, right.facetsExcludes)
+    facetsExcludes: _objectSpread(_objectSpread({}, left.facetsExcludes), right.facetsExcludes)
   });
 };
 
 var mergeDisjunctiveFacetsRefinements = function mergeDisjunctiveFacetsRefinements(left, right) {
   return left.setQueryParameters({
-    disjunctiveFacetsRefinements: _objectSpread({}, left.disjunctiveFacetsRefinements, {}, right.disjunctiveFacetsRefinements)
+    disjunctiveFacetsRefinements: _objectSpread(_objectSpread({}, left.disjunctiveFacetsRefinements), right.disjunctiveFacetsRefinements)
   });
 };
 
 var mergeNumericRefinements = function mergeNumericRefinements(left, right) {
   return left.setQueryParameters({
-    numericRefinements: _objectSpread({}, left.numericRefinements, {}, right.numericRefinements)
+    numericRefinements: _objectSpread(_objectSpread({}, left.numericRefinements), right.numericRefinements)
   });
 };
 
 var mergeHierarchicalFacetsRefinements = function mergeHierarchicalFacetsRefinements(left, right) {
   return left.setQueryParameters({
-    hierarchicalFacetsRefinements: _objectSpread({}, left.hierarchicalFacetsRefinements, {}, right.hierarchicalFacetsRefinements)
+    hierarchicalFacetsRefinements: _objectSpread(_objectSpread({}, left.hierarchicalFacetsRefinements), right.hierarchicalFacetsRefinements)
   });
 };
 

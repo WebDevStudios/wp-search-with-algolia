@@ -53,7 +53,7 @@ var InfiniteHits = function InfiniteHits(_ref) {
         className: cssClasses.item
       },
       key: hit.objectID,
-      data: _objectSpread({}, hit, {
+      data: _objectSpread(_objectSpread({}, hit), {}, {
         __hitIndex: position
       }),
       bindEvent: bindEvent

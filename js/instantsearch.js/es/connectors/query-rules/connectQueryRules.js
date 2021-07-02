@@ -4,13 +4,17 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
-function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _nonIterableSpread(); }
+function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread(); }
 
-function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance"); }
+function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
 
-function _iterableToArray(iter) { if (Symbol.iterator in Object(iter) || Object.prototype.toString.call(iter) === "[object Arguments]") return Array.from(iter); }
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
 
-function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } }
+function _iterableToArray(iter) { if (typeof Symbol !== "undefined" && Symbol.iterator in Object(iter)) return Array.from(iter); }
+
+function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) return _arrayLikeToArray(arr); }
+
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
 
 import { checkRendering, createDocumentationMessageGenerator, warning, getRefinements, isEqual, noop } from '../../lib/utils';
 var withUsage = createDocumentationMessageGenerator({
@@ -35,9 +39,7 @@ function getRuleContextsFromTrackedFilters(_ref) {
       sharedHelperState = _ref.sharedHelperState,
       trackedFilters = _ref.trackedFilters;
   var ruleContexts = Object.keys(trackedFilters).reduce(function (facets, facetName) {
-    var facetRefinements = getRefinements( // An empty object is technically not a `SearchResults` but `getRefinements`
-    // only accesses properties, meaning it will not throw with an empty object.
-    helper.lastResults || {}, sharedHelperState).filter(function (refinement) {
+    var facetRefinements = getRefinements(helper.lastResults || {}, sharedHelperState, true).filter(function (refinement) {
       return refinement.attribute === facetName;
     }).map(function (refinement) {
       return refinement.numericValue || refinement.name;
@@ -70,7 +72,7 @@ function applyRuleContexts(event) {
   var ruleContexts = transformRuleContexts(nextRuleContexts).slice(0, 10);
 
   if (!isEqual(previousRuleContexts, ruleContexts)) {
-    helper.overrideStateWithoutTriggeringChangeEvent(_objectSpread({}, sharedHelperState, {
+    helper.overrideStateWithoutTriggeringChangeEvent(_objectSpread(_objectSpread({}, sharedHelperState), {}, {
       ruleContexts: ruleContexts
     }));
   }
@@ -132,14 +134,14 @@ var connectQueryRules = function connectQueryRules(_render) {
           helper.on('change', onHelperChange);
         }
 
-        _render(_objectSpread({}, this.getWidgetRenderState(initOptions), {
+        _render(_objectSpread(_objectSpread({}, this.getWidgetRenderState(initOptions)), {}, {
           instantSearchInstance: instantSearchInstance
         }), true);
       },
       render: function render(renderOptions) {
         var instantSearchInstance = renderOptions.instantSearchInstance;
 
-        _render(_objectSpread({}, this.getWidgetRenderState(renderOptions), {
+        _render(_objectSpread(_objectSpread({}, this.getWidgetRenderState(renderOptions)), {}, {
           instantSearchInstance: instantSearchInstance
         }), false);
       },
@@ -157,7 +159,7 @@ var connectQueryRules = function connectQueryRules(_render) {
         };
       },
       getRenderState: function getRenderState(renderState, renderOptions) {
-        return _objectSpread({}, renderState, {
+        return _objectSpread(_objectSpread({}, renderState), {}, {
           queryRules: this.getWidgetRenderState(renderOptions)
         });
       },

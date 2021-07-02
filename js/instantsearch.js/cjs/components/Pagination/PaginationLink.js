@@ -8,7 +8,7 @@ exports.default = void 0;
 var _preact = require("preact");
 
 /** @jsx h */
-function PaginationLink(_ref) {
+var PaginationLink = function PaginationLink(_ref) {
   var cssClasses = _ref.cssClasses,
       label = _ref.label,
       ariaLabel = _ref.ariaLabel,
@@ -41,7 +41,7 @@ function PaginationLink(_ref) {
       __html: label
     }
   }));
-}
+};
 
 var _default = PaginationLink;
 exports.default = _default;

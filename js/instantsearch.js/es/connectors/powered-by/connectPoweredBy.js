@@ -27,18 +27,18 @@ var connectPoweredBy = function connectPoweredBy(renderFn) {
       $$type: 'ais.poweredBy',
       init: function init(initOptions) {
         var instantSearchInstance = initOptions.instantSearchInstance;
-        renderFn(_objectSpread({}, this.getWidgetRenderState(initOptions), {
+        renderFn(_objectSpread(_objectSpread({}, this.getWidgetRenderState(initOptions)), {}, {
           instantSearchInstance: instantSearchInstance
         }), true);
       },
       render: function render(renderOptions) {
         var instantSearchInstance = renderOptions.instantSearchInstance;
-        renderFn(_objectSpread({}, this.getWidgetRenderState(renderOptions), {
+        renderFn(_objectSpread(_objectSpread({}, this.getWidgetRenderState(renderOptions)), {}, {
           instantSearchInstance: instantSearchInstance
         }), false);
       },
       getRenderState: function getRenderState(renderState, renderOptions) {
-        return _objectSpread({}, renderState, {
+        return _objectSpread(_objectSpread({}, renderState), {}, {
           poweredBy: this.getWidgetRenderState(renderOptions)
         });
       },

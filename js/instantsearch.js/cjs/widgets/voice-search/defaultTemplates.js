@@ -13,7 +13,7 @@ var getButtonInnerElement = function getButtonInnerElement(status, errorCode, is
   return "<path\n            d=\"M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z\"\n            fill=\"".concat(isListening ? 'currentColor' : 'none', "\">\n          </path>\n          <path d=\"M19 10v2a7 7 0 0 1-14 0v-2\"></path>\n          <line x1=\"12\" y1=\"19\" x2=\"12\" y2=\"23\"></line>\n          <line x1=\"8\" y1=\"23\" x2=\"16\" y2=\"23\"></line>");
 };
 
-var _default = {
+var defaultTemplates = {
   buttonText: function buttonText(_ref) {
     var status = _ref.status,
         errorCode = _ref.errorCode,
@@ -22,4 +22,5 @@ var _default = {
   },
   status: "<p>{{transcript}}</p>"
 };
+var _default = defaultTemplates;
 exports.default = _default;

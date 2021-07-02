@@ -9,7 +9,7 @@ var _isFacetRefined = _interopRequireDefault(require("./isFacetRefined"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 function createSendEventForFacet(_ref) {
   var instantSearchInstance = _ref.instantSearchInstance,
@@ -39,8 +39,9 @@ function createSendEventForFacet(_ref) {
           payload: {
             eventName: eventName,
             index: helper.getIndex(),
-            filters: ["".concat(attribute, ":").concat(JSON.stringify(facetValue))]
-          }
+            filters: ["".concat(attribute, ":").concat(facetValue)]
+          },
+          attribute: attribute
         });
       }
     } else if (process.env.NODE_ENV === 'development') {

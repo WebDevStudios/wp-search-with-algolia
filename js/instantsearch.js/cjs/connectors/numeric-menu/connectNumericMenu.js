@@ -7,11 +7,15 @@ exports.default = void 0;
 
 var _utils = require("../../lib/utils");
 
-function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _nonIterableRest(); }
+function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest(); }
 
-function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance"); }
+function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
 
-function _iterableToArrayLimit(arr, i) { if (!(Symbol.iterator in Object(arr) || Object.prototype.toString.call(arr) === "[object Arguments]")) { return; } var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"] != null) _i["return"](); } finally { if (_d) throw _e; } } return _arr; }
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
+
+function _iterableToArrayLimit(arr, i) { if (typeof Symbol === "undefined" || !(Symbol.iterator in Object(arr))) return; var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"] != null) _i["return"](); } finally { if (_d) throw _e; } } return _arr; }
 
 function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 
@@ -65,7 +69,8 @@ var createSendEvent = function createSendEvent(_ref) {
           eventName: eventName,
           index: helper.getIndex(),
           filters: filters
-        }
+        },
+        attribute: attribute
       });
     }
   };
@@ -100,7 +105,7 @@ var connectNumericMenu = function connectNumericMenu(renderFn) {
             label = _ref3.label;
         return {
           label: label,
-          value: window.encodeURI(JSON.stringify({
+          value: encodeURI(JSON.stringify({
             start: start,
             end: end
           })),
@@ -118,13 +123,13 @@ var connectNumericMenu = function connectNumericMenu(renderFn) {
       $$type: $$type,
       init: function init(initOptions) {
         var instantSearchInstance = initOptions.instantSearchInstance;
-        renderFn(_objectSpread({}, this.getWidgetRenderState(initOptions), {
+        renderFn(_objectSpread(_objectSpread({}, this.getWidgetRenderState(initOptions)), {}, {
           instantSearchInstance: instantSearchInstance
         }), true);
       },
       render: function render(renderOptions) {
         var instantSearchInstance = renderOptions.instantSearchInstance;
-        renderFn(_objectSpread({}, this.getWidgetRenderState(renderOptions), {
+        renderFn(_objectSpread(_objectSpread({}, this.getWidgetRenderState(renderOptions)), {}, {
           instantSearchInstance: instantSearchInstance
         }), false);
       },
@@ -139,8 +144,8 @@ var connectNumericMenu = function connectNumericMenu(renderFn) {
         var equal = values['='] && values['='][0];
 
         if (equal || equal === 0) {
-          return _objectSpread({}, uiState, {
-            numericMenu: _objectSpread({}, uiState.numericMenu, _defineProperty({}, attribute, "".concat(values['='])))
+          return _objectSpread(_objectSpread({}, uiState), {}, {
+            numericMenu: _objectSpread(_objectSpread({}, uiState.numericMenu), {}, _defineProperty({}, attribute, "".concat(values['='])))
           });
         }
 
@@ -151,8 +156,8 @@ var connectNumericMenu = function connectNumericMenu(renderFn) {
           return uiState;
         }
 
-        return _objectSpread({}, uiState, {
-          numericMenu: _objectSpread({}, uiState.numericMenu, _defineProperty({}, attribute, "".concat(min, ":").concat(max)))
+        return _objectSpread(_objectSpread({}, uiState), {}, {
+          numericMenu: _objectSpread(_objectSpread({}, uiState.numericMenu), {}, _defineProperty({}, attribute, "".concat(min, ":").concat(max)))
         });
       },
       getWidgetSearchParameters: function getWidgetSearchParameters(searchParameters, _ref6) {
@@ -162,7 +167,7 @@ var connectNumericMenu = function connectNumericMenu(renderFn) {
 
         if (!value) {
           return withoutRefinements.setQueryParameters({
-            numericRefinements: _objectSpread({}, withoutRefinements.numericRefinements, _defineProperty({}, attribute, {}))
+            numericRefinements: _objectSpread(_objectSpread({}, withoutRefinements.numericRefinements), {}, _defineProperty({}, attribute, {}))
           });
         }
 
@@ -182,8 +187,8 @@ var connectNumericMenu = function connectNumericMenu(renderFn) {
         return withMaxRefinement;
       },
       getRenderState: function getRenderState(renderState, renderOptions) {
-        return _objectSpread({}, renderState, {
-          numericMenu: _objectSpread({}, renderState.numericMenu, _defineProperty({}, attribute, this.getWidgetRenderState(renderOptions)))
+        return _objectSpread(_objectSpread({}, renderState), {}, {
+          numericMenu: _objectSpread(_objectSpread({}, renderState.numericMenu), {}, _defineProperty({}, attribute, this.getWidgetRenderState(renderOptions)))
         });
       },
       getWidgetRenderState: function getWidgetRenderState(_ref7) {
@@ -259,7 +264,7 @@ function isRefined(state, attribute, option) {
 
 function getRefinedState(state, attribute, facetValue) {
   var resolvedState = state;
-  var refinedOption = JSON.parse(window.decodeURI(facetValue)); // @TODO: why is array / element mixed here & hasRefinements; seems wrong?
+  var refinedOption = JSON.parse(decodeURI(facetValue)); // @TODO: why is array / element mixed here & hasRefinements; seems wrong?
 
   var currentRefinements = resolvedState.getNumericRefinements(attribute);
 

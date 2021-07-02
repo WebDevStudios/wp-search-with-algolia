@@ -14,7 +14,7 @@ export default function hoganHelpers(_ref) {
     highlight: function highlight(options, render) {
       try {
         var highlightOptions = JSON.parse(options);
-        return render(_highlight(_objectSpread({}, highlightOptions, {
+        return render(_highlight(_objectSpread(_objectSpread({}, highlightOptions), {}, {
           hit: this
         })));
       } catch (error) {
@@ -24,7 +24,7 @@ export default function hoganHelpers(_ref) {
     reverseHighlight: function reverseHighlight(options, render) {
       try {
         var reverseHighlightOptions = JSON.parse(options);
-        return render(_reverseHighlight(_objectSpread({}, reverseHighlightOptions, {
+        return render(_reverseHighlight(_objectSpread(_objectSpread({}, reverseHighlightOptions), {}, {
           hit: this
         })));
       } catch (error) {
@@ -34,7 +34,7 @@ export default function hoganHelpers(_ref) {
     snippet: function snippet(options, render) {
       try {
         var snippetOptions = JSON.parse(options);
-        return render(_snippet(_objectSpread({}, snippetOptions, {
+        return render(_snippet(_objectSpread(_objectSpread({}, snippetOptions), {}, {
           hit: this
         })));
       } catch (error) {
@@ -44,7 +44,7 @@ export default function hoganHelpers(_ref) {
     reverseSnippet: function reverseSnippet(options, render) {
       try {
         var reverseSnippetOptions = JSON.parse(options);
-        return render(_reverseSnippet(_objectSpread({}, reverseSnippetOptions, {
+        return render(_reverseSnippet(_objectSpread(_objectSpread({}, reverseSnippetOptions), {}, {
           hit: this
         })));
       } catch (error) {

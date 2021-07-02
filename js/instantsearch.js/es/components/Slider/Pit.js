@@ -13,13 +13,11 @@ var Pit = function Pit(_ref) {
       children = _ref.children;
   // first, end & middle
   var positionValue = Math.round(parseFloat(style.left));
-  var shouldDisplayValue = [0, 50, 100].includes(positionValue); // Children could be an array, unwrap the value if it's the case
-  // see: https://github.com/developit/preact-compat/issues/436
-
-  var value = Array.isArray(children) ? children[0] : children;
+  var shouldDisplayValue = [0, 50, 100].includes(positionValue);
+  var value = children;
   var pitValue = Math.round(parseInt(value, 10) * 100) / 100;
   return h("div", {
-    style: _objectSpread({}, style, {
+    style: _objectSpread(_objectSpread({}, style), {}, {
       marginLeft: positionValue === 100 ? '-2px' : 0
     }),
     className: cx('rheostat-marker', 'rheostat-marker-horizontal', {

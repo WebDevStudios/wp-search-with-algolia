@@ -1,6 +1,5 @@
-import { getPropertyByPath } from '../lib/utils';
-import { TAG_REPLACEMENT } from '../lib/escape-highlight';
 import { component } from '../lib/suit';
+import { TAG_REPLACEMENT, getPropertyByPath } from '../lib/utils';
 var suit = component('Snippet');
 export default function snippet(_ref) {
   var attribute = _ref.attribute,

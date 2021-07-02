@@ -18,14 +18,14 @@ export var createRouterMiddleware = function createRouterMiddleware() {
 
     function topLevelCreateURL(nextState) {
       var uiState = Object.keys(nextState).reduce(function (acc, indexId) {
-        return _objectSpread({}, acc, _defineProperty({}, indexId, nextState[indexId]));
+        return _objectSpread(_objectSpread({}, acc), {}, _defineProperty({}, indexId, nextState[indexId]));
       }, instantSearchInstance.mainIndex.getWidgetUiState({}));
       var route = stateMapping.stateToRoute(uiState);
       return router.createURL(route);
     }
 
     instantSearchInstance._createURL = topLevelCreateURL;
-    instantSearchInstance._initialUiState = _objectSpread({}, instantSearchInstance._initialUiState, {}, stateMapping.routeToState(router.read()));
+    instantSearchInstance._initialUiState = _objectSpread(_objectSpread({}, instantSearchInstance._initialUiState), stateMapping.routeToState(router.read()));
     var lastRouteState = undefined;
     return {
       onStateChange: function onStateChange(_ref2) {

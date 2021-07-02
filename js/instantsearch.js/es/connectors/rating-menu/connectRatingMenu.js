@@ -1,23 +1,37 @@
+function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread(); }
+
+function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+
+function _iterableToArray(iter) { if (typeof Symbol !== "undefined" && Symbol.iterator in Object(iter)) return Array.from(iter); }
+
+function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) return _arrayLikeToArray(arr); }
+
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
 function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
-function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _nonIterableSpread(); }
+function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest(); }
 
-function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance"); }
+function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
 
-function _iterableToArray(iter) { if (Symbol.iterator in Object(iter) || Object.prototype.toString.call(iter) === "[object Arguments]") return Array.from(iter); }
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
 
-function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } }
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
 
-import { checkRendering, createDocumentationMessageGenerator, range, noop } from '../../lib/utils';
+function _iterableToArrayLimit(arr, i) { if (typeof Symbol === "undefined" || !(Symbol.iterator in Object(arr))) return; var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"] != null) _i["return"](); } finally { if (_d) throw _e; } } return _arr; }
+
+function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
+
+import { checkRendering, createDocumentationLink, createDocumentationMessageGenerator, noop, warning } from '../../lib/utils';
 var withUsage = createDocumentationMessageGenerator({
   name: 'rating-menu',
   connector: true
 });
 var $$type = 'ais.ratingMenu';
+var MAX_VALUES_PER_FACET_API_LIMIT = 1000;
+var STEP = 1;
 
 var createSendEvent = function createSendEvent(_ref) {
   var instantSearchInstance = _ref.instantSearchInstance,
@@ -54,36 +68,12 @@ var createSendEvent = function createSendEvent(_ref) {
           eventName: eventName,
           index: helper.getIndex(),
           filters: ["".concat(attribute, ">=").concat(facetValue)]
-        }
+        },
+        attribute: attribute
       });
     }
   };
 };
-/**
- * @typedef {Object} StarRatingItems
- * @property {string} name Name corresponding to the number of stars.
- * @property {string} value Number of stars as string.
- * @property {number} count Count of matched results corresponding to the number of stars.
- * @property {boolean[]} stars Array of length of maximum rating value with stars to display or not.
- * @property {boolean} isRefined Indicates if star rating refinement is applied.
- */
-
-/**
- * @typedef {Object} CustomStarRatingWidgetOptions
- * @property {string} attribute Name of the attribute for faceting (eg. "free_shipping").
- * @property {number} [max = 5] The maximum rating value.
- */
-
-/**
- * @typedef {Object} StarRatingRenderingOptions
- * @property {StarRatingItems[]} items Possible star ratings the user can apply.
- * @property {function(string): string} createURL Creates an URL for the next
- * state (takes the item value as parameter). Takes the value of an item as parameter.
- * @property {function(string)} refine Selects a rating to filter the results
- * (takes the filter value as parameter). Takes the value of an item as parameter.
- * @property {boolean} hasNoResults `true` if the last search contains no result.
- * @property {Object} widgetParams All original `CustomStarRatingWidgetOptions` forwarded to the `renderFn`.
- */
 
 /**
  * **StarRating** connector provides the logic to build a custom widget that will let
@@ -92,69 +82,16 @@ var createSendEvent = function createSendEvent(_ref) {
  * The connector provides to the rendering: `refine()` to select a value and
  * `items` that are the values that can be selected. `refine` should be used
  * with `items.value`.
- * @type {Connector}
- * @param {function(StarRatingRenderingOptions, boolean)} renderFn Rendering function for the custom **StarRating** widget.
- * @param {function} unmountFn Unmount function called when the widget is disposed.
- * @return {function(CustomStarRatingWidgetOptions)} Re-usable widget factory for a custom **StarRating** widget.
- * @example
- * // custom `renderFn` to render the custom StarRating widget
- * function renderFn(StarRatingRenderingOptions, isFirstRendering) {
- *   if (isFirstRendering) {
- *     StarRatingRenderingOptions.widgetParams.containerNode.html('<ul></ul>');
- *   }
- *
- *   StarRatingRenderingOptions.widgetParams.containerNode
- *     .find('li[data-refine-value]')
- *     .each(function() { $(this).off('click'); });
- *
- *   var listHTML = StarRatingRenderingOptions.items.map(function(item) {
- *     return '<li data-refine-value="' + item.value + '">' +
- *       '<a href="' + StarRatingRenderingOptions.createURL(item.value) + '">' +
- *       item.stars.map(function(star) { return star === false ? '☆' : '★'; }).join(' ') +
- *       '& up (' + item.count + ')' +
- *       '</a></li>';
- *   });
- *
- *   StarRatingRenderingOptions.widgetParams.containerNode
- *     .find('ul')
- *     .html(listHTML);
- *
- *   StarRatingRenderingOptions.widgetParams.containerNode
- *     .find('li[data-refine-value]')
- *     .each(function() {
- *       $(this).on('click', function(event) {
- *         event.preventDefault();
- *         event.stopPropagation();
- *
- *         StarRatingRenderingOptions.refine($(this).data('refine-value'));
- *       });
- *     });
- * }
- *
- * // connect `renderFn` to StarRating logic
- * var customStarRating = instantsearch.connectors.connectRatingMenu(renderFn);
- *
- * // mount widget on the page
- * search.addWidgets([
- *   customStarRating({
- *     containerNode: $('#custom-rating-menu-container'),
- *     attribute: 'rating',
- *     max: 5,
- *   })
- * ]);
  */
-
-
-export default function connectRatingMenu(renderFn) {
-  var _this = this;
-
+var connectRatingMenu = function connectRatingMenu(renderFn) {
   var unmountFn = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : noop;
   checkRendering(renderFn, withUsage());
-  return function () {
-    var widgetParams = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-    var attribute = widgetParams.attribute,
-        _widgetParams$max = widgetParams.max,
-        max = _widgetParams$max === void 0 ? 5 : _widgetParams$max;
+  return function (widgetParams) {
+    var _ref2 = widgetParams || {},
+        attribute = _ref2.attribute,
+        _ref2$max = _ref2.max,
+        max = _ref2$max === void 0 ? 5 : _ref2$max;
+
     var sendEvent;
 
     if (!attribute) {
@@ -162,38 +99,76 @@ export default function connectRatingMenu(renderFn) {
     }
 
     var _getRefinedStar = function getRefinedStar(state) {
-      var refinements = state.getDisjunctiveRefinements(attribute);
+      var _values$;
 
-      if (!refinements.length) {
+      var values = state.getNumericRefinements(attribute);
+
+      if (!((_values$ = values['>=']) !== null && _values$ !== void 0 && _values$.length)) {
         return undefined;
       }
 
-      return Math.min.apply(Math, _toConsumableArray(refinements.map(Number)));
+      return values['>='][0];
     };
+
+    var getFacetsMaxDecimalPlaces = function getFacetsMaxDecimalPlaces(facetResults) {
+      var maxDecimalPlaces = 0;
+      facetResults.forEach(function (facetResult) {
+        var _facetResult$name$spl = facetResult.name.split('.'),
+            _facetResult$name$spl2 = _slicedToArray(_facetResult$name$spl, 2),
+            _facetResult$name$spl3 = _facetResult$name$spl2[1],
+            decimal = _facetResult$name$spl3 === void 0 ? '' : _facetResult$name$spl3;
+
+        maxDecimalPlaces = Math.max(maxDecimalPlaces, decimal.length);
+      });
+      return maxDecimalPlaces;
+    };
+
+    var getFacetValuesWarningMessage = function getFacetValuesWarningMessage(_ref3) {
+      var maxDecimalPlaces = _ref3.maxDecimalPlaces,
+          maxFacets = _ref3.maxFacets,
+          maxValuesPerFacet = _ref3.maxValuesPerFacet;
+      var maxDecimalPlacesInRange = Math.max(0, Math.floor(Math.log10(MAX_VALUES_PER_FACET_API_LIMIT / max)));
+      var maxFacetsInRange = Math.min(MAX_VALUES_PER_FACET_API_LIMIT, Math.pow(10, maxDecimalPlacesInRange) * max);
+      var solutions = [];
+
+      if (maxFacets > MAX_VALUES_PER_FACET_API_LIMIT) {
+        solutions.push("- Update your records to lower the precision of the values in the \"".concat(attribute, "\" attribute (for example: ").concat(5.123456789.toPrecision(maxDecimalPlaces + 1), " to ").concat(5.123456789.toPrecision(maxDecimalPlacesInRange + 1), ")"));
+      }
+
+      if (maxValuesPerFacet < maxFacetsInRange) {
+        solutions.push("- Increase the maximum number of facet values to ".concat(maxFacetsInRange, " using the \"configure\" widget ").concat(createDocumentationLink({
+          name: 'configure'
+        }), " and the \"maxValuesPerFacet\" parameter https://www.algolia.com/doc/api-reference/api-parameters/maxValuesPerFacet/"));
+      }
+
+      return "The ".concat(attribute, " attribute can have ").concat(maxFacets, " different values (0 to ").concat(max, " with a maximum of ").concat(maxDecimalPlaces, " decimals = ").concat(maxFacets, ") but you retrieved only ").concat(maxValuesPerFacet, " facet values. Therefore the number of results that match the refinements can be incorrect.\n    ").concat(solutions.length ? "To resolve this problem you can:\n".concat(solutions.join('\n')) : "");
+    };
+
+    function getRefinedState(state, facetValue) {
+      var isRefined = _getRefinedStar(state) === Number(facetValue);
+      var emptyState = state.resetPage().removeNumericRefinement(attribute);
+
+      if (!isRefined) {
+        return emptyState.addNumericRefinement(attribute, '<=', max).addNumericRefinement(attribute, '>=', Number(facetValue));
+      }
+
+      return emptyState;
+    }
 
     var toggleRefinement = function toggleRefinement(helper, facetValue) {
       sendEvent('click', facetValue);
-      var isRefined = _getRefinedStar(helper.state) === Number(facetValue);
-      helper.removeDisjunctiveFacetRefinement(attribute);
-
-      if (!isRefined) {
-        for (var val = Number(facetValue); val <= max; ++val) {
-          helper.addDisjunctiveFacetRefinement(attribute, val);
-        }
-      }
-
-      helper.search();
+      helper.setState(getRefinedState(helper.state, facetValue)).search();
     };
 
     var connectorState = {
       toggleRefinementFactory: function toggleRefinementFactory(helper) {
-        return toggleRefinement.bind(_this, helper);
+        return toggleRefinement.bind(null, helper);
       },
-      createURLFactory: function createURLFactory(_ref2) {
-        var state = _ref2.state,
-            createURL = _ref2.createURL;
+      createURLFactory: function createURLFactory(_ref4) {
+        var state = _ref4.state,
+            createURL = _ref4.createURL;
         return function (value) {
-          return createURL(state.toggleRefinement(attribute, value));
+          return createURL(getRefinedState(state, value));
         };
       }
     };
@@ -201,27 +176,27 @@ export default function connectRatingMenu(renderFn) {
       $$type: $$type,
       init: function init(initOptions) {
         var instantSearchInstance = initOptions.instantSearchInstance;
-        renderFn(_objectSpread({}, this.getWidgetRenderState(initOptions), {
+        renderFn(_objectSpread(_objectSpread({}, this.getWidgetRenderState(initOptions)), {}, {
           instantSearchInstance: instantSearchInstance
         }), true);
       },
       render: function render(renderOptions) {
         var instantSearchInstance = renderOptions.instantSearchInstance;
-        renderFn(_objectSpread({}, this.getWidgetRenderState(renderOptions), {
+        renderFn(_objectSpread(_objectSpread({}, this.getWidgetRenderState(renderOptions)), {}, {
           instantSearchInstance: instantSearchInstance
         }), false);
       },
       getRenderState: function getRenderState(renderState, renderOptions) {
-        return _objectSpread({}, renderState, {
-          ratingMenu: _objectSpread({}, renderState.ratingMenu, _defineProperty({}, attribute, this.getWidgetRenderState(renderOptions)))
+        return _objectSpread(_objectSpread({}, renderState), {}, {
+          ratingMenu: _objectSpread(_objectSpread({}, renderState.ratingMenu), {}, _defineProperty({}, attribute, this.getWidgetRenderState(renderOptions)))
         });
       },
-      getWidgetRenderState: function getWidgetRenderState(_ref3) {
-        var helper = _ref3.helper,
-            results = _ref3.results,
-            state = _ref3.state,
-            instantSearchInstance = _ref3.instantSearchInstance,
-            createURL = _ref3.createURL;
+      getWidgetRenderState: function getWidgetRenderState(_ref5) {
+        var helper = _ref5.helper,
+            results = _ref5.results,
+            state = _ref5.state,
+            instantSearchInstance = _ref5.instantSearchInstance,
+            createURL = _ref5.createURL;
         var facetValues = [];
 
         if (!sendEvent) {
@@ -236,54 +211,60 @@ export default function connectRatingMenu(renderFn) {
         }
 
         if (results) {
-          var allValues = {};
-
-          for (var v = max; v >= 0; --v) {
-            allValues[v] = 0;
-          }
-
-          (results.getFacetValues(attribute) || []).forEach(function (facet) {
-            var val = Math.round(facet.name);
-
-            if (!val || val > max) {
-              return;
-            }
-
-            for (var _v = val; _v >= 1; --_v) {
-              allValues[_v] += facet.count;
-            }
-          });
+          var facetResults = results.getFacetValues(attribute, {});
+          var maxValuesPerFacet = facetResults.length;
+          var maxDecimalPlaces = getFacetsMaxDecimalPlaces(facetResults);
+          var maxFacets = Math.pow(10, maxDecimalPlaces) * max;
+          process.env.NODE_ENV === 'development' ? warning(maxFacets <= maxValuesPerFacet, getFacetValuesWarningMessage({
+            maxDecimalPlaces: maxDecimalPlaces,
+            maxFacets: maxFacets,
+            maxValuesPerFacet: maxValuesPerFacet
+          })) : void 0;
 
           var refinedStar = _getRefinedStar(state);
 
-          for (var star = max - 1; star >= 1; --star) {
-            var count = allValues[star];
+          var _loop = function _loop(star) {
+            var isRefined = refinedStar === star;
+            var count = facetResults.filter(function (f) {
+              return Number(f.name) >= star && Number(f.name) <= max;
+            }).map(function (f) {
+              return f.count;
+            }).reduce(function (sum, current) {
+              return sum + current;
+            }, 0);
 
-            if (refinedStar && star !== refinedStar && count === 0) {
+            if (refinedStar && !isRefined && count === 0) {
               // skip count==0 when at least 1 refinement is enabled
               // eslint-disable-next-line no-continue
-              continue;
+              return "continue";
             }
 
-            var stars = [];
-
-            for (var i = 1; i <= max; ++i) {
-              stars.push(i <= star);
-            }
+            var stars = _toConsumableArray(new Array(Math.floor(max / STEP))).map(function (_v, i) {
+              return i * STEP < star;
+            });
 
             facetValues.push({
               stars: stars,
               name: String(star),
+              label: String(star),
               value: String(star),
               count: count,
-              isRefined: refinedStar === star
+              isRefined: isRefined
             });
+          };
+
+          for (var star = STEP; star < max; star += STEP) {
+            var _ret = _loop(star);
+
+            if (_ret === "continue") continue;
           }
         }
 
+        facetValues = facetValues.reverse();
         return {
           items: facetValues,
           hasNoResults: results ? results.nbHits === 0 : true,
+          canRefine: facetValues.length > 0,
           refine: connectorState.toggleRefinementFactory(helper),
           sendEvent: sendEvent,
           createURL: connectorState.createURLFactory({
@@ -293,13 +274,13 @@ export default function connectRatingMenu(renderFn) {
           widgetParams: widgetParams
         };
       },
-      dispose: function dispose(_ref4) {
-        var state = _ref4.state;
+      dispose: function dispose(_ref6) {
+        var state = _ref6.state;
         unmountFn();
-        return state.removeDisjunctiveFacet(attribute);
+        return state.removeNumericRefinement(attribute);
       },
-      getWidgetUiState: function getWidgetUiState(uiState, _ref5) {
-        var searchParameters = _ref5.searchParameters;
+      getWidgetUiState: function getWidgetUiState(uiState, _ref7) {
+        var searchParameters = _ref7.searchParameters;
 
         var value = _getRefinedStar(searchParameters);
 
@@ -307,29 +288,26 @@ export default function connectRatingMenu(renderFn) {
           return uiState;
         }
 
-        return _objectSpread({}, uiState, {
-          ratingMenu: _objectSpread({}, uiState.ratingMenu, _defineProperty({}, attribute, value))
+        return _objectSpread(_objectSpread({}, uiState), {}, {
+          ratingMenu: _objectSpread(_objectSpread({}, uiState.ratingMenu), {}, _defineProperty({}, attribute, value))
         });
       },
-      getWidgetSearchParameters: function getWidgetSearchParameters(searchParameters, _ref6) {
-        var uiState = _ref6.uiState;
+      getWidgetSearchParameters: function getWidgetSearchParameters(searchParameters, _ref8) {
+        var uiState = _ref8.uiState;
         var value = uiState.ratingMenu && uiState.ratingMenu[attribute];
         var withoutRefinements = searchParameters.clearRefinements(attribute);
         var withDisjunctiveFacet = withoutRefinements.addDisjunctiveFacet(attribute);
 
         if (!value) {
           return withDisjunctiveFacet.setQueryParameters({
-            disjunctiveFacetsRefinements: _objectSpread({}, withDisjunctiveFacet.disjunctiveFacetsRefinements, _defineProperty({}, attribute, []))
+            numericRefinements: _objectSpread(_objectSpread({}, withDisjunctiveFacet.numericRefinements), {}, _defineProperty({}, attribute, {}))
           });
         }
 
-        return range({
-          start: Number(value),
-          end: max + 1
-        }).reduce(function (parameters, number) {
-          return parameters.addDisjunctiveFacetRefinement(attribute, number);
-        }, withDisjunctiveFacet);
+        return withDisjunctiveFacet.addNumericRefinement(attribute, '<=', max).addNumericRefinement(attribute, '>=', value);
       }
     };
   };
-}
+};
+
+export default connectRatingMenu;

@@ -8,9 +8,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 import { range } from '../../lib/utils';
 
-var Paginator =
-/*#__PURE__*/
-function () {
+var Paginator = /*#__PURE__*/function () {
   function Paginator(params) {
     _classCallCheck(this, Paginator);
 

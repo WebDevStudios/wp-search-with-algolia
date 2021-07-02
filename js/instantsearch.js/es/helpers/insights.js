@@ -1,6 +1,6 @@
-function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
-import { warning } from '../lib/utils';
+import { warning, serializePayload, deserializePayload } from '../lib/utils';
 export function readDataAttributes(domElement) {
   var method = domElement.getAttribute('data-insights-method');
   var serializedPayload = domElement.getAttribute('data-insights-payload');
@@ -10,7 +10,7 @@ export function readDataAttributes(domElement) {
   }
 
   try {
-    var payload = JSON.parse(atob(serializedPayload));
+    var payload = deserializePayload(serializedPayload);
     return {
       method: method,
       payload: payload
@@ -33,7 +33,7 @@ export function writeDataAttributes(_ref) {
   var serializedPayload;
 
   try {
-    serializedPayload = btoa(JSON.stringify(payload));
+    serializedPayload = serializePayload(payload);
   } catch (error) {
     throw new Error("Could not JSON serialize the payload object.");
   }

@@ -41,8 +41,8 @@ var renderer = function renderer(_ref) {
  * The panel widget wraps other widgets in a consistent panel design.
  * It also reacts, indicates and sets CSS classes when widgets are no longer relevant for refining.
  */
-var panel = function panel(widgetParams) {
-  var _ref3 = widgetParams || {},
+var panel = function panel(panelWidgetParams) {
+  var _ref3 = panelWidgetParams || {},
       _ref3$templates = _ref3.templates,
       templates = _ref3$templates === void 0 ? {} : _ref3$templates,
       _ref3$hidden = _ref3.hidden,
@@ -88,27 +88,25 @@ var panel = function panel(widgetParams) {
     }), userCssClasses.footer)
   };
   return function (widgetFactory) {
-    return function (widgetOptions) {
-      var _ref4 = widgetOptions || {},
-          container = _ref4.container;
-
-      if (!container) {
+    return function (widgetParams) {
+      if (!(widgetParams && widgetParams.container)) {
         throw new Error(withUsage("The `container` option is required in the widget within the panel."));
       }
 
+      var containerNode = getContainerNode(widgetParams.container);
       var defaultTemplates = {
         header: '',
         footer: '',
-        collapseButtonText: function collapseButtonText(_ref5) {
-          var isCollapsed = _ref5.collapsed;
+        collapseButtonText: function collapseButtonText(_ref4) {
+          var isCollapsed = _ref4.collapsed;
           return "<svg\n          class=\"".concat(cssClasses.collapseIcon, "\"\n          width=\"1em\"\n          height=\"1em\"\n          viewBox=\"0 0 500 500\"\n        >\n        <path d=\"").concat(isCollapsed ? 'M100 250l300-150v300z' : 'M250 400l150-300H100z', "\" fill=\"currentColor\" />\n        </svg>");
         }
       };
       var renderPanel = renderer({
-        containerNode: getContainerNode(container),
+        containerNode: containerNode,
         bodyContainerNode: bodyContainerNode,
         cssClasses: cssClasses,
-        templates: _objectSpread({}, defaultTemplates, {}, templates)
+        templates: _objectSpread(_objectSpread({}, defaultTemplates), templates)
       });
       renderPanel({
         options: {},
@@ -116,12 +114,16 @@ var panel = function panel(widgetParams) {
         collapsible: collapsible,
         collapsed: false
       });
-      var widget = widgetFactory(_objectSpread({}, widgetOptions, {
+      var widget = widgetFactory(_objectSpread(_objectSpread({}, widgetParams), {}, {
         container: bodyContainerNode
-      }));
-      return _objectSpread({}, widget, {
+      })); // TypeScript somehow loses track of the ...widget type, since it's
+      // not directly returned. Eventually the "as ReturnType<typeof widgetFactory>"
+      // will not be needed anymore.
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+
+      return _objectSpread(_objectSpread({}, widget), {}, {
         dispose: function dispose() {
-          render(null, getContainerNode(container));
+          render(null, containerNode);
 
           if (typeof widget.dispose === 'function') {
             var _widget$dispose;
@@ -142,7 +144,7 @@ var panel = function panel(widgetParams) {
 
           var renderOptions = args[0];
 
-          var options = _objectSpread({}, widget.getWidgetRenderState ? widget.getWidgetRenderState(renderOptions) : {}, {}, renderOptions);
+          var options = _objectSpread(_objectSpread({}, widget.getWidgetRenderState ? widget.getWidgetRenderState(renderOptions) : {}), renderOptions);
 
           renderPanel({
             options: options,

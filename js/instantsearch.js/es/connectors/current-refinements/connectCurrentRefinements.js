@@ -1,10 +1,14 @@
-function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _nonIterableSpread(); }
+function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread(); }
 
-function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance"); }
+function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
 
-function _iterableToArray(iter) { if (Symbol.iterator in Object(iter) || Object.prototype.toString.call(iter) === "[object Arguments]") return Array.from(iter); }
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
 
-function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } }
+function _iterableToArray(iter) { if (typeof Symbol !== "undefined" && Symbol.iterator in Object(iter)) return Array.from(iter); }
+
+function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) return _arrayLikeToArray(arr); }
+
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
 
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
@@ -39,13 +43,13 @@ var connectCurrentRefinements = function connectCurrentRefinements(renderFn) {
       $$type: 'ais.currentRefinements',
       init: function init(initOptions) {
         var instantSearchInstance = initOptions.instantSearchInstance;
-        renderFn(_objectSpread({}, this.getWidgetRenderState(initOptions), {
+        renderFn(_objectSpread(_objectSpread({}, this.getWidgetRenderState(initOptions)), {}, {
           instantSearchInstance: instantSearchInstance
         }), true);
       },
       render: function render(renderOptions) {
         var instantSearchInstance = renderOptions.instantSearchInstance;
-        renderFn(_objectSpread({}, this.getWidgetRenderState(renderOptions), {
+        renderFn(_objectSpread(_objectSpread({}, this.getWidgetRenderState(renderOptions)), {}, {
           instantSearchInstance: instantSearchInstance
         }), false);
       },
@@ -53,7 +57,7 @@ var connectCurrentRefinements = function connectCurrentRefinements(renderFn) {
         unmountFn();
       },
       getRenderState: function getRenderState(renderState, renderOptions) {
-        return _objectSpread({}, renderState, {
+        return _objectSpread(_objectSpread({}, renderState), {}, {
           currentRefinements: this.getWidgetRenderState(renderOptions)
         });
       },
@@ -83,8 +87,10 @@ var connectCurrentRefinements = function connectCurrentRefinements(renderFn) {
           }, []);
         }
 
+        var items = getItems();
         return {
-          items: getItems(),
+          items: items,
+          canRefine: items.length > 0,
           refine: function refine(refinement) {
             return clearRefinement(helper, refinement);
           },
@@ -103,13 +109,13 @@ function getRefinementsItems(_ref3) {
       helper = _ref3.helper,
       includedAttributes = _ref3.includedAttributes,
       excludedAttributes = _ref3.excludedAttributes;
-  var clearsQuery = (includedAttributes || []).indexOf('query') !== -1 || (excludedAttributes || []).indexOf('query') === -1;
+  var includesQuery = (includedAttributes || []).indexOf('query') !== -1 || (excludedAttributes || []).indexOf('query') === -1;
   var filterFunction = includedAttributes ? function (item) {
     return includedAttributes.indexOf(item.attribute) !== -1;
   } : function (item) {
     return excludedAttributes.indexOf(item.attribute) === -1;
   };
-  var items = getRefinements(results, helper.state, clearsQuery).map(normalizeRefinement).filter(filterFunction);
+  var items = getRefinements(results, helper.state, includesQuery).map(normalizeRefinement).filter(filterFunction);
   return items.reduce(function (allItems, currentItem) {
     return [].concat(_toConsumableArray(allItems.filter(function (item) {
       return item.attribute !== currentItem.attribute;

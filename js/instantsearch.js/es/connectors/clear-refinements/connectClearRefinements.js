@@ -1,10 +1,14 @@
-function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _nonIterableSpread(); }
+function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread(); }
 
-function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance"); }
+function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
 
-function _iterableToArray(iter) { if (Symbol.iterator in Object(iter) || Object.prototype.toString.call(iter) === "[object Arguments]") return Array.from(iter); }
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
 
-function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } }
+function _iterableToArray(iter) { if (typeof Symbol !== "undefined" && Symbol.iterator in Object(iter)) return Array.from(iter); }
+
+function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) return _arrayLikeToArray(arr); }
+
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
 
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
@@ -32,7 +36,7 @@ var connectClearRefinements = function connectClearRefinements(renderFn) {
       return items;
     } : _ref$transformItems;
 
-    if (widgetParams.includedAttributes && widgetParams.excludedAttributes) {
+    if (widgetParams && widgetParams.includedAttributes && widgetParams.excludedAttributes) {
       throw new Error(withUsage('The options `includedAttributes` and `excludedAttributes` cannot be used together.'));
     }
 
@@ -56,13 +60,13 @@ var connectClearRefinements = function connectClearRefinements(renderFn) {
       $$type: 'ais.clearRefinements',
       init: function init(initOptions) {
         var instantSearchInstance = initOptions.instantSearchInstance;
-        renderFn(_objectSpread({}, this.getWidgetRenderState(initOptions), {
+        renderFn(_objectSpread(_objectSpread({}, this.getWidgetRenderState(initOptions)), {}, {
           instantSearchInstance: instantSearchInstance
         }), true);
       },
       render: function render(renderOptions) {
         var instantSearchInstance = renderOptions.instantSearchInstance;
-        renderFn(_objectSpread({}, this.getWidgetRenderState(renderOptions), {
+        renderFn(_objectSpread(_objectSpread({}, this.getWidgetRenderState(renderOptions)), {}, {
           instantSearchInstance: instantSearchInstance
         }), false);
       },
@@ -70,7 +74,7 @@ var connectClearRefinements = function connectClearRefinements(renderFn) {
         unmountFn();
       },
       getRenderState: function getRenderState(renderState, renderOptions) {
-        return _objectSpread({}, renderState, {
+        return _objectSpread(_objectSpread({}, renderState), {}, {
           clearRefinements: this.getWidgetRenderState(renderOptions)
         });
       },
@@ -108,10 +112,12 @@ var connectClearRefinements = function connectClearRefinements(renderFn) {
           }))));
         };
 
+        var canRefine = connectorState.attributesToClear.some(function (attributeToClear) {
+          return attributeToClear.items.length > 0;
+        });
         return {
-          hasRefinements: connectorState.attributesToClear.some(function (attributeToClear) {
-            return attributeToClear.items.length > 0;
-          }),
+          canRefine: canRefine,
+          hasRefinements: canRefine,
           refine: cachedRefine,
           createURL: cachedCreateURL,
           widgetParams: widgetParams
@@ -126,10 +132,10 @@ function getAttributesToClear(_ref5) {
       includedAttributes = _ref5.includedAttributes,
       excludedAttributes = _ref5.excludedAttributes,
       transformItems = _ref5.transformItems;
-  var clearsQuery = includedAttributes.indexOf('query') !== -1 || excludedAttributes.indexOf('query') === -1;
+  var includesQuery = includedAttributes.indexOf('query') !== -1 || excludedAttributes.indexOf('query') === -1;
   return {
     helper: scopedResult.helper,
-    items: transformItems(uniq(getRefinements(scopedResult.results, scopedResult.helper.state, clearsQuery).map(function (refinement) {
+    items: transformItems(uniq(getRefinements(scopedResult.results, scopedResult.helper.state, includesQuery).map(function (refinement) {
       return refinement.attribute;
     }).filter(function (attribute) {
       return (// If the array is empty (default case), we keep all the attributes
@@ -138,7 +144,7 @@ function getAttributesToClear(_ref5) {
       );
     }).filter(function (attribute) {
       return (// If the query is included, we ignore the default `excludedAttributes = ['query']`
-        attribute === 'query' && clearsQuery || // Otherwise, ignore the excluded attributes
+        attribute === 'query' && includesQuery || // Otherwise, ignore the excluded attributes
         excludedAttributes.indexOf(attribute) === -1
       );
     })))

@@ -35,7 +35,7 @@ function createInfiniteHitsSessionStorageCache() {
       }
 
       try {
-        var cache = JSON.parse( // @ts-ignore JSON.parse() requires a string, but it actually accepts null, too.
+        var cache = JSON.parse( // @ts-expect-error JSON.parse() requires a string, but it actually accepts null, too.
         window.sessionStorage.getItem(KEY));
         return cache && (0, _utils.isEqual)(cache.state, getStateWithoutPage(state)) ? cache.hits : null;
       } catch (error) {

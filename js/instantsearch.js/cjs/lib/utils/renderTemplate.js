@@ -9,7 +9,7 @@ var _hogan = _interopRequireDefault(require("hogan.js"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
@@ -26,7 +26,7 @@ function transformHelpersToHogan() {
   var compileOptions = arguments.length > 1 ? arguments[1] : undefined;
   var data = arguments.length > 2 ? arguments[2] : undefined;
   return Object.keys(helpers).reduce(function (acc, helperKey) {
-    return _objectSpread({}, acc, _defineProperty({}, helperKey, function () {
+    return _objectSpread(_objectSpread({}, acc), {}, _defineProperty({}, helperKey, function () {
       var _this = this;
 
       return function (text) {
@@ -49,21 +49,16 @@ function renderTemplate(_ref) {
       bindEvent = _ref.bindEvent;
   var template = templates[templateKey];
 
-  var templateType = _typeof(template);
-
-  var isTemplateString = templateType === 'string';
-  var isTemplateFunction = templateType === 'function';
-
-  if (!isTemplateString && !isTemplateFunction) {
-    throw new Error("Template must be 'string' or 'function', was '".concat(templateType, "' (key: ").concat(templateKey, ")"));
+  if (typeof template !== 'string' && typeof template !== 'function') {
+    throw new Error("Template must be 'string' or 'function', was '".concat(_typeof(template), "' (key: ").concat(templateKey, ")"));
   }
 
-  if (isTemplateFunction) {
+  if (typeof template === 'function') {
     return template(data, bindEvent);
   }
 
   var transformedHelpers = transformHelpersToHogan(helpers, compileOptions, data);
-  return _hogan.default.compile(template, compileOptions).render(_objectSpread({}, data, {
+  return _hogan.default.compile(template, compileOptions).render(_objectSpread(_objectSpread({}, data), {}, {
     helpers: transformedHelpers
   })).replace(/[ \n\r\t\f\xA0]+/g, function (spaces) {
     return spaces.replace(/(^|\xA0+)[^\xA0]+/g, '$1 ');

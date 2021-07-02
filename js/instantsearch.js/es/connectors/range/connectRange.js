@@ -4,11 +4,15 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
-function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _nonIterableRest(); }
+function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest(); }
 
-function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance"); }
+function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
 
-function _iterableToArrayLimit(arr, i) { if (!(Symbol.iterator in Object(arr) || Object.prototype.toString.call(arr) === "[object Arguments]")) { return; } var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"] != null) _i["return"](); } finally { if (_d) throw _e; } } return _arr; }
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
+
+function _iterableToArrayLimit(arr, i) { if (typeof Symbol === "undefined" || !(Symbol.iterator in Object(arr))) return; var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"] != null) _i["return"](); } finally { if (_d) throw _e; } } return _arr; }
 
 function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 
@@ -46,7 +50,8 @@ var connectRange = function connectRange(renderFn) {
   checkRendering(renderFn, withUsage());
   return function (widgetParams) {
     var _ref2 = widgetParams || {},
-        attribute = _ref2.attribute,
+        _ref2$attribute = _ref2.attribute,
+        attribute = _ref2$attribute === void 0 ? '' : _ref2$attribute,
         minBound = _ref2.min,
         maxBound = _ref2.max,
         _ref2$precision = _ref2.precision,
@@ -137,7 +142,7 @@ var connectRange = function connectRange(renderFn) {
           resolvedState = resolvedState.addNumericRefinement(attribute, '<=', newNextMax);
         }
 
-        return resolvedState;
+        return resolvedState.resetPage();
       }
 
       return null;
@@ -156,7 +161,8 @@ var connectRange = function connectRange(renderFn) {
             eventName: eventName,
             index: helper.getIndex(),
             filters: filters
-          }
+          },
+          attribute: attribute
         });
       }
     };
@@ -250,18 +256,18 @@ var connectRange = function connectRange(renderFn) {
     return {
       $$type: $$type,
       init: function init(initOptions) {
-        renderFn(_objectSpread({}, this.getWidgetRenderState(initOptions), {
+        renderFn(_objectSpread(_objectSpread({}, this.getWidgetRenderState(initOptions)), {}, {
           instantSearchInstance: initOptions.instantSearchInstance
         }), true);
       },
       render: function render(renderOptions) {
-        renderFn(_objectSpread({}, this.getWidgetRenderState(renderOptions), {
+        renderFn(_objectSpread(_objectSpread({}, this.getWidgetRenderState(renderOptions)), {}, {
           instantSearchInstance: renderOptions.instantSearchInstance
         }), false);
       },
       getRenderState: function getRenderState(renderState, renderOptions) {
-        return _objectSpread({}, renderState, {
-          range: _objectSpread({}, renderState.range, _defineProperty({}, attribute, this.getWidgetRenderState(renderOptions)))
+        return _objectSpread(_objectSpread({}, renderState), {}, {
+          range: _objectSpread(_objectSpread({}, renderState.range), {}, _defineProperty({}, attribute, this.getWidgetRenderState(renderOptions)))
         });
       },
       getWidgetRenderState: function getWidgetRenderState(_ref13) {
@@ -297,10 +303,11 @@ var connectRange = function connectRange(renderFn) {
 
         return {
           refine: refine,
+          canRefine: currentRange.min !== currentRange.max,
           format: rangeFormatter,
           range: currentRange,
           sendEvent: createSendEvent(instantSearchInstance, helper, currentRange),
-          widgetParams: _objectSpread({}, widgetParams, {
+          widgetParams: _objectSpread(_objectSpread({}, widgetParams), {}, {
             precision: precision
           }),
           start: start
@@ -324,14 +331,14 @@ var connectRange = function connectRange(renderFn) {
           return uiState;
         }
 
-        return _objectSpread({}, uiState, {
-          range: _objectSpread({}, uiState.range, _defineProperty({}, attribute, "".concat(min, ":").concat(max)))
+        return _objectSpread(_objectSpread({}, uiState), {}, {
+          range: _objectSpread(_objectSpread({}, uiState.range), {}, _defineProperty({}, attribute, "".concat(min, ":").concat(max)))
         });
       },
       getWidgetSearchParameters: function getWidgetSearchParameters(searchParameters, _ref16) {
         var uiState = _ref16.uiState;
         var widgetSearchParameters = searchParameters.addDisjunctiveFacet(attribute).setQueryParameters({
-          numericRefinements: _objectSpread({}, searchParameters.numericRefinements, _defineProperty({}, attribute, {}))
+          numericRefinements: _objectSpread(_objectSpread({}, searchParameters.numericRefinements), {}, _defineProperty({}, attribute, {}))
         });
 
         if (isFiniteNumber(minBound)) {
@@ -353,11 +360,13 @@ var connectRange = function connectRange(renderFn) {
             lowerBound = _value$split$map2[0],
             upperBound = _value$split$map2[1];
 
-        if (isFiniteNumber(lowerBound)) {
+        if (isFiniteNumber(lowerBound) && (!isFiniteNumber(minBound) || minBound < lowerBound)) {
+          widgetSearchParameters = widgetSearchParameters.removeNumericRefinement(attribute, '>=');
           widgetSearchParameters = widgetSearchParameters.addNumericRefinement(attribute, '>=', lowerBound);
         }
 
-        if (isFiniteNumber(upperBound)) {
+        if (isFiniteNumber(upperBound) && (!isFiniteNumber(maxBound) || upperBound < maxBound)) {
+          widgetSearchParameters = widgetSearchParameters.removeNumericRefinement(attribute, '<=');
           widgetSearchParameters = widgetSearchParameters.addNumericRefinement(attribute, '<=', upperBound);
         }
 

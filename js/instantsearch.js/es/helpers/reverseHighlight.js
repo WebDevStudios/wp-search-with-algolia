@@ -1,5 +1,4 @@
-import { getPropertyByPath, getHighlightedParts, reverseHighlightedParts, concatHighlightedParts } from '../lib/utils';
-import { TAG_REPLACEMENT } from '../lib/escape-highlight';
+import { TAG_REPLACEMENT, getPropertyByPath, getHighlightedParts, reverseHighlightedParts, concatHighlightedParts } from '../lib/utils';
 import { component } from '../lib/suit';
 var suit = component('ReverseHighlight');
 export default function reverseHighlight(_ref) {

@@ -18,7 +18,9 @@ var ToggleRefinement = function ToggleRefinement(_ref) {
     type: "checkbox",
     checked: currentRefinement.isRefined,
     onChange: function onChange(event) {
-      return refine(!event.target.checked);
+      return refine({
+        isRefined: !event.target.checked
+      });
     }
   }), h(Template, _extends({}, templateProps, {
     rootTagName: "span",

@@ -17,29 +17,30 @@ var withUsage = createDocumentationMessageGenerator({
 var suit = component('QueryRuleCustomData');
 
 var renderer = function renderer(_ref) {
-  var items = _ref.items,
-      widgetParams = _ref.widgetParams;
-  var container = widgetParams.container,
-      cssClasses = widgetParams.cssClasses,
-      templates = widgetParams.templates;
-  render(h(CustomData, {
-    cssClasses: cssClasses,
-    templates: templates,
-    items: items
-  }), container);
+  var containerNode = _ref.containerNode,
+      cssClasses = _ref.cssClasses,
+      templates = _ref.templates;
+  return function (_ref2) {
+    var items = _ref2.items;
+    render(h(CustomData, {
+      cssClasses: cssClasses,
+      templates: templates,
+      items: items
+    }), containerNode);
+  };
 };
 
-var queryRuleCustomData = function queryRuleCustomData() {
-  var _ref2 = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
-      container = _ref2.container,
-      _ref2$cssClasses = _ref2.cssClasses,
-      userCssClasses = _ref2$cssClasses === void 0 ? {} : _ref2$cssClasses,
-      _ref2$templates = _ref2.templates,
-      userTemplates = _ref2$templates === void 0 ? {} : _ref2$templates,
-      _ref2$transformItems = _ref2.transformItems,
-      transformItems = _ref2$transformItems === void 0 ? function (items) {
+var queryRuleCustomData = function queryRuleCustomData(widgetParams) {
+  var _ref3 = widgetParams || {},
+      container = _ref3.container,
+      _ref3$cssClasses = _ref3.cssClasses,
+      userCssClasses = _ref3$cssClasses === void 0 ? {} : _ref3$cssClasses,
+      _ref3$templates = _ref3.templates,
+      userTemplates = _ref3$templates === void 0 ? {} : _ref3$templates,
+      _ref3$transformItems = _ref3.transformItems,
+      transformItems = _ref3$transformItems === void 0 ? function (items) {
     return items;
-  } : _ref2$transformItems;
+  } : _ref3$transformItems;
 
   if (!container) {
     throw new Error(withUsage('The `container` option is required.'));
@@ -48,26 +49,29 @@ var queryRuleCustomData = function queryRuleCustomData() {
   var cssClasses = {
     root: cx(suit(), userCssClasses.root)
   };
+  var containerNode = getContainerNode(container);
   var defaultTemplates = {
-    default: function _default(_ref3) {
-      var items = _ref3.items;
+    default: function _default(_ref4) {
+      var items = _ref4.items;
       return JSON.stringify(items, null, 2);
     }
   };
 
-  var templates = _objectSpread({}, defaultTemplates, {}, userTemplates);
+  var templates = _objectSpread(_objectSpread({}, defaultTemplates), userTemplates);
 
-  var containerNode = getContainerNode(container);
-  var makeQueryRuleCustomData = connectQueryRules(renderer, function () {
+  var specializedRenderer = renderer({
+    containerNode: containerNode,
+    cssClasses: cssClasses,
+    renderState: {},
+    templates: templates
+  });
+  var makeWidget = connectQueryRules(specializedRenderer, function () {
     render(null, containerNode);
   });
-  return _objectSpread({}, makeQueryRuleCustomData({
-    container: containerNode,
-    cssClasses: cssClasses,
-    templates: templates,
+  return _objectSpread(_objectSpread({}, makeWidget({
     transformItems: transformItems
-  }), {
-    $$type: 'ais.queryRuleCustomData'
+  })), {}, {
+    $$widgetType: 'ais.queryRuleCustomData'
   });
 };
 

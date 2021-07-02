@@ -51,8 +51,8 @@ var renderer = function renderer(_ref) {
   }), container);
 };
 
-var voiceSearch = function voiceSearch() {
-  var _ref2 = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
+var voiceSearch = function voiceSearch(widgetParams) {
+  var _ref2 = widgetParams || {},
       container = _ref2.container,
       _ref2$cssClasses = _ref2.cssClasses,
       userCssClasses = _ref2$cssClasses === void 0 ? {} : _ref2$cssClasses,
@@ -80,14 +80,16 @@ var voiceSearch = function voiceSearch() {
   var makeWidget = (0, _connectVoiceSearch.default)(renderer, function () {
     return (0, _preact.render)(null, containerNode);
   });
-  return makeWidget({
+  return _objectSpread(_objectSpread({}, makeWidget({
     container: containerNode,
     cssClasses: cssClasses,
-    templates: _objectSpread({}, _defaultTemplates.default, {}, templates),
+    templates: _objectSpread(_objectSpread({}, _defaultTemplates.default), templates),
     searchAsYouSpeak: searchAsYouSpeak,
     language: language,
     additionalQueryParameters: additionalQueryParameters,
     createVoiceSearchHelper: createVoiceSearchHelper
+  })), {}, {
+    $$widgetType: 'ais.voiceSearch'
   });
 };
 

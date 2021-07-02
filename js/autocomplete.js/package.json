@@ -1,5 +1,5 @@
 {
-  "_from": "autocomplete.js@~0.38.0",
+  "_from": "autocomplete.js@^0.38.0",
   "_id": "autocomplete.js@0.38.0",
   "_inBundle": false,
   "_integrity": "sha512-xZlqbg0LN9D1cZd4TkPJmir/Bq0+xXnp35X6i87yU2dD2wYv9E7pVU1+QKu0PbBVV2dShppwlKGMsfCYQD9OtA==",
@@ -8,20 +8,20 @@
   "_requested": {
     "type": "range",
     "registry": true,
-    "raw": "autocomplete.js@~0.38.0",
+    "raw": "autocomplete.js@^0.38.0",
     "name": "autocomplete.js",
     "escapedName": "autocomplete.js",
-    "rawSpec": "~0.38.0",
+    "rawSpec": "^0.38.0",
     "saveSpec": null,
-    "fetchSpec": "~0.38.0"
+    "fetchSpec": "^0.38.0"
   },
   "_requiredBy": [
     "#USER"
   ],
   "_resolved": "https://registry.npmjs.org/autocomplete.js/-/autocomplete.js-0.38.0.tgz",
   "_shasum": "9d49c2f4788fa23960275a6422ca78b310c01ef8",
-  "_spec": "autocomplete.js@~0.38.0",
-  "_where": "/Users/asharirfan/Documents/code/wp-algolia/app/public/wp-content/plugins/wp-search-with-algolia",
+  "_spec": "autocomplete.js@^0.38.0",
+  "_where": "/Users/raber/Local Sites/algolia/app/public/wp-content/plugins/wp-search-with-algolia",
   "bugs": {
     "url": "https://github.com/algolia/autocomplete.js/issues"
   },

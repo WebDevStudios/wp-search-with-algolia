@@ -4,20 +4,23 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
-function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _nonIterableSpread(); }
+function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread(); }
 
-function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance"); }
+function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
 
-function _iterableToArray(iter) { if (Symbol.iterator in Object(iter) || Object.prototype.toString.call(iter) === "[object Arguments]") return Array.from(iter); }
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
 
-function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } }
+function _iterableToArray(iter) { if (typeof Symbol !== "undefined" && Symbol.iterator in Object(iter)) return Array.from(iter); }
+
+function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) return _arrayLikeToArray(arr); }
+
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
 
 function _objectWithoutProperties(source, excluded) { if (source == null) return {}; var target = _objectWithoutPropertiesLoose(source, excluded); var key, i; if (Object.getOwnPropertySymbols) { var sourceSymbolKeys = Object.getOwnPropertySymbols(source); for (i = 0; i < sourceSymbolKeys.length; i++) { key = sourceSymbolKeys[i]; if (excluded.indexOf(key) >= 0) continue; if (!Object.prototype.propertyIsEnumerable.call(source, key)) continue; target[key] = source[key]; } } return target; }
 
 function _objectWithoutPropertiesLoose(source, excluded) { if (source == null) return {}; var target = {}; var sourceKeys = Object.keys(source); var key, i; for (i = 0; i < sourceKeys.length; i++) { key = sourceKeys[i]; if (excluded.indexOf(key) >= 0) continue; target[key] = source[key]; } return target; }
 
-import escapeHits, { TAG_PLACEHOLDER } from '../../lib/escape-highlight';
-import { checkRendering, createDocumentationMessageGenerator, isEqual, addAbsolutePosition, addQueryID, noop, createSendEventForHits, createBindEventForHits } from '../../lib/utils';
+import { escapeHits, TAG_PLACEHOLDER, checkRendering, createDocumentationMessageGenerator, isEqual, addAbsolutePosition, addQueryID, noop, createSendEventForHits, createBindEventForHits } from '../../lib/utils';
 var withUsage = createDocumentationMessageGenerator({
   name: 'infinite-hits',
   connector: true
@@ -33,7 +36,7 @@ function getStateWithoutPage(state) {
 
 function getInMemoryCache() {
   var cachedHits = null;
-  var cachedState = undefined;
+  var cachedState = null;
   return {
     read: function read(_ref2) {
       var state = _ref2.state;
@@ -99,26 +102,30 @@ var connectInfiniteHits = function connectInfiniteHits(renderFn) {
       }
     };
 
-    var getShowPrevious = function getShowPrevious(helper, cachedHits) {
+    var getShowPrevious = function getShowPrevious(helper) {
       return function () {
         // Using the helper's `overrideStateWithoutTriggeringChangeEvent` method
         // avoid updating the browser URL when the user displays the previous page.
-        helper.overrideStateWithoutTriggeringChangeEvent(_objectSpread({}, helper.state, {
-          page: getFirstReceivedPage(helper.state, cachedHits) - 1
+        helper.overrideStateWithoutTriggeringChangeEvent(_objectSpread(_objectSpread({}, helper.state), {}, {
+          page: getFirstReceivedPage(helper.state, cache.read({
+            state: helper.state
+          }) || {}) - 1
         })).searchWithoutTriggeringOnStateChange();
       };
     };
 
-    var getShowMore = function getShowMore(helper, cachedHits) {
+    var getShowMore = function getShowMore(helper) {
       return function () {
-        helper.setPage(getLastReceivedPage(helper.state, cachedHits) + 1).search();
+        helper.setPage(getLastReceivedPage(helper.state, cache.read({
+          state: helper.state
+        }) || {}) + 1).search();
       };
     };
 
     return {
       $$type: 'ais.infiniteHits',
       init: function init(initOptions) {
-        renderFn(_objectSpread({}, this.getWidgetRenderState(initOptions), {
+        renderFn(_objectSpread(_objectSpread({}, this.getWidgetRenderState(initOptions)), {}, {
           instantSearchInstance: initOptions.instantSearchInstance
         }), true);
       },
@@ -126,12 +133,12 @@ var connectInfiniteHits = function connectInfiniteHits(renderFn) {
         var instantSearchInstance = renderOptions.instantSearchInstance;
         var widgetRenderState = this.getWidgetRenderState(renderOptions);
         sendEvent('view', widgetRenderState.currentPageHits);
-        renderFn(_objectSpread({}, widgetRenderState, {
+        renderFn(_objectSpread(_objectSpread({}, widgetRenderState), {}, {
           instantSearchInstance: instantSearchInstance
         }), false);
       },
       getRenderState: function getRenderState(renderState, renderOptions) {
-        return _objectSpread({}, renderState, {
+        return _objectSpread(_objectSpread({}, renderState), {}, {
           infiniteHits: this.getWidgetRenderState(renderOptions)
         });
       },
@@ -147,8 +154,8 @@ var connectInfiniteHits = function connectInfiniteHits(renderFn) {
         }) || {};
 
         if (!results) {
-          showPrevious = getShowPrevious(helper, cachedHits);
-          showMore = getShowMore(helper, cachedHits);
+          showPrevious = getShowPrevious(helper);
+          showMore = getShowMore(helper);
           sendEvent = createSendEventForHits({
             instantSearchInstance: instantSearchInstance,
             index: helper.getIndex(),
@@ -213,7 +220,7 @@ var connectInfiniteHits = function connectInfiniteHits(renderFn) {
         }
 
         return stateWithoutPage.setQueryParameters(Object.keys(TAG_PLACEHOLDER).reduce(function (acc, key) {
-          return _objectSpread({}, acc, _defineProperty({}, key, undefined));
+          return _objectSpread(_objectSpread({}, acc), {}, _defineProperty({}, key, undefined));
         }, {}));
       },
       getWidgetUiState: function getWidgetUiState(uiState, _ref7) {
@@ -226,7 +233,7 @@ var connectInfiniteHits = function connectInfiniteHits(renderFn) {
           return uiState;
         }
 
-        return _objectSpread({}, uiState, {
+        return _objectSpread(_objectSpread({}, uiState), {}, {
           // The page in the UI state is incremented by one
           // to expose the user value (not `0`).
           page: page + 1

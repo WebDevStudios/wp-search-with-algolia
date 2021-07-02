@@ -1,4 +1,4 @@
-/*! InstantSearch.js 4.10.0 | © Algolia, Inc. and contributors; MIT License | https://github.com/algolia/instantsearch.js */
+/*! InstantSearch.js 4.24.2 | © Algolia, Inc. and contributors; MIT License | https://github.com/algolia/instantsearch.js */
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
   typeof define === 'function' && define.amd ? define(factory) :
@@ -6,6 +6,8 @@
 }(this, (function () { 'use strict';
 
   function _typeof(obj) {
+    "@babel/helpers - typeof";
+
     if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") {
       _typeof = function (obj) {
         return typeof obj;
@@ -139,6 +141,19 @@
     return _setPrototypeOf(o, p);
   }
 
+  function _isNativeReflectConstruct() {
+    if (typeof Reflect === "undefined" || !Reflect.construct) return false;
+    if (Reflect.construct.sham) return false;
+    if (typeof Proxy === "function") return true;
+
+    try {
+      Date.prototype.toString.call(Reflect.construct(Date, [], function () {}));
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
   function _objectWithoutPropertiesLoose(source, excluded) {
     if (source == null) return {};
     var target = {};
@@ -191,20 +206,35 @@
     return _assertThisInitialized(self);
   }
 
+  function _createSuper(Derived) {
+    var hasNativeReflectConstruct = _isNativeReflectConstruct();
+
+    return function _createSuperInternal() {
+      var Super = _getPrototypeOf(Derived),
+          result;
+
+      if (hasNativeReflectConstruct) {
+        var NewTarget = _getPrototypeOf(this).constructor;
+
+        result = Reflect.construct(Super, arguments, NewTarget);
+      } else {
+        result = Super.apply(this, arguments);
+      }
+
+      return _possibleConstructorReturn(this, result);
+    };
+  }
+
   function _slicedToArray(arr, i) {
-    return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _nonIterableRest();
+    return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest();
   }
 
   function _toConsumableArray(arr) {
-    return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _nonIterableSpread();
+    return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread();
   }
 
   function _arrayWithoutHoles(arr) {
-    if (Array.isArray(arr)) {
-      for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) arr2[i] = arr[i];
-
-      return arr2;
-    }
+    if (Array.isArray(arr)) return _arrayLikeToArray(arr);
   }
 
   function _arrayWithHoles(arr) {
@@ -212,14 +242,11 @@
   }
 
   function _iterableToArray(iter) {
-    if (Symbol.iterator in Object(iter) || Object.prototype.toString.call(iter) === "[object Arguments]") return Array.from(iter);
+    if (typeof Symbol !== "undefined" && Symbol.iterator in Object(iter)) return Array.from(iter);
   }
 
   function _iterableToArrayLimit(arr, i) {
-    if (!(Symbol.iterator in Object(arr) || Object.prototype.toString.call(arr) === "[object Arguments]")) {
-      return;
-    }
-
+    if (typeof Symbol === "undefined" || !(Symbol.iterator in Object(arr))) return;
     var _arr = [];
     var _n = true;
     var _d = false;
@@ -245,12 +272,29 @@
     return _arr;
   }
 
+  function _unsupportedIterableToArray(o, minLen) {
+    if (!o) return;
+    if (typeof o === "string") return _arrayLikeToArray(o, minLen);
+    var n = Object.prototype.toString.call(o).slice(8, -1);
+    if (n === "Object" && o.constructor) n = o.constructor.name;
+    if (n === "Map" || n === "Set") return Array.from(o);
+    if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen);
+  }
+
+  function _arrayLikeToArray(arr, len) {
+    if (len == null || len > arr.length) len = arr.length;
+
+    for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i];
+
+    return arr2;
+  }
+
   function _nonIterableSpread() {
-    throw new TypeError("Invalid attempt to spread non-iterable instance");
+    throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
   }
 
   function _nonIterableRest() {
-    throw new TypeError("Invalid attempt to destructure non-iterable instance");
+    throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
   }
 
   function clone(value) {
@@ -3964,7 +4008,7 @@
 
   var requestBuilder_1 = requestBuilder;
 
-  var version = '3.3.4';
+  var version = '3.4.5';
 
   /**
    * Event triggered when a parameter is set or updated
@@ -4201,6 +4245,49 @@
       if (self._currentNbQueries === 0) self.emit('searchQueueEmpty');
       throw e;
     });
+  };
+
+   /**
+   * Start the search for answers with the parameters set in the state.
+   * This method returns a promise.
+   * @param {Object} options - the options for answers API call
+   * @param {string[]} options.attributesForPrediction - Attributes to use for predictions. If empty, `searchableAttributes` is used instead.
+   * @param {string[]} options.queryLanguages - The languages in the query. Currently only supports ['en'].
+   * @param {number} options.nbHits - Maximum number of answers to retrieve from the Answers Engine. Cannot be greater than 1000.
+   *
+   * @return {promise} the answer results
+   */
+  AlgoliaSearchHelper.prototype.findAnswers = function(options) {
+    var state = this.state;
+    var derivedHelper = this.derivedHelpers[0];
+    if (!derivedHelper) {
+      return Promise.resolve([]);
+    }
+    var derivedState = derivedHelper.getModifiedState(state);
+    var data = merge_1(
+      {
+        attributesForPrediction: options.attributesForPrediction,
+        nbHits: options.nbHits
+      },
+      {
+        params: omit(requestBuilder_1._getHitsSearchParams(derivedState), [
+          'attributesToSnippet',
+          'hitsPerPage',
+          'restrictSearchableAttributes',
+          'snippetEllipsisText' // FIXME remove this line once the engine is fixed.
+        ])
+      }
+    );
+
+    var errorMessage = 'search for answers was called, but this client does not have a function client.initIndex(index).findAnswers';
+    if (typeof this.client.initIndex !== 'function') {
+      throw new Error(errorMessage);
+    }
+    var index = this.client.initIndex(derivedState.index);
+    if (typeof index.findAnswers !== 'function') {
+      throw new Error(errorMessage);
+    }
+    return index.findAnswers(derivedState.query, options.queryLanguages, data);
   };
 
   /**
@@ -5533,19 +5620,22 @@
     });
   }
 
-  function prepareTemplates() {
-    var defaultTemplates = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+  function prepareTemplates( // can not use = {} here, since the template could have different constraints
+  defaultTemplates) {
     var templates = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-    var allKeys = uniq([].concat(_toConsumableArray(Object.keys(defaultTemplates)), _toConsumableArray(Object.keys(templates))));
+    var allKeys = uniq([].concat(_toConsumableArray(Object.keys(defaultTemplates || {})), _toConsumableArray(Object.keys(templates))));
     return allKeys.reduce(function (config, key) {
-      var defaultTemplate = defaultTemplates[key];
+      var defaultTemplate = defaultTemplates ? defaultTemplates[key] : undefined;
       var customTemplate = templates[key];
       var isCustomTemplate = customTemplate !== undefined && customTemplate !== defaultTemplate;
-      config.templates[key] = isCustomTemplate ? customTemplate : defaultTemplate;
+      config.templates[key] = isCustomTemplate ? customTemplate // typescript doesn't recognize that this condition asserts customTemplate is defined
+      : defaultTemplate;
       config.useCustomCompileOptions[key] = isCustomTemplate;
       return config;
     }, {
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
       templates: {},
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
       useCustomCompileOptions: {}
     });
   }
@@ -6342,16 +6432,16 @@
   compiler.template = compiler.Template;
   var hogan = compiler;
 
+  // We add all our template helper methods to the template as lambdas. Note
   // that lambdas in Mustache are supposed to accept a second argument of
   // `render` to get the rendered value, not the literal `{{value}}`. But
   // this is currently broken (see https://github.com/twitter/hogan.js/issues/222).
-
   function transformHelpersToHogan() {
     var helpers = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
     var compileOptions = arguments.length > 1 ? arguments[1] : undefined;
     var data = arguments.length > 2 ? arguments[2] : undefined;
     return Object.keys(helpers).reduce(function (acc, helperKey) {
-      return _objectSpread2({}, acc, _defineProperty({}, helperKey, function () {
+      return _objectSpread2(_objectSpread2({}, acc), {}, _defineProperty({}, helperKey, function () {
         var _this = this;
 
         return function (text) {
@@ -6374,21 +6464,16 @@
         bindEvent = _ref.bindEvent;
     var template = templates[templateKey];
 
-    var templateType = _typeof(template);
-
-    var isTemplateString = templateType === 'string';
-    var isTemplateFunction = templateType === 'function';
-
-    if (!isTemplateString && !isTemplateFunction) {
-      throw new Error("Template must be 'string' or 'function', was '".concat(templateType, "' (key: ").concat(templateKey, ")"));
+    if (typeof template !== 'string' && typeof template !== 'function') {
+      throw new Error("Template must be 'string' or 'function', was '".concat(_typeof(template), "' (key: ").concat(templateKey, ")"));
     }
 
-    if (isTemplateFunction) {
+    if (typeof template === 'function') {
       return template(data, bindEvent);
     }
 
     var transformedHelpers = transformHelpersToHogan(helpers, compileOptions, data);
-    return hogan.compile(template, compileOptions).render(_objectSpread2({}, data, {
+    return hogan.compile(template, compileOptions).render(_objectSpread2(_objectSpread2({}, data), {}, {
       helpers: transformedHelpers
     })).replace(/[ \n\r\t\f\xA0]+/g, function (spaces) {
       return spaces.replace(/(^|\xA0+)[^\xA0]+/g, '$1 ');
@@ -6472,7 +6557,7 @@
   }
 
   function getRefinements(results, state) {
-    var clearsQuery = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
+    var includesQuery = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
     var refinements = [];
     var _state$facetsRefineme = state.facetsRefinements,
         facetsRefinements = _state$facetsRefineme === void 0 ? {} : _state$facetsRefineme,
@@ -6542,7 +6627,7 @@
       });
     });
 
-    if (clearsQuery && state.query && state.query.trim()) {
+    if (includesQuery && state.query && state.query.trim()) {
       refinements.push({
         attribute: 'query',
         type: 'query',
@@ -6651,8 +6736,14 @@
     _warning.cache = {};
   }
 
-  // Some connectors are responsible for multiple widgets so we need
+  /**
+   * A typed version of Object.keys, to use when looping over a static object
+   * inspired from https://stackoverflow.com/a/65117465/3185307
+   */
+  var keys = Object.keys;
+
   // to map them.
+
   function getWidgetNames(connectorName) {
     switch (connectorName) {
       case 'range':
@@ -6730,15 +6821,21 @@
     var mountedWidgets = index.getWidgets().map(function (widget) {
       return widget.$$type;
     }).filter(Boolean);
-    var missingWidgets = Object.keys(indexUiState).reduce(function (acc, parameter) {
-      var requiredWidgets = stateToWidgetsMap[parameter] && stateToWidgetsMap[parameter].widgets;
+    var missingWidgets = keys(indexUiState).reduce(function (acc, parameter) {
+      var widgetUiState = stateToWidgetsMap[parameter];
+
+      if (!widgetUiState) {
+        return acc;
+      }
+
+      var requiredWidgets = widgetUiState.widgets;
 
       if (requiredWidgets && !requiredWidgets.some(function (requiredWidget) {
         return mountedWidgets.includes(requiredWidget);
       })) {
         acc.push([parameter, {
-          connectors: stateToWidgetsMap[parameter].connectors,
-          widgets: stateToWidgetsMap[parameter].widgets.map(function (widgetIdentifier) {
+          connectors: widgetUiState.connectors,
+          widgets: widgetUiState.widgets.map(function (widgetIdentifier) {
             return widgetIdentifier.split('ais.')[1];
           })
         }]);
@@ -6964,7 +7061,7 @@
   function recursiveEscape(input) {
     if (isPlainObject(input) && typeof input.value !== 'string') {
       return Object.keys(input).reduce(function (acc, key) {
-        return _objectSpread2({}, acc, _defineProperty({}, key, recursiveEscape(input[key])));
+        return _objectSpread2(_objectSpread2({}, acc), {}, _defineProperty({}, key, recursiveEscape(input[key])));
       }, {});
     }
 
@@ -6972,7 +7069,7 @@
       return input.map(recursiveEscape);
     }
 
-    return _objectSpread2({}, input, {
+    return _objectSpread2(_objectSpread2({}, input), {}, {
       value: replaceTagsAndEscape(input.value)
     });
   }
@@ -7001,7 +7098,7 @@
   }
   function escapeFacets(facetHits) {
     return facetHits.map(function (h) {
-      return _objectSpread2({}, h, {
+      return _objectSpread2(_objectSpread2({}, h), {}, {
         highlighted: replaceTagsAndEscape(h.highlighted)
       });
     });
@@ -7061,14 +7158,14 @@
       return part.isHighlighted;
     })) {
       return parts.map(function (part) {
-        return _objectSpread2({}, part, {
+        return _objectSpread2(_objectSpread2({}, part), {}, {
           isHighlighted: false
         });
       });
     }
 
     return parts.map(function (part, i) {
-      return _objectSpread2({}, part, {
+      return _objectSpread2(_objectSpread2({}, part), {}, {
         isHighlighted: !getHighlightFromSiblings(parts, i)
       });
     });
@@ -7150,31 +7247,31 @@
 
   var mergeFacetRefinements = function mergeFacetRefinements(left, right) {
     return left.setQueryParameters({
-      facetsRefinements: _objectSpread2({}, left.facetsRefinements, {}, right.facetsRefinements)
+      facetsRefinements: _objectSpread2(_objectSpread2({}, left.facetsRefinements), right.facetsRefinements)
     });
   };
 
   var mergeFacetsExcludes = function mergeFacetsExcludes(left, right) {
     return left.setQueryParameters({
-      facetsExcludes: _objectSpread2({}, left.facetsExcludes, {}, right.facetsExcludes)
+      facetsExcludes: _objectSpread2(_objectSpread2({}, left.facetsExcludes), right.facetsExcludes)
     });
   };
 
   var mergeDisjunctiveFacetsRefinements = function mergeDisjunctiveFacetsRefinements(left, right) {
     return left.setQueryParameters({
-      disjunctiveFacetsRefinements: _objectSpread2({}, left.disjunctiveFacetsRefinements, {}, right.disjunctiveFacetsRefinements)
+      disjunctiveFacetsRefinements: _objectSpread2(_objectSpread2({}, left.disjunctiveFacetsRefinements), right.disjunctiveFacetsRefinements)
     });
   };
 
   var mergeNumericRefinements = function mergeNumericRefinements(left, right) {
     return left.setQueryParameters({
-      numericRefinements: _objectSpread2({}, left.numericRefinements, {}, right.numericRefinements)
+      numericRefinements: _objectSpread2(_objectSpread2({}, left.numericRefinements), right.numericRefinements)
     });
   };
 
   var mergeHierarchicalFacetsRefinements = function mergeHierarchicalFacetsRefinements(left, right) {
     return left.setQueryParameters({
-      hierarchicalFacetsRefinements: _objectSpread2({}, left.hierarchicalFacetsRefinements, {}, right.hierarchicalFacetsRefinements)
+      hierarchicalFacetsRefinements: _objectSpread2(_objectSpread2({}, left.hierarchicalFacetsRefinements), right.hierarchicalFacetsRefinements)
     });
   };
 
@@ -7259,6 +7356,7 @@
       lng: parseFloat(pattern[2])
     };
   }
+
   function insideBoundingBoxArrayToBoundingBox(value) {
     var _value = _slicedToArray(value, 1),
         _value$ = _value[0];
@@ -7288,6 +7386,7 @@
       }
     };
   }
+
   function insideBoundingBoxStringToBoundingBox(value) {
     var _value$split$map = value.split(',').map(parseFloat),
         _value$split$map2 = _slicedToArray(_value$split$map, 4),
@@ -7313,6 +7412,7 @@
       }
     };
   }
+
   function insideBoundingBoxToBoundingBox(value) {
     if (Array.isArray(value)) {
       return insideBoundingBoxArrayToBoundingBox(value);
@@ -7321,25 +7421,25 @@
     return insideBoundingBoxStringToBoundingBox(value);
   }
 
-  var addAbsolutePosition = function addAbsolutePosition(hits, page, hitsPerPage) {
+  function addAbsolutePosition(hits, page, hitsPerPage) {
     return hits.map(function (hit, idx) {
-      return _objectSpread2({}, hit, {
+      return _objectSpread2(_objectSpread2({}, hit), {}, {
         __position: hitsPerPage * page + idx + 1
       });
     });
-  };
+  }
 
-  var addQueryID = function addQueryID(hits, queryID) {
+  function addQueryID(hits, queryID) {
     if (!queryID) {
       return hits;
     }
 
     return hits.map(function (hit) {
-      return _objectSpread2({}, hit, {
+      return _objectSpread2(_objectSpread2({}, hit), {}, {
         __queryID: queryID
       });
     });
-  };
+  }
 
   function isFacetRefined(helper, facet, value) {
     if (helper.state.isHierarchicalFacet(facet)) {
@@ -7379,8 +7479,9 @@
             payload: {
               eventName: eventName,
               index: helper.getIndex(),
-              filters: ["".concat(attribute, ":").concat(JSON.stringify(facetValue))]
-            }
+              filters: ["".concat(attribute, ":").concat(facetValue)]
+            },
+            attribute: attribute
           });
         }
       } else {
@@ -7389,6 +7490,13 @@
     };
 
     return sendEventForFacet;
+  }
+
+  function serializePayload(payload) {
+    return btoa(encodeURIComponent(JSON.stringify(payload)));
+  }
+  function deserializePayload(payload) {
+    return JSON.parse(decodeURIComponent(atob(payload)));
   }
 
   var buildPayload = function buildPayload(_ref) {
@@ -7417,7 +7525,7 @@
       }
     }
 
-    var hitsArray = Array.isArray(hits) ? hits : [hits];
+    var hitsArray = Array.isArray(hits) ? removeEscapedFromHits(hits) : [hits];
 
     if (hitsArray.length === 0) {
       return null;
@@ -7440,7 +7548,8 @@
           eventName: eventName || 'Hits Viewed',
           index: index,
           objectIDs: objectIDs
-        }
+        },
+        hits: hitsArray
       };
     } else if (eventType === 'click') {
       return {
@@ -7453,7 +7562,8 @@
           queryID: queryID,
           objectIDs: objectIDs,
           positions: positions
-        }
+        },
+        hits: hitsArray
       };
     } else if (eventType === 'conversion') {
       return {
@@ -7465,12 +7575,21 @@
           index: index,
           queryID: queryID,
           objectIDs: objectIDs
-        }
+        },
+        hits: hitsArray
       };
     } else {
       throw new Error("eventType(\"".concat(eventType, "\") is not supported.\n    If you want to send a custom payload, you can pass one object: ").concat(methodName, "(customPayload);\n    "));
     }
   };
+
+  function removeEscapedFromHits(hits) {
+    // this returns without `hits.__escaped`
+    // and this way it doesn't mutate the original `hits`
+    return hits.map(function (hit) {
+      return hit;
+    });
+  }
 
   function createSendEventForHits(_ref2) {
     var instantSearchInstance = _ref2.instantSearchInstance,
@@ -7511,7 +7630,7 @@
         methodName: 'bindEvent',
         args: args
       });
-      return payload ? "data-insights-event=".concat(btoa(JSON.stringify(payload))) : '';
+      return payload ? "data-insights-event=".concat(serializePayload(payload)) : '';
     };
 
     return bindEventForHits;
@@ -7559,6 +7678,82 @@
     return filters;
   }
 
+  // copied from
+  // https://github.com/algolia/autocomplete.js/blob/307a7acc4283e10a19cb7d067f04f1bea79dc56f/packages/autocomplete-core/src/utils/createConcurrentSafePromise.ts#L1:L1
+
+  /**
+   * Creates a runner that executes promises in a concurrent-safe way.
+   *
+   * This is useful to prevent older promises to resolve after a newer promise,
+   * otherwise resulting in stale resolved values.
+   */
+  function createConcurrentSafePromise() {
+    var basePromiseId = -1;
+    var latestResolvedId = -1;
+    var latestResolvedValue = undefined;
+    return function runConcurrentSafePromise(promise) {
+      var currentPromiseId = ++basePromiseId;
+      return Promise.resolve(promise).then(function (x) {
+        // The promise might take too long to resolve and get outdated. This would
+        // result in resolving stale values.
+        // When this happens, we ignore the promise value and return the one
+        // coming from the latest resolved value.
+        //
+        // +----------------------------------+
+        // |        100ms                     |
+        // | run(1) +--->  R1                 |
+        // |        300ms                     |
+        // | run(2) +-------------> R2 (SKIP) |
+        // |        200ms                     |
+        // | run(3) +--------> R3             |
+        // +----------------------------------+
+        if (latestResolvedValue && currentPromiseId < latestResolvedId) {
+          return latestResolvedValue;
+        }
+
+        latestResolvedId = currentPromiseId;
+        latestResolvedValue = x;
+        return x;
+      });
+    };
+  }
+
+  // Debounce a function call to the trailing edge.
+  // The debounced function returns a promise.
+  function debounce(func, wait) {
+    var lastTimeout = null;
+    return function () {
+      for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+        args[_key] = arguments[_key];
+      }
+
+      return new Promise(function (resolve, reject) {
+        if (lastTimeout) {
+          clearTimeout(lastTimeout);
+        }
+
+        lastTimeout = setTimeout(function () {
+          lastTimeout = null;
+          Promise.resolve(func.apply(void 0, args)).then(resolve).catch(reject);
+        }, wait);
+      });
+    };
+  }
+
+  function getWidgetAttribute(widget, initOptions) {
+    try {
+      // assume the type to be the correct one, but throw a nice error if it isn't the case
+      var _getWidgetRenderState = widget.getWidgetRenderState(initOptions),
+          widgetParams = _getWidgetRenderState.widgetParams;
+
+      var attribute = 'attribute' in widgetParams ? widgetParams.attribute : widgetParams.attributes[0];
+      if (typeof attribute !== 'string') throw new Error();
+      return attribute;
+    } catch (e) {
+      throw new Error("Could not find the attribute of the widget:\n\n".concat(JSON.stringify(widget), "\n\nPlease check whether the widget's getWidgetRenderState returns widgetParams.attribute correctly."));
+    }
+  }
+
   var withUsage = createDocumentationMessageGenerator({
     name: 'index-widget'
   });
@@ -7589,9 +7784,11 @@
 
   function getLocalWidgetsUiState(widgets, widgetStateOptions) {
     var initialUiState = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
-    return widgets.filter(function (widget) {
-      return !isIndexWidget(widget);
-    }).reduce(function (uiState, widget) {
+    return widgets.reduce(function (uiState, widget) {
+      if (isIndexWidget(widget)) {
+        return uiState;
+      }
+
       if (!widget.getWidgetUiState && !widget.getWidgetState) {
         return uiState;
       }
@@ -7647,14 +7844,14 @@
     }, []);
   }
 
-  var index = function index(props) {
-    if (props === undefined || props.indexName === undefined) {
+  var index = function index(widgetParams) {
+    if (widgetParams === undefined || widgetParams.indexName === undefined) {
       throw new Error(withUsage('The `indexName` option is required.'));
     }
 
-    var indexName = props.indexName,
-        _props$indexId = props.indexId,
-        indexId = _props$indexId === void 0 ? indexName : _props$indexId;
+    var indexName = widgetParams.indexName,
+        _widgetParams$indexId = widgetParams.indexId,
+        indexId = _widgetParams$indexId === void 0 ? indexName : _widgetParams$indexId;
     var localWidgets = [];
     var localUiState = {};
     var localInstantSearchInstance = null;
@@ -7663,6 +7860,7 @@
     var derivedHelper = null;
     return {
       $$type: 'ais.index',
+      $$widgetType: 'ais.index',
       getIndexName: function getIndexName() {
         return indexName;
       },
@@ -7766,6 +7964,8 @@
         return this;
       },
       removeWidgets: function removeWidgets(widgets) {
+        var _this2 = this;
+
         if (!Array.isArray(widgets)) {
           throw new Error(withUsage('The `removeWidgets` method expects an array of widgets.'));
         }
@@ -7785,7 +7985,8 @@
             // the `dispose` method exists at this point we already assert it
             var next = widget.dispose({
               helper: helper,
-              state: state
+              state: state,
+              parent: _this2
             });
             return next || state;
           }, helper.state);
@@ -7806,11 +8007,18 @@
         return this;
       },
       init: function init(_ref2) {
-        var _this2 = this;
+        var _this3 = this;
 
         var instantSearchInstance = _ref2.instantSearchInstance,
             parent = _ref2.parent,
             uiState = _ref2.uiState;
+
+        if (helper !== null) {
+          // helper is already initialized, therefore we do not need to set up
+          // any listeners
+          return;
+        }
+
         localInstantSearchInstance = instantSearchInstance;
         localParent = parent;
         localUiState = uiState[indexId] || {}; // The `mainHelper` is already defined at this point. The instance is created
@@ -7856,7 +8064,7 @@
         };
 
         derivedHelper = mainHelper.derive(function () {
-          return merge$1.apply(void 0, _toConsumableArray(resolveSearchParameters(_this2)));
+          return merge$1.apply(void 0, _toConsumableArray(resolveSearchParameters(_this3)));
         }); // Subscribe to the Helper state changes for the page before widgets
         // are initialized. This behavior mimics the original one of the Helper.
         // It makes sense to replicate it at the `init` step. We have another
@@ -7878,7 +8086,7 @@
 
           {
             checkIndexUiState({
-              index: _this2,
+              index: _this3,
               indexUiState: localUiState
             });
           }
@@ -7894,21 +8102,21 @@
           // search behavior.
 
           helper.lastResults = results;
-        }); // We compute the render state before calling `render` in a separate loop
+        }); // We compute the render state before calling `init` in a separate loop
         // to construct the whole render state object that is then passed to
-        // `render`.
+        // `init`.
 
         localWidgets.forEach(function (widget) {
           if (widget.getRenderState) {
-            var renderState = widget.getRenderState(instantSearchInstance.renderState[_this2.getIndexId()] || {}, {
+            var renderState = widget.getRenderState(instantSearchInstance.renderState[_this3.getIndexId()] || {}, {
               uiState: uiState,
               helper: helper,
-              parent: _this2,
+              parent: _this3,
               instantSearchInstance: instantSearchInstance,
               state: helper.state,
               renderState: instantSearchInstance.renderState,
               templatesConfig: instantSearchInstance.templatesConfig,
-              createURL: _this2.createURL,
+              createURL: _this3.createURL,
               scopedResults: [],
               searchMetadata: {
                 isSearchStalled: instantSearchInstance._isSearchStalled
@@ -7917,23 +8125,25 @@
             storeRenderState({
               renderState: renderState,
               instantSearchInstance: instantSearchInstance,
-              parent: _this2
+              parent: _this3
             });
           }
         });
         localWidgets.forEach(function (widget) {
-           _warning(!widget.getWidgetState, 'The `getWidgetState` method is renamed `getWidgetUiState` and will no longer exist under that name in InstantSearch.js 5.x. Please use `getWidgetUiState` instead.') ;
+           _warning( // if it has NO getWidgetState or if it has getWidgetUiState, we don't warn
+          // aka we warn if there's _only_ getWidgetState
+          !widget.getWidgetState || Boolean(widget.getWidgetUiState), 'The `getWidgetState` method is renamed `getWidgetUiState` and will no longer exist under that name in InstantSearch.js 5.x. Please use `getWidgetUiState` instead.') ;
 
           if (widget.init) {
             widget.init({
               uiState: uiState,
               helper: helper,
-              parent: _this2,
+              parent: _this3,
               instantSearchInstance: instantSearchInstance,
               state: helper.state,
               renderState: instantSearchInstance.renderState,
               templatesConfig: instantSearchInstance.templatesConfig,
-              createURL: _this2.createURL,
+              createURL: _this3.createURL,
               scopedResults: [],
               searchMetadata: {
                 isSearchStalled: instantSearchInstance._isSearchStalled
@@ -7948,8 +8158,7 @@
         // https://github.com/algolia/instantsearch.js/pull/994/commits/4a672ae3fd78809e213de0368549ef12e9dc9454
 
         helper.on('change', function (event) {
-          var state = event.state; // @ts-ignore _uiState comes from privateHelperSetState and thus isn't typed on the helper event
-
+          var state = event.state;
           var _uiState = event._uiState;
           localUiState = getLocalWidgetsUiState(localWidgets, {
             searchParameters: state,
@@ -7963,7 +8172,7 @@
         });
       },
       render: function render(_ref5) {
-        var _this3 = this;
+        var _this4 = this;
 
         var instantSearchInstance = _ref5.instantSearchInstance;
 
@@ -7973,16 +8182,16 @@
 
         localWidgets.forEach(function (widget) {
           if (widget.getRenderState) {
-            var renderState = widget.getRenderState(instantSearchInstance.renderState[_this3.getIndexId()] || {}, {
-              helper: _this3.getHelper(),
-              parent: _this3,
+            var renderState = widget.getRenderState(instantSearchInstance.renderState[_this4.getIndexId()] || {}, {
+              helper: _this4.getHelper(),
+              parent: _this4,
               instantSearchInstance: instantSearchInstance,
-              results: _this3.getResults(),
-              scopedResults: _this3.getScopedResults(),
-              state: _this3.getResults()._state,
+              results: _this4.getResults(),
+              scopedResults: _this4.getScopedResults(),
+              state: _this4.getResults()._state,
               renderState: instantSearchInstance.renderState,
               templatesConfig: instantSearchInstance.templatesConfig,
-              createURL: _this3.createURL,
+              createURL: _this4.createURL,
               searchMetadata: {
                 isSearchStalled: instantSearchInstance._isSearchStalled
               }
@@ -7990,7 +8199,7 @@
             storeRenderState({
               renderState: renderState,
               instantSearchInstance: instantSearchInstance,
-              parent: _this3
+              parent: _this4
             });
           }
         });
@@ -8004,14 +8213,14 @@
           if (widget.render) {
             widget.render({
               helper: helper,
-              parent: _this3,
+              parent: _this4,
               instantSearchInstance: instantSearchInstance,
-              results: _this3.getResults(),
-              scopedResults: _this3.getScopedResults(),
-              state: _this3.getResults()._state,
+              results: _this4.getResults(),
+              scopedResults: _this4.getScopedResults(),
+              state: _this4.getResults()._state,
               renderState: instantSearchInstance.renderState,
               templatesConfig: instantSearchInstance.templatesConfig,
-              createURL: _this3.createURL,
+              createURL: _this4.createURL,
               searchMetadata: {
                 isSearchStalled: instantSearchInstance._isSearchStalled
               }
@@ -8020,6 +8229,8 @@
         });
       },
       dispose: function dispose() {
+        var _this5 = this;
+
         localWidgets.forEach(function (widget) {
           if (widget.dispose) {
             // The dispose function is always called once the instance is started
@@ -8030,7 +8241,8 @@
             // operations on `add` & `remove`.
             widget.dispose({
               helper: helper,
-              state: helper.state
+              state: helper.state,
+              parent: _this5
             });
           }
         });
@@ -8044,7 +8256,7 @@
       getWidgetUiState: function getWidgetUiState(uiState) {
         return localWidgets.filter(isIndexWidget).reduce(function (previousUiState, innerIndex) {
           return innerIndex.getWidgetUiState(previousUiState);
-        }, _objectSpread2({}, uiState, _defineProperty({}, this.getIndexId(), localUiState)));
+        }, _objectSpread2(_objectSpread2({}, uiState), {}, _defineProperty({}, this.getIndexId(), localUiState)));
       },
       getWidgetState: function getWidgetState(uiState) {
          _warning(false, 'The `getWidgetState` method is renamed `getWidgetUiState` and will no longer exist under that name in InstantSearch.js 5.x. Please use `getWidgetUiState` instead.') ;
@@ -8071,10 +8283,10 @@
         instantSearchInstance = _ref7.instantSearchInstance,
         parent = _ref7.parent;
     var parentIndexName = parent ? parent.getIndexId() : instantSearchInstance.mainIndex.getIndexId();
-    instantSearchInstance.renderState = _objectSpread2({}, instantSearchInstance.renderState, _defineProperty({}, parentIndexName, _objectSpread2({}, instantSearchInstance.renderState[parentIndexName], {}, renderState)));
+    instantSearchInstance.renderState = _objectSpread2(_objectSpread2({}, instantSearchInstance.renderState), {}, _defineProperty({}, parentIndexName, _objectSpread2(_objectSpread2({}, instantSearchInstance.renderState[parentIndexName]), renderState)));
   }
 
-  var version$1 = '4.10.0';
+  var version$1 = '4.24.2';
 
   var NAMESPACE = 'ais';
   var component = function component(componentName) {
@@ -8180,7 +8392,7 @@
     }
 
     try {
-      var payload = JSON.parse(atob(serializedPayload));
+      var payload = deserializePayload(serializedPayload);
       return {
         method: method,
         payload: payload
@@ -8203,7 +8415,7 @@
     var serializedPayload;
 
     try {
-      serializedPayload = btoa(JSON.stringify(payload));
+      serializedPayload = serializePayload(payload);
     } catch (error) {
       throw new Error("Could not JSON serialize the payload object.");
     }
@@ -8256,7 +8468,7 @@
       highlight: function highlight$1(options, render) {
         try {
           var highlightOptions = JSON.parse(options);
-          return render(highlight(_objectSpread2({}, highlightOptions, {
+          return render(highlight(_objectSpread2(_objectSpread2({}, highlightOptions), {}, {
             hit: this
           })));
         } catch (error) {
@@ -8266,7 +8478,7 @@
       reverseHighlight: function reverseHighlight$1(options, render) {
         try {
           var reverseHighlightOptions = JSON.parse(options);
-          return render(reverseHighlight(_objectSpread2({}, reverseHighlightOptions, {
+          return render(reverseHighlight(_objectSpread2(_objectSpread2({}, reverseHighlightOptions), {}, {
             hit: this
           })));
         } catch (error) {
@@ -8276,7 +8488,7 @@
       snippet: function snippet$1(options, render) {
         try {
           var snippetOptions = JSON.parse(options);
-          return render(snippet(_objectSpread2({}, snippetOptions, {
+          return render(snippet(_objectSpread2(_objectSpread2({}, snippetOptions), {}, {
             hit: this
           })));
         } catch (error) {
@@ -8286,7 +8498,7 @@
       reverseSnippet: function reverseSnippet$1(options, render) {
         try {
           var reverseSnippetOptions = JSON.parse(options);
-          return render(reverseSnippet(_objectSpread2({}, reverseSnippetOptions, {
+          return render(reverseSnippet(_objectSpread2(_objectSpread2({}, reverseSnippetOptions), {}, {
             hit: this
           })));
         } catch (error) {
@@ -8323,13 +8535,13 @@
     return {
       stateToRoute: function stateToRoute(uiState) {
         return Object.keys(uiState).reduce(function (state, indexId) {
-          return _objectSpread2({}, state, _defineProperty({}, indexId, getIndexStateWithoutConfigure(uiState[indexId])));
+          return _objectSpread2(_objectSpread2({}, state), {}, _defineProperty({}, indexId, getIndexStateWithoutConfigure(uiState[indexId])));
         }, {});
       },
       routeToState: function routeToState() {
         var routeState = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
         return Object.keys(routeState).reduce(function (state, indexId) {
-          return _objectSpread2({}, state, _defineProperty({}, indexId, getIndexStateWithoutConfigure(routeState[indexId])));
+          return _objectSpread2(_objectSpread2({}, state), {}, _defineProperty({}, indexId, getIndexStateWithoutConfigure(routeState[indexId])));
         }, {});
       }
     };
@@ -9160,9 +9372,7 @@
     }
   };
 
-  var BrowserHistory =
-  /*#__PURE__*/
-  function () {
+  var BrowserHistory = /*#__PURE__*/function () {
     /**
      * Initializes a new storage provider that syncs the search state to the URL
      * using web APIs (`window.location.pushState` and `onpopstate` event).
@@ -9315,14 +9525,14 @@
 
       function topLevelCreateURL(nextState) {
         var uiState = Object.keys(nextState).reduce(function (acc, indexId) {
-          return _objectSpread2({}, acc, _defineProperty({}, indexId, nextState[indexId]));
+          return _objectSpread2(_objectSpread2({}, acc), {}, _defineProperty({}, indexId, nextState[indexId]));
         }, instantSearchInstance.mainIndex.getWidgetUiState({}));
         var route = stateMapping.stateToRoute(uiState);
         return router.createURL(route);
       }
 
       instantSearchInstance._createURL = topLevelCreateURL;
-      instantSearchInstance._initialUiState = _objectSpread2({}, instantSearchInstance._initialUiState, {}, stateMapping.routeToState(router.read()));
+      instantSearchInstance._initialUiState = _objectSpread2(_objectSpread2({}, instantSearchInstance._initialUiState), stateMapping.routeToState(router.read()));
       var lastRouteState = undefined;
       return {
         onStateChange: function onStateChange(_ref2) {
@@ -9346,6 +9556,88 @@
     };
   };
 
+  function extractPayload(widgets, instantSearchInstance, payload) {
+    var parent = instantSearchInstance.mainIndex;
+    var initOptions = {
+      instantSearchInstance: instantSearchInstance,
+      parent: parent,
+      scopedResults: [],
+      state: parent.getHelper().state,
+      helper: parent.getHelper(),
+      createURL: parent.createURL,
+      uiState: instantSearchInstance._initialUiState,
+      renderState: instantSearchInstance.renderState,
+      templatesConfig: instantSearchInstance.templatesConfig,
+      searchMetadata: {
+        isSearchStalled: instantSearchInstance._isSearchStalled
+      }
+    };
+    widgets.forEach(function (widget) {
+      var widgetParams = {};
+
+      if (widget.getWidgetRenderState) {
+        var renderState = widget.getWidgetRenderState(initOptions);
+
+        if (renderState && _typeof(renderState.widgetParams) === 'object') {
+          widgetParams = renderState.widgetParams;
+        }
+      } // since we destructure in all widgets, the parameters with defaults are set to "undefined"
+
+
+      var params = Object.keys(widgetParams).filter(function (key) {
+        return widgetParams[key] !== undefined;
+      });
+      payload.widgets.push({
+        type: widget.$$type,
+        widgetType: widget.$$widgetType,
+        params: params
+      });
+
+      if (widget.$$type === 'ais.index') {
+        extractPayload(widget.getWidgets(), instantSearchInstance, payload);
+      }
+    });
+  }
+
+  function isMetadataEnabled() {
+    return typeof window !== 'undefined' && window.navigator.userAgent.indexOf('Algolia Crawler') > -1;
+  }
+  /**
+   * Exposes the metadata of mounted widgets in a custom
+   * `<meta name="instantsearch:widgets" />` tag. The metadata per widget is:
+   * - applied parameters
+   * - widget name
+   * - connector name
+   */
+
+  function createMetadataMiddleware() {
+    return function (_ref) {
+      var instantSearchInstance = _ref.instantSearchInstance;
+      var payload = {
+        widgets: []
+      };
+      var payloadContainer = document.createElement('meta');
+      var refNode = document.querySelector('head');
+      payloadContainer.name = 'instantsearch:widgets';
+      return {
+        onStateChange: function onStateChange() {},
+        subscribe: function subscribe() {
+          // using setTimeout here to delay extraction until widgets have been added in a tick (e.g. Vue)
+          setTimeout(function () {
+            var client = instantSearchInstance.client;
+            payload.ua = client.transporter && client.transporter.userAgent ? client.transporter.userAgent.value : client._ua;
+            extractPayload(instantSearchInstance.mainIndex.getWidgets(), instantSearchInstance, payload);
+            payloadContainer.content = JSON.stringify(payload);
+            refNode.appendChild(payloadContainer);
+          }, 0);
+        },
+        unsubscribe: function unsubscribe() {
+          payloadContainer.remove();
+        }
+      };
+    };
+  }
+
   var withUsage$1 = createDocumentationMessageGenerator({
     name: 'instantsearch'
   });
@@ -9363,17 +9655,17 @@
    * created using the `instantsearch` factory function.
    * It emits the 'render' event every time a search is done
    */
-  var InstantSearch =
-  /*#__PURE__*/
-  function (_EventEmitter) {
+  var InstantSearch = /*#__PURE__*/function (_EventEmitter) {
     _inherits(InstantSearch, _EventEmitter);
+
+    var _super = _createSuper(InstantSearch);
 
     function InstantSearch(options) {
       var _this;
 
       _classCallCheck(this, InstantSearch);
 
-      _this = _possibleConstructorReturn(this, _getPrototypeOf(InstantSearch).call(this));
+      _this = _super.call(this);
 
       _defineProperty(_assertThisInitialized(_this), "client", void 0);
 
@@ -9433,15 +9725,16 @@
         _this.emit('render');
       }));
 
-      _defineProperty(_assertThisInitialized(_this), "onInternalStateChange", function () {
+      _defineProperty(_assertThisInitialized(_this), "onInternalStateChange", defer(function () {
         var nextUiState = _this.mainIndex.getWidgetUiState({});
 
-        _this.middleware.forEach(function (m) {
-          m.onStateChange({
+        _this.middleware.forEach(function (_ref) {
+          var instance = _ref.instance;
+          instance.onStateChange({
             uiState: nextUiState
           });
         });
-      });
+      }));
 
       var _options$indexName = options.indexName,
           indexName = _options$indexName === void 0 ? null : _options$indexName,
@@ -9519,13 +9812,14 @@
         _this.use(createRouterMiddleware(routerOptions));
       }
 
+      if (isMetadataEnabled()) {
+        _this.use(createMetadataMiddleware());
+      }
+
       return _this;
     }
     /**
      * Hooks a middleware into the InstantSearch lifecycle.
-     *
-     * This method is considered as experimental and is subject to change in
-     * minor versions.
      */
 
 
@@ -9539,11 +9833,18 @@
         }
 
         var newMiddlewareList = middleware.map(function (fn) {
-          var newMiddleware = fn({
+          var newMiddleware = _objectSpread2({
+            subscribe: noop,
+            unsubscribe: noop,
+            onStateChange: noop
+          }, fn({
             instantSearchInstance: _this2
-          });
+          }));
 
-          _this2.middleware.push(newMiddleware);
+          _this2.middleware.push({
+            creator: fn,
+            instance: newMiddleware
+          });
 
           return newMiddleware;
         }); // If the instance has already started, we directly subscribe the
@@ -9555,6 +9856,27 @@
           });
         }
 
+        return this;
+      }
+      /**
+       * Removes a middleware from the InstantSearch lifecycle.
+       */
+
+    }, {
+      key: "unuse",
+      value: function unuse() {
+        for (var _len2 = arguments.length, middlewareToUnuse = new Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
+          middlewareToUnuse[_key2] = arguments[_key2];
+        }
+
+        this.middleware.filter(function (m) {
+          return middlewareToUnuse.includes(m.creator);
+        }).forEach(function (m) {
+          return m.instance.unsubscribe();
+        });
+        this.middleware = this.middleware.filter(function (m) {
+          return !middlewareToUnuse.includes(m.creator);
+        });
         return this;
       } // @major we shipped with EXPERIMENTAL_use, but have changed that to just `use` now
 
@@ -9654,9 +9976,11 @@
         } // This Helper is used for the queries, we don't care about its state. The
         // states are managed at the `index` level. We use this Helper to create
         // DerivedHelper scoped into the `index` widgets.
+        // In Vue InstantSearch' hydrate, a main helper gets set before start, so
+        // we need to respect this helper as a way to keep all listeners correct.
 
 
-        var mainHelper = algoliasearchHelper_1(this.client, this.indexName);
+        var mainHelper = this.mainHelper || algoliasearchHelper_1(this.client, this.indexName);
 
         mainHelper.search = function () {
           // This solution allows us to keep the exact same API for the users but
@@ -9680,15 +10004,15 @@
             var mainIndexHelper = _this3.mainIndex.getHelper();
 
             var searchFunctionHelper = algoliasearchHelper_1(fakeClient, mainIndexHelper.state.index, mainIndexHelper.state);
-            searchFunctionHelper.once('search', function (_ref) {
-              var state = _ref.state;
+            searchFunctionHelper.once('search', function (_ref2) {
+              var state = _ref2.state;
               mainIndexHelper.overrideStateWithoutTriggeringChangeEvent(state);
 
               _this3._mainHelperSearch();
             }); // Forward state changes from `searchFunctionHelper` to `mainIndexHelper`
 
-            searchFunctionHelper.on('change', function (_ref2) {
-              var state = _ref2.state;
+            searchFunctionHelper.on('change', function (_ref3) {
+              var state = _ref3.state;
               mainIndexHelper.setState(state);
             });
 
@@ -9700,8 +10024,8 @@
         // and `results` that are also emitted on the derived one.
 
 
-        mainHelper.on('error', function (_ref3) {
-          var error = _ref3.error;
+        mainHelper.on('error', function (_ref4) {
+          var error = _ref4.error;
 
           _this3.emit('error', {
             error: error
@@ -9713,8 +10037,9 @@
           parent: null,
           uiState: this._initialUiState
         });
-        this.middleware.forEach(function (m) {
-          m.subscribe();
+        this.middleware.forEach(function (_ref5) {
+          var instance = _ref5.instance;
+          instance.subscribe();
         });
         mainHelper.search(); // Keep the previous reference for legacy purpose, some pattern use
         // the direct Helper access `search.helper` (e.g multi-index).
@@ -9749,8 +10074,9 @@
         this.mainHelper.removeAllListeners();
         this.mainHelper = null;
         this.helper = null;
-        this.middleware.forEach(function (m) {
-          m.unsubscribe();
+        this.middleware.forEach(function (_ref6) {
+          var instance = _ref6.instance;
+          instance.unsubscribe();
         });
       }
     }, {
@@ -9786,7 +10112,7 @@
             });
           }
 
-          indexWidget.getHelper().overrideStateWithoutTriggeringChangeEvent(indexWidget.getWidgetSearchParameters(indexWidget.getHelper().state, {
+          indexWidget.getHelper().setState(indexWidget.getWidgetSearchParameters(indexWidget.getHelper().state, {
             uiState: nextUiState[indexWidget.getIndexId()]
           }));
           indexWidget.getWidgets().filter(isIndexWidget).forEach(setIndexHelperState);
@@ -9795,6 +10121,16 @@
         setIndexHelperState(this.mainIndex);
         this.scheduleSearch();
         this.onInternalStateChange();
+      }
+    }, {
+      key: "getUiState",
+      value: function getUiState() {
+        if (this.started) {
+          // We refresh the index UI state to make sure changes from `refine` are taken in account
+          this.mainIndex.refreshUiState();
+        }
+
+        return this.mainIndex.getWidgetUiState({});
       }
     }, {
       key: "createURL",
@@ -9840,7 +10176,7 @@
         return items;
       } : _ref$transformItems;
 
-      if (widgetParams.includedAttributes && widgetParams.excludedAttributes) {
+      if (widgetParams && widgetParams.includedAttributes && widgetParams.excludedAttributes) {
         throw new Error(withUsage$2('The options `includedAttributes` and `excludedAttributes` cannot be used together.'));
       }
 
@@ -9864,13 +10200,13 @@
         $$type: 'ais.clearRefinements',
         init: function init(initOptions) {
           var instantSearchInstance = initOptions.instantSearchInstance;
-          renderFn(_objectSpread2({}, this.getWidgetRenderState(initOptions), {
+          renderFn(_objectSpread2(_objectSpread2({}, this.getWidgetRenderState(initOptions)), {}, {
             instantSearchInstance: instantSearchInstance
           }), true);
         },
         render: function render(renderOptions) {
           var instantSearchInstance = renderOptions.instantSearchInstance;
-          renderFn(_objectSpread2({}, this.getWidgetRenderState(renderOptions), {
+          renderFn(_objectSpread2(_objectSpread2({}, this.getWidgetRenderState(renderOptions)), {}, {
             instantSearchInstance: instantSearchInstance
           }), false);
         },
@@ -9878,7 +10214,7 @@
           unmountFn();
         },
         getRenderState: function getRenderState(renderState, renderOptions) {
-          return _objectSpread2({}, renderState, {
+          return _objectSpread2(_objectSpread2({}, renderState), {}, {
             clearRefinements: this.getWidgetRenderState(renderOptions)
           });
         },
@@ -9916,10 +10252,12 @@
             }))));
           };
 
+          var canRefine = connectorState.attributesToClear.some(function (attributeToClear) {
+            return attributeToClear.items.length > 0;
+          });
           return {
-            hasRefinements: connectorState.attributesToClear.some(function (attributeToClear) {
-              return attributeToClear.items.length > 0;
-            }),
+            canRefine: canRefine,
+            hasRefinements: canRefine,
             refine: cachedRefine,
             createURL: cachedCreateURL,
             widgetParams: widgetParams
@@ -9934,10 +10272,10 @@
         includedAttributes = _ref5.includedAttributes,
         excludedAttributes = _ref5.excludedAttributes,
         transformItems = _ref5.transformItems;
-    var clearsQuery = includedAttributes.indexOf('query') !== -1 || excludedAttributes.indexOf('query') === -1;
+    var includesQuery = includedAttributes.indexOf('query') !== -1 || excludedAttributes.indexOf('query') === -1;
     return {
       helper: scopedResult.helper,
-      items: transformItems(uniq(getRefinements(scopedResult.results, scopedResult.helper.state, clearsQuery).map(function (refinement) {
+      items: transformItems(uniq(getRefinements(scopedResult.results, scopedResult.helper.state, includesQuery).map(function (refinement) {
         return refinement.attribute;
       }).filter(function (attribute) {
         return (// If the array is empty (default case), we keep all the attributes
@@ -9946,7 +10284,7 @@
         );
       }).filter(function (attribute) {
         return (// If the query is included, we ignore the default `excludedAttributes = ['query']`
-          attribute === 'query' && clearsQuery || // Otherwise, ignore the excluded attributes
+          attribute === 'query' && includesQuery || // Otherwise, ignore the excluded attributes
           excludedAttributes.indexOf(attribute) === -1
         );
       })))
@@ -9979,13 +10317,13 @@
         $$type: 'ais.currentRefinements',
         init: function init(initOptions) {
           var instantSearchInstance = initOptions.instantSearchInstance;
-          renderFn(_objectSpread2({}, this.getWidgetRenderState(initOptions), {
+          renderFn(_objectSpread2(_objectSpread2({}, this.getWidgetRenderState(initOptions)), {}, {
             instantSearchInstance: instantSearchInstance
           }), true);
         },
         render: function render(renderOptions) {
           var instantSearchInstance = renderOptions.instantSearchInstance;
-          renderFn(_objectSpread2({}, this.getWidgetRenderState(renderOptions), {
+          renderFn(_objectSpread2(_objectSpread2({}, this.getWidgetRenderState(renderOptions)), {}, {
             instantSearchInstance: instantSearchInstance
           }), false);
         },
@@ -9993,7 +10331,7 @@
           unmountFn();
         },
         getRenderState: function getRenderState(renderState, renderOptions) {
-          return _objectSpread2({}, renderState, {
+          return _objectSpread2(_objectSpread2({}, renderState), {}, {
             currentRefinements: this.getWidgetRenderState(renderOptions)
           });
         },
@@ -10023,8 +10361,10 @@
             }, []);
           }
 
+          var items = getItems();
           return {
-            items: getItems(),
+            items: items,
+            canRefine: items.length > 0,
             refine: function refine(refinement) {
               return clearRefinement(helper, refinement);
             },
@@ -10043,13 +10383,13 @@
         helper = _ref3.helper,
         includedAttributes = _ref3.includedAttributes,
         excludedAttributes = _ref3.excludedAttributes;
-    var clearsQuery = (includedAttributes || []).indexOf('query') !== -1 || (excludedAttributes || []).indexOf('query') === -1;
+    var includesQuery = (includedAttributes || []).indexOf('query') !== -1 || (excludedAttributes || []).indexOf('query') === -1;
     var filterFunction = includedAttributes ? function (item) {
       return includedAttributes.indexOf(item.attribute) !== -1;
     } : function (item) {
       return excludedAttributes.indexOf(item.attribute) === -1;
     };
-    var items = getRefinements(results, helper.state, clearsQuery).map(normalizeRefinement).filter(filterFunction);
+    var items = getRefinements(results, helper.state, includesQuery).map(normalizeRefinement).filter(filterFunction);
     return items.reduce(function (allItems, currentItem) {
       return [].concat(_toConsumableArray(allItems.filter(function (item) {
         return item.attribute !== currentItem.attribute;
@@ -10145,38 +10485,6 @@
     name: 'hierarchical-menu',
     connector: true
   });
-  /**
-   * @typedef {Object} HierarchicalMenuItem
-   * @property {string} value Value of the menu item.
-   * @property {string} label Human-readable value of the menu item.
-   * @property {number} count Number of matched results after refinement is applied.
-   * @property {isRefined} boolean Indicates if the refinement is applied.
-   * @property {Object} [data = undefined] n+1 level of items, same structure HierarchicalMenuItem (default: `undefined`).
-   */
-
-  /**
-   * @typedef {Object} CustomHierarchicalMenuWidgetOptions
-   * @property {string[]} attributes Attributes to use to generate the hierarchy of the menu.
-   * @property {string} [separator = '>'] Separator used in the attributes to separate level values.
-   * @property {string} [rootPath = null] Prefix path to use if the first level is not the root level.
-   * @property {boolean} [showParentLevel=false] Show the siblings of the selected parent levels of the current refined value. This
-   * does not impact the root level.
-   * @property {number} [limit = 10] Max number of values to display.
-   * @property {boolean} [showMore = false] Whether to display the "show more" button.
-   * @property {number} [showMoreLimit = 20] Max number of values to display when showing more.
-   * @property  {string[]|function} [sortBy = ['name:asc']] How to sort refinements. Possible values: `count|isRefined|name:asc|name:desc`.
-   *
-   * You can also use a sort function that behaves like the standard Javascript [compareFunction](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/sort#Syntax).
-   * @property {function(object[]):object[]} [transformItems] Function to transform the items passed to the templates.
-   */
-
-  /**
-   * @typedef {Object} HierarchicalMenuRenderingOptions
-   * @property {function(item.value): string} createURL Creates an url for the next state for a clicked item.
-   * @property {HierarchicalMenuItem[]} items Values to be rendered.
-   * @property {function(item.value)} refine Sets the path of the hierarchical filter and triggers a new search.
-   * @property {Object} widgetParams All original `CustomHierarchicalMenuWidgetOptions` forwarded to the `renderFn`.
-   */
 
   /**
    * **HierarchicalMenu** connector provides the logic to build a custom widget
@@ -10189,33 +10497,32 @@
    * @type {Connector}
    * @param {function(HierarchicalMenuRenderingOptions, boolean)} renderFn Rendering function for the custom **HierarchicalMenu** widget.
    * @param {function} unmountFn Unmount function called when the widget is disposed.
-   * @return {function(CustomHierarchicalMenuWidgetOptions)} Re-usable widget factory for a custom **HierarchicalMenu** widget.
+   * @return {function(CustomHierarchicalMenuWidgetParams)} Re-usable widget factory for a custom **HierarchicalMenu** widget.
    */
-
-  function connectHierarchicalMenu(renderFn) {
+  var connectHierarchicalMenu = function connectHierarchicalMenu(renderFn) {
     var unmountFn = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : noop;
     checkRendering(renderFn, withUsage$4());
-    return function () {
-      var widgetParams = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-      var attributes = widgetParams.attributes,
-          _widgetParams$separat = widgetParams.separator,
-          separator = _widgetParams$separat === void 0 ? ' > ' : _widgetParams$separat,
-          _widgetParams$rootPat = widgetParams.rootPath,
-          rootPath = _widgetParams$rootPat === void 0 ? null : _widgetParams$rootPat,
-          _widgetParams$showPar = widgetParams.showParentLevel,
-          showParentLevel = _widgetParams$showPar === void 0 ? true : _widgetParams$showPar,
-          _widgetParams$limit = widgetParams.limit,
-          limit = _widgetParams$limit === void 0 ? 10 : _widgetParams$limit,
-          _widgetParams$showMor = widgetParams.showMore,
-          showMore = _widgetParams$showMor === void 0 ? false : _widgetParams$showMor,
-          _widgetParams$showMor2 = widgetParams.showMoreLimit,
-          showMoreLimit = _widgetParams$showMor2 === void 0 ? 20 : _widgetParams$showMor2,
-          _widgetParams$sortBy = widgetParams.sortBy,
-          sortBy = _widgetParams$sortBy === void 0 ? ['name:asc'] : _widgetParams$sortBy,
-          _widgetParams$transfo = widgetParams.transformItems,
-          transformItems = _widgetParams$transfo === void 0 ? function (items) {
+    return function (widgetParams) {
+      var _ref = widgetParams || {},
+          attributes = _ref.attributes,
+          _ref$separator = _ref.separator,
+          separator = _ref$separator === void 0 ? ' > ' : _ref$separator,
+          _ref$rootPath = _ref.rootPath,
+          rootPath = _ref$rootPath === void 0 ? null : _ref$rootPath,
+          _ref$showParentLevel = _ref.showParentLevel,
+          showParentLevel = _ref$showParentLevel === void 0 ? true : _ref$showParentLevel,
+          _ref$limit = _ref.limit,
+          limit = _ref$limit === void 0 ? 10 : _ref$limit,
+          _ref$showMore = _ref.showMore,
+          showMore = _ref$showMore === void 0 ? false : _ref$showMore,
+          _ref$showMoreLimit = _ref.showMoreLimit,
+          showMoreLimit = _ref$showMoreLimit === void 0 ? 20 : _ref$showMoreLimit,
+          _ref$sortBy = _ref.sortBy,
+          sortBy = _ref$sortBy === void 0 ? ['name:asc'] : _ref$sortBy,
+          _ref$transformItems = _ref.transformItems,
+          transformItems = _ref$transformItems === void 0 ? function (items) {
         return items;
-      } : _widgetParams$transfo;
+      } : _ref$transformItems;
 
       if (!attributes || !Array.isArray(attributes) || attributes.length === 0) {
         throw new Error(withUsage$4('The `attributes` option expects an array of strings.'));
@@ -10223,11 +10530,11 @@
 
       if (showMore === true && showMoreLimit <= limit) {
         throw new Error(withUsage$4('The `showMoreLimit` option must be greater than `limit`.'));
-      } // we need to provide a hierarchicalFacet name for the search state
+      }
+
+      // we need to provide a hierarchicalFacet name for the search state
       // so that we can always map $hierarchicalFacetName => real attributes
       // we use the first attribute name
-
-
       var _attributes = _slicedToArray(attributes, 1),
           hierarchicalFacetName = _attributes[0];
 
@@ -10240,49 +10547,54 @@
         toggleShowMore();
       }
 
+      var _refine;
+
+      var isShowingMore = false;
+
+      function createToggleShowMore(renderOptions, widget) {
+        return function () {
+          isShowingMore = !isShowingMore;
+          widget.render(renderOptions);
+        };
+      }
+
+      function getLimit() {
+        return isShowingMore ? showMoreLimit : limit;
+      }
+
+      function _prepareFacetValues(facetValues) {
+        return facetValues.slice(0, getLimit()).map(function (_ref2) {
+          var label = _ref2.name,
+              value = _ref2.path,
+              data = _ref2.data,
+              subValue = _objectWithoutProperties(_ref2, ["name", "path", "data"]);
+
+          var item = _objectSpread2(_objectSpread2({}, subValue), {}, {
+            label: label,
+            value: value,
+            data: null
+          });
+
+          if (Array.isArray(data)) {
+            item.data = _prepareFacetValues(data);
+          }
+
+          return item;
+        });
+      }
+
       return {
         $$type: 'ais.hierarchicalMenu',
-        isShowingMore: false,
-        createToggleShowMore: function createToggleShowMore(renderOptions) {
-          var _this = this;
-
-          return function () {
-            _this.isShowingMore = !_this.isShowingMore;
-
-            _this.render(renderOptions);
-          };
-        },
-        getLimit: function getLimit() {
-          return this.isShowingMore ? showMoreLimit : limit;
-        },
         init: function init(initOptions) {
           var instantSearchInstance = initOptions.instantSearchInstance;
-          renderFn(_objectSpread2({}, this.getWidgetRenderState(initOptions), {
+          renderFn(_objectSpread2(_objectSpread2({}, this.getWidgetRenderState(initOptions)), {}, {
             instantSearchInstance: instantSearchInstance
           }), true);
         },
-        _prepareFacetValues: function _prepareFacetValues(facetValues) {
-          var _this2 = this;
-
-          return facetValues.slice(0, this.getLimit()).map(function (_ref) {
-            var label = _ref.name,
-                value = _ref.path,
-                subValue = _objectWithoutProperties(_ref, ["name", "path"]);
-
-            if (Array.isArray(subValue.data)) {
-              subValue.data = _this2._prepareFacetValues(subValue.data);
-            }
-
-            return _objectSpread2({}, subValue, {
-              label: label,
-              value: value
-            });
-          });
-        },
         render: function render(renderOptions) {
           var instantSearchInstance = renderOptions.instantSearchInstance;
-          toggleShowMore = this.createToggleShowMore(renderOptions);
-          renderFn(_objectSpread2({}, this.getWidgetRenderState(renderOptions), {
+          toggleShowMore = createToggleShowMore(renderOptions, this);
+          renderFn(_objectSpread2(_objectSpread2({}, this.getWidgetRenderState(renderOptions)), {}, {
             instantSearchInstance: instantSearchInstance
           }), false);
         },
@@ -10292,28 +10604,27 @@
          * @param {any} param0.state current search parameters
          * @returns {any} next search parameters
          */
-        dispose: function dispose(_ref2) {
-          var state = _ref2.state;
+        dispose: function dispose(_ref3) {
+          var state = _ref3.state;
           unmountFn();
           return state.removeHierarchicalFacet(hierarchicalFacetName).setQueryParameter('maxValuesPerFacet', undefined);
         },
         getRenderState: function getRenderState(renderState, renderOptions) {
-          return _objectSpread2({}, renderState, {
-            hierarchicalMenu: _objectSpread2({}, renderState.hierarchicalMenu, _defineProperty({}, hierarchicalFacetName, this.getWidgetRenderState(renderOptions)))
+          return _objectSpread2(_objectSpread2({}, renderState), {}, {
+            hierarchicalMenu: _objectSpread2(_objectSpread2({}, renderState.hierarchicalMenu), {}, _defineProperty({}, hierarchicalFacetName, this.getWidgetRenderState(renderOptions)))
           });
         },
-        getWidgetRenderState: function getWidgetRenderState(_ref3) {
-          var _this3 = this;
+        getWidgetRenderState: function getWidgetRenderState(_ref4) {
+          var results = _ref4.results,
+              state = _ref4.state,
+              createURL = _ref4.createURL,
+              instantSearchInstance = _ref4.instantSearchInstance,
+              helper = _ref4.helper;
+          var items = [];
+          var canToggleShowMore = false; // Bind createURL to this specific attribute
 
-          var results = _ref3.results,
-              state = _ref3.state,
-              createURL = _ref3.createURL,
-              instantSearchInstance = _ref3.instantSearchInstance,
-              helper = _ref3.helper;
-
-          // Bind createURL to this specific attribute
           function _createURL(facetValue) {
-            return createURL(state.toggleRefinement(hierarchicalFacetName, facetValue));
+            return createURL(state.resetPage().toggleFacetRefinement(hierarchicalFacetName, facetValue));
           }
 
           if (!sendEvent) {
@@ -10325,59 +10636,55 @@
             });
           }
 
-          if (!this._refine) {
-            this._refine = function (facetValue) {
+          if (!_refine) {
+            _refine = function _refine(facetValue) {
               sendEvent('click', facetValue);
-              helper.toggleRefinement(hierarchicalFacetName, facetValue).search();
+              helper.toggleFacetRefinement(hierarchicalFacetName, facetValue).search();
             };
           }
 
-          var facetValues = results ? results.getFacetValues(hierarchicalFacetName, {
-            sortBy: sortBy
-          }).data || [] : [];
-          var items = transformItems(results ? this._prepareFacetValues(facetValues) : []);
-
-          var getHasExhaustiveItems = function getHasExhaustiveItems() {
-            if (!results) {
-              return false;
-            }
-
-            var currentLimit = _this3.getLimit(); // If the limit is the max number of facet retrieved it is impossible to know
+          if (results) {
+            var facetValues = results.getFacetValues(hierarchicalFacetName, {
+              sortBy: sortBy
+            });
+            var facetItems = facetValues && !Array.isArray(facetValues) && facetValues.data ? facetValues.data : []; // If the limit is the max number of facet retrieved it is impossible to know
             // if the facets are exhaustive. The only moment we are sure it is exhaustive
             // is when it is strictly under the number requested unless we know that another
             // widget has requested more values (maxValuesPerFacet > getLimit()).
             // Because this is used for making the search of facets unable or not, it is important
             // to be conservative here.
 
-
-            return state.maxValuesPerFacet > currentLimit ? facetValues.length <= currentLimit : facetValues.length < currentLimit;
-          };
+            var hasExhaustiveItems = (state.maxValuesPerFacet || 0) > getLimit() ? facetItems.length <= getLimit() : facetItems.length < getLimit();
+            canToggleShowMore = showMore && (isShowingMore || !hasExhaustiveItems);
+            items = transformItems(_prepareFacetValues(facetItems));
+          }
 
           return {
             items: items,
-            refine: this._refine,
+            refine: _refine,
+            canRefine: items.length > 0,
             createURL: _createURL,
             sendEvent: sendEvent,
             widgetParams: widgetParams,
-            isShowingMore: this.isShowingMore,
+            isShowingMore: isShowingMore,
             toggleShowMore: cachedToggleShowMore,
-            canToggleShowMore: showMore && (this.isShowingMore || !getHasExhaustiveItems())
+            canToggleShowMore: canToggleShowMore
           };
         },
-        getWidgetUiState: function getWidgetUiState(uiState, _ref4) {
-          var searchParameters = _ref4.searchParameters;
+        getWidgetUiState: function getWidgetUiState(uiState, _ref5) {
+          var searchParameters = _ref5.searchParameters;
           var path = searchParameters.getHierarchicalFacetBreadcrumb(hierarchicalFacetName);
 
           if (!path.length) {
             return uiState;
           }
 
-          return _objectSpread2({}, uiState, {
-            hierarchicalMenu: _objectSpread2({}, uiState.hierarchicalMenu, _defineProperty({}, hierarchicalFacetName, path))
+          return _objectSpread2(_objectSpread2({}, uiState), {}, {
+            hierarchicalMenu: _objectSpread2(_objectSpread2({}, uiState.hierarchicalMenu), {}, _defineProperty({}, hierarchicalFacetName, path))
           });
         },
-        getWidgetSearchParameters: function getWidgetSearchParameters(searchParameters, _ref5) {
-          var uiState = _ref5.uiState;
+        getWidgetSearchParameters: function getWidgetSearchParameters(searchParameters, _ref6) {
+          var uiState = _ref6.uiState;
           var values = uiState.hierarchicalMenu && uiState.hierarchicalMenu[hierarchicalFacetName];
 
           if (searchParameters.isHierarchicalFacet(hierarchicalFacetName)) {
@@ -10390,6 +10697,7 @@
             attributes: attributes,
             separator: separator,
             rootPath: rootPath,
+            // @ts-ignore `showParentLevel` is missing in the SearchParameters.HierarchicalFacet declaration
             showParentLevel: showParentLevel
           });
           var currentMaxValuesPerFacet = withFacetConfiguration.maxValuesPerFacet || 0;
@@ -10398,7 +10706,7 @@
 
           if (!values) {
             return withMaxValuesPerFacet.setQueryParameters({
-              hierarchicalFacetsRefinements: _objectSpread2({}, withMaxValuesPerFacet.hierarchicalFacetsRefinements, _defineProperty({}, hierarchicalFacetName, []))
+              hierarchicalFacetsRefinements: _objectSpread2(_objectSpread2({}, withMaxValuesPerFacet.hierarchicalFacetsRefinements), {}, _defineProperty({}, hierarchicalFacetName, []))
             });
           }
 
@@ -10406,7 +10714,7 @@
         }
       };
     };
-  }
+  };
 
   var withUsage$5 = createDocumentationMessageGenerator({
     name: 'hits',
@@ -10430,19 +10738,19 @@
       return {
         $$type: 'ais.hits',
         init: function init(initOptions) {
-          renderFn(_objectSpread2({}, this.getWidgetRenderState(initOptions), {
+          renderFn(_objectSpread2(_objectSpread2({}, this.getWidgetRenderState(initOptions)), {}, {
             instantSearchInstance: initOptions.instantSearchInstance
           }), true);
         },
         render: function render(renderOptions) {
           var renderState = this.getWidgetRenderState(renderOptions);
           renderState.sendEvent('view', renderState.hits);
-          renderFn(_objectSpread2({}, renderState, {
+          renderFn(_objectSpread2(_objectSpread2({}, renderState), {}, {
             instantSearchInstance: renderOptions.instantSearchInstance
           }), false);
         },
         getRenderState: function getRenderState(renderState, renderOptions) {
-          return _objectSpread2({}, renderState, {
+          return _objectSpread2(_objectSpread2({}, renderState), {}, {
             hits: this.getWidgetRenderState(renderOptions)
           });
         },
@@ -10505,7 +10813,7 @@
           }
 
           return state.setQueryParameters(Object.keys(TAG_PLACEHOLDER).reduce(function (acc, key) {
-            return _objectSpread2({}, acc, _defineProperty({}, key, undefined));
+            return _objectSpread2(_objectSpread2({}, acc), {}, _defineProperty({}, key, undefined));
           }, {}));
         },
         getWidgetSearchParameters: function getWidgetSearchParameters(state) {
@@ -10611,7 +10919,7 @@
         hits: hits,
         objectIDs: payload.objectIDs
       });
-      aa(method, _objectSpread2({}, inferredPayload, {}, payload));
+      aa(method, _objectSpread2(_objectSpread2({}, inferredPayload), payload));
     };
   };
   /**
@@ -10621,29 +10929,25 @@
 
 
   function withInsights(connector) {
-    var wrapRenderFn = function wrapRenderFn(renderFn) {
-      return function (renderOptions, isFirstRender) {
+    return function (renderFn, unmountFn) {
+      return connector(function (renderOptions, isFirstRender) {
         var results = renderOptions.results,
             hits = renderOptions.hits,
             instantSearchInstance = renderOptions.instantSearchInstance;
 
         if (results && hits && instantSearchInstance) {
           var insights = wrapInsightsClient(instantSearchInstance.insightsClient, results, hits);
-          return renderFn(_objectSpread2({}, renderOptions, {
+          return renderFn(_objectSpread2(_objectSpread2({}, renderOptions), {}, {
             insights: insights
           }), isFirstRender);
         }
 
         return renderFn(renderOptions, isFirstRender);
-      };
-    };
-
-    return function (renderFn, unmountFn) {
-      return connector(wrapRenderFn(renderFn), unmountFn);
+      }, unmountFn);
     };
   }
 
-  var n,u,t,i,r,o,f={},e=[],c=/acit|ex(?:s|g|n|p|$)|rph|grid|ows|mnc|ntw|ine[ch]|zoo|^ord|^--/i;function s(n,l){for(var u in l)n[u]=l[u];return n}function a(n){var l=n.parentNode;l&&l.removeChild(n);}function h(n,l,u){var t,i,r,o,f=arguments;if(l=s({},l),arguments.length>3)for(u=[u],t=3;t<arguments.length;t++)u.push(f[t]);if(null!=u&&(l.children=u),null!=n&&null!=n.defaultProps)for(i in n.defaultProps)void 0===l[i]&&(l[i]=n.defaultProps[i]);return o=l.key,null!=(r=l.ref)&&delete l.ref,null!=o&&delete l.key,v(n,l,o,r)}function v(l,u,t,i){var r={type:l,props:u,key:t,ref:i,__k:null,__p:null,__b:0,__e:null,l:null,__c:null,constructor:void 0};return n.vnode&&n.vnode(r),r}function d(n){return n.children}function y(n){if(null==n||"boolean"==typeof n)return null;if("string"==typeof n||"number"==typeof n)return v(null,n,null,null);if(null!=n.__e||null!=n.__c){var l=v(n.type,n.props,n.key,null);return l.__e=n.__e,l}return n}function m(n,l){this.props=n,this.context=l;}function w(n,l){if(null==l)return n.__p?w(n.__p,n.__p.__k.indexOf(n)+1):null;for(var u;l<n.__k.length;l++)if(null!=(u=n.__k[l])&&null!=u.__e)return u.__e;return "function"==typeof n.type?w(n):null}function g(n){var l,u;if(null!=(n=n.__p)&&null!=n.__c){for(n.__e=n.__c.base=null,l=0;l<n.__k.length;l++)if(null!=(u=n.__k[l])&&null!=u.__e){n.__e=n.__c.base=u.__e;break}return g(n)}}function k(l){(!l.__d&&(l.__d=!0)&&1===u.push(l)||i!==n.debounceRendering)&&(i=n.debounceRendering,(n.debounceRendering||t)(_));}function _(){var n,l,t,i,r,o,f,e;for(u.sort(function(n,l){return l.__v.__b-n.__v.__b});n=u.pop();)n.__d&&(t=void 0,i=void 0,o=(r=(l=n).__v).__e,f=l.__P,e=l.u,l.u=!1,f&&(t=[],i=$(f,r,s({},r),l.__n,void 0!==f.ownerSVGElement,null,t,e,null==o?w(r):o),j(t,r),i!=o&&g(r)));}function b(n,l,u,t,i,r,o,c,s){var h,v,p,d,y,m,g,k=u&&u.__k||e,_=k.length;if(c==f&&(c=null!=r?r[0]:_?w(u,0):null),h=0,l.__k=x(l.__k,function(u){if(null!=u){if(u.__p=l,u.__b=l.__b+1,null===(p=k[h])||p&&u.key==p.key&&u.type===p.type)k[h]=void 0;else for(v=0;v<_;v++){if((p=k[v])&&u.key==p.key&&u.type===p.type){k[v]=void 0;break}p=null;}if(d=$(n,u,p=p||f,t,i,r,o,null,c,s),(v=u.ref)&&p.ref!=v&&(g||(g=[])).push(v,u.__c||d,u),null!=d){if(null==m&&(m=d),null!=u.l)d=u.l,u.l=null;else if(r==p||d!=c||null==d.parentNode){n:if(null==c||c.parentNode!==n)n.appendChild(d);else{for(y=c,v=0;(y=y.nextSibling)&&v<_;v+=2)if(y==d)break n;n.insertBefore(d,c);}"option"==l.type&&(n.value="");}c=d.nextSibling,"function"==typeof l.type&&(l.l=d);}}return h++,u}),l.__e=m,null!=r&&"function"!=typeof l.type)for(h=r.length;h--;)null!=r[h]&&a(r[h]);for(h=_;h--;)null!=k[h]&&D(k[h],k[h]);if(g)for(h=0;h<g.length;h++)A(g[h],g[++h],g[++h]);}function x(n,l,u){if(null==u&&(u=[]),null==n||"boolean"==typeof n)l&&u.push(l(null));else if(Array.isArray(n))for(var t=0;t<n.length;t++)x(n[t],l,u);else u.push(l?l(y(n)):n);return u}function C(n,l,u,t,i){var r;for(r in u)r in l||N(n,r,null,u[r],t);for(r in l)i&&"function"!=typeof l[r]||"value"===r||"checked"===r||u[r]===l[r]||N(n,r,l[r],u[r],t);}function P(n,l,u){"-"===l[0]?n.setProperty(l,u):n[l]="number"==typeof u&&!1===c.test(l)?u+"px":null==u?"":u;}function N(n,l,u,t,i){var r,o,f,e,c;if("key"===(l=i?"className"===l?"class":l:"class"===l?"className":l)||"children"===l);else if("style"===l)if(r=n.style,"string"==typeof u)r.cssText=u;else{if("string"==typeof t&&(r.cssText="",t=null),t)for(o in t)u&&o in u||P(r,o,"");if(u)for(f in u)t&&u[f]===t[f]||P(r,f,u[f]);}else"o"===l[0]&&"n"===l[1]?(e=l!==(l=l.replace(/Capture$/,"")),c=l.toLowerCase(),l=(c in n?c:l).slice(2),u?(t||n.addEventListener(l,T,e),(n.t||(n.t={}))[l]=u):n.removeEventListener(l,T,e)):"list"!==l&&"tagName"!==l&&"form"!==l&&!i&&l in n?n[l]=null==u?"":u:"function"!=typeof u&&"dangerouslySetInnerHTML"!==l&&(l!==(l=l.replace(/^xlink:?/,""))?null==u||!1===u?n.removeAttributeNS("http://www.w3.org/1999/xlink",l.toLowerCase()):n.setAttributeNS("http://www.w3.org/1999/xlink",l.toLowerCase(),u):null==u||!1===u?n.removeAttribute(l):n.setAttribute(l,u));}function T(l){return this.t[l.type](n.event?n.event(l):l)}function $(l,u,t,i,r,o,f,e,c,a){var h,v,p,y,w,g,k,_,C,P,N=u.type;if(void 0!==u.constructor)return null;(h=n.__b)&&h(u);try{n:if("function"==typeof N){if(_=u.props,C=(h=N.contextType)&&i[h.__c],P=h?C?C.props.value:h.__p:i,t.__c?k=(v=u.__c=t.__c).__p=v.__E:("prototype"in N&&N.prototype.render?u.__c=v=new N(_,P):(u.__c=v=new m(_,P),v.constructor=N,v.render=H),C&&C.sub(v),v.props=_,v.state||(v.state={}),v.context=P,v.__n=i,p=v.__d=!0,v.__h=[]),null==v.__s&&(v.__s=v.state),null!=N.getDerivedStateFromProps&&s(v.__s==v.state?v.__s=s({},v.__s):v.__s,N.getDerivedStateFromProps(_,v.__s)),p)null==N.getDerivedStateFromProps&&null!=v.componentWillMount&&v.componentWillMount(),null!=v.componentDidMount&&f.push(v);else{if(null==N.getDerivedStateFromProps&&null==e&&null!=v.componentWillReceiveProps&&v.componentWillReceiveProps(_,P),!e&&null!=v.shouldComponentUpdate&&!1===v.shouldComponentUpdate(_,v.__s,P)){for(v.props=_,v.state=v.__s,v.__d=!1,v.__v=u,u.__e=null!=c?c!==t.__e?c:t.__e:null,u.__k=t.__k,h=0;h<u.__k.length;h++)u.__k[h]&&(u.__k[h].__p=u);break n}null!=v.componentWillUpdate&&v.componentWillUpdate(_,v.__s,P);}for(y=v.props,w=v.state,v.context=P,v.props=_,v.state=v.__s,(h=n.__r)&&h(u),v.__d=!1,v.__v=u,v.__P=l,h=v.render(v.props,v.state,v.context),u.__k=x(null!=h&&h.type==d&&null==h.key?h.props.children:h),null!=v.getChildContext&&(i=s(s({},i),v.getChildContext())),p||null==v.getSnapshotBeforeUpdate||(g=v.getSnapshotBeforeUpdate(y,w)),b(l,u,t,i,r,o,f,c,a),v.base=u.__e;h=v.__h.pop();)v.__s&&(v.state=v.__s),h.call(v);p||null==y||null==v.componentDidUpdate||v.componentDidUpdate(y,w,g),k&&(v.__E=v.__p=null);}else u.__e=z(t.__e,u,t,i,r,o,f,a);(h=n.diffed)&&h(u);}catch(l){n.__e(l,u,t);}return u.__e}function j(l,u){for(var t;t=l.pop();)try{t.componentDidMount();}catch(l){n.__e(l,t.__v);}n.__c&&n.__c(u);}function z(n,l,u,t,i,r,o,c){var s,a,h,v,p=u.props,d=l.props;if(i="svg"===l.type||i,null==n&&null!=r)for(s=0;s<r.length;s++)if(null!=(a=r[s])&&(null===l.type?3===a.nodeType:a.localName===l.type)){n=a,r[s]=null;break}if(null==n){if(null===l.type)return document.createTextNode(d);n=i?document.createElementNS("http://www.w3.org/2000/svg",l.type):document.createElement(l.type),r=null;}return null===l.type?p!==d&&(null!=r&&(r[r.indexOf(n)]=null),n.data=d):l!==u&&(null!=r&&(r=e.slice.call(n.childNodes)),h=(p=u.props||f).dangerouslySetInnerHTML,v=d.dangerouslySetInnerHTML,c||(v||h)&&(v&&h&&v.__html==h.__html||(n.innerHTML=v&&v.__html||"")),C(n,d,p,i,c),l.__k=l.props.children,v||b(n,l,u,t,"foreignObject"!==l.type&&i,r,o,f,c),c||("value"in d&&void 0!==d.value&&d.value!==n.value&&(n.value=null==d.value?"":d.value),"checked"in d&&void 0!==d.checked&&d.checked!==n.checked&&(n.checked=d.checked))),n}function A(l,u,t){try{"function"==typeof l?l(u):l.current=u;}catch(l){n.__e(l,t);}}function D(l,u,t){var i,r,o;if(n.unmount&&n.unmount(l),(i=l.ref)&&A(i,null,u),t||"function"==typeof l.type||(t=null!=(r=l.__e)),l.__e=l.l=null,null!=(i=l.__c)){if(i.componentWillUnmount)try{i.componentWillUnmount();}catch(l){n.__e(l,u);}i.base=i.__P=null;}if(i=l.__k)for(o=0;o<i.length;o++)i[o]&&D(i[o],u,t);null!=r&&a(r);}function H(n,l,u){return this.constructor(n,u)}function I(l,u,t){var i,o,c;n.__p&&n.__p(l,u),o=(i=t===r)?null:t&&t.__k||u.__k,l=h(d,null,[l]),c=[],$(u,i?u.__k=l:(t||u).__k=l,o||f,f,void 0!==u.ownerSVGElement,t&&!i?[t]:o?null:e.slice.call(u.childNodes),c,!1,t||f,i),j(c,l);}n={},m.prototype.setState=function(n,l){var u=this.__s!==this.state&&this.__s||(this.__s=s({},this.state));("function"!=typeof n||(n=n(u,this.props)))&&s(u,n),null!=n&&this.__v&&(this.u=!1,l&&this.__h.push(l),k(this));},m.prototype.forceUpdate=function(n){this.__v&&(n&&this.__h.push(n),this.u=!0,k(this));},m.prototype.render=d,u=[],t="function"==typeof Promise?Promise.prototype.then.bind(Promise.resolve()):setTimeout,i=n.debounceRendering,n.__e=function(n,l,u){for(var t;l=l.__p;)if((t=l.__c)&&!t.__p)try{if(t.constructor&&null!=t.constructor.getDerivedStateFromError)t.setState(t.constructor.getDerivedStateFromError(n));else{if(null==t.componentDidCatch)continue;t.componentDidCatch(n);}return k(t.__E=t)}catch(l){n=l;}throw n},r=f,o=0;
+  var n,u,t,i,r,o,f={},e=[],c=/acit|ex(?:s|g|n|p|$)|rph|grid|ows|mnc|ntw|ine[ch]|zoo|^ord|^--/i;function s(n,l){for(var u in l)n[u]=l[u];return n}function a(n){var l=n.parentNode;l&&l.removeChild(n);}function h(n,l,u){var t,i,r,o,f=arguments;if(l=s({},l),arguments.length>3)for(u=[u],t=3;t<arguments.length;t++)u.push(f[t]);if(null!=u&&(l.children=u),null!=n&&null!=n.defaultProps)for(i in n.defaultProps)void 0===l[i]&&(l[i]=n.defaultProps[i]);return o=l.key,null!=(r=l.ref)&&delete l.ref,null!=o&&delete l.key,v(n,l,o,r)}function v(l,u,t,i){var r={type:l,props:u,key:t,ref:i,__k:null,__p:null,__b:0,__e:null,l:null,__c:null,constructor:void 0};return n.vnode&&n.vnode(r),r}function p(){return {}}function d(n){return n.children}function y(n){if(null==n||"boolean"==typeof n)return null;if("string"==typeof n||"number"==typeof n)return v(null,n,null,null);if(null!=n.__e||null!=n.__c){var l=v(n.type,n.props,n.key,null);return l.__e=n.__e,l}return n}function m(n,l){this.props=n,this.context=l;}function w(n,l){if(null==l)return n.__p?w(n.__p,n.__p.__k.indexOf(n)+1):null;for(var u;l<n.__k.length;l++)if(null!=(u=n.__k[l])&&null!=u.__e)return u.__e;return "function"==typeof n.type?w(n):null}function g(n){var l,u;if(null!=(n=n.__p)&&null!=n.__c){for(n.__e=n.__c.base=null,l=0;l<n.__k.length;l++)if(null!=(u=n.__k[l])&&null!=u.__e){n.__e=n.__c.base=u.__e;break}return g(n)}}function k(l){(!l.__d&&(l.__d=!0)&&1===u.push(l)||i!==n.debounceRendering)&&(i=n.debounceRendering,(n.debounceRendering||t)(_));}function _(){var n,l,t,i,r,o,f,e;for(u.sort(function(n,l){return l.__v.__b-n.__v.__b});n=u.pop();)n.__d&&(t=void 0,i=void 0,o=(r=(l=n).__v).__e,f=l.__P,e=l.u,l.u=!1,f&&(t=[],i=$(f,r,s({},r),l.__n,void 0!==f.ownerSVGElement,null,t,e,null==o?w(r):o),j(t,r),i!=o&&g(r)));}function b(n,l,u,t,i,r,o,c,s){var h,v,p,d,y,m,g,k=u&&u.__k||e,_=k.length;if(c==f&&(c=null!=r?r[0]:_?w(u,0):null),h=0,l.__k=x(l.__k,function(u){if(null!=u){if(u.__p=l,u.__b=l.__b+1,null===(p=k[h])||p&&u.key==p.key&&u.type===p.type)k[h]=void 0;else for(v=0;v<_;v++){if((p=k[v])&&u.key==p.key&&u.type===p.type){k[v]=void 0;break}p=null;}if(d=$(n,u,p=p||f,t,i,r,o,null,c,s),(v=u.ref)&&p.ref!=v&&(g||(g=[])).push(v,u.__c||d,u),null!=d){if(null==m&&(m=d),null!=u.l)d=u.l,u.l=null;else if(r==p||d!=c||null==d.parentNode){n:if(null==c||c.parentNode!==n)n.appendChild(d);else{for(y=c,v=0;(y=y.nextSibling)&&v<_;v+=2)if(y==d)break n;n.insertBefore(d,c);}"option"==l.type&&(n.value="");}c=d.nextSibling,"function"==typeof l.type&&(l.l=d);}}return h++,u}),l.__e=m,null!=r&&"function"!=typeof l.type)for(h=r.length;h--;)null!=r[h]&&a(r[h]);for(h=_;h--;)null!=k[h]&&D(k[h],k[h]);if(g)for(h=0;h<g.length;h++)A(g[h],g[++h],g[++h]);}function x(n,l,u){if(null==u&&(u=[]),null==n||"boolean"==typeof n)l&&u.push(l(null));else if(Array.isArray(n))for(var t=0;t<n.length;t++)x(n[t],l,u);else u.push(l?l(y(n)):n);return u}function C(n,l,u,t,i){var r;for(r in u)r in l||N(n,r,null,u[r],t);for(r in l)i&&"function"!=typeof l[r]||"value"===r||"checked"===r||u[r]===l[r]||N(n,r,l[r],u[r],t);}function P(n,l,u){"-"===l[0]?n.setProperty(l,u):n[l]="number"==typeof u&&!1===c.test(l)?u+"px":null==u?"":u;}function N(n,l,u,t,i){var r,o,f,e,c;if("key"===(l=i?"className"===l?"class":l:"class"===l?"className":l)||"children"===l);else if("style"===l)if(r=n.style,"string"==typeof u)r.cssText=u;else{if("string"==typeof t&&(r.cssText="",t=null),t)for(o in t)u&&o in u||P(r,o,"");if(u)for(f in u)t&&u[f]===t[f]||P(r,f,u[f]);}else"o"===l[0]&&"n"===l[1]?(e=l!==(l=l.replace(/Capture$/,"")),c=l.toLowerCase(),l=(c in n?c:l).slice(2),u?(t||n.addEventListener(l,T,e),(n.t||(n.t={}))[l]=u):n.removeEventListener(l,T,e)):"list"!==l&&"tagName"!==l&&"form"!==l&&!i&&l in n?n[l]=null==u?"":u:"function"!=typeof u&&"dangerouslySetInnerHTML"!==l&&(l!==(l=l.replace(/^xlink:?/,""))?null==u||!1===u?n.removeAttributeNS("http://www.w3.org/1999/xlink",l.toLowerCase()):n.setAttributeNS("http://www.w3.org/1999/xlink",l.toLowerCase(),u):null==u||!1===u?n.removeAttribute(l):n.setAttribute(l,u));}function T(l){return this.t[l.type](n.event?n.event(l):l)}function $(l,u,t,i,r,o,f,e,c,a){var h,v,p,y,w,g,k,_,C,P,N=u.type;if(void 0!==u.constructor)return null;(h=n.__b)&&h(u);try{n:if("function"==typeof N){if(_=u.props,C=(h=N.contextType)&&i[h.__c],P=h?C?C.props.value:h.__p:i,t.__c?k=(v=u.__c=t.__c).__p=v.__E:("prototype"in N&&N.prototype.render?u.__c=v=new N(_,P):(u.__c=v=new m(_,P),v.constructor=N,v.render=H),C&&C.sub(v),v.props=_,v.state||(v.state={}),v.context=P,v.__n=i,p=v.__d=!0,v.__h=[]),null==v.__s&&(v.__s=v.state),null!=N.getDerivedStateFromProps&&s(v.__s==v.state?v.__s=s({},v.__s):v.__s,N.getDerivedStateFromProps(_,v.__s)),p)null==N.getDerivedStateFromProps&&null!=v.componentWillMount&&v.componentWillMount(),null!=v.componentDidMount&&f.push(v);else{if(null==N.getDerivedStateFromProps&&null==e&&null!=v.componentWillReceiveProps&&v.componentWillReceiveProps(_,P),!e&&null!=v.shouldComponentUpdate&&!1===v.shouldComponentUpdate(_,v.__s,P)){for(v.props=_,v.state=v.__s,v.__d=!1,v.__v=u,u.__e=null!=c?c!==t.__e?c:t.__e:null,u.__k=t.__k,h=0;h<u.__k.length;h++)u.__k[h]&&(u.__k[h].__p=u);break n}null!=v.componentWillUpdate&&v.componentWillUpdate(_,v.__s,P);}for(y=v.props,w=v.state,v.context=P,v.props=_,v.state=v.__s,(h=n.__r)&&h(u),v.__d=!1,v.__v=u,v.__P=l,h=v.render(v.props,v.state,v.context),u.__k=x(null!=h&&h.type==d&&null==h.key?h.props.children:h),null!=v.getChildContext&&(i=s(s({},i),v.getChildContext())),p||null==v.getSnapshotBeforeUpdate||(g=v.getSnapshotBeforeUpdate(y,w)),b(l,u,t,i,r,o,f,c,a),v.base=u.__e;h=v.__h.pop();)v.__s&&(v.state=v.__s),h.call(v);p||null==y||null==v.componentDidUpdate||v.componentDidUpdate(y,w,g),k&&(v.__E=v.__p=null);}else u.__e=z(t.__e,u,t,i,r,o,f,a);(h=n.diffed)&&h(u);}catch(l){n.__e(l,u,t);}return u.__e}function j(l,u){for(var t;t=l.pop();)try{t.componentDidMount();}catch(l){n.__e(l,t.__v);}n.__c&&n.__c(u);}function z(n,l,u,t,i,r,o,c){var s,a,h,v,p=u.props,d=l.props;if(i="svg"===l.type||i,null==n&&null!=r)for(s=0;s<r.length;s++)if(null!=(a=r[s])&&(null===l.type?3===a.nodeType:a.localName===l.type)){n=a,r[s]=null;break}if(null==n){if(null===l.type)return document.createTextNode(d);n=i?document.createElementNS("http://www.w3.org/2000/svg",l.type):document.createElement(l.type),r=null;}return null===l.type?p!==d&&(null!=r&&(r[r.indexOf(n)]=null),n.data=d):l!==u&&(null!=r&&(r=e.slice.call(n.childNodes)),h=(p=u.props||f).dangerouslySetInnerHTML,v=d.dangerouslySetInnerHTML,c||(v||h)&&(v&&h&&v.__html==h.__html||(n.innerHTML=v&&v.__html||"")),C(n,d,p,i,c),l.__k=l.props.children,v||b(n,l,u,t,"foreignObject"!==l.type&&i,r,o,f,c),c||("value"in d&&void 0!==d.value&&d.value!==n.value&&(n.value=null==d.value?"":d.value),"checked"in d&&void 0!==d.checked&&d.checked!==n.checked&&(n.checked=d.checked))),n}function A(l,u,t){try{"function"==typeof l?l(u):l.current=u;}catch(l){n.__e(l,t);}}function D(l,u,t){var i,r,o;if(n.unmount&&n.unmount(l),(i=l.ref)&&A(i,null,u),t||"function"==typeof l.type||(t=null!=(r=l.__e)),l.__e=l.l=null,null!=(i=l.__c)){if(i.componentWillUnmount)try{i.componentWillUnmount();}catch(l){n.__e(l,u);}i.base=i.__P=null;}if(i=l.__k)for(o=0;o<i.length;o++)i[o]&&D(i[o],u,t);null!=r&&a(r);}function H(n,l,u){return this.constructor(n,u)}function I(l,u,t){var i,o,c;n.__p&&n.__p(l,u),o=(i=t===r)?null:t&&t.__k||u.__k,l=h(d,null,[l]),c=[],$(u,i?u.__k=l:(t||u).__k=l,o||f,f,void 0!==u.ownerSVGElement,t&&!i?[t]:o?null:e.slice.call(u.childNodes),c,!1,t||f,i),j(c,l);}n={},m.prototype.setState=function(n,l){var u=this.__s!==this.state&&this.__s||(this.__s=s({},this.state));("function"!=typeof n||(n=n(u,this.props)))&&s(u,n),null!=n&&this.__v&&(this.u=!1,l&&this.__h.push(l),k(this));},m.prototype.forceUpdate=function(n){this.__v&&(n&&this.__h.push(n),this.u=!0,k(this));},m.prototype.render=d,u=[],t="function"==typeof Promise?Promise.prototype.then.bind(Promise.resolve()):setTimeout,i=n.debounceRendering,n.__e=function(n,l,u){for(var t;l=l.__p;)if((t=l.__c)&&!t.__p)try{if(t.constructor&&null!=t.constructor.getDerivedStateFromError)t.setState(t.constructor.getDerivedStateFromError(n));else{if(null==t.componentDidCatch)continue;t.componentDidCatch(n);}return k(t.__E=t)}catch(l){n=l;}throw n},r=f,o=0;
 
   /** @jsx h */
 
@@ -10669,7 +10973,7 @@
     }
 
     try {
-      return JSON.parse(atob(serializedPayload));
+      return deserializePayload(serializedPayload);
     } catch (error) {
       throw new Error('The insights middleware was unable to parse `data-insights-event`.');
     }
@@ -10730,12 +11034,11 @@
         return items;
       } : _ref$transformItems;
 
-      var items = userItems;
-
-      if (!Array.isArray(items)) {
+      if (!Array.isArray(userItems)) {
         throw new Error(withUsage$6('The `items` option expects an array of objects.'));
       }
 
+      var items = userItems;
       var defaultItems = items.filter(function (item) {
         return item.default === true;
       });
@@ -10753,7 +11056,7 @@
       var normalizeItems = function normalizeItems(_ref2) {
         var hitsPerPage = _ref2.hitsPerPage;
         return items.map(function (item) {
-          return _objectSpread2({}, item, {
+          return _objectSpread2(_objectSpread2({}, item), {}, {
             isRefined: Number(item.value) === Number(hitsPerPage)
           });
         });
@@ -10769,7 +11072,7 @@
           var state = _ref3.state,
               createURL = _ref3.createURL;
           return function (value) {
-            return createURL(state.setQueryParameter('hitsPerPage', !value && value !== 0 ? undefined : value));
+            return createURL(state.resetPage().setQueryParameter('hitsPerPage', !value && value !== 0 ? undefined : value));
           };
         }
       };
@@ -10792,13 +11095,13 @@
             }].concat(_toConsumableArray(items));
           }
 
-          renderFn(_objectSpread2({}, this.getWidgetRenderState(initOptions), {
+          renderFn(_objectSpread2(_objectSpread2({}, this.getWidgetRenderState(initOptions)), {}, {
             instantSearchInstance: instantSearchInstance
           }), true);
         },
         render: function render(initOptions) {
           var instantSearchInstance = initOptions.instantSearchInstance;
-          renderFn(_objectSpread2({}, this.getWidgetRenderState(initOptions), {
+          renderFn(_objectSpread2(_objectSpread2({}, this.getWidgetRenderState(initOptions)), {}, {
             instantSearchInstance: instantSearchInstance
           }), false);
         },
@@ -10808,7 +11111,7 @@
           return state.setQueryParameter('hitsPerPage', undefined);
         },
         getRenderState: function getRenderState(renderState, renderOptions) {
-          return _objectSpread2({}, renderState, {
+          return _objectSpread2(_objectSpread2({}, renderState), {}, {
             hitsPerPage: this.getWidgetRenderState(renderOptions)
           });
         },
@@ -10836,7 +11139,7 @@
             return uiState;
           }
 
-          return _objectSpread2({}, uiState, {
+          return _objectSpread2(_objectSpread2({}, uiState), {}, {
             hitsPerPage: hitsPerPage
           });
         },
@@ -10865,7 +11168,7 @@
 
   function getInMemoryCache() {
     var cachedHits = null;
-    var cachedState = undefined;
+    var cachedState = null;
     return {
       read: function read(_ref2) {
         var state = _ref2.state;
@@ -10931,26 +11234,30 @@
         }
       };
 
-      var getShowPrevious = function getShowPrevious(helper, cachedHits) {
+      var getShowPrevious = function getShowPrevious(helper) {
         return function () {
           // Using the helper's `overrideStateWithoutTriggeringChangeEvent` method
           // avoid updating the browser URL when the user displays the previous page.
-          helper.overrideStateWithoutTriggeringChangeEvent(_objectSpread2({}, helper.state, {
-            page: getFirstReceivedPage(helper.state, cachedHits) - 1
+          helper.overrideStateWithoutTriggeringChangeEvent(_objectSpread2(_objectSpread2({}, helper.state), {}, {
+            page: getFirstReceivedPage(helper.state, cache.read({
+              state: helper.state
+            }) || {}) - 1
           })).searchWithoutTriggeringOnStateChange();
         };
       };
 
-      var getShowMore = function getShowMore(helper, cachedHits) {
+      var getShowMore = function getShowMore(helper) {
         return function () {
-          helper.setPage(getLastReceivedPage(helper.state, cachedHits) + 1).search();
+          helper.setPage(getLastReceivedPage(helper.state, cache.read({
+            state: helper.state
+          }) || {}) + 1).search();
         };
       };
 
       return {
         $$type: 'ais.infiniteHits',
         init: function init(initOptions) {
-          renderFn(_objectSpread2({}, this.getWidgetRenderState(initOptions), {
+          renderFn(_objectSpread2(_objectSpread2({}, this.getWidgetRenderState(initOptions)), {}, {
             instantSearchInstance: initOptions.instantSearchInstance
           }), true);
         },
@@ -10958,12 +11265,12 @@
           var instantSearchInstance = renderOptions.instantSearchInstance;
           var widgetRenderState = this.getWidgetRenderState(renderOptions);
           sendEvent('view', widgetRenderState.currentPageHits);
-          renderFn(_objectSpread2({}, widgetRenderState, {
+          renderFn(_objectSpread2(_objectSpread2({}, widgetRenderState), {}, {
             instantSearchInstance: instantSearchInstance
           }), false);
         },
         getRenderState: function getRenderState(renderState, renderOptions) {
-          return _objectSpread2({}, renderState, {
+          return _objectSpread2(_objectSpread2({}, renderState), {}, {
             infiniteHits: this.getWidgetRenderState(renderOptions)
           });
         },
@@ -10979,8 +11286,8 @@
           }) || {};
 
           if (!results) {
-            showPrevious = getShowPrevious(helper, cachedHits);
-            showMore = getShowMore(helper, cachedHits);
+            showPrevious = getShowPrevious(helper);
+            showMore = getShowMore(helper);
             sendEvent = createSendEventForHits({
               instantSearchInstance: instantSearchInstance,
               index: helper.getIndex(),
@@ -11045,7 +11352,7 @@
           }
 
           return stateWithoutPage.setQueryParameters(Object.keys(TAG_PLACEHOLDER).reduce(function (acc, key) {
-            return _objectSpread2({}, acc, _defineProperty({}, key, undefined));
+            return _objectSpread2(_objectSpread2({}, acc), {}, _defineProperty({}, key, undefined));
           }, {}));
         },
         getWidgetUiState: function getWidgetUiState(uiState, _ref7) {
@@ -11058,7 +11365,7 @@
             return uiState;
           }
 
-          return _objectSpread2({}, uiState, {
+          return _objectSpread2(_objectSpread2({}, uiState), {}, {
             // The page in the UI state is incremented by one
             // to expose the user value (not `0`).
             page: page + 1
@@ -11087,38 +11394,6 @@
     name: 'menu',
     connector: true
   });
-  /**
-   * @typedef {Object} MenuItem
-   * @property {string} value The value of the menu item.
-   * @property {string} label Human-readable value of the menu item.
-   * @property {number} count Number of results matched after refinement is applied.
-   * @property {boolean} isRefined Indicates if the refinement is applied.
-   */
-
-  /**
-   * @typedef {Object} CustomMenuWidgetOptions
-   * @property {string} attribute Name of the attribute for faceting (eg. "free_shipping").
-   * @property {number} [limit = 10] How many facets values to retrieve.
-   * @property {boolean} [showMore = false] Whether to display a button that expands the number of items.
-   * @property {number} [showMoreLimit = 20] How many facets values to retrieve when `toggleShowMore` is called, this value is meant to be greater than `limit` option.
-   * @property {string[]|function} [sortBy = ['isRefined', 'name:asc']] How to sort refinements. Possible values: `count|isRefined|name:asc|name:desc`.
-   *
-   * You can also use a sort function that behaves like the standard Javascript [compareFunction](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/sort#Syntax).
-   * @property {function(object[]):object[]} [transformItems] Function to transform the items passed to the templates.
-   */
-
-  /**
-   * @typedef {Object} MenuRenderingOptions
-   * @property {MenuItem[]} items The elements that can be refined for the current search results.
-   * @property {function(item.value): string} createURL Creates the URL for a single item name in the list.
-   * @property {function(item.value)} refine Filter the search to item value.
-   * @property {boolean} canRefine True if refinement can be applied.
-   * @property {Object} widgetParams All original `CustomMenuWidgetOptions` forwarded to the `renderFn`.
-   * @property {boolean} isShowingMore True if the menu is displaying all the menu items.
-   * @property {function} toggleShowMore Toggles the number of values displayed between `limit` and `showMore.limit`.
-   * @property {boolean} canToggleShowMore `true` if the toggleShowMore button can be activated (enough items to display more or
-   * already displaying more than `limit` items)
-   */
 
   /**
    * **Menu** connector provides the logic to build a widget that will give the user the ability to choose a single value for a specific facet. The typical usage of menu is for navigation in categories.
@@ -11128,66 +11403,25 @@
    * one that is currently selected.
    *
    * **Requirement:** the attribute passed as `attribute` must be present in "attributes for faceting" on the Algolia dashboard or configured as attributesForFaceting via a set settings call to the Algolia API.
-   * @type {Connector}
-   * @param {function(MenuRenderingOptions, boolean)} renderFn Rendering function for the custom **Menu** widget. widget.
-   * @param {function} unmountFn Unmount function called when the widget is disposed.
-   * @return {function(CustomMenuWidgetOptions)} Re-usable widget factory for a custom **Menu** widget.
-   * @example
-   * // custom `renderFn` to render the custom Menu widget
-   * function renderFn(MenuRenderingOptions, isFirstRendering) {
-   *   if (isFirstRendering) {
-   *     MenuRenderingOptions.widgetParams.containerNode
-   *       .html('<select></select');
-   *
-   *     MenuRenderingOptions.widgetParams.containerNode
-   *       .find('select')
-   *       .on('change', function(event) {
-   *         MenuRenderingOptions.refine(event.target.value);
-   *       });
-   *   }
-   *
-   *   var options = MenuRenderingOptions.items.map(function(item) {
-   *     return item.isRefined
-   *       ? '<option value="' + item.value + '" selected>' + item.label + '</option>'
-   *       : '<option value="' + item.value + '">' + item.label + '</option>';
-   *   });
-   *
-   *   MenuRenderingOptions.widgetParams.containerNode
-   *     .find('select')
-   *     .html(options);
-   * }
-   *
-   * // connect `renderFn` to Menu logic
-   * var customMenu = instantsearch.connectors.connectMenu(renderFn);
-   *
-   * // mount widget on the page
-   * search.addWidgets([
-   *   customMenu({
-   *     containerNode: $('#custom-menu-container'),
-   *     attribute: 'categories',
-   *     limit: 10,
-   *   })
-   * ]);
    */
-
-  function connectMenu(renderFn) {
+  var connectMenu = function connectMenu(renderFn) {
     var unmountFn = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : noop;
     checkRendering(renderFn, withUsage$8());
-    return function () {
-      var widgetParams = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-      var attribute = widgetParams.attribute,
-          _widgetParams$limit = widgetParams.limit,
-          limit = _widgetParams$limit === void 0 ? 10 : _widgetParams$limit,
-          _widgetParams$showMor = widgetParams.showMore,
-          showMore = _widgetParams$showMor === void 0 ? false : _widgetParams$showMor,
-          _widgetParams$showMor2 = widgetParams.showMoreLimit,
-          showMoreLimit = _widgetParams$showMor2 === void 0 ? 20 : _widgetParams$showMor2,
-          _widgetParams$sortBy = widgetParams.sortBy,
-          sortBy = _widgetParams$sortBy === void 0 ? ['isRefined', 'name:asc'] : _widgetParams$sortBy,
-          _widgetParams$transfo = widgetParams.transformItems,
-          transformItems = _widgetParams$transfo === void 0 ? function (items) {
+    return function (widgetParams) {
+      var _ref = widgetParams || {},
+          attribute = _ref.attribute,
+          _ref$limit = _ref.limit,
+          limit = _ref$limit === void 0 ? 10 : _ref$limit,
+          _ref$showMore = _ref.showMore,
+          showMore = _ref$showMore === void 0 ? false : _ref$showMore,
+          _ref$showMoreLimit = _ref.showMoreLimit,
+          showMoreLimit = _ref$showMoreLimit === void 0 ? 20 : _ref$showMoreLimit,
+          _ref$sortBy = _ref.sortBy,
+          sortBy = _ref$sortBy === void 0 ? ['isRefined', 'name:asc'] : _ref$sortBy,
+          _ref$transformItems = _ref.transformItems,
+          transformItems = _ref$transformItems === void 0 ? function (items) {
         return items;
-      } : _widgetParams$transfo;
+      } : _ref$transformItems;
 
       if (!attribute) {
         throw new Error(withUsage$8('The `attribute` option is required.'));
@@ -11197,44 +11431,44 @@
         throw new Error(withUsage$8('The `showMoreLimit` option must be greater than `limit`.'));
       }
 
-      var sendEvent; // Provide the same function to the `renderFn` so that way the user
+      var sendEvent;
+
+      var _createURL;
+
+      var _refine; // Provide the same function to the `renderFn` so that way the user
       // has to only bind it once when `isFirstRendering` for instance
 
+
+      var isShowingMore = false;
+
       var toggleShowMore = function toggleShowMore() {};
+
+      function createToggleShowMore(renderOptions, widget) {
+        return function () {
+          isShowingMore = !isShowingMore;
+          widget.render(renderOptions);
+        };
+      }
 
       function cachedToggleShowMore() {
         toggleShowMore();
       }
 
+      function getLimit() {
+        return isShowingMore ? showMoreLimit : limit;
+      }
+
       return {
         $$type: 'ais.menu',
-        isShowingMore: false,
-        createToggleShowMore: function createToggleShowMore(_ref) {
-          var _this = this;
-
-          var results = _ref.results,
-              instantSearchInstance = _ref.instantSearchInstance;
-          return function () {
-            _this.isShowingMore = !_this.isShowingMore;
-
-            _this.render({
-              results: results,
-              instantSearchInstance: instantSearchInstance
-            });
-          };
-        },
-        getLimit: function getLimit() {
-          return this.isShowingMore ? showMoreLimit : limit;
-        },
         init: function init(initOptions) {
           var instantSearchInstance = initOptions.instantSearchInstance;
-          renderFn(_objectSpread2({}, this.getWidgetRenderState(initOptions), {
+          renderFn(_objectSpread2(_objectSpread2({}, this.getWidgetRenderState(initOptions)), {}, {
             instantSearchInstance: instantSearchInstance
           }), true);
         },
         render: function render(renderOptions) {
           var instantSearchInstance = renderOptions.instantSearchInstance;
-          renderFn(_objectSpread2({}, this.getWidgetRenderState(renderOptions), {
+          renderFn(_objectSpread2(_objectSpread2({}, this.getWidgetRenderState(renderOptions)), {}, {
             instantSearchInstance: instantSearchInstance
           }), false);
         },
@@ -11244,15 +11478,15 @@
           return state.removeHierarchicalFacet(attribute).setQueryParameter('maxValuesPerFacet', undefined);
         },
         getRenderState: function getRenderState(renderState, renderOptions) {
-          return _objectSpread2({}, renderState, {
-            menu: this.getWidgetRenderState(renderOptions)
+          return _objectSpread2(_objectSpread2({}, renderState), {}, {
+            menu: _objectSpread2(_objectSpread2({}, renderState.menu), {}, _defineProperty({}, attribute, this.getWidgetRenderState(renderOptions)))
           });
         },
-        getWidgetRenderState: function getWidgetRenderState(_ref3) {
-          var results = _ref3.results,
-              createURL = _ref3.createURL,
-              instantSearchInstance = _ref3.instantSearchInstance,
-              helper = _ref3.helper;
+        getWidgetRenderState: function getWidgetRenderState(renderOptions) {
+          var results = renderOptions.results,
+              createURL = renderOptions.createURL,
+              instantSearchInstance = renderOptions.instantSearchInstance,
+              helper = renderOptions.helper;
           var items = [];
           var canToggleShowMore = false;
 
@@ -11265,40 +11499,39 @@
             });
           }
 
-          if (!this._createURL) {
-            this._createURL = function (facetValue) {
-              return createURL(helper.state.toggleRefinement(attribute, facetValue));
+          if (!_createURL) {
+            _createURL = function _createURL(facetValue) {
+              return createURL(helper.state.resetPage().toggleFacetRefinement(attribute, facetValue));
             };
           }
 
-          if (!this._refine) {
-            this._refine = function (facetValue) {
+          if (!_refine) {
+            _refine = function _refine(facetValue) {
               var _helper$getHierarchic = helper.getHierarchicalFacetBreadcrumb(attribute),
                   _helper$getHierarchic2 = _slicedToArray(_helper$getHierarchic, 1),
                   refinedItem = _helper$getHierarchic2[0];
 
               sendEvent('click', facetValue ? facetValue : refinedItem);
-              helper.toggleRefinement(attribute, facetValue ? facetValue : refinedItem).search();
+              helper.toggleFacetRefinement(attribute, facetValue ? facetValue : refinedItem).search();
             };
           }
 
-          toggleShowMore = this.createToggleShowMore({
-            results: results,
-            instantSearchInstance: instantSearchInstance
-          });
+          if (renderOptions.results) {
+            toggleShowMore = createToggleShowMore(renderOptions, this);
+          }
 
           if (results) {
             var facetValues = results.getFacetValues(attribute, {
               sortBy: sortBy
             });
-            var facetItems = facetValues && facetValues.data ? facetValues.data : [];
-            canToggleShowMore = showMore && (this.isShowingMore || facetItems.length > this.getLimit());
-            items = transformItems(facetItems.slice(0, this.getLimit()).map(function (_ref4) {
-              var label = _ref4.name,
-                  value = _ref4.path,
-                  item = _objectWithoutProperties(_ref4, ["name", "path"]);
+            var facetItems = facetValues && !Array.isArray(facetValues) && facetValues.data ? facetValues.data : [];
+            canToggleShowMore = showMore && (isShowingMore || facetItems.length > getLimit());
+            items = transformItems(facetItems.slice(0, getLimit()).map(function (_ref3) {
+              var label = _ref3.name,
+                  value = _ref3.path,
+                  item = _objectWithoutProperties(_ref3, ["name", "path"]);
 
-              return _objectSpread2({}, item, {
+              return _objectSpread2(_objectSpread2({}, item), {}, {
                 label: label,
                 value: value
               });
@@ -11307,18 +11540,18 @@
 
           return {
             items: items,
-            createURL: this._createURL,
-            refine: this._refine,
+            createURL: _createURL,
+            refine: _refine,
             sendEvent: sendEvent,
             canRefine: items.length > 0,
             widgetParams: widgetParams,
-            isShowingMore: this.isShowingMore,
+            isShowingMore: isShowingMore,
             toggleShowMore: cachedToggleShowMore,
             canToggleShowMore: canToggleShowMore
           };
         },
-        getWidgetUiState: function getWidgetUiState(uiState, _ref5) {
-          var searchParameters = _ref5.searchParameters;
+        getWidgetUiState: function getWidgetUiState(uiState, _ref4) {
+          var searchParameters = _ref4.searchParameters;
 
           var _searchParameters$get = searchParameters.getHierarchicalFacetBreadcrumb(attribute),
               _searchParameters$get2 = _slicedToArray(_searchParameters$get, 1),
@@ -11328,12 +11561,12 @@
             return uiState;
           }
 
-          return _objectSpread2({}, uiState, {
-            menu: _objectSpread2({}, uiState.menu, _defineProperty({}, attribute, value))
+          return _objectSpread2(_objectSpread2({}, uiState), {}, {
+            menu: _objectSpread2(_objectSpread2({}, uiState.menu), {}, _defineProperty({}, attribute, value))
           });
         },
-        getWidgetSearchParameters: function getWidgetSearchParameters(searchParameters, _ref6) {
-          var uiState = _ref6.uiState;
+        getWidgetSearchParameters: function getWidgetSearchParameters(searchParameters, _ref5) {
+          var uiState = _ref5.uiState;
           var value = uiState.menu && uiState.menu[attribute];
           var withFacetConfiguration = searchParameters.removeHierarchicalFacet(attribute).addHierarchicalFacet({
             name: attribute,
@@ -11345,7 +11578,7 @@
 
           if (!value) {
             return withMaxValuesPerFacet.setQueryParameters({
-              hierarchicalFacetsRefinements: _objectSpread2({}, withMaxValuesPerFacet.hierarchicalFacetsRefinements, _defineProperty({}, attribute, []))
+              hierarchicalFacetsRefinements: _objectSpread2(_objectSpread2({}, withMaxValuesPerFacet.hierarchicalFacetsRefinements), {}, _defineProperty({}, attribute, []))
             });
           }
 
@@ -11353,7 +11586,7 @@
         }
       };
     };
-  }
+  };
 
   var withUsage$9 = createDocumentationMessageGenerator({
     name: 'numeric-menu',
@@ -11399,7 +11632,8 @@
             eventName: eventName,
             index: helper.getIndex(),
             filters: filters
-          }
+          },
+          attribute: attribute
         });
       }
     };
@@ -11434,7 +11668,7 @@
               label = _ref3.label;
           return {
             label: label,
-            value: window.encodeURI(JSON.stringify({
+            value: encodeURI(JSON.stringify({
               start: start,
               end: end
             })),
@@ -11452,13 +11686,13 @@
         $$type: $$type,
         init: function init(initOptions) {
           var instantSearchInstance = initOptions.instantSearchInstance;
-          renderFn(_objectSpread2({}, this.getWidgetRenderState(initOptions), {
+          renderFn(_objectSpread2(_objectSpread2({}, this.getWidgetRenderState(initOptions)), {}, {
             instantSearchInstance: instantSearchInstance
           }), true);
         },
         render: function render(renderOptions) {
           var instantSearchInstance = renderOptions.instantSearchInstance;
-          renderFn(_objectSpread2({}, this.getWidgetRenderState(renderOptions), {
+          renderFn(_objectSpread2(_objectSpread2({}, this.getWidgetRenderState(renderOptions)), {}, {
             instantSearchInstance: instantSearchInstance
           }), false);
         },
@@ -11473,8 +11707,8 @@
           var equal = values['='] && values['='][0];
 
           if (equal || equal === 0) {
-            return _objectSpread2({}, uiState, {
-              numericMenu: _objectSpread2({}, uiState.numericMenu, _defineProperty({}, attribute, "".concat(values['='])))
+            return _objectSpread2(_objectSpread2({}, uiState), {}, {
+              numericMenu: _objectSpread2(_objectSpread2({}, uiState.numericMenu), {}, _defineProperty({}, attribute, "".concat(values['='])))
             });
           }
 
@@ -11485,8 +11719,8 @@
             return uiState;
           }
 
-          return _objectSpread2({}, uiState, {
-            numericMenu: _objectSpread2({}, uiState.numericMenu, _defineProperty({}, attribute, "".concat(min, ":").concat(max)))
+          return _objectSpread2(_objectSpread2({}, uiState), {}, {
+            numericMenu: _objectSpread2(_objectSpread2({}, uiState.numericMenu), {}, _defineProperty({}, attribute, "".concat(min, ":").concat(max)))
           });
         },
         getWidgetSearchParameters: function getWidgetSearchParameters(searchParameters, _ref6) {
@@ -11496,7 +11730,7 @@
 
           if (!value) {
             return withoutRefinements.setQueryParameters({
-              numericRefinements: _objectSpread2({}, withoutRefinements.numericRefinements, _defineProperty({}, attribute, {}))
+              numericRefinements: _objectSpread2(_objectSpread2({}, withoutRefinements.numericRefinements), {}, _defineProperty({}, attribute, {}))
             });
           }
 
@@ -11516,8 +11750,8 @@
           return withMaxRefinement;
         },
         getRenderState: function getRenderState(renderState, renderOptions) {
-          return _objectSpread2({}, renderState, {
-            numericMenu: _objectSpread2({}, renderState.numericMenu, _defineProperty({}, attribute, this.getWidgetRenderState(renderOptions)))
+          return _objectSpread2(_objectSpread2({}, renderState), {}, {
+            numericMenu: _objectSpread2(_objectSpread2({}, renderState.numericMenu), {}, _defineProperty({}, attribute, this.getWidgetRenderState(renderOptions)))
           });
         },
         getWidgetRenderState: function getWidgetRenderState(_ref7) {
@@ -11593,7 +11827,7 @@
 
   function getRefinedState(state, attribute, facetValue) {
     var resolvedState = state;
-    var refinedOption = JSON.parse(window.decodeURI(facetValue)); // @TODO: why is array / element mixed here & hasRefinements; seems wrong?
+    var refinedOption = JSON.parse(decodeURI(facetValue)); // @TODO: why is array / element mixed here & hasRefinements; seems wrong?
 
     var currentRefinements = resolvedState.getNumericRefinements(attribute);
 
@@ -11648,9 +11882,7 @@
     return currentRefinements[operator] !== undefined && currentRefinements[operator].includes(value);
   }
 
-  var Paginator =
-  /*#__PURE__*/
-  function () {
+  var Paginator = /*#__PURE__*/function () {
     function Paginator(params) {
       _classCallCheck(this, Paginator);
 
@@ -11759,13 +11991,13 @@
         $$type: 'ais.pagination',
         init: function init(initOptions) {
           var instantSearchInstance = initOptions.instantSearchInstance;
-          renderFn(_objectSpread2({}, this.getWidgetRenderState(initOptions), {
+          renderFn(_objectSpread2(_objectSpread2({}, this.getWidgetRenderState(initOptions)), {}, {
             instantSearchInstance: instantSearchInstance
           }), true);
         },
         render: function render(renderOptions) {
           var instantSearchInstance = renderOptions.instantSearchInstance;
-          renderFn(_objectSpread2({}, this.getWidgetRenderState(renderOptions), {
+          renderFn(_objectSpread2(_objectSpread2({}, this.getWidgetRenderState(renderOptions)), {}, {
             instantSearchInstance: instantSearchInstance
           }), false);
         },
@@ -11782,7 +12014,7 @@
             return uiState;
           }
 
-          return _objectSpread2({}, uiState, {
+          return _objectSpread2(_objectSpread2({}, uiState), {}, {
             page: page + 1
           });
         },
@@ -11821,6 +12053,7 @@
           return {
             createURL: connectorState.createURL(state),
             refine: connectorState.refine,
+            canRefine: nbPages > 1,
             currentRefinement: page,
             nbHits: (results === null || results === void 0 ? void 0 : results.nbHits) || 0,
             nbPages: nbPages,
@@ -11831,7 +12064,7 @@
           };
         },
         getRenderState: function getRenderState(renderState, renderOptions) {
-          return _objectSpread2({}, renderState, {
+          return _objectSpread2(_objectSpread2({}, renderState), {}, {
             pagination: this.getWidgetRenderState(renderOptions)
           });
         }
@@ -11872,7 +12105,8 @@
     checkRendering(renderFn, withUsage$b());
     return function (widgetParams) {
       var _ref2 = widgetParams || {},
-          attribute = _ref2.attribute,
+          _ref2$attribute = _ref2.attribute,
+          attribute = _ref2$attribute === void 0 ? '' : _ref2$attribute,
           minBound = _ref2.min,
           maxBound = _ref2.max,
           _ref2$precision = _ref2.precision,
@@ -11963,7 +12197,7 @@
             resolvedState = resolvedState.addNumericRefinement(attribute, '<=', newNextMax);
           }
 
-          return resolvedState;
+          return resolvedState.resetPage();
         }
 
         return null;
@@ -11982,7 +12216,8 @@
               eventName: eventName,
               index: helper.getIndex(),
               filters: filters
-            }
+            },
+            attribute: attribute
           });
         }
       };
@@ -12076,18 +12311,18 @@
       return {
         $$type: $$type$1,
         init: function init(initOptions) {
-          renderFn(_objectSpread2({}, this.getWidgetRenderState(initOptions), {
+          renderFn(_objectSpread2(_objectSpread2({}, this.getWidgetRenderState(initOptions)), {}, {
             instantSearchInstance: initOptions.instantSearchInstance
           }), true);
         },
         render: function render(renderOptions) {
-          renderFn(_objectSpread2({}, this.getWidgetRenderState(renderOptions), {
+          renderFn(_objectSpread2(_objectSpread2({}, this.getWidgetRenderState(renderOptions)), {}, {
             instantSearchInstance: renderOptions.instantSearchInstance
           }), false);
         },
         getRenderState: function getRenderState(renderState, renderOptions) {
-          return _objectSpread2({}, renderState, {
-            range: _objectSpread2({}, renderState.range, _defineProperty({}, attribute, this.getWidgetRenderState(renderOptions)))
+          return _objectSpread2(_objectSpread2({}, renderState), {}, {
+            range: _objectSpread2(_objectSpread2({}, renderState.range), {}, _defineProperty({}, attribute, this.getWidgetRenderState(renderOptions)))
           });
         },
         getWidgetRenderState: function getWidgetRenderState(_ref13) {
@@ -12123,10 +12358,11 @@
 
           return {
             refine: refine,
+            canRefine: currentRange.min !== currentRange.max,
             format: rangeFormatter,
             range: currentRange,
             sendEvent: createSendEvent(instantSearchInstance, helper, currentRange),
-            widgetParams: _objectSpread2({}, widgetParams, {
+            widgetParams: _objectSpread2(_objectSpread2({}, widgetParams), {}, {
               precision: precision
             }),
             start: start
@@ -12150,14 +12386,14 @@
             return uiState;
           }
 
-          return _objectSpread2({}, uiState, {
-            range: _objectSpread2({}, uiState.range, _defineProperty({}, attribute, "".concat(min, ":").concat(max)))
+          return _objectSpread2(_objectSpread2({}, uiState), {}, {
+            range: _objectSpread2(_objectSpread2({}, uiState.range), {}, _defineProperty({}, attribute, "".concat(min, ":").concat(max)))
           });
         },
         getWidgetSearchParameters: function getWidgetSearchParameters(searchParameters, _ref16) {
           var uiState = _ref16.uiState;
           var widgetSearchParameters = searchParameters.addDisjunctiveFacet(attribute).setQueryParameters({
-            numericRefinements: _objectSpread2({}, searchParameters.numericRefinements, _defineProperty({}, attribute, {}))
+            numericRefinements: _objectSpread2(_objectSpread2({}, searchParameters.numericRefinements), {}, _defineProperty({}, attribute, {}))
           });
 
           if (isFiniteNumber(minBound)) {
@@ -12179,11 +12415,13 @@
               lowerBound = _value$split$map2[0],
               upperBound = _value$split$map2[1];
 
-          if (isFiniteNumber(lowerBound)) {
+          if (isFiniteNumber(lowerBound) && (!isFiniteNumber(minBound) || minBound < lowerBound)) {
+            widgetSearchParameters = widgetSearchParameters.removeNumericRefinement(attribute, '>=');
             widgetSearchParameters = widgetSearchParameters.addNumericRefinement(attribute, '>=', lowerBound);
           }
 
-          if (isFiniteNumber(upperBound)) {
+          if (isFiniteNumber(upperBound) && (!isFiniteNumber(maxBound) || upperBound < maxBound)) {
+            widgetSearchParameters = widgetSearchParameters.removeNumericRefinement(attribute, '<=');
             widgetSearchParameters = widgetSearchParameters.addNumericRefinement(attribute, '<=', upperBound);
           }
 
@@ -12197,128 +12435,41 @@
     name: 'refinement-list',
     connector: true
   });
-  /**
-   * @typedef {Object} RefinementListItem
-   * @property {string} value The value of the refinement list item.
-   * @property {string} label Human-readable value of the refinement list item.
-   * @property {number} count Number of matched results after refinement is applied.
-   * @property {boolean} isRefined Indicates if the list item is refined.
-   */
 
   /**
-   * @typedef {Object} CustomRefinementListWidgetOptions
-   * @property {string} attribute The name of the attribute in the records.
-   * @property {"and"|"or"} [operator = 'or'] How the filters are combined together.
-   * @property {number} [limit = 10] The max number of items to display when
-   * `showMoreLimit` is not set or if the widget is showing less value.
-   * @property {boolean} [showMore = false] Whether to display a button that expands the number of items.
-   * @property {number} [showMoreLimit = 20] The max number of items to display if the widget
-   * is showing more items.
-   * @property {string[]|function} [sortBy = ['isRefined', 'count:desc', 'name:asc']] How to sort refinements. Possible values: `count|isRefined|name:asc|name:desc`.
-   * @property {boolean} [escapeFacetValues = true] Escapes the content of the facet values.
-   * @property {function(object[]):object[]} [transformItems] Function to transform the items passed to the templates.
+   * **RefinementList** connector provides the logic to build a custom widget that
+   * will let the user filter the results based on the values of a specific facet.
+   *
+   * **Requirement:** the attribute passed as `attribute` must be present in
+   * attributesForFaceting of the searched index.
+   *
+   * This connector provides:
+   * - a `refine()` function to select an item.
+   * - a `toggleShowMore()` function to display more or less items
+   * - a `searchForItems()` function to search within the items.
    */
-
-  /**
-   * @typedef {Object} RefinementListRenderingOptions
-   * @property {RefinementListItem[]} items The list of filtering values returned from Algolia API.
-   * @property {function(item.value): string} createURL Creates the next state url for a selected refinement.
-   * @property {function(item.value)} refine Action to apply selected refinements.
-   * @property {function} searchForItems Searches for values inside the list.
-   * @property {boolean} isFromSearch `true` if the values are from an index search.
-   * @property {boolean} canRefine `true` if a refinement can be applied.
-   * @property {boolean} canToggleShowMore `true` if the toggleShowMore button can be activated (enough items to display more or
-   * already displaying more than `limit` items)
-   * @property {Object} widgetParams All original `CustomRefinementListWidgetOptions` forwarded to the `renderFn`.
-   * @property {boolean} isShowingMore True if the menu is displaying all the menu items.
-   * @property {function} toggleShowMore Toggles the number of values displayed between `limit` and `showMoreLimit`.
-   */
-
-  /**
-   * **RefinementList** connector provides the logic to build a custom widget that will let the
-   * user filter the results based on the values of a specific facet.
-   *
-   * This connector provides a `toggleShowMore()` function to display more or less items and a `refine()`
-   * function to select an item.
-   * @type {Connector}
-   * @param {function(RefinementListRenderingOptions, boolean)} renderFn Rendering function for the custom **RefinementList** widget.
-   * @param {function} unmountFn Unmount function called when the widget is disposed.
-   * @return {function(CustomRefinementListWidgetOptions)} Re-usable widget factory for a custom **RefinementList** widget.
-   * @example
-   * // custom `renderFn` to render the custom RefinementList widget
-   * function renderFn(RefinementListRenderingOptions, isFirstRendering) {
-   *   if (isFirstRendering) {
-   *     RefinementListRenderingOptions.widgetParams.containerNode
-   *       .html('<ul></ul>')
-   *   }
-   *
-   *     RefinementListRenderingOptions.widgetParams.containerNode
-   *       .find('li[data-refine-value]')
-   *       .each(function() { $(this).off('click'); });
-   *
-   *   if (RefinementListRenderingOptions.canRefine) {
-   *     var list = RefinementListRenderingOptions.items.map(function(item) {
-   *       return `
-   *         <li data-refine-value="${item.value}">
-   *           <input type="checkbox" value="${item.value}" ${item.isRefined ? 'checked' : ''} />
-   *           <a href="${RefinementListRenderingOptions.createURL(item.value)}">
-   *             ${item.label} (${item.count})
-   *           </a>
-   *         </li>
-   *       `;
-   *     });
-   *
-   *     RefinementListRenderingOptions.widgetParams.containerNode.find('ul').html(list);
-   *     RefinementListRenderingOptions.widgetParams.containerNode
-   *       .find('li[data-refine-value]')
-   *       .each(function() {
-   *         $(this).on('click', function(event) {
-   *           event.stopPropagation();
-   *           event.preventDefault();
-   *
-   *           RefinementListRenderingOptions.refine($(this).data('refine-value'));
-   *         });
-   *       });
-   *   } else {
-   *     RefinementListRenderingOptions.widgetParams.containerNode.find('ul').html('');
-   *   }
-   * }
-   *
-   * // connect `renderFn` to RefinementList logic
-   * var customRefinementList = instantsearch.connectors.connectRefinementList(renderFn);
-   *
-   * // mount widget on the page
-   * search.addWidgets([
-   *   customRefinementList({
-   *     containerNode: $('#custom-refinement-list-container'),
-   *     attribute: 'categories',
-   *     limit: 10,
-   *   })
-   * ]);
-   */
-
-  function connectRefinementList(renderFn) {
+  var connectRefinementList = function connectRefinementList(renderFn) {
     var unmountFn = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : noop;
     checkRendering(renderFn, withUsage$c());
-    return function () {
-      var widgetParams = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-      var attribute = widgetParams.attribute,
-          _widgetParams$operato = widgetParams.operator,
-          operator = _widgetParams$operato === void 0 ? 'or' : _widgetParams$operato,
-          _widgetParams$limit = widgetParams.limit,
-          limit = _widgetParams$limit === void 0 ? 10 : _widgetParams$limit,
-          _widgetParams$showMor = widgetParams.showMore,
-          showMore = _widgetParams$showMor === void 0 ? false : _widgetParams$showMor,
-          _widgetParams$showMor2 = widgetParams.showMoreLimit,
-          showMoreLimit = _widgetParams$showMor2 === void 0 ? 20 : _widgetParams$showMor2,
-          _widgetParams$sortBy = widgetParams.sortBy,
-          sortBy = _widgetParams$sortBy === void 0 ? ['isRefined', 'count:desc', 'name:asc'] : _widgetParams$sortBy,
-          _widgetParams$escapeF = widgetParams.escapeFacetValues,
-          escapeFacetValues = _widgetParams$escapeF === void 0 ? true : _widgetParams$escapeF,
-          _widgetParams$transfo = widgetParams.transformItems,
-          transformItems = _widgetParams$transfo === void 0 ? function (items) {
+    return function (widgetParams) {
+      var _ref = widgetParams || {},
+          attribute = _ref.attribute,
+          _ref$operator = _ref.operator,
+          operator = _ref$operator === void 0 ? 'or' : _ref$operator,
+          _ref$limit = _ref.limit,
+          limit = _ref$limit === void 0 ? 10 : _ref$limit,
+          _ref$showMore = _ref.showMore,
+          showMore = _ref$showMore === void 0 ? false : _ref$showMore,
+          _ref$showMoreLimit = _ref.showMoreLimit,
+          showMoreLimit = _ref$showMoreLimit === void 0 ? 20 : _ref$showMoreLimit,
+          _ref$sortBy = _ref.sortBy,
+          sortBy = _ref$sortBy === void 0 ? ['isRefined', 'count:desc', 'name:asc'] : _ref$sortBy,
+          _ref$escapeFacetValue = _ref.escapeFacetValues,
+          escapeFacetValues = _ref$escapeFacetValue === void 0 ? true : _ref$escapeFacetValue,
+          _ref$transformItems = _ref.transformItems,
+          transformItems = _ref$transformItems === void 0 ? function (items) {
         return items;
-      } : _widgetParams$transfo;
+      } : _ref$transformItems;
 
       if (!attribute) {
         throw new Error(withUsage$c('The `attribute` option is required.'));
@@ -12332,44 +12483,58 @@
         throw new Error(withUsage$c('`showMoreLimit` should be greater than `limit`.'));
       }
 
-      var formatItems = function formatItems(_ref) {
-        var label = _ref.name,
-            item = _objectWithoutProperties(_ref, ["name"]);
+      var formatItems = function formatItems(_ref2) {
+        var label = _ref2.name,
+            item = _objectWithoutProperties(_ref2, ["name"]);
 
-        return _objectSpread2({}, item, {
+        return _objectSpread2(_objectSpread2({}, item), {}, {
           label: label,
           value: label,
           highlighted: label
         });
       };
 
-      var _getLimit = function getLimit(isShowingMore) {
-        return isShowingMore ? showMoreLimit : limit;
-      };
-
       var lastResultsFromMainSearch;
       var lastItemsFromMainSearch = [];
       var hasExhaustiveItems = true;
-      var searchForFacetValues;
       var triggerRefine;
       var sendEvent;
-      var toggleShowMore;
-      /* eslint-disable max-params */
+      var isShowingMore = false; // Provide the same function to the `renderFn` so that way the user
+      // has to only bind it once when `isFirstRendering` for instance
 
-      var createSearchForFacetValues = function createSearchForFacetValues(helper) {
-        var _this = this;
+      var toggleShowMore = function toggleShowMore() {};
 
+      function cachedToggleShowMore() {
+        toggleShowMore();
+      }
+
+      function createToggleShowMore(renderOptions, widget) {
+        return function () {
+          isShowingMore = !isShowingMore;
+          widget.render(renderOptions);
+        };
+      }
+
+      function getLimit() {
+        return isShowingMore ? showMoreLimit : limit;
+      }
+
+      var searchForFacetValues = function searchForFacetValues() {
+        return function () {};
+      };
+
+      var createSearchForFacetValues = function createSearchForFacetValues(helper, widget) {
         return function (renderOptions) {
           return function (query) {
             var instantSearchInstance = renderOptions.instantSearchInstance;
 
             if (query === '' && lastItemsFromMainSearch) {
               // render with previous data from the helper.
-              renderFn(_objectSpread2({}, _this.getWidgetRenderState(_objectSpread2({}, renderOptions, {
+              renderFn(_objectSpread2(_objectSpread2({}, widget.getWidgetRenderState(_objectSpread2(_objectSpread2({}, renderOptions), {}, {
                 results: lastResultsFromMainSearch
-              })), {
+              }))), {}, {
                 instantSearchInstance: instantSearchInstance
-              }));
+              }), false);
             } else {
               var tags = {
                 highlightPreTag: escapeFacetValues ? TAG_PLACEHOLDER.highlightPreTag : TAG_REPLACEMENT.highlightPreTag,
@@ -12378,81 +12543,57 @@
               helper.searchForFacetValues(attribute, query, // We cap the `maxFacetHits` value to 100 because the Algolia API
               // doesn't support a greater number.
               // See https://www.algolia.com/doc/api-reference/api-parameters/maxFacetHits/
-              Math.min(_getLimit(_this.isShowingMore), 100), tags).then(function (results) {
+              Math.min(getLimit(), 100), tags).then(function (results) {
                 var facetValues = escapeFacetValues ? escapeFacets(results.facetHits) : results.facetHits;
-                var normalizedFacetValues = transformItems(facetValues.map(function (_ref2) {
-                  var value = _ref2.value,
-                      item = _objectWithoutProperties(_ref2, ["value"]);
+                var normalizedFacetValues = transformItems(facetValues.map(function (_ref3) {
+                  var value = _ref3.value,
+                      item = _objectWithoutProperties(_ref3, ["value"]);
 
-                  return _objectSpread2({}, item, {
+                  return _objectSpread2(_objectSpread2({}, item), {}, {
                     value: value,
                     label: value
                   });
                 }));
-                var canToggleShowMore = _this.isShowingMore && lastItemsFromMainSearch.length > limit;
-                renderFn(_objectSpread2({}, _this.getWidgetRenderState(_objectSpread2({}, renderOptions, {
+                renderFn(_objectSpread2(_objectSpread2({}, widget.getWidgetRenderState(_objectSpread2(_objectSpread2({}, renderOptions), {}, {
                   results: lastResultsFromMainSearch
-                })), {
+                }))), {}, {
                   items: normalizedFacetValues,
-                  canToggleShowMore: canToggleShowMore,
+                  canToggleShowMore: false,
                   canRefine: true,
-                  instantSearchInstance: instantSearchInstance,
-                  isFromSearch: true
-                }));
+                  isFromSearch: true,
+                  instantSearchInstance: instantSearchInstance
+                }), false);
               });
             }
           };
         };
       };
-      /* eslint-enable max-params */
-
 
       return {
         $$type: 'ais.refinementList',
-        isShowingMore: false,
-        // Provide the same function to the `renderFn` so that way the user
-        // has to only bind it once when `isFirstRendering` for instance
-        toggleShowMore: function toggleShowMore() {},
-        cachedToggleShowMore: function cachedToggleShowMore() {
-          toggleShowMore();
-        },
-        createToggleShowMore: function createToggleShowMore(renderOptions) {
-          var _this2 = this;
-
-          return function () {
-            _this2.isShowingMore = !_this2.isShowingMore;
-
-            _this2.render(renderOptions);
-          };
-        },
-        getLimit: function getLimit() {
-          return _getLimit(this.isShowingMore);
-        },
         init: function init(initOptions) {
-          renderFn(_objectSpread2({}, this.getWidgetRenderState(initOptions), {
+          renderFn(_objectSpread2(_objectSpread2({}, this.getWidgetRenderState(initOptions)), {}, {
             instantSearchInstance: initOptions.instantSearchInstance
           }), true);
         },
         render: function render(renderOptions) {
-          renderFn(_objectSpread2({}, this.getWidgetRenderState(renderOptions), {
+          renderFn(_objectSpread2(_objectSpread2({}, this.getWidgetRenderState(renderOptions)), {}, {
             instantSearchInstance: renderOptions.instantSearchInstance
           }), false);
         },
         getRenderState: function getRenderState(renderState, renderOptions) {
-          return _objectSpread2({}, renderState, {
-            refinementList: _objectSpread2({}, renderState.refinementList, _defineProperty({}, attribute, this.getWidgetRenderState(renderOptions)))
+          return _objectSpread2(_objectSpread2({}, renderState), {}, {
+            refinementList: _objectSpread2(_objectSpread2({}, renderState.refinementList), {}, _defineProperty({}, attribute, this.getWidgetRenderState(renderOptions)))
           });
         },
         getWidgetRenderState: function getWidgetRenderState(renderOptions) {
           var results = renderOptions.results,
               state = renderOptions.state,
-              createURL = renderOptions.createURL,
+              _createURL = renderOptions.createURL,
               instantSearchInstance = renderOptions.instantSearchInstance,
-              _renderOptions$isFrom = renderOptions.isFromSearch,
-              isFromSearch = _renderOptions$isFrom === void 0 ? false : _renderOptions$isFrom,
               helper = renderOptions.helper;
           var items = [];
-          var facetValues;
+          var facetValues = [];
 
           if (!sendEvent || !triggerRefine || !searchForFacetValues) {
             sendEvent = createSendEventForFacet({
@@ -12464,33 +12605,20 @@
 
             triggerRefine = function triggerRefine(facetValue) {
               sendEvent('click', facetValue);
-              helper.toggleRefinement(attribute, facetValue).search();
+              helper.toggleFacetRefinement(attribute, facetValue).search();
             };
 
-            searchForFacetValues = createSearchForFacetValues.call(this, helper);
+            searchForFacetValues = createSearchForFacetValues(helper, this);
           }
 
           if (results) {
-            if (!isFromSearch) {
-              facetValues = results.getFacetValues(attribute, {
-                sortBy: sortBy
-              }) || [];
-              items = transformItems(facetValues.slice(0, this.getLimit()).map(formatItems));
-            } else {
-              facetValues = escapeFacetValues ? escapeFacets(results.facetHits) : results.facetHits;
-              items = transformItems(facetValues.map(function (_ref3) {
-                var value = _ref3.value,
-                    item = _objectWithoutProperties(_ref3, ["value"]);
-
-                return _objectSpread2({}, item, {
-                  value: value,
-                  label: value
-                });
-              }));
-            }
-
+            var values = results.getFacetValues(attribute, {
+              sortBy: sortBy
+            });
+            facetValues = values && Array.isArray(values) ? values : [];
+            items = transformItems(facetValues.slice(0, getLimit()).map(formatItems));
             var maxValuesPerFacetConfig = state.maxValuesPerFacet;
-            var currentLimit = this.getLimit(); // If the limit is the max number of facet retrieved it is impossible to know
+            var currentLimit = getLimit(); // If the limit is the max number of facet retrieved it is impossible to know
             // if the facets are exhaustive. The only moment we are sure it is exhaustive
             // is when it is strictly under the number requested unless we know that another
             // widget has requested more values (maxValuesPerFacet > getLimit()).
@@ -12500,31 +12628,31 @@
             hasExhaustiveItems = maxValuesPerFacetConfig > currentLimit ? facetValues.length <= currentLimit : facetValues.length < currentLimit;
             lastResultsFromMainSearch = results;
             lastItemsFromMainSearch = items;
-            toggleShowMore = this.createToggleShowMore(renderOptions);
-          } // Compute a specific createURL method able to link to any facet value state change
 
-
-          var _createURL = function _createURL(facetValue) {
-            return createURL(state.toggleRefinement(attribute, facetValue));
-          }; // Do not mistake searchForFacetValues and searchFacetValues which is the actual search
+            if (renderOptions.results) {
+              toggleShowMore = createToggleShowMore(renderOptions, this);
+            }
+          } // Do not mistake searchForFacetValues and searchFacetValues which is the actual search
           // function
 
 
           var searchFacetValues = searchForFacetValues && searchForFacetValues(renderOptions);
-          var canShowLess = this.isShowingMore && lastItemsFromMainSearch.length > limit;
-          var canShowMore = showMore && !isFromSearch && !hasExhaustiveItems;
+          var canShowLess = isShowingMore && lastItemsFromMainSearch.length > limit;
+          var canShowMore = showMore && !hasExhaustiveItems;
           var canToggleShowMore = canShowLess || canShowMore;
           return {
-            createURL: _createURL,
+            createURL: function createURL(facetValue) {
+              return _createURL(state.resetPage().toggleFacetRefinement(attribute, facetValue));
+            },
             items: items,
             refine: triggerRefine,
             searchForItems: searchFacetValues,
-            isFromSearch: isFromSearch,
-            canRefine: isFromSearch || items.length > 0,
+            isFromSearch: false,
+            canRefine: items.length > 0,
             widgetParams: widgetParams,
-            isShowingMore: this.isShowingMore,
+            isShowingMore: isShowingMore,
             canToggleShowMore: canToggleShowMore,
-            toggleShowMore: this.cachedToggleShowMore,
+            toggleShowMore: cachedToggleShowMore,
             sendEvent: sendEvent,
             hasExhaustiveItems: hasExhaustiveItems
           };
@@ -12548,8 +12676,8 @@
             return uiState;
           }
 
-          return _objectSpread2({}, uiState, {
-            refinementList: _objectSpread2({}, uiState.refinementList, _defineProperty({}, attribute, values))
+          return _objectSpread2(_objectSpread2({}, uiState), {}, {
+            refinementList: _objectSpread2(_objectSpread2({}, uiState.refinementList), {}, _defineProperty({}, attribute, values))
           });
         },
         getWidgetSearchParameters: function getWidgetSearchParameters(searchParameters, _ref6) {
@@ -12564,7 +12692,7 @@
 
           if (!values) {
             var key = isDisjunctive ? 'disjunctiveFacetsRefinements' : 'facetsRefinements';
-            return withMaxValuesPerFacet.setQueryParameters(_defineProperty({}, key, _objectSpread2({}, withMaxValuesPerFacet[key], _defineProperty({}, attribute, []))));
+            return withMaxValuesPerFacet.setQueryParameters(_defineProperty({}, key, _objectSpread2(_objectSpread2({}, withMaxValuesPerFacet[key]), {}, _defineProperty({}, attribute, []))));
           }
 
           return values.reduce(function (parameters, value) {
@@ -12573,80 +12701,33 @@
         }
       };
     };
-  }
+  };
 
   var withUsage$d = createDocumentationMessageGenerator({
     name: 'search-box',
     connector: true
   });
-  /**
-   * @typedef {Object} CustomSearchBoxWidgetOptions
-   * @property {function(string, function(string))} [queryHook = undefined] A function that will be called every time
-   * a new value for the query is set. The first parameter is the query and the second is a
-   * function to actually trigger the search. The function takes the query as the parameter.
-   *
-   * This queryHook can be used to debounce the number of searches done from the searchBox.
-   */
-
-  /**
-   * @typedef {Object} SearchBoxRenderingOptions
-   * @property {string} query The query from the last search.
-   * @property {function(string)} refine Sets a new query and searches.
-   * @property {function()} clear Remove the query and perform search.
-   * @property {Object} widgetParams All original `CustomSearchBoxWidgetOptions` forwarded to the `renderFn`.
-   * @property {boolean} isSearchStalled `true` if the search results takes more than a certain time to come back
-   * from Algolia servers. This can be configured on the InstantSearch constructor with the attribute
-   * `stalledSearchDelay` which is 200ms, by default.
-   */
 
   /**
    * **SearchBox** connector provides the logic to build a widget that will let the user search for a query.
    *
    * The connector provides to the rendering: `refine()` to set the query. The behaviour of this function
    * may be impacted by the `queryHook` widget parameter.
-   * @type {Connector}
-   * @param {function(SearchBoxRenderingOptions, boolean)} renderFn Rendering function for the custom **SearchBox** widget.
-   * @param {function} unmountFn Unmount function called when the widget is disposed.
-   * @return {function(CustomSearchBoxWidgetOptions)} Re-usable widget factory for a custom **SearchBox** widget.
-   * @example
-   * // custom `renderFn` to render the custom SearchBox widget
-   * function renderFn(SearchBoxRenderingOptions, isFirstRendering) {
-   *   if (isFirstRendering) {
-   *     SearchBoxRenderingOptions.widgetParams.containerNode.html('<input type="text" />');
-   *     SearchBoxRenderingOptions.widgetParams.containerNode
-   *       .find('input')
-   *       .on('keyup', function() {
-   *         SearchBoxRenderingOptions.refine($(this).val());
-   *       });
-   *     SearchBoxRenderingOptions.widgetParams.containerNode
-   *       .find('input')
-   *       .val(SearchBoxRenderingOptions.query);
-   *   }
-   * }
-   *
-   * // connect `renderFn` to SearchBox logic
-   * var customSearchBox = instantsearch.connectors.connectSearchBox(renderFn);
-   *
-   * // mount widget on the page
-   * search.addWidgets([
-   *   customSearchBox({
-   *     containerNode: $('#custom-searchbox'),
-   *   })
-   * ]);
    */
-
-  function connectSearchBox(renderFn) {
+  var connectSearchBox = function connectSearchBox(renderFn) {
     var unmountFn = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : noop;
     checkRendering(renderFn, withUsage$d());
-    return function () {
-      var widgetParams = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-      var queryHook = widgetParams.queryHook;
+    return function (widgetParams) {
+      var _ref = widgetParams || {},
+          queryHook = _ref.queryHook;
 
       function clear(helper) {
         return function () {
           helper.setQuery('').search();
         };
       }
+
+      var _refine;
 
       var _clear = function _clear() {};
 
@@ -12658,38 +12739,38 @@
         $$type: 'ais.searchBox',
         init: function init(initOptions) {
           var instantSearchInstance = initOptions.instantSearchInstance;
-          renderFn(_objectSpread2({}, this.getWidgetRenderState(initOptions), {
+          renderFn(_objectSpread2(_objectSpread2({}, this.getWidgetRenderState(initOptions)), {}, {
             instantSearchInstance: instantSearchInstance
           }), true);
         },
         render: function render(renderOptions) {
           var instantSearchInstance = renderOptions.instantSearchInstance;
-          renderFn(_objectSpread2({}, this.getWidgetRenderState(renderOptions), {
+          renderFn(_objectSpread2(_objectSpread2({}, this.getWidgetRenderState(renderOptions)), {}, {
             instantSearchInstance: instantSearchInstance
           }), false);
         },
-        dispose: function dispose(_ref) {
-          var state = _ref.state;
+        dispose: function dispose(_ref2) {
+          var state = _ref2.state;
           unmountFn();
           return state.setQueryParameter('query', undefined);
         },
         getRenderState: function getRenderState(renderState, renderOptions) {
-          return _objectSpread2({}, renderState, {
+          return _objectSpread2(_objectSpread2({}, renderState), {}, {
             searchBox: this.getWidgetRenderState(renderOptions)
           });
         },
-        getWidgetRenderState: function getWidgetRenderState(_ref2) {
-          var helper = _ref2.helper,
-              searchMetadata = _ref2.searchMetadata;
+        getWidgetRenderState: function getWidgetRenderState(_ref3) {
+          var helper = _ref3.helper,
+              searchMetadata = _ref3.searchMetadata;
 
-          if (!this._refine) {
+          if (!_refine) {
             var setQueryAndSearch = function setQueryAndSearch(query) {
               if (query !== helper.state.query) {
                 helper.setQuery(query).search();
               }
             };
 
-            this._refine = function (query) {
+            _refine = function _refine(query) {
               if (queryHook) {
                 queryHook(query, setQueryAndSearch);
                 return;
@@ -12702,124 +12783,53 @@
           _clear = clear(helper);
           return {
             query: helper.state.query || '',
-            refine: this._refine,
+            refine: _refine,
             clear: _cachedClear,
             widgetParams: widgetParams,
             isSearchStalled: searchMetadata.isSearchStalled
           };
         },
-        getWidgetUiState: function getWidgetUiState(uiState, _ref3) {
-          var searchParameters = _ref3.searchParameters;
+        getWidgetUiState: function getWidgetUiState(uiState, _ref4) {
+          var searchParameters = _ref4.searchParameters;
           var query = searchParameters.query || '';
 
           if (query === '' || uiState && uiState.query === query) {
             return uiState;
           }
 
-          return _objectSpread2({}, uiState, {
+          return _objectSpread2(_objectSpread2({}, uiState), {}, {
             query: query
           });
         },
-        getWidgetSearchParameters: function getWidgetSearchParameters(searchParameters, _ref4) {
-          var uiState = _ref4.uiState;
+        getWidgetSearchParameters: function getWidgetSearchParameters(searchParameters, _ref5) {
+          var uiState = _ref5.uiState;
           return searchParameters.setQueryParameter('query', uiState.query || '');
         }
       };
     };
-  }
+  };
 
   var withUsage$e = createDocumentationMessageGenerator({
     name: 'sort-by',
     connector: true
   });
   /**
-   * @typedef {Object} SortByItem
-   * @property {string} value The name of the index to target.
-   * @property {string} label The label of the index to display.
-   */
-
-  /**
-   * @typedef {Object} CustomSortByWidgetOptions
-   * @property {SortByItem[]} items Array of objects defining the different indices to choose from.
-   * @property {function(object[]):object[]} [transformItems] Function to transform the items passed to the templates.
-   */
-
-  /**
-   * @typedef {Object} SortByRenderingOptions
-   * @property {string} currentRefinement The currently selected index.
-   * @property {SortByItem[]} options All the available indices
-   * @property {function(string)} refine Switches indices and triggers a new search.
-   * @property {boolean} hasNoResults `true` if the last search contains no result.
-   * @property {Object} widgetParams All original `CustomSortByWidgetOptions` forwarded to the `renderFn`.
-   */
-
-  /**
    * The **SortBy** connector provides the logic to build a custom widget that will display a
    * list of indices. With Algolia, this is most commonly used for changing ranking strategy. This allows
    * a user to change how the hits are being sorted.
-   *
-   * This connector provides the `refine` function that allows to switch indices.
-   * The connector provides to the rendering: `refine()` to switch the current index and
-   * `options` that are the values that can be selected. `refine` should be used
-   * with `options.value`.
-   * @type {Connector}
-   * @param {function(SortByRenderingOptions, boolean)} renderFn Rendering function for the custom **SortBy** widget.
-   * @param {function} unmountFn Unmount function called when the widget is disposed.
-   * @return {function(CustomSortByWidgetOptions)} Re-usable widget factory for a custom **SortBy** widget.
-   * @example
-   * // custom `renderFn` to render the custom SortBy widget
-   * function renderFn(SortByRenderingOptions, isFirstRendering) {
-   *   if (isFirstRendering) {
-   *     SortByRenderingOptions.widgetParams.containerNode.html('<select></select>');
-   *     SortByRenderingOptions.widgetParams.containerNode
-   *       .find('select')
-   *       .on('change', function(event) {
-   *         SortByRenderingOptions.refine(event.target.value);
-   *       });
-   *   }
-   *
-   *   var optionsHTML = SortByRenderingOptions.options.map(function(option) {
-   *     return `
-   *       <option
-   *         value="${option.value}"
-   *         ${SortByRenderingOptions.currentRefinement === option.value ? 'selected' : ''}
-   *       >
-   *         ${option.label}
-   *       </option>
-   *     `;
-   *   });
-   *
-   *   SortByRenderingOptions.widgetParams.containerNode
-   *     .find('select')
-   *     .html(optionsHTML);
-   * }
-   *
-   * // connect `renderFn` to SortBy logic
-   * var customSortBy = instantsearch.connectors.connectSortBy(renderFn);
-   *
-   * // mount widget on the page
-   * search.addWidgets([
-   *   customSortBy({
-   *     containerNode: $('#custom-sort-by-container'),
-   *     items: [
-   *       { value: 'instant_search', label: 'Most relevant' },
-   *       { value: 'instant_search_price_asc', label: 'Lowest price' },
-   *       { value: 'instant_search_price_desc', label: 'Highest price' },
-   *     ],
-   *   })
-   * ]);
    */
 
-  function connectSortBy(renderFn) {
+  var connectSortBy = function connectSortBy(renderFn) {
     var unmountFn = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : noop;
     checkRendering(renderFn, withUsage$e());
-    return function () {
-      var widgetParams = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-      var items = widgetParams.items,
-          _widgetParams$transfo = widgetParams.transformItems,
-          transformItems = _widgetParams$transfo === void 0 ? function (x) {
+    var connectorState = {};
+    return function (widgetParams) {
+      var _ref = widgetParams || {},
+          items = _ref.items,
+          _ref$transformItems = _ref.transformItems,
+          transformItems = _ref$transformItems === void 0 ? function (x) {
         return x;
-      } : _widgetParams$transfo;
+      } : _ref$transformItems;
 
       if (!Array.isArray(items)) {
         throw new Error(withUsage$e('The `items` option expects an array of objects.'));
@@ -12834,38 +12844,38 @@
           var isCurrentIndexInItems = find$1(items, function (item) {
             return item.value === currentIndex;
           });
-           _warning(isCurrentIndexInItems, "The index named \"".concat(currentIndex, "\" is not listed in the `items` of `sortBy`.")) ;
-          renderFn(_objectSpread2({}, widgetRenderState, {
+           _warning(isCurrentIndexInItems !== undefined, "The index named \"".concat(currentIndex, "\" is not listed in the `items` of `sortBy`.")) ;
+          renderFn(_objectSpread2(_objectSpread2({}, widgetRenderState), {}, {
             instantSearchInstance: instantSearchInstance
           }), true);
         },
         render: function render(renderOptions) {
           var instantSearchInstance = renderOptions.instantSearchInstance;
-          renderFn(_objectSpread2({}, this.getWidgetRenderState(renderOptions), {
+          renderFn(_objectSpread2(_objectSpread2({}, this.getWidgetRenderState(renderOptions)), {}, {
             instantSearchInstance: instantSearchInstance
           }), false);
         },
-        dispose: function dispose(_ref) {
-          var state = _ref.state;
+        dispose: function dispose(_ref2) {
+          var state = _ref2.state;
           unmountFn();
-          return state.setIndex(this.initialIndex);
+          return connectorState.initialIndex ? state.setIndex(connectorState.initialIndex) : state;
         },
         getRenderState: function getRenderState(renderState, renderOptions) {
-          return _objectSpread2({}, renderState, {
+          return _objectSpread2(_objectSpread2({}, renderState), {}, {
             sortBy: this.getWidgetRenderState(renderOptions)
           });
         },
-        getWidgetRenderState: function getWidgetRenderState(_ref2) {
-          var results = _ref2.results,
-              helper = _ref2.helper,
-              parent = _ref2.parent;
+        getWidgetRenderState: function getWidgetRenderState(_ref3) {
+          var results = _ref3.results,
+              helper = _ref3.helper,
+              parent = _ref3.parent;
 
-          if (!this.initialIndex) {
-            this.initialIndex = parent.getIndexName();
+          if (!connectorState.initialIndex && parent) {
+            connectorState.initialIndex = parent.getIndexName();
           }
 
-          if (!this.setIndex) {
-            this.setIndex = function (indexName) {
+          if (!connectorState.setIndex) {
+            connectorState.setIndex = function (indexName) {
               helper.setIndex(indexName).search();
             };
           }
@@ -12873,37 +12883,33 @@
           return {
             currentRefinement: helper.state.index,
             options: transformItems(items),
-            refine: this.setIndex,
+            refine: connectorState.setIndex,
             hasNoResults: results ? results.nbHits === 0 : true,
             widgetParams: widgetParams
           };
         },
-        getWidgetUiState: function getWidgetUiState(uiState, _ref3) {
-          var searchParameters = _ref3.searchParameters;
+        getWidgetUiState: function getWidgetUiState(uiState, _ref4) {
+          var searchParameters = _ref4.searchParameters;
           var currentIndex = searchParameters.index;
-          var isInitialIndex = currentIndex === this.initialIndex;
-
-          if (isInitialIndex) {
-            return uiState;
-          }
-
-          return _objectSpread2({}, uiState, {
-            sortBy: currentIndex
+          return _objectSpread2(_objectSpread2({}, uiState), {}, {
+            sortBy: currentIndex !== connectorState.initialIndex ? currentIndex : undefined
           });
         },
-        getWidgetSearchParameters: function getWidgetSearchParameters(searchParameters, _ref4) {
-          var uiState = _ref4.uiState;
-          return searchParameters.setQueryParameter('index', uiState.sortBy || this.initialIndex || searchParameters.index);
+        getWidgetSearchParameters: function getWidgetSearchParameters(searchParameters, _ref5) {
+          var uiState = _ref5.uiState;
+          return searchParameters.setQueryParameter('index', uiState.sortBy || connectorState.initialIndex || searchParameters.index);
         }
       };
     };
-  }
+  };
 
   var withUsage$f = createDocumentationMessageGenerator({
     name: 'rating-menu',
     connector: true
   });
   var $$type$2 = 'ais.ratingMenu';
+  var MAX_VALUES_PER_FACET_API_LIMIT = 1000;
+  var STEP = 1;
 
   var createSendEvent$1 = function createSendEvent(_ref) {
     var instantSearchInstance = _ref.instantSearchInstance,
@@ -12940,36 +12946,12 @@
             eventName: eventName,
             index: helper.getIndex(),
             filters: ["".concat(attribute, ">=").concat(facetValue)]
-          }
+          },
+          attribute: attribute
         });
       }
     };
   };
-  /**
-   * @typedef {Object} StarRatingItems
-   * @property {string} name Name corresponding to the number of stars.
-   * @property {string} value Number of stars as string.
-   * @property {number} count Count of matched results corresponding to the number of stars.
-   * @property {boolean[]} stars Array of length of maximum rating value with stars to display or not.
-   * @property {boolean} isRefined Indicates if star rating refinement is applied.
-   */
-
-  /**
-   * @typedef {Object} CustomStarRatingWidgetOptions
-   * @property {string} attribute Name of the attribute for faceting (eg. "free_shipping").
-   * @property {number} [max = 5] The maximum rating value.
-   */
-
-  /**
-   * @typedef {Object} StarRatingRenderingOptions
-   * @property {StarRatingItems[]} items Possible star ratings the user can apply.
-   * @property {function(string): string} createURL Creates an URL for the next
-   * state (takes the item value as parameter). Takes the value of an item as parameter.
-   * @property {function(string)} refine Selects a rating to filter the results
-   * (takes the filter value as parameter). Takes the value of an item as parameter.
-   * @property {boolean} hasNoResults `true` if the last search contains no result.
-   * @property {Object} widgetParams All original `CustomStarRatingWidgetOptions` forwarded to the `renderFn`.
-   */
 
   /**
    * **StarRating** connector provides the logic to build a custom widget that will let
@@ -12978,69 +12960,16 @@
    * The connector provides to the rendering: `refine()` to select a value and
    * `items` that are the values that can be selected. `refine` should be used
    * with `items.value`.
-   * @type {Connector}
-   * @param {function(StarRatingRenderingOptions, boolean)} renderFn Rendering function for the custom **StarRating** widget.
-   * @param {function} unmountFn Unmount function called when the widget is disposed.
-   * @return {function(CustomStarRatingWidgetOptions)} Re-usable widget factory for a custom **StarRating** widget.
-   * @example
-   * // custom `renderFn` to render the custom StarRating widget
-   * function renderFn(StarRatingRenderingOptions, isFirstRendering) {
-   *   if (isFirstRendering) {
-   *     StarRatingRenderingOptions.widgetParams.containerNode.html('<ul></ul>');
-   *   }
-   *
-   *   StarRatingRenderingOptions.widgetParams.containerNode
-   *     .find('li[data-refine-value]')
-   *     .each(function() { $(this).off('click'); });
-   *
-   *   var listHTML = StarRatingRenderingOptions.items.map(function(item) {
-   *     return '<li data-refine-value="' + item.value + '">' +
-   *       '<a href="' + StarRatingRenderingOptions.createURL(item.value) + '">' +
-   *       item.stars.map(function(star) { return star === false ? '☆' : '★'; }).join(' ') +
-   *       '& up (' + item.count + ')' +
-   *       '</a></li>';
-   *   });
-   *
-   *   StarRatingRenderingOptions.widgetParams.containerNode
-   *     .find('ul')
-   *     .html(listHTML);
-   *
-   *   StarRatingRenderingOptions.widgetParams.containerNode
-   *     .find('li[data-refine-value]')
-   *     .each(function() {
-   *       $(this).on('click', function(event) {
-   *         event.preventDefault();
-   *         event.stopPropagation();
-   *
-   *         StarRatingRenderingOptions.refine($(this).data('refine-value'));
-   *       });
-   *     });
-   * }
-   *
-   * // connect `renderFn` to StarRating logic
-   * var customStarRating = instantsearch.connectors.connectRatingMenu(renderFn);
-   *
-   * // mount widget on the page
-   * search.addWidgets([
-   *   customStarRating({
-   *     containerNode: $('#custom-rating-menu-container'),
-   *     attribute: 'rating',
-   *     max: 5,
-   *   })
-   * ]);
    */
-
-
-  function connectRatingMenu(renderFn) {
-    var _this = this;
-
+  var connectRatingMenu = function connectRatingMenu(renderFn) {
     var unmountFn = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : noop;
     checkRendering(renderFn, withUsage$f());
-    return function () {
-      var widgetParams = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-      var attribute = widgetParams.attribute,
-          _widgetParams$max = widgetParams.max,
-          max = _widgetParams$max === void 0 ? 5 : _widgetParams$max;
+    return function (widgetParams) {
+      var _ref2 = widgetParams || {},
+          attribute = _ref2.attribute,
+          _ref2$max = _ref2.max,
+          max = _ref2$max === void 0 ? 5 : _ref2$max;
+
       var sendEvent;
 
       if (!attribute) {
@@ -13048,38 +12977,76 @@
       }
 
       var _getRefinedStar = function getRefinedStar(state) {
-        var refinements = state.getDisjunctiveRefinements(attribute);
+        var _values$;
 
-        if (!refinements.length) {
+        var values = state.getNumericRefinements(attribute);
+
+        if (!((_values$ = values['>=']) !== null && _values$ !== void 0 && _values$.length)) {
           return undefined;
         }
 
-        return Math.min.apply(Math, _toConsumableArray(refinements.map(Number)));
+        return values['>='][0];
       };
+
+      var getFacetsMaxDecimalPlaces = function getFacetsMaxDecimalPlaces(facetResults) {
+        var maxDecimalPlaces = 0;
+        facetResults.forEach(function (facetResult) {
+          var _facetResult$name$spl = facetResult.name.split('.'),
+              _facetResult$name$spl2 = _slicedToArray(_facetResult$name$spl, 2),
+              _facetResult$name$spl3 = _facetResult$name$spl2[1],
+              decimal = _facetResult$name$spl3 === void 0 ? '' : _facetResult$name$spl3;
+
+          maxDecimalPlaces = Math.max(maxDecimalPlaces, decimal.length);
+        });
+        return maxDecimalPlaces;
+      };
+
+      var getFacetValuesWarningMessage = function getFacetValuesWarningMessage(_ref3) {
+        var maxDecimalPlaces = _ref3.maxDecimalPlaces,
+            maxFacets = _ref3.maxFacets,
+            maxValuesPerFacet = _ref3.maxValuesPerFacet;
+        var maxDecimalPlacesInRange = Math.max(0, Math.floor(Math.log10(MAX_VALUES_PER_FACET_API_LIMIT / max)));
+        var maxFacetsInRange = Math.min(MAX_VALUES_PER_FACET_API_LIMIT, Math.pow(10, maxDecimalPlacesInRange) * max);
+        var solutions = [];
+
+        if (maxFacets > MAX_VALUES_PER_FACET_API_LIMIT) {
+          solutions.push("- Update your records to lower the precision of the values in the \"".concat(attribute, "\" attribute (for example: ").concat(5.123456789.toPrecision(maxDecimalPlaces + 1), " to ").concat(5.123456789.toPrecision(maxDecimalPlacesInRange + 1), ")"));
+        }
+
+        if (maxValuesPerFacet < maxFacetsInRange) {
+          solutions.push("- Increase the maximum number of facet values to ".concat(maxFacetsInRange, " using the \"configure\" widget ").concat(createDocumentationLink({
+            name: 'configure'
+          }), " and the \"maxValuesPerFacet\" parameter https://www.algolia.com/doc/api-reference/api-parameters/maxValuesPerFacet/"));
+        }
+
+        return "The ".concat(attribute, " attribute can have ").concat(maxFacets, " different values (0 to ").concat(max, " with a maximum of ").concat(maxDecimalPlaces, " decimals = ").concat(maxFacets, ") but you retrieved only ").concat(maxValuesPerFacet, " facet values. Therefore the number of results that match the refinements can be incorrect.\n    ").concat(solutions.length ? "To resolve this problem you can:\n".concat(solutions.join('\n')) : "");
+      };
+
+      function getRefinedState(state, facetValue) {
+        var isRefined = _getRefinedStar(state) === Number(facetValue);
+        var emptyState = state.resetPage().removeNumericRefinement(attribute);
+
+        if (!isRefined) {
+          return emptyState.addNumericRefinement(attribute, '<=', max).addNumericRefinement(attribute, '>=', Number(facetValue));
+        }
+
+        return emptyState;
+      }
 
       var toggleRefinement = function toggleRefinement(helper, facetValue) {
         sendEvent('click', facetValue);
-        var isRefined = _getRefinedStar(helper.state) === Number(facetValue);
-        helper.removeDisjunctiveFacetRefinement(attribute);
-
-        if (!isRefined) {
-          for (var val = Number(facetValue); val <= max; ++val) {
-            helper.addDisjunctiveFacetRefinement(attribute, val);
-          }
-        }
-
-        helper.search();
+        helper.setState(getRefinedState(helper.state, facetValue)).search();
       };
 
       var connectorState = {
         toggleRefinementFactory: function toggleRefinementFactory(helper) {
-          return toggleRefinement.bind(_this, helper);
+          return toggleRefinement.bind(null, helper);
         },
-        createURLFactory: function createURLFactory(_ref2) {
-          var state = _ref2.state,
-              createURL = _ref2.createURL;
+        createURLFactory: function createURLFactory(_ref4) {
+          var state = _ref4.state,
+              createURL = _ref4.createURL;
           return function (value) {
-            return createURL(state.toggleRefinement(attribute, value));
+            return createURL(getRefinedState(state, value));
           };
         }
       };
@@ -13087,27 +13054,27 @@
         $$type: $$type$2,
         init: function init(initOptions) {
           var instantSearchInstance = initOptions.instantSearchInstance;
-          renderFn(_objectSpread2({}, this.getWidgetRenderState(initOptions), {
+          renderFn(_objectSpread2(_objectSpread2({}, this.getWidgetRenderState(initOptions)), {}, {
             instantSearchInstance: instantSearchInstance
           }), true);
         },
         render: function render(renderOptions) {
           var instantSearchInstance = renderOptions.instantSearchInstance;
-          renderFn(_objectSpread2({}, this.getWidgetRenderState(renderOptions), {
+          renderFn(_objectSpread2(_objectSpread2({}, this.getWidgetRenderState(renderOptions)), {}, {
             instantSearchInstance: instantSearchInstance
           }), false);
         },
         getRenderState: function getRenderState(renderState, renderOptions) {
-          return _objectSpread2({}, renderState, {
-            ratingMenu: _objectSpread2({}, renderState.ratingMenu, _defineProperty({}, attribute, this.getWidgetRenderState(renderOptions)))
+          return _objectSpread2(_objectSpread2({}, renderState), {}, {
+            ratingMenu: _objectSpread2(_objectSpread2({}, renderState.ratingMenu), {}, _defineProperty({}, attribute, this.getWidgetRenderState(renderOptions)))
           });
         },
-        getWidgetRenderState: function getWidgetRenderState(_ref3) {
-          var helper = _ref3.helper,
-              results = _ref3.results,
-              state = _ref3.state,
-              instantSearchInstance = _ref3.instantSearchInstance,
-              createURL = _ref3.createURL;
+        getWidgetRenderState: function getWidgetRenderState(_ref5) {
+          var helper = _ref5.helper,
+              results = _ref5.results,
+              state = _ref5.state,
+              instantSearchInstance = _ref5.instantSearchInstance,
+              createURL = _ref5.createURL;
           var facetValues = [];
 
           if (!sendEvent) {
@@ -13122,54 +13089,60 @@
           }
 
           if (results) {
-            var allValues = {};
-
-            for (var v = max; v >= 0; --v) {
-              allValues[v] = 0;
-            }
-
-            (results.getFacetValues(attribute) || []).forEach(function (facet) {
-              var val = Math.round(facet.name);
-
-              if (!val || val > max) {
-                return;
-              }
-
-              for (var _v = val; _v >= 1; --_v) {
-                allValues[_v] += facet.count;
-              }
-            });
+            var facetResults = results.getFacetValues(attribute, {});
+            var maxValuesPerFacet = facetResults.length;
+            var maxDecimalPlaces = getFacetsMaxDecimalPlaces(facetResults);
+            var maxFacets = Math.pow(10, maxDecimalPlaces) * max;
+             _warning(maxFacets <= maxValuesPerFacet, getFacetValuesWarningMessage({
+              maxDecimalPlaces: maxDecimalPlaces,
+              maxFacets: maxFacets,
+              maxValuesPerFacet: maxValuesPerFacet
+            })) ;
 
             var refinedStar = _getRefinedStar(state);
 
-            for (var star = max - 1; star >= 1; --star) {
-              var count = allValues[star];
+            var _loop = function _loop(star) {
+              var isRefined = refinedStar === star;
+              var count = facetResults.filter(function (f) {
+                return Number(f.name) >= star && Number(f.name) <= max;
+              }).map(function (f) {
+                return f.count;
+              }).reduce(function (sum, current) {
+                return sum + current;
+              }, 0);
 
-              if (refinedStar && star !== refinedStar && count === 0) {
+              if (refinedStar && !isRefined && count === 0) {
                 // skip count==0 when at least 1 refinement is enabled
                 // eslint-disable-next-line no-continue
-                continue;
+                return "continue";
               }
 
-              var stars = [];
-
-              for (var i = 1; i <= max; ++i) {
-                stars.push(i <= star);
-              }
+              var stars = _toConsumableArray(new Array(Math.floor(max / STEP))).map(function (_v, i) {
+                return i * STEP < star;
+              });
 
               facetValues.push({
                 stars: stars,
                 name: String(star),
+                label: String(star),
                 value: String(star),
                 count: count,
-                isRefined: refinedStar === star
+                isRefined: isRefined
               });
+            };
+
+            for (var star = STEP; star < max; star += STEP) {
+              var _ret = _loop(star);
+
+              if (_ret === "continue") continue;
             }
           }
 
+          facetValues = facetValues.reverse();
           return {
             items: facetValues,
             hasNoResults: results ? results.nbHits === 0 : true,
+            canRefine: facetValues.length > 0,
             refine: connectorState.toggleRefinementFactory(helper),
             sendEvent: sendEvent,
             createURL: connectorState.createURLFactory({
@@ -13179,13 +13152,13 @@
             widgetParams: widgetParams
           };
         },
-        dispose: function dispose(_ref4) {
-          var state = _ref4.state;
+        dispose: function dispose(_ref6) {
+          var state = _ref6.state;
           unmountFn();
-          return state.removeDisjunctiveFacet(attribute);
+          return state.removeNumericRefinement(attribute);
         },
-        getWidgetUiState: function getWidgetUiState(uiState, _ref5) {
-          var searchParameters = _ref5.searchParameters;
+        getWidgetUiState: function getWidgetUiState(uiState, _ref7) {
+          var searchParameters = _ref7.searchParameters;
 
           var value = _getRefinedStar(searchParameters);
 
@@ -13193,96 +13166,52 @@
             return uiState;
           }
 
-          return _objectSpread2({}, uiState, {
-            ratingMenu: _objectSpread2({}, uiState.ratingMenu, _defineProperty({}, attribute, value))
+          return _objectSpread2(_objectSpread2({}, uiState), {}, {
+            ratingMenu: _objectSpread2(_objectSpread2({}, uiState.ratingMenu), {}, _defineProperty({}, attribute, value))
           });
         },
-        getWidgetSearchParameters: function getWidgetSearchParameters(searchParameters, _ref6) {
-          var uiState = _ref6.uiState;
+        getWidgetSearchParameters: function getWidgetSearchParameters(searchParameters, _ref8) {
+          var uiState = _ref8.uiState;
           var value = uiState.ratingMenu && uiState.ratingMenu[attribute];
           var withoutRefinements = searchParameters.clearRefinements(attribute);
           var withDisjunctiveFacet = withoutRefinements.addDisjunctiveFacet(attribute);
 
           if (!value) {
             return withDisjunctiveFacet.setQueryParameters({
-              disjunctiveFacetsRefinements: _objectSpread2({}, withDisjunctiveFacet.disjunctiveFacetsRefinements, _defineProperty({}, attribute, []))
+              numericRefinements: _objectSpread2(_objectSpread2({}, withDisjunctiveFacet.numericRefinements), {}, _defineProperty({}, attribute, {}))
             });
           }
 
-          return range({
-            start: Number(value),
-            end: max + 1
-          }).reduce(function (parameters, number) {
-            return parameters.addDisjunctiveFacetRefinement(attribute, number);
-          }, withDisjunctiveFacet);
+          return withDisjunctiveFacet.addNumericRefinement(attribute, '<=', max).addNumericRefinement(attribute, '>=', value);
         }
       };
     };
-  }
+  };
 
   var withUsage$g = createDocumentationMessageGenerator({
     name: 'stats',
     connector: true
   });
   /**
-   * @typedef {Object} StatsRenderingOptions
-   * @property {number} hitsPerPage The maximum number of hits per page returned by Algolia.
-   * @property {number} nbHits The number of hits in the result set.
-   * @property {number} nbPages The number of pages computed for the result set.
-   * @property {number} page The current page.
-   * @property {number} processingTimeMS The time taken to compute the results inside the Algolia engine.
-   * @property {string} query The query used for the current search.
-   * @property {object} widgetParams All original `CustomStatsWidgetOptions` forwarded to the `renderFn`.
-   */
-
-  /**
-   * @typedef {Object} CustomStatsWidgetOptions
-   */
-
-  /**
    * **Stats** connector provides the logic to build a custom widget that will displays
    * search statistics (hits number and processing time).
-   *
-   * @type {Connector}
-   * @param {function(StatsRenderingOptions, boolean)} renderFn Rendering function for the custom **Stats** widget.
-   * @param {function} unmountFn Unmount function called when the widget is disposed.
-   * @return {function(CustomStatsWidgetOptions)} Re-usable widget factory for a custom **Stats** widget.
-   * @example
-   * // custom `renderFn` to render the custom Stats widget
-   * function renderFn(StatsRenderingOptions, isFirstRendering) {
-   *   if (isFirstRendering) return;
-   *
-   *   StatsRenderingOptions.widgetParams.containerNode
-   *     .html(StatsRenderingOptions.nbHits + ' results found in ' + StatsRenderingOptions.processingTimeMS);
-   * }
-   *
-   * // connect `renderFn` to Stats logic
-   * var customStatsWidget = instantsearch.connectors.connectStats(renderFn);
-   *
-   * // mount widget on the page
-   * search.addWidgets([
-   *   customStatsWidget({
-   *     containerNode: $('#custom-stats-container'),
-   *   })
-   * ]);
    */
 
-  function connectStats(renderFn) {
+  var connectStats = function connectStats(renderFn) {
     var unmountFn = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : noop;
     checkRendering(renderFn, withUsage$g());
-    return function () {
-      var widgetParams = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+    return function (widgetParams) {
       return {
         $$type: 'ais.stats',
         init: function init(initOptions) {
           var instantSearchInstance = initOptions.instantSearchInstance;
-          renderFn(_objectSpread2({}, this.getWidgetRenderState(initOptions), {
+          renderFn(_objectSpread2(_objectSpread2({}, this.getWidgetRenderState(initOptions)), {}, {
             instantSearchInstance: instantSearchInstance
           }), true);
         },
         render: function render(renderOptions) {
           var instantSearchInstance = renderOptions.instantSearchInstance;
-          renderFn(_objectSpread2({}, this.getWidgetRenderState(renderOptions), {
+          renderFn(_objectSpread2(_objectSpread2({}, this.getWidgetRenderState(renderOptions)), {}, {
             instantSearchInstance: instantSearchInstance
           }), false);
         },
@@ -13290,7 +13219,7 @@
           unmountFn();
         },
         getRenderState: function getRenderState(renderState, renderOptions) {
-          return _objectSpread2({}, renderState, {
+          return _objectSpread2(_objectSpread2({}, renderState), {}, {
             stats: this.getWidgetRenderState(renderOptions)
           });
         },
@@ -13302,6 +13231,8 @@
             return {
               hitsPerPage: helper.state.hitsPerPage,
               nbHits: 0,
+              nbSortedHits: undefined,
+              areHitsSorted: false,
               nbPages: 0,
               page: helper.state.page || 0,
               processingTimeMS: -1,
@@ -13313,6 +13244,8 @@
           return {
             hitsPerPage: results.hitsPerPage,
             nbHits: results.nbHits,
+            nbSortedHits: results.nbSortedHits,
+            areHitsSorted: typeof results.appliedRelevancyStrictness !== 'undefined' && results.appliedRelevancyStrictness > 0 && results.nbSortedHits !== results.nbHits,
             nbPages: results.nbPages,
             page: results.page,
             processingTimeMS: results.processingTimeMS,
@@ -13322,7 +13255,7 @@
         }
       };
     };
-  }
+  };
 
   var withUsage$h = createDocumentationMessageGenerator({
     name: 'toggle-refinement',
@@ -13332,10 +13265,11 @@
 
   var createSendEvent$2 = function createSendEvent(_ref) {
     var instantSearchInstance = _ref.instantSearchInstance,
+        helper = _ref.helper,
         attribute = _ref.attribute,
-        on = _ref.on,
-        helper = _ref.helper;
-    return function () {
+        on = _ref.on;
+
+    var sendEventForToggle = function sendEventForToggle() {
       for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
         args[_key] = arguments[_key];
       }
@@ -13352,7 +13286,8 @@
 
       if (eventType !== 'click' || on === undefined) {
         return;
-      } // Checking
+      } // only send an event when the refinement gets applied,
+      // not when it gets removed
 
 
       if (!isRefined) {
@@ -13364,35 +13299,16 @@
             eventName: eventName,
             index: helper.getIndex(),
             filters: on.map(function (value) {
-              return "".concat(attribute, ":").concat(JSON.stringify(value));
+              return "".concat(attribute, ":").concat(value);
             })
-          }
+          },
+          attribute: attribute
         });
       }
     };
+
+    return sendEventForToggle;
   };
-  /**
-   * @typedef {Object} ToggleValue
-   * @property {boolean} isRefined `true` if the toggle is on.
-   * @property {number} count Number of results matched after applying the toggle refinement.
-   * @property {Object} onFacetValue Value of the toggle when it's on.
-   * @property {Object} offFacetValue Value of the toggle when it's off.
-   */
-
-  /**
-   * @typedef {Object} CustomToggleWidgetOptions
-   * @property {string} attribute Name of the attribute for faceting (eg. "free_shipping").
-   * @property {Object} [on = true] Value to filter on when toggled.
-   * @property {Object} [off] Value to filter on when not toggled.
-   */
-
-  /**
-   * @typedef {Object} ToggleRenderingOptions
-   * @property {ToggleValue} value The current toggle value.
-   * @property {function():string} createURL Creates an URL for the next state.
-   * @property {function(value)} refine Updates to the next state by applying the toggle refinement.
-   * @property {Object} widgetParams All original `CustomToggleWidgetOptions` forwarded to the `renderFn`.
-   */
 
   /**
    * **Toggle** connector provides the logic to build a custom widget that will provide
@@ -13401,79 +13317,33 @@
    * Two modes are implemented in the custom widget:
    *  - with or without the value filtered
    *  - switch between two values.
-   *
-   * @type {Connector}
-   * @param {function(ToggleRenderingOptions, boolean)} renderFn Rendering function for the custom **Toggle** widget.
-   * @param {function} unmountFn Unmount function called when the widget is disposed.
-   * @return {function(CustomToggleWidgetOptions)} Re-usable widget factory for a custom **Toggle** widget.
-   * @example
-   * // custom `renderFn` to render the custom ClearAll widget
-   * function renderFn(ToggleRenderingOptions, isFirstRendering) {
-   *   ToggleRenderingOptions.widgetParams.containerNode
-   *     .find('a')
-   *     .off('click');
-   *
-   *   var buttonHTML = `
-   *     <a href="${ToggleRenderingOptions.createURL()}">
-   *       <input
-   *         type="checkbox"
-   *         value="${ToggleRenderingOptions.value.name}"
-   *         ${ToggleRenderingOptions.value.isRefined ? 'checked' : ''}
-   *       />
-   *       ${ToggleRenderingOptions.value.name} (${ToggleRenderingOptions.value.count})
-   *     </a>
-   *   `;
-   *
-   *   ToggleRenderingOptions.widgetParams.containerNode.html(buttonHTML);
-   *   ToggleRenderingOptions.widgetParams.containerNode
-   *     .find('a')
-   *     .on('click', function(event) {
-   *       event.preventDefault();
-   *       event.stopPropagation();
-   *
-   *       ToggleRenderingOptions.refine(ToggleRenderingOptions.value);
-   *     });
-   * }
-   *
-   * // connect `renderFn` to Toggle logic
-   * var customToggle = instantsearch.connectors.connectToggleRefinement(renderFn);
-   *
-   * // mount widget on the page
-   * search.addWidgets([
-   *   customToggle({
-   *     containerNode: $('#custom-toggle-container'),
-   *     attribute: 'free_shipping',
-   *   })
-   * ]);
    */
-
-
-  function connectToggleRefinement(renderFn) {
+  var connectToggleRefinement = function connectToggleRefinement(renderFn) {
     var unmountFn = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : noop;
     checkRendering(renderFn, withUsage$h());
-    return function () {
-      var widgetParams = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-      var attribute = widgetParams.attribute,
-          _widgetParams$on = widgetParams.on,
-          userOn = _widgetParams$on === void 0 ? true : _widgetParams$on,
-          userOff = widgetParams.off;
+    return function (widgetParams) {
+      var _ref2 = widgetParams || {},
+          attribute = _ref2.attribute,
+          _ref2$on = _ref2.on,
+          userOn = _ref2$on === void 0 ? true : _ref2$on,
+          userOff = _ref2.off;
 
       if (!attribute) {
         throw new Error(withUsage$h('The `attribute` option is required.'));
       }
 
       var hasAnOffValue = userOff !== undefined;
-      var hasAnOnValue = userOn !== undefined;
-      var on = hasAnOnValue ? toArray(userOn).map(escapeRefinement) : undefined;
+      var on = toArray(userOn).map(escapeRefinement);
       var off = hasAnOffValue ? toArray(userOff).map(escapeRefinement) : undefined;
       var sendEvent;
 
       var toggleRefinementFactory = function toggleRefinementFactory(helper) {
         return function () {
-          var _ref2 = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
-              isRefined = _ref2.isRefined;
+          var _ref3 = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {
+            isRefined: false
+          },
+              isRefined = _ref3.isRefined;
 
-          // Checking
           if (!isRefined) {
             sendEvent('click', isRefined);
 
@@ -13487,7 +13357,6 @@
               return helper.addDisjunctiveFacetRefinement(attribute, v);
             });
           } else {
-            // Unchecking
             on.forEach(function (v) {
               return helper.removeDisjunctiveFacetRefinement(attribute, v);
             });
@@ -13504,15 +13373,16 @@
       };
 
       var connectorState = {
-        createURLFactory: function createURLFactory(isRefined, _ref3) {
-          var state = _ref3.state,
-              createURL = _ref3.createURL;
+        createURLFactory: function createURLFactory(isRefined, _ref4) {
+          var state = _ref4.state,
+              createURL = _ref4.createURL;
           return function () {
+            state = state.resetPage();
             var valuesToRemove = isRefined ? on : off;
 
             if (valuesToRemove) {
               valuesToRemove.forEach(function (v) {
-                state.removeDisjunctiveFacetRefinement(attribute, v);
+                state = state.removeDisjunctiveFacetRefinement(attribute, v);
               });
             }
 
@@ -13520,7 +13390,7 @@
 
             if (valuesToAdd) {
               valuesToAdd.forEach(function (v) {
-                state.addDisjunctiveFacetRefinement(attribute, v);
+                state = state.addDisjunctiveFacetRefinement(attribute, v);
               });
             }
 
@@ -13532,35 +13402,35 @@
         $$type: $$type$3,
         init: function init(initOptions) {
           var instantSearchInstance = initOptions.instantSearchInstance;
-          renderFn(_objectSpread2({}, this.getWidgetRenderState(initOptions), {
+          renderFn(_objectSpread2(_objectSpread2({}, this.getWidgetRenderState(initOptions)), {}, {
             instantSearchInstance: instantSearchInstance
           }), true);
         },
         render: function render(renderOptions) {
           var instantSearchInstance = renderOptions.instantSearchInstance;
-          renderFn(_objectSpread2({}, this.getWidgetRenderState(renderOptions), {
+          renderFn(_objectSpread2(_objectSpread2({}, this.getWidgetRenderState(renderOptions)), {}, {
             instantSearchInstance: instantSearchInstance
           }), false);
         },
-        dispose: function dispose(_ref4) {
-          var state = _ref4.state;
+        dispose: function dispose(_ref5) {
+          var state = _ref5.state;
           unmountFn();
           return state.removeDisjunctiveFacet(attribute);
         },
         getRenderState: function getRenderState(renderState, renderOptions) {
-          return _objectSpread2({}, renderState, {
-            toggleRefinement: this.getWidgetRenderState(renderOptions)
+          return _objectSpread2(_objectSpread2({}, renderState), {}, {
+            toggleRefinement: _objectSpread2(_objectSpread2({}, renderState.toggleRefinement), {}, _defineProperty({}, attribute, this.getWidgetRenderState(renderOptions)))
           });
         },
-        getWidgetRenderState: function getWidgetRenderState(_ref5) {
-          var state = _ref5.state,
-              helper = _ref5.helper,
-              results = _ref5.results,
-              createURL = _ref5.createURL,
-              instantSearchInstance = _ref5.instantSearchInstance;
-          var isRefined = results ? on === null || on === void 0 ? void 0 : on.every(function (v) {
+        getWidgetRenderState: function getWidgetRenderState(_ref6) {
+          var state = _ref6.state,
+              helper = _ref6.helper,
+              results = _ref6.results,
+              createURL = _ref6.createURL,
+              instantSearchInstance = _ref6.instantSearchInstance;
+          var isRefined = results ? on.every(function (v) {
             return helper.state.isDisjunctiveFacetRefined(attribute, v);
-          }) : on === null || on === void 0 ? void 0 : on.every(function (v) {
+          }) : on.every(function (v) {
             return state.isDisjunctiveFacetRefined(attribute, v);
           });
           var onFacetValue = {
@@ -13574,18 +13444,18 @@
 
           if (results) {
             var offValue = toArray(off || false);
-            var allFacetValues = results.getFacetValues(attribute) || [];
-            var onData = on === null || on === void 0 ? void 0 : on.map(function (v) {
-              return find$1(allFacetValues, function (_ref6) {
-                var name = _ref6.name;
+            var allFacetValues = results.getFacetValues(attribute, {}) || [];
+            var onData = on.map(function (v) {
+              return find$1(allFacetValues, function (_ref7) {
+                var name = _ref7.name;
                 return name === unescapeRefinement(v);
               });
             }).filter(function (v) {
               return v !== undefined;
             });
             var offData = hasAnOffValue ? offValue.map(function (v) {
-              return find$1(allFacetValues, function (_ref7) {
-                var name = _ref7.name;
+              return find$1(allFacetValues, function (_ref8) {
+                var name = _ref8.name;
                 return name === unescapeRefinement(v);
               });
             }).filter(function (v) {
@@ -13605,8 +13475,8 @@
               }) : false,
               count: offData.reduce(function (acc, v) {
                 return acc + v.count;
-              }, 0) || allFacetValues.reduce(function (total, _ref8) {
-                var count = _ref8.count;
+              }, 0) || allFacetValues.reduce(function (total, _ref9) {
+                var count = _ref9.count;
                 return total + count;
               }, 0)
             };
@@ -13638,18 +13508,18 @@
               onFacetValue: onFacetValue,
               offFacetValue: offFacetValue
             },
-            state: state,
             createURL: connectorState.createURLFactory(isRefined, {
               state: state,
               createURL: createURL
             }),
             sendEvent: sendEvent,
+            canRefine: Boolean(results ? nextRefinement.count : null),
             refine: toggleRefinementFactory(helper),
             widgetParams: widgetParams
           };
         },
-        getWidgetUiState: function getWidgetUiState(uiState, _ref9) {
-          var searchParameters = _ref9.searchParameters;
+        getWidgetUiState: function getWidgetUiState(uiState, _ref10) {
+          var searchParameters = _ref10.searchParameters;
           var isRefined = on && on.every(function (v) {
             return searchParameters.isDisjunctiveFacetRefined(attribute, v);
           });
@@ -13658,12 +13528,12 @@
             return uiState;
           }
 
-          return _objectSpread2({}, uiState, {
-            toggle: _objectSpread2({}, uiState.toggle, _defineProperty({}, attribute, isRefined))
+          return _objectSpread2(_objectSpread2({}, uiState), {}, {
+            toggle: _objectSpread2(_objectSpread2({}, uiState.toggle), {}, _defineProperty({}, attribute, isRefined))
           });
         },
-        getWidgetSearchParameters: function getWidgetSearchParameters(searchParameters, _ref10) {
-          var uiState = _ref10.uiState;
+        getWidgetSearchParameters: function getWidgetSearchParameters(searchParameters, _ref11) {
+          var uiState = _ref11.uiState;
           var withFacetConfiguration = searchParameters.clearRefinements(attribute).addDisjunctiveFacet(attribute);
           var isRefined = Boolean(uiState.toggle && uiState.toggle[attribute]);
 
@@ -13690,12 +13560,12 @@
 
 
           return withFacetConfiguration.setQueryParameters({
-            disjunctiveFacetsRefinements: _objectSpread2({}, searchParameters.disjunctiveFacetsRefinements, _defineProperty({}, attribute, []))
+            disjunctiveFacetsRefinements: _objectSpread2(_objectSpread2({}, searchParameters.disjunctiveFacetsRefinements), {}, _defineProperty({}, attribute, []))
           });
         }
       };
     };
-  }
+  };
 
   var withUsage$i = createDocumentationMessageGenerator({
     name: 'breadcrumb',
@@ -13725,15 +13595,27 @@
       var _attributes = _slicedToArray(attributes, 1),
           hierarchicalFacetName = _attributes[0];
 
+      function getRefinedState(state, facetValue) {
+        if (!facetValue) {
+          var breadcrumb = state.getHierarchicalFacetBreadcrumb(hierarchicalFacetName);
+
+          if (breadcrumb.length > 0) {
+            return state.resetPage().toggleFacetRefinement(hierarchicalFacetName, breadcrumb[0]);
+          }
+        }
+
+        return state.resetPage().toggleFacetRefinement(hierarchicalFacetName, facetValue);
+      }
+
       return {
         $$type: 'ais.breadcrumb',
         init: function init(initOptions) {
-          renderFn(_objectSpread2({}, this.getWidgetRenderState(initOptions), {
+          renderFn(_objectSpread2(_objectSpread2({}, this.getWidgetRenderState(initOptions)), {}, {
             instantSearchInstance: initOptions.instantSearchInstance
           }), true);
         },
         render: function render(renderOptions) {
-          renderFn(_objectSpread2({}, this.getWidgetRenderState(renderOptions), {
+          renderFn(_objectSpread2(_objectSpread2({}, this.getWidgetRenderState(renderOptions)), {}, {
             instantSearchInstance: renderOptions.instantSearchInstance
           }), false);
         },
@@ -13741,8 +13623,8 @@
           unmountFn();
         },
         getRenderState: function getRenderState(renderState, renderOptions) {
-          return _objectSpread2({}, renderState, {
-            breadcrumb: _objectSpread2({}, renderState.breadcrumb, _defineProperty({}, hierarchicalFacetName, this.getWidgetRenderState(renderOptions)))
+          return _objectSpread2(_objectSpread2({}, renderState), {}, {
+            breadcrumb: _objectSpread2(_objectSpread2({}, renderState.breadcrumb), {}, _defineProperty({}, hierarchicalFacetName, this.getWidgetRenderState(renderOptions)))
           });
         },
         getWidgetRenderState: function getWidgetRenderState(_ref2) {
@@ -13769,29 +13651,13 @@
 
           if (!connectorState.createURL) {
             connectorState.createURL = function (facetValue) {
-              if (!facetValue) {
-                var breadcrumb = helper.getHierarchicalFacetBreadcrumb(hierarchicalFacetName);
-
-                if (breadcrumb.length > 0) {
-                  return createURL(helper.state.toggleFacetRefinement(hierarchicalFacetName, breadcrumb[0]));
-                }
-              }
-
-              return createURL(helper.state.toggleFacetRefinement(hierarchicalFacetName, facetValue));
+              return createURL(getRefinedState(helper.state, facetValue));
             };
           }
 
           if (!connectorState.refine) {
             connectorState.refine = function (facetValue) {
-              if (!facetValue) {
-                var breadcrumb = helper.getHierarchicalFacetBreadcrumb(hierarchicalFacetName);
-
-                if (breadcrumb.length > 0) {
-                  helper.toggleRefinement(hierarchicalFacetName, breadcrumb[0]).search();
-                }
-              } else {
-                helper.toggleRefinement(hierarchicalFacetName, facetValue).search();
-              }
+              helper.setState(getRefinedState(helper.state, facetValue)).search();
             };
           }
 
@@ -13850,41 +13716,19 @@
   var withUsage$j = createDocumentationMessageGenerator({
     name: 'geo-search',
     connector: true
-  });
+  }); // in this connector, we assume insideBoundingBox is only a string,
+  // even though in the helper it's defined as number[][] alone.
+  // This can be done, since the connector assumes "control" of the parameter
+
+  function getBoundingBoxAsString(state) {
+    return state.insideBoundingBox || '';
+  }
+
+  function setBoundingBoxAsString(state, value) {
+    return state.setQueryParameter('insideBoundingBox', value);
+  }
+
   var $$type$4 = 'ais.geoSearch';
-  /**
-   * @typedef {Object} LatLng
-   * @property {number} lat The latitude in degrees.
-   * @property {number} lng The longitude in degrees.
-   */
-
-  /**
-   * @typedef {Object} Bounds
-   * @property {LatLng} northEast The top right corner of the map view.
-   * @property {LatLng} southWest The bottom left corner of the map view.
-   */
-
-  /**
-   * @typedef {Object} CustomGeoSearchWidgetOptions
-   * @property {boolean} [enableRefineOnMapMove=true] If true, refine will be triggered as you move the map.
-   * @property {function(object[]):object[]} [transformItems] Function to transform the items passed to the templates.
-   */
-
-  /**
-   * @typedef {Object} GeoSearchRenderingOptions
-   * @property {Object[]} items The matched hits from Algolia API.
-   * @property {LatLng} position The current position of the search.
-   * @property {Bounds} currentRefinement The current bounding box of the search.
-   * @property {function(Bounds)} refine Sets a bounding box to filter the results from the given map bounds.
-   * @property {function()} clearMapRefinement Reset the current bounding box refinement.
-   * @property {function(): boolean} isRefinedWithMap Return true if the current refinement is set with the map bounds.
-   * @property {function()} toggleRefineOnMapMove Toggle the fact that the user is able to refine on map move.
-   * @property {function(): boolean} isRefineOnMapMove Return true if the user is able to refine on map move.
-   * @property {function()} setMapMoveSinceLastRefine Set the fact that the map has moved since the last refinement, should be call on each map move. The call to the function triggers a new rendering only when the value change.
-   * @property {function(): boolean} hasMapMoveSinceLastRefine Return true if the map has move since the last refinement.
-   * @property {Object} widgetParams All original `CustomGeoSearchWidgetOptions` forwarded to the `renderFn`.
-   * @property {LatLng} [position] The current position of the search.
-   */
 
   /**
    * The **GeoSearch** connector provides the logic to build a widget that will display the results on a map. It also provides a way to search for results based on their position. The connector provides functions to manage the search experience (search on map interaction or control the interaction for example).
@@ -13894,65 +13738,19 @@
    * Note that the GeoSearch connector uses the [geosearch](https://www.algolia.com/doc/guides/searching/geo-search) capabilities of Algolia. Your hits **must** have a `_geoloc` attribute in order to be passed to the rendering function.
    *
    * Currently, the feature is not compatible with multiple values in the _geoloc attribute.
-   *
-   * @param {function(GeoSearchRenderingOptions, boolean)} renderFn Rendering function for the custom **GeoSearch** widget.
-   * @param {function} unmountFn Unmount function called when the widget is disposed.
-   * @return {function(CustomGeoSearchWidgetOptions)} Re-usable widget factory for a custom **GeoSearch** widget.
-   * @staticExample
-   * // This example use Leaflet for the rendering, be sure to have the library correctly setup
-   * // before trying the demo. You can find more details in their documentation (link below).
-   * // We choose Leaflet for the example but you can use any libraries that you want.
-   * // See: http://leafletjs.com/examples/quick-start
-   *
-   * let map = null;
-   * let markers = [];
-   *
-   * // custom `renderFn` to render the custom GeoSearch widget
-   * function renderFn(GeoSearchRenderingOptions, isFirstRendering) {
-   *   const { items, widgetParams } = GeoSearchRenderingOptions;
-   *
-   *   if (isFirstRendering) {
-   *     map = L.map(widgetParams.container);
-   *
-   *     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-   *       attribution:
-   *         '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
-   *     }).addTo(map);
-   *   }
-   *
-   *   markers.forEach(marker => marker.remove());
-   *
-   *   markers = items.map(({ _geoloc }) =>
-   *     L.marker([_geoloc.lat, _geoloc.lng]).addTo(map)
-   *   );
-   *
-   *   if (markers.length) {
-   *     map.fitBounds(L.featureGroup(markers).getBounds());
-   *   }
-   * }
-   *
-   * // connect `renderFn` to GeoSearch logic
-   * const customGeoSearch = instantsearch.connectors.connectGeoSearch(renderFn);
-   *
-   * // mount widget on the page
-   * search.addWidgets([
-   *   customGeoSearch({
-   *     container: document.getElementById('custom-geo-search'),
-   *   })
-   * ]);
    */
-
   var connectGeoSearch = function connectGeoSearch(renderFn) {
     var unmountFn = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : noop;
     checkRendering(renderFn, withUsage$j());
-    return function () {
-      var widgetParams = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-      var _widgetParams$enableR = widgetParams.enableRefineOnMapMove,
-          enableRefineOnMapMove = _widgetParams$enableR === void 0 ? true : _widgetParams$enableR,
-          _widgetParams$transfo = widgetParams.transformItems,
-          transformItems = _widgetParams$transfo === void 0 ? function (items) {
+    return function (widgetParams) {
+      var _ref = widgetParams || {},
+          _ref$enableRefineOnMa = _ref.enableRefineOnMapMove,
+          enableRefineOnMapMove = _ref$enableRefineOnMa === void 0 ? true : _ref$enableRefineOnMa,
+          _ref$transformItems = _ref.transformItems,
+          transformItems = _ref$transformItems === void 0 ? function (items) {
         return items;
-      } : _widgetParams$transfo;
+      } : _ref$transformItems;
+
       var widgetState = {
         isRefineOnMapMove: enableRefineOnMapMove,
         // @MAJOR hasMapMoveSinceLastRefine -> hasMapMovedSinceLastRefine
@@ -13964,7 +13762,7 @@
       };
 
       var getPositionFromState = function getPositionFromState(state) {
-        return state.aroundLatLng && aroundLatLngToPosition(state.aroundLatLng);
+        return state.aroundLatLng ? aroundLatLngToPosition(state.aroundLatLng) : undefined;
       };
 
       var getCurrentRefinementFromState = function getCurrentRefinementFromState(state) {
@@ -13972,11 +13770,11 @@
       };
 
       var refine = function refine(helper) {
-        return function (_ref) {
-          var ne = _ref.northEast,
-              sw = _ref.southWest;
+        return function (_ref2) {
+          var ne = _ref2.northEast,
+              sw = _ref2.southWest;
           var boundingBox = [ne.lat, ne.lng, sw.lat, sw.lng].join();
-          helper.setQueryParameter('insideBoundingBox', boundingBox).search();
+          helper.setState(setBoundingBoxAsString(helper.state, boundingBox).resetPage()).search();
           widgetState.hasMapMoveSinceLastRefine = false;
           widgetState.lastRefineBoundingBox = boundingBox;
         };
@@ -13998,10 +13796,10 @@
         return widgetState.internalToggleRefineOnMapMove();
       };
 
-      var createInternalToggleRefinementOnMapMove = function createInternalToggleRefinementOnMapMove(render, args) {
+      var createInternalToggleRefinementOnMapMove = function createInternalToggleRefinementOnMapMove(renderOptions, render) {
         return function () {
           widgetState.isRefineOnMapMove = !widgetState.isRefineOnMapMove;
-          render(args);
+          render(renderOptions);
         };
       };
 
@@ -14013,13 +13811,13 @@
         return widgetState.internalSetMapMoveSinceLastRefine();
       };
 
-      var createInternalSetMapMoveSinceLastRefine = function createInternalSetMapMoveSinceLastRefine(render, args) {
+      var createInternalSetMapMoveSinceLastRefine = function createInternalSetMapMoveSinceLastRefine(renderOptions, render) {
         return function () {
           var shouldTriggerRender = widgetState.hasMapMoveSinceLastRefine !== true;
           widgetState.hasMapMoveSinceLastRefine = true;
 
           if (shouldTriggerRender) {
-            render(args);
+            render(renderOptions);
           }
         };
       };
@@ -14034,9 +13832,9 @@
         init: function init(initArgs) {
           var instantSearchInstance = initArgs.instantSearchInstance;
           var isFirstRendering = true;
-          widgetState.internalToggleRefineOnMapMove = createInternalToggleRefinementOnMapMove(noop, initArgs);
-          widgetState.internalSetMapMoveSinceLastRefine = createInternalSetMapMoveSinceLastRefine(noop, initArgs);
-          renderFn(_objectSpread2({}, this.getWidgetRenderState(initArgs), {
+          widgetState.internalToggleRefineOnMapMove = createInternalToggleRefinementOnMapMove(initArgs, noop);
+          widgetState.internalSetMapMoveSinceLastRefine = createInternalSetMapMoveSinceLastRefine(initArgs, noop);
+          renderFn(_objectSpread2(_objectSpread2({}, this.getWidgetRenderState(initArgs)), {}, {
             instantSearchInstance: instantSearchInstance
           }), isFirstRendering);
         },
@@ -14055,12 +13853,12 @@
           }
 
           widgetState.lastRefinePosition = state.aroundLatLng || '';
-          widgetState.lastRefineBoundingBox = state.insideBoundingBox || '';
-          widgetState.internalToggleRefineOnMapMove = createInternalToggleRefinementOnMapMove(this.render.bind(this), renderArgs);
-          widgetState.internalSetMapMoveSinceLastRefine = createInternalSetMapMoveSinceLastRefine(this.render.bind(this), renderArgs);
+          widgetState.lastRefineBoundingBox = getBoundingBoxAsString(state);
+          widgetState.internalToggleRefineOnMapMove = createInternalToggleRefinementOnMapMove(renderArgs, this.render.bind(this));
+          widgetState.internalSetMapMoveSinceLastRefine = createInternalSetMapMoveSinceLastRefine(renderArgs, this.render.bind(this));
           var widgetRenderState = this.getWidgetRenderState(renderArgs);
           sendEvent('view', widgetRenderState.items);
-          renderFn(_objectSpread2({}, widgetRenderState, {
+          renderFn(_objectSpread2(_objectSpread2({}, widgetRenderState), {}, {
             instantSearchInstance: instantSearchInstance
           }), isFirstRendering);
         },
@@ -14097,37 +13895,37 @@
           };
         },
         getRenderState: function getRenderState(renderState, renderOptions) {
-          return _objectSpread2({}, renderState, {
+          return _objectSpread2(_objectSpread2({}, renderState), {}, {
             geoSearch: this.getWidgetRenderState(renderOptions)
           });
         },
-        dispose: function dispose(_ref2) {
-          var state = _ref2.state;
+        dispose: function dispose(_ref3) {
+          var state = _ref3.state;
           unmountFn();
           return state.setQueryParameter('insideBoundingBox', undefined);
         },
-        getWidgetUiState: function getWidgetUiState(uiState, _ref3) {
-          var searchParameters = _ref3.searchParameters;
-          var boundingBox = searchParameters.insideBoundingBox;
+        getWidgetUiState: function getWidgetUiState(uiState, _ref4) {
+          var searchParameters = _ref4.searchParameters;
+          var boundingBox = getBoundingBoxAsString(searchParameters);
 
           if (!boundingBox || uiState && uiState.geoSearch && uiState.geoSearch.boundingBox === boundingBox) {
             return uiState;
           }
 
-          return _objectSpread2({}, uiState, {
+          return _objectSpread2(_objectSpread2({}, uiState), {}, {
             geoSearch: {
               boundingBox: boundingBox
             }
           });
         },
-        getWidgetSearchParameters: function getWidgetSearchParameters(searchParameters, _ref4) {
-          var uiState = _ref4.uiState;
+        getWidgetSearchParameters: function getWidgetSearchParameters(searchParameters, _ref5) {
+          var uiState = _ref5.uiState;
 
           if (!uiState || !uiState.geoSearch) {
             return searchParameters.setQueryParameter('insideBoundingBox', undefined);
           }
 
-          return searchParameters.setQueryParameter('insideBoundingBox', uiState.geoSearch.boundingBox);
+          return setBoundingBoxAsString(searchParameters, uiState.geoSearch.boundingBox);
         }
       };
     };
@@ -14155,18 +13953,18 @@
         $$type: 'ais.poweredBy',
         init: function init(initOptions) {
           var instantSearchInstance = initOptions.instantSearchInstance;
-          renderFn(_objectSpread2({}, this.getWidgetRenderState(initOptions), {
+          renderFn(_objectSpread2(_objectSpread2({}, this.getWidgetRenderState(initOptions)), {}, {
             instantSearchInstance: instantSearchInstance
           }), true);
         },
         render: function render(renderOptions) {
           var instantSearchInstance = renderOptions.instantSearchInstance;
-          renderFn(_objectSpread2({}, this.getWidgetRenderState(renderOptions), {
+          renderFn(_objectSpread2(_objectSpread2({}, this.getWidgetRenderState(renderOptions)), {}, {
             instantSearchInstance: instantSearchInstance
           }), false);
         },
         getRenderState: function getRenderState(renderState, renderOptions) {
-          return _objectSpread2({}, renderState, {
+          return _objectSpread2(_objectSpread2({}, renderState), {}, {
             poweredBy: this.getWidgetRenderState(renderOptions)
           });
         },
@@ -14197,7 +13995,7 @@
     // the state. The function `setQueryParameters` omits the values that
     // are `undefined` on the next state.
     return state.setQueryParameters(Object.keys(widgetParams.searchParameters).reduce(function (acc, key) {
-      return _objectSpread2({}, acc, _defineProperty({}, key, undefined));
+      return _objectSpread2(_objectSpread2({}, acc), {}, _defineProperty({}, key, undefined));
     }, {}));
   }
 
@@ -14227,13 +14025,13 @@
         $$type: 'ais.configure',
         init: function init(initOptions) {
           var instantSearchInstance = initOptions.instantSearchInstance;
-          renderFn(_objectSpread2({}, this.getWidgetRenderState(initOptions), {
+          renderFn(_objectSpread2(_objectSpread2({}, this.getWidgetRenderState(initOptions)), {}, {
             instantSearchInstance: instantSearchInstance
           }), true);
         },
         render: function render(renderOptions) {
           var instantSearchInstance = renderOptions.instantSearchInstance;
-          renderFn(_objectSpread2({}, this.getWidgetRenderState(renderOptions), {
+          renderFn(_objectSpread2(_objectSpread2({}, this.getWidgetRenderState(renderOptions)), {}, {
             instantSearchInstance: instantSearchInstance
           }), false);
         },
@@ -14246,9 +14044,9 @@
           var _renderState$configur;
 
           var widgetRenderState = this.getWidgetRenderState(renderOptions);
-          return _objectSpread2({}, renderState, {
-            configure: _objectSpread2({}, widgetRenderState, {
-              widgetParams: _objectSpread2({}, widgetRenderState.widgetParams, {
+          return _objectSpread2(_objectSpread2({}, renderState), {}, {
+            configure: _objectSpread2(_objectSpread2({}, widgetRenderState), {}, {
+              widgetParams: _objectSpread2(_objectSpread2({}, widgetRenderState.widgetParams), {}, {
                 searchParameters: merge$1(new algoliasearchHelper_1.SearchParameters((_renderState$configur = renderState.configure) === null || _renderState$configur === void 0 ? void 0 : _renderState$configur.widgetParams.searchParameters), new algoliasearchHelper_1.SearchParameters(widgetRenderState.widgetParams.searchParameters)).getQueryParams()
               })
             })
@@ -14268,11 +14066,11 @@
         },
         getWidgetSearchParameters: function getWidgetSearchParameters(state, _ref3) {
           var uiState = _ref3.uiState;
-          return merge$1(state, new algoliasearchHelper_1.SearchParameters(_objectSpread2({}, uiState.configure, {}, widgetParams.searchParameters)));
+          return merge$1(state, new algoliasearchHelper_1.SearchParameters(_objectSpread2(_objectSpread2({}, uiState.configure), widgetParams.searchParameters)));
         },
         getWidgetUiState: function getWidgetUiState(uiState) {
-          return _objectSpread2({}, uiState, {
-            configure: _objectSpread2({}, uiState.configure, {}, widgetParams.searchParameters)
+          return _objectSpread2(_objectSpread2({}, uiState), {}, {
+            configure: _objectSpread2(_objectSpread2({}, uiState.configure), widgetParams.searchParameters)
           });
         }
       };
@@ -14342,10 +14140,10 @@
         optionalFilters: optionalFilters
       })));
 
-      var makeConfigure = connectConfigure(renderFn, unmountFn);
-      return _objectSpread2({}, makeConfigure({
+      var makeWidget = connectConfigure(renderFn, unmountFn);
+      return _objectSpread2(_objectSpread2({}, makeWidget({
         searchParameters: searchParameters
-      }), {
+      })), {}, {
         $$type: 'ais.configureRelatedItems'
       });
     };
@@ -14373,7 +14171,7 @@
         $$type: 'ais.autocomplete',
         init: function init(initOptions) {
           var instantSearchInstance = initOptions.instantSearchInstance;
-          renderFn(_objectSpread2({}, this.getWidgetRenderState(initOptions), {
+          renderFn(_objectSpread2(_objectSpread2({}, this.getWidgetRenderState(initOptions)), {}, {
             instantSearchInstance: instantSearchInstance
           }), true);
         },
@@ -14385,12 +14183,12 @@
                 hits = _ref3.hits;
             sendEvent('view', hits);
           });
-          renderFn(_objectSpread2({}, renderState, {
+          renderFn(_objectSpread2(_objectSpread2({}, renderState), {}, {
             instantSearchInstance: instantSearchInstance
           }), false);
         },
         getRenderState: function getRenderState(renderState, renderOptions) {
-          return _objectSpread2({}, renderState, {
+          return _objectSpread2(_objectSpread2({}, renderState), {}, {
             autocomplete: this.getWidgetRenderState(renderOptions)
           });
         },
@@ -14439,7 +14237,7 @@
             return uiState;
           }
 
-          return _objectSpread2({}, uiState, {
+          return _objectSpread2(_objectSpread2({}, uiState), {}, {
             query: query
           });
         },
@@ -14453,7 +14251,7 @@
             return searchParameters.setQueryParameters(parameters);
           }
 
-          return searchParameters.setQueryParameters(_objectSpread2({}, parameters, {}, TAG_PLACEHOLDER));
+          return searchParameters.setQueryParameters(_objectSpread2(_objectSpread2({}, parameters), TAG_PLACEHOLDER));
         },
         dispose: function dispose(_ref7) {
           var state = _ref7.state;
@@ -14465,7 +14263,7 @@
           }
 
           return stateWithoutQuery.setQueryParameters(Object.keys(TAG_PLACEHOLDER).reduce(function (acc, key) {
-            return _objectSpread2({}, acc, _defineProperty({}, key, undefined));
+            return _objectSpread2(_objectSpread2({}, acc), {}, _defineProperty({}, key, undefined));
           }, {}));
         }
       };
@@ -14494,9 +14292,7 @@
         sharedHelperState = _ref.sharedHelperState,
         trackedFilters = _ref.trackedFilters;
     var ruleContexts = Object.keys(trackedFilters).reduce(function (facets, facetName) {
-      var facetRefinements = getRefinements( // An empty object is technically not a `SearchResults` but `getRefinements`
-      // only accesses properties, meaning it will not throw with an empty object.
-      helper.lastResults || {}, sharedHelperState).filter(function (refinement) {
+      var facetRefinements = getRefinements(helper.lastResults || {}, sharedHelperState, true).filter(function (refinement) {
         return refinement.attribute === facetName;
       }).map(function (refinement) {
         return refinement.numericValue || refinement.name;
@@ -14529,7 +14325,7 @@
     var ruleContexts = transformRuleContexts(nextRuleContexts).slice(0, 10);
 
     if (!isEqual(previousRuleContexts, ruleContexts)) {
-      helper.overrideStateWithoutTriggeringChangeEvent(_objectSpread2({}, sharedHelperState, {
+      helper.overrideStateWithoutTriggeringChangeEvent(_objectSpread2(_objectSpread2({}, sharedHelperState), {}, {
         ruleContexts: ruleContexts
       }));
     }
@@ -14591,14 +14387,14 @@
             helper.on('change', onHelperChange);
           }
 
-          _render(_objectSpread2({}, this.getWidgetRenderState(initOptions), {
+          _render(_objectSpread2(_objectSpread2({}, this.getWidgetRenderState(initOptions)), {}, {
             instantSearchInstance: instantSearchInstance
           }), true);
         },
         render: function render(renderOptions) {
           var instantSearchInstance = renderOptions.instantSearchInstance;
 
-          _render(_objectSpread2({}, this.getWidgetRenderState(renderOptions), {
+          _render(_objectSpread2(_objectSpread2({}, this.getWidgetRenderState(renderOptions)), {}, {
             instantSearchInstance: instantSearchInstance
           }), false);
         },
@@ -14616,7 +14412,7 @@
           };
         },
         getRenderState: function getRenderState(renderState, renderOptions) {
-          return _objectSpread2({}, renderState, {
+          return _objectSpread2(_objectSpread2({}, renderState), {}, {
             queryRules: this.getWidgetRenderState(renderOptions)
           });
         },
@@ -14636,6 +14432,7 @@
     };
   };
 
+  /* global SpeechRecognition SpeechRecognitionEvent */
   var createVoiceSearchHelper = function createVoiceSearchHelper(_ref) {
     var searchAsYouSpeak = _ref.searchAsYouSpeak,
         language = _ref.language,
@@ -14665,7 +14462,7 @@
 
     var setState = function setState() {
       var newState = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-      state = _objectSpread2({}, state, {}, newState);
+      state = _objectSpread2(_objectSpread2({}, state), newState);
       onStateChange();
     };
 
@@ -14786,18 +14583,18 @@
         $$type: 'ais.voiceSearch',
         init: function init(initOptions) {
           var instantSearchInstance = initOptions.instantSearchInstance;
-          renderFn(_objectSpread2({}, this.getWidgetRenderState(initOptions), {
+          renderFn(_objectSpread2(_objectSpread2({}, this.getWidgetRenderState(initOptions)), {}, {
             instantSearchInstance: instantSearchInstance
           }), true);
         },
         render: function render(renderOptions) {
           var instantSearchInstance = renderOptions.instantSearchInstance;
-          renderFn(_objectSpread2({}, this.getWidgetRenderState(renderOptions), {
+          renderFn(_objectSpread2(_objectSpread2({}, this.getWidgetRenderState(renderOptions)), {}, {
             instantSearchInstance: instantSearchInstance
           }), false);
         },
         getRenderState: function getRenderState(renderState, renderOptions) {
-          return _objectSpread2({}, renderState, {
+          return _objectSpread2(_objectSpread2({}, renderState), {}, {
             voiceSearch: this.getWidgetRenderState(renderOptions)
           });
         },
@@ -14837,7 +14634,7 @@
                 return _this._refine(query);
               },
               onStateChange: function onStateChange() {
-                renderFn(_objectSpread2({}, _this.getWidgetRenderState(renderOptions), {
+                renderFn(_objectSpread2(_objectSpread2({}, _this.getWidgetRenderState(renderOptions)), {}, {
                   instantSearchInstance: instantSearchInstance
                 }), false);
               }
@@ -14903,13 +14700,329 @@
             return uiState;
           }
 
-          return _objectSpread2({}, uiState, {
+          return _objectSpread2(_objectSpread2({}, uiState), {}, {
             query: query
           });
         },
         getWidgetSearchParameters: function getWidgetSearchParameters(searchParameters, _ref3) {
           var uiState = _ref3.uiState;
           return searchParameters.setQueryParameter('query', uiState.query || '');
+        }
+      };
+    };
+  };
+
+  function hasFindAnswersMethod(answersIndex) {
+    return typeof answersIndex.findAnswers === 'function';
+  }
+
+  var withUsage$q = createDocumentationMessageGenerator({
+    name: 'answers',
+    connector: true
+  });
+
+  var connectAnswers = function connectAnswers(renderFn) {
+    var unmountFn = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : noop;
+    checkRendering(renderFn, withUsage$q());
+    return function (widgetParams) {
+      var _ref = widgetParams || {},
+          queryLanguages = _ref.queryLanguages,
+          attributesForPrediction = _ref.attributesForPrediction,
+          _ref$nbHits = _ref.nbHits,
+          nbHits = _ref$nbHits === void 0 ? 1 : _ref$nbHits,
+          _ref$renderDebounceTi = _ref.renderDebounceTime,
+          renderDebounceTime = _ref$renderDebounceTi === void 0 ? 100 : _ref$renderDebounceTi,
+          _ref$searchDebounceTi = _ref.searchDebounceTime,
+          searchDebounceTime = _ref$searchDebounceTi === void 0 ? 100 : _ref$searchDebounceTi,
+          _ref$escapeHTML = _ref.escapeHTML,
+          escapeHTML = _ref$escapeHTML === void 0 ? true : _ref$escapeHTML,
+          _ref$extraParameters = _ref.extraParameters,
+          extraParameters = _ref$extraParameters === void 0 ? {} : _ref$extraParameters; // @ts-ignore checking for the wrong value
+
+
+      if (!queryLanguages || queryLanguages.length === 0) {
+        throw new Error(withUsage$q('The `queryLanguages` expects an array of strings.'));
+      }
+
+      var runConcurrentSafePromise = createConcurrentSafePromise();
+      var lastResult;
+      var isLoading = false;
+      var debouncedRender = debounce(renderFn, renderDebounceTime);
+      var debouncedRefine;
+      return {
+        $$type: 'ais.answers',
+        init: function init(initOptions) {
+          var state = initOptions.state,
+              instantSearchInstance = initOptions.instantSearchInstance;
+          var answersIndex = instantSearchInstance.client.initIndex(state.index);
+
+          if (!hasFindAnswersMethod(answersIndex)) {
+            throw new Error(withUsage$q('`algoliasearch` >= 4.8.0 required.'));
+          }
+
+          debouncedRefine = debounce(answersIndex.findAnswers, searchDebounceTime);
+          renderFn(_objectSpread2(_objectSpread2({}, this.getWidgetRenderState(initOptions)), {}, {
+            instantSearchInstance: initOptions.instantSearchInstance
+          }), true);
+        },
+        render: function render(renderOptions) {
+          var _this = this;
+
+          var query = renderOptions.state.query;
+
+          if (!query) {
+            // renders nothing with empty query
+            lastResult = {};
+            isLoading = false;
+            renderFn(_objectSpread2(_objectSpread2({}, this.getWidgetRenderState(renderOptions)), {}, {
+              instantSearchInstance: renderOptions.instantSearchInstance
+            }), false);
+            return;
+          } // render the loader
+
+
+          lastResult = {};
+          isLoading = true;
+          renderFn(_objectSpread2(_objectSpread2({}, this.getWidgetRenderState(renderOptions)), {}, {
+            instantSearchInstance: renderOptions.instantSearchInstance
+          }), false); // call /answers API
+
+          runConcurrentSafePromise(debouncedRefine(query, queryLanguages, _objectSpread2(_objectSpread2({}, extraParameters), {}, {
+            nbHits: nbHits,
+            attributesForPrediction: attributesForPrediction
+          }))).then(function (results) {
+            if (!results) {
+              // It's undefined when it's debounced.
+              return;
+            }
+
+            if (escapeHTML && results.hits.length > 0) {
+              results.hits = escapeHits(results.hits);
+            }
+
+            var initialEscaped = results.hits.__escaped;
+            results.hits = addAbsolutePosition(results.hits, 0, nbHits);
+            results.hits = addQueryID(results.hits, results.queryID); // Make sure the escaped tag stays, even after mapping over the hits.
+            // This prevents the hits from being double-escaped if there are multiple
+            // hits widgets mounted on the page.
+
+            results.hits.__escaped = initialEscaped;
+            lastResult = results;
+            isLoading = false;
+            debouncedRender(_objectSpread2(_objectSpread2({}, _this.getWidgetRenderState(renderOptions)), {}, {
+              instantSearchInstance: renderOptions.instantSearchInstance
+            }), false);
+          });
+        },
+        getRenderState: function getRenderState(renderState, renderOptions) {
+          return _objectSpread2(_objectSpread2({}, renderState), {}, {
+            answers: this.getWidgetRenderState(renderOptions)
+          });
+        },
+        getWidgetRenderState: function getWidgetRenderState() {
+          var _lastResult;
+
+          return {
+            hits: ((_lastResult = lastResult) === null || _lastResult === void 0 ? void 0 : _lastResult.hits) || [],
+            isLoading: isLoading,
+            widgetParams: widgetParams
+          };
+        },
+        dispose: function dispose(_ref2) {
+          var state = _ref2.state;
+          unmountFn();
+          return state;
+        },
+        getWidgetSearchParameters: function getWidgetSearchParameters(state) {
+          return state;
+        }
+      };
+    };
+  };
+
+  var connectRelevantSort = function connectRelevantSort() {
+    var renderFn = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : noop;
+    var unmountFn = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : noop;
+    return function (widgetParams) {
+      var connectorState = {};
+      return {
+        $$type: 'ais.relevantSort',
+        init: function init(initOptions) {
+          var instantSearchInstance = initOptions.instantSearchInstance;
+          renderFn(_objectSpread2(_objectSpread2({}, this.getWidgetRenderState(initOptions)), {}, {
+            instantSearchInstance: instantSearchInstance
+          }), true);
+        },
+        render: function render(renderOptions) {
+          var instantSearchInstance = renderOptions.instantSearchInstance;
+          renderFn(_objectSpread2(_objectSpread2({}, this.getWidgetRenderState(renderOptions)), {}, {
+            instantSearchInstance: instantSearchInstance
+          }), false);
+        },
+        dispose: function dispose(_ref) {
+          var state = _ref.state;
+          unmountFn();
+          return state.setQueryParameter('relevancyStrictness', undefined);
+        },
+        getRenderState: function getRenderState(renderState, renderOptions) {
+          return _objectSpread2(_objectSpread2({}, renderState), {}, {
+            relevantSort: this.getWidgetRenderState(renderOptions)
+          });
+        },
+        getWidgetRenderState: function getWidgetRenderState(_ref2) {
+          var results = _ref2.results,
+              helper = _ref2.helper;
+
+          if (!connectorState.refine) {
+            connectorState.refine = function (relevancyStrictness) {
+              helper.setQueryParameter('relevancyStrictness', relevancyStrictness).search();
+            };
+          }
+
+          var _ref3 = results || {},
+              appliedRelevancyStrictness = _ref3.appliedRelevancyStrictness;
+
+          var isVirtualReplica = appliedRelevancyStrictness !== undefined;
+          return {
+            isRelevantSorted: typeof appliedRelevancyStrictness !== 'undefined' && appliedRelevancyStrictness > 0,
+            isVirtualReplica: isVirtualReplica,
+            canRefine: isVirtualReplica,
+            refine: connectorState.refine,
+            widgetParams: widgetParams
+          };
+        },
+        getWidgetSearchParameters: function getWidgetSearchParameters(state, _ref4) {
+          var _uiState$relevantSort;
+
+          var uiState = _ref4.uiState;
+          return state.setQueryParameter('relevancyStrictness', (_uiState$relevantSort = uiState.relevantSort) !== null && _uiState$relevantSort !== void 0 ? _uiState$relevantSort : state.relevancyStrictness);
+        },
+        getWidgetUiState: function getWidgetUiState(uiState, _ref5) {
+          var searchParameters = _ref5.searchParameters;
+          return _objectSpread2(_objectSpread2({}, uiState), {}, {
+            relevantSort: searchParameters.relevancyStrictness || uiState.relevantSort
+          });
+        }
+      };
+    };
+  };
+
+  var withUsage$r = createDocumentationMessageGenerator({
+    name: 'dynamic-widgets',
+    connector: true
+  });
+
+  var connectDynamicWidgets = function connectDynamicWidgets(renderFn) {
+    var unmountFn = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : noop;
+    checkRendering(renderFn, withUsage$r());
+    return function (widgetParams) {
+      var widgets = widgetParams.widgets,
+          _widgetParams$transfo = widgetParams.transformItems,
+          transformItems = _widgetParams$transfo === void 0 ? function (items) {
+        return items;
+      } : _widgetParams$transfo;
+
+      if (!widgets || !Array.isArray(widgets) || widgets.some(function (widget) {
+        return _typeof(widget) !== 'object';
+      })) {
+        throw new Error(withUsage$r('The `widgets` option expects an array of widgets.'));
+      }
+
+      if (!widgets || !Array.isArray(widgets) || widgets.some(function (widget) {
+        return _typeof(widget) !== 'object';
+      })) {
+        throw new Error(withUsage$r('The `widgets` option expects an array of widgets.'));
+      }
+
+      var localWidgets = new Map();
+      return {
+        $$type: 'ais.dynamicWidgets',
+        init: function init(initOptions) {
+          widgets.forEach(function (widget) {
+            var attribute = getWidgetAttribute(widget, initOptions);
+            localWidgets.set(attribute, {
+              widget: widget,
+              isMounted: true
+            });
+          });
+          initOptions.parent.addWidgets(widgets);
+          renderFn(_objectSpread2(_objectSpread2({}, this.getWidgetRenderState(initOptions)), {}, {
+            instantSearchInstance: initOptions.instantSearchInstance
+          }), true);
+        },
+        render: function render(renderOptions) {
+          var parent = renderOptions.parent;
+          var renderState = this.getWidgetRenderState(renderOptions);
+          var widgetsToUnmount = [];
+          var widgetsToMount = [];
+          localWidgets.forEach(function (_ref, attribute) {
+            var widget = _ref.widget,
+                isMounted = _ref.isMounted;
+            var shouldMount = renderState.attributesToRender.indexOf(attribute) > -1;
+
+            if (!isMounted && shouldMount) {
+              widgetsToMount.push(widget);
+              localWidgets.set(attribute, {
+                widget: widget,
+                isMounted: true
+              });
+            } else if (isMounted && !shouldMount) {
+              widgetsToUnmount.push(widget);
+              localWidgets.set(attribute, {
+                widget: widget,
+                isMounted: false
+              });
+            }
+          });
+          parent.addWidgets(widgetsToMount); // make sure this only happens after the regular render, otherwise it
+          // happens too quick, since render is "deferred" for the next microtask,
+          // so this needs to be a whole task later
+
+          setTimeout(function () {
+            return parent.removeWidgets(widgetsToUnmount);
+          }, 0);
+          renderFn(_objectSpread2(_objectSpread2({}, renderState), {}, {
+            instantSearchInstance: renderOptions.instantSearchInstance
+          }), false);
+        },
+        dispose: function dispose(_ref2) {
+          var parent = _ref2.parent;
+          var toRemove = [];
+          localWidgets.forEach(function (_ref3) {
+            var widget = _ref3.widget,
+                isMounted = _ref3.isMounted;
+
+            if (isMounted) {
+              toRemove.push(widget);
+            }
+          });
+          parent.removeWidgets(toRemove);
+          unmountFn();
+        },
+        getRenderState: function getRenderState(renderState, renderOptions) {
+          return _objectSpread2(_objectSpread2({}, renderState), {}, {
+            dynamicWidgets: this.getWidgetRenderState(renderOptions)
+          });
+        },
+        getWidgetRenderState: function getWidgetRenderState(_ref4) {
+          var _results$renderingCon, _results$renderingCon2, _results$renderingCon3, _results$renderingCon4;
+
+          var results = _ref4.results;
+
+          if (!results) {
+            return {
+              attributesToRender: [],
+              widgetParams: widgetParams
+            };
+          }
+
+          var attributesToRender = (_results$renderingCon = (_results$renderingCon2 = results.renderingContent) === null || _results$renderingCon2 === void 0 ? void 0 : (_results$renderingCon3 = _results$renderingCon2.facetOrdering) === null || _results$renderingCon3 === void 0 ? void 0 : (_results$renderingCon4 = _results$renderingCon3.facet) === null || _results$renderingCon4 === void 0 ? void 0 : _results$renderingCon4.order) !== null && _results$renderingCon !== void 0 ? _results$renderingCon : [];
+          return {
+            attributesToRender: transformItems(attributesToRender, {
+              results: results
+            }),
+            widgetParams: widgetParams
+          };
         }
       };
     };
@@ -14944,8 +15057,180 @@
     EXPERIMENTAL_connectConfigureRelatedItems: connectConfigureRelatedItems,
     connectAutocomplete: connectAutocomplete,
     connectQueryRules: connectQueryRules,
-    connectVoiceSearch: connectVoiceSearch
+    connectVoiceSearch: connectVoiceSearch,
+    EXPERIMENTAL_connectAnswers: connectAnswers,
+    connectRelevantSort: connectRelevantSort,
+    EXPERIMENTAL_connectDynamicWidgets: connectDynamicWidgets
   });
+
+  var withUsage$s = createDocumentationMessageGenerator({
+    name: 'analytics'
+  });
+
+  // @major this widget will be removed from the next major version.
+  var analytics = function analytics(widgetParams) {
+    var _ref = widgetParams || {},
+        pushFunction = _ref.pushFunction,
+        _ref$delay = _ref.delay,
+        delay = _ref$delay === void 0 ? 3000 : _ref$delay,
+        _ref$triggerOnUIInter = _ref.triggerOnUIInteraction,
+        triggerOnUIInteraction = _ref$triggerOnUIInter === void 0 ? false : _ref$triggerOnUIInter,
+        _ref$pushInitialSearc = _ref.pushInitialSearch,
+        pushInitialSearch = _ref$pushInitialSearc === void 0 ? true : _ref$pushInitialSearc,
+        _ref$pushPagination = _ref.pushPagination,
+        pushPagination = _ref$pushPagination === void 0 ? false : _ref$pushPagination;
+
+    if (!pushFunction) {
+      throw new Error(withUsage$s('The `pushFunction` option is required.'));
+    }
+
+     _warning(false, "`analytics` widget has been deprecated. It is still supported in 4.x releases, but not further. It is replaced by the `insights` middleware.\n\nFor the migration, visit https://www.algolia.com/doc/guides/building-search-ui/upgrade-guides/js/#analytics-widget") ;
+    var cachedState = null;
+
+    var serializeRefinements = function serializeRefinements(parameters) {
+      var refinements = [];
+
+      for (var parameter in parameters) {
+        if (parameters.hasOwnProperty(parameter)) {
+          var values = parameters[parameter].join('+');
+          refinements.push("".concat(encodeURIComponent(parameter), "=").concat(encodeURIComponent(parameter), "_").concat(encodeURIComponent(values)));
+        }
+      }
+
+      return refinements.join('&');
+    };
+
+    var serializeNumericRefinements = function serializeNumericRefinements(numericRefinements) {
+      var refinements = [];
+
+      for (var attribute in numericRefinements) {
+        if (numericRefinements.hasOwnProperty(attribute)) {
+          var filter = numericRefinements[attribute];
+
+          if (filter.hasOwnProperty('>=') && filter.hasOwnProperty('<=')) {
+            if (filter['>='] && filter['>='][0] === filter['<='] && filter['<='][0]) {
+              refinements.push("".concat(attribute, "=").concat(attribute, "_").concat(filter['>=']));
+            } else {
+              refinements.push("".concat(attribute, "=").concat(attribute, "_").concat(filter['>='], "to").concat(filter['<=']));
+            }
+          } else if (filter.hasOwnProperty('>=')) {
+            refinements.push("".concat(attribute, "=").concat(attribute, "_from").concat(filter['>=']));
+          } else if (filter.hasOwnProperty('<=')) {
+            refinements.push("".concat(attribute, "=").concat(attribute, "_to").concat(filter['<=']));
+          } else if (filter.hasOwnProperty('=')) {
+            var equals = [];
+
+            for (var equal in filter['=']) {
+              // eslint-disable-next-line max-depth
+              if (filter['='].hasOwnProperty(equal)) {
+                equals.push(filter['='][equal]);
+              }
+            }
+
+            refinements.push("".concat(attribute, "=").concat(attribute, "_").concat(equals.join('-')));
+          }
+        }
+      }
+
+      return refinements.join('&');
+    };
+
+    var lastSentData = '';
+
+    var sendAnalytics = function sendAnalytics(analyticsState) {
+      if (analyticsState === null) {
+        return;
+      }
+
+      var serializedParams = [];
+      var serializedRefinements = serializeRefinements(_objectSpread2(_objectSpread2(_objectSpread2({}, analyticsState.state.disjunctiveFacetsRefinements), analyticsState.state.facetsRefinements), analyticsState.state.hierarchicalFacetsRefinements));
+      var serializedNumericRefinements = serializeNumericRefinements(analyticsState.state.numericRefinements);
+
+      if (serializedRefinements !== '') {
+        serializedParams.push(serializedRefinements);
+      }
+
+      if (serializedNumericRefinements !== '') {
+        serializedParams.push(serializedNumericRefinements);
+      }
+
+      var stringifiedParams = serializedParams.join('&');
+      var dataToSend = "Query: ".concat(analyticsState.state.query || '', ", ").concat(stringifiedParams);
+
+      if (pushPagination === true) {
+        dataToSend += ", Page: ".concat(analyticsState.state.page || 0);
+      }
+
+      if (lastSentData !== dataToSend) {
+        pushFunction(stringifiedParams, analyticsState.state, analyticsState.results);
+        lastSentData = dataToSend;
+      }
+    };
+
+    var pushTimeout;
+    var isInitialSearch = true;
+
+    if (pushInitialSearch === true) {
+      isInitialSearch = false;
+    }
+
+    var onClick = function onClick() {
+      sendAnalytics(cachedState);
+    };
+
+    var onUnload = function onUnload() {
+      sendAnalytics(cachedState);
+    };
+
+    return {
+      $$type: 'ais.analytics',
+      $$widgetType: 'ais.analytics',
+      init: function init() {
+        if (triggerOnUIInteraction === true) {
+          document.addEventListener('click', onClick);
+          window.addEventListener('beforeunload', onUnload);
+        }
+      },
+      render: function render(_ref2) {
+        var results = _ref2.results,
+            state = _ref2.state;
+
+        if (isInitialSearch === true) {
+          isInitialSearch = false;
+          return;
+        }
+
+        cachedState = {
+          results: results,
+          state: state
+        };
+
+        if (pushTimeout) {
+          clearTimeout(pushTimeout);
+        }
+
+        pushTimeout = window.setTimeout(function () {
+          return sendAnalytics(cachedState);
+        }, delay);
+      },
+      dispose: function dispose() {
+        if (triggerOnUIInteraction === true) {
+          document.removeEventListener('click', onClick);
+          window.removeEventListener('beforeunload', onUnload);
+        }
+      },
+      getRenderState: function getRenderState(renderState, renderOptions) {
+        return _objectSpread2(_objectSpread2({}, renderState), {}, {
+          analytics: this.getWidgetRenderState(renderOptions)
+        });
+      },
+      getWidgetRenderState: function getWidgetRenderState() {
+        return {
+          widgetParams: widgetParams
+        };
+      }
+    };
+  };
 
   var classnames = createCommonjsModule(function (module) {
   /*!
@@ -14996,15 +15281,24 @@
   }());
   });
 
-  var Template =
-  /*#__PURE__*/
-  function (_Component) {
+  var defaultProps = {
+    data: {},
+    rootTagName: 'div',
+    useCustomCompileOptions: {},
+    templates: {},
+    templatesConfig: {}
+  };
+
+  // @TODO: Template should be a generic and receive TData to pass to Templates (to avoid TTemplateData to be set as `any`)
+  var Template = /*#__PURE__*/function (_Component) {
     _inherits(Template, _Component);
+
+    var _super = _createSuper(Template);
 
     function Template() {
       _classCallCheck(this, Template);
 
-      return _possibleConstructorReturn(this, _getPrototypeOf(Template).apply(this, arguments));
+      return _super.apply(this, arguments);
     }
 
     _createClass(Template, [{
@@ -15044,12 +15338,152 @@
     return Template;
   }(m);
 
-  Template.defaultProps = {
-    data: {},
-    rootTagName: 'div',
-    useCustomCompileOptions: {},
-    templates: {},
-    templatesConfig: {}
+  _defineProperty(Template, "defaultProps", defaultProps);
+
+  var Breadcrumb = function Breadcrumb(_ref) {
+    var items = _ref.items,
+        cssClasses = _ref.cssClasses,
+        templateProps = _ref.templateProps,
+        createURL = _ref.createURL,
+        refine = _ref.refine;
+    return h("div", {
+      className: classnames(cssClasses.root, _defineProperty({}, cssClasses.noRefinementRoot, items.length === 0))
+    }, h("ul", {
+      className: cssClasses.list
+    }, h("li", {
+      className: classnames(cssClasses.item, _defineProperty({}, cssClasses.selectedItem, items.length === 0))
+    }, h(Template, _extends({}, templateProps, {
+      templateKey: "home",
+      rootTagName: "a",
+      rootProps: {
+        className: cssClasses.link,
+        href: createURL(undefined),
+        onClick: function onClick(event) {
+          event.preventDefault();
+          refine(undefined);
+        }
+      }
+    }))), items.map(function (item, idx) {
+      var isLast = idx === items.length - 1;
+      return h("li", {
+        key: item.label + idx,
+        className: classnames(cssClasses.item, _defineProperty({}, cssClasses.selectedItem, isLast))
+      }, h(Template, _extends({}, templateProps, {
+        templateKey: "separator",
+        rootTagName: "span",
+        rootProps: {
+          className: cssClasses.separator,
+          'aria-hidden': true
+        }
+      })), isLast ? item.label : h("a", {
+        className: cssClasses.link,
+        href: createURL(item.value),
+        onClick: function onClick(event) {
+          event.preventDefault();
+          refine(item.value);
+        }
+      }, item.label));
+    })));
+  };
+
+  var defaultTemplates = {
+    home: 'Home',
+    separator: '>'
+  };
+
+  var withUsage$t = createDocumentationMessageGenerator({
+    name: 'breadcrumb'
+  });
+  var suit$4 = component('Breadcrumb');
+
+  var renderer = function renderer(_ref) {
+    var containerNode = _ref.containerNode,
+        cssClasses = _ref.cssClasses,
+        renderState = _ref.renderState,
+        templates = _ref.templates;
+    return function (_ref2, isFirstRendering) {
+      var canRefine = _ref2.canRefine,
+          createURL = _ref2.createURL,
+          instantSearchInstance = _ref2.instantSearchInstance,
+          items = _ref2.items,
+          refine = _ref2.refine;
+
+      if (isFirstRendering) {
+        renderState.templateProps = prepareTemplateProps({
+          defaultTemplates: defaultTemplates,
+          templatesConfig: instantSearchInstance.templatesConfig,
+          templates: templates
+        });
+        return;
+      }
+
+      I(h(Breadcrumb, {
+        canRefine: canRefine,
+        cssClasses: cssClasses,
+        createURL: createURL,
+        items: items,
+        refine: refine,
+        templateProps: renderState.templateProps
+      }), containerNode);
+    };
+  };
+
+  var breadcrumb = function breadcrumb(widgetParams) {
+    var _ref3 = widgetParams || {},
+        container = _ref3.container,
+        attributes = _ref3.attributes,
+        separator = _ref3.separator,
+        rootPath = _ref3.rootPath,
+        transformItems = _ref3.transformItems,
+        _ref3$templates = _ref3.templates,
+        templates = _ref3$templates === void 0 ? defaultTemplates : _ref3$templates,
+        _ref3$cssClasses = _ref3.cssClasses,
+        userCssClasses = _ref3$cssClasses === void 0 ? {} : _ref3$cssClasses;
+
+    if (!container) {
+      throw new Error(withUsage$t('The `container` option is required.'));
+    }
+
+    var containerNode = getContainerNode(container);
+    var cssClasses = {
+      root: classnames(suit$4(), userCssClasses.root),
+      noRefinementRoot: classnames(suit$4({
+        modifierName: 'noRefinement'
+      }), userCssClasses.noRefinementRoot),
+      list: classnames(suit$4({
+        descendantName: 'list'
+      }), userCssClasses.list),
+      item: classnames(suit$4({
+        descendantName: 'item'
+      }), userCssClasses.item),
+      selectedItem: classnames(suit$4({
+        descendantName: 'item',
+        modifierName: 'selected'
+      }), userCssClasses.selectedItem),
+      separator: classnames(suit$4({
+        descendantName: 'separator'
+      }), userCssClasses.separator),
+      link: classnames(suit$4({
+        descendantName: 'link'
+      }), userCssClasses.link)
+    };
+    var specializedRenderer = renderer({
+      containerNode: containerNode,
+      cssClasses: cssClasses,
+      renderState: {},
+      templates: templates
+    });
+    var makeWidget = connectBreadcrumb(specializedRenderer, function () {
+      return I(null, containerNode);
+    });
+    return _objectSpread2(_objectSpread2({}, makeWidget({
+      attributes: attributes,
+      separator: separator,
+      rootPath: rootPath,
+      transformItems: transformItems
+    })), {}, {
+      $$widgetType: 'ais.breadcrumb'
+    });
   };
 
   var ClearRefinements = function ClearRefinements(_ref) {
@@ -15073,17 +15507,16 @@
     })));
   };
 
-  var defaultTemplates = {
+  var defaultTemplates$1 = {
     resetLabel: 'Clear refinements'
   };
 
-  /** @jsx h */
-  var withUsage$q = createDocumentationMessageGenerator({
+  var withUsage$u = createDocumentationMessageGenerator({
     name: 'clear-refinements'
   });
-  var suit$4 = component('ClearRefinements');
+  var suit$5 = component('ClearRefinements');
 
-  var renderer = function renderer(_ref) {
+  var renderer$1 = function renderer(_ref) {
     var containerNode = _ref.containerNode,
         cssClasses = _ref.cssClasses,
         renderState = _ref.renderState,
@@ -15095,7 +15528,7 @@
 
       if (isFirstRendering) {
         renderState.templateProps = prepareTemplateProps({
-          defaultTemplates: defaultTemplates,
+          defaultTemplates: defaultTemplates$1,
           templatesConfig: instantSearchInstance.templatesConfig,
           templates: templates
         });
@@ -15111,11 +15544,11 @@
     };
   };
 
-  var clearRefinements$1 = function clearRefinements(widgetOptions) {
-    var _ref3 = widgetOptions || {},
+  var clearRefinements$1 = function clearRefinements(widgetParams) {
+    var _ref3 = widgetParams || {},
         container = _ref3.container,
         _ref3$templates = _ref3.templates,
-        templates = _ref3$templates === void 0 ? defaultTemplates : _ref3$templates,
+        templates = _ref3$templates === void 0 ? defaultTemplates$1 : _ref3$templates,
         includedAttributes = _ref3.includedAttributes,
         excludedAttributes = _ref3.excludedAttributes,
         transformItems = _ref3.transformItems,
@@ -15123,21 +15556,21 @@
         userCssClasses = _ref3$cssClasses === void 0 ? {} : _ref3$cssClasses;
 
     if (!container) {
-      throw new Error(withUsage$q('The `container` option is required.'));
+      throw new Error(withUsage$u('The `container` option is required.'));
     }
 
     var containerNode = getContainerNode(container);
     var cssClasses = {
-      root: classnames(suit$4(), userCssClasses.root),
-      button: classnames(suit$4({
+      root: classnames(suit$5(), userCssClasses.root),
+      button: classnames(suit$5({
         descendantName: 'button'
       }), userCssClasses.button),
-      disabledButton: classnames(suit$4({
+      disabledButton: classnames(suit$5({
         descendantName: 'button',
         modifierName: 'disabled'
       }), userCssClasses.disabledButton)
     };
-    var specializedRenderer = renderer({
+    var specializedRenderer = renderer$1({
       containerNode: containerNode,
       cssClasses: cssClasses,
       renderState: {},
@@ -15146,10 +15579,12 @@
     var makeWidget = connectClearRefinements(specializedRenderer, function () {
       return I(null, containerNode);
     });
-    return makeWidget({
+    return _objectSpread2(_objectSpread2({}, makeWidget({
       includedAttributes: includedAttributes,
       excludedAttributes: excludedAttributes,
       transformItems: transformItems
+    })), {}, {
+      $$widgetType: 'ais.clearRefinements'
     });
   };
 
@@ -15162,14 +15597,11 @@
     // This is a renderless widget that falls back to the connector's
     // noop render and unmount functions.
     var makeWidget = connectConfigure(noop);
-    return makeWidget({
+    return _objectSpread2(_objectSpread2({}, makeWidget({
       searchParameters: widgetParams
+    })), {}, {
+      $$widgetType: 'ais.configure'
     });
-  };
-
-  var configureRelatedItems = function configureRelatedItems(widgetParams) {
-    var makeWidget = connectConfigureRelatedItems(noop);
-    return makeWidget(widgetParams);
   };
 
   /** @jsx h */
@@ -15222,13 +15654,12 @@
     })));
   };
 
-  /** @jsx h */
-  var withUsage$r = createDocumentationMessageGenerator({
+  var withUsage$v = createDocumentationMessageGenerator({
     name: 'current-refinements'
   });
-  var suit$5 = component('CurrentRefinements');
+  var suit$6 = component('CurrentRefinements');
 
-  var renderer$1 = function renderer(_ref, isFirstRender) {
+  var renderer$2 = function renderer(_ref, isFirstRender) {
     var items = _ref.items,
         widgetParams = _ref.widgetParams;
 
@@ -15254,40 +15685,255 @@
         transformItems = _ref2.transformItems;
 
     if (!container) {
-      throw new Error(withUsage$r('The `container` option is required.'));
+      throw new Error(withUsage$v('The `container` option is required.'));
     }
 
     var containerNode = getContainerNode(container);
     var cssClasses = {
-      root: classnames(suit$5(), userCssClasses.root),
-      list: classnames(suit$5({
+      root: classnames(suit$6(), userCssClasses.root),
+      list: classnames(suit$6({
         descendantName: 'list'
       }), userCssClasses.list),
-      item: classnames(suit$5({
+      item: classnames(suit$6({
         descendantName: 'item'
       }), userCssClasses.item),
-      label: classnames(suit$5({
+      label: classnames(suit$6({
         descendantName: 'label'
       }), userCssClasses.label),
-      category: classnames(suit$5({
+      category: classnames(suit$6({
         descendantName: 'category'
       }), userCssClasses.category),
-      categoryLabel: classnames(suit$5({
+      categoryLabel: classnames(suit$6({
         descendantName: 'categoryLabel'
       }), userCssClasses.categoryLabel),
-      delete: classnames(suit$5({
+      delete: classnames(suit$6({
         descendantName: 'delete'
       }), userCssClasses.delete)
     };
-    var makeWidget = connectCurrentRefinements(renderer$1, function () {
+    var makeWidget = connectCurrentRefinements(renderer$2, function () {
       return I(null, containerNode);
     });
-    return makeWidget({
+    return _objectSpread2(_objectSpread2({}, makeWidget({
       container: containerNode,
       cssClasses: cssClasses,
       includedAttributes: includedAttributes,
       excludedAttributes: excludedAttributes,
       transformItems: transformItems
+    })), {}, {
+      $$widgetType: 'ais.currentRefinements'
+    });
+  };
+
+  var defaultTemplates$2 = {
+    header: '',
+    loader: '',
+    item: function item(_item) {
+      return JSON.stringify(_item);
+    }
+  };
+
+  var Answers = function Answers(_ref) {
+    var hits = _ref.hits,
+        isLoading = _ref.isLoading,
+        cssClasses = _ref.cssClasses,
+        templateProps = _ref.templateProps;
+    return h("div", {
+      className: classnames(cssClasses.root, _defineProperty({}, cssClasses.emptyRoot, hits.length === 0))
+    }, h(Template, _extends({}, templateProps, {
+      templateKey: "header",
+      rootProps: {
+        className: cssClasses.header
+      },
+      data: {
+        hits: hits,
+        isLoading: isLoading
+      }
+    })), isLoading ? h(Template, _extends({}, templateProps, {
+      templateKey: "loader",
+      rootProps: {
+        className: cssClasses.loader
+      }
+    })) : h("ul", {
+      className: cssClasses.list
+    }, hits.map(function (hit, position) {
+      return h(Template, _extends({}, templateProps, {
+        templateKey: "item",
+        rootTagName: "li",
+        rootProps: {
+          className: cssClasses.item
+        },
+        key: hit.objectID,
+        data: _objectSpread2(_objectSpread2({}, hit), {}, {
+          __hitIndex: position
+        })
+      }));
+    })));
+  };
+
+  var withUsage$w = createDocumentationMessageGenerator({
+    name: 'answers'
+  });
+  var suit$7 = component('Answers');
+
+  var renderer$3 = function renderer(_ref) {
+    var renderState = _ref.renderState,
+        cssClasses = _ref.cssClasses,
+        containerNode = _ref.containerNode,
+        templates = _ref.templates;
+    return function (_ref2, isFirstRendering) {
+      var hits = _ref2.hits,
+          isLoading = _ref2.isLoading,
+          instantSearchInstance = _ref2.instantSearchInstance;
+
+      if (isFirstRendering) {
+        renderState.templateProps = prepareTemplateProps({
+          defaultTemplates: defaultTemplates$2,
+          templatesConfig: instantSearchInstance.templatesConfig,
+          templates: templates
+        });
+        return;
+      }
+
+      I(h(Answers, {
+        cssClasses: cssClasses,
+        hits: hits,
+        isLoading: isLoading,
+        templateProps: renderState.templateProps
+      }), containerNode);
+    };
+  };
+
+  var answersWidget = function answersWidget(widgetParams) {
+    var _ref3 = widgetParams || {},
+        container = _ref3.container,
+        attributesForPrediction = _ref3.attributesForPrediction,
+        queryLanguages = _ref3.queryLanguages,
+        nbHits = _ref3.nbHits,
+        searchDebounceTime = _ref3.searchDebounceTime,
+        renderDebounceTime = _ref3.renderDebounceTime,
+        escapeHTML = _ref3.escapeHTML,
+        extraParameters = _ref3.extraParameters,
+        _ref3$templates = _ref3.templates,
+        templates = _ref3$templates === void 0 ? defaultTemplates$2 : _ref3$templates,
+        _ref3$cssClasses = _ref3.cssClasses,
+        userCssClasses = _ref3$cssClasses === void 0 ? {} : _ref3$cssClasses;
+
+    if (!container) {
+      throw new Error(withUsage$w('The `container` option is required.'));
+    }
+
+    var containerNode = getContainerNode(container);
+    var cssClasses = {
+      root: classnames(suit$7(), userCssClasses.root),
+      emptyRoot: classnames(suit$7({
+        modifierName: 'empty'
+      }), userCssClasses.emptyRoot),
+      header: classnames(suit$7({
+        descendantName: 'header'
+      }), userCssClasses.header),
+      loader: classnames(suit$7({
+        descendantName: 'loader'
+      }), userCssClasses.loader),
+      list: classnames(suit$7({
+        descendantName: 'list'
+      }), userCssClasses.list),
+      item: classnames(suit$7({
+        descendantName: 'item'
+      }), userCssClasses.item)
+    };
+    var specializedRenderer = renderer$3({
+      containerNode: containerNode,
+      cssClasses: cssClasses,
+      templates: templates,
+      renderState: {}
+    });
+    var makeWidget = connectAnswers(specializedRenderer, function () {
+      return I(null, containerNode);
+    });
+    return _objectSpread2(_objectSpread2({}, makeWidget({
+      attributesForPrediction: attributesForPrediction,
+      queryLanguages: queryLanguages,
+      nbHits: nbHits,
+      searchDebounceTime: searchDebounceTime,
+      renderDebounceTime: renderDebounceTime,
+      escapeHTML: escapeHTML,
+      extraParameters: extraParameters
+    })), {}, {
+      $$widgetType: 'ais.answers'
+    });
+  };
+
+  var configureRelatedItems = function configureRelatedItems(widgetParams) {
+    var makeWidget = connectConfigureRelatedItems(noop);
+    return _objectSpread2(_objectSpread2({}, makeWidget(widgetParams)), {}, {
+      $$widgetType: 'ais.configureRelatedItems'
+    });
+  };
+
+  var withUsage$x = createDocumentationMessageGenerator({
+    name: 'dynamic-widgets'
+  });
+  var suit$8 = component('DynamicWidgets');
+
+  var dynamicWidgets = function dynamicWidgets(widgetParams) {
+    var _ref = widgetParams || {},
+        containerSelector = _ref.container,
+        transformItems = _ref.transformItems,
+        widgets = _ref.widgets;
+
+    if (!containerSelector) {
+      throw new Error(withUsage$x('The `container` option is required.'));
+    }
+
+    if (!widgets || !Array.isArray(widgets) || widgets.some(function (widget) {
+      return typeof widget !== 'function';
+    })) {
+      throw new Error(withUsage$x('The `widgets` option expects an array of callbacks.'));
+    }
+
+    var userContainer = getContainerNode(containerSelector);
+    var rootContainer = document.createElement('div');
+    rootContainer.className = suit$8();
+    var containers = new Map();
+    var connectorWidgets = [];
+    var makeWidget = connectDynamicWidgets(function (_ref2, isFirstRender) {
+      var attributesToRender = _ref2.attributesToRender;
+
+      if (isFirstRender) {
+        userContainer.appendChild(rootContainer);
+      }
+
+      attributesToRender.forEach(function (attribute) {
+        if (!containers.has(attribute)) {
+          return;
+        }
+
+        var container = containers.get(attribute);
+        rootContainer.appendChild(container);
+      });
+    }, function () {
+      userContainer.removeChild(rootContainer);
+    });
+    var widget = makeWidget({
+      transformItems: transformItems,
+      widgets: connectorWidgets
+    });
+    return _objectSpread2(_objectSpread2({}, widget), {}, {
+      init: function init(initOptions) {
+        widgets.forEach(function (cb) {
+          var container = document.createElement('div');
+          container.className = suit$8({
+            descendantName: 'widget'
+          });
+          rootContainer.appendChild(container);
+          var childWidget = cb(container);
+          var attribute = getWidgetAttribute(childWidget, initOptions);
+          containers.set(attribute, container);
+          connectorWidgets.push(childWidget);
+        });
+        widget.init(initOptions);
+      },
+      $$widgetType: 'ais.dynamicWidgets'
     });
   };
 
@@ -15410,7 +16056,7 @@
     renderState.isUserInteraction = true;
   };
 
-  var renderer$2 = function renderer(_ref4, isFirstRendering) {
+  var renderer$4 = function renderer(_ref4, isFirstRendering) {
     var items = _ref4.items,
         position = _ref4.position,
         currentRefinement = _ref4.currentRefinement,
@@ -15572,19 +16218,19 @@
     }), container.querySelector(".".concat(cssClasses.tree)));
   };
 
-  var defaultTemplates$1 = {
+  var defaultTemplates$3 = {
     HTMLMarker: '<p>Your custom HTML Marker</p>',
     reset: 'Clear the map refinement',
     toggle: 'Search as I move the map',
     redo: 'Redo search here'
   };
 
-  // eslint-disable-next-line no-undef
+  /* global google EventListener */
   var createHTMLMarker = function createHTMLMarker(googleReference) {
-    var HTMLMarker =
-    /*#__PURE__*/
-    function (_googleReference$maps) {
+    var HTMLMarker = /*#__PURE__*/function (_googleReference$maps) {
       _inherits(HTMLMarker, _googleReference$maps);
+
+      var _super = _createSuper(HTMLMarker);
 
       function HTMLMarker(_ref) {
         var _this;
@@ -15602,7 +16248,7 @@
 
         _classCallCheck(this, HTMLMarker);
 
-        _this = _possibleConstructorReturn(this, _getPrototypeOf(HTMLMarker).call(this));
+        _this = _super.call(this);
 
         _defineProperty(_assertThisInitialized(_this), "__id", void 0);
 
@@ -15666,8 +16312,11 @@
             this.element.parentNode.removeChild(this.element);
             Object.keys(this.listeners).forEach(function (eventName) {
               _this2.element.removeEventListener(eventName, _this2.listeners[eventName]);
-            });
-            delete this.element;
+            }); // after onRemove the class is no longer used, thus it can be deleted
+            // @ts-expect-error
+
+            delete this.element; // @ts-expect-error
+
             delete this.listeners;
           }
         }
@@ -15691,81 +16340,15 @@
       }]);
 
       return HTMLMarker;
-    }(googleReference.maps.OverlayView); // we have to cast this to a regular OverlayView to prevent internal class being exposed
-    // which TypeScript doesn't allow.
-
+    }(googleReference.maps.OverlayView);
 
     return HTMLMarker;
   };
 
-  var withUsage$s = createDocumentationMessageGenerator({
+  var withUsage$y = createDocumentationMessageGenerator({
     name: 'geo-search'
   });
-  var suit$6 = component('GeoSearch');
-  /**
-   * @typedef {object} HTMLMarkerOptions
-   * @property {object} [anchor] The offset from the marker's position.
-   */
-
-  /**
-   * @typedef {object} CustomHTMLMarkerOptions
-   * @property {function(item): HTMLMarkerOptions} [createOptions] Function used to create the options passed to the HTMLMarker.
-   * @property {{ eventType: function(object) }} [events] Object that takes an event type (ex: `click`, `mouseover`) as key and a listener as value. The listener is provided with an object that contains `event`, `item`, `marker`, `map`.
-   */
-
-  /**
-   * @typedef {object} BuiltInMarkerOptions
-   * @property {function(item): MarkerOptions} [createOptions] Function used to create the options passed to the Google Maps marker. <br />
-   * See [the documentation](https://developers.google.com/maps/documentation/javascript/reference/3/#MarkerOptions) for more information.
-   * @property {{ eventType: function(object) }} [events] Object that takes an event type (ex: `click`, `mouseover`) as key and a listener as value. The listener is provided with an object that contains `event`, `item`, `marker`, `map`.
-   */
-
-  /**
-   * @typedef {object} GeoSearchCSSClasses
-   * @property {string|Array<string>} [root] The root div of the widget.
-   * @property {string|Array<string>} [map] The map container of the widget.
-   * @property {string|Array<string>} [control] The control element of the widget.
-   * @property {string|Array<string>} [label] The label of the control element.
-   * @property {string|Array<string>} [selectedLabel] The selected label of the control element.
-   * @property {string|Array<string>} [input] The input of the control element.
-   * @property {string|Array<string>} [redo] The redo search button.
-   * @property {string|Array<string>} [disabledRedo] The disabled redo search button.
-   * @property {string|Array<string>} [reset] The reset refinement button.
-   */
-
-  /**
-   * @typedef {object} GeoSearchTemplates
-   * @property {string|function(object): string} [HTMLMarker] Template to use for the marker.
-   * @property {string|function(object): string} [reset] Template for the reset button.
-   * @property {string|function(object): string} [toggle] Template for the toggle label.
-   * @property {string|function(object): string} [redo] Template for the redo button.
-   */
-
-  /**
-   * @typedef {object} LatLng
-   * @property {number} lat The latitude in degrees.
-   * @property {number} lng The longitude in degrees.
-   */
-
-  /**
-   * @typedef {object} GeoSearchWidgetOptions
-   * @property {string|HTMLElement} container CSS Selector or HTMLElement to insert the widget.
-   * @property {object} googleReference Reference to the global `window.google` object. <br />
-   * See [the documentation](https://developers.google.com/maps/documentation/javascript/tutorial) for more information.
-   * @property {number} [initialZoom=1] By default the map will set the zoom accordingly to the markers displayed on it. When we refine it may happen that the results are empty. For those situations we need to provide a zoom to render the map.
-   * @property {LatLng} [initialPosition={ lat: 0, lng: 0 }] By default the map will set the position accordingly to the markers displayed on it. When we refine it may happen that the results are empty. For those situations we need to provide a position to render the map. This option is ignored when the `position` is provided.
-   * @property {GeoSearchTemplates} [templates] Templates to use for the widget.
-   * @property {GeoSearchCSSClasses} [cssClasses] CSS classes to add to the wrapping elements.
-   * @property {object} [mapOptions] Option forwarded to the Google Maps constructor. <br />
-   * See [the documentation](https://developers.google.com/maps/documentation/javascript/reference/3/#MapOptions) for more information.
-   * @property {BuiltInMarkerOptions} [builtInMarker] Options for customize the built-in Google Maps marker. This option is ignored when the `customHTMLMarker` is provided.
-   * @property {CustomHTMLMarkerOptions} [customHTMLMarker] Options for customize the HTML marker. We provide an alternative to the built-in Google Maps marker in order to have a full control of the marker rendering. You can use plain HTML to build your marker.
-   * @property {boolean} [enableRefine=true] If true, the map is used to search - otherwise it's for display purposes only.
-   * @property {boolean} [enableClearMapRefinement=true] If true, a button is displayed on the map when the refinement is coming from the map in order to remove it.
-   * @property {boolean} [enableRefineControl=true] If true, the user can toggle the option `enableRefineOnMapMove` directly from the map.
-   * @property {boolean} [enableRefineOnMapMove=true] If true, refine will be triggered as you move the map.
-   * @property {function} [transformItems] Function to transform the items passed to the templates.
-   */
+  var suit$9 = component('GeoSearch');
 
   /**
    * The **GeoSearch** widget displays the list of results from the search on a Google Maps. It also provides a way to search for results based on their position. The widget also provide some of the common GeoSearch patterns like search on map interaction.
@@ -15779,21 +16362,9 @@
    * You are also responsible for loading the Google Maps library, it's not shipped with InstantSearch. You need to load the Google Maps library and pass a reference to the widget. You can find more information about how to install the library in [the Google Maps documentation](https://developers.google.com/maps/documentation/javascript/tutorial).
    *
    * Don't forget to explicitly set the `height` of the map container (default class `.ais-geo-search--map`), otherwise it won't be shown (it's a requirement of Google Maps).
-   *
-   * @devNovel GeoSearch
-   * @param {GeoSearchWidgetOptions} $0 Options of the GeoSearch widget.
-   * @return {Widget} A new instance of GeoSearch widget.
-   * @staticExample
-   * search.addWidgets([
-   *   instantsearch.widgets.geoSearch({
-   *     container: '#geo-search-container',
-   *     googleReference: window.google,
-   *   })
-   * ]);
    */
-
-  var geoSearch = function geoSearch() {
-    var _ref = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
+  var geoSearch = function geoSearch(widgetParams) {
+    var _ref = widgetParams || {},
         _ref$initialZoom = _ref.initialZoom,
         initialZoom = _ref$initialZoom === void 0 ? 1 : _ref$initialZoom,
         _ref$initialPosition = _ref.initialPosition,
@@ -15816,73 +16387,78 @@
         enableRefineControl = _ref$enableRefineCont === void 0 ? true : _ref$enableRefineCont,
         container = _ref.container,
         googleReference = _ref.googleReference,
-        widgetParams = _objectWithoutProperties(_ref, ["initialZoom", "initialPosition", "templates", "cssClasses", "builtInMarker", "customHTMLMarker", "enableRefine", "enableClearMapRefinement", "enableRefineControl", "container", "googleReference"]);
+        otherWidgetParams = _objectWithoutProperties(_ref, ["initialZoom", "initialPosition", "templates", "cssClasses", "builtInMarker", "customHTMLMarker", "enableRefine", "enableClearMapRefinement", "enableRefineControl", "container", "googleReference"]);
 
     var defaultBuiltInMarker = {
-      createOptions: noop,
+      createOptions: function createOptions() {
+        return {};
+      },
       events: {}
     };
     var defaultCustomHTMLMarker = {
-      createOptions: noop,
+      createOptions: function createOptions() {
+        return {};
+      },
       events: {}
     };
 
     if (!container) {
-      throw new Error(withUsage$s('The `container` option is required.'));
+      throw new Error(withUsage$y('The `container` option is required.'));
     }
 
     if (!googleReference) {
-      throw new Error(withUsage$s('The `googleReference` option is required.'));
+      throw new Error(withUsage$y('The `googleReference` option is required.'));
     }
 
     var containerNode = getContainerNode(container);
     var cssClasses = {
-      root: classnames(suit$6(), userCssClasses.root),
+      root: classnames(suit$9(), userCssClasses.root),
       // Required only to mount / unmount the Preact tree
-      tree: suit$6({
+      tree: suit$9({
         descendantName: 'tree'
       }),
-      map: classnames(suit$6({
+      map: classnames(suit$9({
         descendantName: 'map'
       }), userCssClasses.map),
-      control: classnames(suit$6({
+      control: classnames(suit$9({
         descendantName: 'control'
       }), userCssClasses.control),
-      label: classnames(suit$6({
+      label: classnames(suit$9({
         descendantName: 'label'
       }), userCssClasses.label),
-      selectedLabel: classnames(suit$6({
+      selectedLabel: classnames(suit$9({
         descendantName: 'label',
         modifierName: 'selected'
       }), userCssClasses.selectedLabel),
-      input: classnames(suit$6({
+      input: classnames(suit$9({
         descendantName: 'input'
       }), userCssClasses.input),
-      redo: classnames(suit$6({
+      redo: classnames(suit$9({
         descendantName: 'redo'
       }), userCssClasses.redo),
-      disabledRedo: classnames(suit$6({
+      disabledRedo: classnames(suit$9({
         descendantName: 'redo',
         modifierName: 'disabled'
       }), userCssClasses.disabledRedo),
-      reset: classnames(suit$6({
+      reset: classnames(suit$9({
         descendantName: 'reset'
       }), userCssClasses.reset)
     };
 
-    var templates = _objectSpread2({}, defaultTemplates$1, {}, userTemplates);
+    var templates = _objectSpread2(_objectSpread2({}, defaultTemplates$3), userTemplates);
 
-    var builtInMarker = _objectSpread2({}, defaultBuiltInMarker, {}, userBuiltInMarker);
+    var builtInMarker = _objectSpread2(_objectSpread2({}, defaultBuiltInMarker), userBuiltInMarker);
 
     var isCustomHTMLMarker = Boolean(userCustomHTMLMarker) || Boolean(userTemplates.HTMLMarker);
 
-    var customHTMLMarker = isCustomHTMLMarker && _objectSpread2({}, defaultCustomHTMLMarker, {}, userCustomHTMLMarker);
+    var customHTMLMarker = isCustomHTMLMarker && _objectSpread2(_objectSpread2({}, defaultCustomHTMLMarker), userCustomHTMLMarker);
 
     var createBuiltInMarker = function createBuiltInMarker(_ref2) {
       var item = _ref2.item,
           rest = _objectWithoutProperties(_ref2, ["item"]);
 
-      return new googleReference.maps.Marker(_objectSpread2({}, builtInMarker.createOptions(item), {}, rest, {
+      return new googleReference.maps.Marker(_objectSpread2(_objectSpread2(_objectSpread2({}, builtInMarker.createOptions(item)), rest), {}, {
+        // @ts-expect-error @types/googlemaps doesn't document this
         __id: item.objectID,
         position: item._geoloc
       }));
@@ -15894,10 +16470,10 @@
       var item = _ref3.item,
           rest = _objectWithoutProperties(_ref3, ["item"]);
 
-      return new HTMLMarker(_objectSpread2({}, customHTMLMarker.createOptions(item), {}, rest, {
+      return new HTMLMarker(_objectSpread2(_objectSpread2(_objectSpread2({}, customHTMLMarker.createOptions(item)), rest), {}, {
         __id: item.objectID,
         position: item._geoloc,
-        className: classnames(suit$6({
+        className: classnames(suit$9({
           descendantName: 'marker'
         })),
         template: renderTemplate({
@@ -15911,10 +16487,12 @@
     var createMarker = !customHTMLMarker ? createBuiltInMarker : createCustomHTMLMarker; // prettier-ignore
 
     var markerOptions = !customHTMLMarker ? builtInMarker : customHTMLMarker;
-    var makeGeoSearch = connectGeoSearch(renderer$2, function () {
+    var makeWidget = connectGeoSearch(renderer$4, function () {
       return I(null, containerNode);
     });
-    return makeGeoSearch(_objectSpread2({}, widgetParams, {
+    return _objectSpread2(_objectSpread2({}, makeWidget(_objectSpread2(_objectSpread2({}, otherWidgetParams), {}, {
+      // @ts-expect-error pattern not used in other widgets, but the
+      // renderState is stored on the connectorParams for usage in the renderer
       renderState: {},
       container: containerNode,
       googleReference: googleReference,
@@ -15927,7 +16505,9 @@
       enableRefine: enableRefine,
       enableClearMapRefinement: enableClearMapRefinement,
       enableRefineControl: enableRefineControl
-    }));
+    }))), {}, {
+      $$widgetType: 'ais.geoSearch'
+    });
   };
 
   function RefinementListItem(_ref) {
@@ -15954,14 +16534,27 @@
     })), subItems);
   }
 
-  var SearchBox =
-  /*#__PURE__*/
-  function (_Component) {
+  var defaultProps$1 = {
+    query: '',
+    showSubmit: true,
+    showReset: true,
+    showLoadingIndicator: true,
+    autofocus: false,
+    searchAsYouType: true,
+    isSearchStalled: false,
+    disabled: false,
+    onChange: noop,
+    onSubmit: noop,
+    onReset: noop,
+    refine: noop
+  };
+
+  var SearchBox = /*#__PURE__*/function (_Component) {
     _inherits(SearchBox, _Component);
 
-    function SearchBox() {
-      var _getPrototypeOf2;
+    var _super = _createSuper(SearchBox);
 
+    function SearchBox() {
       var _this;
 
       _classCallCheck(this, SearchBox);
@@ -15970,12 +16563,14 @@
         args[_key] = arguments[_key];
       }
 
-      _this = _possibleConstructorReturn(this, (_getPrototypeOf2 = _getPrototypeOf(SearchBox)).call.apply(_getPrototypeOf2, [this].concat(args)));
+      _this = _super.call.apply(_super, [this].concat(args));
 
       _defineProperty(_assertThisInitialized(_this), "state", {
         query: _this.props.query,
         focused: false
       });
+
+      _defineProperty(_assertThisInitialized(_this), "input", p());
 
       _defineProperty(_assertThisInitialized(_this), "onInput", function (event) {
         var _this$props = _this.props,
@@ -16003,7 +16598,9 @@
         event.preventDefault();
         event.stopPropagation();
 
-        _this.input.blur();
+        if (_this.input.current) {
+          _this.input.current.blur();
+        }
 
         if (!searchAsYouType) {
           refine(_this.state.query);
@@ -16019,7 +16616,9 @@
             onReset = _this$props3.onReset;
         var query = '';
 
-        _this.input.focus();
+        if (_this.input.current) {
+          _this.input.current.focus();
+        }
 
         refine(query);
 
@@ -16047,7 +16646,7 @@
 
     _createClass(SearchBox, [{
       key: "resetInput",
-
+      value:
       /**
        * This public method is used in the RefinementList SFFV search box
        * to reset the input state when an item is selected.
@@ -16055,7 +16654,7 @@
        * @see RefinementList#componentWillReceiveProps
        * @return {undefined}
        */
-      value: function resetInput() {
+      function resetInput() {
         this.setState({
           query: ''
         });
@@ -16077,8 +16676,6 @@
     }, {
       key: "render",
       value: function render() {
-        var _this2 = this;
-
         var _this$props4 = this.props,
             cssClasses = _this$props4.cssClasses,
             placeholder = _this$props4.placeholder,
@@ -16095,12 +16692,11 @@
           role: "search",
           className: cssClasses.form,
           noValidate: true,
-          onSubmit: this.onSubmit,
+          onSubmit: this.onSubmit // @ts-expect-error `onReset` attibute is missing in preact 10.0.0 JSX types
+          ,
           onReset: this.onReset
         }, h("input", {
-          ref: function ref(inputRef) {
-            return _this2.input = inputRef;
-          },
+          ref: this.input,
           value: this.state.query,
           disabled: this.props.disabled,
           className: cssClasses.input,
@@ -16108,7 +16704,8 @@
           placeholder: placeholder,
           autoFocus: autofocus,
           autoComplete: "off",
-          autoCorrect: "off",
+          autoCorrect: "off" // @ts-expect-error `autoCapitalize` attibute is missing in preact 10.0.0 JSX types
+          ,
           autoCapitalize: "off",
           spellCheck: "false",
           maxLength: 512,
@@ -16159,47 +16756,45 @@
     return SearchBox;
   }(m);
 
-  _defineProperty(SearchBox, "defaultProps", {
-    query: '',
-    showSubmit: true,
-    showReset: true,
-    showLoadingIndicator: true,
-    autofocus: false,
-    searchAsYouType: true,
-    isSearchStalled: false,
-    disabled: false,
-    onChange: noop,
-    onSubmit: noop,
-    onReset: noop,
-    refine: noop
-  });
+  _defineProperty(SearchBox, "defaultProps", defaultProps$1);
 
-  var RefinementList$1 =
-  /*#__PURE__*/
-  function (_Component) {
+  var defaultProps$2 = {
+    cssClasses: {},
+    depth: 0
+  };
+
+  function isHierarchicalMenuItem(facetValue) {
+    return facetValue.data !== undefined;
+  }
+
+  var RefinementList$1 = /*#__PURE__*/function (_Component) {
     _inherits(RefinementList, _Component);
+
+    var _super = _createSuper(RefinementList);
 
     function RefinementList(props) {
       var _this;
 
       _classCallCheck(this, RefinementList);
 
-      _this = _possibleConstructorReturn(this, _getPrototypeOf(RefinementList).call(this, props));
+      _this = _super.call(this, props);
+
+      _defineProperty(_assertThisInitialized(_this), "searchBox", p());
+
       _this.handleItemClick = _this.handleItemClick.bind(_assertThisInitialized(_this));
       return _this;
     }
 
     _createClass(RefinementList, [{
       key: "shouldComponentUpdate",
-      value: function shouldComponentUpdate(nextProps, nextState) {
-        var isStateDifferent = this.state !== nextState;
+      value: function shouldComponentUpdate(nextProps) {
         var areFacetValuesDifferent = !isEqual(this.props.facetValues, nextProps.facetValues);
-        return isStateDifferent || areFacetValuesDifferent;
+        return areFacetValuesDifferent;
       }
     }, {
       key: "refine",
-      value: function refine(facetValueToRefine, isRefined) {
-        this.props.toggleRefinement(facetValueToRefine, isRefined);
+      value: function refine(facetValueToRefine) {
+        this.props.toggleRefinement(facetValueToRefine);
       }
     }, {
       key: "_generateFacetItem",
@@ -16207,14 +16802,15 @@
         var _cx;
 
         var subItems;
-        var hasChildren = facetValue.data && facetValue.data.length > 0;
 
-        if (hasChildren) {
+        if (isHierarchicalMenuItem(facetValue) && Array.isArray(facetValue.data) && facetValue.data.length > 0) {
           var _this$props$cssClasse = this.props.cssClasses,
               root = _this$props$cssClasse.root,
               cssClasses = _objectWithoutProperties(_this$props$cssClasse, ["root"]);
 
           subItems = h(RefinementList, _extends({}, this.props, {
+            // We want to keep `root` required for external usage but not for the
+            // sub items.
             cssClasses: cssClasses,
             depth: this.props.depth + 1,
             facetValues: facetValue.data,
@@ -16225,7 +16821,7 @@
 
         var url = this.props.createURL(facetValue.value);
 
-        var templateData = _objectSpread2({}, facetValue, {
+        var templateData = _objectSpread2(_objectSpread2({}, facetValue), {}, {
           url: url,
           attribute: this.props.attribute,
           cssClasses: this.props.cssClasses,
@@ -16242,13 +16838,14 @@
           key += "/".concat(facetValue.count);
         }
 
+        var refinementListItemClassName = classnames(this.props.cssClasses.item, (_cx = {}, _defineProperty(_cx, this.props.cssClasses.selectedItem, facetValue.isRefined), _defineProperty(_cx, this.props.cssClasses.disabledItem, !facetValue.count), _defineProperty(_cx, this.props.cssClasses.parentItem, isHierarchicalMenuItem(facetValue) && Array.isArray(facetValue.data) && facetValue.data.length > 0), _cx));
         return h(RefinementListItem, {
           templateKey: "item",
           key: key,
           facetValueToRefine: facetValue.value,
           handleClick: this.handleItemClick,
           isRefined: facetValue.isRefined,
-          className: classnames(this.props.cssClasses.item, (_cx = {}, _defineProperty(_cx, this.props.cssClasses.selectedItem, facetValue.isRefined), _defineProperty(_cx, this.props.cssClasses.disabledItem, !facetValue.count), _defineProperty(_cx, this.props.cssClasses.parentItem, hasChildren), _cx)),
+          className: refinementListItemClassName,
           subItems: subItems,
           templateData: templateData,
           templateProps: this.props.templateProps
@@ -16273,12 +16870,16 @@
       key: "handleItemClick",
       value: function handleItemClick(_ref) {
         var facetValueToRefine = _ref.facetValueToRefine,
-            originalEvent = _ref.originalEvent,
-            isRefined = _ref.isRefined;
+            isRefined = _ref.isRefined,
+            originalEvent = _ref.originalEvent;
 
         if (isSpecialClick(originalEvent)) {
           // do not alter the default browser behavior
           // if one special key is down
+          return;
+        }
+
+        if (!(originalEvent.target instanceof HTMLElement) || !(originalEvent.target.parentNode instanceof HTMLElement)) {
           return;
         }
 
@@ -16288,7 +16889,7 @@
         }
 
         if (originalEvent.target.tagName === 'INPUT') {
-          this.refine(facetValueToRefine, isRefined);
+          this.refine(facetValueToRefine);
           return;
         }
 
@@ -16307,19 +16908,19 @@
         }
 
         originalEvent.stopPropagation();
-        this.refine(facetValueToRefine, isRefined);
+        this.refine(facetValueToRefine);
       }
     }, {
       key: "componentWillReceiveProps",
       value: function componentWillReceiveProps(nextProps) {
-        if (this.searchBox && !nextProps.isFromSearch) {
-          this.searchBox.resetInput();
+        if (this.searchBox.current && !nextProps.isFromSearch) {
+          this.searchBox.current.resetInput();
         }
       }
     }, {
       key: "refineFirstValue",
       value: function refineFirstValue() {
-        var firstValue = this.props.facetValues[0];
+        var firstValue = this.props.facetValues && this.props.facetValues[0];
 
         if (firstValue) {
           var actualValue = firstValue.value;
@@ -16331,8 +16932,6 @@
       value: function render() {
         var _this2 = this;
 
-        // Adding `-lvl0` classes
-        var cssClassList = classnames(this.props.cssClasses.list, _defineProperty({}, "".concat(this.props.cssClasses.depth).concat(this.props.depth), this.props.cssClasses.depth));
         var showMoreButtonClassName = classnames(this.props.cssClasses.showMore, _defineProperty({}, this.props.cssClasses.disabledShowMore, !(this.props.showMore === true && this.props.canToggleShowMore)));
         var showMoreButton = this.props.showMore === true && h(Template, _extends({}, this.props.templateProps, {
           templateKey: "showMoreText",
@@ -16347,16 +16946,15 @@
           }
         }));
         var shouldDisableSearchBox = this.props.searchIsAlwaysActive !== true && !(this.props.isFromSearch || !this.props.hasExhaustiveItems);
+        var templates = this.props.searchBoxTemplateProps ? this.props.searchBoxTemplateProps.templates : undefined;
         var searchBox = this.props.searchFacetValues && h("div", {
           className: this.props.cssClasses.searchBox
         }, h(SearchBox, {
-          ref: function ref(searchBoxRef) {
-            return _this2.searchBox = searchBoxRef;
-          },
+          ref: this.searchBox,
           placeholder: this.props.searchPlaceholder,
           disabled: shouldDisableSearchBox,
           cssClasses: this.props.cssClasses.searchable,
-          templates: this.props.templateProps.templates,
+          templates: templates,
           onChange: function onChange(event) {
             return _this2.props.searchFacetValues(event.target.value);
           },
@@ -16371,16 +16969,17 @@
           searchAsYouType: false
         }));
         var facetValues = this.props.facetValues && this.props.facetValues.length > 0 && h("ul", {
-          className: cssClassList
+          className: this.props.cssClasses.list
         }, this.props.facetValues.map(this._generateFacetItem, this));
-        var noResults = this.props.searchFacetValues && this.props.isFromSearch && this.props.facetValues.length === 0 && h(Template, _extends({}, this.props.templateProps, {
+        var noResults = this.props.searchFacetValues && this.props.isFromSearch && (!this.props.facetValues || this.props.facetValues.length === 0) && h(Template, _extends({}, this.props.templateProps, {
           templateKey: "searchableNoResults",
           rootProps: {
             className: this.props.cssClasses.noResults
           }
         }));
+        var rootClassName = classnames(this.props.cssClasses.root, _defineProperty({}, this.props.cssClasses.noRefinementRoot, !this.props.facetValues || this.props.facetValues.length === 0), this.props.className);
         return h("div", {
-          className: classnames(this.props.cssClasses.root, _defineProperty({}, this.props.cssClasses.noRefinementRoot, !this.props.facetValues || this.props.facetValues.length === 0), this.props.className)
+          className: rootClassName
         }, this.props.children, searchBox, facetValues, noResults, showMoreButton);
       }
     }]);
@@ -16388,23 +16987,19 @@
     return RefinementList;
   }(m);
 
-  RefinementList$1.defaultProps = {
-    cssClasses: {},
-    depth: 0
-  };
+  _defineProperty(RefinementList$1, "defaultProps", defaultProps$2);
 
-  var defaultTemplates$2 = {
+  var defaultTemplates$4 = {
     item: '<a class="{{cssClasses.link}}" href="{{url}}">' + '<span class="{{cssClasses.label}}">{{label}}</span>' + '<span class="{{cssClasses.count}}">{{#helpers.formatNumber}}{{count}}{{/helpers.formatNumber}}</span>' + '</a>',
     showMoreText: "\n    {{#isShowingMore}}\n      Show less\n    {{/isShowingMore}}\n    {{^isShowingMore}}\n      Show more\n    {{/isShowingMore}}\n  "
   };
 
-  /** @jsx h */
-  var withUsage$t = createDocumentationMessageGenerator({
+  var withUsage$z = createDocumentationMessageGenerator({
     name: 'hierarchical-menu'
   });
-  var suit$7 = component('HierarchicalMenu');
+  var suit$a = component('HierarchicalMenu');
 
-  var renderer$3 = function renderer(_ref) {
+  var renderer$5 = function renderer(_ref) {
     var cssClasses = _ref.cssClasses,
         containerNode = _ref.containerNode,
         showMore = _ref.showMore,
@@ -16421,7 +17016,7 @@
 
       if (isFirstRendering) {
         renderState.templateProps = prepareTemplateProps({
-          defaultTemplates: defaultTemplates$2,
+          defaultTemplates: defaultTemplates$4,
           templatesConfig: instantSearchInstance.templatesConfig,
           templates: templates
         });
@@ -16441,67 +17036,6 @@
       }), containerNode);
     };
   };
-  /**
-   * @typedef {Object} HierarchicalMenuCSSClasses
-   * @property {string|string[]} [root] CSS class to add to the root element.
-   * @property {string|string[]} [noRefinementRoot] CSS class to add to the root element when no refinements.
-   * @property {string|string[]} [list] CSS class to add to the list element.
-   * @property {string|string[]} [childList] CSS class to add to the child list element.
-   * @property {string|string[]} [item] CSS class to add to each item element.
-   * @property {string|string[]} [selectedItem] CSS class to add to each selected item element.
-   * @property {string|string[]} [parentItem] CSS class to add to each parent item element.
-   * @property {string|string[]} [link] CSS class to add to each link (when using the default template).
-   * @property {string|string[]} [label] CSS class to add to each label (when using the default template).
-   * @property {string|string[]} [count] CSS class to add to each count element (when using the default template).
-   * @property {string|string[]} [showMore] CSS class to add to the show more element.
-   * @property {string|string[]} [disabledShowMore] CSS class to add to the disabled show more element.
-   */
-
-  /**
-   * @typedef {Object} HierarchicalMenuTemplates
-   * @property {string|function(object):string} [item] Item template, provided with `name`, `count`, `isRefined`, `url` data properties.
-   * @property {string|function} [showMoreText] Template used for the show more text, provided with `isShowingMore` data property.
-   */
-
-  /**
-   * @typedef {Object} HierarchicalMenuWidgetOptions
-   * @property {string|HTMLElement} container CSS Selector or HTMLElement to insert the widget.
-   * @property {string[]} attributes Array of attributes to use to generate the hierarchy of the menu.
-   * @property {string} [separator = " > "] Separator used in the attributes to separate level values.
-   * @property {string} [rootPath] Prefix path to use if the first level is not the root level.
-   * @property {boolean} [showParentLevel = true] Show the siblings of the selected parent level of the current refined value. This
-   * @property {number} [limit = 10] Max number of values to display.
-   * @property {boolean} [showMore = false] Whether to display the "show more" button.
-   * @property {number} [showMoreLimit = 20] Max number of values to display when showing more.
-   * does not impact the root level.
-   *
-   * The hierarchical menu is able to show or hide the siblings with `showParentLevel`.
-   *
-   * With `showParentLevel` set to `true` (default):
-   * - Parent lvl0
-   *   - **lvl1**
-   *     - **lvl2**
-   *     - lvl2
-   *     - lvl2
-   *   - lvl 1
-   *   - lvl 1
-   * - Parent lvl0
-   * - Parent lvl0
-   *
-   * With `showParentLevel` set to `false`:
-   * - Parent lvl0
-   *   - **lvl1**
-   *     - **lvl2**
-   * - Parent lvl0
-   * - Parent lvl0
-   * @property {string[]|function} [sortBy = ['name:asc']] How to sort refinements. Possible values: `count|isRefined|name:asc|name:desc`.
-   *
-   * You can also use a sort function that behaves like the standard Javascript [compareFunction](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/sort#Syntax).
-   * @property {function(object[]):object[]} [transformItems] Function to transform the items passed to the templates.
-   * @property {HierarchicalMenuTemplates} [templates] Templates to use for the widget.
-   * @property {HierarchicalMenuCSSClasses} [cssClasses] CSS classes to add to the wrapping elements.
-   */
-
   /**
    * The hierarchical menu widget is used to create a navigation based on a hierarchy of facet attributes.
    *
@@ -16543,7 +17077,7 @@
    * @type {WidgetFactory}
    * @devNovel HierarchicalMenu
    * @category filter
-   * @param {HierarchicalMenuWidgetOptions} $0 The HierarchicalMenu widget options.
+   * @param {HierarchicalMenuWidgetParams} widgetParams The HierarchicalMenu widget options.
    * @return {Widget} A new HierarchicalMenu widget instance.
    * @example
    * search.addWidgets([
@@ -16555,8 +17089,8 @@
    */
 
 
-  function hierarchicalMenu() {
-    var _ref3 = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
+  var hierarchicalMenu = function hierarchicalMenu(widgetParams) {
+    var _ref3 = widgetParams || {},
         container = _ref3.container,
         attributes = _ref3.attributes,
         separator = _ref3.separator,
@@ -16569,66 +17103,66 @@
         sortBy = _ref3.sortBy,
         transformItems = _ref3.transformItems,
         _ref3$templates = _ref3.templates,
-        templates = _ref3$templates === void 0 ? defaultTemplates$2 : _ref3$templates,
+        templates = _ref3$templates === void 0 ? defaultTemplates$4 : _ref3$templates,
         _ref3$cssClasses = _ref3.cssClasses,
         userCssClasses = _ref3$cssClasses === void 0 ? {} : _ref3$cssClasses;
 
     if (!container) {
-      throw new Error(withUsage$t('The `container` option is required.'));
+      throw new Error(withUsage$z('The `container` option is required.'));
     }
 
     var containerNode = getContainerNode(container);
     var cssClasses = {
-      root: classnames(suit$7(), userCssClasses.root),
-      noRefinementRoot: classnames(suit$7({
+      root: classnames(suit$a(), userCssClasses.root),
+      noRefinementRoot: classnames(suit$a({
         modifierName: 'noRefinement'
       }), userCssClasses.noRefinementRoot),
-      list: classnames(suit$7({
+      list: classnames(suit$a({
         descendantName: 'list'
       }), userCssClasses.list),
-      childList: classnames(suit$7({
+      childList: classnames(suit$a({
         descendantName: 'list',
         modifierName: 'child'
       }), userCssClasses.childList),
-      item: classnames(suit$7({
+      item: classnames(suit$a({
         descendantName: 'item'
       }), userCssClasses.item),
-      selectedItem: classnames(suit$7({
+      selectedItem: classnames(suit$a({
         descendantName: 'item',
         modifierName: 'selected'
       }), userCssClasses.selectedItem),
-      parentItem: classnames(suit$7({
+      parentItem: classnames(suit$a({
         descendantName: 'item',
         modifierName: 'parent'
       }), userCssClasses.parentItem),
-      link: classnames(suit$7({
+      link: classnames(suit$a({
         descendantName: 'link'
       }), userCssClasses.link),
-      label: classnames(suit$7({
+      label: classnames(suit$a({
         descendantName: 'label'
       }), userCssClasses.label),
-      count: classnames(suit$7({
+      count: classnames(suit$a({
         descendantName: 'count'
       }), userCssClasses.count),
-      showMore: classnames(suit$7({
+      showMore: classnames(suit$a({
         descendantName: 'showMore'
       }), userCssClasses.showMore),
-      disabledShowMore: classnames(suit$7({
+      disabledShowMore: classnames(suit$a({
         descendantName: 'showMore',
         modifierName: 'disabled'
       }), userCssClasses.disabledShowMore)
     };
-    var specializedRenderer = renderer$3({
+    var specializedRenderer = renderer$5({
       cssClasses: cssClasses,
       containerNode: containerNode,
       templates: templates,
       showMore: showMore,
       renderState: {}
     });
-    var makeHierarchicalMenu = connectHierarchicalMenu(specializedRenderer, function () {
+    var makeWidget = connectHierarchicalMenu(specializedRenderer, function () {
       return I(null, containerNode);
     });
-    return makeHierarchicalMenu({
+    return _objectSpread2(_objectSpread2({}, makeWidget({
       attributes: attributes,
       separator: separator,
       rootPath: rootPath,
@@ -16638,8 +17172,10 @@
       showMoreLimit: showMoreLimit,
       sortBy: sortBy,
       transformItems: transformItems
+    })), {}, {
+      $$widgetType: 'ais.hierarchicalMenu'
     });
-  }
+  };
 
   var Hits = function Hits(_ref) {
     var results = _ref.results,
@@ -16662,7 +17198,7 @@
       className: cssClasses.root
     }, h("ol", {
       className: cssClasses.list
-    }, hits.map(function (hit, position) {
+    }, hits.map(function (hit, index) {
       return h(Template, _extends({}, templateProps, {
         templateKey: "item",
         rootTagName: "li",
@@ -16670,8 +17206,8 @@
           className: cssClasses.item
         },
         key: hit.objectID,
-        data: _objectSpread2({}, hit, {
-          __hitIndex: position
+        data: _objectSpread2(_objectSpread2({}, hit), {}, {
+          __hitIndex: index
         }),
         bindEvent: bindEvent
       }));
@@ -16685,21 +17221,20 @@
     hits: []
   };
 
-  var defaultTemplates$3 = {
+  var defaultTemplates$5 = {
     empty: 'No results',
     item: function item(data) {
       return JSON.stringify(data, null, 2);
     }
   };
 
-  /** @jsx h */
-  var withUsage$u = createDocumentationMessageGenerator({
+  var withUsage$A = createDocumentationMessageGenerator({
     name: 'hits'
   });
-  var suit$8 = component('Hits');
+  var suit$b = component('Hits');
   var HitsWithInsightsListener = insightsListener(Hits);
 
-  var renderer$4 = function renderer(_ref) {
+  var renderer$6 = function renderer(_ref) {
     var renderState = _ref.renderState,
         cssClasses = _ref.cssClasses,
         containerNode = _ref.containerNode,
@@ -16713,7 +17248,7 @@
 
       if (isFirstRendering) {
         renderState.templateProps = prepareTemplateProps({
-          defaultTemplates: defaultTemplates$3,
+          defaultTemplates: defaultTemplates$5,
           templatesConfig: instantSearchInstance.templatesConfig,
           templates: templates
         });
@@ -16734,45 +17269,47 @@
     };
   };
 
-  var hits = function hits(widgetOptions) {
-    var _ref3 = widgetOptions || {},
+  var hits = function hits(widgetParams) {
+    var _ref3 = widgetParams || {},
         container = _ref3.container,
         escapeHTML = _ref3.escapeHTML,
         transformItems = _ref3.transformItems,
         _ref3$templates = _ref3.templates,
-        templates = _ref3$templates === void 0 ? defaultTemplates$3 : _ref3$templates,
+        templates = _ref3$templates === void 0 ? defaultTemplates$5 : _ref3$templates,
         _ref3$cssClasses = _ref3.cssClasses,
         userCssClasses = _ref3$cssClasses === void 0 ? {} : _ref3$cssClasses;
 
     if (!container) {
-      throw new Error(withUsage$u('The `container` option is required.'));
+      throw new Error(withUsage$A('The `container` option is required.'));
     }
 
     var containerNode = getContainerNode(container);
     var cssClasses = {
-      root: classnames(suit$8(), userCssClasses.root),
-      emptyRoot: classnames(suit$8({
+      root: classnames(suit$b(), userCssClasses.root),
+      emptyRoot: classnames(suit$b({
         modifierName: 'empty'
       }), userCssClasses.emptyRoot),
-      list: classnames(suit$8({
+      list: classnames(suit$b({
         descendantName: 'list'
       }), userCssClasses.list),
-      item: classnames(suit$8({
+      item: classnames(suit$b({
         descendantName: 'item'
       }), userCssClasses.item)
     };
-    var specializedRenderer = renderer$4({
+    var specializedRenderer = renderer$6({
       containerNode: containerNode,
       cssClasses: cssClasses,
       renderState: {},
       templates: templates
     });
-    var makeHits = withInsights(connectHits)(specializedRenderer, function () {
+    var makeWidget = withInsights(connectHits)(specializedRenderer, function () {
       return I(null, containerNode);
     });
-    return makeHits({
+    return _objectSpread2(_objectSpread2({}, makeWidget({
       escapeHTML: escapeHTML,
       transformItems: transformItems
+    })), {}, {
+      $$widgetType: 'ais.hits'
     });
   };
 
@@ -16798,13 +17335,12 @@
     }));
   }
 
-  /** @jsx h */
-  var withUsage$v = createDocumentationMessageGenerator({
+  var withUsage$B = createDocumentationMessageGenerator({
     name: 'hits-per-page'
   });
-  var suit$9 = component('HitsPerPage');
+  var suit$c = component('HitsPerPage');
 
-  var renderer$5 = function renderer(_ref) {
+  var renderer$7 = function renderer(_ref) {
     var containerNode = _ref.containerNode,
         cssClasses = _ref.cssClasses;
     return function (_ref2, isFirstRendering) {
@@ -16829,8 +17365,8 @@
     };
   };
 
-  var hitsPerPage = function hitsPerPage(widgetOptions) {
-    var _ref5 = widgetOptions || {},
+  var hitsPerPage = function hitsPerPage(widgetParams) {
+    var _ref5 = widgetParams || {},
         container = _ref5.container,
         items = _ref5.items,
         _ref5$cssClasses = _ref5.cssClasses,
@@ -16838,29 +17374,31 @@
         transformItems = _ref5.transformItems;
 
     if (!container) {
-      throw new Error(withUsage$v('The `container` option is required.'));
+      throw new Error(withUsage$B('The `container` option is required.'));
     }
 
     var containerNode = getContainerNode(container);
     var cssClasses = {
-      root: classnames(suit$9(), userCssClasses.root),
-      select: classnames(suit$9({
+      root: classnames(suit$c(), userCssClasses.root),
+      select: classnames(suit$c({
         descendantName: 'select'
       }), userCssClasses.select),
-      option: classnames(suit$9({
+      option: classnames(suit$c({
         descendantName: 'option'
       }), userCssClasses.option)
     };
-    var specializedRenderer = renderer$5({
+    var specializedRenderer = renderer$7({
       containerNode: containerNode,
       cssClasses: cssClasses
     });
-    var makeHitsPerPage = connectHitsPerPage(specializedRenderer, function () {
+    var makeWidget = connectHitsPerPage(specializedRenderer, function () {
       return I(null, containerNode);
     });
-    return makeHitsPerPage({
+    return _objectSpread2(_objectSpread2({}, makeWidget({
       items: items,
       transformItems: transformItems
+    })), {}, {
+      $$widgetType: 'ais.hitsPerPage'
     });
   };
 
@@ -16906,7 +17444,7 @@
           className: cssClasses.item
         },
         key: hit.objectID,
-        data: _objectSpread2({}, hit, {
+        data: _objectSpread2(_objectSpread2({}, hit), {}, {
           __hitIndex: position
         }),
         bindEvent: bindEvent
@@ -16922,7 +17460,7 @@
     })));
   };
 
-  var defaultTemplates$4 = {
+  var defaultTemplates$6 = {
     empty: 'No results',
     showPreviousText: 'Show previous results',
     showMoreText: 'Show more results',
@@ -16931,14 +17469,13 @@
     }
   };
 
-  /** @jsx h */
-  var withUsage$w = createDocumentationMessageGenerator({
+  var withUsage$C = createDocumentationMessageGenerator({
     name: 'infinite-hits'
   });
-  var suit$a = component('InfiniteHits');
+  var suit$d = component('InfiniteHits');
   var InfiniteHitsWithInsightsListener = insightsListener(InfiniteHits);
 
-  var renderer$6 = function renderer(_ref) {
+  var renderer$8 = function renderer(_ref) {
     var cssClasses = _ref.cssClasses,
         containerNode = _ref.containerNode,
         renderState = _ref.renderState,
@@ -16957,7 +17494,7 @@
 
       if (isFirstRendering) {
         renderState.templateProps = prepareTemplateProps({
-          defaultTemplates: defaultTemplates$4,
+          defaultTemplates: defaultTemplates$6,
           templatesConfig: instantSearchInstance.templatesConfig,
           templates: templates
         });
@@ -16983,79 +17520,80 @@
     };
   };
 
-  var infiniteHits = function infiniteHits() {
-    var _ref3 = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
+  var infiniteHits = function infiniteHits(widgetParams) {
+    var _ref3 = widgetParams || {},
         container = _ref3.container,
         escapeHTML = _ref3.escapeHTML,
         transformItems = _ref3.transformItems,
         _ref3$templates = _ref3.templates,
-        templates = _ref3$templates === void 0 ? defaultTemplates$4 : _ref3$templates,
+        templates = _ref3$templates === void 0 ? defaultTemplates$6 : _ref3$templates,
         _ref3$cssClasses = _ref3.cssClasses,
         userCssClasses = _ref3$cssClasses === void 0 ? {} : _ref3$cssClasses,
         showPrevious = _ref3.showPrevious,
         cache = _ref3.cache;
 
     if (!container) {
-      throw new Error(withUsage$w('The `container` option is required.'));
+      throw new Error(withUsage$C('The `container` option is required.'));
     }
 
     var containerNode = getContainerNode(container);
     var cssClasses = {
-      root: classnames(suit$a(), userCssClasses.root),
-      emptyRoot: classnames(suit$a({
+      root: classnames(suit$d(), userCssClasses.root),
+      emptyRoot: classnames(suit$d({
         modifierName: 'empty'
       }), userCssClasses.emptyRoot),
-      item: classnames(suit$a({
+      item: classnames(suit$d({
         descendantName: 'item'
       }), userCssClasses.item),
-      list: classnames(suit$a({
+      list: classnames(suit$d({
         descendantName: 'list'
       }), userCssClasses.list),
-      loadPrevious: classnames(suit$a({
+      loadPrevious: classnames(suit$d({
         descendantName: 'loadPrevious'
       }), userCssClasses.loadPrevious),
-      disabledLoadPrevious: classnames(suit$a({
+      disabledLoadPrevious: classnames(suit$d({
         descendantName: 'loadPrevious',
         modifierName: 'disabled'
       }), userCssClasses.disabledLoadPrevious),
-      loadMore: classnames(suit$a({
+      loadMore: classnames(suit$d({
         descendantName: 'loadMore'
       }), userCssClasses.loadMore),
-      disabledLoadMore: classnames(suit$a({
+      disabledLoadMore: classnames(suit$d({
         descendantName: 'loadMore',
         modifierName: 'disabled'
       }), userCssClasses.disabledLoadMore)
     };
-    var specializedRenderer = renderer$6({
+    var specializedRenderer = renderer$8({
       containerNode: containerNode,
       cssClasses: cssClasses,
       templates: templates,
       showPrevious: showPrevious,
       renderState: {}
     });
-    var makeInfiniteHits = withInsights(connectInfiniteHits)(specializedRenderer, function () {
+    var makeWidget = withInsights(connectInfiniteHits)(specializedRenderer, function () {
       return I(null, containerNode);
     });
-    return makeInfiniteHits({
+    return _objectSpread2(_objectSpread2({}, makeWidget({
       escapeHTML: escapeHTML,
       transformItems: transformItems,
       showPrevious: showPrevious,
       cache: cache
+    })), {}, {
+      $$widgetType: 'ais.infiniteHits'
     });
   };
 
-  /* eslint-disable max-len */
-  var defaultTemplates$5 = {
+  var defaultTemplates$7 = {
     item: '<a class="{{cssClasses.link}}" href="{{url}}">' + '<span class="{{cssClasses.label}}">{{label}}</span>' + '<span class="{{cssClasses.count}}">{{#helpers.formatNumber}}{{count}}{{/helpers.formatNumber}}</span>' + '</a>',
     showMoreText: "\n    {{#isShowingMore}}\n      Show less\n    {{/isShowingMore}}\n    {{^isShowingMore}}\n      Show more\n    {{/isShowingMore}}\n  "
   };
 
-  var withUsage$x = createDocumentationMessageGenerator({
+  var withUsage$D = createDocumentationMessageGenerator({
     name: 'menu'
   });
-  var suit$b = component('Menu');
+  var suit$e = component('Menu');
 
-  var renderer$7 = function renderer(_ref) {
+  var renderer$9 = function renderer(_ref) {
     var containerNode = _ref.containerNode,
         cssClasses = _ref.cssClasses,
         renderState = _ref.renderState,
@@ -17072,7 +17610,7 @@
 
       if (isFirstRendering) {
         renderState.templateProps = prepareTemplateProps({
-          defaultTemplates: defaultTemplates$5,
+          defaultTemplates: defaultTemplates$7,
           templatesConfig: instantSearchInstance.templatesConfig,
           templates: templates
         });
@@ -17080,8 +17618,8 @@
       }
 
       var facetValues = items.map(function (facetValue) {
-        return _objectSpread2({}, facetValue, {
-          url: createURL(facetValue.name)
+        return _objectSpread2(_objectSpread2({}, facetValue), {}, {
+          url: createURL(facetValue.value)
         });
       });
       I(h(RefinementList$1, {
@@ -17097,67 +17635,10 @@
       }), containerNode);
     };
   };
-  /**
-   * @typedef {Object} MenuCSSClasses
-   * @property {string|string[]} [root] CSS class to add to the root element.
-   * @property {string|string[]} [noRefinementRoot] CSS class to add to the root element when no refinements.
-   * @property {string|string[]} [list] CSS class to add to the list element.
-   * @property {string|string[]} [item] CSS class to add to each item element.
-   * @property {string|string[]} [selectedItem] CSS class to add to each selected item element.
-   * @property {string|string[]} [link] CSS class to add to each link (when using the default template).
-   * @property {string|string[]} [label] CSS class to add to each label (when using the default template).
-   * @property {string|string[]} [count] CSS class to add to each count element (when using the default template).
-   * @property {string|string[]} [showMore] CSS class to add to the show more button.
-   * @property {string|string[]} [disabledShowMore] CSS class to add to the disabled show more button.
-   */
 
-  /**
-   * @typedef {Object} MenuTemplates
-   * @property {string|function({count: number, cssClasses: object, isRefined: boolean, label: string, url: string, value: string}):string} [item] Item template. The string template gets the same values as the function.
-   * @property {string} [showMoreText] Template used for the show more text, provided with `isShowingMore` data property.
-   */
-
-  /**
-   * @typedef {Object} MenuWidgetOptions
-   * @property {string|HTMLElement} container CSS Selector or HTMLElement to insert the widget.
-   * @property {string} attribute Name of the attribute for faceting
-   * @property {string[]|function} [sortBy=['isRefined', 'name:asc']] How to sort refinements. Possible values: `count|isRefined|name:asc|name:desc`.
-   *
-   * You can also use a sort function that behaves like the standard Javascript [compareFunction](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/sort#Syntax).
-   * @property {MenuTemplates} [templates] Customize the output through templating.
-   * @property {number} [limit=10] How many facets values to retrieve.
-   * @property {boolean} [showMore=false] Limit the number of results and display a showMore button.
-   * @property {number} [showMoreLimit=20] Max number of values to display when showing more.
-   * @property {MenuCSSClasses} [cssClasses] CSS classes to add to the wrapping elements.
-   * @property {function(object[]):object[]} [transformItems] Function to transform the items passed to the templates.
-   */
-
-  /**
-   * Create a menu based on a facet. A menu displays facet values and let the user selects only one value at a time.
-   * It also displays an empty value which lets the user "unselect" any previous selection.
-   *
-   * @requirements
-   * The attribute passed to `attribute` must be declared as an
-   * [attribute for faceting](https://www.algolia.com/doc/guides/searching/faceting/#declaring-attributes-for-faceting)
-   * in your Algolia settings.
-   * @type {WidgetFactory}
-   * @devNovel Menu
-   * @category filter
-   * @param {MenuWidgetOptions} $0 The Menu widget options.
-   * @return {Widget} Creates a new instance of the Menu widget.
-   * @example
-   * search.addWidgets([
-   *   instantsearch.widgets.menu({
-   *     container: '#categories',
-   *     attribute: 'hierarchicalCategories.lvl0',
-   *     limit: 10,
-   *   })
-   * ]);
-   */
-
-
-  function menu(_ref3) {
-    var container = _ref3.container,
+  var menu = function menu(widgetParams) {
+    var _ref3 = widgetParams || {},
+        container = _ref3.container,
         attribute = _ref3.attribute,
         sortBy = _ref3.sortBy,
         limit = _ref3.limit,
@@ -17166,47 +17647,47 @@
         _ref3$cssClasses = _ref3.cssClasses,
         userCssClasses = _ref3$cssClasses === void 0 ? {} : _ref3$cssClasses,
         _ref3$templates = _ref3.templates,
-        templates = _ref3$templates === void 0 ? defaultTemplates$5 : _ref3$templates,
+        templates = _ref3$templates === void 0 ? defaultTemplates$7 : _ref3$templates,
         transformItems = _ref3.transformItems;
 
     if (!container) {
-      throw new Error(withUsage$x('The `container` option is required.'));
+      throw new Error(withUsage$D('The `container` option is required.'));
     }
 
     var containerNode = getContainerNode(container);
     var cssClasses = {
-      root: classnames(suit$b(), userCssClasses.root),
-      noRefinementRoot: classnames(suit$b({
+      root: classnames(suit$e(), userCssClasses.root),
+      noRefinementRoot: classnames(suit$e({
         modifierName: 'noRefinement'
       }), userCssClasses.noRefinementRoot),
-      list: classnames(suit$b({
+      list: classnames(suit$e({
         descendantName: 'list'
       }), userCssClasses.list),
-      item: classnames(suit$b({
+      item: classnames(suit$e({
         descendantName: 'item'
       }), userCssClasses.item),
-      selectedItem: classnames(suit$b({
+      selectedItem: classnames(suit$e({
         descendantName: 'item',
         modifierName: 'selected'
       }), userCssClasses.selectedItem),
-      link: classnames(suit$b({
+      link: classnames(suit$e({
         descendantName: 'link'
       }), userCssClasses.link),
-      label: classnames(suit$b({
+      label: classnames(suit$e({
         descendantName: 'label'
       }), userCssClasses.label),
-      count: classnames(suit$b({
+      count: classnames(suit$e({
         descendantName: 'count'
       }), userCssClasses.count),
-      showMore: classnames(suit$b({
+      showMore: classnames(suit$e({
         descendantName: 'showMore'
       }), userCssClasses.showMore),
-      disabledShowMore: classnames(suit$b({
+      disabledShowMore: classnames(suit$e({
         descendantName: 'showMore',
         modifierName: 'disabled'
       }), userCssClasses.disabledShowMore)
     };
-    var specializedRenderer = renderer$7({
+    var specializedRenderer = renderer$9({
       containerNode: containerNode,
       cssClasses: cssClasses,
       renderState: {},
@@ -17216,335 +17697,158 @@
     var makeWidget = connectMenu(specializedRenderer, function () {
       return I(null, containerNode);
     });
-    return makeWidget({
+    return _objectSpread2(_objectSpread2({}, makeWidget({
       attribute: attribute,
       limit: limit,
       showMore: showMore,
       showMoreLimit: showMoreLimit,
       sortBy: sortBy,
       transformItems: transformItems
+    })), {}, {
+      $$widgetType: 'ais.menu'
     });
+  };
+
+  function MenuSelect(_ref) {
+    var cssClasses = _ref.cssClasses,
+        templateProps = _ref.templateProps,
+        items = _ref.items,
+        refine = _ref.refine;
+
+    var _ref2 = find$1(items, function (item) {
+      return item.isRefined;
+    }) || {
+      value: ''
+    },
+        selectedValue = _ref2.value;
+
+    return h("div", {
+      className: classnames(cssClasses.root, _defineProperty({}, cssClasses.noRefinementRoot, items.length === 0))
+    }, h("select", {
+      className: cssClasses.select,
+      value: selectedValue,
+      onChange: function onChange(event) {
+        refine(event.target.value);
+      }
+    }, h(Template, _extends({}, templateProps, {
+      templateKey: "defaultOption",
+      rootTagName: "option",
+      rootProps: {
+        value: '',
+        className: cssClasses.option
+      }
+    })), items.map(function (item) {
+      return h(Template, _extends({}, templateProps, {
+        templateKey: "item",
+        rootTagName: "option",
+        rootProps: {
+          value: item.value,
+          className: cssClasses.option
+        },
+        key: item.value,
+        data: item
+      }));
+    })));
   }
 
-  /* eslint max-len: 0 */
-  var defaultTemplates$6 = {
-    reset: "\n<svg class=\"{{cssClasses.resetIcon}}\" xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 20 20\" width=\"10\" height=\"10\">\n  <path d=\"M8.114 10L.944 2.83 0 1.885 1.886 0l.943.943L10 8.113l7.17-7.17.944-.943L20 1.886l-.943.943-7.17 7.17 7.17 7.17.943.944L18.114 20l-.943-.943-7.17-7.17-7.17 7.17-.944.943L0 18.114l.943-.943L8.113 10z\"></path>\n</svg>\n  ",
-    submit: "\n<svg class=\"{{cssClasses.submitIcon}}\" xmlns=\"http://www.w3.org/2000/svg\" width=\"10\" height=\"10\" viewBox=\"0 0 40 40\">\n  <path d=\"M26.804 29.01c-2.832 2.34-6.465 3.746-10.426 3.746C7.333 32.756 0 25.424 0 16.378 0 7.333 7.333 0 16.378 0c9.046 0 16.378 7.333 16.378 16.378 0 3.96-1.406 7.594-3.746 10.426l10.534 10.534c.607.607.61 1.59-.004 2.202-.61.61-1.597.61-2.202.004L26.804 29.01zm-10.426.627c7.323 0 13.26-5.936 13.26-13.26 0-7.32-5.937-13.257-13.26-13.257C9.056 3.12 3.12 9.056 3.12 16.378c0 7.323 5.936 13.26 13.258 13.26z\"></path>\n</svg>\n  ",
-    loadingIndicator: "\n<svg class=\"{{cssClasses.loadingIcon}}\" width=\"16\" height=\"16\" viewBox=\"0 0 38 38\" xmlns=\"http://www.w3.org/2000/svg\" stroke=\"#444\">\n  <g fill=\"none\" fillRule=\"evenodd\">\n    <g transform=\"translate(1 1)\" strokeWidth=\"2\">\n      <circle strokeOpacity=\".5\" cx=\"18\" cy=\"18\" r=\"18\" />\n      <path d=\"M36 18c0-9.94-8.06-18-18-18\">\n        <animateTransform\n          attributeName=\"transform\"\n          type=\"rotate\"\n          from=\"0 18 18\"\n          to=\"360 18 18\"\n          dur=\"1s\"\n          repeatCount=\"indefinite\"\n        />\n      </path>\n    </g>\n  </g>\n</svg>\n  "
+  var defaultTemplates$8 = {
+    item: '{{label}} ({{#helpers.formatNumber}}{{count}}{{/helpers.formatNumber}})',
+    defaultOption: 'See all'
   };
 
-  var defaultTemplates$7 = {
-    item: "<label class=\"{{cssClasses.label}}\">\n  <input type=\"checkbox\"\n         class=\"{{cssClasses.checkbox}}\"\n         value=\"{{value}}\"\n         {{#isRefined}}checked{{/isRefined}} />\n  <span class=\"{{cssClasses.labelText}}\">{{#isFromSearch}}{{{highlighted}}}{{/isFromSearch}}{{^isFromSearch}}{{highlighted}}{{/isFromSearch}}</span>\n  <span class=\"{{cssClasses.count}}\">{{#helpers.formatNumber}}{{count}}{{/helpers.formatNumber}}</span>\n</label>",
-    showMoreText: "\n    {{#isShowingMore}}\n      Show less\n    {{/isShowingMore}}\n    {{^isShowingMore}}\n      Show more\n    {{/isShowingMore}}\n    ",
-    searchableNoResults: 'No results',
-    searchableReset: defaultTemplates$6.reset,
-    searchableSubmit: defaultTemplates$6.submit,
-    searchableLoadingIndicator: defaultTemplates$6.loadingIndicator
-  };
-
-  var withUsage$y = createDocumentationMessageGenerator({
-    name: 'refinement-list'
+  var withUsage$E = createDocumentationMessageGenerator({
+    name: 'menu-select'
   });
-  var suit$c = component('RefinementList');
-  var searchBoxSuit = component('SearchBox');
-  /**
-   * Transforms the searchable templates by removing the `searchable` prefix.
-   *
-   * This makes them usable in the `SearchBox` component.
-   *
-   * @param {object} templates The widget templates
-   * @returns {object} the formatted templates
-   */
+  var suit$f = component('MenuSelect');
 
-  function transformTemplates(templates) {
-    var allTemplates = _objectSpread2({}, templates, {
-      submit: templates.searchableSubmit,
-      reset: templates.searchableReset,
-      loadingIndicator: templates.searchableLoadingIndicator
-    });
-
-    var searchableReset = allTemplates.searchableReset,
-        searchableSubmit = allTemplates.searchableSubmit,
-        searchableLoadingIndicator = allTemplates.searchableLoadingIndicator,
-        transformedTemplates = _objectWithoutProperties(allTemplates, ["searchableReset", "searchableSubmit", "searchableLoadingIndicator"]);
-
-    return transformedTemplates;
-  }
-
-  var renderer$8 = function renderer(_ref) {
+  var renderer$a = function renderer(_ref) {
     var containerNode = _ref.containerNode,
         cssClasses = _ref.cssClasses,
-        templates = _ref.templates,
         renderState = _ref.renderState,
-        showMore = _ref.showMore,
-        searchable = _ref.searchable,
-        searchablePlaceholder = _ref.searchablePlaceholder,
-        searchableIsAlwaysActive = _ref.searchableIsAlwaysActive;
+        templates = _ref.templates;
     return function (_ref2, isFirstRendering) {
       var refine = _ref2.refine,
           items = _ref2.items,
-          createURL = _ref2.createURL,
-          searchForItems = _ref2.searchForItems,
-          isFromSearch = _ref2.isFromSearch,
-          instantSearchInstance = _ref2.instantSearchInstance,
-          toggleShowMore = _ref2.toggleShowMore,
-          isShowingMore = _ref2.isShowingMore,
-          hasExhaustiveItems = _ref2.hasExhaustiveItems,
-          canToggleShowMore = _ref2.canToggleShowMore;
+          instantSearchInstance = _ref2.instantSearchInstance;
 
       if (isFirstRendering) {
         renderState.templateProps = prepareTemplateProps({
+          defaultTemplates: defaultTemplates$8,
           templatesConfig: instantSearchInstance.templatesConfig,
           templates: templates
         });
         return;
       }
 
-      I(h(RefinementList$1, {
-        createURL: createURL,
+      I(h(MenuSelect, {
         cssClasses: cssClasses,
-        facetValues: items,
-        templateProps: renderState.templateProps,
-        toggleRefinement: refine,
-        searchFacetValues: searchable ? searchForItems : undefined,
-        searchPlaceholder: searchablePlaceholder,
-        searchIsAlwaysActive: searchableIsAlwaysActive,
-        isFromSearch: isFromSearch,
-        showMore: showMore && !isFromSearch && items.length > 0,
-        toggleShowMore: toggleShowMore,
-        isShowingMore: isShowingMore,
-        hasExhaustiveItems: hasExhaustiveItems,
-        canToggleShowMore: canToggleShowMore
+        items: items,
+        refine: refine,
+        templateProps: renderState.templateProps
       }), containerNode);
     };
   };
-  /**
-   * @typedef {Object} RefinementListTemplates
-   * @property  {string|function(RefinementListItemData):string} [item] Item template, provided with `label`, `highlighted`, `value`, `count`, `isRefined`, `url` data properties.
-   * @property {string|function} [searchableNoResults] Templates to use for search for facet values.
-   * @property {string|function} [showMoreText] Template used for the show more text, provided with `isShowingMore` data property.
-   */
 
-  /**
-   * @typedef {Object} RefinementListItemData
-   * @property {number} count The number of occurrences of the facet in the result set.
-   * @property {boolean} isRefined True if the value is selected.
-   * @property {string} label The label to display.
-   * @property {string} value The value used for refining.
-   * @property {string} highlighted The label highlighted (when using search for facet values). This value is displayed in the default template.
-   * @property {string} url The url with this refinement selected.
-   * @property {object} cssClasses Object containing all the classes computed for the item.
-   */
-
-  /**
-   * @typedef {Object} RefinementListCSSClasses
-   * @property {string|string[]} [root] CSS class to add to the root element.
-   * @property {string|string[]} [noRefinementRoot] CSS class to add to the root element when no refinements.
-   * @property {string|string[]} [noResults] CSS class to add to the root element with no results.
-   * @property {string|string[]} [list] CSS class to add to the list element.
-   * @property {string|string[]} [item] CSS class to add to each item element.
-   * @property {string|string[]} [selectedItem] CSS class to add to each selected element.
-   * @property {string|string[]} [label] CSS class to add to each label element (when using the default template).
-   * @property {string|string[]} [checkbox] CSS class to add to each checkbox element (when using the default template).
-   * @property {string|string[]} [labelText] CSS class to add to each label text element.
-   * @property {string|string[]} [showMore] CSS class to add to the show more element
-   * @property {string|string[]} [disabledShowMore] CSS class to add to the disabledshow more element
-   * @property {string|string[]} [count] CSS class to add to each count element (when using the default template).
-   */
-
-  /**
-   * @typedef {Object} RefinementListWidgetOptions
-   * @property {string|HTMLElement} container CSS Selector or HTMLElement to insert the widget.
-   * @property {string} attribute Name of the attribute for faceting.
-   * @property {"and"|"or"} [operator="or"] How to apply refinements. Possible values: `or`, `and`
-   * @property {string[]|function} [sortBy=["isRefined", "count:desc", "name:asc"]] How to sort refinements. Possible values: `count:asc` `count:desc` `name:asc` `name:desc` `isRefined`.
-   *
-   * You can also use a sort function that behaves like the standard Javascript [compareFunction](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/sort#Syntax).
-   * @property {function(object[]):object[]} [transformItems] Function to transform the items passed to the templates.
-   * @property {boolean} [searchable=false] Add a search input to let the user search for more facet values. In order to make this feature work, you need to make the attribute searchable [using the API](https://www.algolia.com/doc/guides/searching/faceting/?language=js#declaring-a-searchable-attribute-for-faceting) or [the dashboard](https://www.algolia.com/explorer/display/).
-   * @property {number} [limit = 10] The minimum number of facet values to retrieve.
-   * @property {boolean} [showMore = false] Whether to display a button that expands the number of items.
-   * @property {number} [showMoreLimit = 20] The max number of items to display if the widget
-   * @property {string} [searchablePlaceholder] Value of the search field placeholder.
-   * @property {boolean} [searchableIsAlwaysActive=true] When `false` the search field will become disabled if
-   * there are less items to display than the `options.limit`, otherwise the search field is always usable.
-   * @property {boolean} [searchableEscapeFacetValues=true] When activated, it will escape the facet values that are returned
-   * from Algolia. In this case, the surrounding tags will always be `<mark></mark>`.
-   * @property {RefinementListTemplates} [templates] Templates to use for the widget.
-   * @property {RefinementListCSSClasses} [cssClasses] CSS classes to add to the wrapping elements.
-   */
-
-  /**
-   * The refinement list widget is one of the most common widget that you can find
-   * in a search UI. With this widget, the user can filter the dataset based on facets.
-   *
-   * The refinement list displays only the most relevant facets for the current search
-   * context. The sort option only affects the facet that are returned by the engine,
-   * not which facets are returned.
-   *
-   * This widget also implements search for facet values, which is a mini search inside the
-   * values of the facets. This makes easy to deal with uncommon facet values.
-   *
-   * @requirements
-   *
-   * The attribute passed to `attribute` must be declared as an
-   * [attribute for faceting](https://www.algolia.com/doc/guides/searching/faceting/#declaring-attributes-for-faceting)
-   * in your Algolia settings.
-   *
-   * If you also want to use search for facet values on this attribute, you need to make it searchable using the [dashboard](https://www.algolia.com/explorer/display/) or using the [API](https://www.algolia.com/doc/guides/searching/faceting/#search-for-facet-values).
-   *
-   * @type {WidgetFactory}
-   * @devNovel RefinementList
-   * @category filter
-   * @param {RefinementListWidgetOptions} $0 The RefinementList widget options that you use to customize the widget.
-   * @return {Widget} Creates a new instance of the RefinementList widget.
-   * @example
-   * search.addWidgets([
-   *   instantsearch.widgets.refinementList({
-   *     container: '#brands',
-   *     attribute: 'brand',
-   *     operator: 'or',
-   *     limit: 10,
-   *   })
-   * ]);
-   */
-
-
-  function refinementList() {
-    var _ref3 = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
+  var menuSelect = function menuSelect(widgetParams) {
+    var _ref3 = widgetParams || {},
         container = _ref3.container,
         attribute = _ref3.attribute,
-        operator = _ref3.operator,
-        sortBy = _ref3.sortBy,
-        limit = _ref3.limit,
-        showMore = _ref3.showMore,
-        showMoreLimit = _ref3.showMoreLimit,
-        _ref3$searchable = _ref3.searchable,
-        searchable = _ref3$searchable === void 0 ? false : _ref3$searchable,
-        _ref3$searchablePlace = _ref3.searchablePlaceholder,
-        searchablePlaceholder = _ref3$searchablePlace === void 0 ? 'Search...' : _ref3$searchablePlace,
-        _ref3$searchableEscap = _ref3.searchableEscapeFacetValues,
-        searchableEscapeFacetValues = _ref3$searchableEscap === void 0 ? true : _ref3$searchableEscap,
-        _ref3$searchableIsAlw = _ref3.searchableIsAlwaysActive,
-        searchableIsAlwaysActive = _ref3$searchableIsAlw === void 0 ? true : _ref3$searchableIsAlw,
+        _ref3$sortBy = _ref3.sortBy,
+        sortBy = _ref3$sortBy === void 0 ? ['name:asc'] : _ref3$sortBy,
+        _ref3$limit = _ref3.limit,
+        limit = _ref3$limit === void 0 ? 10 : _ref3$limit,
         _ref3$cssClasses = _ref3.cssClasses,
         userCssClasses = _ref3$cssClasses === void 0 ? {} : _ref3$cssClasses,
         _ref3$templates = _ref3.templates,
-        userTemplates = _ref3$templates === void 0 ? defaultTemplates$7 : _ref3$templates,
+        templates = _ref3$templates === void 0 ? defaultTemplates$8 : _ref3$templates,
         transformItems = _ref3.transformItems;
 
     if (!container) {
-      throw new Error(withUsage$y('The `container` option is required.'));
+      throw new Error(withUsage$E('The `container` option is required.'));
     }
 
-    var escapeFacetValues = searchable ? Boolean(searchableEscapeFacetValues) : false;
     var containerNode = getContainerNode(container);
-    var templates = transformTemplates(_objectSpread2({}, defaultTemplates$7, {}, userTemplates));
     var cssClasses = {
-      root: classnames(suit$c(), userCssClasses.root),
-      noRefinementRoot: classnames(suit$c({
+      root: classnames(suit$f(), userCssClasses.root),
+      noRefinementRoot: classnames(suit$f({
         modifierName: 'noRefinement'
       }), userCssClasses.noRefinementRoot),
-      list: classnames(suit$c({
-        descendantName: 'list'
-      }), userCssClasses.list),
-      item: classnames(suit$c({
-        descendantName: 'item'
-      }), userCssClasses.item),
-      selectedItem: classnames(suit$c({
-        descendantName: 'item',
-        modifierName: 'selected'
-      }), userCssClasses.selectedItem),
-      searchBox: classnames(suit$c({
-        descendantName: 'searchBox'
-      }), userCssClasses.searchBox),
-      label: classnames(suit$c({
-        descendantName: 'label'
-      }), userCssClasses.label),
-      checkbox: classnames(suit$c({
-        descendantName: 'checkbox'
-      }), userCssClasses.checkbox),
-      labelText: classnames(suit$c({
-        descendantName: 'labelText'
-      }), userCssClasses.labelText),
-      count: classnames(suit$c({
-        descendantName: 'count'
-      }), userCssClasses.count),
-      noResults: classnames(suit$c({
-        descendantName: 'noResults'
-      }), userCssClasses.noResults),
-      showMore: classnames(suit$c({
-        descendantName: 'showMore'
-      }), userCssClasses.showMore),
-      disabledShowMore: classnames(suit$c({
-        descendantName: 'showMore',
-        modifierName: 'disabled'
-      }), userCssClasses.disabledShowMore),
-      searchable: {
-        root: classnames(searchBoxSuit(), userCssClasses.searchableRoot),
-        form: classnames(searchBoxSuit({
-          descendantName: 'form'
-        }), userCssClasses.searchableForm),
-        input: classnames(searchBoxSuit({
-          descendantName: 'input'
-        }), userCssClasses.searchableInput),
-        submit: classnames(searchBoxSuit({
-          descendantName: 'submit'
-        }), userCssClasses.searchableSubmit),
-        submitIcon: classnames(searchBoxSuit({
-          descendantName: 'submitIcon'
-        }), userCssClasses.searchableSubmitIcon),
-        reset: classnames(searchBoxSuit({
-          descendantName: 'reset'
-        }), userCssClasses.searchableReset),
-        resetIcon: classnames(searchBoxSuit({
-          descendantName: 'resetIcon'
-        }), userCssClasses.searchableResetIcon),
-        loadingIndicator: classnames(searchBoxSuit({
-          descendantName: 'loadingIndicator'
-        }), userCssClasses.searchableLoadingIndicator),
-        loadingIcon: classnames(searchBoxSuit({
-          descendantName: 'loadingIcon'
-        }), userCssClasses.searchableLoadingIcon)
-      }
+      select: classnames(suit$f({
+        descendantName: 'select'
+      }), userCssClasses.select),
+      option: classnames(suit$f({
+        descendantName: 'option'
+      }), userCssClasses.option)
     };
-    var specializedRenderer = renderer$8({
+    var specializedRenderer = renderer$a({
       containerNode: containerNode,
       cssClasses: cssClasses,
-      templates: templates,
       renderState: {},
-      searchable: searchable,
-      searchablePlaceholder: searchablePlaceholder,
-      searchableIsAlwaysActive: searchableIsAlwaysActive,
-      showMore: showMore
+      templates: templates
     });
-    var makeWidget = connectRefinementList(specializedRenderer, function () {
+    var makeWidget = connectMenu(specializedRenderer, function () {
       return I(null, containerNode);
     });
-    return makeWidget({
+    return _objectSpread2(_objectSpread2({}, makeWidget({
       attribute: attribute,
-      operator: operator,
       limit: limit,
-      showMore: showMore,
-      showMoreLimit: showMoreLimit,
       sortBy: sortBy,
-      escapeFacetValues: escapeFacetValues,
       transformItems: transformItems
+    })), {}, {
+      $$widgetType: 'ais.menuSelect'
     });
-  }
+  };
 
-  /* eslint-disable max-len */
-  var defaultTemplates$8 = {
+  var defaultTemplates$9 = {
     item: "<label class=\"{{cssClasses.label}}\">\n  <input type=\"radio\" class=\"{{cssClasses.radio}}\" name=\"{{attribute}}\"{{#isRefined}} checked{{/isRefined}} />\n  <span class=\"{{cssClasses.labelText}}\">{{label}}</span>\n</label>"
   };
 
-  /** @jsx h */
-  var withUsage$z = createDocumentationMessageGenerator({
+  var withUsage$F = createDocumentationMessageGenerator({
     name: 'numeric-menu'
   });
-  var suit$d = component('NumericMenu');
+  var suit$g = component('NumericMenu');
 
-  var renderer$9 = function renderer(_ref) {
+  var renderer$b = function renderer(_ref) {
     var containerNode = _ref.containerNode,
         attribute = _ref.attribute,
         cssClasses = _ref.cssClasses,
@@ -17558,7 +17862,7 @@
 
       if (isFirstRendering) {
         renderState.templateProps = prepareTemplateProps({
-          defaultTemplates: defaultTemplates$8,
+          defaultTemplates: defaultTemplates$9,
           templatesConfig: instantSearchInstance.templatesConfig,
           templates: templates
         });
@@ -17576,67 +17880,69 @@
     };
   };
 
-  var numericMenu = function numericMenu(widgetOptions) {
-    var _ref3 = widgetOptions || {},
+  var numericMenu = function numericMenu(widgetParams) {
+    var _ref3 = widgetParams || {},
         container = _ref3.container,
         attribute = _ref3.attribute,
         items = _ref3.items,
         _ref3$cssClasses = _ref3.cssClasses,
         userCssClasses = _ref3$cssClasses === void 0 ? {} : _ref3$cssClasses,
         _ref3$templates = _ref3.templates,
-        templates = _ref3$templates === void 0 ? defaultTemplates$8 : _ref3$templates,
+        templates = _ref3$templates === void 0 ? defaultTemplates$9 : _ref3$templates,
         transformItems = _ref3.transformItems;
 
     if (!container) {
-      throw new Error(withUsage$z('The `container` option is required.'));
+      throw new Error(withUsage$F('The `container` option is required.'));
     }
 
     var containerNode = getContainerNode(container);
     var cssClasses = {
-      root: classnames(suit$d(), userCssClasses.root),
-      noRefinementRoot: classnames(suit$d({
+      root: classnames(suit$g(), userCssClasses.root),
+      noRefinementRoot: classnames(suit$g({
         modifierName: 'noRefinement'
       }), userCssClasses.noRefinementRoot),
-      list: classnames(suit$d({
+      list: classnames(suit$g({
         descendantName: 'list'
       }), userCssClasses.list),
-      item: classnames(suit$d({
+      item: classnames(suit$g({
         descendantName: 'item'
       }), userCssClasses.item),
-      selectedItem: classnames(suit$d({
+      selectedItem: classnames(suit$g({
         descendantName: 'item',
         modifierName: 'selected'
       }), userCssClasses.selectedItem),
-      label: classnames(suit$d({
+      label: classnames(suit$g({
         descendantName: 'label'
       }), userCssClasses.label),
-      radio: classnames(suit$d({
+      radio: classnames(suit$g({
         descendantName: 'radio'
       }), userCssClasses.radio),
-      labelText: classnames(suit$d({
+      labelText: classnames(suit$g({
         descendantName: 'labelText'
       }), userCssClasses.labelText)
     };
-    var specializedRenderer = renderer$9({
+    var specializedRenderer = renderer$b({
       containerNode: containerNode,
       attribute: attribute,
       cssClasses: cssClasses,
       renderState: {},
       templates: templates
     });
-    var makeNumericMenu = connectNumericMenu(specializedRenderer, function () {
+    var makeWidget = connectNumericMenu(specializedRenderer, function () {
       return I(null, containerNode);
     });
-    return makeNumericMenu({
+    return _objectSpread2(_objectSpread2({}, makeWidget({
       attribute: attribute,
       items: items,
       transformItems: transformItems
+    })), {}, {
+      $$widgetType: 'ais.numericMenu'
     });
   };
 
   /** @jsx h */
 
-  function PaginationLink(_ref) {
+  var PaginationLink = function PaginationLink(_ref) {
     var cssClasses = _ref.cssClasses,
         label = _ref.label,
         ariaLabel = _ref.ariaLabel,
@@ -17669,16 +17975,20 @@
         __html: label
       }
     }));
-  }
+  };
 
-  var Pagination =
-  /*#__PURE__*/
-  function (_Component) {
+  var defaultProps$3 = {
+    currentPage: 0,
+    nbPages: 0,
+    pages: []
+  };
+
+  var Pagination = /*#__PURE__*/function (_Component) {
     _inherits(Pagination, _Component);
 
-    function Pagination() {
-      var _getPrototypeOf2;
+    var _super = _createSuper(Pagination);
 
+    function Pagination() {
       var _this;
 
       _classCallCheck(this, Pagination);
@@ -17687,7 +17997,7 @@
         args[_key] = arguments[_key];
       }
 
-      _this = _possibleConstructorReturn(this, (_getPrototypeOf2 = _getPrototypeOf(Pagination)).call.apply(_getPrototypeOf2, [this].concat(args)));
+      _this = _super.call.apply(_super, [this].concat(args));
 
       _defineProperty(_assertThisInitialized(_this), "handleClick", function (pageNumber, event) {
         if (isSpecialClick(event)) {
@@ -17699,6 +18009,63 @@
         event.preventDefault();
 
         _this.props.setCurrentPage(pageNumber);
+      });
+
+      _defineProperty(_assertThisInitialized(_this), "previousPageLink", function () {
+        return _this.pageLink({
+          ariaLabel: 'Previous',
+          additionalClassName: _this.props.cssClasses.previousPageItem,
+          isDisabled: _this.props.isFirstPage,
+          label: _this.props.templates.previous,
+          pageNumber: _this.props.currentPage - 1,
+          createURL: _this.props.createURL
+        });
+      });
+
+      _defineProperty(_assertThisInitialized(_this), "nextPageLink", function () {
+        return _this.pageLink({
+          ariaLabel: 'Next',
+          additionalClassName: _this.props.cssClasses.nextPageItem,
+          isDisabled: _this.props.isLastPage,
+          label: _this.props.templates.next,
+          pageNumber: _this.props.currentPage + 1,
+          createURL: _this.props.createURL
+        });
+      });
+
+      _defineProperty(_assertThisInitialized(_this), "firstPageLink", function () {
+        return _this.pageLink({
+          ariaLabel: 'First',
+          additionalClassName: _this.props.cssClasses.firstPageItem,
+          isDisabled: _this.props.isFirstPage,
+          label: _this.props.templates.first,
+          pageNumber: 0,
+          createURL: _this.props.createURL
+        });
+      });
+
+      _defineProperty(_assertThisInitialized(_this), "lastPageLink", function () {
+        return _this.pageLink({
+          ariaLabel: 'Last',
+          additionalClassName: _this.props.cssClasses.lastPageItem,
+          isDisabled: _this.props.isLastPage,
+          label: _this.props.templates.last,
+          pageNumber: _this.props.nbPages - 1,
+          createURL: _this.props.createURL
+        });
+      });
+
+      _defineProperty(_assertThisInitialized(_this), "pages", function () {
+        return _this.props.pages.map(function (pageNumber) {
+          return _this.pageLink({
+            ariaLabel: "".concat(pageNumber + 1),
+            additionalClassName: _this.props.cssClasses.pageItem,
+            isSelected: pageNumber === _this.props.currentPage,
+            label: "".concat(pageNumber + 1),
+            pageNumber: pageNumber,
+            createURL: _this.props.createURL
+          });
+        });
       });
 
       return _this;
@@ -17728,7 +18095,7 @@
           cssClasses.item = classnames(cssClasses.item, this.props.cssClasses.selectedItem);
         }
 
-        var url = createURL && !isDisabled ? createURL(pageNumber) : '#';
+        var url = !isDisabled ? createURL(pageNumber) : '#';
         return h(PaginationLink, {
           ariaLabel: ariaLabel,
           cssClasses: cssClasses,
@@ -17741,119 +18108,36 @@
         });
       }
     }, {
-      key: "previousPageLink",
-      value: function previousPageLink(_ref2) {
-        var isFirstPage = _ref2.isFirstPage,
-            currentPage = _ref2.currentPage,
-            createURL = _ref2.createURL;
-        return this.pageLink({
-          ariaLabel: 'Previous',
-          additionalClassName: this.props.cssClasses.previousPageItem,
-          isDisabled: isFirstPage,
-          label: this.props.templates.previous,
-          pageNumber: currentPage - 1,
-          createURL: createURL
-        });
-      }
-    }, {
-      key: "nextPageLink",
-      value: function nextPageLink(_ref3) {
-        var isLastPage = _ref3.isLastPage,
-            currentPage = _ref3.currentPage,
-            createURL = _ref3.createURL;
-        return this.pageLink({
-          ariaLabel: 'Next',
-          additionalClassName: this.props.cssClasses.nextPageItem,
-          isDisabled: isLastPage,
-          label: this.props.templates.next,
-          pageNumber: currentPage + 1,
-          createURL: createURL
-        });
-      }
-    }, {
-      key: "firstPageLink",
-      value: function firstPageLink(_ref4) {
-        var isFirstPage = _ref4.isFirstPage,
-            createURL = _ref4.createURL;
-        return this.pageLink({
-          ariaLabel: 'First',
-          additionalClassName: this.props.cssClasses.firstPageItem,
-          isDisabled: isFirstPage,
-          label: this.props.templates.first,
-          pageNumber: 0,
-          createURL: createURL
-        });
-      }
-    }, {
-      key: "lastPageLink",
-      value: function lastPageLink(_ref5) {
-        var isLastPage = _ref5.isLastPage,
-            nbPages = _ref5.nbPages,
-            createURL = _ref5.createURL;
-        return this.pageLink({
-          ariaLabel: 'Last',
-          additionalClassName: this.props.cssClasses.lastPageItem,
-          isDisabled: isLastPage,
-          label: this.props.templates.last,
-          pageNumber: nbPages - 1,
-          createURL: createURL
-        });
-      }
-    }, {
-      key: "pages",
-      value: function pages(_ref6) {
-        var _this2 = this;
-
-        var currentPage = _ref6.currentPage,
-            _pages = _ref6.pages,
-            createURL = _ref6.createURL;
-        return _pages.map(function (pageNumber) {
-          return _this2.pageLink({
-            ariaLabel: pageNumber + 1,
-            additionalClassName: _this2.props.cssClasses.pageItem,
-            isSelected: pageNumber === currentPage,
-            label: pageNumber + 1,
-            pageNumber: pageNumber,
-            createURL: createURL
-          });
-        });
-      }
-    }, {
       key: "render",
       value: function render() {
         return h("div", {
           className: classnames(this.props.cssClasses.root, _defineProperty({}, this.props.cssClasses.noRefinementRoot, this.props.nbPages <= 1))
         }, h("ul", {
           className: this.props.cssClasses.list
-        }, this.props.showFirst && this.firstPageLink(this.props), this.props.showPrevious && this.previousPageLink(this.props), this.pages(this.props), this.props.showNext && this.nextPageLink(this.props), this.props.showLast && this.lastPageLink(this.props)));
+        }, this.props.showFirst && this.firstPageLink(), this.props.showPrevious && this.previousPageLink(), this.pages(), this.props.showNext && this.nextPageLink(), this.props.showLast && this.lastPageLink()));
       }
     }]);
 
     return Pagination;
   }(m);
 
-  Pagination.defaultProps = {
-    nbHits: 0,
-    currentPage: 0,
-    nbPages: 0
-  };
+  _defineProperty(Pagination, "defaultProps", defaultProps$3);
 
-  var withUsage$A = createDocumentationMessageGenerator({
+  var suit$h = component('Pagination');
+  var withUsage$G = createDocumentationMessageGenerator({
     name: 'pagination'
   });
-  var suit$e = component('Pagination');
-  var defaultTemplates$9 = {
+  var defaultTemplates$a = {
     previous: '‹',
     next: '›',
     first: '«',
     last: '»'
   };
 
-  var renderer$a = function renderer(_ref) {
+  var renderer$c = function renderer(_ref) {
     var containerNode = _ref.containerNode,
         cssClasses = _ref.cssClasses,
         templates = _ref.templates,
-        totalPages = _ref.totalPages,
         showFirst = _ref.showFirst,
         showLast = _ref.showLast,
         showPrevious = _ref.showPrevious,
@@ -17862,7 +18146,6 @@
     return function (_ref2, isFirstRendering) {
       var createURL = _ref2.createURL,
           currentRefinement = _ref2.currentRefinement,
-          nbHits = _ref2.nbHits,
           nbPages = _ref2.nbPages,
           pages = _ref2.pages,
           isFirstPage = _ref2.isFirstPage,
@@ -17883,10 +18166,8 @@
         cssClasses: cssClasses,
         currentPage: currentRefinement,
         templates: templates,
-        nbHits: nbHits,
         nbPages: nbPages,
         pages: pages,
-        totalPages: totalPages,
         isFirstPage: isFirstPage,
         isLastPage: isLastPage,
         setCurrentPage: setCurrentPage,
@@ -17897,76 +18178,9 @@
       }), containerNode);
     };
   };
-  /**
-   * @typedef {Object} PaginationCSSClasses
-   * @property  {string|string[]} [root] CSS classes added to the root element of the widget.
-   * @property {string|string[]} [noRefinementRoot] CSS class to add to the root element of the widget if there are no refinements.
-   * @property  {string|string[]} [list] CSS classes added to the wrapping `<ul>`.
-   * @property  {string|string[]} [item] CSS classes added to each `<li>`.
-   * @property  {string|string[]} [firstPageItem] CSS classes added to the first `<li>`.
-   * @property  {string|string[]} [lastPageItem] CSS classes added to the last `<li>`.
-   * @property  {string|string[]} [previousPageItem] CSS classes added to the previous `<li>`.
-   * @property  {string|string[]} [nextPageItem] CSS classes added to the next `<li>`.
-   * @property  {string|string[]} [pageItem] CSS classes added to page `<li>`.
-   * @property  {string|string[]} [selectedItem] CSS classes added to the selected `<li>`.
-   * @property  {string|string[]} [disabledItem] CSS classes added to the disabled `<li>`.
-   * @property  {string|string[]} [link] CSS classes added to each link.
-   */
 
-  /**
-   * @typedef {Object} PaginationTemplates
-   * @property  {string} [previous] Label for the Previous link.
-   * @property  {string} [next] Label for the Next link.
-   * @property  {string} [first] Label for the First link.
-   * @property  {string} [last] Label for the Last link.
-   */
-
-  /**
-   * @typedef {Object} PaginationWidgetOptions
-   * @property  {string|HTMLElement} container CSS Selector or HTMLElement to insert the widget.
-   * @property  {number} [totalPages] The max number of pages to browse.
-   * @property  {number} [padding=3] The number of pages to display on each side of the current page.
-   * @property  {string|HTMLElement|boolean} [scrollTo='body'] Where to scroll after a click, set to `false` to disable.
-   * @property  {boolean} [showFirst=true] Whether to show the “first page” control
-   * @property  {boolean} [showLast=true] Whether to show the last page” control
-   * @property  {boolean} [showNext=true] Whether to show the “next page” control
-   * @property  {boolean} [showPrevious=true] 	Whether to show the “previous page” control
-   * @property  {PaginationTemplates} [templates] Text to display in the links.
-   * @property  {PaginationCSSClasses} [cssClasses] CSS classes to be added.
-   */
-
-  /**
-   * The pagination widget allow the user to switch between pages of the results.
-   *
-   * This is an alternative to using the *show more* pattern, that allows the user
-   * only to display more items. The *show more* pattern is usually preferred
-   * because it is simpler to use, and it is more convenient in a mobile context.
-   * See the infinite hits widget, for more information.
-   *
-   * When using the pagination with Algolia, you should be aware that the engine won't provide you pages
-   * beyond the 1000th hits by default. You can find more information on the [Algolia documentation](https://www.algolia.com/doc/guides/searching/pagination/#pagination-limitations).
-   *
-   * @type {WidgetFactory}
-   * @devNovel Pagination
-   * @category navigation
-   * @param {PaginationWidgetOptions} $0 Options for the Pagination widget.
-   * @return {Widget} A new instance of Pagination widget.
-   * @example
-   * search.addWidgets([
-   *   instantsearch.widgets.pagination({
-   *     container: '#pagination-container',
-   *     totalPages: 20,
-   *     // default is to scroll to 'body', here we disable this behavior
-   *     scrollTo: false,
-   *     showFirst: false,
-   *     showLast: false,
-   *   })
-   * ]);
-   */
-
-
-  function pagination() {
-    var _ref3 = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
+  var pagination = function pagination(widgetParams) {
+    var _ref3 = widgetParams || {},
         container = _ref3.container,
         _ref3$templates = _ref3.templates,
         userTemplates = _ref3$templates === void 0 ? {} : _ref3$templates,
@@ -17986,59 +18200,59 @@
         userScrollTo = _ref3$scrollTo === void 0 ? 'body' : _ref3$scrollTo;
 
     if (!container) {
-      throw new Error(withUsage$A('The `container` option is required.'));
+      throw new Error(withUsage$G('The `container` option is required.'));
     }
 
     var containerNode = getContainerNode(container);
     var scrollTo = userScrollTo === true ? 'body' : userScrollTo;
     var scrollToNode = scrollTo !== false ? getContainerNode(scrollTo) : false;
     var cssClasses = {
-      root: classnames(suit$e(), userCssClasses.root),
-      noRefinementRoot: classnames(suit$e({
+      root: classnames(suit$h(), userCssClasses.root),
+      noRefinementRoot: classnames(suit$h({
         modifierName: 'noRefinement'
       }), userCssClasses.noRefinementRoot),
-      list: classnames(suit$e({
+      list: classnames(suit$h({
         descendantName: 'list'
       }), userCssClasses.list),
-      item: classnames(suit$e({
+      item: classnames(suit$h({
         descendantName: 'item'
       }), userCssClasses.item),
-      firstPageItem: classnames(suit$e({
+      firstPageItem: classnames(suit$h({
         descendantName: 'item',
         modifierName: 'firstPage'
       }), userCssClasses.firstPageItem),
-      lastPageItem: classnames(suit$e({
+      lastPageItem: classnames(suit$h({
         descendantName: 'item',
         modifierName: 'lastPage'
       }), userCssClasses.lastPageItem),
-      previousPageItem: classnames(suit$e({
+      previousPageItem: classnames(suit$h({
         descendantName: 'item',
         modifierName: 'previousPage'
       }), userCssClasses.previousPageItem),
-      nextPageItem: classnames(suit$e({
+      nextPageItem: classnames(suit$h({
         descendantName: 'item',
         modifierName: 'nextPage'
       }), userCssClasses.nextPageItem),
-      pageItem: classnames(suit$e({
+      pageItem: classnames(suit$h({
         descendantName: 'item',
         modifierName: 'page'
       }), userCssClasses.pageItem),
-      selectedItem: classnames(suit$e({
+      selectedItem: classnames(suit$h({
         descendantName: 'item',
         modifierName: 'selected'
       }), userCssClasses.selectedItem),
-      disabledItem: classnames(suit$e({
+      disabledItem: classnames(suit$h({
         descendantName: 'item',
         modifierName: 'disabled'
       }), userCssClasses.disabledItem),
-      link: classnames(suit$e({
+      link: classnames(suit$h({
         descendantName: 'link'
       }), userCssClasses.link)
     };
 
-    var templates = _objectSpread2({}, defaultTemplates$9, {}, userTemplates);
+    var templates = _objectSpread2(_objectSpread2({}, defaultTemplates$a), userTemplates);
 
-    var specializedRenderer = renderer$a({
+    var specializedRenderer = renderer$c({
       containerNode: containerNode,
       cssClasses: cssClasses,
       templates: templates,
@@ -18046,46 +18260,586 @@
       showLast: showLast,
       showPrevious: showPrevious,
       showNext: showNext,
-      padding: padding,
       scrollToNode: scrollToNode
     });
     var makeWidget = connectPagination(specializedRenderer, function () {
       return I(null, containerNode);
     });
-    return makeWidget({
+    return _objectSpread2(_objectSpread2({}, makeWidget({
       totalPages: totalPages,
       padding: padding
+    })), {}, {
+      $$widgetType: 'ais.pagination'
     });
+  };
+
+  var t$1,r$1,u$1=[],i$1=n.__r;n.__r=function(n){i$1&&i$1(n),t$1=0,(r$1=n.__c).__H&&(r$1.__H.t=A$1(r$1.__H.t));};var f$1=n.diffed;n.diffed=function(n){f$1&&f$1(n);var t=n.__c;if(t){var r=t.__H;r&&(r.u=(r.u.some(function(n){n.ref&&(n.ref.current=n.createHandle());}),[]),r.i=A$1(r.i));}};var o$1=n.unmount;function e$1(t){n.__h&&n.__h(r$1);var u=r$1.__H||(r$1.__H={o:[],t:[],i:[],u:[]});return t>=u.o.length&&u.o.push({}),u.o[t]}function c$1(n){return a$1(q,n)}function a$1(n,u,i){var f=e$1(t$1++);return f.__c||(f.__c=r$1,f.v=[i?i(u):q(void 0,u),function(t){var r=n(f.v[0],t);f.v[0]!==r&&(f.v[0]=r,f.__c.setState({}));}]),f.v}function v$1(n,u){var i=e$1(t$1++);h$1(i.m,u)&&(i.v=n,i.m=u,r$1.__H.t.push(i),T$1(r$1));}function d$1(n){return l(function(){return {current:n}},[])}function l(n,r){var u=e$1(t$1++);return h$1(u.m,r)?(u.m=r,u.p=n,u.v=n()):u.v}n.unmount=function(n){o$1&&o$1(n);var t=n.__c;if(t){var r=t.__H;r&&r.o.forEach(function(n){return n.l&&n.l()});}};var T$1=function(){};function g$1(){u$1.some(function(n){n.s=!1,n.__P&&(n.__H.t=A$1(n.__H.t));}),u$1=[];}if("undefined"!=typeof window){var w$1=n.requestAnimationFrame;T$1=function(t){(!t.s&&(t.s=!0)&&1===u$1.push(t)||w$1!==n.requestAnimationFrame)&&(w$1=n.requestAnimationFrame,(n.requestAnimationFrame||function(n){var t=function(){clearTimeout(r),cancelAnimationFrame(u),setTimeout(n);},r=setTimeout(t,100),u=requestAnimationFrame(t);})(g$1));};}function A$1(n){return n.forEach(E),n.forEach(F),[]}function E(n){n.l&&n.l();}function F(n){var t=n.v();"function"==typeof t&&(n.l=t);}function h$1(n,t){return !n||t.some(function(t,r){return t!==n[r]})}function q(n,t){return "function"==typeof t?t(n):t}
+
+  function Panel(props) {
+    var _cx;
+
+    var _useState = c$1(props.isCollapsed),
+        _useState2 = _slicedToArray(_useState, 2),
+        isCollapsed = _useState2[0],
+        setIsCollapsed = _useState2[1];
+
+    var _useState3 = c$1(false),
+        _useState4 = _slicedToArray(_useState3, 2),
+        isControlled = _useState4[0],
+        setIsControlled = _useState4[1];
+
+    var bodyRef = d$1(null);
+    v$1(function () {
+      if (!bodyRef.current) {
+        return undefined;
+      }
+
+      bodyRef.current.appendChild(props.bodyElement);
+      return function () {
+        bodyRef.current.removeChild(props.bodyElement);
+      };
+    }, [bodyRef, props.bodyElement]);
+
+    if (!isControlled && props.isCollapsed !== isCollapsed) {
+      setIsCollapsed(props.isCollapsed);
+    }
+
+    return h("div", {
+      className: classnames(props.cssClasses.root, (_cx = {}, _defineProperty(_cx, props.cssClasses.noRefinementRoot, props.hidden), _defineProperty(_cx, props.cssClasses.collapsibleRoot, props.collapsible), _defineProperty(_cx, props.cssClasses.collapsedRoot, isCollapsed), _cx)),
+      hidden: props.hidden
+    }, props.templates.header && h("div", {
+      className: props.cssClasses.header
+    }, h(Template, {
+      templates: props.templates,
+      templateKey: "header",
+      rootTagName: "span",
+      data: props.data
+    }), props.collapsible && h("button", {
+      className: props.cssClasses.collapseButton,
+      "aria-expanded": !isCollapsed,
+      onClick: function onClick(event) {
+        event.preventDefault();
+        setIsControlled(true);
+        setIsCollapsed(function (prevIsCollapsed) {
+          return !prevIsCollapsed;
+        });
+      }
+    }, h(Template, {
+      templates: props.templates,
+      templateKey: "collapseButtonText",
+      rootTagName: "span",
+      data: {
+        collapsed: isCollapsed
+      }
+    }))), h("div", {
+      className: props.cssClasses.body,
+      ref: bodyRef
+    }), props.templates.footer && h(Template, {
+      templates: props.templates,
+      templateKey: "footer",
+      rootProps: {
+        className: props.cssClasses.footer
+      },
+      data: props.data
+    }));
   }
 
-  var RangeInput =
-  /*#__PURE__*/
-  function (_Component) {
+  var withUsage$H = createDocumentationMessageGenerator({
+    name: 'panel'
+  });
+  var suit$i = component('Panel');
+
+  var renderer$d = function renderer(_ref) {
+    var containerNode = _ref.containerNode,
+        bodyContainerNode = _ref.bodyContainerNode,
+        cssClasses = _ref.cssClasses,
+        templates = _ref.templates;
+    return function (_ref2) {
+      var options = _ref2.options,
+          hidden = _ref2.hidden,
+          collapsible = _ref2.collapsible,
+          collapsed = _ref2.collapsed;
+      I(h(Panel, {
+        cssClasses: cssClasses,
+        hidden: hidden,
+        collapsible: collapsible,
+        isCollapsed: collapsed,
+        templates: templates,
+        data: options,
+        bodyElement: bodyContainerNode
+      }), containerNode);
+    };
+  };
+
+  /**
+   * The panel widget wraps other widgets in a consistent panel design.
+   * It also reacts, indicates and sets CSS classes when widgets are no longer relevant for refining.
+   */
+  var panel = function panel(panelWidgetParams) {
+    var _ref3 = panelWidgetParams || {},
+        _ref3$templates = _ref3.templates,
+        templates = _ref3$templates === void 0 ? {} : _ref3$templates,
+        _ref3$hidden = _ref3.hidden,
+        hidden = _ref3$hidden === void 0 ? function () {
+      return false;
+    } : _ref3$hidden,
+        collapsed = _ref3.collapsed,
+        _ref3$cssClasses = _ref3.cssClasses,
+        userCssClasses = _ref3$cssClasses === void 0 ? {} : _ref3$cssClasses;
+
+     _warning(typeof hidden === 'function', "The `hidden` option in the \"panel\" widget expects a function returning a boolean (received type ".concat(getObjectType(hidden), ").")) ;
+     _warning(typeof collapsed === 'undefined' || typeof collapsed === 'function', "The `collapsed` option in the \"panel\" widget expects a function returning a boolean (received type ".concat(getObjectType(collapsed), ").")) ;
+    var bodyContainerNode = document.createElement('div');
+    var collapsible = Boolean(collapsed);
+    var collapsedFn = typeof collapsed === 'function' ? collapsed : function () {
+      return false;
+    };
+    var cssClasses = {
+      root: classnames(suit$i(), userCssClasses.root),
+      noRefinementRoot: classnames(suit$i({
+        modifierName: 'noRefinement'
+      }), userCssClasses.noRefinementRoot),
+      collapsibleRoot: classnames(suit$i({
+        modifierName: 'collapsible'
+      }), userCssClasses.collapsibleRoot),
+      collapsedRoot: classnames(suit$i({
+        modifierName: 'collapsed'
+      }), userCssClasses.collapsedRoot),
+      collapseButton: classnames(suit$i({
+        descendantName: 'collapseButton'
+      }), userCssClasses.collapseButton),
+      collapseIcon: classnames(suit$i({
+        descendantName: 'collapseIcon'
+      }), userCssClasses.collapseIcon),
+      body: classnames(suit$i({
+        descendantName: 'body'
+      }), userCssClasses.body),
+      header: classnames(suit$i({
+        descendantName: 'header'
+      }), userCssClasses.header),
+      footer: classnames(suit$i({
+        descendantName: 'footer'
+      }), userCssClasses.footer)
+    };
+    return function (widgetFactory) {
+      return function (widgetParams) {
+        if (!(widgetParams && widgetParams.container)) {
+          throw new Error(withUsage$H("The `container` option is required in the widget within the panel."));
+        }
+
+        var containerNode = getContainerNode(widgetParams.container);
+        var defaultTemplates = {
+          header: '',
+          footer: '',
+          collapseButtonText: function collapseButtonText(_ref4) {
+            var isCollapsed = _ref4.collapsed;
+            return "<svg\n          class=\"".concat(cssClasses.collapseIcon, "\"\n          width=\"1em\"\n          height=\"1em\"\n          viewBox=\"0 0 500 500\"\n        >\n        <path d=\"").concat(isCollapsed ? 'M100 250l300-150v300z' : 'M250 400l150-300H100z', "\" fill=\"currentColor\" />\n        </svg>");
+          }
+        };
+        var renderPanel = renderer$d({
+          containerNode: containerNode,
+          bodyContainerNode: bodyContainerNode,
+          cssClasses: cssClasses,
+          templates: _objectSpread2(_objectSpread2({}, defaultTemplates), templates)
+        });
+        renderPanel({
+          options: {},
+          hidden: true,
+          collapsible: collapsible,
+          collapsed: false
+        });
+        var widget = widgetFactory(_objectSpread2(_objectSpread2({}, widgetParams), {}, {
+          container: bodyContainerNode
+        })); // TypeScript somehow loses track of the ...widget type, since it's
+        // not directly returned. Eventually the "as ReturnType<typeof widgetFactory>"
+        // will not be needed anymore.
+        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+
+        return _objectSpread2(_objectSpread2({}, widget), {}, {
+          dispose: function dispose() {
+            I(null, containerNode);
+
+            if (typeof widget.dispose === 'function') {
+              var _widget$dispose;
+
+              for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+                args[_key] = arguments[_key];
+              }
+
+              return (_widget$dispose = widget.dispose).call.apply(_widget$dispose, [this].concat(args));
+            }
+
+            return undefined;
+          },
+          render: function render() {
+            for (var _len2 = arguments.length, args = new Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
+              args[_key2] = arguments[_key2];
+            }
+
+            var renderOptions = args[0];
+
+            var options = _objectSpread2(_objectSpread2({}, widget.getWidgetRenderState ? widget.getWidgetRenderState(renderOptions) : {}), renderOptions);
+
+            renderPanel({
+              options: options,
+              hidden: Boolean(hidden(options)),
+              collapsible: collapsible,
+              collapsed: Boolean(collapsedFn(options))
+            });
+
+            if (typeof widget.render === 'function') {
+              var _widget$render;
+
+              (_widget$render = widget.render).call.apply(_widget$render, [this].concat(args));
+            }
+          }
+        });
+      };
+    };
+  };
+
+  /** @ts-ignore */
+  // using the type like this requires only one ts-ignore
+
+  /**
+   * This widget sets the geolocation value for the search based on the selected
+   * result in the Algolia Places autocomplete.
+   */
+  var placesWidget = function placesWidget(widgetParams) {
+    var _ref = widgetParams || {},
+        placesReference = _ref.placesReference,
+        _ref$defaultPosition = _ref.defaultPosition,
+        defaultPosition = _ref$defaultPosition === void 0 ? [] : _ref$defaultPosition,
+        placesOptions = _objectWithoutProperties(_ref, ["placesReference", "defaultPosition"]);
+
+    if (typeof placesReference !== 'function') {
+      throw new Error('The `placesReference` option requires a valid Places.js reference.');
+    }
+
+    var placesAutocomplete = placesReference(placesOptions);
+    var state = {
+      query: '',
+      initialLatLngViaIP: undefined,
+      isInitialLatLngViaIPSet: false
+    };
+    return {
+      $$type: 'ais.places',
+      $$widgetType: 'ais.places',
+      init: function init(_ref2) {
+        var helper = _ref2.helper;
+        placesAutocomplete.on('change', function (eventOptions) {
+          var _eventOptions$suggest = eventOptions.suggestion,
+              value = _eventOptions$suggest.value,
+              _eventOptions$suggest2 = _eventOptions$suggest.latlng,
+              lat = _eventOptions$suggest2.lat,
+              lng = _eventOptions$suggest2.lng;
+          state.query = value;
+          helper.setQueryParameter('insideBoundingBox', undefined).setQueryParameter('aroundLatLngViaIP', false).setQueryParameter('aroundLatLng', "".concat(lat, ",").concat(lng)).search();
+        });
+        placesAutocomplete.on('clear', function () {
+          state.query = '';
+          helper.setQueryParameter('insideBoundingBox', undefined);
+
+          if (defaultPosition.length > 1) {
+            helper.setQueryParameter('aroundLatLngViaIP', false).setQueryParameter('aroundLatLng', defaultPosition.join(','));
+          } else {
+            helper.setQueryParameter('aroundLatLngViaIP', state.initialLatLngViaIP).setQueryParameter('aroundLatLng', undefined);
+          }
+
+          helper.search();
+        });
+      },
+      getWidgetUiState: function getWidgetUiState(uiState, _ref3) {
+        var searchParameters = _ref3.searchParameters;
+        var position = searchParameters.aroundLatLng || defaultPosition.join(',');
+        var hasPositionSet = position !== defaultPosition.join(',');
+
+        if (!hasPositionSet && !state.query) {
+          var places = uiState.places,
+              uiStateWithoutPlaces = _objectWithoutProperties(uiState, ["places"]);
+
+          return uiStateWithoutPlaces;
+        }
+
+        return _objectSpread2(_objectSpread2({}, uiState), {}, {
+          places: {
+            query: state.query,
+            position: position
+          }
+        });
+      },
+      getWidgetSearchParameters: function getWidgetSearchParameters(searchParameters, _ref4) {
+        var uiState = _ref4.uiState;
+
+        var _ref5 = uiState.places || {},
+            _ref5$query = _ref5.query,
+            query = _ref5$query === void 0 ? '' : _ref5$query,
+            _ref5$position = _ref5.position,
+            position = _ref5$position === void 0 ? defaultPosition.join(',') : _ref5$position;
+
+        state.query = query;
+
+        if (!state.isInitialLatLngViaIPSet) {
+          state.isInitialLatLngViaIPSet = true;
+          state.initialLatLngViaIP = searchParameters.aroundLatLngViaIP;
+        }
+
+        placesAutocomplete.setVal(query);
+        placesAutocomplete.close();
+        return searchParameters.setQueryParameter('insideBoundingBox', undefined).setQueryParameter('aroundLatLngViaIP', false).setQueryParameter('aroundLatLng', position || undefined);
+      },
+      getRenderState: function getRenderState(renderState, renderOptions) {
+        return _objectSpread2(_objectSpread2({}, renderState), {}, {
+          places: this.getWidgetRenderState(renderOptions)
+        });
+      },
+      getWidgetRenderState: function getWidgetRenderState() {
+        return {
+          widgetParams: widgetParams
+        };
+      }
+    };
+  };
+
+  /** @jsx h */
+
+  var _ref2 = h("path", {
+    fill: "#5468FF",
+    d: "M78.99.94h16.6a2.97 2.97 0 012.96 2.96v16.6a2.97 2.97 0 01-2.97 2.96h-16.6a2.97 2.97 0 01-2.96-2.96V3.9A2.96 2.96 0 0179 .94"
+  });
+
+  var _ref3 = h("path", {
+    fill: "#FFF",
+    d: "M89.63 5.97v-.78a.98.98 0 00-.98-.97h-2.28a.98.98 0 00-.97.97V6c0 .09.08.15.17.13a7.13 7.13 0 013.9-.02c.08.02.16-.04.16-.13m-6.25 1L83 6.6a.98.98 0 00-1.38 0l-.46.46a.97.97 0 000 1.38l.38.39c.06.06.15.04.2-.02a7.49 7.49 0 011.63-1.62c.07-.04.08-.14.02-.2m4.16 2.45v3.34c0 .1.1.17.2.12l2.97-1.54c.06-.03.08-.12.05-.18a3.7 3.7 0 00-3.08-1.87c-.07 0-.14.06-.14.13m0 8.05a4.49 4.49 0 110-8.98 4.49 4.49 0 010 8.98m0-10.85a6.37 6.37 0 100 12.74 6.37 6.37 0 000-12.74"
+  });
+
+  var PoweredBy = function PoweredBy(_ref) {
+    var url = _ref.url,
+        theme = _ref.theme,
+        cssClasses = _ref.cssClasses;
+    return h("div", {
+      className: cssClasses.root
+    }, h("a", {
+      href: url,
+      target: "_blank",
+      className: cssClasses.link,
+      "aria-label": "Search by Algolia",
+      rel: "noopener noreferrer"
+    }, h("svg", {
+      height: "1.2em",
+      className: cssClasses.logo,
+      viewBox: "0 0 168 24" // This style is necessary as long as it's not included in InstantSearch.css.
+      // For now, InstantSearch.css sets a maximum width of 70px.
+      ,
+      style: {
+        width: 'auto'
+      }
+    }, h("path", {
+      fill: theme === 'dark' ? '#FFF' : '#5D6494',
+      d: "M6.97 6.68V8.3a4.47 4.47 0 00-2.42-.67 2.2 2.2 0 00-1.38.4c-.34.26-.5.6-.5 1.02 0 .43.16.77.49 1.03.33.25.83.53 1.51.83a7.04 7.04 0 011.9 1.08c.34.24.58.54.73.89.15.34.23.74.23 1.18 0 .95-.33 1.7-1 2.24a4 4 0 01-2.6.81 5.71 5.71 0 01-2.94-.68v-1.71c.84.63 1.81.94 2.92.94.58 0 1.05-.14 1.39-.4.34-.28.5-.65.5-1.13 0-.29-.1-.55-.3-.8a2.2 2.2 0 00-.65-.53 23.03 23.03 0 00-1.64-.78 13.67 13.67 0 01-1.11-.64c-.12-.1-.28-.22-.46-.4a1.72 1.72 0 01-.39-.5 4.46 4.46 0 01-.22-.6c-.07-.23-.1-.48-.1-.75 0-.91.33-1.63 1-2.17a4 4 0 012.57-.8c.97 0 1.8.18 2.47.52zm7.47 5.7v-.3a2.26 2.26 0 00-.5-1.44c-.3-.35-.74-.53-1.32-.53-.53 0-.99.2-1.37.58a2.9 2.9 0 00-.72 1.68h3.91zm1 2.79v1.4c-.6.34-1.38.51-2.36.51a4.02 4.02 0 01-3-1.13 4.04 4.04 0 01-1.11-2.97c0-1.3.34-2.32 1.02-3.06a3.38 3.38 0 012.6-1.1c1.03 0 1.85.32 2.46.96.6.64.9 1.57.9 2.78 0 .33-.03.68-.09 1.04h-5.31c.1.7.4 1.24.89 1.61.49.38 1.1.56 1.85.56.86 0 1.58-.2 2.15-.6zm6.61-1.78h-1.21c-.6 0-1.05.12-1.35.36-.3.23-.46.53-.46.89 0 .37.12.66.36.88.23.2.57.32 1.02.32.5 0 .9-.15 1.2-.43.3-.28.44-.65.44-1.1v-.92zm-4.07-2.55V9.33a4.96 4.96 0 012.5-.55c2.1 0 3.17 1.03 3.17 3.08V17H22.1v-.96c-.42.68-1.15 1.02-2.19 1.02-.76 0-1.38-.22-1.84-.66-.46-.44-.7-1-.7-1.68 0-.78.3-1.38.88-1.81.59-.43 1.4-.65 2.46-.65h1.34v-.46c0-.55-.13-.97-.4-1.25-.26-.29-.7-.43-1.32-.43-.86 0-1.65.24-2.35.72zm9.34-1.93v1.42c.39-1 1.1-1.5 2.12-1.5.15 0 .31.02.5.05v1.53c-.23-.1-.48-.14-.76-.14-.54 0-.99.24-1.34.71a2.8 2.8 0 00-.52 1.71V17h-1.57V8.91h1.57zm5 4.09a3 3 0 00.76 2.01c.47.53 1.14.8 2 .8.64 0 1.24-.18 1.8-.53v1.4c-.53.32-1.2.48-2 .48a3.98 3.98 0 01-4.17-4.18c0-1.16.38-2.15 1.14-2.98a4 4 0 013.1-1.23c.7 0 1.34.15 1.92.44v1.44a3.24 3.24 0 00-1.77-.5A2.65 2.65 0 0032.33 13zm7.92-7.28v4.58c.46-1 1.3-1.5 2.5-1.5.8 0 1.42.24 1.9.73.48.5.72 1.17.72 2.05V17H43.8v-5.1c0-.56-.14-.99-.43-1.29-.28-.3-.65-.45-1.1-.45-.54 0-1 .2-1.42.6-.4.4-.61 1.02-.61 1.85V17h-1.56V5.72h1.56zM55.2 15.74c.6 0 1.1-.25 1.5-.76.4-.5.6-1.16.6-1.95 0-.92-.2-1.62-.6-2.12-.4-.5-.92-.74-1.55-.74-.56 0-1.05.22-1.5.67-.44.45-.66 1.13-.66 2.06 0 .96.22 1.67.64 2.14.43.47.95.7 1.57.7zM53 5.72v4.42a2.74 2.74 0 012.43-1.34c1.03 0 1.86.38 2.51 1.15.65.76.97 1.78.97 3.05 0 1.13-.3 2.1-.92 2.9-.62.81-1.47 1.21-2.54 1.21s-1.9-.45-2.46-1.34V17h-1.58V5.72H53zm9.9 11.1l-3.22-7.9h1.74l1 2.62 1.26 3.42c.1-.32.48-1.46 1.15-3.42l.91-2.63h1.66l-2.92 7.87c-.78 2.07-1.96 3.1-3.56 3.1-.28 0-.53-.02-.73-.07v-1.34c.17.04.35.06.54.06 1.03 0 1.76-.57 2.17-1.7z"
+    }), _ref2, _ref3, h("path", {
+      fill: theme === 'dark' ? '#FFF' : '#5468FF',
+      d: "M120.92 18.8c-4.38.02-4.38-3.54-4.38-4.1V1.36l2.67-.42v13.25c0 .32 0 2.36 1.71 2.37v2.24zm-10.84-2.18c.82 0 1.43-.04 1.85-.12v-2.72a5.48 5.48 0 00-1.57-.2c-.3 0-.6.02-.9.07-.3.04-.57.12-.81.24-.24.11-.44.28-.58.49a.93.93 0 00-.22.65c0 .63.22 1 .61 1.23.4.24.94.36 1.62.36zm-.23-9.7c.88 0 1.62.11 2.23.33.6.22 1.09.53 1.44.92.36.4.61.92.76 1.48.16.56.23 1.17.23 1.85v6.87a21.69 21.69 0 01-4.68.5c-.69 0-1.32-.07-1.9-.2a4 4 0 01-1.46-.63 3.3 3.3 0 01-.96-1.13 4.3 4.3 0 01-.34-1.8 3.13 3.13 0 011.43-2.63c.45-.3.95-.5 1.54-.62a8.8 8.8 0 013.79.05v-.44c0-.3-.04-.6-.11-.87a1.78 1.78 0 00-1.1-1.22 3.2 3.2 0 00-1.15-.2 9.75 9.75 0 00-2.95.46l-.33-2.19a11.43 11.43 0 013.56-.53zm52.84 9.63c.82 0 1.43-.05 1.85-.13V13.7a5.42 5.42 0 00-1.57-.2c-.3 0-.6.02-.9.07-.3.04-.57.12-.81.24-.24.12-.44.28-.58.5a.93.93 0 00-.22.65c0 .63.22.99.61 1.23.4.24.94.36 1.62.36zm-.23-9.7c.88 0 1.63.11 2.23.33.6.22 1.1.53 1.45.92.35.39.6.92.76 1.48.15.56.23 1.18.23 1.85v6.88c-.41.08-1.03.19-1.87.31-.83.12-1.77.18-2.81.18-.7 0-1.33-.06-1.9-.2a4 4 0 01-1.47-.63c-.4-.3-.72-.67-.95-1.13a4.3 4.3 0 01-.34-1.8c0-.66.13-1.08.38-1.53.26-.45.61-.82 1.05-1.1.44-.3.95-.5 1.53-.62a8.8 8.8 0 013.8.05v-.43c0-.31-.04-.6-.12-.88-.07-.28-.2-.52-.38-.73a1.78 1.78 0 00-.73-.5c-.3-.1-.68-.2-1.14-.2a9.85 9.85 0 00-2.95.47l-.32-2.19a11.63 11.63 0 013.55-.53zm-8.03-1.27a1.62 1.62 0 000-3.24 1.62 1.62 0 100 3.24zm1.35 13.22h-2.7V7.27l2.7-.42V18.8zm-4.72 0c-4.38.02-4.38-3.54-4.38-4.1l-.01-13.34 2.67-.42v13.25c0 .32 0 2.36 1.72 2.37v2.24zm-8.7-5.9a4.7 4.7 0 00-.74-2.79 2.4 2.4 0 00-2.07-1 2.4 2.4 0 00-2.06 1 4.7 4.7 0 00-.74 2.8c0 1.16.25 1.94.74 2.62a2.4 2.4 0 002.07 1.02c.88 0 1.57-.34 2.07-1.02a4.2 4.2 0 00.73-2.63zm2.74 0a6.46 6.46 0 01-1.52 4.23c-.49.53-1.07.94-1.76 1.22-.68.29-1.73.45-2.26.45a6.6 6.6 0 01-2.25-.45 5.1 5.1 0 01-2.88-3.13 7.3 7.3 0 01-.01-4.84 5.13 5.13 0 012.9-3.1 5.67 5.67 0 012.22-.42c.81 0 1.56.14 2.24.42.69.29 1.28.69 1.75 1.22.49.52.87 1.15 1.14 1.89a7 7 0 01.43 2.5zm-20.14 0c0 1.11.25 2.36.74 2.88.5.52 1.13.78 1.91.78a4.07 4.07 0 002.12-.6V9.33c-.19-.04-.99-.2-1.76-.23a2.67 2.67 0 00-2.23 1 4.73 4.73 0 00-.78 2.8zm7.44 5.27c0 1.82-.46 3.16-1.4 4-.94.85-2.37 1.27-4.3 1.27-.7 0-2.17-.13-3.34-.4l.43-2.11c.98.2 2.27.26 2.95.26 1.08 0 1.84-.22 2.3-.66.46-.43.68-1.08.68-1.94v-.44a5.2 5.2 0 01-2.54.6 5.6 5.6 0 01-2.01-.36 4.2 4.2 0 01-2.58-2.71 9.88 9.88 0 01.02-5.35 4.92 4.92 0 012.93-2.96 6.6 6.6 0 012.43-.46 19.64 19.64 0 014.43.66v10.6z"
+    }))));
+  };
+
+  var suit$j = component('PoweredBy');
+  var withUsage$I = createDocumentationMessageGenerator({
+    name: 'powered-by'
+  });
+
+  var renderer$e = function renderer(_ref) {
+    var containerNode = _ref.containerNode,
+        cssClasses = _ref.cssClasses;
+    return function (_ref2, isFirstRendering) {
+      var url = _ref2.url,
+          widgetParams = _ref2.widgetParams;
+
+      if (isFirstRendering) {
+        var _widgetParams$theme = widgetParams.theme,
+            theme = _widgetParams$theme === void 0 ? 'light' : _widgetParams$theme;
+        I(h(PoweredBy, {
+          cssClasses: cssClasses,
+          url: url,
+          theme: theme
+        }), containerNode);
+        return;
+      }
+    };
+  };
+
+  var poweredBy = function poweredBy(widgetParams) {
+    var _ref3 = widgetParams || {},
+        container = _ref3.container,
+        _ref3$cssClasses = _ref3.cssClasses,
+        userCssClasses = _ref3$cssClasses === void 0 ? {} : _ref3$cssClasses,
+        _ref3$theme = _ref3.theme,
+        theme = _ref3$theme === void 0 ? 'light' : _ref3$theme;
+
+    if (!container) {
+      throw new Error(withUsage$I('The `container` option is required.'));
+    }
+
+    var containerNode = getContainerNode(container);
+    var cssClasses = {
+      root: classnames(suit$j(), suit$j({
+        modifierName: theme === 'dark' ? 'dark' : 'light'
+      }), userCssClasses.root),
+      link: classnames(suit$j({
+        descendantName: 'link'
+      }), userCssClasses.link),
+      logo: classnames(suit$j({
+        descendantName: 'logo'
+      }), userCssClasses.logo)
+    };
+    var specializedRenderer = renderer$e({
+      containerNode: containerNode,
+      cssClasses: cssClasses
+    });
+    var makeWidget = connectPoweredBy(specializedRenderer, function () {
+      return I(null, containerNode);
+    });
+    return _objectSpread2(_objectSpread2({}, makeWidget({
+      theme: theme
+    })), {}, {
+      $$widgetType: 'ais.poweredBy'
+    });
+  };
+
+  var withUsage$J = createDocumentationMessageGenerator({
+    name: 'query-rule-context'
+  });
+
+  var queryRuleContext = function queryRuleContext() {
+    var widgetParams = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+
+    if (!widgetParams.trackedFilters) {
+      throw new Error(withUsage$J('The `trackedFilters` option is required.'));
+    }
+
+    return _objectSpread2(_objectSpread2({}, connectQueryRules(noop)(widgetParams)), {}, {
+      $$widgetType: 'ais.queryRuleContext'
+    });
+  };
+
+  /** @jsx h */
+
+  var QueryRuleCustomData = function QueryRuleCustomData(_ref) {
+    var cssClasses = _ref.cssClasses,
+        templates = _ref.templates,
+        items = _ref.items;
+    return h(Template, {
+      templateKey: "default",
+      templates: templates,
+      rootProps: {
+        className: cssClasses.root
+      },
+      data: {
+        items: items
+      }
+    });
+  };
+
+  var withUsage$K = createDocumentationMessageGenerator({
+    name: 'query-rule-custom-data'
+  });
+  var suit$k = component('QueryRuleCustomData');
+
+  var renderer$f = function renderer(_ref) {
+    var containerNode = _ref.containerNode,
+        cssClasses = _ref.cssClasses,
+        templates = _ref.templates;
+    return function (_ref2) {
+      var items = _ref2.items;
+      I(h(QueryRuleCustomData, {
+        cssClasses: cssClasses,
+        templates: templates,
+        items: items
+      }), containerNode);
+    };
+  };
+
+  var queryRuleCustomData = function queryRuleCustomData(widgetParams) {
+    var _ref3 = widgetParams || {},
+        container = _ref3.container,
+        _ref3$cssClasses = _ref3.cssClasses,
+        userCssClasses = _ref3$cssClasses === void 0 ? {} : _ref3$cssClasses,
+        _ref3$templates = _ref3.templates,
+        userTemplates = _ref3$templates === void 0 ? {} : _ref3$templates,
+        _ref3$transformItems = _ref3.transformItems,
+        transformItems = _ref3$transformItems === void 0 ? function (items) {
+      return items;
+    } : _ref3$transformItems;
+
+    if (!container) {
+      throw new Error(withUsage$K('The `container` option is required.'));
+    }
+
+    var cssClasses = {
+      root: classnames(suit$k(), userCssClasses.root)
+    };
+    var containerNode = getContainerNode(container);
+    var defaultTemplates = {
+      default: function _default(_ref4) {
+        var items = _ref4.items;
+        return JSON.stringify(items, null, 2);
+      }
+    };
+
+    var templates = _objectSpread2(_objectSpread2({}, defaultTemplates), userTemplates);
+
+    var specializedRenderer = renderer$f({
+      containerNode: containerNode,
+      cssClasses: cssClasses,
+      renderState: {},
+      templates: templates
+    });
+    var makeWidget = connectQueryRules(specializedRenderer, function () {
+      I(null, containerNode);
+    });
+    return _objectSpread2(_objectSpread2({}, makeWidget({
+      transformItems: transformItems
+    })), {}, {
+      $$widgetType: 'ais.queryRuleCustomData'
+    });
+  };
+
+  var RangeInput = /*#__PURE__*/function (_Component) {
     _inherits(RangeInput, _Component);
 
-    function RangeInput(props) {
+    var _super = _createSuper(RangeInput);
+
+    function RangeInput() {
       var _this;
 
       _classCallCheck(this, RangeInput);
 
-      _this = _possibleConstructorReturn(this, _getPrototypeOf(RangeInput).call(this, props));
+      for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+        args[_key] = arguments[_key];
+      }
 
-      _defineProperty(_assertThisInitialized(_this), "onInput", function (name) {
+      _this = _super.call.apply(_super, [this].concat(args));
+
+      _defineProperty(_assertThisInitialized(_this), "state", {
+        min: _this.props.values.min,
+        max: _this.props.values.max
+      });
+
+      _defineProperty(_assertThisInitialized(_this), "onInput", function (key) {
         return function (event) {
-          _this.setState(_defineProperty({}, name, event.currentTarget.value));
+          var _ref = event.currentTarget,
+              value = _ref.value;
+
+          _this.setState(_defineProperty({}, key, Number(value)));
         };
       });
 
       _defineProperty(_assertThisInitialized(_this), "onSubmit", function (event) {
         event.preventDefault();
 
-        _this.props.refine([_this.state.min && Number(_this.state.min), _this.state.max && Number(_this.state.max)]);
+        _this.props.refine([_this.state.min, _this.state.max]);
       });
 
-      _this.state = {
-        min: props.values.min,
-        max: props.values.max
-      };
       return _this;
     }
 
@@ -18109,7 +18863,7 @@
             step = _this$props.step,
             cssClasses = _this$props.cssClasses,
             templateProps = _this$props.templateProps;
-        var isDisabled = min >= max;
+        var isDisabled = min && max ? min >= max : false;
         var hasRefinements = Boolean(minValue || maxValue);
         var rootClassNames = classnames(cssClasses.root, _defineProperty({}, cssClasses.noRefinement, !hasRefinements));
         return h("div", {
@@ -18127,7 +18881,7 @@
           step: step,
           value: minValue !== null && minValue !== void 0 ? minValue : '',
           onInput: this.onInput('min'),
-          placeholder: min,
+          placeholder: min === null || min === void 0 ? void 0 : min.toString(),
           disabled: isDisabled
         })), h(Template, _extends({}, templateProps, {
           templateKey: "separatorText",
@@ -18145,7 +18899,7 @@
           step: step,
           value: maxValue !== null && maxValue !== void 0 ? maxValue : '',
           onInput: this.onInput('max'),
-          placeholder: max,
+          placeholder: max === null || max === void 0 ? void 0 : max.toString(),
           disabled: isDisabled
         })), h(Template, _extends({}, templateProps, {
           templateKey: "submitText",
@@ -18162,12 +18916,16 @@
     return RangeInput;
   }(m);
 
-  var withUsage$B = createDocumentationMessageGenerator({
+  var withUsage$L = createDocumentationMessageGenerator({
     name: 'range-input'
   });
-  var suit$f = component('RangeInput');
+  var suit$l = component('RangeInput');
+  var defaultTemplates$b = {
+    separatorText: 'to',
+    submitText: 'Go'
+  };
 
-  var renderer$b = function renderer(_ref) {
+  var renderer$g = function renderer(_ref) {
     var containerNode = _ref.containerNode,
         cssClasses = _ref.cssClasses,
         renderState = _ref.renderState,
@@ -18181,6 +18939,7 @@
 
       if (isFirstRendering) {
         renderState.templateProps = prepareTemplateProps({
+          defaultTemplates: defaultTemplates$b,
           templatesConfig: instantSearchInstance.templatesConfig,
           templates: templates
         });
@@ -18194,7 +18953,7 @@
           minValue = _start[0],
           maxValue = _start[1];
 
-      var step = 1 / Math.pow(10, widgetParams.precision);
+      var step = 1 / Math.pow(10, widgetParams.precision || 0);
       var values = {
         min: minValue !== -Infinity && minValue !== rangeMin ? minValue : undefined,
         max: maxValue !== Infinity && maxValue !== rangeMax ? maxValue : undefined
@@ -18210,66 +18969,9 @@
       }), containerNode);
     };
   };
-  /**
-   * @typedef {Object} RangeInputClasses
-   * @property {string|string[]} [root] CSS class to add to the root element.
-   * @property {string|string[]} [noRefinement] CSS class to add to the root element when there's no refinements.
-   * @property {string|string[]} [form] CSS class to add to the form element.
-   * @property {string|string[]} [label] CSS class to add to the label element.
-   * @property {string|string[]} [input] CSS class to add to the input element.
-   * @property {string|string[]} [inputMin] CSS class to add to the min input element.
-   * @property {string|string[]} [inputMax] CSS class to add to the max input element.
-   * @property {string|string[]} [separator] CSS class to add to the separator of the form.
-   * @property {string|string[]} [submit] CSS class to add to the submit button of the form.
-   */
 
-  /**
-   * @typedef {Object} RangeInputTemplates
-   * @property {string} [separatorText = "to"] The label of the separator, between min and max.
-   * @property {string} [submitText = "Go"] The label of the submit button.
-   */
-
-  /**
-   * @typedef {Object} RangeInputWidgetOptions
-   * @property {string|HTMLElement} container Valid CSS Selector as a string or DOMElement.
-   * @property {string} attribute Name of the attribute for faceting.
-   * @property {number} [min] Minimal slider value, default to automatically computed from the result set.
-   * @property {number} [max] Maximal slider value, defaults to automatically computed from the result set.
-   * @property {number} [precision = 0] Number of digits after decimal point to use.
-   * @property {RangeInputTemplates} [templates] Labels to use for the widget.
-   * @property {RangeInputClasses} [cssClasses] CSS classes to add.
-   */
-
-  /**
-   * The range input widget allows a user to select a numeric range using a minimum and maximum input.
-   *
-   * @requirements
-   * The attribute passed to `attribute` must be declared as an
-   * [attribute for faceting](https://www.algolia.com/doc/guides/searching/faceting/#declaring-attributes-for-faceting)
-   * in your Algolia settings.
-   *
-   * The values inside this attribute must be JavaScript numbers (not strings).
-   * @type {WidgetFactory}
-   * @devNovel RangeInput
-   * @category filter
-   * @param {RangeInputWidgetOptions} $0 The RangeInput widget options.
-   * @return {Widget} A new instance of RangeInput widget.
-   * @example
-   * search.addWidgets([
-   *   instantsearch.widgets.rangeInput({
-   *     container: '#range-input',
-   *     attribute: 'price',
-   *     templates: {
-   *       separatorText: 'to',
-   *       submitText: 'Go'
-   *     },
-   *   })
-   * ]);
-   */
-
-
-  function rangeInput() {
-    var _ref3 = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
+  var rangeInput = function rangeInput(widgetParams) {
+    var _ref3 = widgetParams || {},
         container = _ref3.container,
         attribute = _ref3.attribute,
         min = _ref3.min,
@@ -18282,46 +18984,43 @@
         userTemplates = _ref3$templates === void 0 ? {} : _ref3$templates;
 
     if (!container) {
-      throw new Error(withUsage$B('The `container` option is required.'));
+      throw new Error(withUsage$L('The `container` option is required.'));
     }
 
     var containerNode = getContainerNode(container);
 
-    var templates = _objectSpread2({
-      separatorText: 'to',
-      submitText: 'Go'
-    }, userTemplates);
+    var templates = _objectSpread2(_objectSpread2({}, defaultTemplates$b), userTemplates);
 
     var cssClasses = {
-      root: classnames(suit$f(), userCssClasses.root),
-      noRefinement: classnames(suit$f({
+      root: classnames(suit$l(), userCssClasses.root),
+      noRefinement: classnames(suit$l({
         modifierName: 'noRefinement'
       })),
-      form: classnames(suit$f({
+      form: classnames(suit$l({
         descendantName: 'form'
       }), userCssClasses.form),
-      label: classnames(suit$f({
+      label: classnames(suit$l({
         descendantName: 'label'
       }), userCssClasses.label),
-      input: classnames(suit$f({
+      input: classnames(suit$l({
         descendantName: 'input'
       }), userCssClasses.input),
-      inputMin: classnames(suit$f({
+      inputMin: classnames(suit$l({
         descendantName: 'input',
         modifierName: 'min'
       }), userCssClasses.inputMin),
-      inputMax: classnames(suit$f({
+      inputMax: classnames(suit$l({
         descendantName: 'input',
         modifierName: 'max'
       }), userCssClasses.inputMax),
-      separator: classnames(suit$f({
+      separator: classnames(suit$l({
         descendantName: 'separator'
       }), userCssClasses.separator),
-      submit: classnames(suit$f({
+      submit: classnames(suit$l({
         descendantName: 'submit'
       }), userCssClasses.submit)
     };
-    var specializedRenderer = renderer$b({
+    var specializedRenderer = renderer$g({
       containerNode: containerNode,
       cssClasses: cssClasses,
       templates: templates,
@@ -18330,180 +19029,16 @@
     var makeWidget = connectRange(specializedRenderer, function () {
       return I(null, containerNode);
     });
-    return _objectSpread2({}, makeWidget({
+    return _objectSpread2(_objectSpread2({}, makeWidget({
       attribute: attribute,
       min: min,
       max: max,
       precision: precision
-    }), {
-      $$type: 'ais.rangeInput'
+    })), {}, {
+      $$type: 'ais.rangeInput',
+      $$widgetType: 'ais.rangeInput'
     });
-  }
-
-  var withUsage$C = createDocumentationMessageGenerator({
-    name: 'search-box'
-  });
-  var suit$g = component('SearchBox');
-
-  var renderer$c = function renderer(_ref) {
-    var containerNode = _ref.containerNode,
-        cssClasses = _ref.cssClasses,
-        placeholder = _ref.placeholder,
-        templates = _ref.templates,
-        autofocus = _ref.autofocus,
-        searchAsYouType = _ref.searchAsYouType,
-        showReset = _ref.showReset,
-        showSubmit = _ref.showSubmit,
-        showLoadingIndicator = _ref.showLoadingIndicator;
-    return function (_ref2) {
-      var refine = _ref2.refine,
-          query = _ref2.query,
-          isSearchStalled = _ref2.isSearchStalled;
-      I(h(SearchBox, {
-        query: query,
-        placeholder: placeholder,
-        autofocus: autofocus,
-        refine: refine,
-        searchAsYouType: searchAsYouType,
-        templates: templates,
-        showSubmit: showSubmit,
-        showReset: showReset,
-        showLoadingIndicator: showLoadingIndicator,
-        isSearchStalled: isSearchStalled,
-        cssClasses: cssClasses
-      }), containerNode);
-    };
   };
-  /**
-   * @typedef {Object} SearchBoxTemplates
-   * @property {function|string} submit Template used for displaying the submit. Can accept a function or a Hogan string.
-   * @property {function|string} reset Template used for displaying the button. Can accept a function or a Hogan string.
-   * @property {function|string} loadingIndicator Template used for displaying the button. Can accept a function or a Hogan string.
-   */
-
-  /**
-   * @typedef {Object} SearchBoxCSSClasses
-   * @property {string|string[]} [root] CSS class to add to the wrapping `<div>`
-   * @property {string|string[]} [form] CSS class to add to the form
-   * @property {string|string[]} [input] CSS class to add to the input.
-   * @property {string|string[]} [submit] CSS classes added to the submit button.
-   * @property {string|string[]} [submitIcon] CSS classes added to the submit icon.
-   * @property {string|string[]} [reset] CSS classes added to the reset button.
-   * @property {string|string[]} [resetIcon] CSS classes added to the reset icon.
-   * @property {string|string[]} [loadingIndicator] CSS classes added to the loading indicator element.
-   * @property {string|string[]} [loadingIcon] CSS classes added to the loading indicator icon.
-   */
-
-  /**
-   * @typedef {Object} SearchBoxWidgetOptions
-   * @property {string|HTMLElement} container CSS Selector or HTMLElement to insert the widget
-   * @property {string} [placeholder] The placeholder of the input
-   * @property {boolean} [autofocus=false] Whether the input should be autofocused
-   * @property {boolean} [searchAsYouType=true] If set, trigger the search
-   * once `<Enter>` is pressed only.
-   * @property {boolean} [showReset=true] Whether to show the reset button
-   * @property {boolean} [showSubmit=true] Whether to show the submit button
-   * @property {boolean} [showLoadingIndicator=true] Whether to show the loading indicator (replaces the submit if
-   * the search is stalled)
-   * @property {SearchBoxCSSClasses} [cssClasses] CSS classes to add
-   * @property {SearchBoxTemplates} [templates] Templates used for customizing the rendering of the searchbox
-   * @property {function} [queryHook] A function that is called every time a new search is done. You
-   * will get the query as the first parameter and a search (query) function to call as the second parameter.
-   * This `queryHook` can be used to debounce the number of searches done from the search box.
-   */
-
-  /**
-   * The searchbox widget is used to let the user set a text based query.
-   *
-   * This is usually the  main entry point to start the search in an instantsearch context. For that
-   * reason is usually placed on top, and not hidden so that the user can start searching right
-   * away.
-   *
-   * @type {WidgetFactory}
-   * @devNovel SearchBox
-   * @category basic
-   * @param {SearchBoxWidgetOptions} $0 Options used to configure a SearchBox widget.
-   * @return {Widget} Creates a new instance of the SearchBox widget.
-   * @example
-   * search.addWidgets([
-   *   instantsearch.widgets.searchBox({
-   *     container: '#q',
-   *     placeholder: 'Search for products',
-   *   })
-   * ]);
-   */
-
-
-  function searchBox() {
-    var _ref3 = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
-        container = _ref3.container,
-        _ref3$placeholder = _ref3.placeholder,
-        placeholder = _ref3$placeholder === void 0 ? '' : _ref3$placeholder,
-        _ref3$cssClasses = _ref3.cssClasses,
-        userCssClasses = _ref3$cssClasses === void 0 ? {} : _ref3$cssClasses,
-        _ref3$autofocus = _ref3.autofocus,
-        autofocus = _ref3$autofocus === void 0 ? false : _ref3$autofocus,
-        _ref3$searchAsYouType = _ref3.searchAsYouType,
-        searchAsYouType = _ref3$searchAsYouType === void 0 ? true : _ref3$searchAsYouType,
-        _ref3$showReset = _ref3.showReset,
-        showReset = _ref3$showReset === void 0 ? true : _ref3$showReset,
-        _ref3$showSubmit = _ref3.showSubmit,
-        showSubmit = _ref3$showSubmit === void 0 ? true : _ref3$showSubmit,
-        _ref3$showLoadingIndi = _ref3.showLoadingIndicator,
-        showLoadingIndicator = _ref3$showLoadingIndi === void 0 ? true : _ref3$showLoadingIndi,
-        queryHook = _ref3.queryHook,
-        templates = _ref3.templates;
-
-    if (!container) {
-      throw new Error(withUsage$C('The `container` option is required.'));
-    }
-
-    var containerNode = getContainerNode(container);
-    var cssClasses = {
-      root: classnames(suit$g(), userCssClasses.root),
-      form: classnames(suit$g({
-        descendantName: 'form'
-      }), userCssClasses.form),
-      input: classnames(suit$g({
-        descendantName: 'input'
-      }), userCssClasses.input),
-      submit: classnames(suit$g({
-        descendantName: 'submit'
-      }), userCssClasses.submit),
-      submitIcon: classnames(suit$g({
-        descendantName: 'submitIcon'
-      }), userCssClasses.submitIcon),
-      reset: classnames(suit$g({
-        descendantName: 'reset'
-      }), userCssClasses.reset),
-      resetIcon: classnames(suit$g({
-        descendantName: 'resetIcon'
-      }), userCssClasses.resetIcon),
-      loadingIndicator: classnames(suit$g({
-        descendantName: 'loadingIndicator'
-      }), userCssClasses.loadingIndicator),
-      loadingIcon: classnames(suit$g({
-        descendantName: 'loadingIcon'
-      }), userCssClasses.loadingIcon)
-    };
-    var specializedRenderer = renderer$c({
-      containerNode: containerNode,
-      cssClasses: cssClasses,
-      placeholder: placeholder,
-      templates: _objectSpread2({}, defaultTemplates$6, {}, templates),
-      autofocus: autofocus,
-      searchAsYouType: searchAsYouType,
-      showReset: showReset,
-      showSubmit: showSubmit,
-      showLoadingIndicator: showLoadingIndicator
-    });
-    var makeWidget = connectSearchBox(specializedRenderer, function () {
-      return I(null, containerNode);
-    });
-    return makeWidget({
-      queryHook: queryHook
-    });
-  }
 
   var KEYS = {
     DOWN: 40,
@@ -18549,49 +19084,33 @@
     ev.preventDefault();
   }
 
-  var Button =
-  /*#__PURE__*/
-  function (_Component) {
-    _inherits(Button, _Component);
+  function Button(props) {
+    return h("button", _extends({}, props, {
+      type: "button"
+    }));
+  } // Preact doesn't have builtin types for Style, h.JSX.HTMLAttributes['style'] is just object
+  // maybe migrate to csstype later?
 
-    function Button() {
-      _classCallCheck(this, Button);
 
-      return _possibleConstructorReturn(this, _getPrototypeOf(Button).apply(this, arguments));
-    }
-
-    _createClass(Button, [{
-      key: "render",
-      value: function render() {
-        return h("button", _extends({}, this.props, {
-          type: "button"
-        }));
-      }
-    }]);
-
-    return Button;
-  }(m);
-
-  var _ref2 =
-  /*#__PURE__*/
-  h("div", {
+  var _ref6 = h("div", {
     className: "rheostat-background"
   });
 
-  var Rheostat =
-  /*#__PURE__*/
-  function (_Component2) {
-    _inherits(Rheostat, _Component2);
+  var Rheostat = /*#__PURE__*/function (_Component) {
+    _inherits(Rheostat, _Component);
+
+    var _super = _createSuper(Rheostat);
 
     function Rheostat(props) {
       var _this;
 
       _classCallCheck(this, Rheostat);
 
-      _this = _possibleConstructorReturn(this, _getPrototypeOf(Rheostat).call(this, props));
+      _this = _super.call(this, props);
 
       _defineProperty(_assertThisInitialized(_this), "state", {
         className: getClassName(_this.props),
+        // non-null thanks to defaultProps
         handlePos: _this.props.values.map(function (value) {
           return getPosition(value, _this.props.min, _this.props.max);
         }),
@@ -18599,8 +19118,11 @@
         mousePos: null,
         sliderBox: {},
         slidingIndex: null,
+        // non-null thanks to defaultProps
         values: _this.props.values
       });
+
+      _defineProperty(_assertThisInitialized(_this), "rheostat", p());
 
       _this.getPublicState = _this.getPublicState.bind(_assertThisInitialized(_this));
       _this.getSliderBoundingBox = _this.getSliderBoundingBox.bind(_assertThisInitialized(_this));
@@ -18678,7 +19200,8 @@
     }, {
       key: "getSliderBoundingBox",
       value: function getSliderBoundingBox() {
-        var node = this.rheostat.getDOMNode ? this.rheostat.getDOMNode() : this.rheostat;
+        // only gets called after render, so it will always be defined
+        var node = this.rheostat.current;
         var rect = node.getBoundingClientRect();
         return {
           height: rect.height || node.clientHeight,
@@ -18733,6 +19256,7 @@
     }, {
       key: "getClosestSnapPoint",
       value: function getClosestSnapPoint(value) {
+        // non-null thanks to defaultProps
         if (!this.props.snapPoints.length) return value;
         return this.props.snapPoints.reduce(function (snapTo, snap) {
           return Math.abs(snapTo - value) < Math.abs(snap - value) ? snapTo : snap;
@@ -18742,9 +19266,9 @@
       key: "getSnapPosition",
       value: function getSnapPosition(positionPercent) {
         if (!this.props.snap) return positionPercent;
-        var _this$props3 = this.props,
-            max = _this$props3.max,
-            min = _this$props3.min;
+        var _ref = this.props,
+            max = _ref.max,
+            min = _ref.min;
         var value = getValue(positionPercent, min, max);
         var snapValue = this.getClosestSnapPoint(value);
         return getPosition(snapValue, min, max);
@@ -18757,10 +19281,10 @@
         var _this$state2 = this.state,
             handlePos = _this$state2.handlePos,
             values = _this$state2.values;
-        var _this$props4 = this.props,
-            max = _this$props4.max,
-            min = _this$props4.min,
-            snapPoints = _this$props4.snapPoints;
+        var _ref2 = this.props,
+            max = _ref2.max,
+            min = _ref2.min,
+            snapPoints = _ref2.snapPoints;
         var shouldSnap = this.props.snap;
         var proposedValue = values[idx];
         var proposedPercentage = handlePos[idx];
@@ -18797,7 +19321,7 @@
           proposedPercentage += stepMultiplier[keyCode](stepValue);
 
           if (shouldSnap) {
-            if (proposedPercentage > originalPercentage) {
+            if (!currentIndex) ; else if (proposedPercentage > originalPercentage) {
               // move cursor right unless overflow
               if (currentIndex < snapPoints.length - 1) {
                 proposedValue = snapPoints[currentIndex + 1];
@@ -18829,9 +19353,9 @@
       key: "getNextState",
       value: function getNextState(idx, proposedPosition) {
         var handlePos = this.state.handlePos;
-        var _this$props5 = this.props,
-            max = _this$props5.max,
-            min = _this$props5.min;
+        var _ref3 = this.props,
+            max = _ref3.max,
+            min = _ref3.min;
         var actualPosition = this.validatePosition(idx, proposedPosition);
         var nextHandlePos = handlePos.map(function (pos, index) {
           return index === idx ? actualPosition : pos;
@@ -18847,7 +19371,7 @@
       key: "getClosestHandle",
       value: function getClosestHandle(positionPercent) {
         var handlePos = this.state.handlePos;
-        return handlePos.reduce(function (closestIdx, node, idx) {
+        return handlePos.reduce(function (closestIdx, _node, idx) {
           var challenger = Math.abs(handlePos[idx] - positionPercent);
           var current = Math.abs(handlePos[closestIdx] - positionPercent);
           return challenger < current ? idx : closestIdx;
@@ -18871,15 +19395,8 @@
       key: "startMouseSlide",
       value: function startMouseSlide(ev) {
         this.setStartSlide(ev, ev.clientX, ev.clientY);
-
-        if (typeof document.addEventListener === 'function') {
-          document.addEventListener('mousemove', this.handleMouseSlide, false);
-          document.addEventListener('mouseup', this.endSlide, false);
-        } else {
-          document.attachEvent('onmousemove', this.handleMouseSlide);
-          document.attachEvent('onmouseup', this.endSlide);
-        }
-
+        document.addEventListener('mousemove', this.handleMouseSlide, false);
+        document.addEventListener('mouseup', this.endSlide, false);
         killEvent(ev);
       }
     }, {
@@ -18926,8 +19443,10 @@
         if (this.canMove(idx, positionPercent)) {
           // update mouse positions
           this.setState({
-            x: x,
-            y: y
+            mousePos: {
+              x: x,
+              y: y
+            }
           });
           if (this.props.onSliderDragMove) this.props.onSliderDragMove();
         }
@@ -18941,17 +19460,10 @@
         this.setState({
           slidingIndex: null
         });
-
-        if (typeof document.removeEventListener === 'function') {
-          document.removeEventListener('mouseup', this.endSlide, false);
-          document.removeEventListener('touchend', this.endSlide, false);
-          document.removeEventListener('touchmove', this.handleTouchSlide, false);
-          document.removeEventListener('mousemove', this.handleMouseSlide, false);
-        } else {
-          document.detachEvent('onmousemove', this.handleMouseSlide);
-          document.detachEvent('onmouseup', this.endSlide);
-        }
-
+        document.removeEventListener('mouseup', this.endSlide, false);
+        document.removeEventListener('touchend', this.endSlide, false);
+        document.removeEventListener('touchmove', this.handleTouchSlide, false);
+        document.removeEventListener('mousemove', this.handleMouseSlide, false);
         if (this.props.onSliderDragEnd) this.props.onSliderDragEnd();
 
         if (this.props.snap) {
@@ -19024,9 +19536,9 @@
     }, {
       key: "validateValues",
       value: function validateValues(proposedValues, props) {
-        var _ref = props || this.props,
-            max = _ref.max,
-            min = _ref.min;
+        var _ref4 = props || this.props,
+            max = _ref4.max,
+            min = _ref4.min;
 
         return proposedValues.map(function (value, idx, values) {
           var realValue = Math.max(Math.min(value, max), min);
@@ -19099,30 +19611,29 @@
       value: function render() {
         var _this7 = this;
 
-        var _this$props6 = this.props,
-            children = _this$props6.children,
-            disabled = _this$props6.disabled,
-            Handle = _this$props6.handle,
-            max = _this$props6.max,
-            min = _this$props6.min,
-            orientation = _this$props6.orientation,
-            PitComponent = _this$props6.pitComponent,
-            pitPoints = _this$props6.pitPoints,
-            ProgressBar = _this$props6.progressBar;
+        var _ref5 = this.props,
+            children = _ref5.children,
+            disabled = _ref5.disabled,
+            Handle = _ref5.handle,
+            max = _ref5.max,
+            min = _ref5.min,
+            orientation = _ref5.orientation,
+            PitComponent = _ref5.pitComponent,
+            pitPoints = _ref5.pitPoints,
+            ProgressBar = _ref5.progressBar; // all required thanks to defaultProps
+
         var _this$state6 = this.state,
             className = _this$state6.className,
             handlePos = _this$state6.handlePos,
             values = _this$state6.values;
         return h("div", {
           className: className,
-          ref: function ref(_ref3) {
-            _this7.rheostat = _ref3;
-          },
-          onClick: !disabled && this.handleClick,
+          ref: this.rheostat,
+          onClick: disabled ? undefined : this.handleClick,
           style: {
             position: 'relative'
           }
-        }, _ref2, handlePos.map(function (pos, idx) {
+        }, _ref6, handlePos.map(function (pos, idx) {
           var handleStyle = orientation === 'vertical' ? {
             top: "".concat(pos, "%"),
             position: 'absolute'
@@ -19138,15 +19649,15 @@
             "data-handle-key": idx,
             className: "rheostat-handle",
             key: "handle-".concat(idx),
-            onClick: _this7.killEvent,
-            onKeyDown: !disabled && _this7.handleKeydown,
-            onMouseDown: !disabled && _this7.startMouseSlide,
-            onTouchStart: !disabled && _this7.startTouchSlide,
+            onClick: killEvent,
+            onKeyDown: disabled ? undefined : _this7.handleKeydown,
+            onMouseDown: disabled ? undefined : _this7.startMouseSlide,
+            onTouchStart: disabled ? undefined : _this7.startTouchSlide,
             role: "slider",
             style: handleStyle,
             tabIndex: 0
           });
-        }), handlePos.map(function (node, idx, arr) {
+        }), handlePos.map(function (_node, idx, arr) {
           if (idx === 0 && arr.length > 1) {
             return null;
           }
@@ -19204,13 +19715,11 @@
         children = _ref.children;
     // first, end & middle
     var positionValue = Math.round(parseFloat(style.left));
-    var shouldDisplayValue = [0, 50, 100].includes(positionValue); // Children could be an array, unwrap the value if it's the case
-    // see: https://github.com/developit/preact-compat/issues/436
-
-    var value = Array.isArray(children) ? children[0] : children;
+    var shouldDisplayValue = [0, 50, 100].includes(positionValue);
+    var value = children;
     var pitValue = Math.round(parseInt(value, 10) * 100) / 100;
     return h("div", {
-      style: _objectSpread2({}, style, {
+      style: _objectSpread2(_objectSpread2({}, style), {}, {
         marginLeft: positionValue === 100 ? '-2px' : 0
       }),
       className: classnames('rheostat-marker', 'rheostat-marker-horizontal', {
@@ -19221,14 +19730,12 @@
     }, pitValue));
   };
 
-  var Slider =
-  /*#__PURE__*/
-  function (_Component) {
+  var Slider = /*#__PURE__*/function (_Component) {
     _inherits(Slider, _Component);
 
-    function Slider() {
-      var _getPrototypeOf2;
+    var _super = _createSuper(Slider);
 
+    function Slider() {
       var _this;
 
       _classCallCheck(this, Slider);
@@ -19237,7 +19744,7 @@
         args[_key] = arguments[_key];
       }
 
-      _this = _possibleConstructorReturn(this, (_getPrototypeOf2 = _getPrototypeOf(Slider)).call.apply(_getPrototypeOf2, [this].concat(args)));
+      _this = _super.call.apply(_super, [this].concat(args));
 
       _defineProperty(_assertThisInitialized(_this), "handleChange", function (_ref) {
         var values = _ref.values;
@@ -19269,9 +19776,14 @@
     }
 
     _createClass(Slider, [{
+      key: "isDisabled",
+      get: function get() {
+        return this.props.min >= this.props.max;
+      }
+    }, {
       key: "computeDefaultPitPoints",
-      // creates an array number where to display a pit point on the slider
-      value: function computeDefaultPitPoints(_ref2) {
+      value: // creates an array number where to display a pit point on the slider
+      function computeDefaultPitPoints(_ref2) {
         var min = _ref2.min,
             max = _ref2.max;
         var totalLength = max - min;
@@ -19339,22 +19851,17 @@
           disabled: this.isDisabled
         }));
       }
-    }, {
-      key: "isDisabled",
-      get: function get() {
-        return this.props.min >= this.props.max;
-      }
     }]);
 
     return Slider;
   }(m);
 
-  var withUsage$D = createDocumentationMessageGenerator({
+  var withUsage$M = createDocumentationMessageGenerator({
     name: 'range-slider'
   });
-  var suit$h = component('RangeSlider');
+  var suit$m = component('RangeSlider');
 
-  var renderer$d = function renderer(_ref) {
+  var renderer$h = function renderer(_ref) {
     var containerNode = _ref.containerNode,
         cssClasses = _ref.cssClasses,
         pips = _ref.pips,
@@ -19395,34 +19902,6 @@
       }), containerNode);
     };
   };
-  /**
-   * @typedef {Object} RangeSliderCssClasses
-   * @property  {string|string[]} [root] CSS class to add to the root element.
-   * @property  {string|string[]} [disabledRoot] CSS class to add to the disabled root element.
-   */
-
-  /**
-   * @typedef {Object} RangeSliderTooltipOptions
-   * @property {function(number):string} format The function takes the raw value as input, and should return
-   * a string for the label that should be used for this value.
-   * `format: function(rawValue) {return '$' + Math.round(rawValue).toLocaleString()}`
-   */
-
-  /**
-   * @typedef {Object} RangeSliderWidgetOptions
-   * @property  {string|HTMLElement} container CSS Selector or DOMElement to insert the widget.
-   * @property  {string} attribute Name of the attribute for faceting.
-   * @property  {boolean|RangeSliderTooltipOptions} [tooltips=true] Should we show tooltips or not.
-   * The default tooltip will show the raw value.
-   * You can also provide an object with a format function as an attribute.
-   * So that you can format the tooltip display value as you want
-   * @property  {RangeSliderCssClasses} [cssClasses] CSS classes to add to the wrapping elements.
-   * @property  {boolean} [pips=true] Show slider pips.
-   * @property  {number} [precision = 0] Number of digits after decimal point to use.
-   * @property  {number} [step] Every handle move will jump that number of steps.
-   * @property  {number} [min] Minimal slider value, default to automatically computed from the result set.
-   * @property  {number} [max] Maximal slider value, defaults to automatically computed from the result set.
-   */
 
   /**
    * The range slider is a widget which provides a user-friendly way to filter the
@@ -19434,29 +19913,9 @@
    * in your Algolia settings.
    *
    * The values inside this attribute must be JavaScript numbers (not strings).
-   *
-   * @type {WidgetFactory}
-   * @devNovel RangeSlider
-   * @category filter
-   * @param {RangeSliderWidgetOptions} $0 RangeSlider widget options.
-   * @return {Widget} A new RangeSlider widget instance.
-   * @example
-   * search.addWidgets([
-   *   instantsearch.widgets.rangeSlider({
-   *     container: '#price',
-   *     attribute: 'price',
-   *     tooltips: {
-   *       format: function(rawValue) {
-   *         return '$' + Math.round(rawValue).toLocaleString();
-   *       }
-   *     }
-   *   })
-   * ]);
    */
-
-
-  function rangeSlider() {
-    var _ref3 = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
+  var rangeSlider = function rangeSlider(widgetParams) {
+    var _ref3 = widgetParams || {},
         container = _ref3.container,
         attribute = _ref3.attribute,
         min = _ref3.min,
@@ -19472,44 +19931,650 @@
         tooltips = _ref3$tooltips === void 0 ? true : _ref3$tooltips;
 
     if (!container) {
-      throw new Error(withUsage$D('The `container` option is required.'));
+      throw new Error(withUsage$M('The `container` option is required.'));
     }
 
     var containerNode = getContainerNode(container);
     var cssClasses = {
-      root: classnames(suit$h(), userCssClasses.root),
-      disabledRoot: classnames(suit$h({
+      root: classnames(suit$m(), userCssClasses.root),
+      disabledRoot: classnames(suit$m({
         modifierName: 'disabled'
       }), userCssClasses.disabledRoot)
     };
-    var specializedRenderer = renderer$d({
+    var specializedRenderer = renderer$h({
       containerNode: containerNode,
       step: step,
       pips: pips,
       tooltips: tooltips,
-      renderState: {},
       cssClasses: cssClasses
     });
     var makeWidget = connectRange(specializedRenderer, function () {
       return I(null, containerNode);
     });
-    return _objectSpread2({}, makeWidget({
+    return _objectSpread2(_objectSpread2({}, makeWidget({
       attribute: attribute,
       min: min,
       max: max,
       precision: precision
-    }), {
-      $$type: 'ais.rangeSlider'
+    })), {}, {
+      $$type: 'ais.rangeSlider',
+      $$widgetType: 'ais.rangeSlider'
     });
-  }
+  };
+
+  var defaultTemplates$c = {
+    item: "{{#count}}<a class=\"{{cssClasses.link}}\" aria-label=\"{{value}} & up\" href=\"{{url}}\">{{/count}}{{^count}}<div class=\"{{cssClasses.link}}\" aria-label=\"{{value}} & up\" disabled>{{/count}}\n  {{#stars}}<svg class=\"{{cssClasses.starIcon}} {{#.}}{{cssClasses.fullStarIcon}}{{/.}}{{^.}}{{cssClasses.emptyStarIcon}}{{/.}}\" aria-hidden=\"true\" width=\"24\" height=\"24\">\n    {{#.}}<use xlink:href=\"#ais-RatingMenu-starSymbol\"></use>{{/.}}{{^.}}<use xlink:href=\"#ais-RatingMenu-starEmptySymbol\"></use>{{/.}}\n  </svg>{{/stars}}\n  <span class=\"{{cssClasses.label}}\">& Up</span>\n  {{#count}}<span class=\"{{cssClasses.count}}\">{{#helpers.formatNumber}}{{count}}{{/helpers.formatNumber}}</span>{{/count}}\n{{#count}}</a>{{/count}}{{^count}}</div>{{/count}}"
+  };
+
+  var withUsage$N = createDocumentationMessageGenerator({
+    name: 'rating-menu'
+  });
+  var suit$n = component('RatingMenu');
+
+  var _ref3$1 = h("path", {
+    d: "M12 .288l2.833 8.718h9.167l-7.417 5.389 2.833 8.718-7.416-5.388-7.417 5.388 2.833-8.718-7.416-5.389h9.167z"
+  });
+
+  var _ref4 = h("path", {
+    d: "M12 6.76l1.379 4.246h4.465l-3.612 2.625 1.379 4.246-3.611-2.625-3.612 2.625 1.379-4.246-3.612-2.625h4.465l1.38-4.246zm0-6.472l-2.833 8.718h-9.167l7.416 5.389-2.833 8.718 7.417-5.388 7.416 5.388-2.833-8.718 7.417-5.389h-9.167l-2.833-8.718z"
+  });
+
+  var renderer$i = function renderer(_ref) {
+    var containerNode = _ref.containerNode,
+        cssClasses = _ref.cssClasses,
+        templates = _ref.templates,
+        renderState = _ref.renderState;
+    return function (_ref2, isFirstRendering) {
+      var refine = _ref2.refine,
+          items = _ref2.items,
+          createURL = _ref2.createURL,
+          instantSearchInstance = _ref2.instantSearchInstance;
+
+      if (isFirstRendering) {
+        renderState.templateProps = prepareTemplateProps({
+          defaultTemplates: defaultTemplates$c,
+          templatesConfig: instantSearchInstance.templatesConfig,
+          templates: templates
+        });
+        return;
+      }
+
+      I(h(RefinementList$1, {
+        createURL: createURL,
+        cssClasses: cssClasses,
+        facetValues: items,
+        templateProps: renderState.templateProps,
+        toggleRefinement: refine
+      }, h("svg", {
+        xmlns: "http://www.w3.org/2000/svg",
+        style: "display:none;"
+      }, h("symbol", {
+        id: suit$n({
+          descendantName: 'starSymbol'
+        }),
+        viewBox: "0 0 24 24"
+      }, _ref3$1), h("symbol", {
+        id: suit$n({
+          descendantName: 'starEmptySymbol'
+        }),
+        viewBox: "0 0 24 24"
+      }, _ref4))), containerNode);
+    };
+  };
+  /**
+   * Rating menu is used for displaying grade like filters. The values are normalized within boundaries.
+   *
+   * The maximum value can be set (with `max`), the minimum is always 0.
+   *
+   * @requirements
+   * The attribute passed to `attribute` must be declared as an
+   * [attribute for faceting](https://www.algolia.com/doc/guides/searching/faceting/#declaring-attributes-for-faceting)
+   * in your Algolia settings.
+   *
+   * The values inside this attribute must be JavaScript numbers (not strings).
+   *
+   * @type {WidgetFactory}
+   * @devNovel RatingMenu
+   * @category filter
+   * @param {RatingMenuWidgetParams} widgetParams RatingMenu widget options.
+   * @return {Widget} A new RatingMenu widget instance.
+   * @example
+   * search.addWidgets([
+   *   instantsearch.widgets.ratingMenu({
+   *     container: '#stars',
+   *     attribute: 'rating',
+   *     max: 5,
+   *   })
+   * ]);
+   */
+
+
+  var ratingMenu = function ratingMenu(widgetParams) {
+    var _ref5 = widgetParams || {},
+        container = _ref5.container,
+        attribute = _ref5.attribute,
+        _ref5$max = _ref5.max,
+        max = _ref5$max === void 0 ? 5 : _ref5$max,
+        _ref5$cssClasses = _ref5.cssClasses,
+        userCssClasses = _ref5$cssClasses === void 0 ? {} : _ref5$cssClasses,
+        _ref5$templates = _ref5.templates,
+        templates = _ref5$templates === void 0 ? defaultTemplates$c : _ref5$templates;
+
+    if (!container) {
+      throw new Error(withUsage$N('The `container` option is required.'));
+    }
+
+    var containerNode = getContainerNode(container);
+    var cssClasses = {
+      root: classnames(suit$n(), userCssClasses.root),
+      noRefinementRoot: classnames(suit$n({
+        modifierName: 'noRefinement'
+      }), userCssClasses.noRefinementRoot),
+      list: classnames(suit$n({
+        descendantName: 'list'
+      }), userCssClasses.list),
+      item: classnames(suit$n({
+        descendantName: 'item'
+      }), userCssClasses.item),
+      selectedItem: classnames(suit$n({
+        descendantName: 'item',
+        modifierName: 'selected'
+      }), userCssClasses.selectedItem),
+      disabledItem: classnames(suit$n({
+        descendantName: 'item',
+        modifierName: 'disabled'
+      }), userCssClasses.disabledItem),
+      link: classnames(suit$n({
+        descendantName: 'link'
+      }), userCssClasses.link),
+      starIcon: classnames(suit$n({
+        descendantName: 'starIcon'
+      }), userCssClasses.starIcon),
+      fullStarIcon: classnames(suit$n({
+        descendantName: 'starIcon',
+        modifierName: 'full'
+      }), userCssClasses.fullStarIcon),
+      emptyStarIcon: classnames(suit$n({
+        descendantName: 'starIcon',
+        modifierName: 'empty'
+      }), userCssClasses.emptyStarIcon),
+      label: classnames(suit$n({
+        descendantName: 'label'
+      }), userCssClasses.label),
+      count: classnames(suit$n({
+        descendantName: 'count'
+      }), userCssClasses.count)
+    };
+    var specializedRenderer = renderer$i({
+      containerNode: containerNode,
+      cssClasses: cssClasses,
+      renderState: {},
+      templates: templates
+    });
+    var makeWidget = connectRatingMenu(specializedRenderer, function () {
+      return I(null, containerNode);
+    });
+    return _objectSpread2(_objectSpread2({}, makeWidget({
+      attribute: attribute,
+      max: max
+    })), {}, {
+      $$widgetType: 'ais.ratingMenu'
+    });
+  };
+
+  /* eslint max-len: 0 */
+  var defaultTemplates$d = {
+    reset: "\n<svg class=\"{{cssClasses.resetIcon}}\" xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 20 20\" width=\"10\" height=\"10\">\n  <path d=\"M8.114 10L.944 2.83 0 1.885 1.886 0l.943.943L10 8.113l7.17-7.17.944-.943L20 1.886l-.943.943-7.17 7.17 7.17 7.17.943.944L18.114 20l-.943-.943-7.17-7.17-7.17 7.17-.944.943L0 18.114l.943-.943L8.113 10z\"></path>\n</svg>\n  ",
+    submit: "\n<svg class=\"{{cssClasses.submitIcon}}\" xmlns=\"http://www.w3.org/2000/svg\" width=\"10\" height=\"10\" viewBox=\"0 0 40 40\">\n  <path d=\"M26.804 29.01c-2.832 2.34-6.465 3.746-10.426 3.746C7.333 32.756 0 25.424 0 16.378 0 7.333 7.333 0 16.378 0c9.046 0 16.378 7.333 16.378 16.378 0 3.96-1.406 7.594-3.746 10.426l10.534 10.534c.607.607.61 1.59-.004 2.202-.61.61-1.597.61-2.202.004L26.804 29.01zm-10.426.627c7.323 0 13.26-5.936 13.26-13.26 0-7.32-5.937-13.257-13.26-13.257C9.056 3.12 3.12 9.056 3.12 16.378c0 7.323 5.936 13.26 13.258 13.26z\"></path>\n</svg>\n  ",
+    loadingIndicator: "\n<svg class=\"{{cssClasses.loadingIcon}}\" width=\"16\" height=\"16\" viewBox=\"0 0 38 38\" xmlns=\"http://www.w3.org/2000/svg\" stroke=\"#444\">\n  <g fill=\"none\" fillRule=\"evenodd\">\n    <g transform=\"translate(1 1)\" strokeWidth=\"2\">\n      <circle strokeOpacity=\".5\" cx=\"18\" cy=\"18\" r=\"18\" />\n      <path d=\"M36 18c0-9.94-8.06-18-18-18\">\n        <animateTransform\n          attributeName=\"transform\"\n          type=\"rotate\"\n          from=\"0 18 18\"\n          to=\"360 18 18\"\n          dur=\"1s\"\n          repeatCount=\"indefinite\"\n        />\n      </path>\n    </g>\n  </g>\n</svg>\n  "
+  };
+
+  var withUsage$O = createDocumentationMessageGenerator({
+    name: 'refinement-list'
+  });
+  var suit$o = component('RefinementList');
+  var searchBoxSuit = component('SearchBox');
+  var defaultTemplates$e = {
+    item: "<label class=\"{{cssClasses.label}}\">\n  <input type=\"checkbox\"\n         class=\"{{cssClasses.checkbox}}\"\n         value=\"{{value}}\"\n         {{#isRefined}}checked{{/isRefined}} />\n  <span class=\"{{cssClasses.labelText}}\">{{#isFromSearch}}{{{highlighted}}}{{/isFromSearch}}{{^isFromSearch}}{{highlighted}}{{/isFromSearch}}</span>\n  <span class=\"{{cssClasses.count}}\">{{#helpers.formatNumber}}{{count}}{{/helpers.formatNumber}}</span>\n</label>",
+    showMoreText: "\n    {{#isShowingMore}}\n      Show less\n    {{/isShowingMore}}\n    {{^isShowingMore}}\n      Show more\n    {{/isShowingMore}}\n    ",
+    searchableNoResults: 'No results'
+  };
+
+  var renderer$j = function renderer(_ref) {
+    var containerNode = _ref.containerNode,
+        cssClasses = _ref.cssClasses,
+        templates = _ref.templates,
+        searchBoxTemplates = _ref.searchBoxTemplates,
+        renderState = _ref.renderState,
+        showMore = _ref.showMore,
+        searchable = _ref.searchable,
+        searchablePlaceholder = _ref.searchablePlaceholder,
+        searchableIsAlwaysActive = _ref.searchableIsAlwaysActive;
+    return function (_ref2, isFirstRendering) {
+      var refine = _ref2.refine,
+          items = _ref2.items,
+          createURL = _ref2.createURL,
+          searchForItems = _ref2.searchForItems,
+          isFromSearch = _ref2.isFromSearch,
+          instantSearchInstance = _ref2.instantSearchInstance,
+          toggleShowMore = _ref2.toggleShowMore,
+          isShowingMore = _ref2.isShowingMore,
+          hasExhaustiveItems = _ref2.hasExhaustiveItems,
+          canToggleShowMore = _ref2.canToggleShowMore;
+
+      if (isFirstRendering) {
+        renderState.templateProps = prepareTemplateProps({
+          defaultTemplates: defaultTemplates$e,
+          templatesConfig: instantSearchInstance.templatesConfig,
+          templates: templates
+        });
+        renderState.searchBoxTemplateProps = prepareTemplateProps({
+          defaultTemplates: defaultTemplates$d,
+          templatesConfig: instantSearchInstance.templatesConfig,
+          templates: searchBoxTemplates
+        });
+        return;
+      }
+
+      I(h(RefinementList$1, {
+        createURL: createURL,
+        cssClasses: cssClasses,
+        facetValues: items,
+        templateProps: renderState.templateProps,
+        searchBoxTemplateProps: renderState.searchBoxTemplateProps,
+        toggleRefinement: refine,
+        searchFacetValues: searchable ? searchForItems : undefined,
+        searchPlaceholder: searchablePlaceholder,
+        searchIsAlwaysActive: searchableIsAlwaysActive,
+        isFromSearch: isFromSearch,
+        showMore: showMore && !isFromSearch && items.length > 0,
+        toggleShowMore: toggleShowMore,
+        isShowingMore: isShowingMore,
+        hasExhaustiveItems: hasExhaustiveItems,
+        canToggleShowMore: canToggleShowMore
+      }), containerNode);
+    };
+  };
+
+  /**
+   * The refinement list widget is one of the most common widget that you can find
+   * in a search UI. With this widget, the user can filter the dataset based on facets.
+   *
+   * The refinement list displays only the most relevant facets for the current search
+   * context. The sort option only affects the facet that are returned by the engine,
+   * not which facets are returned.
+   *
+   * This widget also implements search for facet values, which is a mini search inside the
+   * values of the facets. This makes easy to deal with uncommon facet values.
+   *
+   * @requirements
+   *
+   * The attribute passed to `attribute` must be declared as an
+   * [attribute for faceting](https://www.algolia.com/doc/guides/searching/faceting/#declaring-attributes-for-faceting)
+   * in your Algolia settings.
+   *
+   * If you also want to use search for facet values on this attribute, you need to make it searchable using the [dashboard](https://www.algolia.com/explorer/display/) or using the [API](https://www.algolia.com/doc/guides/searching/faceting/#search-for-facet-values).
+   */
+  var refinementList = function refinementList(widgetParams) {
+    var _ref3 = widgetParams || {},
+        container = _ref3.container,
+        attribute = _ref3.attribute,
+        operator = _ref3.operator,
+        sortBy = _ref3.sortBy,
+        limit = _ref3.limit,
+        showMore = _ref3.showMore,
+        showMoreLimit = _ref3.showMoreLimit,
+        _ref3$searchable = _ref3.searchable,
+        searchable = _ref3$searchable === void 0 ? false : _ref3$searchable,
+        _ref3$searchablePlace = _ref3.searchablePlaceholder,
+        searchablePlaceholder = _ref3$searchablePlace === void 0 ? 'Search...' : _ref3$searchablePlace,
+        _ref3$searchableEscap = _ref3.searchableEscapeFacetValues,
+        searchableEscapeFacetValues = _ref3$searchableEscap === void 0 ? true : _ref3$searchableEscap,
+        _ref3$searchableIsAlw = _ref3.searchableIsAlwaysActive,
+        searchableIsAlwaysActive = _ref3$searchableIsAlw === void 0 ? true : _ref3$searchableIsAlw,
+        _ref3$cssClasses = _ref3.cssClasses,
+        userCssClasses = _ref3$cssClasses === void 0 ? {} : _ref3$cssClasses,
+        _ref3$templates = _ref3.templates,
+        userTemplates = _ref3$templates === void 0 ? defaultTemplates$e : _ref3$templates,
+        transformItems = _ref3.transformItems;
+
+    if (!container) {
+      throw new Error(withUsage$O('The `container` option is required.'));
+    }
+
+    var escapeFacetValues = searchable ? Boolean(searchableEscapeFacetValues) : false;
+    var containerNode = getContainerNode(container);
+    var cssClasses = {
+      root: classnames(suit$o(), userCssClasses.root),
+      noRefinementRoot: classnames(suit$o({
+        modifierName: 'noRefinement'
+      }), userCssClasses.noRefinementRoot),
+      list: classnames(suit$o({
+        descendantName: 'list'
+      }), userCssClasses.list),
+      item: classnames(suit$o({
+        descendantName: 'item'
+      }), userCssClasses.item),
+      selectedItem: classnames(suit$o({
+        descendantName: 'item',
+        modifierName: 'selected'
+      }), userCssClasses.selectedItem),
+      searchBox: classnames(suit$o({
+        descendantName: 'searchBox'
+      }), userCssClasses.searchBox),
+      label: classnames(suit$o({
+        descendantName: 'label'
+      }), userCssClasses.label),
+      checkbox: classnames(suit$o({
+        descendantName: 'checkbox'
+      }), userCssClasses.checkbox),
+      labelText: classnames(suit$o({
+        descendantName: 'labelText'
+      }), userCssClasses.labelText),
+      count: classnames(suit$o({
+        descendantName: 'count'
+      }), userCssClasses.count),
+      noResults: classnames(suit$o({
+        descendantName: 'noResults'
+      }), userCssClasses.noResults),
+      showMore: classnames(suit$o({
+        descendantName: 'showMore'
+      }), userCssClasses.showMore),
+      disabledShowMore: classnames(suit$o({
+        descendantName: 'showMore',
+        modifierName: 'disabled'
+      }), userCssClasses.disabledShowMore),
+      searchable: {
+        root: classnames(searchBoxSuit(), userCssClasses.searchableRoot),
+        form: classnames(searchBoxSuit({
+          descendantName: 'form'
+        }), userCssClasses.searchableForm),
+        input: classnames(searchBoxSuit({
+          descendantName: 'input'
+        }), userCssClasses.searchableInput),
+        submit: classnames(searchBoxSuit({
+          descendantName: 'submit'
+        }), userCssClasses.searchableSubmit),
+        submitIcon: classnames(searchBoxSuit({
+          descendantName: 'submitIcon'
+        }), userCssClasses.searchableSubmitIcon),
+        reset: classnames(searchBoxSuit({
+          descendantName: 'reset'
+        }), userCssClasses.searchableReset),
+        resetIcon: classnames(searchBoxSuit({
+          descendantName: 'resetIcon'
+        }), userCssClasses.searchableResetIcon),
+        loadingIndicator: classnames(searchBoxSuit({
+          descendantName: 'loadingIndicator'
+        }), userCssClasses.searchableLoadingIndicator),
+        loadingIcon: classnames(searchBoxSuit({
+          descendantName: 'loadingIcon'
+        }), userCssClasses.searchableLoadingIcon)
+      }
+    };
+    var specializedRenderer = renderer$j({
+      containerNode: containerNode,
+      cssClasses: cssClasses,
+      templates: userTemplates,
+      searchBoxTemplates: {
+        submit: userTemplates.searchableSubmit,
+        reset: userTemplates.searchableReset,
+        loadingIndicator: userTemplates.searchableLoadingIndicator
+      },
+      renderState: {},
+      searchable: searchable,
+      searchablePlaceholder: searchablePlaceholder,
+      searchableIsAlwaysActive: searchableIsAlwaysActive,
+      showMore: showMore
+    });
+    var makeWidget = connectRefinementList(specializedRenderer, function () {
+      return I(null, containerNode);
+    });
+    return _objectSpread2(_objectSpread2({}, makeWidget({
+      attribute: attribute,
+      operator: operator,
+      limit: limit,
+      showMore: showMore,
+      showMoreLimit: showMoreLimit,
+      sortBy: sortBy,
+      escapeFacetValues: escapeFacetValues,
+      transformItems: transformItems
+    })), {}, {
+      $$widgetType: 'ais.refinementList'
+    });
+  };
 
   /** @jsx h */
-  var withUsage$E = createDocumentationMessageGenerator({
+
+  var RelevantSort = function RelevantSort(_ref) {
+    var cssClasses = _ref.cssClasses,
+        templates = _ref.templates,
+        isRelevantSorted = _ref.isRelevantSorted,
+        isVirtualReplica = _ref.isVirtualReplica,
+        refine = _ref.refine;
+    return isVirtualReplica ? h("div", {
+      className: cssClasses.root
+    }, h(Template, {
+      templateKey: "text",
+      templates: templates,
+      rootProps: {
+        className: cssClasses.text
+      },
+      data: {
+        isRelevantSorted: isRelevantSorted
+      }
+    }), h("button", {
+      type: "button",
+      className: cssClasses.button,
+      onClick: function onClick() {
+        if (isRelevantSorted) {
+          refine(0);
+        } else {
+          refine(undefined);
+        }
+      }
+    }, h(Template, {
+      rootTagName: "span",
+      templateKey: "button",
+      templates: templates,
+      data: {
+        isRelevantSorted: isRelevantSorted
+      }
+    }))) : null;
+  };
+
+  var defaultTemplates$f = {
+    text: '',
+    button: function button(_ref) {
+      var isRelevantSorted = _ref.isRelevantSorted;
+      return isRelevantSorted ? 'See all results' : 'See relevant results';
+    }
+  };
+
+  var withUsage$P = createDocumentationMessageGenerator({
+    name: 'relevant-sort'
+  });
+  var suit$p = component('RelevantSort');
+
+  var renderer$k = function renderer(_ref) {
+    var containerNode = _ref.containerNode,
+        cssClasses = _ref.cssClasses,
+        templates = _ref.templates;
+    return function (_ref2) {
+      var isRelevantSorted = _ref2.isRelevantSorted,
+          isVirtualReplica = _ref2.isVirtualReplica,
+          refine = _ref2.refine;
+      I(h(RelevantSort, {
+        cssClasses: cssClasses,
+        templates: templates,
+        isRelevantSorted: isRelevantSorted,
+        isVirtualReplica: isVirtualReplica,
+        refine: refine
+      }), containerNode);
+    };
+  };
+
+  var relevantSort = function relevantSort(widgetParams) {
+    var container = widgetParams.container,
+        _widgetParams$templat = widgetParams.templates,
+        userTemplates = _widgetParams$templat === void 0 ? {} : _widgetParams$templat,
+        _widgetParams$cssClas = widgetParams.cssClasses,
+        userCssClasses = _widgetParams$cssClas === void 0 ? {} : _widgetParams$cssClas;
+
+    if (!container) {
+      throw new Error(withUsage$P('The `container` option is required.'));
+    }
+
+    var containerNode = getContainerNode(container);
+    var cssClasses = {
+      root: classnames(suit$p(), userCssClasses.root),
+      text: classnames(suit$p({
+        descendantName: 'text'
+      }), userCssClasses.text),
+      button: classnames(suit$p({
+        descendantName: 'button'
+      }), userCssClasses.button)
+    };
+
+    var templates = _objectSpread2(_objectSpread2({}, defaultTemplates$f), userTemplates);
+
+    var specializedRenderer = renderer$k({
+      containerNode: containerNode,
+      cssClasses: cssClasses,
+      renderState: {},
+      templates: templates
+    });
+    var makeWidget = connectRelevantSort(specializedRenderer, function () {
+      I(null, containerNode);
+    });
+    return _objectSpread2(_objectSpread2({}, makeWidget({})), {}, {
+      $$widgetType: 'ais.relevantSort'
+    });
+  };
+
+  var withUsage$Q = createDocumentationMessageGenerator({
+    name: 'search-box'
+  });
+  var suit$q = component('SearchBox');
+
+  var renderer$l = function renderer(_ref) {
+    var containerNode = _ref.containerNode,
+        cssClasses = _ref.cssClasses,
+        placeholder = _ref.placeholder,
+        templates = _ref.templates,
+        autofocus = _ref.autofocus,
+        searchAsYouType = _ref.searchAsYouType,
+        showReset = _ref.showReset,
+        showSubmit = _ref.showSubmit,
+        showLoadingIndicator = _ref.showLoadingIndicator;
+    return function (_ref2) {
+      var refine = _ref2.refine,
+          query = _ref2.query,
+          isSearchStalled = _ref2.isSearchStalled;
+      I(h(SearchBox, {
+        query: query,
+        placeholder: placeholder,
+        autofocus: autofocus,
+        refine: refine,
+        searchAsYouType: searchAsYouType,
+        templates: templates,
+        showSubmit: showSubmit,
+        showReset: showReset,
+        showLoadingIndicator: showLoadingIndicator,
+        isSearchStalled: isSearchStalled,
+        cssClasses: cssClasses
+      }), containerNode);
+    };
+  };
+  /**
+   * The searchbox widget is used to let the user set a text based query.
+   *
+   * This is usually the  main entry point to start the search in an instantsearch context. For that
+   * reason is usually placed on top, and not hidden so that the user can start searching right
+   * away.
+   *
+   */
+
+
+  var searchBox = function searchBox(widgetParams) {
+    var _ref3 = widgetParams || {},
+        container = _ref3.container,
+        _ref3$placeholder = _ref3.placeholder,
+        placeholder = _ref3$placeholder === void 0 ? '' : _ref3$placeholder,
+        _ref3$cssClasses = _ref3.cssClasses,
+        userCssClasses = _ref3$cssClasses === void 0 ? {} : _ref3$cssClasses,
+        _ref3$autofocus = _ref3.autofocus,
+        autofocus = _ref3$autofocus === void 0 ? false : _ref3$autofocus,
+        _ref3$searchAsYouType = _ref3.searchAsYouType,
+        searchAsYouType = _ref3$searchAsYouType === void 0 ? true : _ref3$searchAsYouType,
+        _ref3$showReset = _ref3.showReset,
+        showReset = _ref3$showReset === void 0 ? true : _ref3$showReset,
+        _ref3$showSubmit = _ref3.showSubmit,
+        showSubmit = _ref3$showSubmit === void 0 ? true : _ref3$showSubmit,
+        _ref3$showLoadingIndi = _ref3.showLoadingIndicator,
+        showLoadingIndicator = _ref3$showLoadingIndi === void 0 ? true : _ref3$showLoadingIndi,
+        queryHook = _ref3.queryHook,
+        templates = _ref3.templates;
+
+    if (!container) {
+      throw new Error(withUsage$Q('The `container` option is required.'));
+    }
+
+    var containerNode = getContainerNode(container);
+    var cssClasses = {
+      root: classnames(suit$q(), userCssClasses.root),
+      form: classnames(suit$q({
+        descendantName: 'form'
+      }), userCssClasses.form),
+      input: classnames(suit$q({
+        descendantName: 'input'
+      }), userCssClasses.input),
+      submit: classnames(suit$q({
+        descendantName: 'submit'
+      }), userCssClasses.submit),
+      submitIcon: classnames(suit$q({
+        descendantName: 'submitIcon'
+      }), userCssClasses.submitIcon),
+      reset: classnames(suit$q({
+        descendantName: 'reset'
+      }), userCssClasses.reset),
+      resetIcon: classnames(suit$q({
+        descendantName: 'resetIcon'
+      }), userCssClasses.resetIcon),
+      loadingIndicator: classnames(suit$q({
+        descendantName: 'loadingIndicator'
+      }), userCssClasses.loadingIndicator),
+      loadingIcon: classnames(suit$q({
+        descendantName: 'loadingIcon'
+      }), userCssClasses.loadingIcon)
+    };
+    var specializedRenderer = renderer$l({
+      containerNode: containerNode,
+      cssClasses: cssClasses,
+      placeholder: placeholder,
+      templates: _objectSpread2(_objectSpread2({}, defaultTemplates$d), templates),
+      autofocus: autofocus,
+      searchAsYouType: searchAsYouType,
+      showReset: showReset,
+      showSubmit: showSubmit,
+      showLoadingIndicator: showLoadingIndicator
+    });
+    var makeWidget = connectSearchBox(specializedRenderer, function () {
+      return I(null, containerNode);
+    });
+    return _objectSpread2(_objectSpread2({}, makeWidget({
+      queryHook: queryHook
+    })), {}, {
+      $$widgetType: 'ais.searchBox'
+    });
+  };
+
+  var withUsage$R = createDocumentationMessageGenerator({
     name: 'sort-by'
   });
-  var suit$i = component('SortBy');
+  var suit$r = component('SortBy');
 
-  var renderer$e = function renderer(_ref) {
+  var renderer$m = function renderer(_ref) {
     var containerNode = _ref.containerNode,
         cssClasses = _ref.cssClasses;
     return function (_ref2, isFirstRendering) {
@@ -19532,52 +20597,13 @@
     };
   };
   /**
-   * @typedef {Object} SortByWidgetCssClasses
-   * @property {string|string[]} [root] CSS classes added to the outer `<div>`.
-   * @property {string|string[]} [select] CSS classes added to the parent `<select>`.
-   * @property {string|string[]} [option] CSS classes added to each `<option>`.
-   */
-
-  /**
-   * @typedef {Object} SortByIndexDefinition
-   * @property {string} value The name of the index to target.
-   * @property {string} label The label of the index to display.
-   */
-
-  /**
-   * @typedef {Object} SortByWidgetOptions
-   * @property {string|HTMLElement} container CSS Selector or HTMLElement to insert the widget.
-   * @property {SortByIndexDefinition[]} items Array of objects defining the different indices to choose from.
-   * @property {SortByWidgetCssClasses} [cssClasses] CSS classes to be added.
-   * @property {function(object[]):object[]} [transformItems] Function to transform the items passed to the templates.
-   */
-
-  /**
    * Sort by selector is a widget used for letting the user choose between different
    * indices that contains the same data with a different order / ranking formula.
-   *
-   * For the users it is like they are selecting a new sort order.
-   * @type {WidgetFactory}
-   * @devNovel SortBy
-   * @category sort
-   * @param {SortByWidgetOptions} $0 Options for the SortBy widget
-   * @return {Widget} Creates a new instance of the SortBy widget.
-   * @example
-   * search.addWidgets([
-   *   instantsearch.widgets.sortBy({
-   *     container: '#sort-by-container',
-   *     items: [
-   *       {value: 'instant_search', label: 'Most relevant'},
-   *       {value: 'instant_search_price_asc', label: 'Lowest price'},
-   *       {value: 'instant_search_price_desc', label: 'Highest price'}
-   *     ]
-   *   })
-   * ]);
    */
 
 
-  function sortBy() {
-    var _ref3 = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
+  var sortBy = function sortBy(widgetParams) {
+    var _ref3 = widgetParams || {},
         container = _ref3.container,
         items = _ref3.items,
         _ref3$cssClasses = _ref3.cssClasses,
@@ -19585,275 +20611,82 @@
         transformItems = _ref3.transformItems;
 
     if (!container) {
-      throw new Error(withUsage$E('The `container` option is required.'));
+      throw new Error(withUsage$R('The `container` option is required.'));
     }
 
     var containerNode = getContainerNode(container);
     var cssClasses = {
-      root: classnames(suit$i(), userCssClasses.root),
-      select: classnames(suit$i({
+      root: classnames(suit$r(), userCssClasses.root),
+      select: classnames(suit$r({
         descendantName: 'select'
       }), userCssClasses.select),
-      option: classnames(suit$i({
+      option: classnames(suit$r({
         descendantName: 'option'
       }), userCssClasses.option)
     };
-    var specializedRenderer = renderer$e({
+    var specializedRenderer = renderer$m({
       containerNode: containerNode,
       cssClasses: cssClasses
     });
     var makeWidget = connectSortBy(specializedRenderer, function () {
       return I(null, containerNode);
     });
-    return makeWidget({
+    return _objectSpread2(_objectSpread2({}, makeWidget({
+      container: containerNode,
       items: items,
       transformItems: transformItems
+    })), {}, {
+      $$widgetType: 'ais.sortBy'
     });
-  }
-
-  var defaultTemplates$a = {
-    item: "{{#count}}<a class=\"{{cssClasses.link}}\" aria-label=\"{{value}} & up\" href=\"{{href}}\">{{/count}}{{^count}}<div class=\"{{cssClasses.link}}\" aria-label=\"{{value}} & up\" disabled>{{/count}}\n  {{#stars}}<svg class=\"{{cssClasses.starIcon}} {{#.}}{{cssClasses.fullStarIcon}}{{/.}}{{^.}}{{cssClasses.emptyStarIcon}}{{/.}}\" aria-hidden=\"true\" width=\"24\" height=\"24\">\n    {{#.}}<use xlink:href=\"#ais-RatingMenu-starSymbol\"></use>{{/.}}{{^.}}<use xlink:href=\"#ais-RatingMenu-starEmptySymbol\"></use>{{/.}}\n  </svg>{{/stars}}\n  <span class=\"{{cssClasses.label}}\">& Up</span>\n  {{#count}}<span class=\"{{cssClasses.count}}\">{{#helpers.formatNumber}}{{count}}{{/helpers.formatNumber}}</span>{{/count}}\n{{#count}}</a>{{/count}}{{^count}}</div>{{/count}}"
   };
-
-  /** @jsx h */
-  var withUsage$F = createDocumentationMessageGenerator({
-    name: 'rating-menu'
-  });
-  var suit$j = component('RatingMenu');
-
-  var _ref3 =
-  /*#__PURE__*/
-  h("path", {
-    d: "M12 .288l2.833 8.718h9.167l-7.417 5.389 2.833 8.718-7.416-5.388-7.417 5.388 2.833-8.718-7.416-5.389h9.167z"
-  });
-
-  var _ref4 =
-  /*#__PURE__*/
-  h("path", {
-    d: "M12 6.76l1.379 4.246h4.465l-3.612 2.625 1.379 4.246-3.611-2.625-3.612 2.625 1.379-4.246-3.612-2.625h4.465l1.38-4.246zm0-6.472l-2.833 8.718h-9.167l7.416 5.389-2.833 8.718 7.417-5.388 7.416 5.388-2.833-8.718 7.417-5.389h-9.167l-2.833-8.718z"
-  });
-
-  var renderer$f = function renderer(_ref) {
-    var containerNode = _ref.containerNode,
-        cssClasses = _ref.cssClasses,
-        templates = _ref.templates,
-        renderState = _ref.renderState;
-    return function (_ref2, isFirstRendering) {
-      var refine = _ref2.refine,
-          items = _ref2.items,
-          createURL = _ref2.createURL,
-          instantSearchInstance = _ref2.instantSearchInstance;
-
-      if (isFirstRendering) {
-        renderState.templateProps = prepareTemplateProps({
-          defaultTemplates: defaultTemplates$a,
-          templatesConfig: instantSearchInstance.templatesConfig,
-          templates: templates
-        });
-        return;
-      }
-
-      I(h(RefinementList$1, {
-        createURL: createURL,
-        cssClasses: cssClasses,
-        facetValues: items,
-        templateProps: renderState.templateProps,
-        toggleRefinement: refine
-      }, h("svg", {
-        xmlns: "http://www.w3.org/2000/svg",
-        style: "display:none;"
-      }, h("symbol", {
-        id: suit$j({
-          descendantName: 'starSymbol'
-        }),
-        viewBox: "0 0 24 24"
-      }, _ref3), h("symbol", {
-        id: suit$j({
-          descendantName: 'starEmptySymbol'
-        }),
-        viewBox: "0 0 24 24"
-      }, _ref4))), containerNode);
-    };
-  };
-  /**
-   * @typedef {Object} RatingMenuWidgetTemplates
-   * @property  {string|function} [item] Item template, provided with `name`, `count`, `isRefined`, `url` data properties.
-   */
-
-  /**
-   * @typedef {Object} RatingMenuWidgetCssClasses
-   * @property  {string|string[]} [root] CSS class to add to the root element.
-   * @property  {string|string[]} [noRefinementRoot] CSS class to add to the root element when there's no refinements.
-   * @property  {string|string[]} [list] CSS class to add to the list element.
-   * @property  {string|string[]} [item] CSS class to add to each item element.
-   * @property  {string|string[]} [selectedItem] CSS class to add the selected item element.
-   * @property  {string|string[]} [disabledItem] CSS class to add a disabled item element.
-   * @property  {string|string[]} [link] CSS class to add to each link element.
-   * @property  {string|string[]} [starIcon] CSS class to add to each star element (when using the default template).
-   * @property  {string|string[]} [fullStarIcon] CSS class to add to each full star element (when using the default template).
-   * @property  {string|string[]} [emptyStarIcon] CSS class to add to each empty star element (when using the default template).
-   * @property  {string|string[]} [label] CSS class to add to each label.
-   * @property  {string|string[]} [count] CSS class to add to each counter.
-   */
-
-  /**
-   * @typedef {Object} RatingMenuWidgetOptions
-   * @property {string|HTMLElement} container Place where to insert the widget in your webpage.
-   * @property {string} attribute Name of the attribute in your records that contains the ratings.
-   * @property {number} [max = 5] The maximum rating value.
-   * @property {RatingMenuWidgetTemplates} [templates] Templates to use for the widget.
-   * @property {RatingMenuWidgetCssClasses} [cssClasses] CSS classes to add.
-   */
-
-  /**
-   * Rating menu is used for displaying grade like filters. The values are normalized within boundaries.
-   *
-   * The maximum value can be set (with `max`), the minimum is always 0.
-   *
-   * @requirements
-   * The attribute passed to `attribute` must be declared as an
-   * [attribute for faceting](https://www.algolia.com/doc/guides/searching/faceting/#declaring-attributes-for-faceting)
-   * in your Algolia settings.
-   *
-   * The values inside this attribute must be JavaScript numbers (not strings).
-   *
-   * @type {WidgetFactory}
-   * @devNovel RatingMenu
-   * @category filter
-   * @param {RatingMenuWidgetOptions} $0 RatingMenu widget options.
-   * @return {Widget} A new RatingMenu widget instance.
-   * @example
-   * search.addWidgets([
-   *   instantsearch.widgets.ratingMenu({
-   *     container: '#stars',
-   *     attribute: 'rating',
-   *     max: 5,
-   *   })
-   * ]);
-   */
-
-
-  function ratingMenu() {
-    var _ref5 = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
-        container = _ref5.container,
-        attribute = _ref5.attribute,
-        _ref5$max = _ref5.max,
-        max = _ref5$max === void 0 ? 5 : _ref5$max,
-        _ref5$cssClasses = _ref5.cssClasses,
-        userCssClasses = _ref5$cssClasses === void 0 ? {} : _ref5$cssClasses,
-        _ref5$templates = _ref5.templates,
-        templates = _ref5$templates === void 0 ? defaultTemplates$a : _ref5$templates;
-
-    if (!container) {
-      throw new Error(withUsage$F('The `container` option is required.'));
-    }
-
-    var containerNode = getContainerNode(container);
-    var cssClasses = {
-      root: classnames(suit$j(), userCssClasses.root),
-      noRefinementRoot: classnames(suit$j({
-        modifierName: 'noRefinement'
-      }), userCssClasses.noRefinementRoot),
-      list: classnames(suit$j({
-        descendantName: 'list'
-      }), userCssClasses.list),
-      item: classnames(suit$j({
-        descendantName: 'item'
-      }), userCssClasses.item),
-      selectedItem: classnames(suit$j({
-        descendantName: 'item',
-        modifierName: 'selected'
-      }), userCssClasses.selectedItem),
-      disabledItem: classnames(suit$j({
-        descendantName: 'item',
-        modifierName: 'disabled'
-      }), userCssClasses.disabledItem),
-      link: classnames(suit$j({
-        descendantName: 'link'
-      }), userCssClasses.link),
-      starIcon: classnames(suit$j({
-        descendantName: 'starIcon'
-      }), userCssClasses.starIcon),
-      fullStarIcon: classnames(suit$j({
-        descendantName: 'starIcon',
-        modifierName: 'full'
-      }), userCssClasses.fullStarIcon),
-      emptyStarIcon: classnames(suit$j({
-        descendantName: 'starIcon',
-        modifierName: 'empty'
-      }), userCssClasses.emptyStarIcon),
-      label: classnames(suit$j({
-        descendantName: 'label'
-      }), userCssClasses.label),
-      count: classnames(suit$j({
-        descendantName: 'count'
-      }), userCssClasses.count)
-    };
-    var specializedRenderer = renderer$f({
-      containerNode: containerNode,
-      cssClasses: cssClasses,
-      renderState: {},
-      templates: templates
-    });
-    var makeWidget = connectRatingMenu(specializedRenderer, function () {
-      return I(null, containerNode);
-    });
-    return makeWidget({
-      attribute: attribute,
-      max: max
-    });
-  }
 
   var Stats = function Stats(_ref) {
     var nbHits = _ref.nbHits,
-        hitsPerPage = _ref.hitsPerPage,
-        nbPages = _ref.nbPages,
-        page = _ref.page,
-        processingTimeMS = _ref.processingTimeMS,
-        query = _ref.query,
+        nbSortedHits = _ref.nbSortedHits,
+        cssClasses = _ref.cssClasses,
         templateProps = _ref.templateProps,
-        cssClasses = _ref.cssClasses;
+        rest = _objectWithoutProperties(_ref, ["nbHits", "nbSortedHits", "cssClasses", "templateProps"]);
+
     return h("div", {
-      className: cssClasses.root
+      className: classnames(cssClasses.root)
     }, h(Template, _extends({}, templateProps, {
       templateKey: "text",
       rootTagName: "span",
       rootProps: {
         className: cssClasses.text
       },
-      data: {
+      data: _objectSpread2({
+        hasManySortedResults: nbSortedHits && nbSortedHits > 1,
+        hasNoSortedResults: nbSortedHits === 0,
+        hasOneSortedResults: nbSortedHits === 1,
         hasManyResults: nbHits > 1,
         hasNoResults: nbHits === 0,
         hasOneResult: nbHits === 1,
-        hitsPerPage: hitsPerPage,
         nbHits: nbHits,
-        nbPages: nbPages,
-        page: page,
-        processingTimeMS: processingTimeMS,
-        query: query,
+        nbSortedHits: nbSortedHits,
         cssClasses: cssClasses
-      }
+      }, rest)
     })));
   };
 
-  var defaultTemplates$b = {
-    text: "{{#hasNoResults}}No results{{/hasNoResults}}\n    {{#hasOneResult}}1 result{{/hasOneResult}}\n    {{#hasManyResults}}{{#helpers.formatNumber}}{{nbHits}}{{/helpers.formatNumber}} results{{/hasManyResults}} found in {{processingTimeMS}}ms"
-  };
-
-  /** @jsx h */
-  var withUsage$G = createDocumentationMessageGenerator({
+  var withUsage$S = createDocumentationMessageGenerator({
     name: 'stats'
   });
-  var suit$k = component('Stats');
+  var suit$s = component('Stats');
+  var defaultTemplates$g = {
+    text: "\n    {{#areHitsSorted}}\n      {{#hasNoSortedResults}}No relevant results{{/hasNoSortedResults}}\n      {{#hasOneSortedResults}}1 relevant result{{/hasOneSortedResults}}\n      {{#hasManySortedResults}}{{#helpers.formatNumber}}{{nbSortedHits}}{{/helpers.formatNumber}} relevant results{{/hasManySortedResults}}\n      sorted out of {{#helpers.formatNumber}}{{nbHits}}{{/helpers.formatNumber}}\n    {{/areHitsSorted}}\n    {{^areHitsSorted}}\n      {{#hasNoResults}}No results{{/hasNoResults}}\n      {{#hasOneResult}}1 result{{/hasOneResult}}\n      {{#hasManyResults}}{{#helpers.formatNumber}}{{nbHits}}{{/helpers.formatNumber}} results{{/hasManyResults}}\n    {{/areHitsSorted}}\n    found in {{processingTimeMS}}ms"
+  };
 
-  var renderer$g = function renderer(_ref) {
-    var containerNode = _ref.containerNode,
+  var renderer$n = function renderer(_ref) {
+    var renderState = _ref.renderState,
         cssClasses = _ref.cssClasses,
-        renderState = _ref.renderState,
+        containerNode = _ref.containerNode,
         templates = _ref.templates;
     return function (_ref2, isFirstRendering) {
       var hitsPerPage = _ref2.hitsPerPage,
           nbHits = _ref2.nbHits,
+          nbSortedHits = _ref2.nbSortedHits,
+          areHitsSorted = _ref2.areHitsSorted,
           nbPages = _ref2.nbPages,
           page = _ref2.page,
           processingTimeMS = _ref2.processingTimeMS,
@@ -19862,7 +20695,7 @@
 
       if (isFirstRendering) {
         renderState.templateProps = prepareTemplateProps({
-          defaultTemplates: defaultTemplates$b,
+          defaultTemplates: defaultTemplates$g,
           templatesConfig: instantSearchInstance.templatesConfig,
           templates: templates
         });
@@ -19873,6 +20706,8 @@
         cssClasses: cssClasses,
         hitsPerPage: hitsPerPage,
         nbHits: nbHits,
+        nbSortedHits: nbSortedHits,
+        areHitsSorted: areHitsSorted,
         nbPages: nbPages,
         page: page,
         processingTimeMS: processingTimeMS,
@@ -19882,86 +20717,45 @@
     };
   };
   /**
-   * @typedef {Object} StatsWidgetTemplates
-   * @property {string|function} [text] Text template, provided with `hasManyResults`,
-   * `hasNoResults`, `hasOneResult`, `hitsPerPage`, `nbHits`, `nbPages`, `page`, `processingTimeMS`, `query`.
-   */
-
-  /**
-   * @typedef {Object} StatsWidgetCssClasses
-   * @property {string|string[]} [root] CSS class to add to the root element.
-   * @property {string|string[]} [text] CSS class to add to the text span element.
-   */
-
-  /**
-   * @typedef {Object} StatsTextData
-   * @property {boolean} hasManyResults True if the result set has more than one result.
-   * @property {boolean} hasNoResults True if the result set has no result.
-   * @property {boolean} hasOneResult True if the result set has exactly one result.
-   * @property {number} hitsPerPage Number of hits per page.
-   * @property {number} nbHits Number of hit in the result set.
-   * @property {number} nbPages Number of pages in the result set with regard to the hitsPerPage and number of hits.
-   * @property {number} page Number of the current page. First page is 0.
-   * @property {number} processingTimeMS Time taken to compute the results inside the engine.
-   * @property {string} query Text query currently used.
-   */
-
-  /**
-   * @typedef {Object} StatsWidgetOptions
-   * @property {string|HTMLElement} container Place where to insert the widget in your webpage.
-   * @property {StatsWidgetTemplates} [templates] Templates to use for the widget.
-   * @property {StatsWidgetCssClasses} [cssClasses] CSS classes to add.
-   */
-
-  /**
    * The `stats` widget is used to display useful insights about the current results.
    *
    * By default, it will display the **number of hits** and the time taken to compute the
    * results inside the engine.
-   * @type {WidgetFactory}
-   * @devNovel Stats
-   * @category metadata
-   * @param {StatsWidgetOptions} $0 Stats widget options. Some keys are mandatory: `container`,
-   * @return {Widget} A new stats widget instance
-   * @example
-   * search.addWidgets([
-   *   instantsearch.widgets.stats({
-   *     container: '#stats-container'
-   *   })
-   * ]);
    */
 
 
-  function stats() {
-    var _ref3 = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
+  var stats = function stats(widgetParams) {
+    var _ref3 = widgetParams || {},
         container = _ref3.container,
         _ref3$cssClasses = _ref3.cssClasses,
         userCssClasses = _ref3$cssClasses === void 0 ? {} : _ref3$cssClasses,
         _ref3$templates = _ref3.templates,
-        templates = _ref3$templates === void 0 ? defaultTemplates$b : _ref3$templates;
+        templates = _ref3$templates === void 0 ? defaultTemplates$g : _ref3$templates;
 
     if (!container) {
-      throw new Error(withUsage$G('The `container` option is required.'));
+      throw new Error(withUsage$S('The `container` option is required.'));
     }
 
     var containerNode = getContainerNode(container);
     var cssClasses = {
-      root: classnames(suit$k(), userCssClasses.root),
-      text: classnames(suit$k({
+      root: classnames(suit$s(), userCssClasses.root),
+      text: classnames(suit$s({
         descendantName: 'text'
       }), userCssClasses.text)
     };
-    var specializedRenderer = renderer$g({
+    var specializedRenderer = renderer$n({
       containerNode: containerNode,
       cssClasses: cssClasses,
-      renderState: {},
-      templates: templates
+      templates: templates,
+      renderState: {}
     });
     var makeWidget = connectStats(specializedRenderer, function () {
       return I(null, containerNode);
     });
-    return makeWidget();
-  }
+    return _objectSpread2(_objectSpread2({}, makeWidget({})), {}, {
+      $$widgetType: 'ais.stats'
+    });
+  };
 
   var ToggleRefinement = function ToggleRefinement(_ref) {
     var currentRefinement = _ref.currentRefinement,
@@ -19977,7 +20771,9 @@
       type: "checkbox",
       checked: currentRefinement.isRefined,
       onChange: function onChange(event) {
-        return refine(!event.target.checked);
+        return refine({
+          isRefined: !event.target.checked
+        });
       }
     }), h(Template, _extends({}, templateProps, {
       rootTagName: "span",
@@ -19989,30 +20785,28 @@
     }))));
   };
 
-  var defaultTemplates$c = {
+  var defaultTemplates$h = {
     labelText: '{{name}}'
   };
 
-  /** @jsx h */
-  var withUsage$H = createDocumentationMessageGenerator({
+  var withUsage$T = createDocumentationMessageGenerator({
     name: 'toggle-refinement'
   });
-  var suit$l = component('ToggleRefinement');
+  var suit$t = component('ToggleRefinement');
 
-  var renderer$h = function renderer(_ref) {
+  var renderer$o = function renderer(_ref) {
     var containerNode = _ref.containerNode,
         cssClasses = _ref.cssClasses,
         renderState = _ref.renderState,
         templates = _ref.templates;
     return function (_ref2, isFirstRendering) {
       var value = _ref2.value,
-          createURL = _ref2.createURL,
-          _refine = _ref2.refine,
+          refine = _ref2.refine,
           instantSearchInstance = _ref2.instantSearchInstance;
 
       if (isFirstRendering) {
         renderState.templateProps = prepareTemplateProps({
-          defaultTemplates: defaultTemplates$c,
+          defaultTemplates: defaultTemplates$h,
           templatesConfig: instantSearchInstance.templatesConfig,
           templates: templates
         });
@@ -20020,47 +20814,13 @@
       }
 
       I(h(ToggleRefinement, {
-        createURL: createURL,
         cssClasses: cssClasses,
         currentRefinement: value,
         templateProps: renderState.templateProps,
-        refine: function refine(isRefined) {
-          return _refine({
-            isRefined: isRefined
-          });
-        }
+        refine: refine
       }), containerNode);
     };
   };
-  /**
-   * @typedef {Object} ToggleWidgetCSSClasses
-   * @property {string|string[]} [root] CSS class to add to the root element.
-   * @property {string|string[]} [label] CSS class to add to the label wrapping element
-   * @property {string|string[]} [checkbox] CSS class to add to the checkbox
-   * @property {string|string[]} [labelText] CSS class to add to the label text.
-   */
-
-  /**
-   * @typedef {Object} ToggleWidgetTemplates
-   * @property {string|function(object):string} labelText the text that describes the toggle action. This
-   * template receives some contextual information:
-   *  - `isRefined` which is `true` if the checkbox is checked
-   *  - `count` - the count of the values if the toggle in the next refinements
-   *  - `onFacetValue`, `offFacetValue`: objects with `count` (useful to get the other value of `count`)
-   */
-
-  /**
-   * @typedef {Object} ToggleWidgetOptions
-   * @property {string|HTMLElement} container Place where to insert the widget in your webpage.
-   * @property {string} attribute Name of the attribute for faceting (eg. "free_shipping").
-   * @property {string|number|boolean|array} on Value to filter on when checked.
-   * @property {string|number|boolean|array} off Value to filter on when unchecked.
-   * element (when using the default template). By default when switching to `off`, no refinement will be asked. So you
-   * will get both `true` and `false` results. If you set the off value to `false` then you will get only objects
-   * having `false` has a value for the selected attribute.
-   * @property {ToggleWidgetTemplates} [templates] Templates to use for the widget.
-   * @property {ToggleWidgetCSSClasses} [cssClasses] CSS classes to add.
-   */
 
   /**
    * The toggleRefinement widget lets the user either:
@@ -20073,56 +20833,37 @@
    * The attribute passed to `attribute` must be declared as an
    * [attribute for faceting](https://www.algolia.com/doc/guides/searching/faceting/#declaring-attributes-for-faceting)
    * in your Algolia settings.
-   *
-   * @type {WidgetFactory}
-   * @devNovel ToggleRefinement
-   * @category filter
-   * @param {ToggleWidgetOptions} $0 Options for the ToggleRefinement widget.
-   * @return {Widget} A new instance of the ToggleRefinement widget
-   * @example
-   * search.addWidgets([
-   *   instantsearch.widgets.toggleRefinement({
-   *     container: '#free-shipping',
-   *     attribute: 'free_shipping',
-   *     on: true,
-   *     templates: {
-   *       labelText: 'Free shipping'
-   *     }
-   *   })
-   * ]);
    */
-
-
-  function toggleRefinement() {
-    var _ref3 = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
+  var toggleRefinement = function toggleRefinement(widgetParams) {
+    var _ref3 = widgetParams || {},
         container = _ref3.container,
         attribute = _ref3.attribute,
         _ref3$cssClasses = _ref3.cssClasses,
         userCssClasses = _ref3$cssClasses === void 0 ? {} : _ref3$cssClasses,
         _ref3$templates = _ref3.templates,
-        templates = _ref3$templates === void 0 ? defaultTemplates$c : _ref3$templates,
+        templates = _ref3$templates === void 0 ? defaultTemplates$h : _ref3$templates,
         _ref3$on = _ref3.on,
         on = _ref3$on === void 0 ? true : _ref3$on,
         off = _ref3.off;
 
     if (!container) {
-      throw new Error(withUsage$H('The `container` option is required.'));
+      throw new Error(withUsage$T('The `container` option is required.'));
     }
 
     var containerNode = getContainerNode(container);
     var cssClasses = {
-      root: classnames(suit$l(), userCssClasses.root),
-      label: classnames(suit$l({
+      root: classnames(suit$t(), userCssClasses.root),
+      label: classnames(suit$t({
         descendantName: 'label'
       }), userCssClasses.label),
-      checkbox: classnames(suit$l({
+      checkbox: classnames(suit$t({
         descendantName: 'checkbox'
       }), userCssClasses.checkbox),
-      labelText: classnames(suit$l({
+      labelText: classnames(suit$t({
         descendantName: 'labelText'
       }), userCssClasses.labelText)
     };
-    var specializedRenderer = renderer$h({
+    var specializedRenderer = renderer$o({
       containerNode: containerNode,
       cssClasses: cssClasses,
       renderState: {},
@@ -20131,857 +20872,13 @@
     var makeWidget = connectToggleRefinement(specializedRenderer, function () {
       return I(null, containerNode);
     });
-    return makeWidget({
+    return _objectSpread2(_objectSpread2({}, makeWidget({
       attribute: attribute,
       on: on,
       off: off
+    })), {}, {
+      $$widgetType: 'ais.toggleRefinement'
     });
-  }
-
-  var withUsage$I = createDocumentationMessageGenerator({
-    name: 'analytics'
-  });
-
-  // @major this widget will be removed from the next major version.
-  var analytics = function analytics(widgetParams) {
-    var _ref = widgetParams || {},
-        pushFunction = _ref.pushFunction,
-        _ref$delay = _ref.delay,
-        delay = _ref$delay === void 0 ? 3000 : _ref$delay,
-        _ref$triggerOnUIInter = _ref.triggerOnUIInteraction,
-        triggerOnUIInteraction = _ref$triggerOnUIInter === void 0 ? false : _ref$triggerOnUIInter,
-        _ref$pushInitialSearc = _ref.pushInitialSearch,
-        pushInitialSearch = _ref$pushInitialSearc === void 0 ? true : _ref$pushInitialSearc,
-        _ref$pushPagination = _ref.pushPagination,
-        pushPagination = _ref$pushPagination === void 0 ? false : _ref$pushPagination;
-
-    if (!pushFunction) {
-      throw new Error(withUsage$I('The `pushFunction` option is required.'));
-    }
-
-     _warning(false, "`analytics` widget has been deprecated. It is still supported in 4.x releases, but not further. It is replaced by the `insights` middleware.\n\nFor the migration, visit https://www.algolia.com/doc/guides/building-search-ui/upgrade-guides/js/#analytics-widget") ;
-    var cachedState = null;
-
-    var serializeRefinements = function serializeRefinements(parameters) {
-      var refinements = [];
-
-      for (var parameter in parameters) {
-        if (parameters.hasOwnProperty(parameter)) {
-          var values = parameters[parameter].join('+');
-          refinements.push("".concat(encodeURIComponent(parameter), "=").concat(encodeURIComponent(parameter), "_").concat(encodeURIComponent(values)));
-        }
-      }
-
-      return refinements.join('&');
-    };
-
-    var serializeNumericRefinements = function serializeNumericRefinements(numericRefinements) {
-      var refinements = [];
-
-      for (var attribute in numericRefinements) {
-        if (numericRefinements.hasOwnProperty(attribute)) {
-          var filter = numericRefinements[attribute];
-
-          if (filter.hasOwnProperty('>=') && filter.hasOwnProperty('<=')) {
-            if (filter['>='] && filter['>='][0] === filter['<='] && filter['<='][0]) {
-              refinements.push("".concat(attribute, "=").concat(attribute, "_").concat(filter['>=']));
-            } else {
-              refinements.push("".concat(attribute, "=").concat(attribute, "_").concat(filter['>='], "to").concat(filter['<=']));
-            }
-          } else if (filter.hasOwnProperty('>=')) {
-            refinements.push("".concat(attribute, "=").concat(attribute, "_from").concat(filter['>=']));
-          } else if (filter.hasOwnProperty('<=')) {
-            refinements.push("".concat(attribute, "=").concat(attribute, "_to").concat(filter['<=']));
-          } else if (filter.hasOwnProperty('=')) {
-            var equals = [];
-
-            for (var equal in filter['=']) {
-              // eslint-disable-next-line max-depth
-              if (filter['='].hasOwnProperty(equal)) {
-                equals.push(filter['='][equal]);
-              }
-            }
-
-            refinements.push("".concat(attribute, "=").concat(attribute, "_").concat(equals.join('-')));
-          }
-        }
-      }
-
-      return refinements.join('&');
-    };
-
-    var lastSentData = '';
-
-    var sendAnalytics = function sendAnalytics(analyticsState) {
-      if (analyticsState === null) {
-        return;
-      }
-
-      var serializedParams = [];
-      var serializedRefinements = serializeRefinements(_objectSpread2({}, analyticsState.state.disjunctiveFacetsRefinements, {}, analyticsState.state.facetsRefinements, {}, analyticsState.state.hierarchicalFacetsRefinements));
-      var serializedNumericRefinements = serializeNumericRefinements(analyticsState.state.numericRefinements);
-
-      if (serializedRefinements !== '') {
-        serializedParams.push(serializedRefinements);
-      }
-
-      if (serializedNumericRefinements !== '') {
-        serializedParams.push(serializedNumericRefinements);
-      }
-
-      var stringifiedParams = serializedParams.join('&');
-      var dataToSend = "Query: ".concat(analyticsState.state.query || '', ", ").concat(stringifiedParams);
-
-      if (pushPagination === true) {
-        dataToSend += ", Page: ".concat(analyticsState.state.page || 0);
-      }
-
-      if (lastSentData !== dataToSend) {
-        pushFunction(stringifiedParams, analyticsState.state, analyticsState.results);
-        lastSentData = dataToSend;
-      }
-    };
-
-    var pushTimeout;
-    var isInitialSearch = true;
-
-    if (pushInitialSearch === true) {
-      isInitialSearch = false;
-    }
-
-    var onClick = function onClick() {
-      sendAnalytics(cachedState);
-    };
-
-    var onUnload = function onUnload() {
-      sendAnalytics(cachedState);
-    };
-
-    return {
-      init: function init() {
-        if (triggerOnUIInteraction === true) {
-          document.addEventListener('click', onClick);
-          window.addEventListener('beforeunload', onUnload);
-        }
-      },
-      render: function render(_ref2) {
-        var results = _ref2.results,
-            state = _ref2.state;
-
-        if (isInitialSearch === true) {
-          isInitialSearch = false;
-          return;
-        }
-
-        cachedState = {
-          results: results,
-          state: state
-        };
-
-        if (pushTimeout) {
-          clearTimeout(pushTimeout);
-        }
-
-        pushTimeout = window.setTimeout(function () {
-          return sendAnalytics(cachedState);
-        }, delay);
-      },
-      dispose: function dispose() {
-        if (triggerOnUIInteraction === true) {
-          document.removeEventListener('click', onClick);
-          window.removeEventListener('beforeunload', onUnload);
-        }
-      },
-      getRenderState: function getRenderState(renderState, renderOptions) {
-        return _objectSpread2({}, renderState, {
-          analytics: this.getWidgetRenderState(renderOptions)
-        });
-      },
-      getWidgetRenderState: function getWidgetRenderState() {
-        return {
-          widgetParams: widgetParams
-        };
-      }
-    };
-  };
-
-  var Breadcrumb = function Breadcrumb(_ref) {
-    var items = _ref.items,
-        cssClasses = _ref.cssClasses,
-        templateProps = _ref.templateProps,
-        createURL = _ref.createURL,
-        refine = _ref.refine;
-    return h("div", {
-      className: classnames(cssClasses.root, _defineProperty({}, cssClasses.noRefinementRoot, items.length === 0))
-    }, h("ul", {
-      className: cssClasses.list
-    }, h("li", {
-      className: classnames(cssClasses.item, _defineProperty({}, cssClasses.selectedItem, items.length === 0))
-    }, h(Template, _extends({}, templateProps, {
-      templateKey: "home",
-      rootTagName: "a",
-      rootProps: {
-        className: cssClasses.link,
-        href: createURL(undefined),
-        onClick: function onClick(event) {
-          event.preventDefault();
-          refine(undefined);
-        }
-      }
-    }))), items.map(function (item, idx) {
-      var isLast = idx === items.length - 1;
-      return h("li", {
-        key: item.label + idx,
-        className: classnames(cssClasses.item, _defineProperty({}, cssClasses.selectedItem, isLast))
-      }, h(Template, _extends({}, templateProps, {
-        templateKey: "separator",
-        rootTagName: "span",
-        rootProps: {
-          className: cssClasses.separator,
-          'aria-hidden': true
-        }
-      })), isLast ? item.label : h("a", {
-        className: cssClasses.link,
-        href: createURL(item.value),
-        onClick: function onClick(event) {
-          event.preventDefault();
-          refine(item.value);
-        }
-      }, item.label));
-    })));
-  };
-
-  var defaultTemplates$d = {
-    home: 'Home',
-    separator: '>'
-  };
-
-  /** @jsx h */
-  var withUsage$J = createDocumentationMessageGenerator({
-    name: 'breadcrumb'
-  });
-  var suit$m = component('Breadcrumb');
-
-  var renderer$i = function renderer(_ref) {
-    var containerNode = _ref.containerNode,
-        cssClasses = _ref.cssClasses,
-        renderState = _ref.renderState,
-        templates = _ref.templates;
-    return function (_ref2, isFirstRendering) {
-      var canRefine = _ref2.canRefine,
-          createURL = _ref2.createURL,
-          instantSearchInstance = _ref2.instantSearchInstance,
-          items = _ref2.items,
-          refine = _ref2.refine;
-
-      if (isFirstRendering) {
-        renderState.templateProps = prepareTemplateProps({
-          defaultTemplates: defaultTemplates$d,
-          templatesConfig: instantSearchInstance.templatesConfig,
-          templates: templates
-        });
-        return;
-      }
-
-      I(h(Breadcrumb, {
-        canRefine: canRefine,
-        cssClasses: cssClasses,
-        createURL: createURL,
-        items: items,
-        refine: refine,
-        templateProps: renderState.templateProps
-      }), containerNode);
-    };
-  };
-
-  var breadcrumb = function breadcrumb(widgetOptions) {
-    var _ref3 = widgetOptions || {},
-        container = _ref3.container,
-        attributes = _ref3.attributes,
-        separator = _ref3.separator,
-        rootPath = _ref3.rootPath,
-        transformItems = _ref3.transformItems,
-        _ref3$templates = _ref3.templates,
-        templates = _ref3$templates === void 0 ? defaultTemplates$d : _ref3$templates,
-        _ref3$cssClasses = _ref3.cssClasses,
-        userCssClasses = _ref3$cssClasses === void 0 ? {} : _ref3$cssClasses;
-
-    if (!container) {
-      throw new Error(withUsage$J('The `container` option is required.'));
-    }
-
-    var containerNode = getContainerNode(container);
-    var cssClasses = {
-      root: classnames(suit$m(), userCssClasses.root),
-      noRefinementRoot: classnames(suit$m({
-        modifierName: 'noRefinement'
-      }), userCssClasses.noRefinementRoot),
-      list: classnames(suit$m({
-        descendantName: 'list'
-      }), userCssClasses.list),
-      item: classnames(suit$m({
-        descendantName: 'item'
-      }), userCssClasses.item),
-      selectedItem: classnames(suit$m({
-        descendantName: 'item',
-        modifierName: 'selected'
-      }), userCssClasses.selectedItem),
-      separator: classnames(suit$m({
-        descendantName: 'separator'
-      }), userCssClasses.separator),
-      link: classnames(suit$m({
-        descendantName: 'link'
-      }), userCssClasses.link)
-    };
-    var specializedRenderer = renderer$i({
-      containerNode: containerNode,
-      cssClasses: cssClasses,
-      renderState: {},
-      templates: templates
-    });
-    var makeBreadcrumb = connectBreadcrumb(specializedRenderer, function () {
-      return I(null, containerNode);
-    });
-    return makeBreadcrumb({
-      attributes: attributes,
-      separator: separator,
-      rootPath: rootPath,
-      transformItems: transformItems
-    });
-  };
-
-  function MenuSelect(_ref) {
-    var cssClasses = _ref.cssClasses,
-        templateProps = _ref.templateProps,
-        items = _ref.items,
-        refine = _ref.refine;
-
-    var _ref2 = find$1(items, function (item) {
-      return item.isRefined;
-    }) || {
-      value: ''
-    },
-        selectedValue = _ref2.value;
-
-    return h("div", {
-      className: classnames(cssClasses.root, _defineProperty({}, cssClasses.noRefinementRoot, items.length === 0))
-    }, h("select", {
-      className: cssClasses.select,
-      value: selectedValue,
-      onChange: function onChange(event) {
-        refine(event.target.value);
-      }
-    }, h(Template, _extends({}, templateProps, {
-      templateKey: "defaultOption",
-      rootTagName: "option",
-      rootProps: {
-        value: '',
-        className: cssClasses.option
-      }
-    })), items.map(function (item) {
-      return h(Template, _extends({}, templateProps, {
-        templateKey: "item",
-        rootTagName: "option",
-        rootProps: {
-          value: item.value,
-          className: cssClasses.option
-        },
-        key: item.value,
-        data: item
-      }));
-    })));
-  }
-
-  var defaultTemplates$e = {
-    item: '{{label}} ({{#helpers.formatNumber}}{{count}}{{/helpers.formatNumber}})',
-    defaultOption: 'See all'
-  };
-
-  /** @jsx h */
-  var withUsage$K = createDocumentationMessageGenerator({
-    name: 'menu-select'
-  });
-  var suit$n = component('MenuSelect');
-
-  var renderer$j = function renderer(_ref) {
-    var containerNode = _ref.containerNode,
-        cssClasses = _ref.cssClasses,
-        renderState = _ref.renderState,
-        templates = _ref.templates;
-    return function (_ref2, isFirstRendering) {
-      var refine = _ref2.refine,
-          items = _ref2.items,
-          canRefine = _ref2.canRefine,
-          instantSearchInstance = _ref2.instantSearchInstance;
-
-      if (isFirstRendering) {
-        renderState.templateProps = prepareTemplateProps({
-          defaultTemplates: defaultTemplates$e,
-          templatesConfig: instantSearchInstance.templatesConfig,
-          templates: templates
-        });
-        return;
-      }
-
-      I(h(MenuSelect, {
-        cssClasses: cssClasses,
-        items: items,
-        refine: refine,
-        templateProps: renderState.templateProps,
-        canRefine: canRefine
-      }), containerNode);
-    };
-  };
-  /**
-   * @typedef {Object} MenuSelectCSSClasses
-   * @property {string|string[]} [root] CSS class to add to the root element.
-   * @property {string|string[]} [noRefinementRoot] CSS class to add to the root when there are no items to display
-   * @property {string|string[]} [select] CSS class to add to the select element.
-   * @property {string|string[]} [option] CSS class to add to the option element.
-   *
-   */
-
-  /**
-   * @typedef {Object} MenuSelectTemplates
-   * @property {string|function(label: string, count: number, isRefined: boolean, value: string)} [item] Item template, provided with `label`, `count`, `isRefined` and `value` data properties.
-   * @property {string} [defaultOption = 'See all'] Label of the "see all" option in the select.
-   */
-
-  /**
-   * @typedef {Object} MenuSelectWidgetOptions
-   * @property {string|HTMLElement} container CSS Selector or HTMLElement to insert the widget.
-   * @property {string} attribute Name of the attribute for faceting
-   * @property {string[]|function} [sortBy=['name:asc']] How to sort refinements. Possible values: `count|isRefined|name:asc|name:desc`.
-   *
-   * You can also use a sort function that behaves like the standard Javascript [compareFunction](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/sort#Syntax).
-   * @property {MenuSelectTemplates} [templates] Customize the output through templating.
-   * @property {number} [limit=10] How many facets values to retrieve.
-   * @property {MenuSelectCSSClasses} [cssClasses] CSS classes to add to the wrapping elements.
-   * @property {function(object[]):object[]} [transformItems] Function to transform the items passed to the templates.
-   */
-
-  /**
-   * Create a menu select out of a facet
-   * @type {WidgetFactory}
-   * @category filter
-   * @param {MenuSelectWidgetOptions} $0 The Menu select widget options.
-   * @return {Widget} Creates a new instance of the Menu select widget.
-   * @example
-   * search.addWidgets([
-   *   instantsearch.widgets.menuSelect({
-   *     container: '#categories-menuSelect',
-   *     attribute: 'hierarchicalCategories.lvl0',
-   *     limit: 10,
-   *   })
-   * ]);
-   */
-
-
-  function menuSelect(_ref3) {
-    var container = _ref3.container,
-        attribute = _ref3.attribute,
-        _ref3$sortBy = _ref3.sortBy,
-        sortBy = _ref3$sortBy === void 0 ? ['name:asc'] : _ref3$sortBy,
-        _ref3$limit = _ref3.limit,
-        limit = _ref3$limit === void 0 ? 10 : _ref3$limit,
-        _ref3$cssClasses = _ref3.cssClasses,
-        userCssClasses = _ref3$cssClasses === void 0 ? {} : _ref3$cssClasses,
-        _ref3$templates = _ref3.templates,
-        templates = _ref3$templates === void 0 ? defaultTemplates$e : _ref3$templates,
-        transformItems = _ref3.transformItems;
-
-    if (!container) {
-      throw new Error(withUsage$K('The `container` option is required.'));
-    }
-
-    var containerNode = getContainerNode(container);
-    var cssClasses = {
-      root: classnames(suit$n(), userCssClasses.root),
-      noRefinementRoot: classnames(suit$n({
-        modifierName: 'noRefinement'
-      }), userCssClasses.noRefinementRoot),
-      select: classnames(suit$n({
-        descendantName: 'select'
-      }), userCssClasses.select),
-      option: classnames(suit$n({
-        descendantName: 'option'
-      }), userCssClasses.option)
-    };
-    var specializedRenderer = renderer$j({
-      containerNode: containerNode,
-      cssClasses: cssClasses,
-      renderState: {},
-      templates: templates
-    });
-    var makeWidget = connectMenu(specializedRenderer, function () {
-      return I(null, containerNode);
-    });
-    return makeWidget({
-      attribute: attribute,
-      limit: limit,
-      sortBy: sortBy,
-      transformItems: transformItems
-    });
-  }
-
-  /** @jsx h */
-
-  var _ref2$1 =
-  /*#__PURE__*/
-  h("path", {
-    fill: "#5468FF",
-    d: "M78.99.94h16.6a2.97 2.97 0 0 1 2.96 2.96v16.6a2.97 2.97 0 0 1-2.97 2.96h-16.6a2.97 2.97 0 0 1-2.96-2.96V3.9A2.96 2.96 0 0 1 79 .94"
-  });
-
-  var _ref3$1 =
-  /*#__PURE__*/
-  h("path", {
-    fill: "#FFF",
-    d: "M89.63 5.97v-.78a.98.98 0 0 0-.98-.97h-2.28a.98.98 0 0 0-.97.97V6c0 .09.08.15.17.13a7.13 7.13 0 0 1 3.9-.02c.08.02.16-.04.16-.13m-6.25 1L83 6.6a.98.98 0 0 0-1.38 0l-.46.46a.97.97 0 0 0 0 1.38l.38.39c.06.06.15.04.2-.02a7.49 7.49 0 0 1 1.63-1.62c.07-.04.08-.14.02-.2m4.16 2.45v3.34c0 .1.1.17.2.12l2.97-1.54c.06-.03.08-.12.05-.18a3.7 3.7 0 0 0-3.08-1.87c-.07 0-.14.06-.14.13m0 8.05a4.49 4.49 0 1 1 0-8.98 4.49 4.49 0 0 1 0 8.98m0-10.85a6.37 6.37 0 1 0 0 12.74 6.37 6.37 0 0 0 0-12.74"
-  });
-
-  var PoweredBy = function PoweredBy(_ref) {
-    var url = _ref.url,
-        theme = _ref.theme,
-        cssClasses = _ref.cssClasses;
-    return h("div", {
-      className: cssClasses.root
-    }, h("a", {
-      href: url,
-      target: "_blank",
-      className: cssClasses.link,
-      "aria-label": "Search by Algolia",
-      rel: "noopener noreferrer"
-    }, h("svg", {
-      height: "1.2em",
-      className: cssClasses.logo,
-      viewBox: "0 0 168 24" // This style is necessary as long as it's not included in InstantSearch.css.
-      // For now, InstantSearch.css sets a maximum width of 70px.
-      ,
-      style: {
-        width: 'auto'
-      }
-    }, h("path", {
-      fill: theme === 'dark' ? '#FFF' : '#5D6494',
-      d: "M6.97 6.68V8.3a4.47 4.47 0 0 0-2.42-.67 2.2 2.2 0 0 0-1.38.4c-.34.26-.5.6-.5 1.02 0 .43.16.77.49 1.03.33.25.83.53 1.51.83a7.04 7.04 0 0 1 1.9 1.08c.34.24.58.54.73.89.15.34.23.74.23 1.18 0 .95-.33 1.7-1 2.24a4 4 0 0 1-2.6.81 5.71 5.71 0 0 1-2.94-.68v-1.71c.84.63 1.81.94 2.92.94.58 0 1.05-.14 1.39-.4.34-.28.5-.65.5-1.13 0-.29-.1-.55-.3-.8a2.2 2.2 0 0 0-.65-.53 23.03 23.03 0 0 0-1.64-.78 13.67 13.67 0 0 1-1.11-.64c-.12-.1-.28-.22-.46-.4a1.72 1.72 0 0 1-.39-.5 4.46 4.46 0 0 1-.22-.6c-.07-.23-.1-.48-.1-.75 0-.91.33-1.63 1-2.17a4 4 0 0 1 2.57-.8c.97 0 1.8.18 2.47.52zm7.47 5.7v-.3a2.26 2.26 0 0 0-.5-1.44c-.3-.35-.74-.53-1.32-.53-.53 0-.99.2-1.37.58-.38.39-.62.95-.72 1.68h3.91zm1 2.79v1.4c-.6.34-1.38.51-2.36.51a4.02 4.02 0 0 1-3-1.13 4.04 4.04 0 0 1-1.11-2.97c0-1.3.34-2.32 1.02-3.06a3.38 3.38 0 0 1 2.6-1.1c1.03 0 1.85.32 2.46.96.6.64.9 1.57.9 2.78 0 .33-.03.68-.09 1.04h-5.31c.1.7.4 1.24.89 1.61.49.38 1.1.56 1.85.56.86 0 1.58-.2 2.15-.6zm6.61-1.78h-1.21c-.6 0-1.05.12-1.35.36-.3.23-.46.53-.46.89 0 .37.12.66.36.88.23.2.57.32 1.02.32.5 0 .9-.15 1.2-.43.3-.28.44-.65.44-1.1v-.92zm-4.07-2.55V9.33a4.96 4.96 0 0 1 2.5-.55c2.1 0 3.17 1.03 3.17 3.08V17H22.1v-.96c-.42.68-1.15 1.02-2.19 1.02-.76 0-1.38-.22-1.84-.66-.46-.44-.7-1-.7-1.68 0-.78.3-1.38.88-1.81.59-.43 1.4-.65 2.46-.65h1.34v-.46c0-.55-.13-.97-.4-1.25-.26-.29-.7-.43-1.32-.43-.86 0-1.65.24-2.35.72zm9.34-1.93v1.42c.39-1 1.1-1.5 2.12-1.5.15 0 .31.02.5.05v1.53c-.23-.1-.48-.14-.76-.14-.54 0-.99.24-1.34.71a2.8 2.8 0 0 0-.52 1.71V17h-1.57V8.91h1.57zm5 4.09a3 3 0 0 0 .76 2.01c.47.53 1.14.8 2 .8.64 0 1.24-.18 1.8-.53v1.4c-.53.32-1.2.48-2 .48a3.98 3.98 0 0 1-4.17-4.18c0-1.16.38-2.15 1.14-2.98a4 4 0 0 1 3.1-1.23c.7 0 1.34.15 1.92.44v1.44a3.24 3.24 0 0 0-1.77-.5A2.65 2.65 0 0 0 32.33 13zm7.92-7.28v4.58c.46-1 1.3-1.5 2.5-1.5.8 0 1.42.24 1.9.73.48.5.72 1.17.72 2.05V17H43.8v-5.1c0-.56-.14-.99-.43-1.29-.28-.3-.65-.45-1.1-.45-.54 0-1 .2-1.42.6-.4.4-.61 1.02-.61 1.85V17h-1.56V5.72h1.56zM55.2 15.74c.6 0 1.1-.25 1.5-.76.4-.5.6-1.16.6-1.95 0-.92-.2-1.62-.6-2.12-.4-.5-.92-.74-1.55-.74-.56 0-1.05.22-1.5.67-.44.45-.66 1.13-.66 2.06 0 .96.22 1.67.64 2.14.43.47.95.7 1.57.7zM53 5.72v4.42a2.74 2.74 0 0 1 2.43-1.34c1.03 0 1.86.38 2.51 1.15.65.76.97 1.78.97 3.05 0 1.13-.3 2.1-.92 2.9-.62.81-1.47 1.21-2.54 1.21s-1.9-.45-2.46-1.34V17h-1.58V5.72H53zm9.9 11.1l-3.22-7.9h1.74l1 2.62 1.26 3.42c.1-.32.48-1.46 1.15-3.42l.91-2.63h1.66l-2.92 7.87c-.78 2.07-1.96 3.1-3.56 3.1-.28 0-.53-.02-.73-.07v-1.34c.17.04.35.06.54.06 1.03 0 1.76-.57 2.17-1.7z"
-    }), _ref2$1, _ref3$1, h("path", {
-      fill: theme === 'dark' ? '#FFF' : '#5468FF',
-      d: "M120.92 18.8c-4.38.02-4.38-3.54-4.38-4.1V1.36l2.67-.42v13.25c0 .32 0 2.36 1.71 2.37v2.24zm-10.84-2.18c.82 0 1.43-.04 1.85-.12v-2.72a5.48 5.48 0 0 0-1.57-.2c-.3 0-.6.02-.9.07-.3.04-.57.12-.81.24-.24.11-.44.28-.58.49a.93.93 0 0 0-.22.65c0 .63.22 1 .61 1.23.4.24.94.36 1.62.36zm-.23-9.7c.88 0 1.62.11 2.23.33.6.22 1.09.53 1.44.92.36.4.61.92.76 1.48.16.56.23 1.17.23 1.85v6.87c-.4.1-1.03.2-1.86.32-.84.12-1.78.18-2.82.18-.69 0-1.32-.07-1.9-.2a4 4 0 0 1-1.46-.63c-.4-.3-.72-.67-.96-1.13a4.3 4.3 0 0 1-.34-1.8c0-.66.13-1.08.39-1.53.26-.45.6-.82 1.04-1.1.45-.3.95-.5 1.54-.62a8.8 8.8 0 0 1 3.79.05v-.44c0-.3-.04-.6-.11-.87a1.78 1.78 0 0 0-1.1-1.22c-.31-.12-.7-.2-1.15-.2a9.75 9.75 0 0 0-2.95.46l-.33-2.19c.34-.12.84-.23 1.48-.35.65-.12 1.34-.18 2.08-.18zm52.84 9.63c.82 0 1.43-.05 1.85-.13V13.7a5.42 5.42 0 0 0-1.57-.2c-.3 0-.6.02-.9.07-.3.04-.57.12-.81.24-.24.12-.44.28-.58.5a.93.93 0 0 0-.22.65c0 .63.22.99.61 1.23.4.24.94.36 1.62.36zm-.23-9.7c.88 0 1.63.11 2.23.33.6.22 1.1.53 1.45.92.35.39.6.92.76 1.48.15.56.23 1.18.23 1.85v6.88c-.41.08-1.03.19-1.87.31-.83.12-1.77.18-2.81.18-.7 0-1.33-.06-1.9-.2a4 4 0 0 1-1.47-.63c-.4-.3-.72-.67-.95-1.13a4.3 4.3 0 0 1-.34-1.8c0-.66.13-1.08.38-1.53.26-.45.61-.82 1.05-1.1.44-.3.95-.5 1.53-.62a8.8 8.8 0 0 1 3.8.05v-.43c0-.31-.04-.6-.12-.88-.07-.28-.2-.52-.38-.73a1.78 1.78 0 0 0-.73-.5c-.3-.1-.68-.2-1.14-.2a9.85 9.85 0 0 0-2.95.47l-.32-2.19a11.63 11.63 0 0 1 3.55-.53zm-8.03-1.27a1.62 1.62 0 0 0 0-3.24 1.62 1.62 0 1 0 0 3.24zm1.35 13.22h-2.7V7.27l2.7-.42V18.8zm-4.72 0c-4.38.02-4.38-3.54-4.38-4.1l-.01-13.34 2.67-.42v13.25c0 .32 0 2.36 1.72 2.37v2.24zm-8.7-5.9a4.7 4.7 0 0 0-.74-2.79 2.4 2.4 0 0 0-2.07-1 2.4 2.4 0 0 0-2.06 1 4.7 4.7 0 0 0-.74 2.8c0 1.16.25 1.94.74 2.62a2.4 2.4 0 0 0 2.07 1.02c.88 0 1.57-.34 2.07-1.02.49-.68.73-1.46.73-2.63zm2.74 0a6.46 6.46 0 0 1-1.52 4.23c-.49.53-1.07.94-1.76 1.22-.68.29-1.73.45-2.26.45-.53 0-1.58-.15-2.25-.45a5.1 5.1 0 0 1-2.88-3.13 7.3 7.3 0 0 1-.01-4.84 5.13 5.13 0 0 1 2.9-3.1 5.67 5.67 0 0 1 2.22-.42c.81 0 1.56.14 2.24.42.69.29 1.28.69 1.75 1.22.49.52.87 1.15 1.14 1.89a7 7 0 0 1 .43 2.5zm-20.14 0c0 1.11.25 2.36.74 2.88.5.52 1.13.78 1.91.78a4.07 4.07 0 0 0 2.12-.6V9.33c-.19-.04-.99-.2-1.76-.23a2.67 2.67 0 0 0-2.23 1 4.73 4.73 0 0 0-.78 2.8zm7.44 5.27c0 1.82-.46 3.16-1.4 4-.94.85-2.37 1.27-4.3 1.27-.7 0-2.17-.13-3.34-.4l.43-2.11c.98.2 2.27.26 2.95.26 1.08 0 1.84-.22 2.3-.66.46-.43.68-1.08.68-1.94v-.44a5.2 5.2 0 0 1-2.54.6 5.6 5.6 0 0 1-2.01-.36 4.2 4.2 0 0 1-2.58-2.71 9.88 9.88 0 0 1 .02-5.35 4.92 4.92 0 0 1 2.93-2.96 6.6 6.6 0 0 1 2.43-.46 19.64 19.64 0 0 1 4.43.66v10.6z"
-    }))));
-  };
-
-  /** @jsx h */
-  var suit$o = component('PoweredBy');
-  var withUsage$L = createDocumentationMessageGenerator({
-    name: 'powered-by'
-  });
-
-  var renderer$k = function renderer(_ref) {
-    var containerNode = _ref.containerNode,
-        cssClasses = _ref.cssClasses;
-    return function (_ref2, isFirstRendering) {
-      var url = _ref2.url,
-          widgetParams = _ref2.widgetParams;
-
-      if (isFirstRendering) {
-        var theme = widgetParams.theme;
-        I(h(PoweredBy, {
-          cssClasses: cssClasses,
-          url: url,
-          theme: theme
-        }), containerNode);
-        return;
-      }
-    };
-  };
-  /**
-   * @typedef {Object} PoweredByWidgetCssClasses
-   * @property  {string|string[]} [root] CSS classes added to the root element of the widget.
-   * @property  {string|string[]} [link] CSS class to add to the link.
-   * @property  {string|string[]} [logo] CSS class to add to the SVG logo.
-   */
-
-  /**
-   * @typedef {Object} PoweredByWidgetOptions
-   * @property {string|HTMLElement} container Place where to insert the widget in your webpage.
-   * @property {string} [theme] The theme of the logo ("light" or "dark").
-   * @property {PoweredByWidgetCssClasses} [cssClasses] CSS classes to add.
-   */
-
-  /**
-   * The `poweredBy` widget is used to display the logo to redirect to Algolia.
-   * @type {WidgetFactory}
-   * @devNovel PoweredBy
-   * @category metadata
-   * @param {PoweredByWidgetOptions} $0 PoweredBy widget options. Some keys are mandatory: `container`,
-   * @return {Widget} A new poweredBy widget instance
-   * @example
-   * search.addWidgets([
-   *   instantsearch.widgets.poweredBy({
-   *     container: '#poweredBy-container',
-   *     theme: 'dark',
-   *   })
-   * ]);
-   */
-
-
-  function poweredBy() {
-    var _ref3 = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
-        container = _ref3.container,
-        _ref3$cssClasses = _ref3.cssClasses,
-        userCssClasses = _ref3$cssClasses === void 0 ? {} : _ref3$cssClasses,
-        _ref3$theme = _ref3.theme,
-        theme = _ref3$theme === void 0 ? 'light' : _ref3$theme;
-
-    if (!container) {
-      throw new Error(withUsage$L('The `container` option is required.'));
-    }
-
-    var containerNode = getContainerNode(container);
-    var cssClasses = {
-      root: classnames(suit$o(), suit$o({
-        modifierName: theme === 'dark' ? 'dark' : 'light'
-      }), userCssClasses.root),
-      link: classnames(suit$o({
-        descendantName: 'link'
-      }), userCssClasses.link),
-      logo: classnames(suit$o({
-        descendantName: 'logo'
-      }), userCssClasses.logo)
-    };
-    var specializedRenderer = renderer$k({
-      containerNode: containerNode,
-      cssClasses: cssClasses
-    });
-    var makeWidget = connectPoweredBy(specializedRenderer, function () {
-      return I(null, containerNode);
-    });
-    return makeWidget({
-      theme: theme
-    });
-  }
-
-  var t$1,r$1,u$1=[],i$1=n.__r;n.__r=function(n){i$1&&i$1(n),t$1=0,(r$1=n.__c).__H&&(r$1.__H.t=A$1(r$1.__H.t));};var f$1=n.diffed;n.diffed=function(n){f$1&&f$1(n);var t=n.__c;if(t){var r=t.__H;r&&(r.u=(r.u.some(function(n){n.ref&&(n.ref.current=n.createHandle());}),[]),r.i=A$1(r.i));}};var o$1=n.unmount;function e$1(t){n.__h&&n.__h(r$1);var u=r$1.__H||(r$1.__H={o:[],t:[],i:[],u:[]});return t>=u.o.length&&u.o.push({}),u.o[t]}function c$1(n){return a$1(q,n)}function a$1(n,u,i){var f=e$1(t$1++);return f.__c||(f.__c=r$1,f.v=[i?i(u):q(void 0,u),function(t){var r=n(f.v[0],t);f.v[0]!==r&&(f.v[0]=r,f.__c.setState({}));}]),f.v}function v$1(n,u){var i=e$1(t$1++);h$1(i.m,u)&&(i.v=n,i.m=u,r$1.__H.t.push(i),T$1(r$1));}function d$1(n){return l(function(){return {current:n}},[])}function l(n,r){var u=e$1(t$1++);return h$1(u.m,r)?(u.m=r,u.p=n,u.v=n()):u.v}n.unmount=function(n){o$1&&o$1(n);var t=n.__c;if(t){var r=t.__H;r&&r.o.forEach(function(n){return n.l&&n.l()});}};var T$1=function(){};function g$1(){u$1.some(function(n){n.s=!1,n.__P&&(n.__H.t=A$1(n.__H.t));}),u$1=[];}if("undefined"!=typeof window){var w$1=n.requestAnimationFrame;T$1=function(t){(!t.s&&(t.s=!0)&&1===u$1.push(t)||w$1!==n.requestAnimationFrame)&&(w$1=n.requestAnimationFrame,(n.requestAnimationFrame||function(n){var t=function(){clearTimeout(r),cancelAnimationFrame(u),setTimeout(n);},r=setTimeout(t,100),u=requestAnimationFrame(t);})(g$1));};}function A$1(n){return n.forEach(E),n.forEach(F),[]}function E(n){n.l&&n.l();}function F(n){var t=n.v();"function"==typeof t&&(n.l=t);}function h$1(n,t){return !n||t.some(function(t,r){return t!==n[r]})}function q(n,t){return "function"==typeof t?t(n):t}
-
-  function Panel(props) {
-    var _cx;
-
-    var _useState = c$1(props.isCollapsed),
-        _useState2 = _slicedToArray(_useState, 2),
-        isCollapsed = _useState2[0],
-        setIsCollapsed = _useState2[1];
-
-    var _useState3 = c$1(false),
-        _useState4 = _slicedToArray(_useState3, 2),
-        isControlled = _useState4[0],
-        setIsControlled = _useState4[1];
-
-    var bodyRef = d$1(null);
-    v$1(function () {
-      if (!bodyRef.current) {
-        return undefined;
-      }
-
-      bodyRef.current.appendChild(props.bodyElement);
-      return function () {
-        bodyRef.current.removeChild(props.bodyElement);
-      };
-    }, [bodyRef, props.bodyElement]);
-
-    if (!isControlled && props.isCollapsed !== isCollapsed) {
-      setIsCollapsed(props.isCollapsed);
-    }
-
-    return h("div", {
-      className: classnames(props.cssClasses.root, (_cx = {}, _defineProperty(_cx, props.cssClasses.noRefinementRoot, props.hidden), _defineProperty(_cx, props.cssClasses.collapsibleRoot, props.collapsible), _defineProperty(_cx, props.cssClasses.collapsedRoot, isCollapsed), _cx)),
-      hidden: props.hidden
-    }, props.templates.header && h("div", {
-      className: props.cssClasses.header
-    }, h(Template, {
-      templates: props.templates,
-      templateKey: "header",
-      rootTagName: "span",
-      data: props.data
-    }), props.collapsible && h("button", {
-      className: props.cssClasses.collapseButton,
-      "aria-expanded": !isCollapsed,
-      onClick: function onClick(event) {
-        event.preventDefault();
-        setIsControlled(true);
-        setIsCollapsed(function (prevIsCollapsed) {
-          return !prevIsCollapsed;
-        });
-      }
-    }, h(Template, {
-      templates: props.templates,
-      templateKey: "collapseButtonText",
-      rootTagName: "span",
-      data: {
-        collapsed: isCollapsed
-      }
-    }))), h("div", {
-      className: props.cssClasses.body,
-      ref: bodyRef
-    }), props.templates.footer && h(Template, {
-      templates: props.templates,
-      templateKey: "footer",
-      rootProps: {
-        className: props.cssClasses.footer
-      },
-      data: props.data
-    }));
-  }
-
-  var withUsage$M = createDocumentationMessageGenerator({
-    name: 'panel'
-  });
-  var suit$p = component('Panel');
-
-  var renderer$l = function renderer(_ref) {
-    var containerNode = _ref.containerNode,
-        bodyContainerNode = _ref.bodyContainerNode,
-        cssClasses = _ref.cssClasses,
-        templates = _ref.templates;
-    return function (_ref2) {
-      var options = _ref2.options,
-          hidden = _ref2.hidden,
-          collapsible = _ref2.collapsible,
-          collapsed = _ref2.collapsed;
-      I(h(Panel, {
-        cssClasses: cssClasses,
-        hidden: hidden,
-        collapsible: collapsible,
-        isCollapsed: collapsed,
-        templates: templates,
-        data: options,
-        bodyElement: bodyContainerNode
-      }), containerNode);
-    };
-  };
-
-  /**
-   * The panel widget wraps other widgets in a consistent panel design.
-   * It also reacts, indicates and sets CSS classes when widgets are no longer relevant for refining.
-   */
-  var panel = function panel(widgetParams) {
-    var _ref3 = widgetParams || {},
-        _ref3$templates = _ref3.templates,
-        templates = _ref3$templates === void 0 ? {} : _ref3$templates,
-        _ref3$hidden = _ref3.hidden,
-        hidden = _ref3$hidden === void 0 ? function () {
-      return false;
-    } : _ref3$hidden,
-        collapsed = _ref3.collapsed,
-        _ref3$cssClasses = _ref3.cssClasses,
-        userCssClasses = _ref3$cssClasses === void 0 ? {} : _ref3$cssClasses;
-
-     _warning(typeof hidden === 'function', "The `hidden` option in the \"panel\" widget expects a function returning a boolean (received type ".concat(getObjectType(hidden), ").")) ;
-     _warning(typeof collapsed === 'undefined' || typeof collapsed === 'function', "The `collapsed` option in the \"panel\" widget expects a function returning a boolean (received type ".concat(getObjectType(collapsed), ").")) ;
-    var bodyContainerNode = document.createElement('div');
-    var collapsible = Boolean(collapsed);
-    var collapsedFn = typeof collapsed === 'function' ? collapsed : function () {
-      return false;
-    };
-    var cssClasses = {
-      root: classnames(suit$p(), userCssClasses.root),
-      noRefinementRoot: classnames(suit$p({
-        modifierName: 'noRefinement'
-      }), userCssClasses.noRefinementRoot),
-      collapsibleRoot: classnames(suit$p({
-        modifierName: 'collapsible'
-      }), userCssClasses.collapsibleRoot),
-      collapsedRoot: classnames(suit$p({
-        modifierName: 'collapsed'
-      }), userCssClasses.collapsedRoot),
-      collapseButton: classnames(suit$p({
-        descendantName: 'collapseButton'
-      }), userCssClasses.collapseButton),
-      collapseIcon: classnames(suit$p({
-        descendantName: 'collapseIcon'
-      }), userCssClasses.collapseIcon),
-      body: classnames(suit$p({
-        descendantName: 'body'
-      }), userCssClasses.body),
-      header: classnames(suit$p({
-        descendantName: 'header'
-      }), userCssClasses.header),
-      footer: classnames(suit$p({
-        descendantName: 'footer'
-      }), userCssClasses.footer)
-    };
-    return function (widgetFactory) {
-      return function (widgetOptions) {
-        var _ref4 = widgetOptions || {},
-            container = _ref4.container;
-
-        if (!container) {
-          throw new Error(withUsage$M("The `container` option is required in the widget within the panel."));
-        }
-
-        var defaultTemplates = {
-          header: '',
-          footer: '',
-          collapseButtonText: function collapseButtonText(_ref5) {
-            var isCollapsed = _ref5.collapsed;
-            return "<svg\n          class=\"".concat(cssClasses.collapseIcon, "\"\n          width=\"1em\"\n          height=\"1em\"\n          viewBox=\"0 0 500 500\"\n        >\n        <path d=\"").concat(isCollapsed ? 'M100 250l300-150v300z' : 'M250 400l150-300H100z', "\" fill=\"currentColor\" />\n        </svg>");
-          }
-        };
-        var renderPanel = renderer$l({
-          containerNode: getContainerNode(container),
-          bodyContainerNode: bodyContainerNode,
-          cssClasses: cssClasses,
-          templates: _objectSpread2({}, defaultTemplates, {}, templates)
-        });
-        renderPanel({
-          options: {},
-          hidden: true,
-          collapsible: collapsible,
-          collapsed: false
-        });
-        var widget = widgetFactory(_objectSpread2({}, widgetOptions, {
-          container: bodyContainerNode
-        }));
-        return _objectSpread2({}, widget, {
-          dispose: function dispose() {
-            I(null, getContainerNode(container));
-
-            if (typeof widget.dispose === 'function') {
-              var _widget$dispose;
-
-              for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
-                args[_key] = arguments[_key];
-              }
-
-              return (_widget$dispose = widget.dispose).call.apply(_widget$dispose, [this].concat(args));
-            }
-
-            return undefined;
-          },
-          render: function render() {
-            for (var _len2 = arguments.length, args = new Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
-              args[_key2] = arguments[_key2];
-            }
-
-            var renderOptions = args[0];
-
-            var options = _objectSpread2({}, widget.getWidgetRenderState ? widget.getWidgetRenderState(renderOptions) : {}, {}, renderOptions);
-
-            renderPanel({
-              options: options,
-              hidden: Boolean(hidden(options)),
-              collapsible: collapsible,
-              collapsed: Boolean(collapsedFn(options))
-            });
-
-            if (typeof widget.render === 'function') {
-              var _widget$render;
-
-              (_widget$render = widget.render).call.apply(_widget$render, [this].concat(args));
-            }
-          }
-        });
-      };
-    };
   };
 
   /** @jsx h */
@@ -20995,7 +20892,10 @@
         templates = _ref.templates;
 
     var handleClick = function handleClick(event) {
-      event.currentTarget.blur();
+      if (event.currentTarget instanceof HTMLElement) {
+        event.currentTarget.blur();
+      }
+
       toggleListening();
     };
 
@@ -21049,7 +20949,7 @@
     return "<path\n            d=\"M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z\"\n            fill=\"".concat(isListening ? 'currentColor' : 'none', "\">\n          </path>\n          <path d=\"M19 10v2a7 7 0 0 1-14 0v-2\"></path>\n          <line x1=\"12\" y1=\"19\" x2=\"12\" y2=\"23\"></line>\n          <line x1=\"8\" y1=\"23\" x2=\"16\" y2=\"23\"></line>");
   };
 
-  var defaultTemplates$f = {
+  var defaultTemplates$i = {
     buttonText: function buttonText(_ref) {
       var status = _ref.status,
           errorCode = _ref.errorCode,
@@ -21059,12 +20959,12 @@
     status: "<p>{{transcript}}</p>"
   };
 
-  var withUsage$N = createDocumentationMessageGenerator({
+  var withUsage$U = createDocumentationMessageGenerator({
     name: 'voice-search'
   });
-  var suit$q = component('VoiceSearch');
+  var suit$u = component('VoiceSearch');
 
-  var renderer$m = function renderer(_ref) {
+  var renderer$p = function renderer(_ref) {
     var isBrowserSupported = _ref.isBrowserSupported,
         isListening = _ref.isListening,
         toggleListening = _ref.toggleListening,
@@ -21083,8 +20983,8 @@
     }), container);
   };
 
-  var voiceSearch = function voiceSearch() {
-    var _ref2 = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
+  var voiceSearch = function voiceSearch(widgetParams) {
+    var _ref2 = widgetParams || {},
         container = _ref2.container,
         _ref2$cssClasses = _ref2.cssClasses,
         userCssClasses = _ref2$cssClasses === void 0 ? {} : _ref2$cssClasses,
@@ -21096,265 +20996,78 @@
         createVoiceSearchHelper = _ref2.createVoiceSearchHelper;
 
     if (!container) {
-      throw new Error(withUsage$N('The `container` option is required.'));
+      throw new Error(withUsage$U('The `container` option is required.'));
     }
 
     var containerNode = getContainerNode(container);
     var cssClasses = {
-      root: classnames(suit$q(), userCssClasses.root),
-      button: classnames(suit$q({
+      root: classnames(suit$u(), userCssClasses.root),
+      button: classnames(suit$u({
         descendantName: 'button'
       }), userCssClasses.button),
-      status: classnames(suit$q({
+      status: classnames(suit$u({
         descendantName: 'status'
       }), userCssClasses.status)
     };
-    var makeWidget = connectVoiceSearch(renderer$m, function () {
+    var makeWidget = connectVoiceSearch(renderer$p, function () {
       return I(null, containerNode);
     });
-    return makeWidget({
+    return _objectSpread2(_objectSpread2({}, makeWidget({
       container: containerNode,
       cssClasses: cssClasses,
-      templates: _objectSpread2({}, defaultTemplates$f, {}, templates),
+      templates: _objectSpread2(_objectSpread2({}, defaultTemplates$i), templates),
       searchAsYouSpeak: searchAsYouSpeak,
       language: language,
       additionalQueryParameters: additionalQueryParameters,
       createVoiceSearchHelper: createVoiceSearchHelper
+    })), {}, {
+      $$widgetType: 'ais.voiceSearch'
     });
-  };
-
-  /** @jsx h */
-
-  var QueryRuleCustomData = function QueryRuleCustomData(_ref) {
-    var cssClasses = _ref.cssClasses,
-        templates = _ref.templates,
-        items = _ref.items;
-    return h(Template, {
-      templateKey: "default",
-      templates: templates,
-      rootProps: {
-        className: cssClasses.root
-      },
-      data: {
-        items: items
-      }
-    });
-  };
-
-  var withUsage$O = createDocumentationMessageGenerator({
-    name: 'query-rule-custom-data'
-  });
-  var suit$r = component('QueryRuleCustomData');
-
-  var renderer$n = function renderer(_ref) {
-    var items = _ref.items,
-        widgetParams = _ref.widgetParams;
-    var container = widgetParams.container,
-        cssClasses = widgetParams.cssClasses,
-        templates = widgetParams.templates;
-    I(h(QueryRuleCustomData, {
-      cssClasses: cssClasses,
-      templates: templates,
-      items: items
-    }), container);
-  };
-
-  var queryRuleCustomData = function queryRuleCustomData() {
-    var _ref2 = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
-        container = _ref2.container,
-        _ref2$cssClasses = _ref2.cssClasses,
-        userCssClasses = _ref2$cssClasses === void 0 ? {} : _ref2$cssClasses,
-        _ref2$templates = _ref2.templates,
-        userTemplates = _ref2$templates === void 0 ? {} : _ref2$templates,
-        _ref2$transformItems = _ref2.transformItems,
-        transformItems = _ref2$transformItems === void 0 ? function (items) {
-      return items;
-    } : _ref2$transformItems;
-
-    if (!container) {
-      throw new Error(withUsage$O('The `container` option is required.'));
-    }
-
-    var cssClasses = {
-      root: classnames(suit$r(), userCssClasses.root)
-    };
-    var defaultTemplates = {
-      default: function _default(_ref3) {
-        var items = _ref3.items;
-        return JSON.stringify(items, null, 2);
-      }
-    };
-
-    var templates = _objectSpread2({}, defaultTemplates, {}, userTemplates);
-
-    var containerNode = getContainerNode(container);
-    var makeQueryRuleCustomData = connectQueryRules(renderer$n, function () {
-      I(null, containerNode);
-    });
-    return _objectSpread2({}, makeQueryRuleCustomData({
-      container: containerNode,
-      cssClasses: cssClasses,
-      templates: templates,
-      transformItems: transformItems
-    }), {
-      $$type: 'ais.queryRuleCustomData'
-    });
-  };
-
-  var withUsage$P = createDocumentationMessageGenerator({
-    name: 'query-rule-context'
-  });
-
-  var queryRuleContext = function queryRuleContext() {
-    var widgetParams = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-
-    if (!widgetParams.trackedFilters) {
-      throw new Error(withUsage$P('The `trackedFilters` option is required.'));
-    }
-
-    return _objectSpread2({}, connectQueryRules(noop)(widgetParams), {
-      $$type: 'ais.queryRuleContext'
-    });
-  };
-
-  /**
-   * This widget sets the geolocation value for the search based on the selected
-   * result in the Algolia Places autocomplete.
-   */
-  var placesWidget = function placesWidget(widgetParams) {
-    var _ref = widgetParams || {},
-        placesReference = _ref.placesReference,
-        _ref$defaultPosition = _ref.defaultPosition,
-        defaultPosition = _ref$defaultPosition === void 0 ? [] : _ref$defaultPosition,
-        placesOptions = _objectWithoutProperties(_ref, ["placesReference", "defaultPosition"]);
-
-    if (typeof placesReference !== 'function') {
-      throw new Error('The `placesReference` option requires a valid Places.js reference.');
-    }
-
-    var placesAutocomplete = placesReference(placesOptions);
-    var state = {
-      query: '',
-      initialLatLngViaIP: undefined,
-      isInitialLatLngViaIPSet: false
-    };
-    return {
-      $$type: 'ais.places',
-      init: function init(_ref2) {
-        var helper = _ref2.helper;
-        placesAutocomplete.on('change', function (eventOptions) {
-          var _eventOptions$suggest = eventOptions.suggestion,
-              value = _eventOptions$suggest.value,
-              _eventOptions$suggest2 = _eventOptions$suggest.latlng,
-              lat = _eventOptions$suggest2.lat,
-              lng = _eventOptions$suggest2.lng;
-          state.query = value;
-          helper.setQueryParameter('insideBoundingBox', undefined).setQueryParameter('aroundLatLngViaIP', false).setQueryParameter('aroundLatLng', "".concat(lat, ",").concat(lng)).search();
-        });
-        placesAutocomplete.on('clear', function () {
-          state.query = '';
-          helper.setQueryParameter('insideBoundingBox', undefined);
-
-          if (defaultPosition.length > 1) {
-            helper.setQueryParameter('aroundLatLngViaIP', false).setQueryParameter('aroundLatLng', defaultPosition.join(','));
-          } else {
-            helper.setQueryParameter('aroundLatLngViaIP', state.initialLatLngViaIP).setQueryParameter('aroundLatLng', undefined);
-          }
-
-          helper.search();
-        });
-      },
-      getWidgetUiState: function getWidgetUiState(uiState, _ref3) {
-        var searchParameters = _ref3.searchParameters;
-        var position = searchParameters.aroundLatLng || defaultPosition.join(',');
-        var hasPositionSet = position !== defaultPosition.join(',');
-
-        if (!hasPositionSet && !state.query) {
-          var places = uiState.places,
-              uiStateWithoutPlaces = _objectWithoutProperties(uiState, ["places"]);
-
-          return uiStateWithoutPlaces;
-        }
-
-        return _objectSpread2({}, uiState, {
-          places: {
-            query: state.query,
-            position: position
-          }
-        });
-      },
-      getWidgetSearchParameters: function getWidgetSearchParameters(searchParameters, _ref4) {
-        var uiState = _ref4.uiState;
-
-        var _ref5 = uiState.places || {},
-            _ref5$query = _ref5.query,
-            query = _ref5$query === void 0 ? '' : _ref5$query,
-            _ref5$position = _ref5.position,
-            position = _ref5$position === void 0 ? defaultPosition.join(',') : _ref5$position;
-
-        state.query = query;
-
-        if (!state.isInitialLatLngViaIPSet) {
-          state.isInitialLatLngViaIPSet = true;
-          state.initialLatLngViaIP = searchParameters.aroundLatLngViaIP;
-        }
-
-        placesAutocomplete.setVal(query);
-        placesAutocomplete.close();
-        return searchParameters.setQueryParameter('insideBoundingBox', undefined).setQueryParameter('aroundLatLngViaIP', false).setQueryParameter('aroundLatLng', position || undefined);
-      },
-      getRenderState: function getRenderState(renderState, renderOptions) {
-        return _objectSpread2({}, renderState, {
-          places: this.getWidgetRenderState(renderOptions)
-        });
-      },
-      getWidgetRenderState: function getWidgetRenderState() {
-        return {
-          widgetParams: widgetParams
-        };
-      }
-    };
   };
 
 
 
   var widgets = /*#__PURE__*/Object.freeze({
     __proto__: null,
+    analytics: analytics,
+    breadcrumb: breadcrumb,
     clearRefinements: clearRefinements$1,
     configure: configure,
-    EXPERIMENTAL_configureRelatedItems: configureRelatedItems,
     currentRefinements: currentRefinements,
+    EXPERIMENTAL_answers: answersWidget,
+    EXPERIMENTAL_configureRelatedItems: configureRelatedItems,
+    EXPERIMENTAL_dynamicWidgets: dynamicWidgets,
     geoSearch: geoSearch,
     hierarchicalMenu: hierarchicalMenu,
     hits: hits,
     hitsPerPage: hitsPerPage,
+    index: index,
     infiniteHits: infiniteHits,
     menu: menu,
-    refinementList: refinementList,
+    menuSelect: menuSelect,
     numericMenu: numericMenu,
     pagination: pagination,
+    panel: panel,
+    places: placesWidget,
+    poweredBy: poweredBy,
+    queryRuleContext: queryRuleContext,
+    queryRuleCustomData: queryRuleCustomData,
     rangeInput: rangeInput,
-    searchBox: searchBox,
     rangeSlider: rangeSlider,
-    sortBy: sortBy,
     ratingMenu: ratingMenu,
+    refinementList: refinementList,
+    relevantSort: relevantSort,
+    searchBox: searchBox,
+    sortBy: sortBy,
     stats: stats,
     toggleRefinement: toggleRefinement,
-    analytics: analytics,
-    breadcrumb: breadcrumb,
-    menuSelect: menuSelect,
-    poweredBy: poweredBy,
-    panel: panel,
-    voiceSearch: voiceSearch,
-    queryRuleCustomData: queryRuleCustomData,
-    queryRuleContext: queryRuleContext,
-    index: index,
-    places: placesWidget
+    voiceSearch: voiceSearch
   });
 
   var createInsightsMiddleware = function createInsightsMiddleware(props) {
     var _ref = props || {},
         _insightsClient = _ref.insightsClient,
+        insightsInitParams = _ref.insightsInitParams,
         onEvent = _ref.onEvent;
 
     if (_insightsClient !== null && !_insightsClient) {
@@ -21399,7 +21112,7 @@
         queuedUserToken = _ref4[1];
       }
 
-      insightsClient('_get', '_userToken', function (userToken) {
+      insightsClient('getUserToken', null, function (_error, userToken) {
         // If user has called `aa('setUserToken', 'my-user-token')` before creating
         // the `insights` middleware, we store them temporarily and
         // set it later on.
@@ -21407,22 +21120,29 @@
         // Otherwise, the `init` call might override it with anonymous user token.
         userTokenBeforeInit = userToken;
       });
-      insightsClient('init', {
+      insightsClient('init', _objectSpread2({
         appId: appId,
         apiKey: apiKey
-      });
+      }, insightsInitParams));
       return {
         onStateChange: function onStateChange() {},
         subscribe: function subscribe() {
+          insightsClient('addAlgoliaAgent', 'insights-middleware'); // At the time this middleware is subscribed, `mainIndex.init()` is already called.
+          // It means `mainIndex.getHelper()` exists.
+
+          var helper = instantSearchInstance.mainIndex.getHelper();
+
           var setUserTokenToSearch = function setUserTokenToSearch(userToken) {
-            // At the time this middleware is subscribed, `mainIndex.init()` is already called.
-            // It means `mainIndex.getHelper()` exists.
             if (userToken) {
-              instantSearchInstance.mainIndex.getHelper().setQueryParameter('userToken', userToken);
+              helper.setState(helper.state.setQueryParameter('userToken', userToken));
             }
           };
 
-          instantSearchInstance.mainIndex.getHelper().setQueryParameter('clickAnalytics', true);
+          var hasUserToken = function hasUserToken() {
+            return Boolean(helper.state.userToken);
+          };
+
+          helper.setState(helper.state.setQueryParameter('clickAnalytics', true));
           var anonymousUserToken = getInsightsAnonymousUserTokenInternal();
 
           if (hasInsightsClient && anonymousUserToken) {
@@ -21448,7 +21168,11 @@
             if (onEvent) {
               onEvent(event, _insightsClient);
             } else if (event.insightsMethod) {
-              insightsClient(event.insightsMethod, event.payload);
+              if (hasUserToken()) {
+                insightsClient(event.insightsMethod, event.payload);
+              } else {
+                 _warning(false, "\nCannot send event to Algolia Insights because `userToken` is not set.\n\nSee documentation: https://www.algolia.com/doc/guides/building-search-ui/going-further/send-insights-events/js/#setting-the-usertoken\n") ;
+              }
             } else {
                _warning(false, 'Cannot send event to Algolia Insights because `insightsMethod` option is missing.') ;
             }
@@ -21467,7 +21191,9 @@
   var middlewares = /*#__PURE__*/Object.freeze({
     __proto__: null,
     createInsightsMiddleware: createInsightsMiddleware,
-    createRouterMiddleware: createRouterMiddleware
+    createRouterMiddleware: createRouterMiddleware,
+    isMetadataEnabled: isMetadataEnabled,
+    createMetadataMiddleware: createMetadataMiddleware
   });
 
 
@@ -21528,7 +21254,7 @@
         }
 
         try {
-          var cache = JSON.parse( // @ts-ignore JSON.parse() requires a string, but it actually accepts null, too.
+          var cache = JSON.parse( // @ts-expect-error JSON.parse() requires a string, but it actually accepts null, too.
           window.sessionStorage.getItem(KEY));
           return cache && isEqual(cache.state, getStateWithoutPage$1(state)) ? cache.hits : null;
         } catch (error) {

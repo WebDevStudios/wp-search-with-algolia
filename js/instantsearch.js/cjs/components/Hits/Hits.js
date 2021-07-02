@@ -42,7 +42,7 @@ var Hits = function Hits(_ref) {
     className: cssClasses.root
   }, (0, _preact.h)("ol", {
     className: cssClasses.list
-  }, hits.map(function (hit, position) {
+  }, hits.map(function (hit, index) {
     return (0, _preact.h)(_Template.default, _extends({}, templateProps, {
       templateKey: "item",
       rootTagName: "li",
@@ -50,8 +50,8 @@ var Hits = function Hits(_ref) {
         className: cssClasses.item
       },
       key: hit.objectID,
-      data: _objectSpread({}, hit, {
-        __hitIndex: position
+      data: _objectSpread(_objectSpread({}, hit), {}, {
+        __hitIndex: index
       }),
       bindEvent: bindEvent
     }));

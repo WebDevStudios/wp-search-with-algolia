@@ -6,7 +6,9 @@ Object.defineProperty(exports, "__esModule", {
 exports.createSendEventForHits = createSendEventForHits;
 exports.createBindEventForHits = createBindEventForHits;
 
-function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+var _serializer = require("../../lib/utils/serializer");
+
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 var buildPayload = function buildPayload(_ref) {
   var index = _ref.index,
@@ -38,7 +40,7 @@ var buildPayload = function buildPayload(_ref) {
     }
   }
 
-  var hitsArray = Array.isArray(hits) ? hits : [hits];
+  var hitsArray = Array.isArray(hits) ? removeEscapedFromHits(hits) : [hits];
 
   if (hitsArray.length === 0) {
     return null;
@@ -61,7 +63,8 @@ var buildPayload = function buildPayload(_ref) {
         eventName: eventName || 'Hits Viewed',
         index: index,
         objectIDs: objectIDs
-      }
+      },
+      hits: hitsArray
     };
   } else if (eventType === 'click') {
     return {
@@ -74,7 +77,8 @@ var buildPayload = function buildPayload(_ref) {
         queryID: queryID,
         objectIDs: objectIDs,
         positions: positions
-      }
+      },
+      hits: hitsArray
     };
   } else if (eventType === 'conversion') {
     return {
@@ -86,7 +90,8 @@ var buildPayload = function buildPayload(_ref) {
         index: index,
         queryID: queryID,
         objectIDs: objectIDs
-      }
+      },
+      hits: hitsArray
     };
   } else if (process.env.NODE_ENV === 'development') {
     throw new Error("eventType(\"".concat(eventType, "\") is not supported.\n    If you want to send a custom payload, you can pass one object: ").concat(methodName, "(customPayload);\n    "));
@@ -94,6 +99,14 @@ var buildPayload = function buildPayload(_ref) {
     return null;
   }
 };
+
+function removeEscapedFromHits(hits) {
+  // this returns without `hits.__escaped`
+  // and this way it doesn't mutate the original `hits`
+  return hits.map(function (hit) {
+    return hit;
+  });
+}
 
 function createSendEventForHits(_ref2) {
   var instantSearchInstance = _ref2.instantSearchInstance,
@@ -135,7 +148,7 @@ function createBindEventForHits(_ref3) {
       methodName: 'bindEvent',
       args: args
     });
-    return payload ? "data-insights-event=".concat(btoa(JSON.stringify(payload))) : '';
+    return payload ? "data-insights-event=".concat((0, _serializer.serializePayload)(payload)) : '';
   };
 
   return bindEventForHits;

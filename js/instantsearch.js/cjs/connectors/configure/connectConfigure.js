@@ -27,7 +27,7 @@ function getInitialSearchParameters(state, widgetParams) {
   // the state. The function `setQueryParameters` omits the values that
   // are `undefined` on the next state.
   return state.setQueryParameters(Object.keys(widgetParams.searchParameters).reduce(function (acc, key) {
-    return _objectSpread({}, acc, _defineProperty({}, key, undefined));
+    return _objectSpread(_objectSpread({}, acc), {}, _defineProperty({}, key, undefined));
   }, {}));
 }
 
@@ -57,13 +57,13 @@ var connectConfigure = function connectConfigure() {
       $$type: 'ais.configure',
       init: function init(initOptions) {
         var instantSearchInstance = initOptions.instantSearchInstance;
-        renderFn(_objectSpread({}, this.getWidgetRenderState(initOptions), {
+        renderFn(_objectSpread(_objectSpread({}, this.getWidgetRenderState(initOptions)), {}, {
           instantSearchInstance: instantSearchInstance
         }), true);
       },
       render: function render(renderOptions) {
         var instantSearchInstance = renderOptions.instantSearchInstance;
-        renderFn(_objectSpread({}, this.getWidgetRenderState(renderOptions), {
+        renderFn(_objectSpread(_objectSpread({}, this.getWidgetRenderState(renderOptions)), {}, {
           instantSearchInstance: instantSearchInstance
         }), false);
       },
@@ -76,9 +76,9 @@ var connectConfigure = function connectConfigure() {
         var _renderState$configur;
 
         var widgetRenderState = this.getWidgetRenderState(renderOptions);
-        return _objectSpread({}, renderState, {
-          configure: _objectSpread({}, widgetRenderState, {
-            widgetParams: _objectSpread({}, widgetRenderState.widgetParams, {
+        return _objectSpread(_objectSpread({}, renderState), {}, {
+          configure: _objectSpread(_objectSpread({}, widgetRenderState), {}, {
+            widgetParams: _objectSpread(_objectSpread({}, widgetRenderState.widgetParams), {}, {
               searchParameters: (0, _utils.mergeSearchParameters)(new _algoliasearchHelper.default.SearchParameters((_renderState$configur = renderState.configure) === null || _renderState$configur === void 0 ? void 0 : _renderState$configur.widgetParams.searchParameters), new _algoliasearchHelper.default.SearchParameters(widgetRenderState.widgetParams.searchParameters)).getQueryParams()
             })
           })
@@ -98,11 +98,11 @@ var connectConfigure = function connectConfigure() {
       },
       getWidgetSearchParameters: function getWidgetSearchParameters(state, _ref3) {
         var uiState = _ref3.uiState;
-        return (0, _utils.mergeSearchParameters)(state, new _algoliasearchHelper.default.SearchParameters(_objectSpread({}, uiState.configure, {}, widgetParams.searchParameters)));
+        return (0, _utils.mergeSearchParameters)(state, new _algoliasearchHelper.default.SearchParameters(_objectSpread(_objectSpread({}, uiState.configure), widgetParams.searchParameters)));
       },
       getWidgetUiState: function getWidgetUiState(uiState) {
-        return _objectSpread({}, uiState, {
-          configure: _objectSpread({}, uiState.configure, {}, widgetParams.searchParameters)
+        return _objectSpread(_objectSpread({}, uiState), {}, {
+          configure: _objectSpread(_objectSpread({}, uiState.configure), widgetParams.searchParameters)
         });
       }
     };

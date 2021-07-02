@@ -3,8 +3,11 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.default = void 0;
-var _default = {
-  text: "{{#hasNoResults}}No results{{/hasNoResults}}\n    {{#hasOneResult}}1 result{{/hasOneResult}}\n    {{#hasManyResults}}{{#helpers.formatNumber}}{{nbHits}}{{/helpers.formatNumber}} results{{/hasManyResults}} found in {{processingTimeMS}}ms"
-};
-exports.default = _default;
+Object.defineProperty(exports, "default", {
+  enumerable: true,
+  get: function get() {
+    return _stats.defaultTemplates;
+  }
+});
+
+var _stats = require("./stats");

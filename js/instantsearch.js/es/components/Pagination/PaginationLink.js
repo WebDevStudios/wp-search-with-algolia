@@ -1,7 +1,7 @@
 /** @jsx h */
 import { h } from 'preact';
 
-function PaginationLink(_ref) {
+var PaginationLink = function PaginationLink(_ref) {
   var cssClasses = _ref.cssClasses,
       label = _ref.label,
       ariaLabel = _ref.ariaLabel,
@@ -34,6 +34,6 @@ function PaginationLink(_ref) {
       __html: label
     }
   }));
-}
+};
 
 export default PaginationLink;

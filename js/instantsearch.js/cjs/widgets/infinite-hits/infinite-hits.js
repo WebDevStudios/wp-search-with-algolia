@@ -23,7 +23,12 @@ var _defaultTemplates = _interopRequireDefault(require("./defaultTemplates"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-/** @jsx h */
+function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
+
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
 var withUsage = (0, _utils.createDocumentationMessageGenerator)({
   name: 'infinite-hits'
 });
@@ -75,8 +80,8 @@ var renderer = function renderer(_ref) {
   };
 };
 
-var infiniteHits = function infiniteHits() {
-  var _ref3 = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
+var infiniteHits = function infiniteHits(widgetParams) {
+  var _ref3 = widgetParams || {},
       container = _ref3.container,
       escapeHTML = _ref3.escapeHTML,
       transformItems = _ref3.transformItems,
@@ -125,14 +130,16 @@ var infiniteHits = function infiniteHits() {
     showPrevious: showPrevious,
     renderState: {}
   });
-  var makeInfiniteHits = (0, _insights.withInsights)(_connectInfiniteHits.default)(specializedRenderer, function () {
+  var makeWidget = (0, _insights.withInsights)(_connectInfiniteHits.default)(specializedRenderer, function () {
     return (0, _preact.render)(null, containerNode);
   });
-  return makeInfiniteHits({
+  return _objectSpread(_objectSpread({}, makeWidget({
     escapeHTML: escapeHTML,
     transformItems: transformItems,
     showPrevious: showPrevious,
     cache: cache
+  })), {}, {
+    $$widgetType: 'ais.infiniteHits'
   });
 };
 

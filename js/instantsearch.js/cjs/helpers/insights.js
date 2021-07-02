@@ -10,7 +10,7 @@ exports.default = insights;
 
 var _utils = require("../lib/utils");
 
-function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 function readDataAttributes(domElement) {
   var method = domElement.getAttribute('data-insights-method');
@@ -21,7 +21,7 @@ function readDataAttributes(domElement) {
   }
 
   try {
-    var payload = JSON.parse(atob(serializedPayload));
+    var payload = (0, _utils.deserializePayload)(serializedPayload);
     return {
       method: method,
       payload: payload
@@ -46,7 +46,7 @@ function writeDataAttributes(_ref) {
   var serializedPayload;
 
   try {
-    serializedPayload = btoa(JSON.stringify(payload));
+    serializedPayload = (0, _utils.serializePayload)(payload);
   } catch (error) {
     throw new Error("Could not JSON serialize the payload object.");
   }

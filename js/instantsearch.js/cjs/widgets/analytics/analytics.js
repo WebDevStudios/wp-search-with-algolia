@@ -93,7 +93,7 @@ var analytics = function analytics(widgetParams) {
     }
 
     var serializedParams = [];
-    var serializedRefinements = serializeRefinements(_objectSpread({}, analyticsState.state.disjunctiveFacetsRefinements, {}, analyticsState.state.facetsRefinements, {}, analyticsState.state.hierarchicalFacetsRefinements));
+    var serializedRefinements = serializeRefinements(_objectSpread(_objectSpread(_objectSpread({}, analyticsState.state.disjunctiveFacetsRefinements), analyticsState.state.facetsRefinements), analyticsState.state.hierarchicalFacetsRefinements));
     var serializedNumericRefinements = serializeNumericRefinements(analyticsState.state.numericRefinements);
 
     if (serializedRefinements !== '') {
@@ -133,6 +133,8 @@ var analytics = function analytics(widgetParams) {
   };
 
   return {
+    $$type: 'ais.analytics',
+    $$widgetType: 'ais.analytics',
     init: function init() {
       if (triggerOnUIInteraction === true) {
         document.addEventListener('click', onClick);
@@ -168,7 +170,7 @@ var analytics = function analytics(widgetParams) {
       }
     },
     getRenderState: function getRenderState(renderState, renderOptions) {
-      return _objectSpread({}, renderState, {
+      return _objectSpread(_objectSpread({}, renderState), {}, {
         analytics: this.getWidgetRenderState(renderOptions)
       });
     },

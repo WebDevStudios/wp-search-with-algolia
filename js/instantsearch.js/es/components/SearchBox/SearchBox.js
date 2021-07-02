@@ -1,4 +1,4 @@
-function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -6,31 +6,47 @@ function _defineProperties(target, props) { for (var i = 0; i < props.length; i+
 
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
-function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
-
-function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
-
-function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
-
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
 
 function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
 
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 /** @jsx h */
-import { h, Component } from 'preact';
+import { h, createRef, Component } from 'preact';
 import { noop } from '../../lib/utils';
 import Template from '../Template/Template';
+var defaultProps = {
+  query: '',
+  showSubmit: true,
+  showReset: true,
+  showLoadingIndicator: true,
+  autofocus: false,
+  searchAsYouType: true,
+  isSearchStalled: false,
+  disabled: false,
+  onChange: noop,
+  onSubmit: noop,
+  onReset: noop,
+  refine: noop
+};
 
-var SearchBox =
-/*#__PURE__*/
-function (_Component) {
+var SearchBox = /*#__PURE__*/function (_Component) {
   _inherits(SearchBox, _Component);
 
-  function SearchBox() {
-    var _getPrototypeOf2;
+  var _super = _createSuper(SearchBox);
 
+  function SearchBox() {
     var _this;
 
     _classCallCheck(this, SearchBox);
@@ -39,12 +55,14 @@ function (_Component) {
       args[_key] = arguments[_key];
     }
 
-    _this = _possibleConstructorReturn(this, (_getPrototypeOf2 = _getPrototypeOf(SearchBox)).call.apply(_getPrototypeOf2, [this].concat(args)));
+    _this = _super.call.apply(_super, [this].concat(args));
 
     _defineProperty(_assertThisInitialized(_this), "state", {
       query: _this.props.query,
       focused: false
     });
+
+    _defineProperty(_assertThisInitialized(_this), "input", createRef());
 
     _defineProperty(_assertThisInitialized(_this), "onInput", function (event) {
       var _this$props = _this.props,
@@ -72,7 +90,9 @@ function (_Component) {
       event.preventDefault();
       event.stopPropagation();
 
-      _this.input.blur();
+      if (_this.input.current) {
+        _this.input.current.blur();
+      }
 
       if (!searchAsYouType) {
         refine(_this.state.query);
@@ -88,7 +108,9 @@ function (_Component) {
           onReset = _this$props3.onReset;
       var query = '';
 
-      _this.input.focus();
+      if (_this.input.current) {
+        _this.input.current.focus();
+      }
 
       refine(query);
 
@@ -116,7 +138,7 @@ function (_Component) {
 
   _createClass(SearchBox, [{
     key: "resetInput",
-
+    value:
     /**
      * This public method is used in the RefinementList SFFV search box
      * to reset the input state when an item is selected.
@@ -124,7 +146,7 @@ function (_Component) {
      * @see RefinementList#componentWillReceiveProps
      * @return {undefined}
      */
-    value: function resetInput() {
+    function resetInput() {
       this.setState({
         query: ''
       });
@@ -146,8 +168,6 @@ function (_Component) {
   }, {
     key: "render",
     value: function render() {
-      var _this2 = this;
-
       var _this$props4 = this.props,
           cssClasses = _this$props4.cssClasses,
           placeholder = _this$props4.placeholder,
@@ -164,12 +184,11 @@ function (_Component) {
         role: "search",
         className: cssClasses.form,
         noValidate: true,
-        onSubmit: this.onSubmit,
+        onSubmit: this.onSubmit // @ts-expect-error `onReset` attibute is missing in preact 10.0.0 JSX types
+        ,
         onReset: this.onReset
       }, h("input", {
-        ref: function ref(inputRef) {
-          return _this2.input = inputRef;
-        },
+        ref: this.input,
         value: this.state.query,
         disabled: this.props.disabled,
         className: cssClasses.input,
@@ -177,7 +196,8 @@ function (_Component) {
         placeholder: placeholder,
         autoFocus: autofocus,
         autoComplete: "off",
-        autoCorrect: "off",
+        autoCorrect: "off" // @ts-expect-error `autoCapitalize` attibute is missing in preact 10.0.0 JSX types
+        ,
         autoCapitalize: "off",
         spellCheck: "false",
         maxLength: 512,
@@ -228,19 +248,6 @@ function (_Component) {
   return SearchBox;
 }(Component);
 
-_defineProperty(SearchBox, "defaultProps", {
-  query: '',
-  showSubmit: true,
-  showReset: true,
-  showLoadingIndicator: true,
-  autofocus: false,
-  searchAsYouType: true,
-  isSearchStalled: false,
-  disabled: false,
-  onChange: noop,
-  onSubmit: noop,
-  onReset: noop,
-  refine: noop
-});
+_defineProperty(SearchBox, "defaultProps", defaultProps);
 
 export default SearchBox;

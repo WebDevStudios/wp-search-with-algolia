@@ -4,14 +4,14 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
-export var addQueryID = function addQueryID(hits, queryID) {
+export function addQueryID(hits, queryID) {
   if (!queryID) {
     return hits;
   }
 
   return hits.map(function (hit) {
-    return _objectSpread({}, hit, {
+    return _objectSpread(_objectSpread({}, hit), {}, {
       __queryID: queryID
     });
   });
-};
+}

@@ -1,4 +1,8 @@
-function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
+
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -6,15 +10,19 @@ function _defineProperties(target, props) { for (var i = 0; i < props.length; i+
 
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
-function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
-
-function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
-
-function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
-
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
 
 function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
@@ -25,6 +33,7 @@ import version from './version';
 import createHelpers from './createHelpers';
 import { createDocumentationMessageGenerator, createDocumentationLink, defer, noop, warning, checkIndexUiState } from './utils';
 import { createRouterMiddleware } from '../middlewares/createRouterMiddleware';
+import { createMetadataMiddleware, isMetadataEnabled } from '../middlewares/createMetadataMiddleware';
 var withUsage = createDocumentationMessageGenerator({
   name: 'instantsearch'
 });
@@ -42,17 +51,17 @@ function defaultCreateURL() {
  * created using the `instantsearch` factory function.
  * It emits the 'render' event every time a search is done
  */
-var InstantSearch =
-/*#__PURE__*/
-function (_EventEmitter) {
+var InstantSearch = /*#__PURE__*/function (_EventEmitter) {
   _inherits(InstantSearch, _EventEmitter);
+
+  var _super = _createSuper(InstantSearch);
 
   function InstantSearch(options) {
     var _this;
 
     _classCallCheck(this, InstantSearch);
 
-    _this = _possibleConstructorReturn(this, _getPrototypeOf(InstantSearch).call(this));
+    _this = _super.call(this);
 
     _defineProperty(_assertThisInitialized(_this), "client", void 0);
 
@@ -112,15 +121,16 @@ function (_EventEmitter) {
       _this.emit('render');
     }));
 
-    _defineProperty(_assertThisInitialized(_this), "onInternalStateChange", function () {
+    _defineProperty(_assertThisInitialized(_this), "onInternalStateChange", defer(function () {
       var nextUiState = _this.mainIndex.getWidgetUiState({});
 
-      _this.middleware.forEach(function (m) {
-        m.onStateChange({
+      _this.middleware.forEach(function (_ref) {
+        var instance = _ref.instance;
+        instance.onStateChange({
           uiState: nextUiState
         });
       });
-    });
+    }));
 
     var _options$indexName = options.indexName,
         indexName = _options$indexName === void 0 ? null : _options$indexName,
@@ -198,13 +208,14 @@ function (_EventEmitter) {
       _this.use(createRouterMiddleware(routerOptions));
     }
 
+    if (isMetadataEnabled()) {
+      _this.use(createMetadataMiddleware());
+    }
+
     return _this;
   }
   /**
    * Hooks a middleware into the InstantSearch lifecycle.
-   *
-   * This method is considered as experimental and is subject to change in
-   * minor versions.
    */
 
 
@@ -218,11 +229,18 @@ function (_EventEmitter) {
       }
 
       var newMiddlewareList = middleware.map(function (fn) {
-        var newMiddleware = fn({
+        var newMiddleware = _objectSpread({
+          subscribe: noop,
+          unsubscribe: noop,
+          onStateChange: noop
+        }, fn({
           instantSearchInstance: _this2
-        });
+        }));
 
-        _this2.middleware.push(newMiddleware);
+        _this2.middleware.push({
+          creator: fn,
+          instance: newMiddleware
+        });
 
         return newMiddleware;
       }); // If the instance has already started, we directly subscribe the
@@ -234,6 +252,27 @@ function (_EventEmitter) {
         });
       }
 
+      return this;
+    }
+    /**
+     * Removes a middleware from the InstantSearch lifecycle.
+     */
+
+  }, {
+    key: "unuse",
+    value: function unuse() {
+      for (var _len2 = arguments.length, middlewareToUnuse = new Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
+        middlewareToUnuse[_key2] = arguments[_key2];
+      }
+
+      this.middleware.filter(function (m) {
+        return middlewareToUnuse.includes(m.creator);
+      }).forEach(function (m) {
+        return m.instance.unsubscribe();
+      });
+      this.middleware = this.middleware.filter(function (m) {
+        return !middlewareToUnuse.includes(m.creator);
+      });
       return this;
     } // @major we shipped with EXPERIMENTAL_use, but have changed that to just `use` now
 
@@ -333,9 +372,11 @@ function (_EventEmitter) {
       } // This Helper is used for the queries, we don't care about its state. The
       // states are managed at the `index` level. We use this Helper to create
       // DerivedHelper scoped into the `index` widgets.
+      // In Vue InstantSearch' hydrate, a main helper gets set before start, so
+      // we need to respect this helper as a way to keep all listeners correct.
 
 
-      var mainHelper = algoliasearchHelper(this.client, this.indexName);
+      var mainHelper = this.mainHelper || algoliasearchHelper(this.client, this.indexName);
 
       mainHelper.search = function () {
         // This solution allows us to keep the exact same API for the users but
@@ -359,15 +400,15 @@ function (_EventEmitter) {
           var mainIndexHelper = _this3.mainIndex.getHelper();
 
           var searchFunctionHelper = algoliasearchHelper(fakeClient, mainIndexHelper.state.index, mainIndexHelper.state);
-          searchFunctionHelper.once('search', function (_ref) {
-            var state = _ref.state;
+          searchFunctionHelper.once('search', function (_ref2) {
+            var state = _ref2.state;
             mainIndexHelper.overrideStateWithoutTriggeringChangeEvent(state);
 
             _this3._mainHelperSearch();
           }); // Forward state changes from `searchFunctionHelper` to `mainIndexHelper`
 
-          searchFunctionHelper.on('change', function (_ref2) {
-            var state = _ref2.state;
+          searchFunctionHelper.on('change', function (_ref3) {
+            var state = _ref3.state;
             mainIndexHelper.setState(state);
           });
 
@@ -379,8 +420,8 @@ function (_EventEmitter) {
       // and `results` that are also emitted on the derived one.
 
 
-      mainHelper.on('error', function (_ref3) {
-        var error = _ref3.error;
+      mainHelper.on('error', function (_ref4) {
+        var error = _ref4.error;
 
         _this3.emit('error', {
           error: error
@@ -392,8 +433,9 @@ function (_EventEmitter) {
         parent: null,
         uiState: this._initialUiState
       });
-      this.middleware.forEach(function (m) {
-        m.subscribe();
+      this.middleware.forEach(function (_ref5) {
+        var instance = _ref5.instance;
+        instance.subscribe();
       });
       mainHelper.search(); // Keep the previous reference for legacy purpose, some pattern use
       // the direct Helper access `search.helper` (e.g multi-index).
@@ -428,8 +470,9 @@ function (_EventEmitter) {
       this.mainHelper.removeAllListeners();
       this.mainHelper = null;
       this.helper = null;
-      this.middleware.forEach(function (m) {
-        m.unsubscribe();
+      this.middleware.forEach(function (_ref6) {
+        var instance = _ref6.instance;
+        instance.unsubscribe();
       });
     }
   }, {
@@ -465,7 +508,7 @@ function (_EventEmitter) {
           });
         }
 
-        indexWidget.getHelper().overrideStateWithoutTriggeringChangeEvent(indexWidget.getWidgetSearchParameters(indexWidget.getHelper().state, {
+        indexWidget.getHelper().setState(indexWidget.getWidgetSearchParameters(indexWidget.getHelper().state, {
           uiState: nextUiState[indexWidget.getIndexId()]
         }));
         indexWidget.getWidgets().filter(isIndexWidget).forEach(setIndexHelperState);
@@ -474,6 +517,16 @@ function (_EventEmitter) {
       setIndexHelperState(this.mainIndex);
       this.scheduleSearch();
       this.onInternalStateChange();
+    }
+  }, {
+    key: "getUiState",
+    value: function getUiState() {
+      if (this.started) {
+        // We refresh the index UI state to make sure changes from `refine` are taken in account
+        this.mainIndex.refreshUiState();
+      }
+
+      return this.mainIndex.getWidgetUiState({});
     }
   }, {
     key: "createURL",

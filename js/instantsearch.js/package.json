@@ -1,27 +1,27 @@
 {
-  "_from": "instantsearch.js@~4.10.0",
-  "_id": "instantsearch.js@4.10.0",
+  "_from": "instantsearch.js@^4.24.2",
+  "_id": "instantsearch.js@4.24.2",
   "_inBundle": false,
-  "_integrity": "sha512-Opwo3yhuCU4X3AbQUfI9OR5fvfc9zhd3OhPsU54CmZxjrq4ViJ0ySAeX9CC+3zlJ6kunTJKhxjBHUKv37mv1yQ==",
+  "_integrity": "sha512-mrAuBooLE8sQR3SlLHPF6Y9d7as+8R+aQvZmtEpz257bIr6HuanIdtYI0oQ7LSyHGYj2aiOmxiUSWdZZi6mblA==",
   "_location": "/instantsearch.js",
   "_phantomChildren": {},
   "_requested": {
     "type": "range",
     "registry": true,
-    "raw": "instantsearch.js@~4.10.0",
+    "raw": "instantsearch.js@^4.24.2",
     "name": "instantsearch.js",
     "escapedName": "instantsearch.js",
-    "rawSpec": "~4.10.0",
+    "rawSpec": "^4.24.2",
     "saveSpec": null,
-    "fetchSpec": "~4.10.0"
+    "fetchSpec": "^4.24.2"
   },
   "_requiredBy": [
     "#USER"
   ],
-  "_resolved": "https://registry.npmjs.org/instantsearch.js/-/instantsearch.js-4.10.0.tgz",
-  "_shasum": "74cb6b47f83e22d100aa7f9278bc70665fa098c2",
-  "_spec": "instantsearch.js@~4.10.0",
-  "_where": "/Users/asharirfan/Documents/code/wp-algolia/app/public/wp-content/plugins/wp-search-with-algolia",
+  "_resolved": "https://registry.npmjs.org/instantsearch.js/-/instantsearch.js-4.24.2.tgz",
+  "_shasum": "44da291595940b46dda94941a6a5f2f16585e231",
+  "_spec": "instantsearch.js@^4.24.2",
+  "_where": "/Users/raber/Local Sites/algolia/app/public/wp-content/plugins/wp-search-with-algolia",
   "author": {
     "name": "Algolia",
     "email": "support@algolia.com"
@@ -33,16 +33,17 @@
   "bundlesize": [
     {
       "path": "./dist/instantsearch.production.min.js",
-      "maxSize": "65.5 kB"
+      "maxSize": "69 kB"
     },
     {
       "path": "./dist/instantsearch.development.js",
-      "maxSize": "160 kB"
+      "maxSize": "155.00 kB"
     }
   ],
   "dependencies": {
-    "@types/googlemaps": "^3.39.6",
-    "algoliasearch-helper": "^3.3.4",
+    "@types/google.maps": "^3.45.3",
+    "@types/hogan.js": "^3.0.0",
+    "algoliasearch-helper": "^3.4.5",
     "classnames": "^2.2.5",
     "events": "^1.1.0",
     "hogan.js": "^3.0.2",
@@ -53,14 +54,14 @@
   "deprecated": false,
   "description": "InstantSearch.js is a JavaScript library for building performant and instant search experiences with Algolia.",
   "devDependencies": {
-    "@algolia/client-search": "4.8.2",
-    "@babel/cli": "7.8.3",
-    "@babel/core": "7.8.3",
+    "@algolia/client-search": "4.9.2",
+    "@babel/cli": "7.8.4",
+    "@babel/core": "7.9.6",
     "@babel/plugin-proposal-class-properties": "7.8.3",
-    "@babel/plugin-transform-react-constant-elements": "7.8.3",
-    "@babel/preset-env": "7.8.3",
-    "@babel/preset-react": "7.8.3",
-    "@babel/preset-typescript": "7.8.3",
+    "@babel/plugin-transform-react-constant-elements": "7.9.0",
+    "@babel/preset-env": "7.9.6",
+    "@babel/preset-react": "7.9.4",
+    "@babel/preset-typescript": "7.9.0",
     "@microsoft/api-extractor": "7.9.2",
     "@storybook/addon-actions": "5.3.9",
     "@storybook/html": "5.3.9",
@@ -70,23 +71,24 @@
     "@testing-library/preact": "1.0.2",
     "@types/classnames": "^2.2.7",
     "@types/enzyme": "^3.1.15",
-    "@types/jest": "^24.0.0",
-    "@types/jest-diff": "^20.0.1",
+    "@types/jest": "^26.0.22",
+    "@types/jest-diff": "^24.3.0",
     "@types/qs": "^6.5.3",
     "@types/storybook__addon-actions": "^3.4.2",
-    "@typescript-eslint/eslint-plugin": "1.13.0",
-    "@typescript-eslint/parser": "1.13.0",
+    "@typescript-eslint/eslint-plugin": "4.15.1",
+    "@typescript-eslint/parser": "4.15.1",
     "@wdio/cli": "5.16.9",
     "@wdio/jasmine-framework": "5.16.5",
+    "@wdio/junit-reporter": "5.16.11",
     "@wdio/local-runner": "5.16.9",
     "@wdio/sauce-service": "5.16.5",
     "@wdio/selenium-standalone-service": "5.16.5",
     "@wdio/spec-reporter": "5.16.5",
     "@wdio/static-server-service": "5.16.5",
-    "algoliasearch": "4.8.2",
+    "algoliasearch": "4.9.2",
     "algoliasearch-v3": "npm:algoliasearch@3.35.1",
     "babel-eslint": "10.0.3",
-    "babel-jest": "24.9.0",
+    "babel-jest": "26.6.3",
     "babel-loader": "8.0.6",
     "babel-plugin-inline-replace-variables": "1.3.1",
     "babel-plugin-polyfill-es-shims": "0.0.7",
@@ -99,20 +101,22 @@
     "enzyme-adapter-preact-pure": "2.2.0",
     "enzyme-to-json": "3.4.4",
     "eslint": "6.8.0",
-    "eslint-config-algolia": "13.4.0",
+    "eslint-config-algolia": "16.0.0",
     "eslint-config-prettier": "6.9.0",
+    "eslint-plugin-eslint-comments": "3.2.0",
     "eslint-plugin-import": "2.18.2",
     "eslint-plugin-jasmine": "4.1.0",
-    "eslint-plugin-jest": "23.6.0",
-    "eslint-plugin-prettier": "3.1.2",
+    "eslint-plugin-jest": "24.3.5",
+    "eslint-plugin-prettier": "3.3.1",
     "eslint-plugin-react": "7.18.0",
     "eslint-plugin-react-hooks": "2.3.0",
     "instantsearch-e2e-tests": "github:algolia/instantsearch-e2e-tests#1.3.0",
-    "jest": "25.1.0",
-    "jest-diff": "25.1.0",
-    "jest-environment-jsdom": "25.1.0",
-    "jest-environment-jsdom-global": "1.2.0",
-    "jest-watch-typeahead": "0.4.2",
+    "jest": "26.6.3",
+    "jest-diff": "26.6.2",
+    "jest-environment-jsdom": "26.6.2",
+    "jest-environment-jsdom-global": "2.0.4",
+    "jest-junit": "12.2.0",
+    "jest-watch-typeahead": "0.6.2",
     "jscodeshift": "0.7.0",
     "jsdom-global": "3.0.2",
     "places.js": "1.17.1",
@@ -125,10 +129,11 @@
     "rollup-plugin-replace": "2.2.0",
     "rollup-plugin-uglify": "6.0.4",
     "scriptjs": "2.5.9",
+    "search-insights": "1.7.2",
     "semver": "6.3.0",
     "shelljs": "0.8.3",
     "shipjs": "0.21.0",
-    "typescript": "3.8.3",
+    "typescript": "4.2.4",
     "webpack": "4.41.5"
   },
   "files": [
@@ -154,6 +159,9 @@
     "type": "git",
     "url": "git+https://github.com/algolia/instantsearch.js.git"
   },
+  "resolutions": {
+    "places.js/algoliasearch": "3.35.0"
+  },
   "scripts": {
     "build": "yarn run build:cjs && yarn run build:es && yarn run build:umd",
     "build:cjs": "rm -rf cjs && BABEL_ENV=cjs babel src --extensions '.js,.ts,.tsx' --out-dir cjs/ --ignore 'src/index.es.ts','**/__tests__','**/__mocks__' --quiet",
@@ -176,12 +184,12 @@
     "test:size": "bundlesize",
     "test:watch": "jest --watch --bail",
     "type-check": "tsc",
-    "type-check:js": "tsc --project tsconfig.checkjs.json",
+    "type-check:v3": "tsc --project tsconfig.v3.json",
     "type-check:watch": "yarn type-check --watch",
     "website:build": "yarn build && ./scripts/website/build-examples.sh"
   },
   "sideEffects": false,
   "types": "es/index.d.ts",
   "unpkg": "dist/instantsearch.production.min.js",
-  "version": "4.10.0"
+  "version": "4.24.2"
 }

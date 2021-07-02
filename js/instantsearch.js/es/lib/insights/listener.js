@@ -1,5 +1,6 @@
 /** @jsx h */
 import { h } from 'preact';
+import { deserializePayload } from '../utils';
 import { readDataAttributes, hasDataAttributes } from '../../helpers/insights';
 
 var findInsightsTarget = function findInsightsTarget(startElement, endElement, validator) {
@@ -24,7 +25,7 @@ var parseInsightsEvent = function parseInsightsEvent(element) {
   }
 
   try {
-    return JSON.parse(atob(serializedPayload));
+    return deserializePayload(serializedPayload);
   } catch (error) {
     throw new Error('The insights middleware was unable to parse `data-insights-event`.');
   }
