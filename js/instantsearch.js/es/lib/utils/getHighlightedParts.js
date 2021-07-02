@@ -1,4 +1,4 @@
-import { TAG_REPLACEMENT } from '../../lib/escape-highlight';
+import { TAG_REPLACEMENT } from './escape-highlight';
 export default function getHighlightedParts(highlightedValue) {
   var highlightPostTag = TAG_REPLACEMENT.highlightPostTag,
       highlightPreTag = TAG_REPLACEMENT.highlightPreTag;

@@ -4,10 +4,10 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
-export var addAbsolutePosition = function addAbsolutePosition(hits, page, hitsPerPage) {
+export function addAbsolutePosition(hits, page, hitsPerPage) {
   return hits.map(function (hit, idx) {
-    return _objectSpread({}, hit, {
+    return _objectSpread(_objectSpread({}, hit), {}, {
       __position: hitsPerPage * page + idx + 1
     });
   });
-};
+}

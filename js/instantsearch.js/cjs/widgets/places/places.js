@@ -15,6 +15,9 @@ function _objectWithoutProperties(source, excluded) { if (source == null) return
 
 function _objectWithoutPropertiesLoose(source, excluded) { if (source == null) return {}; var target = {}; var sourceKeys = Object.keys(source); var key, i; for (i = 0; i < sourceKeys.length; i++) { key = sourceKeys[i]; if (excluded.indexOf(key) >= 0) continue; target[key] = source[key]; } return target; }
 
+/** @ts-ignore */
+// using the type like this requires only one ts-ignore
+
 /**
  * This widget sets the geolocation value for the search based on the selected
  * result in the Algolia Places autocomplete.
@@ -38,6 +41,7 @@ var placesWidget = function placesWidget(widgetParams) {
   };
   return {
     $$type: 'ais.places',
+    $$widgetType: 'ais.places',
     init: function init(_ref2) {
       var helper = _ref2.helper;
       placesAutocomplete.on('change', function (eventOptions) {
@@ -74,7 +78,7 @@ var placesWidget = function placesWidget(widgetParams) {
         return uiStateWithoutPlaces;
       }
 
-      return _objectSpread({}, uiState, {
+      return _objectSpread(_objectSpread({}, uiState), {}, {
         places: {
           query: state.query,
           position: position
@@ -102,7 +106,7 @@ var placesWidget = function placesWidget(widgetParams) {
       return searchParameters.setQueryParameter('insideBoundingBox', undefined).setQueryParameter('aroundLatLngViaIP', false).setQueryParameter('aroundLatLng', position || undefined);
     },
     getRenderState: function getRenderState(renderState, renderOptions) {
-      return _objectSpread({}, renderState, {
+      return _objectSpread(_objectSpread({}, renderState), {}, {
         places: this.getWidgetRenderState(renderOptions)
       });
     },

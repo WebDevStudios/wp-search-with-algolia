@@ -23,7 +23,12 @@ var _insights = require("../../lib/insights");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-/** @jsx h */
+function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
+
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
 var withUsage = (0, _utils.createDocumentationMessageGenerator)({
   name: 'hits'
 });
@@ -65,8 +70,8 @@ var renderer = function renderer(_ref) {
   };
 };
 
-var hits = function hits(widgetOptions) {
-  var _ref3 = widgetOptions || {},
+var hits = function hits(widgetParams) {
+  var _ref3 = widgetParams || {},
       container = _ref3.container,
       escapeHTML = _ref3.escapeHTML,
       transformItems = _ref3.transformItems,
@@ -98,12 +103,14 @@ var hits = function hits(widgetOptions) {
     renderState: {},
     templates: templates
   });
-  var makeHits = (0, _insights.withInsights)(_connectHits.default)(specializedRenderer, function () {
+  var makeWidget = (0, _insights.withInsights)(_connectHits.default)(specializedRenderer, function () {
     return (0, _preact.render)(null, containerNode);
   });
-  return makeHits({
+  return _objectSpread(_objectSpread({}, makeWidget({
     escapeHTML: escapeHTML,
     transformItems: transformItems
+  })), {}, {
+    $$widgetType: 'ais.hits'
   });
 };
 

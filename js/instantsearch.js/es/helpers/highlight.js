@@ -1,6 +1,5 @@
-import { getPropertyByPath } from '../lib/utils';
-import { TAG_REPLACEMENT } from '../lib/escape-highlight';
 import { component } from '../lib/suit';
+import { getPropertyByPath, TAG_REPLACEMENT } from '../lib/utils';
 var suit = component('Highlight');
 export default function highlight(_ref) {
   var attribute = _ref.attribute,

@@ -22,13 +22,13 @@ export default function simpleStateMapping() {
   return {
     stateToRoute: function stateToRoute(uiState) {
       return Object.keys(uiState).reduce(function (state, indexId) {
-        return _objectSpread({}, state, _defineProperty({}, indexId, getIndexStateWithoutConfigure(uiState[indexId])));
+        return _objectSpread(_objectSpread({}, state), {}, _defineProperty({}, indexId, getIndexStateWithoutConfigure(uiState[indexId])));
       }, {});
     },
     routeToState: function routeToState() {
       var routeState = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
       return Object.keys(routeState).reduce(function (state, indexId) {
-        return _objectSpread({}, state, _defineProperty({}, indexId, getIndexStateWithoutConfigure(routeState[indexId])));
+        return _objectSpread(_objectSpread({}, state), {}, _defineProperty({}, indexId, getIndexStateWithoutConfigure(routeState[indexId])));
       }, {});
     }
   };

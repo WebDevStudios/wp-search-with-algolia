@@ -4,11 +4,15 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
-function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _nonIterableRest(); }
+function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest(); }
 
-function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance"); }
+function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
 
-function _iterableToArrayLimit(arr, i) { if (!(Symbol.iterator in Object(arr) || Object.prototype.toString.call(arr) === "[object Arguments]")) { return; } var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"] != null) _i["return"](); } finally { if (_d) throw _e; } } return _arr; }
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
+
+function _iterableToArrayLimit(arr, i) { if (typeof Symbol === "undefined" || !(Symbol.iterator in Object(arr))) return; var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"] != null) _i["return"](); } finally { if (_d) throw _e; } } return _arr; }
 
 function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 
@@ -65,34 +69,6 @@ var renderer = function renderer(_ref) {
     }), containerNode);
   };
 };
-/**
- * @typedef {Object} RangeSliderCssClasses
- * @property  {string|string[]} [root] CSS class to add to the root element.
- * @property  {string|string[]} [disabledRoot] CSS class to add to the disabled root element.
- */
-
-/**
- * @typedef {Object} RangeSliderTooltipOptions
- * @property {function(number):string} format The function takes the raw value as input, and should return
- * a string for the label that should be used for this value.
- * `format: function(rawValue) {return '$' + Math.round(rawValue).toLocaleString()}`
- */
-
-/**
- * @typedef {Object} RangeSliderWidgetOptions
- * @property  {string|HTMLElement} container CSS Selector or DOMElement to insert the widget.
- * @property  {string} attribute Name of the attribute for faceting.
- * @property  {boolean|RangeSliderTooltipOptions} [tooltips=true] Should we show tooltips or not.
- * The default tooltip will show the raw value.
- * You can also provide an object with a format function as an attribute.
- * So that you can format the tooltip display value as you want
- * @property  {RangeSliderCssClasses} [cssClasses] CSS classes to add to the wrapping elements.
- * @property  {boolean} [pips=true] Show slider pips.
- * @property  {number} [precision = 0] Number of digits after decimal point to use.
- * @property  {number} [step] Every handle move will jump that number of steps.
- * @property  {number} [min] Minimal slider value, default to automatically computed from the result set.
- * @property  {number} [max] Maximal slider value, defaults to automatically computed from the result set.
- */
 
 /**
  * The range slider is a widget which provides a user-friendly way to filter the
@@ -104,29 +80,9 @@ var renderer = function renderer(_ref) {
  * in your Algolia settings.
  *
  * The values inside this attribute must be JavaScript numbers (not strings).
- *
- * @type {WidgetFactory}
- * @devNovel RangeSlider
- * @category filter
- * @param {RangeSliderWidgetOptions} $0 RangeSlider widget options.
- * @return {Widget} A new RangeSlider widget instance.
- * @example
- * search.addWidgets([
- *   instantsearch.widgets.rangeSlider({
- *     container: '#price',
- *     attribute: 'price',
- *     tooltips: {
- *       format: function(rawValue) {
- *         return '$' + Math.round(rawValue).toLocaleString();
- *       }
- *     }
- *   })
- * ]);
  */
-
-
-export default function rangeSlider() {
-  var _ref3 = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
+var rangeSlider = function rangeSlider(widgetParams) {
+  var _ref3 = widgetParams || {},
       container = _ref3.container,
       attribute = _ref3.attribute,
       min = _ref3.min,
@@ -157,18 +113,20 @@ export default function rangeSlider() {
     step: step,
     pips: pips,
     tooltips: tooltips,
-    renderState: {},
     cssClasses: cssClasses
   });
   var makeWidget = connectRange(specializedRenderer, function () {
     return render(null, containerNode);
   });
-  return _objectSpread({}, makeWidget({
+  return _objectSpread(_objectSpread({}, makeWidget({
     attribute: attribute,
     min: min,
     max: max,
     precision: precision
-  }), {
-    $$type: 'ais.rangeSlider'
+  })), {}, {
+    $$type: 'ais.rangeSlider',
+    $$widgetType: 'ais.rangeSlider'
   });
-}
+};
+
+export default rangeSlider;

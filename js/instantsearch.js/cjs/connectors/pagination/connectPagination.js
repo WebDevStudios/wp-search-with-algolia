@@ -54,13 +54,13 @@ var connectPagination = function connectPagination(renderFn) {
       $$type: 'ais.pagination',
       init: function init(initOptions) {
         var instantSearchInstance = initOptions.instantSearchInstance;
-        renderFn(_objectSpread({}, this.getWidgetRenderState(initOptions), {
+        renderFn(_objectSpread(_objectSpread({}, this.getWidgetRenderState(initOptions)), {}, {
           instantSearchInstance: instantSearchInstance
         }), true);
       },
       render: function render(renderOptions) {
         var instantSearchInstance = renderOptions.instantSearchInstance;
-        renderFn(_objectSpread({}, this.getWidgetRenderState(renderOptions), {
+        renderFn(_objectSpread(_objectSpread({}, this.getWidgetRenderState(renderOptions)), {}, {
           instantSearchInstance: instantSearchInstance
         }), false);
       },
@@ -77,7 +77,7 @@ var connectPagination = function connectPagination(renderFn) {
           return uiState;
         }
 
-        return _objectSpread({}, uiState, {
+        return _objectSpread(_objectSpread({}, uiState), {}, {
           page: page + 1
         });
       },
@@ -116,6 +116,7 @@ var connectPagination = function connectPagination(renderFn) {
         return {
           createURL: connectorState.createURL(state),
           refine: connectorState.refine,
+          canRefine: nbPages > 1,
           currentRefinement: page,
           nbHits: (results === null || results === void 0 ? void 0 : results.nbHits) || 0,
           nbPages: nbPages,
@@ -126,7 +127,7 @@ var connectPagination = function connectPagination(renderFn) {
         };
       },
       getRenderState: function getRenderState(renderState, renderOptions) {
-        return _objectSpread({}, renderState, {
+        return _objectSpread(_objectSpread({}, renderState), {}, {
           pagination: this.getWidgetRenderState(renderOptions)
         });
       }

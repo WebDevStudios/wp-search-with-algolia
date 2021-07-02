@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.default = menu;
+exports.default = void 0;
 
 var _preact = require("preact");
 
@@ -57,8 +57,8 @@ var renderer = function renderer(_ref) {
     }
 
     var facetValues = items.map(function (facetValue) {
-      return _objectSpread({}, facetValue, {
-        url: createURL(facetValue.name)
+      return _objectSpread(_objectSpread({}, facetValue), {}, {
+        url: createURL(facetValue.value)
       });
     });
     (0, _preact.render)((0, _preact.h)(_RefinementList.default, {
@@ -74,67 +74,10 @@ var renderer = function renderer(_ref) {
     }), containerNode);
   };
 };
-/**
- * @typedef {Object} MenuCSSClasses
- * @property {string|string[]} [root] CSS class to add to the root element.
- * @property {string|string[]} [noRefinementRoot] CSS class to add to the root element when no refinements.
- * @property {string|string[]} [list] CSS class to add to the list element.
- * @property {string|string[]} [item] CSS class to add to each item element.
- * @property {string|string[]} [selectedItem] CSS class to add to each selected item element.
- * @property {string|string[]} [link] CSS class to add to each link (when using the default template).
- * @property {string|string[]} [label] CSS class to add to each label (when using the default template).
- * @property {string|string[]} [count] CSS class to add to each count element (when using the default template).
- * @property {string|string[]} [showMore] CSS class to add to the show more button.
- * @property {string|string[]} [disabledShowMore] CSS class to add to the disabled show more button.
- */
 
-/**
- * @typedef {Object} MenuTemplates
- * @property {string|function({count: number, cssClasses: object, isRefined: boolean, label: string, url: string, value: string}):string} [item] Item template. The string template gets the same values as the function.
- * @property {string} [showMoreText] Template used for the show more text, provided with `isShowingMore` data property.
- */
-
-/**
- * @typedef {Object} MenuWidgetOptions
- * @property {string|HTMLElement} container CSS Selector or HTMLElement to insert the widget.
- * @property {string} attribute Name of the attribute for faceting
- * @property {string[]|function} [sortBy=['isRefined', 'name:asc']] How to sort refinements. Possible values: `count|isRefined|name:asc|name:desc`.
- *
- * You can also use a sort function that behaves like the standard Javascript [compareFunction](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/sort#Syntax).
- * @property {MenuTemplates} [templates] Customize the output through templating.
- * @property {number} [limit=10] How many facets values to retrieve.
- * @property {boolean} [showMore=false] Limit the number of results and display a showMore button.
- * @property {number} [showMoreLimit=20] Max number of values to display when showing more.
- * @property {MenuCSSClasses} [cssClasses] CSS classes to add to the wrapping elements.
- * @property {function(object[]):object[]} [transformItems] Function to transform the items passed to the templates.
- */
-
-/**
- * Create a menu based on a facet. A menu displays facet values and let the user selects only one value at a time.
- * It also displays an empty value which lets the user "unselect" any previous selection.
- *
- * @requirements
- * The attribute passed to `attribute` must be declared as an
- * [attribute for faceting](https://www.algolia.com/doc/guides/searching/faceting/#declaring-attributes-for-faceting)
- * in your Algolia settings.
- * @type {WidgetFactory}
- * @devNovel Menu
- * @category filter
- * @param {MenuWidgetOptions} $0 The Menu widget options.
- * @return {Widget} Creates a new instance of the Menu widget.
- * @example
- * search.addWidgets([
- *   instantsearch.widgets.menu({
- *     container: '#categories',
- *     attribute: 'hierarchicalCategories.lvl0',
- *     limit: 10,
- *   })
- * ]);
- */
-
-
-function menu(_ref3) {
-  var container = _ref3.container,
+var menu = function menu(widgetParams) {
+  var _ref3 = widgetParams || {},
+      container = _ref3.container,
       attribute = _ref3.attribute,
       sortBy = _ref3.sortBy,
       limit = _ref3.limit,
@@ -193,12 +136,17 @@ function menu(_ref3) {
   var makeWidget = (0, _connectMenu.default)(specializedRenderer, function () {
     return (0, _preact.render)(null, containerNode);
   });
-  return makeWidget({
+  return _objectSpread(_objectSpread({}, makeWidget({
     attribute: attribute,
     limit: limit,
     showMore: showMore,
     showMoreLimit: showMoreLimit,
     sortBy: sortBy,
     transformItems: transformItems
+  })), {}, {
+    $$widgetType: 'ais.menu'
   });
-}
+};
+
+var _default = menu;
+exports.default = _default;

@@ -10,7 +10,7 @@ import cx from 'classnames';
 import { getContainerNode, createDocumentationMessageGenerator } from '../../lib/utils';
 import { component } from '../../lib/suit';
 import connectVoiceSearch from '../../connectors/voice-search/connectVoiceSearch';
-import VoiceSearch from '../../components/VoiceSearch/VoiceSearch';
+import VoiceSearchComponent from '../../components/VoiceSearch/VoiceSearch';
 import defaultTemplates from './defaultTemplates';
 var withUsage = createDocumentationMessageGenerator({
   name: 'voice-search'
@@ -26,7 +26,7 @@ var renderer = function renderer(_ref) {
   var container = widgetParams.container,
       cssClasses = widgetParams.cssClasses,
       templates = widgetParams.templates;
-  render(h(VoiceSearch, {
+  render(h(VoiceSearchComponent, {
     cssClasses: cssClasses,
     templates: templates,
     isBrowserSupported: isBrowserSupported,
@@ -36,8 +36,8 @@ var renderer = function renderer(_ref) {
   }), container);
 };
 
-var voiceSearch = function voiceSearch() {
-  var _ref2 = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
+var voiceSearch = function voiceSearch(widgetParams) {
+  var _ref2 = widgetParams || {},
       container = _ref2.container,
       _ref2$cssClasses = _ref2.cssClasses,
       userCssClasses = _ref2$cssClasses === void 0 ? {} : _ref2$cssClasses,
@@ -65,14 +65,16 @@ var voiceSearch = function voiceSearch() {
   var makeWidget = connectVoiceSearch(renderer, function () {
     return render(null, containerNode);
   });
-  return makeWidget({
+  return _objectSpread(_objectSpread({}, makeWidget({
     container: containerNode,
     cssClasses: cssClasses,
-    templates: _objectSpread({}, defaultTemplates, {}, templates),
+    templates: _objectSpread(_objectSpread({}, defaultTemplates), templates),
     searchAsYouSpeak: searchAsYouSpeak,
     language: language,
     additionalQueryParameters: additionalQueryParameters,
     createVoiceSearchHelper: createVoiceSearchHelper
+  })), {}, {
+    $$widgetType: 'ais.voiceSearch'
   });
 };
 

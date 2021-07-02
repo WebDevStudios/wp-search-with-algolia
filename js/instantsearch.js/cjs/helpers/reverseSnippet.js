@@ -7,8 +7,6 @@ exports.default = reverseSnippet;
 
 var _utils = require("../lib/utils");
 
-var _escapeHighlight = require("../lib/escape-highlight");
-
 var _suit = require("../lib/suit");
 
 var suit = (0, _suit.component)('ReverseSnippet');
@@ -30,5 +28,5 @@ function reverseSnippet(_ref) {
     descendantName: 'highlighted'
   }) + (cssClasses.highlighted ? " ".concat(cssClasses.highlighted) : '');
   var reverseHighlightedValue = (0, _utils.concatHighlightedParts)((0, _utils.reverseHighlightedParts)((0, _utils.getHighlightedParts)(attributeValue)));
-  return reverseHighlightedValue.replace(new RegExp(_escapeHighlight.TAG_REPLACEMENT.highlightPreTag, 'g'), "<".concat(highlightedTagName, " class=\"").concat(className, "\">")).replace(new RegExp(_escapeHighlight.TAG_REPLACEMENT.highlightPostTag, 'g'), "</".concat(highlightedTagName, ">"));
+  return reverseHighlightedValue.replace(new RegExp(_utils.TAG_REPLACEMENT.highlightPreTag, 'g'), "<".concat(highlightedTagName, " class=\"").concat(className, "\">")).replace(new RegExp(_utils.TAG_REPLACEMENT.highlightPostTag, 'g'), "</".concat(highlightedTagName, ">"));
 }

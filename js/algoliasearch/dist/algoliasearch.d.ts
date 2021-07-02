@@ -22,6 +22,11 @@ import { DeleteByFiltersOptions } from '@algolia/client-search';
 import { DeleteResponse } from '@algolia/client-search';
 import { DeleteSynonymOptions } from '@algolia/client-search';
 import { Destroyable } from '@algolia/requester-common';
+import { DictionaryEntriesOptions } from '@algolia/client-search';
+import { DictionaryEntriesResponse } from '@algolia/client-search';
+import { DictionaryEntry } from '@algolia/client-search';
+import { DictionaryName } from '@algolia/client-search';
+import { DictionarySettings } from '@algolia/client-search';
 import { FindAnswersOptions } from '@algolia/client-search';
 import { FindAnswersResponse } from '@algolia/client-search';
 import { FindObjectOptions } from '@algolia/client-search';
@@ -30,11 +35,12 @@ import { GetABTestResponse } from '@algolia/client-analytics';
 import { GetABTestsOptions } from '@algolia/client-analytics';
 import { GetABTestsResponse } from '@algolia/client-analytics';
 import { GetApiKeyResponse } from '@algolia/client-search';
+import { GetDictionarySettingsResponse } from '@algolia/client-search';
 import { GetLogsResponse } from '@algolia/client-search';
 import { GetObjectOptions } from '@algolia/client-search';
 import { GetObjectsOptions } from '@algolia/client-search';
 import { GetObjectsResponse } from '@algolia/client-search';
-import { GetPersonalizationStrategyResponse } from '@algolia/client-recommendation';
+import { GetPersonalizationStrategyResponse } from '@algolia/client-personalization';
 import { GetTopUserIDsResponse } from '@algolia/client-search';
 import { HasPendingMappingsOptions } from '@algolia/client-search';
 import { HasPendingMappingsResponse } from '@algolia/client-search';
@@ -54,9 +60,9 @@ import { MultipleQueriesResponse } from '@algolia/client-search';
 import { ObjectWithObjectID } from '@algolia/client-search';
 import { PartialUpdateObjectResponse } from '@algolia/client-search';
 import { PartialUpdateObjectsOptions } from '@algolia/client-search';
-import { PersonalizationStrategy } from '@algolia/client-recommendation';
-import { RecommendationClient as RecommendationClient_2 } from '@algolia/client-recommendation';
-import { RecommendationClientOptions } from '@algolia/client-recommendation';
+import { PersonalizationClient as PersonalizationClient_2 } from '@algolia/client-personalization';
+import { PersonalizationClientOptions } from '@algolia/client-personalization';
+import { PersonalizationStrategy } from '@algolia/client-personalization';
 import { RemoveUserIDResponse } from '@algolia/client-search';
 import { ReplaceAllObjectsOptions } from '@algolia/client-search';
 import { RequestOptions } from '@algolia/transporter';
@@ -72,6 +78,7 @@ import { SaveSynonymsOptions } from '@algolia/client-search';
 import { SaveSynonymsResponse } from '@algolia/client-search';
 import { SearchClient as SearchClient_2 } from '@algolia/client-search';
 import { SearchClientOptions } from '@algolia/client-search';
+import { SearchDictionaryEntriesResponse } from '@algolia/client-search';
 import { SearchForFacetValuesQueryParams } from '@algolia/client-search';
 import { SearchForFacetValuesResponse } from '@algolia/client-search';
 import { SearchIndex as SearchIndex_2 } from '@algolia/client-search';
@@ -83,11 +90,12 @@ import { SearchSynonymsResponse } from '@algolia/client-search';
 import { SearchUserIDsOptions } from '@algolia/client-search';
 import { SearchUserIDsResponse } from '@algolia/client-search';
 import { SecuredApiKeyRestrictions } from '@algolia/client-search';
-import { SetPersonalizationStrategyResponse } from '@algolia/client-recommendation';
+import { SetPersonalizationStrategyResponse } from '@algolia/client-personalization';
 import { SetSettingsResponse } from '@algolia/client-search';
 import { Settings } from '@algolia/client-search';
 import { StopABTestResponse } from '@algolia/client-analytics';
 import { Synonym } from '@algolia/client-search';
+import { TaskStatusResponse } from '@algolia/client-search';
 import { UpdateApiKeyOptions } from '@algolia/client-search';
 import { UpdateApiKeyResponse } from '@algolia/client-search';
 import { UserIDResponse } from '@algolia/client-search';
@@ -117,14 +125,24 @@ declare type Credentials = {
 
 export declare type InitAnalyticsOptions = Partial<ClientTransporterOptions> & OptionalCredentials<AnalyticsClientOptions>;
 
-export declare type InitRecommendationOptions = Partial<ClientTransporterOptions> & OptionalCredentials<RecommendationClientOptions>;
+export declare type InitPersonalizationOptions = Partial<ClientTransporterOptions> & OptionalCredentials<PersonalizationClientOptions>;
+
+/**
+ * @deprecated Use `InitPersonalizationOptions` instead.
+ */
+export declare type InitRecommendationOptions = InitPersonalizationOptions;
 
 export declare type OptionalCredentials<TClientOptions extends Credentials> = Omit<TClientOptions, keyof Credentials> & Pick<Partial<TClientOptions>, keyof Credentials>;
 
-export declare type RecommendationClient = RecommendationClient_2 & {
+export declare type PersonalizationClient = PersonalizationClient_2 & {
     readonly getPersonalizationStrategy: (requestOptions?: RequestOptions) => Readonly<Promise<GetPersonalizationStrategyResponse>>;
     readonly setPersonalizationStrategy: (personalizationStrategy: PersonalizationStrategy, requestOptions?: RequestOptions) => Readonly<Promise<SetPersonalizationStrategyResponse>>;
 };
+
+/**
+ * @deprecated Use `PersonalizationClient` instead.
+ */
+export declare type RecommendationClient = PersonalizationClient;
 
 export declare type SearchClient = SearchClient_2 & {
     readonly initIndex: (indexName: string) => SearchIndex;
@@ -164,8 +182,20 @@ export declare type SearchClient = SearchClient_2 & {
     readonly hasPendingMappings: (requestOptions?: HasPendingMappingsOptions & RequestOptions) => Readonly<Promise<HasPendingMappingsResponse>>;
     readonly generateSecuredApiKey: (parentApiKey: string, restrictions: SecuredApiKeyRestrictions) => string;
     readonly getSecuredApiKeyRemainingValidity: (securedApiKey: string) => number;
+    readonly clearDictionaryEntries: (dictionary: DictionaryName, requestOptions?: RequestOptions & DictionaryEntriesOptions) => Readonly<WaitablePromise<DictionaryEntriesResponse>>;
+    readonly deleteDictionaryEntries: (dictionary: DictionaryName, objectIDs: readonly string[], requestOptions?: RequestOptions & DictionaryEntriesOptions) => Readonly<WaitablePromise<DictionaryEntriesResponse>>;
+    readonly replaceDictionaryEntries: (dictionary: DictionaryName, entries: readonly DictionaryEntry[], requestOptions?: RequestOptions & DictionaryEntriesOptions) => Readonly<WaitablePromise<DictionaryEntriesResponse>>;
+    readonly saveDictionaryEntries: (dictionary: DictionaryName, entries: readonly DictionaryEntry[], requestOptions?: RequestOptions & DictionaryEntriesOptions) => Readonly<WaitablePromise<DictionaryEntriesResponse>>;
+    readonly searchDictionaryEntries: (dictionary: DictionaryName, query: string, requestOptions?: RequestOptions) => Readonly<Promise<SearchDictionaryEntriesResponse>>;
+    readonly getDictionarySettings: (requestOptions?: RequestOptions) => Readonly<Promise<GetDictionarySettingsResponse>>;
+    readonly setDictionarySettings: (settings: DictionarySettings, requestOptions?: RequestOptions) => Readonly<WaitablePromise<DictionaryEntriesResponse>>;
+    readonly getAppTask: (taskID: number, requestOptions?: RequestOptions) => Readonly<Promise<TaskStatusResponse>>;
     readonly initAnalytics: (options?: InitAnalyticsOptions) => AnalyticsClient;
-    readonly initRecommendation: (options?: InitRecommendationOptions) => RecommendationClient;
+    readonly initPersonalization: (options?: InitPersonalizationOptions) => PersonalizationClient;
+    /**
+     * @deprecated Use `initPersonalization` instead.
+     */
+    readonly initRecommendation: (options?: InitPersonalizationOptions) => PersonalizationClient;
 } & Destroyable;
 
 export declare type SearchIndex = SearchIndex_2 & {

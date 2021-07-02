@@ -1,19 +1,11 @@
 "use strict";
 
-function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
-
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
 
-var _escapeHighlight = _interopRequireWildcard(require("../../lib/escape-highlight"));
-
 var _utils = require("../../lib/utils");
-
-function _getRequireWildcardCache() { if (typeof WeakMap !== "function") return null; var cache = new WeakMap(); _getRequireWildcardCache = function _getRequireWildcardCache() { return cache; }; return cache; }
-
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } if (obj === null || _typeof(obj) !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
 
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
@@ -43,7 +35,7 @@ var connectAutocomplete = function connectAutocomplete(renderFn) {
       $$type: 'ais.autocomplete',
       init: function init(initOptions) {
         var instantSearchInstance = initOptions.instantSearchInstance;
-        renderFn(_objectSpread({}, this.getWidgetRenderState(initOptions), {
+        renderFn(_objectSpread(_objectSpread({}, this.getWidgetRenderState(initOptions)), {}, {
           instantSearchInstance: instantSearchInstance
         }), true);
       },
@@ -55,12 +47,12 @@ var connectAutocomplete = function connectAutocomplete(renderFn) {
               hits = _ref3.hits;
           sendEvent('view', hits);
         });
-        renderFn(_objectSpread({}, renderState, {
+        renderFn(_objectSpread(_objectSpread({}, renderState), {}, {
           instantSearchInstance: instantSearchInstance
         }), false);
       },
       getRenderState: function getRenderState(renderState, renderOptions) {
-        return _objectSpread({}, renderState, {
+        return _objectSpread(_objectSpread({}, renderState), {}, {
           autocomplete: this.getWidgetRenderState(renderOptions)
         });
       },
@@ -80,7 +72,7 @@ var connectAutocomplete = function connectAutocomplete(renderFn) {
         var indices = scopedResults.map(function (scopedResult) {
           // We need to escape the hits because highlighting
           // exposes HTML tags to the end-user.
-          scopedResult.results.hits = escapeHTML ? (0, _escapeHighlight.default)(scopedResult.results.hits) : scopedResult.results.hits;
+          scopedResult.results.hits = escapeHTML ? (0, _utils.escapeHits)(scopedResult.results.hits) : scopedResult.results.hits;
           var sendEvent = (0, _utils.createSendEventForHits)({
             instantSearchInstance: instantSearchInstance,
             index: scopedResult.results.index,
@@ -109,7 +101,7 @@ var connectAutocomplete = function connectAutocomplete(renderFn) {
           return uiState;
         }
 
-        return _objectSpread({}, uiState, {
+        return _objectSpread(_objectSpread({}, uiState), {}, {
           query: query
         });
       },
@@ -123,7 +115,7 @@ var connectAutocomplete = function connectAutocomplete(renderFn) {
           return searchParameters.setQueryParameters(parameters);
         }
 
-        return searchParameters.setQueryParameters(_objectSpread({}, parameters, {}, _escapeHighlight.TAG_PLACEHOLDER));
+        return searchParameters.setQueryParameters(_objectSpread(_objectSpread({}, parameters), _utils.TAG_PLACEHOLDER));
       },
       dispose: function dispose(_ref7) {
         var state = _ref7.state;
@@ -134,8 +126,8 @@ var connectAutocomplete = function connectAutocomplete(renderFn) {
           return stateWithoutQuery;
         }
 
-        return stateWithoutQuery.setQueryParameters(Object.keys(_escapeHighlight.TAG_PLACEHOLDER).reduce(function (acc, key) {
-          return _objectSpread({}, acc, _defineProperty({}, key, undefined));
+        return stateWithoutQuery.setQueryParameters(Object.keys(_utils.TAG_PLACEHOLDER).reduce(function (acc, key) {
+          return _objectSpread(_objectSpread({}, acc), {}, _defineProperty({}, key, undefined));
         }, {}));
       }
     };

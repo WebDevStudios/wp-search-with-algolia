@@ -11,7 +11,10 @@ var VoiceSearch = function VoiceSearch(_ref) {
       templates = _ref.templates;
 
   var handleClick = function handleClick(event) {
-    event.currentTarget.blur();
+    if (event.currentTarget instanceof HTMLElement) {
+      event.currentTarget.blur();
+    }
+
     toggleListening();
   };
 

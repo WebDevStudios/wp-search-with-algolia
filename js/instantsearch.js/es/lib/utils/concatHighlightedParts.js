@@ -1,4 +1,4 @@
-import { TAG_REPLACEMENT } from '../escape-highlight';
+import { TAG_REPLACEMENT } from './escape-highlight';
 export default function concatHighlightedParts(parts) {
   var highlightPreTag = TAG_REPLACEMENT.highlightPreTag,
       highlightPostTag = TAG_REPLACEMENT.highlightPostTag;

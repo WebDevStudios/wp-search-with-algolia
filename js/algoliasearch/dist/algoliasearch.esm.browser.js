@@ -207,7 +207,7 @@ function encode(format, ...args) {
     return format.replace(/%s/g, () => encodeURIComponent(args[i++]));
 }
 
-const version = '4.8.4';
+const version = '4.10.2';
 
 const AuthMode = {
     /**
@@ -351,7 +351,7 @@ const retryDecision = (response, outcomes) => {
         return outcomes.onRetry(response);
     }
     if (isSuccess(response)) {
-        return outcomes.onSucess(response);
+        return outcomes.onSuccess(response);
     }
     return outcomes.onFail(response);
 };
@@ -412,7 +412,7 @@ function retryableRequest(transporter, statelessHosts, request, requestOptions) 
             return stackFrame;
         };
         const decisions = {
-            onSucess: response => deserializeSuccess(response),
+            onSuccess: response => deserializeSuccess(response),
             onRetry(response) {
                 const stackFrame = pushToStackTrace(response);
                 /**
@@ -743,11 +743,11 @@ const stopABTest = (base) => {
     };
 };
 
-const createRecommendationClient = options => {
+const createPersonalizationClient = options => {
     const region = options.region || 'us';
     const auth = createAuth(AuthMode.WithinHeaders, options.appId, options.apiKey);
     const transporter = createTransporter({
-        hosts: [{ url: `recommendation.${region}.algolia.com` }],
+        hosts: [{ url: `personalization.${region}.algolia.com` }],
         ...options,
         headers: {
             ...auth.headers(),
@@ -925,6 +925,19 @@ const assignUserIDs = (base) => {
     };
 };
 
+const clearDictionaryEntries = (base) => {
+    return (dictionary, requestOptions) => {
+        return createWaitablePromise(base.transporter.write({
+            method: MethodEnum.Post,
+            path: encode('/1/dictionaries/%s/batch', dictionary),
+            data: {
+                clearExistingDictionaryEntries: true,
+                requests: { action: 'addEntry', body: [] },
+            },
+        }, requestOptions), (response, waitRequestOptions) => waitAppTask(base)(response.taskID, waitRequestOptions));
+    };
+};
+
 const copyIndex = (base) => {
     return (from, to, requestOptions) => {
         const wait = (response, waitRequestOptions) => {
@@ -990,11 +1003,34 @@ const deleteApiKey = (base) => {
     };
 };
 
+const deleteDictionaryEntries = (base) => {
+    return (dictionary, objectIDs, requestOptions) => {
+        const requests = objectIDs.map(objectID => ({
+            action: 'deleteEntry',
+            body: { objectID },
+        }));
+        return createWaitablePromise(base.transporter.write({
+            method: MethodEnum.Post,
+            path: encode('/1/dictionaries/%s/batch', dictionary),
+            data: { clearExistingDictionaryEntries: false, requests },
+        }, requestOptions), (response, waitRequestOptions) => waitAppTask(base)(response.taskID, waitRequestOptions));
+    };
+};
+
 const getApiKey = (base) => {
     return (apiKey, requestOptions) => {
         return base.transporter.read({
             method: MethodEnum.Get,
             path: encode('1/keys/%s', apiKey),
+        }, requestOptions);
+    };
+};
+
+const getDictionarySettings = (base) => {
+    return (requestOptions) => {
+        return base.transporter.read({
+            method: MethodEnum.Get,
+            path: '/1/dictionaries/*/settings',
         }, requestOptions);
     };
 };
@@ -1013,6 +1049,15 @@ const getTopUserIDs = (base) => {
         return base.transporter.read({
             method: MethodEnum.Get,
             path: '1/clusters/mapping/top',
+        }, requestOptions);
+    };
+};
+
+const getAppTask = (base) => {
+    return (taskID, requestOptions) => {
+        return base.transporter.read({
+            method: MethodEnum.Get,
+            path: encode('1/task/%s', taskID.toString()),
         }, requestOptions);
     };
 };
@@ -1181,6 +1226,20 @@ const removeUserID = (base) => {
     };
 };
 
+const replaceDictionaryEntries = (base) => {
+    return (dictionary, entries, requestOptions) => {
+        const requests = entries.map(entry => ({
+            action: 'addEntry',
+            body: entry,
+        }));
+        return createWaitablePromise(base.transporter.write({
+            method: MethodEnum.Post,
+            path: encode('/1/dictionaries/%s/batch', dictionary),
+            data: { clearExistingDictionaryEntries: true, requests },
+        }, requestOptions), (response, waitRequestOptions) => waitAppTask(base)(response.taskID, waitRequestOptions));
+    };
+};
+
 const restoreApiKey = (base) => {
     return (apiKey, requestOptions) => {
         const wait = (_, waitRequestOptions) => {
@@ -1200,6 +1259,33 @@ const restoreApiKey = (base) => {
     };
 };
 
+const saveDictionaryEntries = (base) => {
+    return (dictionary, entries, requestOptions) => {
+        const requests = entries.map(entry => ({
+            action: 'addEntry',
+            body: entry,
+        }));
+        return createWaitablePromise(base.transporter.write({
+            method: MethodEnum.Post,
+            path: encode('/1/dictionaries/%s/batch', dictionary),
+            data: { clearExistingDictionaryEntries: false, requests },
+        }, requestOptions), (response, waitRequestOptions) => waitAppTask(base)(response.taskID, waitRequestOptions));
+    };
+};
+
+const searchDictionaryEntries = (base) => {
+    return (dictionary, query, requestOptions) => {
+        return base.transporter.read({
+            method: MethodEnum.Post,
+            path: encode('/1/dictionaries/%s/search', dictionary),
+            data: {
+                query,
+            },
+            cacheable: true,
+        }, requestOptions);
+    };
+};
+
 const searchUserIDs = (base) => {
     return (query, requestOptions) => {
         return base.transporter.read({
@@ -1209,6 +1295,16 @@ const searchUserIDs = (base) => {
                 query,
             },
         }, requestOptions);
+    };
+};
+
+const setDictionarySettings = (base) => {
+    return (settings, requestOptions) => {
+        return createWaitablePromise(base.transporter.write({
+            method: MethodEnum.Put,
+            path: '/1/dictionaries/*/settings',
+            data: settings,
+        }, requestOptions), (response, waitRequestOptions) => waitAppTask(base)(response.taskID, waitRequestOptions));
     };
 };
 
@@ -1244,6 +1340,16 @@ const updateApiKey = (base) => {
             path: encode('1/keys/%s', apiKey),
             data,
         }, options), wait);
+    };
+};
+
+const waitAppTask = (base) => {
+    return (taskID, requestOptions) => {
+        return createRetryablePromise(retry => {
+            return getAppTask(base)(taskID, requestOptions).then(response => {
+                return response.status !== 'published' ? retry() : undefined;
+            });
+        });
     };
 };
 
@@ -1982,9 +2088,19 @@ function algoliasearch(appId, apiKey, options) {
         }),
         userAgent: createUserAgent(version).add({ segment: 'Browser' }),
     };
+    const searchClientOptions = { ...commonOptions, ...options };
+    const initPersonalization = () => (clientOptions) => {
+        return createPersonalizationClient({
+            ...commonOptions,
+            ...clientOptions,
+            methods: {
+                getPersonalizationStrategy,
+                setPersonalizationStrategy,
+            },
+        });
+    };
     return createSearchClient({
-        ...commonOptions,
-        ...options,
+        ...searchClientOptions,
         methods: {
             search: multipleQueries,
             searchForFacetValues: multipleSearchForFacetValues,
@@ -2014,6 +2130,15 @@ function algoliasearch(appId, apiKey, options) {
             getTopUserIDs,
             removeUserID,
             hasPendingMappings,
+            clearDictionaryEntries,
+            deleteDictionaryEntries,
+            getDictionarySettings,
+            getAppTask,
+            replaceDictionaryEntries,
+            saveDictionaryEntries,
+            searchDictionaryEntries,
+            setDictionarySettings,
+            waitAppTask,
             initIndex: base => (indexName) => {
                 return initIndex(base)(indexName, {
                     methods: {
@@ -2072,15 +2197,10 @@ function algoliasearch(appId, apiKey, options) {
                     },
                 });
             },
+            initPersonalization,
             initRecommendation: () => (clientOptions) => {
-                return createRecommendationClient({
-                    ...commonOptions,
-                    ...clientOptions,
-                    methods: {
-                        getPersonalizationStrategy,
-                        setPersonalizationStrategy,
-                    },
-                });
+                searchClientOptions.logger.info('The `initRecommendation` method is deprecated. Use `initPersonalization` instead.');
+                return initPersonalization()(clientOptions);
             },
         },
     });

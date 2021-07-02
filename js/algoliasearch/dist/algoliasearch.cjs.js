@@ -4,7 +4,7 @@ var cacheCommon = require('@algolia/cache-common');
 var cacheInMemory = require('@algolia/cache-in-memory');
 var clientAnalytics = require('@algolia/client-analytics');
 var clientCommon = require('@algolia/client-common');
-var clientRecommendation = require('@algolia/client-recommendation');
+var clientPersonalization = require('@algolia/client-personalization');
 var clientSearch = require('@algolia/client-search');
 var loggerCommon = require('@algolia/logger-common');
 var requesterNodeHttp = require('@algolia/requester-node-http');
@@ -29,9 +29,19 @@ function algoliasearch(appId, apiKey, options) {
             version: process.versions.node,
         }),
     };
+    const searchClientOptions = { ...commonOptions, ...options };
+    const initPersonalization = () => (clientOptions) => {
+        return clientPersonalization.createPersonalizationClient({
+            ...commonOptions,
+            ...clientOptions,
+            methods: {
+                getPersonalizationStrategy: clientPersonalization.getPersonalizationStrategy,
+                setPersonalizationStrategy: clientPersonalization.setPersonalizationStrategy,
+            },
+        });
+    };
     return clientSearch.createSearchClient({
-        ...commonOptions,
-        ...options,
+        ...searchClientOptions,
         methods: {
             search: clientSearch.multipleQueries,
             searchForFacetValues: clientSearch.multipleSearchForFacetValues,
@@ -64,6 +74,15 @@ function algoliasearch(appId, apiKey, options) {
             generateSecuredApiKey: clientSearch.generateSecuredApiKey,
             getSecuredApiKeyRemainingValidity: clientSearch.getSecuredApiKeyRemainingValidity,
             destroy: clientCommon.destroy,
+            clearDictionaryEntries: clientSearch.clearDictionaryEntries,
+            deleteDictionaryEntries: clientSearch.deleteDictionaryEntries,
+            getDictionarySettings: clientSearch.getDictionarySettings,
+            getAppTask: clientSearch.getAppTask,
+            replaceDictionaryEntries: clientSearch.replaceDictionaryEntries,
+            saveDictionaryEntries: clientSearch.saveDictionaryEntries,
+            searchDictionaryEntries: clientSearch.searchDictionaryEntries,
+            setDictionarySettings: clientSearch.setDictionarySettings,
+            waitAppTask: clientSearch.waitAppTask,
             initIndex: base => (indexName) => {
                 return clientSearch.initIndex(base)(indexName, {
                     methods: {
@@ -122,15 +141,10 @@ function algoliasearch(appId, apiKey, options) {
                     },
                 });
             },
+            initPersonalization,
             initRecommendation: () => (clientOptions) => {
-                return clientRecommendation.createRecommendationClient({
-                    ...commonOptions,
-                    ...clientOptions,
-                    methods: {
-                        getPersonalizationStrategy: clientRecommendation.getPersonalizationStrategy,
-                        setPersonalizationStrategy: clientRecommendation.setPersonalizationStrategy,
-                    },
-                });
+                searchClientOptions.logger.info('The `initRecommendation` method is deprecated. Use `initPersonalization` instead.');
+                return initPersonalization()(clientOptions);
             },
         },
     });

@@ -4,8 +4,7 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
-import escapeHits, { TAG_PLACEHOLDER } from '../../lib/escape-highlight';
-import { checkRendering, createDocumentationMessageGenerator, createSendEventForHits, noop, warning } from '../../lib/utils';
+import { escapeHits, TAG_PLACEHOLDER, checkRendering, createDocumentationMessageGenerator, createSendEventForHits, noop, warning } from '../../lib/utils';
 var withUsage = createDocumentationMessageGenerator({
   name: 'autocomplete',
   connector: true
@@ -28,7 +27,7 @@ var connectAutocomplete = function connectAutocomplete(renderFn) {
       $$type: 'ais.autocomplete',
       init: function init(initOptions) {
         var instantSearchInstance = initOptions.instantSearchInstance;
-        renderFn(_objectSpread({}, this.getWidgetRenderState(initOptions), {
+        renderFn(_objectSpread(_objectSpread({}, this.getWidgetRenderState(initOptions)), {}, {
           instantSearchInstance: instantSearchInstance
         }), true);
       },
@@ -40,12 +39,12 @@ var connectAutocomplete = function connectAutocomplete(renderFn) {
               hits = _ref3.hits;
           sendEvent('view', hits);
         });
-        renderFn(_objectSpread({}, renderState, {
+        renderFn(_objectSpread(_objectSpread({}, renderState), {}, {
           instantSearchInstance: instantSearchInstance
         }), false);
       },
       getRenderState: function getRenderState(renderState, renderOptions) {
-        return _objectSpread({}, renderState, {
+        return _objectSpread(_objectSpread({}, renderState), {}, {
           autocomplete: this.getWidgetRenderState(renderOptions)
         });
       },
@@ -94,7 +93,7 @@ var connectAutocomplete = function connectAutocomplete(renderFn) {
           return uiState;
         }
 
-        return _objectSpread({}, uiState, {
+        return _objectSpread(_objectSpread({}, uiState), {}, {
           query: query
         });
       },
@@ -108,7 +107,7 @@ var connectAutocomplete = function connectAutocomplete(renderFn) {
           return searchParameters.setQueryParameters(parameters);
         }
 
-        return searchParameters.setQueryParameters(_objectSpread({}, parameters, {}, TAG_PLACEHOLDER));
+        return searchParameters.setQueryParameters(_objectSpread(_objectSpread({}, parameters), TAG_PLACEHOLDER));
       },
       dispose: function dispose(_ref7) {
         var state = _ref7.state;
@@ -120,7 +119,7 @@ var connectAutocomplete = function connectAutocomplete(renderFn) {
         }
 
         return stateWithoutQuery.setQueryParameters(Object.keys(TAG_PLACEHOLDER).reduce(function (acc, key) {
-          return _objectSpread({}, acc, _defineProperty({}, key, undefined));
+          return _objectSpread(_objectSpread({}, acc), {}, _defineProperty({}, key, undefined));
         }, {}));
       }
     };

@@ -1,24 +1,34 @@
+function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
+
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
 /** @jsx h */
 import { h, render } from 'preact';
 import cx from 'classnames';
 import Stats from '../../components/Stats/Stats';
 import connectStats from '../../connectors/stats/connectStats';
-import defaultTemplates from './defaultTemplates';
 import { prepareTemplateProps, getContainerNode, createDocumentationMessageGenerator } from '../../lib/utils';
 import { component } from '../../lib/suit';
 var withUsage = createDocumentationMessageGenerator({
   name: 'stats'
 });
 var suit = component('Stats');
+export var defaultTemplates = {
+  text: "\n    {{#areHitsSorted}}\n      {{#hasNoSortedResults}}No relevant results{{/hasNoSortedResults}}\n      {{#hasOneSortedResults}}1 relevant result{{/hasOneSortedResults}}\n      {{#hasManySortedResults}}{{#helpers.formatNumber}}{{nbSortedHits}}{{/helpers.formatNumber}} relevant results{{/hasManySortedResults}}\n      sorted out of {{#helpers.formatNumber}}{{nbHits}}{{/helpers.formatNumber}}\n    {{/areHitsSorted}}\n    {{^areHitsSorted}}\n      {{#hasNoResults}}No results{{/hasNoResults}}\n      {{#hasOneResult}}1 result{{/hasOneResult}}\n      {{#hasManyResults}}{{#helpers.formatNumber}}{{nbHits}}{{/helpers.formatNumber}} results{{/hasManyResults}}\n    {{/areHitsSorted}}\n    found in {{processingTimeMS}}ms"
+};
 
 var renderer = function renderer(_ref) {
-  var containerNode = _ref.containerNode,
+  var renderState = _ref.renderState,
       cssClasses = _ref.cssClasses,
-      renderState = _ref.renderState,
+      containerNode = _ref.containerNode,
       templates = _ref.templates;
   return function (_ref2, isFirstRendering) {
     var hitsPerPage = _ref2.hitsPerPage,
         nbHits = _ref2.nbHits,
+        nbSortedHits = _ref2.nbSortedHits,
+        areHitsSorted = _ref2.areHitsSorted,
         nbPages = _ref2.nbPages,
         page = _ref2.page,
         processingTimeMS = _ref2.processingTimeMS,
@@ -38,6 +48,8 @@ var renderer = function renderer(_ref) {
       cssClasses: cssClasses,
       hitsPerPage: hitsPerPage,
       nbHits: nbHits,
+      nbSortedHits: nbSortedHits,
+      areHitsSorted: areHitsSorted,
       nbPages: nbPages,
       page: page,
       processingTimeMS: processingTimeMS,
@@ -47,58 +59,15 @@ var renderer = function renderer(_ref) {
   };
 };
 /**
- * @typedef {Object} StatsWidgetTemplates
- * @property {string|function} [text] Text template, provided with `hasManyResults`,
- * `hasNoResults`, `hasOneResult`, `hitsPerPage`, `nbHits`, `nbPages`, `page`, `processingTimeMS`, `query`.
- */
-
-/**
- * @typedef {Object} StatsWidgetCssClasses
- * @property {string|string[]} [root] CSS class to add to the root element.
- * @property {string|string[]} [text] CSS class to add to the text span element.
- */
-
-/**
- * @typedef {Object} StatsTextData
- * @property {boolean} hasManyResults True if the result set has more than one result.
- * @property {boolean} hasNoResults True if the result set has no result.
- * @property {boolean} hasOneResult True if the result set has exactly one result.
- * @property {number} hitsPerPage Number of hits per page.
- * @property {number} nbHits Number of hit in the result set.
- * @property {number} nbPages Number of pages in the result set with regard to the hitsPerPage and number of hits.
- * @property {number} page Number of the current page. First page is 0.
- * @property {number} processingTimeMS Time taken to compute the results inside the engine.
- * @property {string} query Text query currently used.
- */
-
-/**
- * @typedef {Object} StatsWidgetOptions
- * @property {string|HTMLElement} container Place where to insert the widget in your webpage.
- * @property {StatsWidgetTemplates} [templates] Templates to use for the widget.
- * @property {StatsWidgetCssClasses} [cssClasses] CSS classes to add.
- */
-
-/**
  * The `stats` widget is used to display useful insights about the current results.
  *
  * By default, it will display the **number of hits** and the time taken to compute the
  * results inside the engine.
- * @type {WidgetFactory}
- * @devNovel Stats
- * @category metadata
- * @param {StatsWidgetOptions} $0 Stats widget options. Some keys are mandatory: `container`,
- * @return {Widget} A new stats widget instance
- * @example
- * search.addWidgets([
- *   instantsearch.widgets.stats({
- *     container: '#stats-container'
- *   })
- * ]);
  */
 
 
-export default function stats() {
-  var _ref3 = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
+var stats = function stats(widgetParams) {
+  var _ref3 = widgetParams || {},
       container = _ref3.container,
       _ref3$cssClasses = _ref3.cssClasses,
       userCssClasses = _ref3$cssClasses === void 0 ? {} : _ref3$cssClasses,
@@ -119,11 +88,15 @@ export default function stats() {
   var specializedRenderer = renderer({
     containerNode: containerNode,
     cssClasses: cssClasses,
-    renderState: {},
-    templates: templates
+    templates: templates,
+    renderState: {}
   });
   var makeWidget = connectStats(specializedRenderer, function () {
     return render(null, containerNode);
   });
-  return makeWidget();
-}
+  return _objectSpread(_objectSpread({}, makeWidget({})), {}, {
+    $$widgetType: 'ais.stats'
+  });
+};
+
+export default stats;

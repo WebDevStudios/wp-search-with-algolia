@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.default = sortBy;
+exports.default = void 0;
 
 var _preact = require("preact");
 
@@ -19,7 +19,12 @@ var _suit = require("../../lib/suit");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-/** @jsx h */
+function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
+
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
 var withUsage = (0, _utils.createDocumentationMessageGenerator)({
   name: 'sort-by'
 });
@@ -48,52 +53,13 @@ var renderer = function renderer(_ref) {
   };
 };
 /**
- * @typedef {Object} SortByWidgetCssClasses
- * @property {string|string[]} [root] CSS classes added to the outer `<div>`.
- * @property {string|string[]} [select] CSS classes added to the parent `<select>`.
- * @property {string|string[]} [option] CSS classes added to each `<option>`.
- */
-
-/**
- * @typedef {Object} SortByIndexDefinition
- * @property {string} value The name of the index to target.
- * @property {string} label The label of the index to display.
- */
-
-/**
- * @typedef {Object} SortByWidgetOptions
- * @property {string|HTMLElement} container CSS Selector or HTMLElement to insert the widget.
- * @property {SortByIndexDefinition[]} items Array of objects defining the different indices to choose from.
- * @property {SortByWidgetCssClasses} [cssClasses] CSS classes to be added.
- * @property {function(object[]):object[]} [transformItems] Function to transform the items passed to the templates.
- */
-
-/**
  * Sort by selector is a widget used for letting the user choose between different
  * indices that contains the same data with a different order / ranking formula.
- *
- * For the users it is like they are selecting a new sort order.
- * @type {WidgetFactory}
- * @devNovel SortBy
- * @category sort
- * @param {SortByWidgetOptions} $0 Options for the SortBy widget
- * @return {Widget} Creates a new instance of the SortBy widget.
- * @example
- * search.addWidgets([
- *   instantsearch.widgets.sortBy({
- *     container: '#sort-by-container',
- *     items: [
- *       {value: 'instant_search', label: 'Most relevant'},
- *       {value: 'instant_search_price_asc', label: 'Lowest price'},
- *       {value: 'instant_search_price_desc', label: 'Highest price'}
- *     ]
- *   })
- * ]);
  */
 
 
-function sortBy() {
-  var _ref3 = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
+var sortBy = function sortBy(widgetParams) {
+  var _ref3 = widgetParams || {},
       container = _ref3.container,
       items = _ref3.items,
       _ref3$cssClasses = _ref3.cssClasses,
@@ -121,8 +87,14 @@ function sortBy() {
   var makeWidget = (0, _connectSortBy.default)(specializedRenderer, function () {
     return (0, _preact.render)(null, containerNode);
   });
-  return makeWidget({
+  return _objectSpread(_objectSpread({}, makeWidget({
+    container: containerNode,
     items: items,
     transformItems: transformItems
+  })), {}, {
+    $$widgetType: 'ais.sortBy'
   });
-}
+};
+
+var _default = sortBy;
+exports.default = _default;

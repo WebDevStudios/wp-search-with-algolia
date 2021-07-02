@@ -38,6 +38,10 @@ var _exportNames = {
   toArray: true,
   warning: true,
   deprecate: true,
+  escapeHits: true,
+  TAG_PLACEHOLDER: true,
+  TAG_REPLACEMENT: true,
+  escapeFacets: true,
   createDocumentationLink: true,
   createDocumentationMessageGenerator: true,
   aroundLatLngToPosition: true,
@@ -46,7 +50,12 @@ var _exportNames = {
   addQueryID: true,
   isFacetRefined: true,
   getAppIdAndApiKey: true,
-  convertNumericRefinementsToFilters: true
+  convertNumericRefinementsToFilters: true,
+  createConcurrentSafePromise: true,
+  debounce: true,
+  serializePayload: true,
+  deserializePayload: true,
+  getWidgetAttribute: true
 };
 Object.defineProperty(exports, "capitalize", {
   enumerable: true,
@@ -252,6 +261,30 @@ Object.defineProperty(exports, "deprecate", {
     return _logger.deprecate;
   }
 });
+Object.defineProperty(exports, "escapeHits", {
+  enumerable: true,
+  get: function get() {
+    return _escapeHighlight.escapeHits;
+  }
+});
+Object.defineProperty(exports, "TAG_PLACEHOLDER", {
+  enumerable: true,
+  get: function get() {
+    return _escapeHighlight.TAG_PLACEHOLDER;
+  }
+});
+Object.defineProperty(exports, "TAG_REPLACEMENT", {
+  enumerable: true,
+  get: function get() {
+    return _escapeHighlight.TAG_REPLACEMENT;
+  }
+});
+Object.defineProperty(exports, "escapeFacets", {
+  enumerable: true,
+  get: function get() {
+    return _escapeHighlight.escapeFacets;
+  }
+});
 Object.defineProperty(exports, "createDocumentationLink", {
   enumerable: true,
   get: function get() {
@@ -304,6 +337,36 @@ Object.defineProperty(exports, "convertNumericRefinementsToFilters", {
   enumerable: true,
   get: function get() {
     return _convertNumericRefinementsToFilters.convertNumericRefinementsToFilters;
+  }
+});
+Object.defineProperty(exports, "createConcurrentSafePromise", {
+  enumerable: true,
+  get: function get() {
+    return _createConcurrentSafePromise.createConcurrentSafePromise;
+  }
+});
+Object.defineProperty(exports, "debounce", {
+  enumerable: true,
+  get: function get() {
+    return _debounce.debounce;
+  }
+});
+Object.defineProperty(exports, "serializePayload", {
+  enumerable: true,
+  get: function get() {
+    return _serializer.serializePayload;
+  }
+});
+Object.defineProperty(exports, "deserializePayload", {
+  enumerable: true,
+  get: function get() {
+    return _serializer.deserializePayload;
+  }
+});
+Object.defineProperty(exports, "getWidgetAttribute", {
+  enumerable: true,
+  get: function get() {
+    return _getWidgetAttribute.getWidgetAttribute;
   }
 });
 
@@ -373,6 +436,8 @@ var _toArray = _interopRequireDefault(require("./toArray"));
 
 var _logger = require("./logger");
 
+var _escapeHighlight = require("./escape-highlight");
+
 var _documentation = require("./documentation");
 
 var _geoSearch = require("./geo-search");
@@ -388,6 +453,7 @@ var _createSendEventForFacet = require("./createSendEventForFacet");
 Object.keys(_createSendEventForFacet).forEach(function (key) {
   if (key === "default" || key === "__esModule") return;
   if (Object.prototype.hasOwnProperty.call(_exportNames, key)) return;
+  if (key in exports && exports[key] === _createSendEventForFacet[key]) return;
   Object.defineProperty(exports, key, {
     enumerable: true,
     get: function get() {
@@ -401,6 +467,7 @@ var _createSendEventForHits = require("./createSendEventForHits");
 Object.keys(_createSendEventForHits).forEach(function (key) {
   if (key === "default" || key === "__esModule") return;
   if (Object.prototype.hasOwnProperty.call(_exportNames, key)) return;
+  if (key in exports && exports[key] === _createSendEventForHits[key]) return;
   Object.defineProperty(exports, key, {
     enumerable: true,
     get: function get() {
@@ -412,5 +479,13 @@ Object.keys(_createSendEventForHits).forEach(function (key) {
 var _getAppIdAndApiKey = require("./getAppIdAndApiKey");
 
 var _convertNumericRefinementsToFilters = require("./convertNumericRefinementsToFilters");
+
+var _createConcurrentSafePromise = require("./createConcurrentSafePromise");
+
+var _debounce = require("./debounce");
+
+var _serializer = require("./serializer");
+
+var _getWidgetAttribute = require("./getWidgetAttribute");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }

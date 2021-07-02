@@ -36,18 +36,18 @@ var connectVoiceSearch = function connectVoiceSearch(renderFn) {
       $$type: 'ais.voiceSearch',
       init: function init(initOptions) {
         var instantSearchInstance = initOptions.instantSearchInstance;
-        renderFn(_objectSpread({}, this.getWidgetRenderState(initOptions), {
+        renderFn(_objectSpread(_objectSpread({}, this.getWidgetRenderState(initOptions)), {}, {
           instantSearchInstance: instantSearchInstance
         }), true);
       },
       render: function render(renderOptions) {
         var instantSearchInstance = renderOptions.instantSearchInstance;
-        renderFn(_objectSpread({}, this.getWidgetRenderState(renderOptions), {
+        renderFn(_objectSpread(_objectSpread({}, this.getWidgetRenderState(renderOptions)), {}, {
           instantSearchInstance: instantSearchInstance
         }), false);
       },
       getRenderState: function getRenderState(renderState, renderOptions) {
-        return _objectSpread({}, renderState, {
+        return _objectSpread(_objectSpread({}, renderState), {}, {
           voiceSearch: this.getWidgetRenderState(renderOptions)
         });
       },
@@ -87,7 +87,7 @@ var connectVoiceSearch = function connectVoiceSearch(renderFn) {
               return _this._refine(query);
             },
             onStateChange: function onStateChange() {
-              renderFn(_objectSpread({}, _this.getWidgetRenderState(renderOptions), {
+              renderFn(_objectSpread(_objectSpread({}, _this.getWidgetRenderState(renderOptions)), {}, {
                 instantSearchInstance: instantSearchInstance
               }), false);
             }
@@ -153,7 +153,7 @@ var connectVoiceSearch = function connectVoiceSearch(renderFn) {
           return uiState;
         }
 
-        return _objectSpread({}, uiState, {
+        return _objectSpread(_objectSpread({}, uiState), {}, {
           query: query
         });
       },

@@ -10,14 +10,14 @@ export default function reverseHighlightedParts(parts) {
     return part.isHighlighted;
   })) {
     return parts.map(function (part) {
-      return _objectSpread({}, part, {
+      return _objectSpread(_objectSpread({}, part), {}, {
         isHighlighted: false
       });
     });
   }
 
   return parts.map(function (part, i) {
-    return _objectSpread({}, part, {
+    return _objectSpread(_objectSpread({}, part), {}, {
       isHighlighted: !getHighlightFromSiblings(parts, i)
     });
   });

@@ -1,7 +1,3 @@
-function _objectWithoutProperties(source, excluded) { if (source == null) return {}; var target = _objectWithoutPropertiesLoose(source, excluded); var key, i; if (Object.getOwnPropertySymbols) { var sourceSymbolKeys = Object.getOwnPropertySymbols(source); for (i = 0; i < sourceSymbolKeys.length; i++) { key = sourceSymbolKeys[i]; if (excluded.indexOf(key) >= 0) continue; if (!Object.prototype.propertyIsEnumerable.call(source, key)) continue; target[key] = source[key]; } } return target; }
-
-function _objectWithoutPropertiesLoose(source, excluded) { if (source == null) return {}; var target = {}; var sourceKeys = Object.keys(source); var key, i; for (i = 0; i < sourceKeys.length; i++) { key = sourceKeys[i]; if (excluded.indexOf(key) >= 0) continue; target[key] = source[key]; } return target; }
-
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
 function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
@@ -13,42 +9,25 @@ import { h, render } from 'preact';
 import cx from 'classnames';
 import RefinementList from '../../components/RefinementList/RefinementList';
 import connectRefinementList from '../../connectors/refinement-list/connectRefinementList';
-import defaultTemplates from './defaultTemplates';
 import { prepareTemplateProps, getContainerNode, createDocumentationMessageGenerator } from '../../lib/utils';
 import { component } from '../../lib/suit';
+import searchBoxDefaultTemplates from '../search-box/defaultTemplates';
 var withUsage = createDocumentationMessageGenerator({
   name: 'refinement-list'
 });
 var suit = component('RefinementList');
 var searchBoxSuit = component('SearchBox');
-/**
- * Transforms the searchable templates by removing the `searchable` prefix.
- *
- * This makes them usable in the `SearchBox` component.
- *
- * @param {object} templates The widget templates
- * @returns {object} the formatted templates
- */
-
-function transformTemplates(templates) {
-  var allTemplates = _objectSpread({}, templates, {
-    submit: templates.searchableSubmit,
-    reset: templates.searchableReset,
-    loadingIndicator: templates.searchableLoadingIndicator
-  });
-
-  var searchableReset = allTemplates.searchableReset,
-      searchableSubmit = allTemplates.searchableSubmit,
-      searchableLoadingIndicator = allTemplates.searchableLoadingIndicator,
-      transformedTemplates = _objectWithoutProperties(allTemplates, ["searchableReset", "searchableSubmit", "searchableLoadingIndicator"]);
-
-  return transformedTemplates;
-}
+export var defaultTemplates = {
+  item: "<label class=\"{{cssClasses.label}}\">\n  <input type=\"checkbox\"\n         class=\"{{cssClasses.checkbox}}\"\n         value=\"{{value}}\"\n         {{#isRefined}}checked{{/isRefined}} />\n  <span class=\"{{cssClasses.labelText}}\">{{#isFromSearch}}{{{highlighted}}}{{/isFromSearch}}{{^isFromSearch}}{{highlighted}}{{/isFromSearch}}</span>\n  <span class=\"{{cssClasses.count}}\">{{#helpers.formatNumber}}{{count}}{{/helpers.formatNumber}}</span>\n</label>",
+  showMoreText: "\n    {{#isShowingMore}}\n      Show less\n    {{/isShowingMore}}\n    {{^isShowingMore}}\n      Show more\n    {{/isShowingMore}}\n    ",
+  searchableNoResults: 'No results'
+};
 
 var renderer = function renderer(_ref) {
   var containerNode = _ref.containerNode,
       cssClasses = _ref.cssClasses,
       templates = _ref.templates,
+      searchBoxTemplates = _ref.searchBoxTemplates,
       renderState = _ref.renderState,
       showMore = _ref.showMore,
       searchable = _ref.searchable,
@@ -68,8 +47,14 @@ var renderer = function renderer(_ref) {
 
     if (isFirstRendering) {
       renderState.templateProps = prepareTemplateProps({
+        defaultTemplates: defaultTemplates,
         templatesConfig: instantSearchInstance.templatesConfig,
         templates: templates
+      });
+      renderState.searchBoxTemplateProps = prepareTemplateProps({
+        defaultTemplates: searchBoxDefaultTemplates,
+        templatesConfig: instantSearchInstance.templatesConfig,
+        templates: searchBoxTemplates
       });
       return;
     }
@@ -79,6 +64,7 @@ var renderer = function renderer(_ref) {
       cssClasses: cssClasses,
       facetValues: items,
       templateProps: renderState.templateProps,
+      searchBoxTemplateProps: renderState.searchBoxTemplateProps,
       toggleRefinement: refine,
       searchFacetValues: searchable ? searchForItems : undefined,
       searchPlaceholder: searchablePlaceholder,
@@ -92,61 +78,6 @@ var renderer = function renderer(_ref) {
     }), containerNode);
   };
 };
-/**
- * @typedef {Object} RefinementListTemplates
- * @property  {string|function(RefinementListItemData):string} [item] Item template, provided with `label`, `highlighted`, `value`, `count`, `isRefined`, `url` data properties.
- * @property {string|function} [searchableNoResults] Templates to use for search for facet values.
- * @property {string|function} [showMoreText] Template used for the show more text, provided with `isShowingMore` data property.
- */
-
-/**
- * @typedef {Object} RefinementListItemData
- * @property {number} count The number of occurrences of the facet in the result set.
- * @property {boolean} isRefined True if the value is selected.
- * @property {string} label The label to display.
- * @property {string} value The value used for refining.
- * @property {string} highlighted The label highlighted (when using search for facet values). This value is displayed in the default template.
- * @property {string} url The url with this refinement selected.
- * @property {object} cssClasses Object containing all the classes computed for the item.
- */
-
-/**
- * @typedef {Object} RefinementListCSSClasses
- * @property {string|string[]} [root] CSS class to add to the root element.
- * @property {string|string[]} [noRefinementRoot] CSS class to add to the root element when no refinements.
- * @property {string|string[]} [noResults] CSS class to add to the root element with no results.
- * @property {string|string[]} [list] CSS class to add to the list element.
- * @property {string|string[]} [item] CSS class to add to each item element.
- * @property {string|string[]} [selectedItem] CSS class to add to each selected element.
- * @property {string|string[]} [label] CSS class to add to each label element (when using the default template).
- * @property {string|string[]} [checkbox] CSS class to add to each checkbox element (when using the default template).
- * @property {string|string[]} [labelText] CSS class to add to each label text element.
- * @property {string|string[]} [showMore] CSS class to add to the show more element
- * @property {string|string[]} [disabledShowMore] CSS class to add to the disabledshow more element
- * @property {string|string[]} [count] CSS class to add to each count element (when using the default template).
- */
-
-/**
- * @typedef {Object} RefinementListWidgetOptions
- * @property {string|HTMLElement} container CSS Selector or HTMLElement to insert the widget.
- * @property {string} attribute Name of the attribute for faceting.
- * @property {"and"|"or"} [operator="or"] How to apply refinements. Possible values: `or`, `and`
- * @property {string[]|function} [sortBy=["isRefined", "count:desc", "name:asc"]] How to sort refinements. Possible values: `count:asc` `count:desc` `name:asc` `name:desc` `isRefined`.
- *
- * You can also use a sort function that behaves like the standard Javascript [compareFunction](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/sort#Syntax).
- * @property {function(object[]):object[]} [transformItems] Function to transform the items passed to the templates.
- * @property {boolean} [searchable=false] Add a search input to let the user search for more facet values. In order to make this feature work, you need to make the attribute searchable [using the API](https://www.algolia.com/doc/guides/searching/faceting/?language=js#declaring-a-searchable-attribute-for-faceting) or [the dashboard](https://www.algolia.com/explorer/display/).
- * @property {number} [limit = 10] The minimum number of facet values to retrieve.
- * @property {boolean} [showMore = false] Whether to display a button that expands the number of items.
- * @property {number} [showMoreLimit = 20] The max number of items to display if the widget
- * @property {string} [searchablePlaceholder] Value of the search field placeholder.
- * @property {boolean} [searchableIsAlwaysActive=true] When `false` the search field will become disabled if
- * there are less items to display than the `options.limit`, otherwise the search field is always usable.
- * @property {boolean} [searchableEscapeFacetValues=true] When activated, it will escape the facet values that are returned
- * from Algolia. In this case, the surrounding tags will always be `<mark></mark>`.
- * @property {RefinementListTemplates} [templates] Templates to use for the widget.
- * @property {RefinementListCSSClasses} [cssClasses] CSS classes to add to the wrapping elements.
- */
 
 /**
  * The refinement list widget is one of the most common widget that you can find
@@ -166,26 +97,9 @@ var renderer = function renderer(_ref) {
  * in your Algolia settings.
  *
  * If you also want to use search for facet values on this attribute, you need to make it searchable using the [dashboard](https://www.algolia.com/explorer/display/) or using the [API](https://www.algolia.com/doc/guides/searching/faceting/#search-for-facet-values).
- *
- * @type {WidgetFactory}
- * @devNovel RefinementList
- * @category filter
- * @param {RefinementListWidgetOptions} $0 The RefinementList widget options that you use to customize the widget.
- * @return {Widget} Creates a new instance of the RefinementList widget.
- * @example
- * search.addWidgets([
- *   instantsearch.widgets.refinementList({
- *     container: '#brands',
- *     attribute: 'brand',
- *     operator: 'or',
- *     limit: 10,
- *   })
- * ]);
  */
-
-
-export default function refinementList() {
-  var _ref3 = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
+var refinementList = function refinementList(widgetParams) {
+  var _ref3 = widgetParams || {},
       container = _ref3.container,
       attribute = _ref3.attribute,
       operator = _ref3.operator,
@@ -213,7 +127,6 @@ export default function refinementList() {
 
   var escapeFacetValues = searchable ? Boolean(searchableEscapeFacetValues) : false;
   var containerNode = getContainerNode(container);
-  var templates = transformTemplates(_objectSpread({}, defaultTemplates, {}, userTemplates));
   var cssClasses = {
     root: cx(suit(), userCssClasses.root),
     noRefinementRoot: cx(suit({
@@ -285,7 +198,12 @@ export default function refinementList() {
   var specializedRenderer = renderer({
     containerNode: containerNode,
     cssClasses: cssClasses,
-    templates: templates,
+    templates: userTemplates,
+    searchBoxTemplates: {
+      submit: userTemplates.searchableSubmit,
+      reset: userTemplates.searchableReset,
+      loadingIndicator: userTemplates.searchableLoadingIndicator
+    },
     renderState: {},
     searchable: searchable,
     searchablePlaceholder: searchablePlaceholder,
@@ -295,7 +213,7 @@ export default function refinementList() {
   var makeWidget = connectRefinementList(specializedRenderer, function () {
     return render(null, containerNode);
   });
-  return makeWidget({
+  return _objectSpread(_objectSpread({}, makeWidget({
     attribute: attribute,
     operator: operator,
     limit: limit,
@@ -304,5 +222,9 @@ export default function refinementList() {
     sortBy: sortBy,
     escapeFacetValues: escapeFacetValues,
     transformItems: transformItems
+  })), {}, {
+    $$widgetType: 'ais.refinementList'
   });
-}
+};
+
+export default refinementList;

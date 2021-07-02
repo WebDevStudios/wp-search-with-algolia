@@ -98,7 +98,7 @@ var wrapInsightsClient = function wrapInsightsClient(aa, results, hits) {
       hits: hits,
       objectIDs: payload.objectIDs
     });
-    aa(method, _objectSpread({}, inferredPayload, {}, payload));
+    aa(method, _objectSpread(_objectSpread({}, inferredPayload), payload));
   };
 };
 /**
@@ -108,24 +108,20 @@ var wrapInsightsClient = function wrapInsightsClient(aa, results, hits) {
 
 
 export default function withInsights(connector) {
-  var wrapRenderFn = function wrapRenderFn(renderFn) {
-    return function (renderOptions, isFirstRender) {
+  return function (renderFn, unmountFn) {
+    return connector(function (renderOptions, isFirstRender) {
       var results = renderOptions.results,
           hits = renderOptions.hits,
           instantSearchInstance = renderOptions.instantSearchInstance;
 
       if (results && hits && instantSearchInstance) {
         var insights = wrapInsightsClient(instantSearchInstance.insightsClient, results, hits);
-        return renderFn(_objectSpread({}, renderOptions, {
+        return renderFn(_objectSpread(_objectSpread({}, renderOptions), {}, {
           insights: insights
         }), isFirstRender);
       }
 
       return renderFn(renderOptions, isFirstRender);
-    };
-  };
-
-  return function (renderFn, unmountFn) {
-    return connector(wrapRenderFn(renderFn), unmountFn);
+    }, unmountFn);
   };
 }

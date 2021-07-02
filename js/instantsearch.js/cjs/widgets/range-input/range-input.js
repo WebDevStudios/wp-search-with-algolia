@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.default = rangeInput;
+exports.default = void 0;
 
 var _preact = require("preact");
 
@@ -25,11 +25,15 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
-function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _nonIterableRest(); }
+function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest(); }
 
-function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance"); }
+function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
 
-function _iterableToArrayLimit(arr, i) { if (!(Symbol.iterator in Object(arr) || Object.prototype.toString.call(arr) === "[object Arguments]")) { return; } var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"] != null) _i["return"](); } finally { if (_d) throw _e; } } return _arr; }
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
+
+function _iterableToArrayLimit(arr, i) { if (typeof Symbol === "undefined" || !(Symbol.iterator in Object(arr))) return; var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"] != null) _i["return"](); } finally { if (_d) throw _e; } } return _arr; }
 
 function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 
@@ -37,6 +41,10 @@ var withUsage = (0, _utils.createDocumentationMessageGenerator)({
   name: 'range-input'
 });
 var suit = (0, _suit.component)('RangeInput');
+var defaultTemplates = {
+  separatorText: 'to',
+  submitText: 'Go'
+};
 
 var renderer = function renderer(_ref) {
   var containerNode = _ref.containerNode,
@@ -52,6 +60,7 @@ var renderer = function renderer(_ref) {
 
     if (isFirstRendering) {
       renderState.templateProps = (0, _utils.prepareTemplateProps)({
+        defaultTemplates: defaultTemplates,
         templatesConfig: instantSearchInstance.templatesConfig,
         templates: templates
       });
@@ -65,7 +74,7 @@ var renderer = function renderer(_ref) {
         minValue = _start[0],
         maxValue = _start[1];
 
-    var step = 1 / Math.pow(10, widgetParams.precision);
+    var step = 1 / Math.pow(10, widgetParams.precision || 0);
     var values = {
       min: minValue !== -Infinity && minValue !== rangeMin ? minValue : undefined,
       max: maxValue !== Infinity && maxValue !== rangeMax ? maxValue : undefined
@@ -81,66 +90,9 @@ var renderer = function renderer(_ref) {
     }), containerNode);
   };
 };
-/**
- * @typedef {Object} RangeInputClasses
- * @property {string|string[]} [root] CSS class to add to the root element.
- * @property {string|string[]} [noRefinement] CSS class to add to the root element when there's no refinements.
- * @property {string|string[]} [form] CSS class to add to the form element.
- * @property {string|string[]} [label] CSS class to add to the label element.
- * @property {string|string[]} [input] CSS class to add to the input element.
- * @property {string|string[]} [inputMin] CSS class to add to the min input element.
- * @property {string|string[]} [inputMax] CSS class to add to the max input element.
- * @property {string|string[]} [separator] CSS class to add to the separator of the form.
- * @property {string|string[]} [submit] CSS class to add to the submit button of the form.
- */
 
-/**
- * @typedef {Object} RangeInputTemplates
- * @property {string} [separatorText = "to"] The label of the separator, between min and max.
- * @property {string} [submitText = "Go"] The label of the submit button.
- */
-
-/**
- * @typedef {Object} RangeInputWidgetOptions
- * @property {string|HTMLElement} container Valid CSS Selector as a string or DOMElement.
- * @property {string} attribute Name of the attribute for faceting.
- * @property {number} [min] Minimal slider value, default to automatically computed from the result set.
- * @property {number} [max] Maximal slider value, defaults to automatically computed from the result set.
- * @property {number} [precision = 0] Number of digits after decimal point to use.
- * @property {RangeInputTemplates} [templates] Labels to use for the widget.
- * @property {RangeInputClasses} [cssClasses] CSS classes to add.
- */
-
-/**
- * The range input widget allows a user to select a numeric range using a minimum and maximum input.
- *
- * @requirements
- * The attribute passed to `attribute` must be declared as an
- * [attribute for faceting](https://www.algolia.com/doc/guides/searching/faceting/#declaring-attributes-for-faceting)
- * in your Algolia settings.
- *
- * The values inside this attribute must be JavaScript numbers (not strings).
- * @type {WidgetFactory}
- * @devNovel RangeInput
- * @category filter
- * @param {RangeInputWidgetOptions} $0 The RangeInput widget options.
- * @return {Widget} A new instance of RangeInput widget.
- * @example
- * search.addWidgets([
- *   instantsearch.widgets.rangeInput({
- *     container: '#range-input',
- *     attribute: 'price',
- *     templates: {
- *       separatorText: 'to',
- *       submitText: 'Go'
- *     },
- *   })
- * ]);
- */
-
-
-function rangeInput() {
-  var _ref3 = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
+var rangeInput = function rangeInput(widgetParams) {
+  var _ref3 = widgetParams || {},
       container = _ref3.container,
       attribute = _ref3.attribute,
       min = _ref3.min,
@@ -158,10 +110,7 @@ function rangeInput() {
 
   var containerNode = (0, _utils.getContainerNode)(container);
 
-  var templates = _objectSpread({
-    separatorText: 'to',
-    submitText: 'Go'
-  }, userTemplates);
+  var templates = _objectSpread(_objectSpread({}, defaultTemplates), userTemplates);
 
   var cssClasses = {
     root: (0, _classnames.default)(suit(), userCssClasses.root),
@@ -201,12 +150,16 @@ function rangeInput() {
   var makeWidget = (0, _connectRange.default)(specializedRenderer, function () {
     return (0, _preact.render)(null, containerNode);
   });
-  return _objectSpread({}, makeWidget({
+  return _objectSpread(_objectSpread({}, makeWidget({
     attribute: attribute,
     min: min,
     max: max,
     precision: precision
-  }), {
-    $$type: 'ais.rangeInput'
+  })), {}, {
+    $$type: 'ais.rangeInput',
+    $$widgetType: 'ais.rangeInput'
   });
-}
+};
+
+var _default = rangeInput;
+exports.default = _default;

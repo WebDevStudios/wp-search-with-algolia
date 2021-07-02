@@ -5,7 +5,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = concatHighlightedParts;
 
-var _escapeHighlight = require("../escape-highlight");
+var _escapeHighlight = require("./escape-highlight");
 
 function concatHighlightedParts(parts) {
   var highlightPreTag = _escapeHighlight.TAG_REPLACEMENT.highlightPreTag,

@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.default = connectMenu;
+exports.default = void 0;
 
 var _utils = require("../../lib/utils");
 
@@ -11,11 +11,15 @@ function _objectWithoutProperties(source, excluded) { if (source == null) return
 
 function _objectWithoutPropertiesLoose(source, excluded) { if (source == null) return {}; var target = {}; var sourceKeys = Object.keys(source); var key, i; for (i = 0; i < sourceKeys.length; i++) { key = sourceKeys[i]; if (excluded.indexOf(key) >= 0) continue; target[key] = source[key]; } return target; }
 
-function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _nonIterableRest(); }
+function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest(); }
 
-function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance"); }
+function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
 
-function _iterableToArrayLimit(arr, i) { if (!(Symbol.iterator in Object(arr) || Object.prototype.toString.call(arr) === "[object Arguments]")) { return; } var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"] != null) _i["return"](); } finally { if (_d) throw _e; } } return _arr; }
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
+
+function _iterableToArrayLimit(arr, i) { if (typeof Symbol === "undefined" || !(Symbol.iterator in Object(arr))) return; var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"] != null) _i["return"](); } finally { if (_d) throw _e; } } return _arr; }
 
 function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 
@@ -29,38 +33,6 @@ var withUsage = (0, _utils.createDocumentationMessageGenerator)({
   name: 'menu',
   connector: true
 });
-/**
- * @typedef {Object} MenuItem
- * @property {string} value The value of the menu item.
- * @property {string} label Human-readable value of the menu item.
- * @property {number} count Number of results matched after refinement is applied.
- * @property {boolean} isRefined Indicates if the refinement is applied.
- */
-
-/**
- * @typedef {Object} CustomMenuWidgetOptions
- * @property {string} attribute Name of the attribute for faceting (eg. "free_shipping").
- * @property {number} [limit = 10] How many facets values to retrieve.
- * @property {boolean} [showMore = false] Whether to display a button that expands the number of items.
- * @property {number} [showMoreLimit = 20] How many facets values to retrieve when `toggleShowMore` is called, this value is meant to be greater than `limit` option.
- * @property {string[]|function} [sortBy = ['isRefined', 'name:asc']] How to sort refinements. Possible values: `count|isRefined|name:asc|name:desc`.
- *
- * You can also use a sort function that behaves like the standard Javascript [compareFunction](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/sort#Syntax).
- * @property {function(object[]):object[]} [transformItems] Function to transform the items passed to the templates.
- */
-
-/**
- * @typedef {Object} MenuRenderingOptions
- * @property {MenuItem[]} items The elements that can be refined for the current search results.
- * @property {function(item.value): string} createURL Creates the URL for a single item name in the list.
- * @property {function(item.value)} refine Filter the search to item value.
- * @property {boolean} canRefine True if refinement can be applied.
- * @property {Object} widgetParams All original `CustomMenuWidgetOptions` forwarded to the `renderFn`.
- * @property {boolean} isShowingMore True if the menu is displaying all the menu items.
- * @property {function} toggleShowMore Toggles the number of values displayed between `limit` and `showMore.limit`.
- * @property {boolean} canToggleShowMore `true` if the toggleShowMore button can be activated (enough items to display more or
- * already displaying more than `limit` items)
- */
 
 /**
  * **Menu** connector provides the logic to build a widget that will give the user the ability to choose a single value for a specific facet. The typical usage of menu is for navigation in categories.
@@ -70,66 +42,25 @@ var withUsage = (0, _utils.createDocumentationMessageGenerator)({
  * one that is currently selected.
  *
  * **Requirement:** the attribute passed as `attribute` must be present in "attributes for faceting" on the Algolia dashboard or configured as attributesForFaceting via a set settings call to the Algolia API.
- * @type {Connector}
- * @param {function(MenuRenderingOptions, boolean)} renderFn Rendering function for the custom **Menu** widget. widget.
- * @param {function} unmountFn Unmount function called when the widget is disposed.
- * @return {function(CustomMenuWidgetOptions)} Re-usable widget factory for a custom **Menu** widget.
- * @example
- * // custom `renderFn` to render the custom Menu widget
- * function renderFn(MenuRenderingOptions, isFirstRendering) {
- *   if (isFirstRendering) {
- *     MenuRenderingOptions.widgetParams.containerNode
- *       .html('<select></select');
- *
- *     MenuRenderingOptions.widgetParams.containerNode
- *       .find('select')
- *       .on('change', function(event) {
- *         MenuRenderingOptions.refine(event.target.value);
- *       });
- *   }
- *
- *   var options = MenuRenderingOptions.items.map(function(item) {
- *     return item.isRefined
- *       ? '<option value="' + item.value + '" selected>' + item.label + '</option>'
- *       : '<option value="' + item.value + '">' + item.label + '</option>';
- *   });
- *
- *   MenuRenderingOptions.widgetParams.containerNode
- *     .find('select')
- *     .html(options);
- * }
- *
- * // connect `renderFn` to Menu logic
- * var customMenu = instantsearch.connectors.connectMenu(renderFn);
- *
- * // mount widget on the page
- * search.addWidgets([
- *   customMenu({
- *     containerNode: $('#custom-menu-container'),
- *     attribute: 'categories',
- *     limit: 10,
- *   })
- * ]);
  */
-
-function connectMenu(renderFn) {
+var connectMenu = function connectMenu(renderFn) {
   var unmountFn = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : _utils.noop;
   (0, _utils.checkRendering)(renderFn, withUsage());
-  return function () {
-    var widgetParams = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-    var attribute = widgetParams.attribute,
-        _widgetParams$limit = widgetParams.limit,
-        limit = _widgetParams$limit === void 0 ? 10 : _widgetParams$limit,
-        _widgetParams$showMor = widgetParams.showMore,
-        showMore = _widgetParams$showMor === void 0 ? false : _widgetParams$showMor,
-        _widgetParams$showMor2 = widgetParams.showMoreLimit,
-        showMoreLimit = _widgetParams$showMor2 === void 0 ? 20 : _widgetParams$showMor2,
-        _widgetParams$sortBy = widgetParams.sortBy,
-        sortBy = _widgetParams$sortBy === void 0 ? ['isRefined', 'name:asc'] : _widgetParams$sortBy,
-        _widgetParams$transfo = widgetParams.transformItems,
-        transformItems = _widgetParams$transfo === void 0 ? function (items) {
+  return function (widgetParams) {
+    var _ref = widgetParams || {},
+        attribute = _ref.attribute,
+        _ref$limit = _ref.limit,
+        limit = _ref$limit === void 0 ? 10 : _ref$limit,
+        _ref$showMore = _ref.showMore,
+        showMore = _ref$showMore === void 0 ? false : _ref$showMore,
+        _ref$showMoreLimit = _ref.showMoreLimit,
+        showMoreLimit = _ref$showMoreLimit === void 0 ? 20 : _ref$showMoreLimit,
+        _ref$sortBy = _ref.sortBy,
+        sortBy = _ref$sortBy === void 0 ? ['isRefined', 'name:asc'] : _ref$sortBy,
+        _ref$transformItems = _ref.transformItems,
+        transformItems = _ref$transformItems === void 0 ? function (items) {
       return items;
-    } : _widgetParams$transfo;
+    } : _ref$transformItems;
 
     if (!attribute) {
       throw new Error(withUsage('The `attribute` option is required.'));
@@ -139,44 +70,44 @@ function connectMenu(renderFn) {
       throw new Error(withUsage('The `showMoreLimit` option must be greater than `limit`.'));
     }
 
-    var sendEvent; // Provide the same function to the `renderFn` so that way the user
+    var sendEvent;
+
+    var _createURL;
+
+    var _refine; // Provide the same function to the `renderFn` so that way the user
     // has to only bind it once when `isFirstRendering` for instance
 
+
+    var isShowingMore = false;
+
     var toggleShowMore = function toggleShowMore() {};
+
+    function createToggleShowMore(renderOptions, widget) {
+      return function () {
+        isShowingMore = !isShowingMore;
+        widget.render(renderOptions);
+      };
+    }
 
     function cachedToggleShowMore() {
       toggleShowMore();
     }
 
+    function getLimit() {
+      return isShowingMore ? showMoreLimit : limit;
+    }
+
     return {
       $$type: 'ais.menu',
-      isShowingMore: false,
-      createToggleShowMore: function createToggleShowMore(_ref) {
-        var _this = this;
-
-        var results = _ref.results,
-            instantSearchInstance = _ref.instantSearchInstance;
-        return function () {
-          _this.isShowingMore = !_this.isShowingMore;
-
-          _this.render({
-            results: results,
-            instantSearchInstance: instantSearchInstance
-          });
-        };
-      },
-      getLimit: function getLimit() {
-        return this.isShowingMore ? showMoreLimit : limit;
-      },
       init: function init(initOptions) {
         var instantSearchInstance = initOptions.instantSearchInstance;
-        renderFn(_objectSpread({}, this.getWidgetRenderState(initOptions), {
+        renderFn(_objectSpread(_objectSpread({}, this.getWidgetRenderState(initOptions)), {}, {
           instantSearchInstance: instantSearchInstance
         }), true);
       },
       render: function render(renderOptions) {
         var instantSearchInstance = renderOptions.instantSearchInstance;
-        renderFn(_objectSpread({}, this.getWidgetRenderState(renderOptions), {
+        renderFn(_objectSpread(_objectSpread({}, this.getWidgetRenderState(renderOptions)), {}, {
           instantSearchInstance: instantSearchInstance
         }), false);
       },
@@ -186,15 +117,15 @@ function connectMenu(renderFn) {
         return state.removeHierarchicalFacet(attribute).setQueryParameter('maxValuesPerFacet', undefined);
       },
       getRenderState: function getRenderState(renderState, renderOptions) {
-        return _objectSpread({}, renderState, {
-          menu: this.getWidgetRenderState(renderOptions)
+        return _objectSpread(_objectSpread({}, renderState), {}, {
+          menu: _objectSpread(_objectSpread({}, renderState.menu), {}, _defineProperty({}, attribute, this.getWidgetRenderState(renderOptions)))
         });
       },
-      getWidgetRenderState: function getWidgetRenderState(_ref3) {
-        var results = _ref3.results,
-            createURL = _ref3.createURL,
-            instantSearchInstance = _ref3.instantSearchInstance,
-            helper = _ref3.helper;
+      getWidgetRenderState: function getWidgetRenderState(renderOptions) {
+        var results = renderOptions.results,
+            createURL = renderOptions.createURL,
+            instantSearchInstance = renderOptions.instantSearchInstance,
+            helper = renderOptions.helper;
         var items = [];
         var canToggleShowMore = false;
 
@@ -207,40 +138,39 @@ function connectMenu(renderFn) {
           });
         }
 
-        if (!this._createURL) {
-          this._createURL = function (facetValue) {
-            return createURL(helper.state.toggleRefinement(attribute, facetValue));
+        if (!_createURL) {
+          _createURL = function _createURL(facetValue) {
+            return createURL(helper.state.resetPage().toggleFacetRefinement(attribute, facetValue));
           };
         }
 
-        if (!this._refine) {
-          this._refine = function (facetValue) {
+        if (!_refine) {
+          _refine = function _refine(facetValue) {
             var _helper$getHierarchic = helper.getHierarchicalFacetBreadcrumb(attribute),
                 _helper$getHierarchic2 = _slicedToArray(_helper$getHierarchic, 1),
                 refinedItem = _helper$getHierarchic2[0];
 
             sendEvent('click', facetValue ? facetValue : refinedItem);
-            helper.toggleRefinement(attribute, facetValue ? facetValue : refinedItem).search();
+            helper.toggleFacetRefinement(attribute, facetValue ? facetValue : refinedItem).search();
           };
         }
 
-        toggleShowMore = this.createToggleShowMore({
-          results: results,
-          instantSearchInstance: instantSearchInstance
-        });
+        if (renderOptions.results) {
+          toggleShowMore = createToggleShowMore(renderOptions, this);
+        }
 
         if (results) {
           var facetValues = results.getFacetValues(attribute, {
             sortBy: sortBy
           });
-          var facetItems = facetValues && facetValues.data ? facetValues.data : [];
-          canToggleShowMore = showMore && (this.isShowingMore || facetItems.length > this.getLimit());
-          items = transformItems(facetItems.slice(0, this.getLimit()).map(function (_ref4) {
-            var label = _ref4.name,
-                value = _ref4.path,
-                item = _objectWithoutProperties(_ref4, ["name", "path"]);
+          var facetItems = facetValues && !Array.isArray(facetValues) && facetValues.data ? facetValues.data : [];
+          canToggleShowMore = showMore && (isShowingMore || facetItems.length > getLimit());
+          items = transformItems(facetItems.slice(0, getLimit()).map(function (_ref3) {
+            var label = _ref3.name,
+                value = _ref3.path,
+                item = _objectWithoutProperties(_ref3, ["name", "path"]);
 
-            return _objectSpread({}, item, {
+            return _objectSpread(_objectSpread({}, item), {}, {
               label: label,
               value: value
             });
@@ -249,18 +179,18 @@ function connectMenu(renderFn) {
 
         return {
           items: items,
-          createURL: this._createURL,
-          refine: this._refine,
+          createURL: _createURL,
+          refine: _refine,
           sendEvent: sendEvent,
           canRefine: items.length > 0,
           widgetParams: widgetParams,
-          isShowingMore: this.isShowingMore,
+          isShowingMore: isShowingMore,
           toggleShowMore: cachedToggleShowMore,
           canToggleShowMore: canToggleShowMore
         };
       },
-      getWidgetUiState: function getWidgetUiState(uiState, _ref5) {
-        var searchParameters = _ref5.searchParameters;
+      getWidgetUiState: function getWidgetUiState(uiState, _ref4) {
+        var searchParameters = _ref4.searchParameters;
 
         var _searchParameters$get = searchParameters.getHierarchicalFacetBreadcrumb(attribute),
             _searchParameters$get2 = _slicedToArray(_searchParameters$get, 1),
@@ -270,12 +200,12 @@ function connectMenu(renderFn) {
           return uiState;
         }
 
-        return _objectSpread({}, uiState, {
-          menu: _objectSpread({}, uiState.menu, _defineProperty({}, attribute, value))
+        return _objectSpread(_objectSpread({}, uiState), {}, {
+          menu: _objectSpread(_objectSpread({}, uiState.menu), {}, _defineProperty({}, attribute, value))
         });
       },
-      getWidgetSearchParameters: function getWidgetSearchParameters(searchParameters, _ref6) {
-        var uiState = _ref6.uiState;
+      getWidgetSearchParameters: function getWidgetSearchParameters(searchParameters, _ref5) {
+        var uiState = _ref5.uiState;
         var value = uiState.menu && uiState.menu[attribute];
         var withFacetConfiguration = searchParameters.removeHierarchicalFacet(attribute).addHierarchicalFacet({
           name: attribute,
@@ -287,7 +217,7 @@ function connectMenu(renderFn) {
 
         if (!value) {
           return withMaxValuesPerFacet.setQueryParameters({
-            hierarchicalFacetsRefinements: _objectSpread({}, withMaxValuesPerFacet.hierarchicalFacetsRefinements, _defineProperty({}, attribute, []))
+            hierarchicalFacetsRefinements: _objectSpread(_objectSpread({}, withMaxValuesPerFacet.hierarchicalFacetsRefinements), {}, _defineProperty({}, attribute, []))
           });
         }
 
@@ -295,4 +225,7 @@ function connectMenu(renderFn) {
       }
     };
   };
-}
+};
+
+var _default = connectMenu;
+exports.default = _default;

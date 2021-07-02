@@ -5,11 +5,9 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = highlight;
 
-var _utils = require("../lib/utils");
-
-var _escapeHighlight = require("../lib/escape-highlight");
-
 var _suit = require("../lib/suit");
+
+var _utils = require("../lib/utils");
 
 var suit = (0, _suit.component)('Highlight');
 
@@ -29,5 +27,5 @@ function highlight(_ref) {
   var className = suit({
     descendantName: 'highlighted'
   }) + (cssClasses.highlighted ? " ".concat(cssClasses.highlighted) : '');
-  return attributeValue.replace(new RegExp(_escapeHighlight.TAG_REPLACEMENT.highlightPreTag, 'g'), "<".concat(highlightedTagName, " class=\"").concat(className, "\">")).replace(new RegExp(_escapeHighlight.TAG_REPLACEMENT.highlightPostTag, 'g'), "</".concat(highlightedTagName, ">"));
+  return attributeValue.replace(new RegExp(_utils.TAG_REPLACEMENT.highlightPreTag, 'g'), "<".concat(highlightedTagName, " class=\"").concat(className, "\">")).replace(new RegExp(_utils.TAG_REPLACEMENT.highlightPostTag, 'g'), "</".concat(highlightedTagName, ">"));
 }

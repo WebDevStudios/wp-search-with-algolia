@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.addQueryID = void 0;
+exports.addQueryID = addQueryID;
 
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
@@ -11,16 +11,14 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
-var addQueryID = function addQueryID(hits, queryID) {
+function addQueryID(hits, queryID) {
   if (!queryID) {
     return hits;
   }
 
   return hits.map(function (hit) {
-    return _objectSpread({}, hit, {
+    return _objectSpread(_objectSpread({}, hit), {}, {
       __queryID: queryID
     });
   });
-};
-
-exports.addQueryID = addQueryID;
+}

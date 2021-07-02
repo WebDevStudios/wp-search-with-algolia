@@ -16,41 +16,19 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 var withUsage = (0, _utils.createDocumentationMessageGenerator)({
   name: 'geo-search',
   connector: true
-});
+}); // in this connector, we assume insideBoundingBox is only a string,
+// even though in the helper it's defined as number[][] alone.
+// This can be done, since the connector assumes "control" of the parameter
+
+function getBoundingBoxAsString(state) {
+  return state.insideBoundingBox || '';
+}
+
+function setBoundingBoxAsString(state, value) {
+  return state.setQueryParameter('insideBoundingBox', value);
+}
+
 var $$type = 'ais.geoSearch';
-/**
- * @typedef {Object} LatLng
- * @property {number} lat The latitude in degrees.
- * @property {number} lng The longitude in degrees.
- */
-
-/**
- * @typedef {Object} Bounds
- * @property {LatLng} northEast The top right corner of the map view.
- * @property {LatLng} southWest The bottom left corner of the map view.
- */
-
-/**
- * @typedef {Object} CustomGeoSearchWidgetOptions
- * @property {boolean} [enableRefineOnMapMove=true] If true, refine will be triggered as you move the map.
- * @property {function(object[]):object[]} [transformItems] Function to transform the items passed to the templates.
- */
-
-/**
- * @typedef {Object} GeoSearchRenderingOptions
- * @property {Object[]} items The matched hits from Algolia API.
- * @property {LatLng} position The current position of the search.
- * @property {Bounds} currentRefinement The current bounding box of the search.
- * @property {function(Bounds)} refine Sets a bounding box to filter the results from the given map bounds.
- * @property {function()} clearMapRefinement Reset the current bounding box refinement.
- * @property {function(): boolean} isRefinedWithMap Return true if the current refinement is set with the map bounds.
- * @property {function()} toggleRefineOnMapMove Toggle the fact that the user is able to refine on map move.
- * @property {function(): boolean} isRefineOnMapMove Return true if the user is able to refine on map move.
- * @property {function()} setMapMoveSinceLastRefine Set the fact that the map has moved since the last refinement, should be call on each map move. The call to the function triggers a new rendering only when the value change.
- * @property {function(): boolean} hasMapMoveSinceLastRefine Return true if the map has move since the last refinement.
- * @property {Object} widgetParams All original `CustomGeoSearchWidgetOptions` forwarded to the `renderFn`.
- * @property {LatLng} [position] The current position of the search.
- */
 
 /**
  * The **GeoSearch** connector provides the logic to build a widget that will display the results on a map. It also provides a way to search for results based on their position. The connector provides functions to manage the search experience (search on map interaction or control the interaction for example).
@@ -60,65 +38,19 @@ var $$type = 'ais.geoSearch';
  * Note that the GeoSearch connector uses the [geosearch](https://www.algolia.com/doc/guides/searching/geo-search) capabilities of Algolia. Your hits **must** have a `_geoloc` attribute in order to be passed to the rendering function.
  *
  * Currently, the feature is not compatible with multiple values in the _geoloc attribute.
- *
- * @param {function(GeoSearchRenderingOptions, boolean)} renderFn Rendering function for the custom **GeoSearch** widget.
- * @param {function} unmountFn Unmount function called when the widget is disposed.
- * @return {function(CustomGeoSearchWidgetOptions)} Re-usable widget factory for a custom **GeoSearch** widget.
- * @staticExample
- * // This example use Leaflet for the rendering, be sure to have the library correctly setup
- * // before trying the demo. You can find more details in their documentation (link below).
- * // We choose Leaflet for the example but you can use any libraries that you want.
- * // See: http://leafletjs.com/examples/quick-start
- *
- * let map = null;
- * let markers = [];
- *
- * // custom `renderFn` to render the custom GeoSearch widget
- * function renderFn(GeoSearchRenderingOptions, isFirstRendering) {
- *   const { items, widgetParams } = GeoSearchRenderingOptions;
- *
- *   if (isFirstRendering) {
- *     map = L.map(widgetParams.container);
- *
- *     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
- *       attribution:
- *         '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
- *     }).addTo(map);
- *   }
- *
- *   markers.forEach(marker => marker.remove());
- *
- *   markers = items.map(({ _geoloc }) =>
- *     L.marker([_geoloc.lat, _geoloc.lng]).addTo(map)
- *   );
- *
- *   if (markers.length) {
- *     map.fitBounds(L.featureGroup(markers).getBounds());
- *   }
- * }
- *
- * // connect `renderFn` to GeoSearch logic
- * const customGeoSearch = instantsearch.connectors.connectGeoSearch(renderFn);
- *
- * // mount widget on the page
- * search.addWidgets([
- *   customGeoSearch({
- *     container: document.getElementById('custom-geo-search'),
- *   })
- * ]);
  */
-
 var connectGeoSearch = function connectGeoSearch(renderFn) {
   var unmountFn = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : _utils.noop;
   (0, _utils.checkRendering)(renderFn, withUsage());
-  return function () {
-    var widgetParams = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-    var _widgetParams$enableR = widgetParams.enableRefineOnMapMove,
-        enableRefineOnMapMove = _widgetParams$enableR === void 0 ? true : _widgetParams$enableR,
-        _widgetParams$transfo = widgetParams.transformItems,
-        transformItems = _widgetParams$transfo === void 0 ? function (items) {
+  return function (widgetParams) {
+    var _ref = widgetParams || {},
+        _ref$enableRefineOnMa = _ref.enableRefineOnMapMove,
+        enableRefineOnMapMove = _ref$enableRefineOnMa === void 0 ? true : _ref$enableRefineOnMa,
+        _ref$transformItems = _ref.transformItems,
+        transformItems = _ref$transformItems === void 0 ? function (items) {
       return items;
-    } : _widgetParams$transfo;
+    } : _ref$transformItems;
+
     var widgetState = {
       isRefineOnMapMove: enableRefineOnMapMove,
       // @MAJOR hasMapMoveSinceLastRefine -> hasMapMovedSinceLastRefine
@@ -130,7 +62,7 @@ var connectGeoSearch = function connectGeoSearch(renderFn) {
     };
 
     var getPositionFromState = function getPositionFromState(state) {
-      return state.aroundLatLng && (0, _utils.aroundLatLngToPosition)(state.aroundLatLng);
+      return state.aroundLatLng ? (0, _utils.aroundLatLngToPosition)(state.aroundLatLng) : undefined;
     };
 
     var getCurrentRefinementFromState = function getCurrentRefinementFromState(state) {
@@ -138,11 +70,11 @@ var connectGeoSearch = function connectGeoSearch(renderFn) {
     };
 
     var refine = function refine(helper) {
-      return function (_ref) {
-        var ne = _ref.northEast,
-            sw = _ref.southWest;
+      return function (_ref2) {
+        var ne = _ref2.northEast,
+            sw = _ref2.southWest;
         var boundingBox = [ne.lat, ne.lng, sw.lat, sw.lng].join();
-        helper.setQueryParameter('insideBoundingBox', boundingBox).search();
+        helper.setState(setBoundingBoxAsString(helper.state, boundingBox).resetPage()).search();
         widgetState.hasMapMoveSinceLastRefine = false;
         widgetState.lastRefineBoundingBox = boundingBox;
       };
@@ -164,10 +96,10 @@ var connectGeoSearch = function connectGeoSearch(renderFn) {
       return widgetState.internalToggleRefineOnMapMove();
     };
 
-    var createInternalToggleRefinementOnMapMove = function createInternalToggleRefinementOnMapMove(render, args) {
+    var createInternalToggleRefinementOnMapMove = function createInternalToggleRefinementOnMapMove(renderOptions, render) {
       return function () {
         widgetState.isRefineOnMapMove = !widgetState.isRefineOnMapMove;
-        render(args);
+        render(renderOptions);
       };
     };
 
@@ -179,13 +111,13 @@ var connectGeoSearch = function connectGeoSearch(renderFn) {
       return widgetState.internalSetMapMoveSinceLastRefine();
     };
 
-    var createInternalSetMapMoveSinceLastRefine = function createInternalSetMapMoveSinceLastRefine(render, args) {
+    var createInternalSetMapMoveSinceLastRefine = function createInternalSetMapMoveSinceLastRefine(renderOptions, render) {
       return function () {
         var shouldTriggerRender = widgetState.hasMapMoveSinceLastRefine !== true;
         widgetState.hasMapMoveSinceLastRefine = true;
 
         if (shouldTriggerRender) {
-          render(args);
+          render(renderOptions);
         }
       };
     };
@@ -200,9 +132,9 @@ var connectGeoSearch = function connectGeoSearch(renderFn) {
       init: function init(initArgs) {
         var instantSearchInstance = initArgs.instantSearchInstance;
         var isFirstRendering = true;
-        widgetState.internalToggleRefineOnMapMove = createInternalToggleRefinementOnMapMove(_utils.noop, initArgs);
-        widgetState.internalSetMapMoveSinceLastRefine = createInternalSetMapMoveSinceLastRefine(_utils.noop, initArgs);
-        renderFn(_objectSpread({}, this.getWidgetRenderState(initArgs), {
+        widgetState.internalToggleRefineOnMapMove = createInternalToggleRefinementOnMapMove(initArgs, _utils.noop);
+        widgetState.internalSetMapMoveSinceLastRefine = createInternalSetMapMoveSinceLastRefine(initArgs, _utils.noop);
+        renderFn(_objectSpread(_objectSpread({}, this.getWidgetRenderState(initArgs)), {}, {
           instantSearchInstance: instantSearchInstance
         }), isFirstRendering);
       },
@@ -221,12 +153,12 @@ var connectGeoSearch = function connectGeoSearch(renderFn) {
         }
 
         widgetState.lastRefinePosition = state.aroundLatLng || '';
-        widgetState.lastRefineBoundingBox = state.insideBoundingBox || '';
-        widgetState.internalToggleRefineOnMapMove = createInternalToggleRefinementOnMapMove(this.render.bind(this), renderArgs);
-        widgetState.internalSetMapMoveSinceLastRefine = createInternalSetMapMoveSinceLastRefine(this.render.bind(this), renderArgs);
+        widgetState.lastRefineBoundingBox = getBoundingBoxAsString(state);
+        widgetState.internalToggleRefineOnMapMove = createInternalToggleRefinementOnMapMove(renderArgs, this.render.bind(this));
+        widgetState.internalSetMapMoveSinceLastRefine = createInternalSetMapMoveSinceLastRefine(renderArgs, this.render.bind(this));
         var widgetRenderState = this.getWidgetRenderState(renderArgs);
         sendEvent('view', widgetRenderState.items);
-        renderFn(_objectSpread({}, widgetRenderState, {
+        renderFn(_objectSpread(_objectSpread({}, widgetRenderState), {}, {
           instantSearchInstance: instantSearchInstance
         }), isFirstRendering);
       },
@@ -263,37 +195,37 @@ var connectGeoSearch = function connectGeoSearch(renderFn) {
         };
       },
       getRenderState: function getRenderState(renderState, renderOptions) {
-        return _objectSpread({}, renderState, {
+        return _objectSpread(_objectSpread({}, renderState), {}, {
           geoSearch: this.getWidgetRenderState(renderOptions)
         });
       },
-      dispose: function dispose(_ref2) {
-        var state = _ref2.state;
+      dispose: function dispose(_ref3) {
+        var state = _ref3.state;
         unmountFn();
         return state.setQueryParameter('insideBoundingBox', undefined);
       },
-      getWidgetUiState: function getWidgetUiState(uiState, _ref3) {
-        var searchParameters = _ref3.searchParameters;
-        var boundingBox = searchParameters.insideBoundingBox;
+      getWidgetUiState: function getWidgetUiState(uiState, _ref4) {
+        var searchParameters = _ref4.searchParameters;
+        var boundingBox = getBoundingBoxAsString(searchParameters);
 
         if (!boundingBox || uiState && uiState.geoSearch && uiState.geoSearch.boundingBox === boundingBox) {
           return uiState;
         }
 
-        return _objectSpread({}, uiState, {
+        return _objectSpread(_objectSpread({}, uiState), {}, {
           geoSearch: {
             boundingBox: boundingBox
           }
         });
       },
-      getWidgetSearchParameters: function getWidgetSearchParameters(searchParameters, _ref4) {
-        var uiState = _ref4.uiState;
+      getWidgetSearchParameters: function getWidgetSearchParameters(searchParameters, _ref5) {
+        var uiState = _ref5.uiState;
 
         if (!uiState || !uiState.geoSearch) {
           return searchParameters.setQueryParameter('insideBoundingBox', undefined);
         }
 
-        return searchParameters.setQueryParameter('insideBoundingBox', uiState.geoSearch.boundingBox);
+        return setBoundingBoxAsString(searchParameters, uiState.geoSearch.boundingBox);
       }
     };
   };

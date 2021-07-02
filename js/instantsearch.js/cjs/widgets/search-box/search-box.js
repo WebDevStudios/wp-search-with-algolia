@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.default = searchBox;
+exports.default = void 0;
 
 var _preact = require("preact");
 
@@ -62,67 +62,17 @@ var renderer = function renderer(_ref) {
   };
 };
 /**
- * @typedef {Object} SearchBoxTemplates
- * @property {function|string} submit Template used for displaying the submit. Can accept a function or a Hogan string.
- * @property {function|string} reset Template used for displaying the button. Can accept a function or a Hogan string.
- * @property {function|string} loadingIndicator Template used for displaying the button. Can accept a function or a Hogan string.
- */
-
-/**
- * @typedef {Object} SearchBoxCSSClasses
- * @property {string|string[]} [root] CSS class to add to the wrapping `<div>`
- * @property {string|string[]} [form] CSS class to add to the form
- * @property {string|string[]} [input] CSS class to add to the input.
- * @property {string|string[]} [submit] CSS classes added to the submit button.
- * @property {string|string[]} [submitIcon] CSS classes added to the submit icon.
- * @property {string|string[]} [reset] CSS classes added to the reset button.
- * @property {string|string[]} [resetIcon] CSS classes added to the reset icon.
- * @property {string|string[]} [loadingIndicator] CSS classes added to the loading indicator element.
- * @property {string|string[]} [loadingIcon] CSS classes added to the loading indicator icon.
- */
-
-/**
- * @typedef {Object} SearchBoxWidgetOptions
- * @property {string|HTMLElement} container CSS Selector or HTMLElement to insert the widget
- * @property {string} [placeholder] The placeholder of the input
- * @property {boolean} [autofocus=false] Whether the input should be autofocused
- * @property {boolean} [searchAsYouType=true] If set, trigger the search
- * once `<Enter>` is pressed only.
- * @property {boolean} [showReset=true] Whether to show the reset button
- * @property {boolean} [showSubmit=true] Whether to show the submit button
- * @property {boolean} [showLoadingIndicator=true] Whether to show the loading indicator (replaces the submit if
- * the search is stalled)
- * @property {SearchBoxCSSClasses} [cssClasses] CSS classes to add
- * @property {SearchBoxTemplates} [templates] Templates used for customizing the rendering of the searchbox
- * @property {function} [queryHook] A function that is called every time a new search is done. You
- * will get the query as the first parameter and a search (query) function to call as the second parameter.
- * This `queryHook` can be used to debounce the number of searches done from the search box.
- */
-
-/**
  * The searchbox widget is used to let the user set a text based query.
  *
  * This is usually the  main entry point to start the search in an instantsearch context. For that
  * reason is usually placed on top, and not hidden so that the user can start searching right
  * away.
  *
- * @type {WidgetFactory}
- * @devNovel SearchBox
- * @category basic
- * @param {SearchBoxWidgetOptions} $0 Options used to configure a SearchBox widget.
- * @return {Widget} Creates a new instance of the SearchBox widget.
- * @example
- * search.addWidgets([
- *   instantsearch.widgets.searchBox({
- *     container: '#q',
- *     placeholder: 'Search for products',
- *   })
- * ]);
  */
 
 
-function searchBox() {
-  var _ref3 = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
+var searchBox = function searchBox(widgetParams) {
+  var _ref3 = widgetParams || {},
       container = _ref3.container,
       _ref3$placeholder = _ref3.placeholder,
       placeholder = _ref3$placeholder === void 0 ? '' : _ref3$placeholder,
@@ -177,7 +127,7 @@ function searchBox() {
     containerNode: containerNode,
     cssClasses: cssClasses,
     placeholder: placeholder,
-    templates: _objectSpread({}, _defaultTemplates.default, {}, templates),
+    templates: _objectSpread(_objectSpread({}, _defaultTemplates.default), templates),
     autofocus: autofocus,
     searchAsYouType: searchAsYouType,
     showReset: showReset,
@@ -187,7 +137,12 @@ function searchBox() {
   var makeWidget = (0, _connectSearchBox.default)(specializedRenderer, function () {
     return (0, _preact.render)(null, containerNode);
   });
-  return makeWidget({
+  return _objectSpread(_objectSpread({}, makeWidget({
     queryHook: queryHook
+  })), {}, {
+    $$widgetType: 'ais.searchBox'
   });
-}
+};
+
+var _default = searchBox;
+exports.default = _default;

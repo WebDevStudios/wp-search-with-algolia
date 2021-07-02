@@ -1,3 +1,9 @@
+function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
+
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
 /** @jsx h */
 import { h, render } from 'preact';
 import cx from 'classnames';
@@ -49,67 +55,6 @@ var renderer = function renderer(_ref) {
   };
 };
 /**
- * @typedef {Object} HierarchicalMenuCSSClasses
- * @property {string|string[]} [root] CSS class to add to the root element.
- * @property {string|string[]} [noRefinementRoot] CSS class to add to the root element when no refinements.
- * @property {string|string[]} [list] CSS class to add to the list element.
- * @property {string|string[]} [childList] CSS class to add to the child list element.
- * @property {string|string[]} [item] CSS class to add to each item element.
- * @property {string|string[]} [selectedItem] CSS class to add to each selected item element.
- * @property {string|string[]} [parentItem] CSS class to add to each parent item element.
- * @property {string|string[]} [link] CSS class to add to each link (when using the default template).
- * @property {string|string[]} [label] CSS class to add to each label (when using the default template).
- * @property {string|string[]} [count] CSS class to add to each count element (when using the default template).
- * @property {string|string[]} [showMore] CSS class to add to the show more element.
- * @property {string|string[]} [disabledShowMore] CSS class to add to the disabled show more element.
- */
-
-/**
- * @typedef {Object} HierarchicalMenuTemplates
- * @property {string|function(object):string} [item] Item template, provided with `name`, `count`, `isRefined`, `url` data properties.
- * @property {string|function} [showMoreText] Template used for the show more text, provided with `isShowingMore` data property.
- */
-
-/**
- * @typedef {Object} HierarchicalMenuWidgetOptions
- * @property {string|HTMLElement} container CSS Selector or HTMLElement to insert the widget.
- * @property {string[]} attributes Array of attributes to use to generate the hierarchy of the menu.
- * @property {string} [separator = " > "] Separator used in the attributes to separate level values.
- * @property {string} [rootPath] Prefix path to use if the first level is not the root level.
- * @property {boolean} [showParentLevel = true] Show the siblings of the selected parent level of the current refined value. This
- * @property {number} [limit = 10] Max number of values to display.
- * @property {boolean} [showMore = false] Whether to display the "show more" button.
- * @property {number} [showMoreLimit = 20] Max number of values to display when showing more.
- * does not impact the root level.
- *
- * The hierarchical menu is able to show or hide the siblings with `showParentLevel`.
- *
- * With `showParentLevel` set to `true` (default):
- * - Parent lvl0
- *   - **lvl1**
- *     - **lvl2**
- *     - lvl2
- *     - lvl2
- *   - lvl 1
- *   - lvl 1
- * - Parent lvl0
- * - Parent lvl0
- *
- * With `showParentLevel` set to `false`:
- * - Parent lvl0
- *   - **lvl1**
- *     - **lvl2**
- * - Parent lvl0
- * - Parent lvl0
- * @property {string[]|function} [sortBy = ['name:asc']] How to sort refinements. Possible values: `count|isRefined|name:asc|name:desc`.
- *
- * You can also use a sort function that behaves like the standard Javascript [compareFunction](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/sort#Syntax).
- * @property {function(object[]):object[]} [transformItems] Function to transform the items passed to the templates.
- * @property {HierarchicalMenuTemplates} [templates] Templates to use for the widget.
- * @property {HierarchicalMenuCSSClasses} [cssClasses] CSS classes to add to the wrapping elements.
- */
-
-/**
  * The hierarchical menu widget is used to create a navigation based on a hierarchy of facet attributes.
  *
  * It is commonly used for categories with subcategories.
@@ -150,7 +95,7 @@ var renderer = function renderer(_ref) {
  * @type {WidgetFactory}
  * @devNovel HierarchicalMenu
  * @category filter
- * @param {HierarchicalMenuWidgetOptions} $0 The HierarchicalMenu widget options.
+ * @param {HierarchicalMenuWidgetParams} widgetParams The HierarchicalMenu widget options.
  * @return {Widget} A new HierarchicalMenu widget instance.
  * @example
  * search.addWidgets([
@@ -162,8 +107,8 @@ var renderer = function renderer(_ref) {
  */
 
 
-export default function hierarchicalMenu() {
-  var _ref3 = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
+var hierarchicalMenu = function hierarchicalMenu(widgetParams) {
+  var _ref3 = widgetParams || {},
       container = _ref3.container,
       attributes = _ref3.attributes,
       separator = _ref3.separator,
@@ -232,10 +177,10 @@ export default function hierarchicalMenu() {
     showMore: showMore,
     renderState: {}
   });
-  var makeHierarchicalMenu = connectHierarchicalMenu(specializedRenderer, function () {
+  var makeWidget = connectHierarchicalMenu(specializedRenderer, function () {
     return render(null, containerNode);
   });
-  return makeHierarchicalMenu({
+  return _objectSpread(_objectSpread({}, makeWidget({
     attributes: attributes,
     separator: separator,
     rootPath: rootPath,
@@ -245,5 +190,9 @@ export default function hierarchicalMenu() {
     showMoreLimit: showMoreLimit,
     sortBy: sortBy,
     transformItems: transformItems
+  })), {}, {
+    $$widgetType: 'ais.hierarchicalMenu'
   });
-}
+};
+
+export default hierarchicalMenu;

@@ -159,6 +159,24 @@ Object.defineProperty(exports, "connectVoiceSearch", {
     return _connectVoiceSearch.default;
   }
 });
+Object.defineProperty(exports, "EXPERIMENTAL_connectAnswers", {
+  enumerable: true,
+  get: function get() {
+    return _connectAnswers.default;
+  }
+});
+Object.defineProperty(exports, "connectRelevantSort", {
+  enumerable: true,
+  get: function get() {
+    return _connectRelevantSort.default;
+  }
+});
+Object.defineProperty(exports, "EXPERIMENTAL_connectDynamicWidgets", {
+  enumerable: true,
+  get: function get() {
+    return _connectDynamicWidgets.default;
+  }
+});
 
 var _connectClearRefinements = _interopRequireDefault(require("./clear-refinements/connectClearRefinements"));
 
@@ -211,5 +229,11 @@ var _connectAutocomplete = _interopRequireDefault(require("./autocomplete/connec
 var _connectQueryRules = _interopRequireDefault(require("./query-rules/connectQueryRules"));
 
 var _connectVoiceSearch = _interopRequireDefault(require("./voice-search/connectVoiceSearch"));
+
+var _connectAnswers = _interopRequireDefault(require("./answers/connectAnswers"));
+
+var _connectRelevantSort = _interopRequireDefault(require("./relevant-sort/connectRelevantSort"));
+
+var _connectDynamicWidgets = _interopRequireDefault(require("./dynamic-widgets/connectDynamicWidgets"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }

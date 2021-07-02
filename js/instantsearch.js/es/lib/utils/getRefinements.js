@@ -54,7 +54,7 @@ function getRefinement(state, type, attribute, name) {
 }
 
 function getRefinements(results, state) {
-  var clearsQuery = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
+  var includesQuery = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
   var refinements = [];
   var _state$facetsRefineme = state.facetsRefinements,
       facetsRefinements = _state$facetsRefineme === void 0 ? {} : _state$facetsRefineme,
@@ -124,7 +124,7 @@ function getRefinements(results, state) {
     });
   });
 
-  if (clearsQuery && state.query && state.query.trim()) {
+  if (includesQuery && state.query && state.query.trim()) {
     refinements.push({
       attribute: 'query',
       type: 'query',

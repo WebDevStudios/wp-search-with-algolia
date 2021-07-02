@@ -52,9 +52,7 @@ var setWindowTitle = function setWindowTitle(title) {
   }
 };
 
-var BrowserHistory =
-/*#__PURE__*/
-function () {
+var BrowserHistory = /*#__PURE__*/function () {
   /**
    * Initializes a new storage provider that syncs the search state to the URL
    * using web APIs (`window.location.pushState` and `onpopstate` event).

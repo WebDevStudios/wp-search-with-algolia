@@ -9,17 +9,28 @@ var _helpers = require("../helpers");
 
 var _utils = require("../lib/utils");
 
-function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _nonIterableRest(); }
+function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
-function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance"); }
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
 
-function _iterableToArrayLimit(arr, i) { if (!(Symbol.iterator in Object(arr) || Object.prototype.toString.call(arr) === "[object Arguments]")) { return; } var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"] != null) _i["return"](); } finally { if (_d) throw _e; } } return _arr; }
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest(); }
+
+function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
+
+function _iterableToArrayLimit(arr, i) { if (typeof Symbol === "undefined" || !(Symbol.iterator in Object(arr))) return; var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"] != null) _i["return"](); } finally { if (_d) throw _e; } } return _arr; }
 
 function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 
 var createInsightsMiddleware = function createInsightsMiddleware(props) {
   var _ref = props || {},
       _insightsClient = _ref.insightsClient,
+      insightsInitParams = _ref.insightsInitParams,
       onEvent = _ref.onEvent;
 
   if (_insightsClient !== null && !_insightsClient) {
@@ -66,7 +77,7 @@ var createInsightsMiddleware = function createInsightsMiddleware(props) {
       queuedUserToken = _ref4[1];
     }
 
-    insightsClient('_get', '_userToken', function (userToken) {
+    insightsClient('getUserToken', null, function (_error, userToken) {
       // If user has called `aa('setUserToken', 'my-user-token')` before creating
       // the `insights` middleware, we store them temporarily and
       // set it later on.
@@ -74,22 +85,29 @@ var createInsightsMiddleware = function createInsightsMiddleware(props) {
       // Otherwise, the `init` call might override it with anonymous user token.
       userTokenBeforeInit = userToken;
     });
-    insightsClient('init', {
+    insightsClient('init', _objectSpread({
       appId: appId,
       apiKey: apiKey
-    });
+    }, insightsInitParams));
     return {
       onStateChange: function onStateChange() {},
       subscribe: function subscribe() {
+        insightsClient('addAlgoliaAgent', 'insights-middleware'); // At the time this middleware is subscribed, `mainIndex.init()` is already called.
+        // It means `mainIndex.getHelper()` exists.
+
+        var helper = instantSearchInstance.mainIndex.getHelper();
+
         var setUserTokenToSearch = function setUserTokenToSearch(userToken) {
-          // At the time this middleware is subscribed, `mainIndex.init()` is already called.
-          // It means `mainIndex.getHelper()` exists.
           if (userToken) {
-            instantSearchInstance.mainIndex.getHelper().setQueryParameter('userToken', userToken);
+            helper.setState(helper.state.setQueryParameter('userToken', userToken));
           }
         };
 
-        instantSearchInstance.mainIndex.getHelper().setQueryParameter('clickAnalytics', true);
+        var hasUserToken = function hasUserToken() {
+          return Boolean(helper.state.userToken);
+        };
+
+        helper.setState(helper.state.setQueryParameter('clickAnalytics', true));
         var anonymousUserToken = (0, _helpers.getInsightsAnonymousUserTokenInternal)();
 
         if (hasInsightsClient && anonymousUserToken) {
@@ -115,7 +133,11 @@ var createInsightsMiddleware = function createInsightsMiddleware(props) {
           if (onEvent) {
             onEvent(event, _insightsClient);
           } else if (event.insightsMethod) {
-            insightsClient(event.insightsMethod, event.payload);
+            if (hasUserToken()) {
+              insightsClient(event.insightsMethod, event.payload);
+            } else {
+              process.env.NODE_ENV === 'development' ? (0, _utils.warning)(false, "\nCannot send event to Algolia Insights because `userToken` is not set.\n\nSee documentation: https://www.algolia.com/doc/guides/building-search-ui/going-further/send-insights-events/js/#setting-the-usertoken\n") : void 0;
+            }
           } else {
             process.env.NODE_ENV === 'development' ? (0, _utils.warning)(false, 'Cannot send event to Algolia Insights because `insightsMethod` option is missing.') : void 0;
           }

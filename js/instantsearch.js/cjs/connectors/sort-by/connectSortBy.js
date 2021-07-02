@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.default = connectSortBy;
+exports.default = void 0;
 
 var _utils = require("../../lib/utils");
 
@@ -18,93 +18,22 @@ var withUsage = (0, _utils.createDocumentationMessageGenerator)({
   connector: true
 });
 /**
- * @typedef {Object} SortByItem
- * @property {string} value The name of the index to target.
- * @property {string} label The label of the index to display.
- */
-
-/**
- * @typedef {Object} CustomSortByWidgetOptions
- * @property {SortByItem[]} items Array of objects defining the different indices to choose from.
- * @property {function(object[]):object[]} [transformItems] Function to transform the items passed to the templates.
- */
-
-/**
- * @typedef {Object} SortByRenderingOptions
- * @property {string} currentRefinement The currently selected index.
- * @property {SortByItem[]} options All the available indices
- * @property {function(string)} refine Switches indices and triggers a new search.
- * @property {boolean} hasNoResults `true` if the last search contains no result.
- * @property {Object} widgetParams All original `CustomSortByWidgetOptions` forwarded to the `renderFn`.
- */
-
-/**
  * The **SortBy** connector provides the logic to build a custom widget that will display a
  * list of indices. With Algolia, this is most commonly used for changing ranking strategy. This allows
  * a user to change how the hits are being sorted.
- *
- * This connector provides the `refine` function that allows to switch indices.
- * The connector provides to the rendering: `refine()` to switch the current index and
- * `options` that are the values that can be selected. `refine` should be used
- * with `options.value`.
- * @type {Connector}
- * @param {function(SortByRenderingOptions, boolean)} renderFn Rendering function for the custom **SortBy** widget.
- * @param {function} unmountFn Unmount function called when the widget is disposed.
- * @return {function(CustomSortByWidgetOptions)} Re-usable widget factory for a custom **SortBy** widget.
- * @example
- * // custom `renderFn` to render the custom SortBy widget
- * function renderFn(SortByRenderingOptions, isFirstRendering) {
- *   if (isFirstRendering) {
- *     SortByRenderingOptions.widgetParams.containerNode.html('<select></select>');
- *     SortByRenderingOptions.widgetParams.containerNode
- *       .find('select')
- *       .on('change', function(event) {
- *         SortByRenderingOptions.refine(event.target.value);
- *       });
- *   }
- *
- *   var optionsHTML = SortByRenderingOptions.options.map(function(option) {
- *     return `
- *       <option
- *         value="${option.value}"
- *         ${SortByRenderingOptions.currentRefinement === option.value ? 'selected' : ''}
- *       >
- *         ${option.label}
- *       </option>
- *     `;
- *   });
- *
- *   SortByRenderingOptions.widgetParams.containerNode
- *     .find('select')
- *     .html(optionsHTML);
- * }
- *
- * // connect `renderFn` to SortBy logic
- * var customSortBy = instantsearch.connectors.connectSortBy(renderFn);
- *
- * // mount widget on the page
- * search.addWidgets([
- *   customSortBy({
- *     containerNode: $('#custom-sort-by-container'),
- *     items: [
- *       { value: 'instant_search', label: 'Most relevant' },
- *       { value: 'instant_search_price_asc', label: 'Lowest price' },
- *       { value: 'instant_search_price_desc', label: 'Highest price' },
- *     ],
- *   })
- * ]);
  */
 
-function connectSortBy(renderFn) {
+var connectSortBy = function connectSortBy(renderFn) {
   var unmountFn = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : _utils.noop;
   (0, _utils.checkRendering)(renderFn, withUsage());
-  return function () {
-    var widgetParams = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-    var items = widgetParams.items,
-        _widgetParams$transfo = widgetParams.transformItems,
-        transformItems = _widgetParams$transfo === void 0 ? function (x) {
+  var connectorState = {};
+  return function (widgetParams) {
+    var _ref = widgetParams || {},
+        items = _ref.items,
+        _ref$transformItems = _ref.transformItems,
+        transformItems = _ref$transformItems === void 0 ? function (x) {
       return x;
-    } : _widgetParams$transfo;
+    } : _ref$transformItems;
 
     if (!Array.isArray(items)) {
       throw new Error(withUsage('The `items` option expects an array of objects.'));
@@ -119,38 +48,38 @@ function connectSortBy(renderFn) {
         var isCurrentIndexInItems = (0, _utils.find)(items, function (item) {
           return item.value === currentIndex;
         });
-        process.env.NODE_ENV === 'development' ? (0, _utils.warning)(isCurrentIndexInItems, "The index named \"".concat(currentIndex, "\" is not listed in the `items` of `sortBy`.")) : void 0;
-        renderFn(_objectSpread({}, widgetRenderState, {
+        process.env.NODE_ENV === 'development' ? (0, _utils.warning)(isCurrentIndexInItems !== undefined, "The index named \"".concat(currentIndex, "\" is not listed in the `items` of `sortBy`.")) : void 0;
+        renderFn(_objectSpread(_objectSpread({}, widgetRenderState), {}, {
           instantSearchInstance: instantSearchInstance
         }), true);
       },
       render: function render(renderOptions) {
         var instantSearchInstance = renderOptions.instantSearchInstance;
-        renderFn(_objectSpread({}, this.getWidgetRenderState(renderOptions), {
+        renderFn(_objectSpread(_objectSpread({}, this.getWidgetRenderState(renderOptions)), {}, {
           instantSearchInstance: instantSearchInstance
         }), false);
       },
-      dispose: function dispose(_ref) {
-        var state = _ref.state;
+      dispose: function dispose(_ref2) {
+        var state = _ref2.state;
         unmountFn();
-        return state.setIndex(this.initialIndex);
+        return connectorState.initialIndex ? state.setIndex(connectorState.initialIndex) : state;
       },
       getRenderState: function getRenderState(renderState, renderOptions) {
-        return _objectSpread({}, renderState, {
+        return _objectSpread(_objectSpread({}, renderState), {}, {
           sortBy: this.getWidgetRenderState(renderOptions)
         });
       },
-      getWidgetRenderState: function getWidgetRenderState(_ref2) {
-        var results = _ref2.results,
-            helper = _ref2.helper,
-            parent = _ref2.parent;
+      getWidgetRenderState: function getWidgetRenderState(_ref3) {
+        var results = _ref3.results,
+            helper = _ref3.helper,
+            parent = _ref3.parent;
 
-        if (!this.initialIndex) {
-          this.initialIndex = parent.getIndexName();
+        if (!connectorState.initialIndex && parent) {
+          connectorState.initialIndex = parent.getIndexName();
         }
 
-        if (!this.setIndex) {
-          this.setIndex = function (indexName) {
+        if (!connectorState.setIndex) {
+          connectorState.setIndex = function (indexName) {
             helper.setIndex(indexName).search();
           };
         }
@@ -158,28 +87,25 @@ function connectSortBy(renderFn) {
         return {
           currentRefinement: helper.state.index,
           options: transformItems(items),
-          refine: this.setIndex,
+          refine: connectorState.setIndex,
           hasNoResults: results ? results.nbHits === 0 : true,
           widgetParams: widgetParams
         };
       },
-      getWidgetUiState: function getWidgetUiState(uiState, _ref3) {
-        var searchParameters = _ref3.searchParameters;
+      getWidgetUiState: function getWidgetUiState(uiState, _ref4) {
+        var searchParameters = _ref4.searchParameters;
         var currentIndex = searchParameters.index;
-        var isInitialIndex = currentIndex === this.initialIndex;
-
-        if (isInitialIndex) {
-          return uiState;
-        }
-
-        return _objectSpread({}, uiState, {
-          sortBy: currentIndex
+        return _objectSpread(_objectSpread({}, uiState), {}, {
+          sortBy: currentIndex !== connectorState.initialIndex ? currentIndex : undefined
         });
       },
-      getWidgetSearchParameters: function getWidgetSearchParameters(searchParameters, _ref4) {
-        var uiState = _ref4.uiState;
-        return searchParameters.setQueryParameter('index', uiState.sortBy || this.initialIndex || searchParameters.index);
+      getWidgetSearchParameters: function getWidgetSearchParameters(searchParameters, _ref5) {
+        var uiState = _ref5.uiState;
+        return searchParameters.setQueryParameter('index', uiState.sortBy || connectorState.initialIndex || searchParameters.index);
       }
     };
   };
-}
+};
+
+var _default = connectSortBy;
+exports.default = _default;

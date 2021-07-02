@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.default = menuSelect;
+exports.default = void 0;
 
 var _preact = require("preact");
 
@@ -21,7 +21,12 @@ var _suit = require("../../lib/suit");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-/** @jsx h */
+function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
+
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
 var withUsage = (0, _utils.createDocumentationMessageGenerator)({
   name: 'menu-select'
 });
@@ -35,7 +40,6 @@ var renderer = function renderer(_ref) {
   return function (_ref2, isFirstRendering) {
     var refine = _ref2.refine,
         items = _ref2.items,
-        canRefine = _ref2.canRefine,
         instantSearchInstance = _ref2.instantSearchInstance;
 
     if (isFirstRendering) {
@@ -51,58 +55,14 @@ var renderer = function renderer(_ref) {
       cssClasses: cssClasses,
       items: items,
       refine: refine,
-      templateProps: renderState.templateProps,
-      canRefine: canRefine
+      templateProps: renderState.templateProps
     }), containerNode);
   };
 };
-/**
- * @typedef {Object} MenuSelectCSSClasses
- * @property {string|string[]} [root] CSS class to add to the root element.
- * @property {string|string[]} [noRefinementRoot] CSS class to add to the root when there are no items to display
- * @property {string|string[]} [select] CSS class to add to the select element.
- * @property {string|string[]} [option] CSS class to add to the option element.
- *
- */
 
-/**
- * @typedef {Object} MenuSelectTemplates
- * @property {string|function(label: string, count: number, isRefined: boolean, value: string)} [item] Item template, provided with `label`, `count`, `isRefined` and `value` data properties.
- * @property {string} [defaultOption = 'See all'] Label of the "see all" option in the select.
- */
-
-/**
- * @typedef {Object} MenuSelectWidgetOptions
- * @property {string|HTMLElement} container CSS Selector or HTMLElement to insert the widget.
- * @property {string} attribute Name of the attribute for faceting
- * @property {string[]|function} [sortBy=['name:asc']] How to sort refinements. Possible values: `count|isRefined|name:asc|name:desc`.
- *
- * You can also use a sort function that behaves like the standard Javascript [compareFunction](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/sort#Syntax).
- * @property {MenuSelectTemplates} [templates] Customize the output through templating.
- * @property {number} [limit=10] How many facets values to retrieve.
- * @property {MenuSelectCSSClasses} [cssClasses] CSS classes to add to the wrapping elements.
- * @property {function(object[]):object[]} [transformItems] Function to transform the items passed to the templates.
- */
-
-/**
- * Create a menu select out of a facet
- * @type {WidgetFactory}
- * @category filter
- * @param {MenuSelectWidgetOptions} $0 The Menu select widget options.
- * @return {Widget} Creates a new instance of the Menu select widget.
- * @example
- * search.addWidgets([
- *   instantsearch.widgets.menuSelect({
- *     container: '#categories-menuSelect',
- *     attribute: 'hierarchicalCategories.lvl0',
- *     limit: 10,
- *   })
- * ]);
- */
-
-
-function menuSelect(_ref3) {
-  var container = _ref3.container,
+var menuSelect = function menuSelect(widgetParams) {
+  var _ref3 = widgetParams || {},
+      container = _ref3.container,
       attribute = _ref3.attribute,
       _ref3$sortBy = _ref3.sortBy,
       sortBy = _ref3$sortBy === void 0 ? ['name:asc'] : _ref3$sortBy,
@@ -140,10 +100,15 @@ function menuSelect(_ref3) {
   var makeWidget = (0, _connectMenu.default)(specializedRenderer, function () {
     return (0, _preact.render)(null, containerNode);
   });
-  return makeWidget({
+  return _objectSpread(_objectSpread({}, makeWidget({
     attribute: attribute,
     limit: limit,
     sortBy: sortBy,
     transformItems: transformItems
+  })), {}, {
+    $$widgetType: 'ais.menuSelect'
   });
-}
+};
+
+var _default = menuSelect;
+exports.default = _default;

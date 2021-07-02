@@ -7,6 +7,8 @@ exports.default = void 0;
 
 var _preact = require("preact");
 
+var _utils = require("../utils");
+
 var _insights = require("../../helpers/insights");
 
 /** @jsx h */
@@ -32,7 +34,7 @@ var parseInsightsEvent = function parseInsightsEvent(element) {
   }
 
   try {
-    return JSON.parse(atob(serializedPayload));
+    return (0, _utils.deserializePayload)(serializedPayload);
   } catch (error) {
     throw new Error('The insights middleware was unable to parse `data-insights-event`.');
   }

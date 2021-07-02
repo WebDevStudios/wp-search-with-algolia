@@ -4,13 +4,17 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
-function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _nonIterableSpread(); }
+function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread(); }
 
-function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance"); }
+function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
 
-function _iterableToArray(iter) { if (Symbol.iterator in Object(iter) || Object.prototype.toString.call(iter) === "[object Arguments]") return Array.from(iter); }
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
 
-function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } }
+function _iterableToArray(iter) { if (typeof Symbol !== "undefined" && Symbol.iterator in Object(iter)) return Array.from(iter); }
+
+function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) return _arrayLikeToArray(arr); }
+
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
 
 function _objectWithoutProperties(source, excluded) { if (source == null) return {}; var target = _objectWithoutPropertiesLoose(source, excluded); var key, i; if (Object.getOwnPropertySymbols) { var sourceSymbolKeys = Object.getOwnPropertySymbols(source); for (i = 0; i < sourceSymbolKeys.length; i++) { key = sourceSymbolKeys[i]; if (excluded.indexOf(key) >= 0) continue; if (!Object.prototype.propertyIsEnumerable.call(source, key)) continue; target[key] = source[key]; } } return target; }
 
@@ -48,9 +52,11 @@ function privateHelperSetState(helper, _ref) {
 
 function getLocalWidgetsUiState(widgets, widgetStateOptions) {
   var initialUiState = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
-  return widgets.filter(function (widget) {
-    return !isIndexWidget(widget);
-  }).reduce(function (uiState, widget) {
+  return widgets.reduce(function (uiState, widget) {
+    if (isIndexWidget(widget)) {
+      return uiState;
+    }
+
     if (!widget.getWidgetUiState && !widget.getWidgetState) {
       return uiState;
     }
@@ -106,14 +112,14 @@ function resolveScopedResultsFromWidgets(widgets) {
   }, []);
 }
 
-var index = function index(props) {
-  if (props === undefined || props.indexName === undefined) {
+var index = function index(widgetParams) {
+  if (widgetParams === undefined || widgetParams.indexName === undefined) {
     throw new Error(withUsage('The `indexName` option is required.'));
   }
 
-  var indexName = props.indexName,
-      _props$indexId = props.indexId,
-      indexId = _props$indexId === void 0 ? indexName : _props$indexId;
+  var indexName = widgetParams.indexName,
+      _widgetParams$indexId = widgetParams.indexId,
+      indexId = _widgetParams$indexId === void 0 ? indexName : _widgetParams$indexId;
   var localWidgets = [];
   var localUiState = {};
   var localInstantSearchInstance = null;
@@ -122,6 +128,7 @@ var index = function index(props) {
   var derivedHelper = null;
   return {
     $$type: 'ais.index',
+    $$widgetType: 'ais.index',
     getIndexName: function getIndexName() {
       return indexName;
     },
@@ -225,6 +232,8 @@ var index = function index(props) {
       return this;
     },
     removeWidgets: function removeWidgets(widgets) {
+      var _this2 = this;
+
       if (!Array.isArray(widgets)) {
         throw new Error(withUsage('The `removeWidgets` method expects an array of widgets.'));
       }
@@ -244,7 +253,8 @@ var index = function index(props) {
           // the `dispose` method exists at this point we already assert it
           var next = widget.dispose({
             helper: helper,
-            state: state
+            state: state,
+            parent: _this2
           });
           return next || state;
         }, helper.state);
@@ -265,11 +275,18 @@ var index = function index(props) {
       return this;
     },
     init: function init(_ref2) {
-      var _this2 = this;
+      var _this3 = this;
 
       var instantSearchInstance = _ref2.instantSearchInstance,
           parent = _ref2.parent,
           uiState = _ref2.uiState;
+
+      if (helper !== null) {
+        // helper is already initialized, therefore we do not need to set up
+        // any listeners
+        return;
+      }
+
       localInstantSearchInstance = instantSearchInstance;
       localParent = parent;
       localUiState = uiState[indexId] || {}; // The `mainHelper` is already defined at this point. The instance is created
@@ -315,7 +332,7 @@ var index = function index(props) {
       };
 
       derivedHelper = mainHelper.derive(function () {
-        return mergeSearchParameters.apply(void 0, _toConsumableArray(resolveSearchParameters(_this2)));
+        return mergeSearchParameters.apply(void 0, _toConsumableArray(resolveSearchParameters(_this3)));
       }); // Subscribe to the Helper state changes for the page before widgets
       // are initialized. This behavior mimics the original one of the Helper.
       // It makes sense to replicate it at the `init` step. We have another
@@ -337,7 +354,7 @@ var index = function index(props) {
 
         if (process.env.NODE_ENV === 'development') {
           checkIndexUiState({
-            index: _this2,
+            index: _this3,
             indexUiState: localUiState
           });
         }
@@ -353,21 +370,21 @@ var index = function index(props) {
         // search behavior.
 
         helper.lastResults = results;
-      }); // We compute the render state before calling `render` in a separate loop
+      }); // We compute the render state before calling `init` in a separate loop
       // to construct the whole render state object that is then passed to
-      // `render`.
+      // `init`.
 
       localWidgets.forEach(function (widget) {
         if (widget.getRenderState) {
-          var renderState = widget.getRenderState(instantSearchInstance.renderState[_this2.getIndexId()] || {}, {
+          var renderState = widget.getRenderState(instantSearchInstance.renderState[_this3.getIndexId()] || {}, {
             uiState: uiState,
             helper: helper,
-            parent: _this2,
+            parent: _this3,
             instantSearchInstance: instantSearchInstance,
             state: helper.state,
             renderState: instantSearchInstance.renderState,
             templatesConfig: instantSearchInstance.templatesConfig,
-            createURL: _this2.createURL,
+            createURL: _this3.createURL,
             scopedResults: [],
             searchMetadata: {
               isSearchStalled: instantSearchInstance._isSearchStalled
@@ -376,23 +393,25 @@ var index = function index(props) {
           storeRenderState({
             renderState: renderState,
             instantSearchInstance: instantSearchInstance,
-            parent: _this2
+            parent: _this3
           });
         }
       });
       localWidgets.forEach(function (widget) {
-        process.env.NODE_ENV === 'development' ? warning(!widget.getWidgetState, 'The `getWidgetState` method is renamed `getWidgetUiState` and will no longer exist under that name in InstantSearch.js 5.x. Please use `getWidgetUiState` instead.') : void 0;
+        process.env.NODE_ENV === 'development' ? warning( // if it has NO getWidgetState or if it has getWidgetUiState, we don't warn
+        // aka we warn if there's _only_ getWidgetState
+        !widget.getWidgetState || Boolean(widget.getWidgetUiState), 'The `getWidgetState` method is renamed `getWidgetUiState` and will no longer exist under that name in InstantSearch.js 5.x. Please use `getWidgetUiState` instead.') : void 0;
 
         if (widget.init) {
           widget.init({
             uiState: uiState,
             helper: helper,
-            parent: _this2,
+            parent: _this3,
             instantSearchInstance: instantSearchInstance,
             state: helper.state,
             renderState: instantSearchInstance.renderState,
             templatesConfig: instantSearchInstance.templatesConfig,
-            createURL: _this2.createURL,
+            createURL: _this3.createURL,
             scopedResults: [],
             searchMetadata: {
               isSearchStalled: instantSearchInstance._isSearchStalled
@@ -407,8 +426,7 @@ var index = function index(props) {
       // https://github.com/algolia/instantsearch.js/pull/994/commits/4a672ae3fd78809e213de0368549ef12e9dc9454
 
       helper.on('change', function (event) {
-        var state = event.state; // @ts-ignore _uiState comes from privateHelperSetState and thus isn't typed on the helper event
-
+        var state = event.state;
         var _uiState = event._uiState;
         localUiState = getLocalWidgetsUiState(localWidgets, {
           searchParameters: state,
@@ -422,7 +440,7 @@ var index = function index(props) {
       });
     },
     render: function render(_ref5) {
-      var _this3 = this;
+      var _this4 = this;
 
       var instantSearchInstance = _ref5.instantSearchInstance;
 
@@ -432,16 +450,16 @@ var index = function index(props) {
 
       localWidgets.forEach(function (widget) {
         if (widget.getRenderState) {
-          var renderState = widget.getRenderState(instantSearchInstance.renderState[_this3.getIndexId()] || {}, {
-            helper: _this3.getHelper(),
-            parent: _this3,
+          var renderState = widget.getRenderState(instantSearchInstance.renderState[_this4.getIndexId()] || {}, {
+            helper: _this4.getHelper(),
+            parent: _this4,
             instantSearchInstance: instantSearchInstance,
-            results: _this3.getResults(),
-            scopedResults: _this3.getScopedResults(),
-            state: _this3.getResults()._state,
+            results: _this4.getResults(),
+            scopedResults: _this4.getScopedResults(),
+            state: _this4.getResults()._state,
             renderState: instantSearchInstance.renderState,
             templatesConfig: instantSearchInstance.templatesConfig,
-            createURL: _this3.createURL,
+            createURL: _this4.createURL,
             searchMetadata: {
               isSearchStalled: instantSearchInstance._isSearchStalled
             }
@@ -449,7 +467,7 @@ var index = function index(props) {
           storeRenderState({
             renderState: renderState,
             instantSearchInstance: instantSearchInstance,
-            parent: _this3
+            parent: _this4
           });
         }
       });
@@ -463,14 +481,14 @@ var index = function index(props) {
         if (widget.render) {
           widget.render({
             helper: helper,
-            parent: _this3,
+            parent: _this4,
             instantSearchInstance: instantSearchInstance,
-            results: _this3.getResults(),
-            scopedResults: _this3.getScopedResults(),
-            state: _this3.getResults()._state,
+            results: _this4.getResults(),
+            scopedResults: _this4.getScopedResults(),
+            state: _this4.getResults()._state,
             renderState: instantSearchInstance.renderState,
             templatesConfig: instantSearchInstance.templatesConfig,
-            createURL: _this3.createURL,
+            createURL: _this4.createURL,
             searchMetadata: {
               isSearchStalled: instantSearchInstance._isSearchStalled
             }
@@ -479,6 +497,8 @@ var index = function index(props) {
       });
     },
     dispose: function dispose() {
+      var _this5 = this;
+
       localWidgets.forEach(function (widget) {
         if (widget.dispose) {
           // The dispose function is always called once the instance is started
@@ -489,7 +509,8 @@ var index = function index(props) {
           // operations on `add` & `remove`.
           widget.dispose({
             helper: helper,
-            state: helper.state
+            state: helper.state,
+            parent: _this5
           });
         }
       });
@@ -503,7 +524,7 @@ var index = function index(props) {
     getWidgetUiState: function getWidgetUiState(uiState) {
       return localWidgets.filter(isIndexWidget).reduce(function (previousUiState, innerIndex) {
         return innerIndex.getWidgetUiState(previousUiState);
-      }, _objectSpread({}, uiState, _defineProperty({}, this.getIndexId(), localUiState)));
+      }, _objectSpread(_objectSpread({}, uiState), {}, _defineProperty({}, this.getIndexId(), localUiState)));
     },
     getWidgetState: function getWidgetState(uiState) {
       process.env.NODE_ENV === 'development' ? warning(false, 'The `getWidgetState` method is renamed `getWidgetUiState` and will no longer exist under that name in InstantSearch.js 5.x. Please use `getWidgetUiState` instead.') : void 0;
@@ -532,5 +553,5 @@ function storeRenderState(_ref7) {
       instantSearchInstance = _ref7.instantSearchInstance,
       parent = _ref7.parent;
   var parentIndexName = parent ? parent.getIndexId() : instantSearchInstance.mainIndex.getIndexId();
-  instantSearchInstance.renderState = _objectSpread({}, instantSearchInstance.renderState, _defineProperty({}, parentIndexName, _objectSpread({}, instantSearchInstance.renderState[parentIndexName], {}, renderState)));
+  instantSearchInstance.renderState = _objectSpread(_objectSpread({}, instantSearchInstance.renderState), {}, _defineProperty({}, parentIndexName, _objectSpread(_objectSpread({}, instantSearchInstance.renderState[parentIndexName]), renderState)));
 }

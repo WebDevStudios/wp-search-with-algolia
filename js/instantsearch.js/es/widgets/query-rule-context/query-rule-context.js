@@ -17,8 +17,8 @@ var queryRuleContext = function queryRuleContext() {
     throw new Error(withUsage('The `trackedFilters` option is required.'));
   }
 
-  return _objectSpread({}, connectQueryRules(noop)(widgetParams), {
-    $$type: 'ais.queryRuleContext'
+  return _objectSpread(_objectSpread({}, connectQueryRules(noop)(widgetParams)), {}, {
+    $$widgetType: 'ais.queryRuleContext'
   });
 };
 
