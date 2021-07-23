@@ -164,9 +164,9 @@ class Algolia_Admin_Page_Autocomplete {
 		$indices  = $this->autocomplete_config->get_form_data();
 		$checked  = 'yes' === $value ? 'checked ' : '';
 		$disabled = empty( $indices ) ? 'disabled ' : '';
-?>
+		?>
 		<input type='checkbox' name='algolia_autocomplete_enabled' value='yes' <?php echo esc_html( $checked . ' ' . $disabled ); ?>/>
-<?php
+		<?php
 	}
 
 	/**

@@ -186,7 +186,8 @@ class Algolia_Template_Loader {
 	 */
 	public function load_instantsearch_template() {
 		add_action(
-			'wp_enqueue_scripts', function () {
+			'wp_enqueue_scripts',
+			function () {
 				// Enqueue the instantsearch.js default styles.
 				wp_enqueue_style( 'algolia-instantsearch' );
 
