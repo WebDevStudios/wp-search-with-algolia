@@ -8,6 +8,10 @@
     "algolia"
   ],
   "homepage": "https://github.com/WebDevStudios/wp-search-with-algolia",
+  "engines": {
+    "node": "^12.0.0",
+    "npm": "^6.0.0"
+  },
   "dependencies": {
     "algoliasearch": "^4.10.2",
     "autocomplete.js": "^0.38.0",
