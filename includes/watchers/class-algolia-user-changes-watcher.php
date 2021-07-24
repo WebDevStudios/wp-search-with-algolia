@@ -153,7 +153,8 @@ class Algolia_User_Changes_Watcher implements Algolia_Changes_Watcher {
 		// Todo: this is not optimal given it would be triggered for every future triggered hook.
 		// Todo: needs to be changed.
 		add_action(
-			'after_delete_post', function() use ( $watcher, $author_id ) {
+			'after_delete_post',
+			function() use ( $watcher, $author_id ) {
 				$watcher->sync_item( $author_id );
 			}
 		);

@@ -76,7 +76,7 @@ class Algolia_Template_Loader {
 		$autocomplete_config = $this->plugin->get_autocomplete_config();
 
 		$config = array(
-			'debug'              => defined( 'WP_DEBUG' ) && WP_DEBUG,
+			'debug'              => defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG,
 			'application_id'     => $settings->get_application_id(),
 			'search_api_key'     => $settings->get_search_api_key(),
 			'powered_by_enabled' => $settings->is_powered_by_enabled(),
@@ -186,7 +186,8 @@ class Algolia_Template_Loader {
 	 */
 	public function load_instantsearch_template() {
 		add_action(
-			'wp_enqueue_scripts', function () {
+			'wp_enqueue_scripts',
+			function () {
 				// Enqueue the instantsearch.js default styles.
 				wp_enqueue_style( 'algolia-instantsearch' );
 

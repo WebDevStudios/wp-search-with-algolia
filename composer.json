@@ -1,6 +1,6 @@
 {
   "name": "webdevstudios/wp-search-with-algolia",
-  "version": "1.6.0",
+  "version": "2.0.0",
   "description": "Integrate the powerful Algolia search service with WordPress.",
   "authors": [
     {
@@ -21,17 +21,17 @@
     "composer/installers": "~1.0"
   },
   "require-dev": {
-    "algolia/algoliasearch-client-php": "~2.7.0",
-    "psr/http-message": "~1.0.0",
-    "psr/log": "~1.0.0",
-    "psr/simple-cache": "~1.0.0",
-    "webdevstudios/php-coding-standards": "^1.0.0",
-    "phpcompatibility/phpcompatibility-wp": "^2.0.0",
-    "slowprog/composer-copy-file": "^0.3.2"
+    "algolia/algoliasearch-client-php": "^3.0.2",
+    "psr/http-message": "~1.0.1",
+    "psr/log": "~1.0.2",
+    "psr/simple-cache": "~1.0.1",
+	"dealerdirect/phpcodesniffer-composer-installer": "^0.7.1",
+    "phpcompatibility/phpcompatibility-wp": "^2.1.2",
+    "wp-coding-standards/wpcs": "^2.3.0",
+    "slowprog/composer-copy-file": "^0.3.3"
   },
   "extra": {
     "installer-name": "wp-search-with-algolia",
-    "phpcodesniffer-search-depth": 5,
     "copy-file": {
       "vendor/algolia": "includes/libraries"
     },
@@ -42,7 +42,7 @@
   },
   "scripts": {
     "lint": "@php ./vendor/squizlabs/php_codesniffer/bin/phpcs --standard=phpcs.xml --extensions=php .",
-    "lint:fix": "vendor/bin/phpcbf",
+    "lint:fix": "@php ./vendor/squizlabs/php_codesniffer/bin/phpcbf --standard=phpcs.xml --extensions=php .",
     "post-install-cmd": [
       "SlowProg\\CopyFile\\ScriptHandler::copy"
     ],
