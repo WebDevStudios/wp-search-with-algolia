@@ -42,7 +42,7 @@
   },
   "scripts": {
     "lint": "@php ./vendor/squizlabs/php_codesniffer/bin/phpcs --standard=phpcs.xml --extensions=php .",
-    "lint:fix": "vendor/bin/phpcbf",
+    "lint:fix": "@php ./vendor/squizlabs/php_codesniffer/bin/phpcbf --standard=phpcs.xml --extensions=php .",
     "post-install-cmd": [
       "SlowProg\\CopyFile\\ScriptHandler::copy"
     ],
