@@ -106,6 +106,14 @@ WebDevStudios provides end-to-end WordPress opportunities from strategy and plan
 
 Follow along with the changelog on [Github](https://github.com/WebDevStudios/wp-search-with-algolia/releases).
 
+= 2.0.0 =
+* Breaking changes for users with customized autocomplete.php / instantsearch.php template in their theme.
+* Update autocomplete.php and instantsearch.php templates for compatibility with new JS libs.
+* Update Algolia JavaScript API Client to 4.10.3
+* Update Algolia InstantSearch.js to 4.25.2
+* Update Algolia Autocomplete.js to 0.38.0
+* Update Algolia PHP API Client to 3.0.2
+
 = 1.8.0 =
 * Focus on template versioning and update messaging
 * Add Algolia_Template_Utils class
