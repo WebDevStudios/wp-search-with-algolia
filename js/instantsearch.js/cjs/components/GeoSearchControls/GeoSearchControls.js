@@ -33,7 +33,7 @@ var GeoSearchControls = function GeoSearchControls(_ref) {
       onRefineClick = _ref.onRefineClick,
       onClearClick = _ref.onClearClick,
       templateProps = _ref.templateProps;
-  return enableRefine && (0, _preact.h)("div", null, enableRefineControl && (0, _preact.h)("div", {
+  return (0, _preact.h)(_preact.Fragment, null, enableRefine && (0, _preact.h)("div", null, enableRefineControl && (0, _preact.h)("div", {
     className: cssClasses.control
   }, isRefineOnMapMove || !hasMapMoveSinceLastRefine ? (0, _preact.h)(_GeoSearchToggle.default, {
     classNameLabel: (0, _classnames.default)(cssClasses.label, _defineProperty({}, cssClasses.selectedLabel, isRefineOnMapMove)),
@@ -65,7 +65,7 @@ var GeoSearchControls = function GeoSearchControls(_ref) {
   }, (0, _preact.h)(_Template.default, _extends({}, templateProps, {
     templateKey: "reset",
     rootTagName: "span"
-  }))));
+  })))));
 };
 
 var _default = GeoSearchControls;

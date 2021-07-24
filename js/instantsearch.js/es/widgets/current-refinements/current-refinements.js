@@ -24,8 +24,9 @@ var renderer = function renderer(_ref, isFirstRender) {
     return;
   }
 
-  var container = widgetParams.container,
-      cssClasses = widgetParams.cssClasses;
+  var _ref2 = widgetParams,
+      container = _ref2.container,
+      cssClasses = _ref2.cssClasses;
   render(h(CurrentRefinements, {
     cssClasses: cssClasses,
     items: items
@@ -33,13 +34,13 @@ var renderer = function renderer(_ref, isFirstRender) {
 };
 
 var currentRefinements = function currentRefinements(widgetParams) {
-  var _ref2 = widgetParams || {},
-      container = _ref2.container,
-      includedAttributes = _ref2.includedAttributes,
-      excludedAttributes = _ref2.excludedAttributes,
-      _ref2$cssClasses = _ref2.cssClasses,
-      userCssClasses = _ref2$cssClasses === void 0 ? {} : _ref2$cssClasses,
-      transformItems = _ref2.transformItems;
+  var _ref3 = widgetParams || {},
+      container = _ref3.container,
+      includedAttributes = _ref3.includedAttributes,
+      excludedAttributes = _ref3.excludedAttributes,
+      _ref3$cssClasses = _ref3.cssClasses,
+      userCssClasses = _ref3$cssClasses === void 0 ? {} : _ref3$cssClasses,
+      transformItems = _ref3.transformItems;
 
   if (!container) {
     throw new Error(withUsage('The `container` option is required.'));

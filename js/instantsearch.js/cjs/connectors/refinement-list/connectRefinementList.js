@@ -21,6 +21,7 @@ var withUsage = (0, _utils.createDocumentationMessageGenerator)({
   name: 'refinement-list',
   connector: true
 });
+var DEFAULT_SORT = ['isRefined', 'count:desc', 'name:asc'];
 
 /**
  * **RefinementList** connector provides the logic to build a custom widget that
@@ -49,7 +50,7 @@ var connectRefinementList = function connectRefinementList(renderFn) {
         _ref$showMoreLimit = _ref.showMoreLimit,
         showMoreLimit = _ref$showMoreLimit === void 0 ? 20 : _ref$showMoreLimit,
         _ref$sortBy = _ref.sortBy,
-        sortBy = _ref$sortBy === void 0 ? ['isRefined', 'count:desc', 'name:asc'] : _ref$sortBy,
+        sortBy = _ref$sortBy === void 0 ? DEFAULT_SORT : _ref$sortBy,
         _ref$escapeFacetValue = _ref.escapeFacetValues,
         escapeFacetValues = _ref$escapeFacetValue === void 0 ? true : _ref$escapeFacetValue,
         _ref$transformItems = _ref.transformItems,
@@ -199,7 +200,8 @@ var connectRefinementList = function connectRefinementList(renderFn) {
 
         if (results) {
           var values = results.getFacetValues(attribute, {
-            sortBy: sortBy
+            sortBy: sortBy,
+            facetOrdering: sortBy === DEFAULT_SORT
           });
           facetValues = values && Array.isArray(values) ? values : [];
           items = transformItems(facetValues.slice(0, getLimit()).map(formatItems));

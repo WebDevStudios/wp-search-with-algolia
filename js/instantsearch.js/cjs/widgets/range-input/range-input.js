@@ -102,16 +102,13 @@ var rangeInput = function rangeInput(widgetParams) {
       _ref3$cssClasses = _ref3.cssClasses,
       userCssClasses = _ref3$cssClasses === void 0 ? {} : _ref3$cssClasses,
       _ref3$templates = _ref3.templates,
-      userTemplates = _ref3$templates === void 0 ? {} : _ref3$templates;
+      templates = _ref3$templates === void 0 ? {} : _ref3$templates;
 
   if (!container) {
     throw new Error(withUsage('The `container` option is required.'));
   }
 
   var containerNode = (0, _utils.getContainerNode)(container);
-
-  var templates = _objectSpread(_objectSpread({}, defaultTemplates), userTemplates);
-
   var cssClasses = {
     root: (0, _classnames.default)(suit(), userCssClasses.root),
     noRefinement: (0, _classnames.default)(suit({

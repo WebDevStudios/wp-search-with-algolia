@@ -96,7 +96,8 @@ class Algolia_Admin_Page_Settings {
 	 */
 	public function add_action_links( array $links ) {
 		return array_merge(
-			$links, array(
+			$links,
+			array(
 				'<a href="' . esc_url( admin_url( 'admin.php?page=' . $this->slug ) ) . '">' . esc_html__( 'Settings', 'wp-search-with-algolia' ) . '</a>',
 			)
 		);
@@ -206,10 +207,10 @@ class Algolia_Admin_Page_Settings {
 		$settings      = $this->plugin->get_settings();
 		$setting       = $settings->get_application_id();
 		$disabled_html = $settings->is_application_id_in_config() ? ' disabled' : '';
-?>
+		?>
 		<input type="text" name="algolia_application_id" class="regular-text" value="<?php echo esc_attr( $setting ); ?>" <?php echo esc_html( $disabled_html ); ?>/>
 		<p class="description" id="home-description"><?php esc_html_e( 'Your Algolia Application ID.', 'wp-search-with-algolia' ); ?></p>
-<?php
+		<?php
 	}
 
 	/**
@@ -223,10 +224,10 @@ class Algolia_Admin_Page_Settings {
 		$setting       = $settings->get_search_api_key();
 		$disabled_html = $settings->is_search_api_key_in_config() ? ' disabled' : '';
 
-?>
+		?>
 		<input type="text" name="algolia_search_api_key" class="regular-text" value="<?php echo esc_attr( $setting ); ?>" <?php echo esc_html( $disabled_html ); ?>/>
 		<p class="description" id="home-description"><?php esc_html_e( 'Your Algolia Search-only API key (public).', 'wp-search-with-algolia' ); ?></p>
-<?php
+		<?php
 	}
 
 	/**
@@ -239,10 +240,10 @@ class Algolia_Admin_Page_Settings {
 		$settings      = $this->plugin->get_settings();
 		$setting       = $settings->get_api_key();
 		$disabled_html = $settings->is_api_key_in_config() ? ' disabled' : '';
-?>
+		?>
 		<input type="password" name="algolia_api_key" class="regular-text" value="<?php echo esc_attr( $setting ); ?>" <?php echo esc_html( $disabled_html ); ?>/>
 		<p class="description" id="home-description"><?php esc_html_e( 'Your Algolia ADMIN API key (kept private).', 'wp-search-with-algolia' ); ?></p>
-<?php
+		<?php
 	}
 
 	/**
@@ -255,10 +256,10 @@ class Algolia_Admin_Page_Settings {
 		$settings          = $this->plugin->get_settings();
 		$index_name_prefix = $settings->get_index_name_prefix();
 		$disabled_html     = $settings->is_index_name_prefix_in_config() ? ' disabled' : '';
-?>
+		?>
 		<input type="text" name="algolia_index_name_prefix" value="<?php echo esc_attr( $index_name_prefix ); ?>" <?php echo esc_html( $disabled_html ); ?>/>
 		<p class="description" id="home-description"><?php esc_html_e( 'This prefix will be prepended to your index names.', 'wp-search-with-algolia' ); ?></p>
-<?php
+		<?php
 	}
 
 	/**

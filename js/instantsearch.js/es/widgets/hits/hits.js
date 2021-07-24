@@ -60,7 +60,7 @@ var hits = function hits(widgetParams) {
       escapeHTML = _ref3.escapeHTML,
       transformItems = _ref3.transformItems,
       _ref3$templates = _ref3.templates,
-      templates = _ref3$templates === void 0 ? defaultTemplates : _ref3$templates,
+      templates = _ref3$templates === void 0 ? {} : _ref3$templates,
       _ref3$cssClasses = _ref3.cssClasses,
       userCssClasses = _ref3$cssClasses === void 0 ? {} : _ref3$cssClasses;
 

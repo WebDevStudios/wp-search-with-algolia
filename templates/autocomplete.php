@@ -25,9 +25,9 @@
 		<# } #>
 		<div class="suggestion-post-attributes">
 			<span class="suggestion-post-title">{{{ data._highlightResult.post_title.value }}}</span>
-				<# if ( data._snippetResult['content'] ) { #>
-					<span class="suggestion-post-content">{{{ data._snippetResult['content'].value }}}</span>
-				<# } #>
+			<# if ( data._snippetResult['content'] ) { #>
+				<span class="suggestion-post-content">{{{ data._snippetResult['content'].value }}}</span>
+			<# } #>
 		</div>
 	</a>
 </script>
@@ -101,9 +101,7 @@
 		/**
 		 * Algolia hits source method.
 		 *
-		 * This method defines a custom source to use with autocomplete.js
-		 * instead of using its default one. The default one throws errors
-		 * before initializing autocomplete.
+		 * This method defines a custom source to use with autocomplete.js.
 		 *
 		 * @param object $index Algolia index object.
 		 * @param object $params Options object to use in search.

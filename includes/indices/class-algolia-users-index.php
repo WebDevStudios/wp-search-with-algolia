@@ -84,7 +84,8 @@ final class Algolia_Users_Index extends Algolia_Index {
 		$avatar_size = 32;
 		if ( function_exists( 'get_avatar_url' ) ) {
 			$record['avatar_url'] = get_avatar_url(
-				$item->ID, array(
+				$item->ID,
+				array(
 					'size' => $avatar_size,
 				)
 			);

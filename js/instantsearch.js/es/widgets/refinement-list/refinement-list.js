@@ -12,16 +12,12 @@ import connectRefinementList from '../../connectors/refinement-list/connectRefin
 import { prepareTemplateProps, getContainerNode, createDocumentationMessageGenerator } from '../../lib/utils';
 import { component } from '../../lib/suit';
 import searchBoxDefaultTemplates from '../search-box/defaultTemplates';
+import defaultTemplates from './defaultTemplates';
 var withUsage = createDocumentationMessageGenerator({
   name: 'refinement-list'
 });
 var suit = component('RefinementList');
 var searchBoxSuit = component('SearchBox');
-export var defaultTemplates = {
-  item: "<label class=\"{{cssClasses.label}}\">\n  <input type=\"checkbox\"\n         class=\"{{cssClasses.checkbox}}\"\n         value=\"{{value}}\"\n         {{#isRefined}}checked{{/isRefined}} />\n  <span class=\"{{cssClasses.labelText}}\">{{#isFromSearch}}{{{highlighted}}}{{/isFromSearch}}{{^isFromSearch}}{{highlighted}}{{/isFromSearch}}</span>\n  <span class=\"{{cssClasses.count}}\">{{#helpers.formatNumber}}{{count}}{{/helpers.formatNumber}}</span>\n</label>",
-  showMoreText: "\n    {{#isShowingMore}}\n      Show less\n    {{/isShowingMore}}\n    {{^isShowingMore}}\n      Show more\n    {{/isShowingMore}}\n    ",
-  searchableNoResults: 'No results'
-};
 
 var renderer = function renderer(_ref) {
   var containerNode = _ref.containerNode,
@@ -118,7 +114,7 @@ var refinementList = function refinementList(widgetParams) {
       _ref3$cssClasses = _ref3.cssClasses,
       userCssClasses = _ref3$cssClasses === void 0 ? {} : _ref3$cssClasses,
       _ref3$templates = _ref3.templates,
-      userTemplates = _ref3$templates === void 0 ? defaultTemplates : _ref3$templates,
+      templates = _ref3$templates === void 0 ? {} : _ref3$templates,
       transformItems = _ref3.transformItems;
 
   if (!container) {
@@ -198,11 +194,11 @@ var refinementList = function refinementList(widgetParams) {
   var specializedRenderer = renderer({
     containerNode: containerNode,
     cssClasses: cssClasses,
-    templates: userTemplates,
+    templates: templates,
     searchBoxTemplates: {
-      submit: userTemplates.searchableSubmit,
-      reset: userTemplates.searchableReset,
-      loadingIndicator: userTemplates.searchableLoadingIndicator
+      submit: templates.searchableSubmit,
+      reset: templates.searchableReset,
+      loadingIndicator: templates.searchableLoadingIndicator
     },
     renderState: {},
     searchable: searchable,

@@ -3,7 +3,8 @@ import { h } from 'preact';
 
 var GeoSearchButton = function GeoSearchButton(_ref) {
   var className = _ref.className,
-      disabled = _ref.disabled,
+      _ref$disabled = _ref.disabled,
+      disabled = _ref$disabled === void 0 ? false : _ref$disabled,
       onClick = _ref.onClick,
       children = _ref.children;
   return h("button", {
@@ -13,7 +14,4 @@ var GeoSearchButton = function GeoSearchButton(_ref) {
   }, children);
 };
 
-GeoSearchButton.defaultProps = {
-  disabled: false
-};
 export default GeoSearchButton;

@@ -104,7 +104,7 @@ var ratingMenu = function ratingMenu(widgetParams) {
       _ref5$cssClasses = _ref5.cssClasses,
       userCssClasses = _ref5$cssClasses === void 0 ? {} : _ref5$cssClasses,
       _ref5$templates = _ref5.templates,
-      templates = _ref5$templates === void 0 ? defaultTemplates : _ref5$templates;
+      templates = _ref5$templates === void 0 ? {} : _ref5$templates;
 
   if (!container) {
     throw new Error(withUsage('The `container` option is required.'));

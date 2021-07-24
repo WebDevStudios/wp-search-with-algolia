@@ -274,7 +274,8 @@ class Algolia_Plugin {
 		$searchable_post_types = get_post_types(
 			array(
 				'exclude_from_search' => false,
-			), 'names'
+			),
+			'names'
 		);
 		$searchable_post_types = (array) apply_filters( 'algolia_searchable_post_types', $searchable_post_types );
 		$this->indices[]       = new Algolia_Searchable_Posts_Index( $searchable_post_types );
@@ -353,7 +354,8 @@ class Algolia_Plugin {
 
 		if ( isset( $args['enabled'] ) && true === $args['enabled'] ) {
 			$indices = array_filter(
-				$indices, function( $index ) {
+				$indices,
+				function( $index ) {
 					return $index->is_enabled();
 				}
 			);
@@ -362,7 +364,8 @@ class Algolia_Plugin {
 		if ( isset( $args['contains'] ) ) {
 			$contains = (string) $args['contains'];
 			$indices  = array_filter(
-				$indices, function( $index ) use ( $contains ) {
+				$indices,
+				function( $index ) use ( $contains ) {
 					return $index->contains_only( $contains );
 				}
 			);

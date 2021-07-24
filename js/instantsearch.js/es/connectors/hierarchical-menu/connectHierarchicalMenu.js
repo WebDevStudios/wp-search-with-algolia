@@ -25,6 +25,7 @@ var withUsage = createDocumentationMessageGenerator({
   name: 'hierarchical-menu',
   connector: true
 });
+var DEFAULT_SORT = ['name:asc'];
 
 /**
  * **HierarchicalMenu** connector provides the logic to build a custom widget
@@ -58,7 +59,7 @@ var connectHierarchicalMenu = function connectHierarchicalMenu(renderFn) {
         _ref$showMoreLimit = _ref.showMoreLimit,
         showMoreLimit = _ref$showMoreLimit === void 0 ? 20 : _ref$showMoreLimit,
         _ref$sortBy = _ref.sortBy,
-        sortBy = _ref$sortBy === void 0 ? ['name:asc'] : _ref$sortBy,
+        sortBy = _ref$sortBy === void 0 ? DEFAULT_SORT : _ref$sortBy,
         _ref$transformItems = _ref.transformItems,
         transformItems = _ref$transformItems === void 0 ? function (items) {
       return items;
@@ -138,12 +139,6 @@ var connectHierarchicalMenu = function connectHierarchicalMenu(renderFn) {
           instantSearchInstance: instantSearchInstance
         }), false);
       },
-
-      /**
-       * @param {Object} param0 cleanup arguments
-       * @param {any} param0.state current search parameters
-       * @returns {any} next search parameters
-       */
       dispose: function dispose(_ref3) {
         var state = _ref3.state;
         unmountFn();
@@ -185,7 +180,8 @@ var connectHierarchicalMenu = function connectHierarchicalMenu(renderFn) {
 
         if (results) {
           var facetValues = results.getFacetValues(hierarchicalFacetName, {
-            sortBy: sortBy
+            sortBy: sortBy,
+            facetOrdering: sortBy === DEFAULT_SORT
           });
           var facetItems = facetValues && !Array.isArray(facetValues) && facetValues.data ? facetValues.data : []; // If the limit is the max number of facet retrieved it is impossible to know
           // if the facets are exhaustive. The only moment we are sure it is exhaustive

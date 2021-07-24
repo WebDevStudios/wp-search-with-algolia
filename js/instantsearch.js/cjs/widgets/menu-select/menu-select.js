@@ -71,7 +71,7 @@ var menuSelect = function menuSelect(widgetParams) {
       _ref3$cssClasses = _ref3.cssClasses,
       userCssClasses = _ref3$cssClasses === void 0 ? {} : _ref3$cssClasses,
       _ref3$templates = _ref3.templates,
-      templates = _ref3$templates === void 0 ? _defaultTemplates.default : _ref3$templates,
+      templates = _ref3$templates === void 0 ? {} : _ref3$templates,
       transformItems = _ref3.transformItems;
 
   if (!container) {

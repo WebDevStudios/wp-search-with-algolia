@@ -1,3 +1,4 @@
+// typed as any, since it accepts the _real_ js clients, not the interface we otherwise expect
 export function getAppIdAndApiKey(searchClient) {
   if (searchClient.transporter) {
     // searchClient v4

@@ -120,6 +120,7 @@ var connectVoiceSearch = function connectVoiceSearch(renderFn) {
             query: ''
           });
           var toReset = additional ? Object.keys(additional).reduce(function (acc, current) {
+            // @ts-ignore search parameters is typed as readonly
             acc[current] = undefined;
             return acc;
           }, {}) : {};

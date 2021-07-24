@@ -37,11 +37,16 @@
 	<exclude-pattern>/node_modules/</exclude-pattern>
 	<exclude-pattern>/tests/</exclude-pattern>
 
-	<!--
-		Use WDS Coding standards.
-	 	https://github.com/WebDevStudios/WDS-Coding-Standards
-	-->
-	<rule ref="WebDevStudios"/>
+	<!-- Use WordPress "Extra" Coding Standards. -->
+	<rule ref="WordPress-Extra">
+		<!-- Allow array short syntax. -->
+		<exclude name="Generic.Arrays.DisallowShortArraySyntax" />
+		<!-- Allow short prefixes. -->
+		<exclude name="WordPress.NamingConventions.PrefixAllGlobals.ShortPrefixPassed"/>
+	</rule>
+
+	<!-- Use WordPress "Docs" Coding Standards. -->
+	<rule ref="WordPress-Docs" />
 
 	<!--
 		WP Search With Algolia currently supports WP 5.0+.
@@ -94,8 +99,10 @@
 		</properties>
 	</rule>
 
-	<rule ref="Generic.Arrays.DisallowShortArraySyntax">
-		<severity>0</severity>
-	</rule>
+	<!-- Use WordPress PHP Compatibility. -->
+	<rule ref="PHPCompatibilityWP"/>
+
+	<!-- WPSWA currently supports PHP 7.2+. -->
+	<config name="testVersion" value="7.2-"/>
 
 </ruleset>

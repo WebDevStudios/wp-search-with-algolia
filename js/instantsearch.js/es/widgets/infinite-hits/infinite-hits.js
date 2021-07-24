@@ -20,8 +20,8 @@ var suit = component('InfiniteHits');
 var InfiniteHitsWithInsightsListener = withInsightsListener(InfiniteHits);
 
 var renderer = function renderer(_ref) {
-  var cssClasses = _ref.cssClasses,
-      containerNode = _ref.containerNode,
+  var containerNode = _ref.containerNode,
+      cssClasses = _ref.cssClasses,
       renderState = _ref.renderState,
       templates = _ref.templates,
       hasShowPrevious = _ref.showPrevious;
@@ -70,7 +70,7 @@ var infiniteHits = function infiniteHits(widgetParams) {
       escapeHTML = _ref3.escapeHTML,
       transformItems = _ref3.transformItems,
       _ref3$templates = _ref3.templates,
-      templates = _ref3$templates === void 0 ? defaultTemplates : _ref3$templates,
+      templates = _ref3$templates === void 0 ? {} : _ref3$templates,
       _ref3$cssClasses = _ref3.cssClasses,
       userCssClasses = _ref3$cssClasses === void 0 ? {} : _ref3$cssClasses,
       showPrevious = _ref3.showPrevious,

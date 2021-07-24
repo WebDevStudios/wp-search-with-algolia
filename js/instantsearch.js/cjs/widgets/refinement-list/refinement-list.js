@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.default = exports.defaultTemplates = void 0;
+exports.default = void 0;
 
 var _preact = require("preact");
 
@@ -19,6 +19,8 @@ var _suit = require("../../lib/suit");
 
 var _defaultTemplates = _interopRequireDefault(require("../search-box/defaultTemplates"));
 
+var _defaultTemplates2 = _interopRequireDefault(require("./defaultTemplates"));
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
@@ -32,12 +34,6 @@ var withUsage = (0, _utils.createDocumentationMessageGenerator)({
 });
 var suit = (0, _suit.component)('RefinementList');
 var searchBoxSuit = (0, _suit.component)('SearchBox');
-var defaultTemplates = {
-  item: "<label class=\"{{cssClasses.label}}\">\n  <input type=\"checkbox\"\n         class=\"{{cssClasses.checkbox}}\"\n         value=\"{{value}}\"\n         {{#isRefined}}checked{{/isRefined}} />\n  <span class=\"{{cssClasses.labelText}}\">{{#isFromSearch}}{{{highlighted}}}{{/isFromSearch}}{{^isFromSearch}}{{highlighted}}{{/isFromSearch}}</span>\n  <span class=\"{{cssClasses.count}}\">{{#helpers.formatNumber}}{{count}}{{/helpers.formatNumber}}</span>\n</label>",
-  showMoreText: "\n    {{#isShowingMore}}\n      Show less\n    {{/isShowingMore}}\n    {{^isShowingMore}}\n      Show more\n    {{/isShowingMore}}\n    ",
-  searchableNoResults: 'No results'
-};
-exports.defaultTemplates = defaultTemplates;
 
 var renderer = function renderer(_ref) {
   var containerNode = _ref.containerNode,
@@ -63,7 +59,7 @@ var renderer = function renderer(_ref) {
 
     if (isFirstRendering) {
       renderState.templateProps = (0, _utils.prepareTemplateProps)({
-        defaultTemplates: defaultTemplates,
+        defaultTemplates: _defaultTemplates2.default,
         templatesConfig: instantSearchInstance.templatesConfig,
         templates: templates
       });
@@ -134,7 +130,7 @@ var refinementList = function refinementList(widgetParams) {
       _ref3$cssClasses = _ref3.cssClasses,
       userCssClasses = _ref3$cssClasses === void 0 ? {} : _ref3$cssClasses,
       _ref3$templates = _ref3.templates,
-      userTemplates = _ref3$templates === void 0 ? defaultTemplates : _ref3$templates,
+      templates = _ref3$templates === void 0 ? {} : _ref3$templates,
       transformItems = _ref3.transformItems;
 
   if (!container) {
@@ -214,11 +210,11 @@ var refinementList = function refinementList(widgetParams) {
   var specializedRenderer = renderer({
     containerNode: containerNode,
     cssClasses: cssClasses,
-    templates: userTemplates,
+    templates: templates,
     searchBoxTemplates: {
-      submit: userTemplates.searchableSubmit,
-      reset: userTemplates.searchableReset,
-      loadingIndicator: userTemplates.searchableLoadingIndicator
+      submit: templates.searchableSubmit,
+      reset: templates.searchableReset,
+      loadingIndicator: templates.searchableLoadingIndicator
     },
     renderState: {},
     searchable: searchable,

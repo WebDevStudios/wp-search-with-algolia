@@ -25,6 +25,7 @@ var withUsage = createDocumentationMessageGenerator({
   name: 'menu',
   connector: true
 });
+var DEFAULT_SORT = ['isRefined', 'name:asc'];
 
 /**
  * **Menu** connector provides the logic to build a widget that will give the user the ability to choose a single value for a specific facet. The typical usage of menu is for navigation in categories.
@@ -48,7 +49,7 @@ var connectMenu = function connectMenu(renderFn) {
         _ref$showMoreLimit = _ref.showMoreLimit,
         showMoreLimit = _ref$showMoreLimit === void 0 ? 20 : _ref$showMoreLimit,
         _ref$sortBy = _ref.sortBy,
-        sortBy = _ref$sortBy === void 0 ? ['isRefined', 'name:asc'] : _ref$sortBy,
+        sortBy = _ref$sortBy === void 0 ? DEFAULT_SORT : _ref$sortBy,
         _ref$transformItems = _ref.transformItems,
         transformItems = _ref$transformItems === void 0 ? function (items) {
       return items;
@@ -153,7 +154,8 @@ var connectMenu = function connectMenu(renderFn) {
 
         if (results) {
           var facetValues = results.getFacetValues(attribute, {
-            sortBy: sortBy
+            sortBy: sortBy,
+            facetOrdering: sortBy === DEFAULT_SORT
           });
           var facetItems = facetValues && !Array.isArray(facetValues) && facetValues.data ? facetValues.data : [];
           canToggleShowMore = showMore && (isShowingMore || facetItems.length > getLimit());

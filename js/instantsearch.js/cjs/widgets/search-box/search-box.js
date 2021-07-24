@@ -89,7 +89,8 @@ var searchBox = function searchBox(widgetParams) {
       _ref3$showLoadingIndi = _ref3.showLoadingIndicator,
       showLoadingIndicator = _ref3$showLoadingIndi === void 0 ? true : _ref3$showLoadingIndi,
       queryHook = _ref3.queryHook,
-      templates = _ref3.templates;
+      _ref3$templates = _ref3.templates,
+      userTemplates = _ref3$templates === void 0 ? {} : _ref3$templates;
 
   if (!container) {
     throw new Error(withUsage('The `container` option is required.'));
@@ -123,11 +124,14 @@ var searchBox = function searchBox(widgetParams) {
       descendantName: 'loadingIcon'
     }), userCssClasses.loadingIcon)
   };
+
+  var templates = _objectSpread(_objectSpread({}, _defaultTemplates.default), userTemplates);
+
   var specializedRenderer = renderer({
     containerNode: containerNode,
     cssClasses: cssClasses,
     placeholder: placeholder,
-    templates: _objectSpread(_objectSpread({}, _defaultTemplates.default), templates),
+    templates: templates,
     autofocus: autofocus,
     searchAsYouType: searchAsYouType,
     showReset: showReset,
