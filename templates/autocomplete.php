@@ -25,9 +25,9 @@
 		<# } #>
 		<div class="suggestion-post-attributes">
 			<span class="suggestion-post-title">{{{ data._highlightResult.post_title.value }}}</span>
-				<# if ( data._snippetResult['content'] ) { #>
-					<span class="suggestion-post-content">{{{ data._snippetResult['content'].value }}}</span>
-				<# } #>
+			<# if ( data._snippetResult['content'] ) { #>
+				<span class="suggestion-post-content">{{{ data._snippetResult['content'].value }}}</span>
+			<# } #>
 		</div>
 	</a>
 </script>
