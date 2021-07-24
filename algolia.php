@@ -26,7 +26,7 @@ if ( ! defined( 'WPINC' ) ) {
 }
 
 // The Algolia Search plugin version.
-define( 'ALGOLIA_VERSION', '1.8.0' );
+define( 'ALGOLIA_VERSION', '2.0.0' );
 
 // The minmum required PHP version.
 define( 'ALGOLIA_MIN_PHP_VERSION', '7.2' );
