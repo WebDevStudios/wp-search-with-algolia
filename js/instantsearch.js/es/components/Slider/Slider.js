@@ -1,5 +1,3 @@
-function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
-
 function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread(); }
 
 function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
@@ -13,6 +11,8 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) return _arrayLikeToAr
 function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
 
 function _extends() { _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; return _extends.apply(this, arguments); }
+
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -71,8 +71,9 @@ var Slider = /*#__PURE__*/function (_Component) {
       return function (props) {
         // display only two decimals after comma,
         // and apply `tooltips.format()` if any
-        var roundedValue = Math.round(parseFloat(props['aria-valuenow']) * 100) / 100;
-        var value = tooltips && tooltips.format ? tooltips.format(roundedValue) : roundedValue;
+        var roundedValue = Math.round( // have to cast as a string, as the value given to the prop is a number, but becomes a string when read
+        parseFloat(props['aria-valuenow']) * 100) / 100;
+        var value = _typeof(tooltips) === 'object' && tooltips.format ? tooltips.format(roundedValue) : roundedValue;
         var className = cx(props.className, {
           'rheostat-handle-lower': props['data-handle-key'] === 0,
           'rheostat-handle-upper': props['data-handle-key'] === 1
@@ -131,7 +132,7 @@ var Slider = /*#__PURE__*/function (_Component) {
           step = _this$props.step,
           pips = _this$props.pips,
           values = _this$props.values,
-          cssClasses = _this$props.cssClasses;
+          cssClasses = _this$props.cssClasses; // @TODO: figure out why this.props needs to be non-null asserted
 
       var _ref4 = this.isDisabled ? {
         min: this.props.min,

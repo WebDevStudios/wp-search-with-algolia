@@ -10,7 +10,8 @@ var _preact = require("preact");
 /** @jsx h */
 var GeoSearchButton = function GeoSearchButton(_ref) {
   var className = _ref.className,
-      disabled = _ref.disabled,
+      _ref$disabled = _ref.disabled,
+      disabled = _ref$disabled === void 0 ? false : _ref$disabled,
       onClick = _ref.onClick,
       children = _ref.children;
   return (0, _preact.h)("button", {
@@ -20,8 +21,5 @@ var GeoSearchButton = function GeoSearchButton(_ref) {
   }, children);
 };
 
-GeoSearchButton.defaultProps = {
-  disabled: false
-};
 var _default = GeoSearchButton;
 exports.default = _default;

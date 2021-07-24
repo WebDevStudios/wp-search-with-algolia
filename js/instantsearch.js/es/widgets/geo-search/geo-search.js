@@ -158,15 +158,12 @@ var geoSearch = function geoSearch(widgetParams) {
     }));
   };
 
-  var createMarker = !customHTMLMarker ? createBuiltInMarker : createCustomHTMLMarker; // prettier-ignore
-
+  var createMarker = !customHTMLMarker ? createBuiltInMarker : createCustomHTMLMarker;
   var markerOptions = !customHTMLMarker ? builtInMarker : customHTMLMarker;
   var makeWidget = connectGeoSearch(renderer, function () {
     return render(null, containerNode);
   });
   return _objectSpread(_objectSpread({}, makeWidget(_objectSpread(_objectSpread({}, otherWidgetParams), {}, {
-    // @ts-expect-error pattern not used in other widgets, but the
-    // renderState is stored on the connectorParams for usage in the renderer
     renderState: {},
     container: containerNode,
     googleReference: googleReference,

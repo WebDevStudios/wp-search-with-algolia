@@ -1,26 +1,26 @@
 {
-  "_from": "algoliasearch@^4.10.2",
-  "_id": "algoliasearch@4.10.2",
+  "_from": "algoliasearch@^4.10.3",
+  "_id": "algoliasearch@4.10.3",
   "_inBundle": false,
-  "_integrity": "sha512-BAYCe97XRfO15irJKBRjBnrp9tSqN0jppklLIXKdtUcXlibcPQtuAeGUP2cPiz6bJd3ISuoYzLFNt4/fQYtLMw==",
+  "_integrity": "sha512-OLY0AWlPKGLbSaw14ivMB7BT5fPdp8VdzY4L8FtzZnqmLKsyes24cltGlf7/X96ACkYEcT390SReCDt/9SUIRg==",
   "_location": "/algoliasearch",
   "_phantomChildren": {},
   "_requested": {
     "type": "range",
     "registry": true,
-    "raw": "algoliasearch@^4.10.2",
+    "raw": "algoliasearch@^4.10.3",
     "name": "algoliasearch",
     "escapedName": "algoliasearch",
-    "rawSpec": "^4.10.2",
+    "rawSpec": "^4.10.3",
     "saveSpec": null,
-    "fetchSpec": "^4.10.2"
+    "fetchSpec": "^4.10.3"
   },
   "_requiredBy": [
     "#USER"
   ],
-  "_resolved": "https://registry.npmjs.org/algoliasearch/-/algoliasearch-4.10.2.tgz",
-  "_shasum": "23e88c71cb381d5b59430baa5d417186cc8ff683",
-  "_spec": "algoliasearch@^4.10.2",
+  "_resolved": "https://registry.npmjs.org/algoliasearch/-/algoliasearch-4.10.3.tgz",
+  "_shasum": "22df4bb02fbf13a765b18b85df8745ee9c04f00a",
+  "_spec": "algoliasearch@^4.10.3",
   "_where": "/Users/raber/Local Sites/algolia/app/public/wp-content/plugins/wp-search-with-algolia",
   "browser": {
     "./index.js": "./dist/algoliasearch.umd.js",
@@ -31,20 +31,20 @@
   },
   "bundleDependencies": false,
   "dependencies": {
-    "@algolia/cache-browser-local-storage": "4.10.2",
-    "@algolia/cache-common": "4.10.2",
-    "@algolia/cache-in-memory": "4.10.2",
-    "@algolia/client-account": "4.10.2",
-    "@algolia/client-analytics": "4.10.2",
-    "@algolia/client-common": "4.10.2",
-    "@algolia/client-personalization": "4.10.2",
-    "@algolia/client-search": "4.10.2",
-    "@algolia/logger-common": "4.10.2",
-    "@algolia/logger-console": "4.10.2",
-    "@algolia/requester-browser-xhr": "4.10.2",
-    "@algolia/requester-common": "4.10.2",
-    "@algolia/requester-node-http": "4.10.2",
-    "@algolia/transporter": "4.10.2"
+    "@algolia/cache-browser-local-storage": "4.10.3",
+    "@algolia/cache-common": "4.10.3",
+    "@algolia/cache-in-memory": "4.10.3",
+    "@algolia/client-account": "4.10.3",
+    "@algolia/client-analytics": "4.10.3",
+    "@algolia/client-common": "4.10.3",
+    "@algolia/client-personalization": "4.10.3",
+    "@algolia/client-search": "4.10.3",
+    "@algolia/logger-common": "4.10.3",
+    "@algolia/logger-console": "4.10.3",
+    "@algolia/requester-browser-xhr": "4.10.3",
+    "@algolia/requester-common": "4.10.3",
+    "@algolia/requester-node-http": "4.10.3",
+    "@algolia/transporter": "4.10.3"
   },
   "deprecated": false,
   "description": "A fully-featured and blazing-fast JavaScript API client to interact with Algolia API.",
@@ -68,5 +68,5 @@
   "sideEffects": false,
   "types": "index.d.ts",
   "unpkg": "./dist/algoliasearch.umd.js",
-  "version": "4.10.2"
+  "version": "4.10.3"
 }

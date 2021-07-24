@@ -1,3 +1,41 @@
+## [4.25.2](https://github.com/algolia/instantsearch.js/compare/v4.25.1...v4.25.2) (2021-07-20)
+
+
+### Bug Fixes
+
+* **build:** ensure build fails when types building fails ([#4812](https://github.com/algolia/instantsearch.js/issues/4812)) ([b37e23b](https://github.com/algolia/instantsearch.js/commit/b37e23b5819abbc03049124bc3a29120f91aeb8c))
+* **types:** export widget's types ([#4813](https://github.com/algolia/instantsearch.js/issues/4813)) ([e9764e9](https://github.com/algolia/instantsearch.js/commit/e9764e9273e5b7bacd86f8d1cb751e87bd75eb75))
+
+
+
+## [4.25.1](https://github.com/algolia/instantsearch.js/compare/v4.25.0...v4.25.1) (2021-07-13)
+
+
+### Bug Fixes
+
+* **deps:** force a lower version of qs ([#4805](https://github.com/algolia/instantsearch.js/issues/4805)) ([07b7e08](https://github.com/algolia/instantsearch.js/commit/07b7e086282f8cc6a17aee822902d97204c1d2da))
+
+
+
+# [4.25.0](https://github.com/algolia/instantsearch.js/compare/v4.24.3...v4.25.0) (2021-07-06)
+
+
+### Features
+
+* **facets:** apply result from facet ordering ([#4784](https://github.com/algolia/instantsearch.js/issues/4784)) ([9e9d839](https://github.com/algolia/instantsearch.js/commit/9e9d8394067bec35425b7d66f94fcce504faee7f))
+
+
+
+## [4.24.3](https://github.com/algolia/instantsearch.js/compare/v4.24.2...v4.24.3) (2021-07-05)
+
+
+### Bug Fixes
+
+* **dynamicWidgets:** read from facetOrdering.facets ([42d6c6c](https://github.com/algolia/instantsearch.js/commit/42d6c6cefc5f009a3cfc63ab3d628ed2811f1700))
+* **ts:** make template types consistent ([#4785](https://github.com/algolia/instantsearch.js/issues/4785)) ([e0fbd55](https://github.com/algolia/instantsearch.js/commit/e0fbd55b6b98dd64301f113fd394dce57552d94c))
+
+
+
 ## [4.24.2](https://github.com/algolia/instantsearch.js/compare/v4.24.1...v4.24.2) (2021-06-29)
 
 

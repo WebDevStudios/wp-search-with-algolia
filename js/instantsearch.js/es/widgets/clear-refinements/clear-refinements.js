@@ -49,7 +49,7 @@ var clearRefinements = function clearRefinements(widgetParams) {
   var _ref3 = widgetParams || {},
       container = _ref3.container,
       _ref3$templates = _ref3.templates,
-      templates = _ref3$templates === void 0 ? defaultTemplates : _ref3$templates,
+      templates = _ref3$templates === void 0 ? {} : _ref3$templates,
       includedAttributes = _ref3.includedAttributes,
       excludedAttributes = _ref3.excludedAttributes,
       transformItems = _ref3.transformItems,

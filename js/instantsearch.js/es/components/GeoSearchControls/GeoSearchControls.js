@@ -3,7 +3,7 @@ function _extends() { _extends = Object.assign || function (target) { for (var i
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 /** @jsx h */
-import { h } from 'preact';
+import { h, Fragment } from 'preact';
 import cx from 'classnames';
 import Template from '../Template/Template';
 import GeoSearchButton from './GeoSearchButton';
@@ -21,7 +21,7 @@ var GeoSearchControls = function GeoSearchControls(_ref) {
       onRefineClick = _ref.onRefineClick,
       onClearClick = _ref.onClearClick,
       templateProps = _ref.templateProps;
-  return enableRefine && h("div", null, enableRefineControl && h("div", {
+  return h(Fragment, null, enableRefine && h("div", null, enableRefineControl && h("div", {
     className: cssClasses.control
   }, isRefineOnMapMove || !hasMapMoveSinceLastRefine ? h(GeoSearchToggle, {
     classNameLabel: cx(cssClasses.label, _defineProperty({}, cssClasses.selectedLabel, isRefineOnMapMove)),
@@ -53,7 +53,7 @@ var GeoSearchControls = function GeoSearchControls(_ref) {
   }, h(Template, _extends({}, templateProps, {
     templateKey: "reset",
     rootTagName: "span"
-  }))));
+  })))));
 };
 
 export default GeoSearchControls;

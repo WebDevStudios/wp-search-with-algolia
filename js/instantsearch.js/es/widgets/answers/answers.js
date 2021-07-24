@@ -18,9 +18,9 @@ var withUsage = createDocumentationMessageGenerator({
 var suit = component('Answers');
 
 var renderer = function renderer(_ref) {
-  var renderState = _ref.renderState,
+  var containerNode = _ref.containerNode,
       cssClasses = _ref.cssClasses,
-      containerNode = _ref.containerNode,
+      renderState = _ref.renderState,
       templates = _ref.templates;
   return function (_ref2, isFirstRendering) {
     var hits = _ref2.hits,
@@ -56,7 +56,7 @@ var answersWidget = function answersWidget(widgetParams) {
       escapeHTML = _ref3.escapeHTML,
       extraParameters = _ref3.extraParameters,
       _ref3$templates = _ref3.templates,
-      templates = _ref3$templates === void 0 ? defaultTemplates : _ref3$templates,
+      templates = _ref3$templates === void 0 ? {} : _ref3$templates,
       _ref3$cssClasses = _ref3.cssClasses,
       userCssClasses = _ref3$cssClasses === void 0 ? {} : _ref3$cssClasses;
 

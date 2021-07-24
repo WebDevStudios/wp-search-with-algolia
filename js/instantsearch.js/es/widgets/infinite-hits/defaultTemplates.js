@@ -1,4 +1,4 @@
-export default {
+var defaultTemplates = {
   empty: 'No results',
   showPreviousText: 'Show previous results',
   showMoreText: 'Show more results',
@@ -6,3 +6,4 @@ export default {
     return JSON.stringify(data, null, 2);
   }
 };
+export default defaultTemplates;

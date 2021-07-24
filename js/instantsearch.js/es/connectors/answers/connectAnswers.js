@@ -41,7 +41,8 @@ var connectAnswers = function connectAnswers(renderFn) {
     var runConcurrentSafePromise = createConcurrentSafePromise();
     var lastResult;
     var isLoading = false;
-    var debouncedRender = debounce(renderFn, renderDebounceTime);
+    var debouncedRender = debounce(renderFn, renderDebounceTime); // this does not directly use DebouncedFunction<findAnswers>, since then the generic will disappear
+
     var debouncedRefine;
     return {
       $$type: 'ais.answers',

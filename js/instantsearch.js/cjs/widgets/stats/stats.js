@@ -87,7 +87,7 @@ var stats = function stats(widgetParams) {
       _ref3$cssClasses = _ref3.cssClasses,
       userCssClasses = _ref3$cssClasses === void 0 ? {} : _ref3$cssClasses,
       _ref3$templates = _ref3.templates,
-      templates = _ref3$templates === void 0 ? defaultTemplates : _ref3$templates;
+      templates = _ref3$templates === void 0 ? {} : _ref3$templates;
 
   if (!container) {
     throw new Error(withUsage('The `container` option is required.'));

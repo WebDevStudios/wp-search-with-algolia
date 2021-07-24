@@ -73,6 +73,7 @@ var analytics = function analytics(widgetParams) {
           for (var equal in filter['=']) {
             // eslint-disable-next-line max-depth
             if (filter['='].hasOwnProperty(equal)) {
+              // @ts-ignore somehow 'equal' is a string, even though it's a number?
               equals.push(filter['='][equal]);
             }
           }

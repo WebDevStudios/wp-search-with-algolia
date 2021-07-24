@@ -1,3 +1,4 @@
-export default {
+var defaultTemplates = {
   labelText: '{{name}}'
 };
+export default defaultTemplates;

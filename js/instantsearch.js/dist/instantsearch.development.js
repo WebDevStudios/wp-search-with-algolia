@@ -1,4 +1,4 @@
-/*! InstantSearch.js 4.24.2 | © Algolia, Inc. and contributors; MIT License | https://github.com/algolia/instantsearch.js */
+/*! InstantSearch.js 4.25.2 | © Algolia, Inc. and contributors; MIT License | https://github.com/algolia/instantsearch.js */
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
   typeof define === 'function' && define.amd ? define(factory) :
@@ -3077,20 +3077,29 @@
   }
 
   /**
-   * Sort nodes of a hierarchical facet results
+   * Sort nodes of a hierarchical or disjunctive facet results
    * @private
-   * @param {HierarchicalFacet} node node to upon which we want to apply the sort
+   * @param {function} sortFn
+   * @param {HierarchicalFacet|Array} node node upon which we want to apply the sort
+   * @param {string[]} names attribute names
+   * @param {number} [level=0] current index in the names array
    */
-  function recSort(sortFn, node) {
+  function recSort(sortFn, node, names, level) {
+    level = level || 0;
+
+    if (Array.isArray(node)) {
+      return sortFn(node, names[level]);
+    }
+
     if (!node.data || node.data.length === 0) {
       return node;
     }
 
     var children = node.data.map(function(childNode) {
-      return recSort(sortFn, childNode);
+      return recSort(sortFn, childNode, names, level + 1);
     });
-    var sortedChildren = sortFn(children);
-    var newNode = merge_1({}, node, {data: sortedChildren});
+    var sortedChildren = sortFn(children, names[level]);
+    var newNode = defaultsPure({data: sortedChildren}, node);
     return newNode;
   }
 
@@ -3098,6 +3107,72 @@
 
   function vanillaSortFn(order, data) {
     return data.sort(order);
+  }
+
+  /**
+   * @typedef FacetOrdering
+   * @type {Object}
+   * @property {string[]} [order]
+   * @property {'count' | 'alpha' | 'hidden'} [sortRemainingBy]
+   */
+
+  /**
+   * Sorts facet arrays via their facet ordering
+   * @param {Array} facetValues the values
+   * @param {FacetOrdering} facetOrdering the ordering
+   * @returns {Array}
+   */
+  function sortViaFacetOrdering(facetValues, facetOrdering) {
+    var orderedFacets = [];
+    var remainingFacets = [];
+
+    var order = facetOrdering.order || [];
+    /**
+     * an object with the keys being the values in order, the values their index:
+     * ['one', 'two'] -> { one: 0, two: 1 }
+     */
+    var reverseOrder = order.reduce(function(acc, name, i) {
+      acc[name] = i;
+      return acc;
+    }, {});
+
+    facetValues.forEach(function(item) {
+      // hierarchical facets get sorted using their raw name
+      var name = item.path || item.name;
+      if (reverseOrder[name] !== undefined) {
+        orderedFacets[reverseOrder[name]] = item;
+      } else {
+        remainingFacets.push(item);
+      }
+    });
+
+    var sortRemainingBy = facetOrdering.sortRemainingBy;
+    var ordering;
+    if (sortRemainingBy === 'hidden') {
+      return orderedFacets;
+    } else if (sortRemainingBy === 'alpha') {
+      ordering = [['path', 'name'], ['asc', 'asc']];
+    } else {
+      ordering = [['count'], ['desc']];
+    }
+
+    return orderedFacets.concat(
+      orderBy_1(remainingFacets, ordering[0], ordering[1])
+    );
+  }
+
+  /**
+   * @param {SearchResults} results the search results class
+   * @param {string} attribute the attribute to retrieve ordering of
+   * @returns {FacetOrdering=}
+   */
+  function getFacetOrdering(results, attribute) {
+    return (
+      results.renderingContent &&
+      results.renderingContent.facetOrdering &&
+      results.renderingContent.facetOrdering.values &&
+      results.renderingContent.facetOrdering.values[attribute]
+    );
   }
 
   /**
@@ -3112,6 +3187,9 @@
    * might not be respected if you have facet values that are already refined.
    * @param {string} attribute attribute name
    * @param {object} opts configuration options.
+   * @param {boolean} [opts.facetOrdering]
+   * Force the use of facetOrdering from the result if a sortBy is present. If
+   * sortBy isn't present, facetOrdering will be used automatically.
    * @param {Array.<string> | function} opts.sortBy
    * When using strings, it consists of
    * the name of the [FacetValue](#SearchResults.FacetValue) or the
@@ -3151,30 +3229,41 @@
       return undefined;
     }
 
-    var options = defaultsPure({}, opts, {sortBy: SearchResults.DEFAULT_SORT});
+    var options = defaultsPure({}, opts, {
+      sortBy: SearchResults.DEFAULT_SORT,
+      // if no sortBy is given, attempt to sort based on facetOrdering
+      // if it is given, we still allow to sort via facet ordering first
+      facetOrdering: !(opts && opts.sortBy)
+    });
 
-    if (Array.isArray(options.sortBy)) {
-      var order = formatSort(options.sortBy, SearchResults.DEFAULT_SORT);
-      if (Array.isArray(facetValues)) {
-        return orderBy_1(facetValues, order[0], order[1]);
-      }
-      // If facetValues is not an array, it's an object thus a hierarchical facet object
-      return recSort(function(hierarchicalFacetValues) {
-        return orderBy_1(hierarchicalFacetValues, order[0], order[1]);
-      }, facetValues);
-    } else if (typeof options.sortBy === 'function') {
-      if (Array.isArray(facetValues)) {
-        return facetValues.sort(options.sortBy);
-      }
-      // If facetValues is not an array, it's an object thus a hierarchical facet object
-      return recSort(function(data) {
-        return vanillaSortFn(options.sortBy, data);
-      }, facetValues);
+    var results = this;
+    var attributes;
+    if (Array.isArray(facetValues)) {
+      attributes = [attribute];
+    } else {
+      var config = results._state.getHierarchicalFacetByName(facetValues.name);
+      attributes = config.attributes;
     }
-    throw new Error(
-      'options.sortBy is optional but if defined it must be ' +
-      'either an array of string (predicates) or a sorting function'
-    );
+
+    return recSort(function(data, facetName) {
+      if (options.facetOrdering) {
+        var facetOrdering = getFacetOrdering(results, facetName);
+        if (Boolean(facetOrdering)) {
+          return sortViaFacetOrdering(data, facetOrdering);
+        }
+      }
+
+      if (Array.isArray(options.sortBy)) {
+        var order = formatSort(options.sortBy, SearchResults.DEFAULT_SORT);
+        return orderBy_1(data, order[0], order[1]);
+      } else if (typeof options.sortBy === 'function') {
+        return vanillaSortFn(options.sortBy, data);
+      }
+      throw new Error(
+        'options.sortBy is optional but if defined it must be ' +
+          'either an array of string (predicates) or a sorting function'
+      );
+    }, facetValues, attributes);
   };
 
   /**
@@ -4008,7 +4097,7 @@
 
   var requestBuilder_1 = requestBuilder;
 
-  var version = '3.4.5';
+  var version = '3.5.4';
 
   /**
    * Event triggered when a parameter is set or updated
@@ -7636,6 +7725,7 @@
     return bindEventForHits;
   }
 
+  // typed as any, since it accepts the _real_ js clients, not the interface we otherwise expect
   function getAppIdAndApiKey(searchClient) {
     if (searchClient.transporter) {
       // searchClient v4
@@ -8286,7 +8376,7 @@
     instantSearchInstance.renderState = _objectSpread2(_objectSpread2({}, instantSearchInstance.renderState), {}, _defineProperty({}, parentIndexName, _objectSpread2(_objectSpread2({}, instantSearchInstance.renderState[parentIndexName]), renderState)));
   }
 
-  var version$1 = '4.24.2';
+  var version$1 = '4.25.2';
 
   var NAMESPACE = 'ais';
   var component = function component(componentName) {
@@ -8547,6 +8637,28 @@
     };
   }
 
+  var replace = String.prototype.replace;
+  var percentTwenties = /%20/g;
+
+  var Format = {
+      RFC1738: 'RFC1738',
+      RFC3986: 'RFC3986'
+  };
+
+  var formats = {
+      'default': Format.RFC3986,
+      formatters: {
+          RFC1738: function (value) {
+              return replace.call(value, percentTwenties, '+');
+          },
+          RFC3986: function (value) {
+              return String(value);
+          }
+      },
+      RFC1738: Format.RFC1738,
+      RFC3986: Format.RFC3986
+  };
+
   var has = Object.prototype.hasOwnProperty;
   var isArray = Array.isArray;
 
@@ -8590,6 +8702,7 @@
   };
 
   var merge$2 = function merge(target, source, options) {
+      /* eslint no-param-reassign: 0 */
       if (!source) {
           return target;
       }
@@ -8666,7 +8779,7 @@
       }
   };
 
-  var encode = function encode(str, defaultEncoder, charset) {
+  var encode = function encode(str, defaultEncoder, charset, kind, format) {
       // This code was originally written by Brian White (mscdex) for the io.js core querystring library.
       // It has been adapted here for stricter adherence to RFC 3986
       if (str.length === 0) {
@@ -8698,6 +8811,7 @@
               || (c >= 0x30 && c <= 0x39) // 0-9
               || (c >= 0x41 && c <= 0x5A) // a-z
               || (c >= 0x61 && c <= 0x7A) // A-Z
+              || (format === formats.RFC1738 && (c === 0x28 || c === 0x29)) // ( )
           ) {
               out += string.charAt(i);
               continue;
@@ -8769,6 +8883,17 @@
       return [].concat(a, b);
   };
 
+  var maybeMap = function maybeMap(val, fn) {
+      if (isArray(val)) {
+          var mapped = [];
+          for (var i = 0; i < val.length; i += 1) {
+              mapped.push(fn(val[i]));
+          }
+          return mapped;
+      }
+      return fn(val);
+  };
+
   var utils = {
       arrayToObject: arrayToObject,
       assign: assign,
@@ -8778,45 +8903,21 @@
       encode: encode,
       isBuffer: isBuffer,
       isRegExp: isRegExp,
+      maybeMap: maybeMap,
       merge: merge$2
   };
-
-  var replace = String.prototype.replace;
-  var percentTwenties = /%20/g;
-
-
-
-  var Format = {
-      RFC1738: 'RFC1738',
-      RFC3986: 'RFC3986'
-  };
-
-  var formats = utils.assign(
-      {
-          'default': Format.RFC3986,
-          formatters: {
-              RFC1738: function (value) {
-                  return replace.call(value, percentTwenties, '+');
-              },
-              RFC3986: function (value) {
-                  return String(value);
-              }
-          }
-      },
-      Format
-  );
 
   var has$1 = Object.prototype.hasOwnProperty;
 
   var arrayPrefixGenerators = {
-      brackets: function brackets(prefix) { // eslint-disable-line func-name-matching
+      brackets: function brackets(prefix) {
           return prefix + '[]';
       },
       comma: 'comma',
-      indices: function indices(prefix, key) { // eslint-disable-line func-name-matching
+      indices: function indices(prefix, key) {
           return prefix + '[' + key + ']';
       },
-      repeat: function repeat(prefix) { // eslint-disable-line func-name-matching
+      repeat: function repeat(prefix) {
           return prefix;
       }
   };
@@ -8843,22 +8944,22 @@
       formatter: formats.formatters[defaultFormat],
       // deprecated
       indices: false,
-      serializeDate: function serializeDate(date) { // eslint-disable-line func-name-matching
+      serializeDate: function serializeDate(date) {
           return toISO.call(date);
       },
       skipNulls: false,
       strictNullHandling: false
   };
 
-  var isNonNullishPrimitive = function isNonNullishPrimitive(v) { // eslint-disable-line func-name-matching
+  var isNonNullishPrimitive = function isNonNullishPrimitive(v) {
       return typeof v === 'string'
           || typeof v === 'number'
           || typeof v === 'boolean'
           || typeof v === 'symbol'
-          || typeof v === 'bigint'; // eslint-disable-line valid-typeof
+          || typeof v === 'bigint';
   };
 
-  var stringify = function stringify( // eslint-disable-line func-name-matching
+  var stringify = function stringify(
       object,
       prefix,
       generateArrayPrefix,
@@ -8869,6 +8970,7 @@
       sort,
       allowDots,
       serializeDate,
+      format,
       formatter,
       encodeValuesOnly,
       charset
@@ -8879,12 +8981,17 @@
       } else if (obj instanceof Date) {
           obj = serializeDate(obj);
       } else if (generateArrayPrefix === 'comma' && isArray$1(obj)) {
-          obj = obj.join(',');
+          obj = utils.maybeMap(obj, function (value) {
+              if (value instanceof Date) {
+                  return serializeDate(value);
+              }
+              return value;
+          });
       }
 
       if (obj === null) {
           if (strictNullHandling) {
-              return encoder && !encodeValuesOnly ? encoder(prefix, defaults.encoder, charset) : prefix;
+              return encoder && !encodeValuesOnly ? encoder(prefix, defaults.encoder, charset, 'key', format) : prefix;
           }
 
           obj = '';
@@ -8892,8 +8999,8 @@
 
       if (isNonNullishPrimitive(obj) || utils.isBuffer(obj)) {
           if (encoder) {
-              var keyValue = encodeValuesOnly ? prefix : encoder(prefix, defaults.encoder, charset);
-              return [formatter(keyValue) + '=' + formatter(encoder(obj, defaults.encoder, charset))];
+              var keyValue = encodeValuesOnly ? prefix : encoder(prefix, defaults.encoder, charset, 'key', format);
+              return [formatter(keyValue) + '=' + formatter(encoder(obj, defaults.encoder, charset, 'value', format))];
           }
           return [formatter(prefix) + '=' + formatter(String(obj))];
       }
@@ -8905,7 +9012,10 @@
       }
 
       var objKeys;
-      if (isArray$1(filter)) {
+      if (generateArrayPrefix === 'comma' && isArray$1(obj)) {
+          // we need to join elements in
+          objKeys = [{ value: obj.length > 0 ? obj.join(',') || null : undefined }];
+      } else if (isArray$1(filter)) {
           objKeys = filter;
       } else {
           var keys = Object.keys(obj);
@@ -8914,44 +9024,32 @@
 
       for (var i = 0; i < objKeys.length; ++i) {
           var key = objKeys[i];
+          var value = typeof key === 'object' && key.value !== undefined ? key.value : obj[key];
 
-          if (skipNulls && obj[key] === null) {
+          if (skipNulls && value === null) {
               continue;
           }
 
-          if (isArray$1(obj)) {
-              pushToArray(values, stringify(
-                  obj[key],
-                  typeof generateArrayPrefix === 'function' ? generateArrayPrefix(prefix, key) : prefix,
-                  generateArrayPrefix,
-                  strictNullHandling,
-                  skipNulls,
-                  encoder,
-                  filter,
-                  sort,
-                  allowDots,
-                  serializeDate,
-                  formatter,
-                  encodeValuesOnly,
-                  charset
-              ));
-          } else {
-              pushToArray(values, stringify(
-                  obj[key],
-                  prefix + (allowDots ? '.' + key : '[' + key + ']'),
-                  generateArrayPrefix,
-                  strictNullHandling,
-                  skipNulls,
-                  encoder,
-                  filter,
-                  sort,
-                  allowDots,
-                  serializeDate,
-                  formatter,
-                  encodeValuesOnly,
-                  charset
-              ));
-          }
+          var keyPrefix = isArray$1(obj)
+              ? typeof generateArrayPrefix === 'function' ? generateArrayPrefix(prefix, key) : prefix
+              : prefix + (allowDots ? '.' + key : '[' + key + ']');
+
+          pushToArray(values, stringify(
+              value,
+              keyPrefix,
+              generateArrayPrefix,
+              strictNullHandling,
+              skipNulls,
+              encoder,
+              filter,
+              sort,
+              allowDots,
+              serializeDate,
+              format,
+              formatter,
+              encodeValuesOnly,
+              charset
+          ));
       }
 
       return values;
@@ -8995,6 +9093,7 @@
           encoder: typeof opts.encoder === 'function' ? opts.encoder : defaults.encoder,
           encodeValuesOnly: typeof opts.encodeValuesOnly === 'boolean' ? opts.encodeValuesOnly : defaults.encodeValuesOnly,
           filter: filter,
+          format: format,
           formatter: formatter,
           serializeDate: typeof opts.serializeDate === 'function' ? opts.serializeDate : defaults.serializeDate,
           skipNulls: typeof opts.skipNulls === 'boolean' ? opts.skipNulls : defaults.skipNulls,
@@ -9060,6 +9159,7 @@
               options.sort,
               options.allowDots,
               options.serializeDate,
+              options.format,
               options.formatter,
               options.encodeValuesOnly,
               options.charset
@@ -9083,6 +9183,7 @@
   };
 
   var has$2 = Object.prototype.hasOwnProperty;
+  var isArray$2 = Array.isArray;
 
   var defaults$1 = {
       allowDots: false,
@@ -9106,6 +9207,14 @@
       return str.replace(/&#(\d+);/g, function ($0, numberStr) {
           return String.fromCharCode(parseInt(numberStr, 10));
       });
+  };
+
+  var parseArrayValue = function (val, options) {
+      if (val && typeof val === 'string' && options.comma && val.indexOf(',') > -1) {
+          return val.split(',');
+      }
+
+      return val;
   };
 
   // This is what browsers will submit when the ✓ character occurs in an
@@ -9152,19 +9261,24 @@
 
           var key, val;
           if (pos === -1) {
-              key = options.decoder(part, defaults$1.decoder, charset);
+              key = options.decoder(part, defaults$1.decoder, charset, 'key');
               val = options.strictNullHandling ? null : '';
           } else {
-              key = options.decoder(part.slice(0, pos), defaults$1.decoder, charset);
-              val = options.decoder(part.slice(pos + 1), defaults$1.decoder, charset);
+              key = options.decoder(part.slice(0, pos), defaults$1.decoder, charset, 'key');
+              val = utils.maybeMap(
+                  parseArrayValue(part.slice(pos + 1), options),
+                  function (encodedVal) {
+                      return options.decoder(encodedVal, defaults$1.decoder, charset, 'value');
+                  }
+              );
           }
 
           if (val && options.interpretNumericEntities && charset === 'iso-8859-1') {
               val = interpretNumericEntities(val);
           }
 
-          if (val && options.comma && val.indexOf(',') > -1) {
-              val = val.split(',');
+          if (part.indexOf('[]=') > -1) {
+              val = isArray$2(val) ? [val] : val;
           }
 
           if (has$2.call(obj, key)) {
@@ -9177,8 +9291,8 @@
       return obj;
   };
 
-  var parseObject = function (chain, val, options) {
-      var leaf = val;
+  var parseObject = function (chain, val, options, valuesParsed) {
+      var leaf = valuesParsed ? val : parseArrayValue(val, options);
 
       for (var i = chain.length - 1; i >= 0; --i) {
           var obj;
@@ -9212,7 +9326,7 @@
       return leaf;
   };
 
-  var parseKeys = function parseQueryStringKeys(givenKey, val, options) {
+  var parseKeys = function parseQueryStringKeys(givenKey, val, options, valuesParsed) {
       if (!givenKey) {
           return;
       }
@@ -9263,7 +9377,7 @@
           keys.push('[' + key.slice(segment.index) + ']');
       }
 
-      return parseObject(keys, val, options);
+      return parseObject(keys, val, options, valuesParsed);
   };
 
   var normalizeParseOptions = function normalizeParseOptions(opts) {
@@ -9276,7 +9390,7 @@
       }
 
       if (typeof opts.charset !== 'undefined' && opts.charset !== 'utf-8' && opts.charset !== 'iso-8859-1') {
-          throw new Error('The charset option must be either utf-8, iso-8859-1, or undefined');
+          throw new TypeError('The charset option must be either utf-8, iso-8859-1, or undefined');
       }
       var charset = typeof opts.charset === 'undefined' ? defaults$1.charset : opts.charset;
 
@@ -9315,7 +9429,7 @@
       var keys = Object.keys(tempObj);
       for (var i = 0; i < keys.length; ++i) {
           var key = keys[i];
-          var newObj = parseKeys(key, tempObj[key], options);
+          var newObj = parseKeys(key, tempObj[key], options, typeof str === 'string');
           obj = utils.merge(obj, newObj, options);
       }
 
@@ -10485,6 +10599,7 @@
     name: 'hierarchical-menu',
     connector: true
   });
+  var DEFAULT_SORT = ['name:asc'];
 
   /**
    * **HierarchicalMenu** connector provides the logic to build a custom widget
@@ -10518,7 +10633,7 @@
           _ref$showMoreLimit = _ref.showMoreLimit,
           showMoreLimit = _ref$showMoreLimit === void 0 ? 20 : _ref$showMoreLimit,
           _ref$sortBy = _ref.sortBy,
-          sortBy = _ref$sortBy === void 0 ? ['name:asc'] : _ref$sortBy,
+          sortBy = _ref$sortBy === void 0 ? DEFAULT_SORT : _ref$sortBy,
           _ref$transformItems = _ref.transformItems,
           transformItems = _ref$transformItems === void 0 ? function (items) {
         return items;
@@ -10598,12 +10713,6 @@
             instantSearchInstance: instantSearchInstance
           }), false);
         },
-
-        /**
-         * @param {Object} param0 cleanup arguments
-         * @param {any} param0.state current search parameters
-         * @returns {any} next search parameters
-         */
         dispose: function dispose(_ref3) {
           var state = _ref3.state;
           unmountFn();
@@ -10645,7 +10754,8 @@
 
           if (results) {
             var facetValues = results.getFacetValues(hierarchicalFacetName, {
-              sortBy: sortBy
+              sortBy: sortBy,
+              facetOrdering: sortBy === DEFAULT_SORT
             });
             var facetItems = facetValues && !Array.isArray(facetValues) && facetValues.data ? facetValues.data : []; // If the limit is the max number of facet retrieved it is impossible to know
             // if the facets are exhaustive. The only moment we are sure it is exhaustive
@@ -11394,6 +11504,7 @@
     name: 'menu',
     connector: true
   });
+  var DEFAULT_SORT$1 = ['isRefined', 'name:asc'];
 
   /**
    * **Menu** connector provides the logic to build a widget that will give the user the ability to choose a single value for a specific facet. The typical usage of menu is for navigation in categories.
@@ -11417,7 +11528,7 @@
           _ref$showMoreLimit = _ref.showMoreLimit,
           showMoreLimit = _ref$showMoreLimit === void 0 ? 20 : _ref$showMoreLimit,
           _ref$sortBy = _ref.sortBy,
-          sortBy = _ref$sortBy === void 0 ? ['isRefined', 'name:asc'] : _ref$sortBy,
+          sortBy = _ref$sortBy === void 0 ? DEFAULT_SORT$1 : _ref$sortBy,
           _ref$transformItems = _ref.transformItems,
           transformItems = _ref$transformItems === void 0 ? function (items) {
         return items;
@@ -11522,7 +11633,8 @@
 
           if (results) {
             var facetValues = results.getFacetValues(attribute, {
-              sortBy: sortBy
+              sortBy: sortBy,
+              facetOrdering: sortBy === DEFAULT_SORT$1
             });
             var facetItems = facetValues && !Array.isArray(facetValues) && facetValues.data ? facetValues.data : [];
             canToggleShowMore = showMore && (isShowingMore || facetItems.length > getLimit());
@@ -12435,6 +12547,7 @@
     name: 'refinement-list',
     connector: true
   });
+  var DEFAULT_SORT$2 = ['isRefined', 'count:desc', 'name:asc'];
 
   /**
    * **RefinementList** connector provides the logic to build a custom widget that
@@ -12463,7 +12576,7 @@
           _ref$showMoreLimit = _ref.showMoreLimit,
           showMoreLimit = _ref$showMoreLimit === void 0 ? 20 : _ref$showMoreLimit,
           _ref$sortBy = _ref.sortBy,
-          sortBy = _ref$sortBy === void 0 ? ['isRefined', 'count:desc', 'name:asc'] : _ref$sortBy,
+          sortBy = _ref$sortBy === void 0 ? DEFAULT_SORT$2 : _ref$sortBy,
           _ref$escapeFacetValue = _ref.escapeFacetValues,
           escapeFacetValues = _ref$escapeFacetValue === void 0 ? true : _ref$escapeFacetValue,
           _ref$transformItems = _ref.transformItems,
@@ -12613,7 +12726,8 @@
 
           if (results) {
             var values = results.getFacetValues(attribute, {
-              sortBy: sortBy
+              sortBy: sortBy,
+              facetOrdering: sortBy === DEFAULT_SORT$2
             });
             facetValues = values && Array.isArray(values) ? values : [];
             items = transformItems(facetValues.slice(0, getLimit()).map(formatItems));
@@ -14678,6 +14792,7 @@
               query: ''
             });
             var toReset = additional ? Object.keys(additional).reduce(function (acc, current) {
+              // @ts-ignore search parameters is typed as readonly
               acc[current] = undefined;
               return acc;
             }, {}) : {};
@@ -14747,7 +14862,8 @@
       var runConcurrentSafePromise = createConcurrentSafePromise();
       var lastResult;
       var isLoading = false;
-      var debouncedRender = debounce(renderFn, renderDebounceTime);
+      var debouncedRender = debounce(renderFn, renderDebounceTime); // this does not directly use DebouncedFunction<findAnswers>, since then the generic will disappear
+
       var debouncedRefine;
       return {
         $$type: 'ais.answers',
@@ -15016,7 +15132,7 @@
             };
           }
 
-          var attributesToRender = (_results$renderingCon = (_results$renderingCon2 = results.renderingContent) === null || _results$renderingCon2 === void 0 ? void 0 : (_results$renderingCon3 = _results$renderingCon2.facetOrdering) === null || _results$renderingCon3 === void 0 ? void 0 : (_results$renderingCon4 = _results$renderingCon3.facet) === null || _results$renderingCon4 === void 0 ? void 0 : _results$renderingCon4.order) !== null && _results$renderingCon !== void 0 ? _results$renderingCon : [];
+          var attributesToRender = (_results$renderingCon = (_results$renderingCon2 = results.renderingContent) === null || _results$renderingCon2 === void 0 ? void 0 : (_results$renderingCon3 = _results$renderingCon2.facetOrdering) === null || _results$renderingCon3 === void 0 ? void 0 : (_results$renderingCon4 = _results$renderingCon3.facets) === null || _results$renderingCon4 === void 0 ? void 0 : _results$renderingCon4.order) !== null && _results$renderingCon !== void 0 ? _results$renderingCon : [];
           return {
             attributesToRender: transformItems(attributesToRender, {
               results: results
@@ -15123,6 +15239,7 @@
             for (var equal in filter['=']) {
               // eslint-disable-next-line max-depth
               if (filter['='].hasOwnProperty(equal)) {
+                // @ts-ignore somehow 'equal' is a string, even though it's a number?
                 equals.push(filter['='][equal]);
               }
             }
@@ -15436,7 +15553,7 @@
         rootPath = _ref3.rootPath,
         transformItems = _ref3.transformItems,
         _ref3$templates = _ref3.templates,
-        templates = _ref3$templates === void 0 ? defaultTemplates : _ref3$templates,
+        templates = _ref3$templates === void 0 ? {} : _ref3$templates,
         _ref3$cssClasses = _ref3.cssClasses,
         userCssClasses = _ref3$cssClasses === void 0 ? {} : _ref3$cssClasses;
 
@@ -15548,7 +15665,7 @@
     var _ref3 = widgetParams || {},
         container = _ref3.container,
         _ref3$templates = _ref3.templates,
-        templates = _ref3$templates === void 0 ? defaultTemplates$1 : _ref3$templates,
+        templates = _ref3$templates === void 0 ? {} : _ref3$templates,
         includedAttributes = _ref3.includedAttributes,
         excludedAttributes = _ref3.excludedAttributes,
         transformItems = _ref3.transformItems,
@@ -15667,8 +15784,9 @@
       return;
     }
 
-    var container = widgetParams.container,
-        cssClasses = widgetParams.cssClasses;
+    var _ref2 = widgetParams,
+        container = _ref2.container,
+        cssClasses = _ref2.cssClasses;
     I(h(CurrentRefinements, {
       cssClasses: cssClasses,
       items: items
@@ -15676,13 +15794,13 @@
   };
 
   var currentRefinements = function currentRefinements(widgetParams) {
-    var _ref2 = widgetParams || {},
-        container = _ref2.container,
-        includedAttributes = _ref2.includedAttributes,
-        excludedAttributes = _ref2.excludedAttributes,
-        _ref2$cssClasses = _ref2.cssClasses,
-        userCssClasses = _ref2$cssClasses === void 0 ? {} : _ref2$cssClasses,
-        transformItems = _ref2.transformItems;
+    var _ref3 = widgetParams || {},
+        container = _ref3.container,
+        includedAttributes = _ref3.includedAttributes,
+        excludedAttributes = _ref3.excludedAttributes,
+        _ref3$cssClasses = _ref3.cssClasses,
+        userCssClasses = _ref3$cssClasses === void 0 ? {} : _ref3$cssClasses,
+        transformItems = _ref3.transformItems;
 
     if (!container) {
       throw new Error(withUsage$v('The `container` option is required.'));
@@ -15776,9 +15894,9 @@
   var suit$7 = component('Answers');
 
   var renderer$3 = function renderer(_ref) {
-    var renderState = _ref.renderState,
+    var containerNode = _ref.containerNode,
         cssClasses = _ref.cssClasses,
-        containerNode = _ref.containerNode,
+        renderState = _ref.renderState,
         templates = _ref.templates;
     return function (_ref2, isFirstRendering) {
       var hits = _ref2.hits,
@@ -15814,7 +15932,7 @@
         escapeHTML = _ref3.escapeHTML,
         extraParameters = _ref3.extraParameters,
         _ref3$templates = _ref3.templates,
-        templates = _ref3$templates === void 0 ? defaultTemplates$2 : _ref3$templates,
+        templates = _ref3$templates === void 0 ? {} : _ref3$templates,
         _ref3$cssClasses = _ref3.cssClasses,
         userCssClasses = _ref3$cssClasses === void 0 ? {} : _ref3$cssClasses;
 
@@ -15941,7 +16059,8 @@
 
   var GeoSearchButton = function GeoSearchButton(_ref) {
     var className = _ref.className,
-        disabled = _ref.disabled,
+        _ref$disabled = _ref.disabled,
+        disabled = _ref$disabled === void 0 ? false : _ref$disabled,
         onClick = _ref.onClick,
         children = _ref.children;
     return h("button", {
@@ -15949,10 +16068,6 @@
       onClick: onClick,
       disabled: disabled
     }, children);
-  };
-
-  GeoSearchButton.defaultProps = {
-    disabled: false
   };
 
   /** @jsx h */
@@ -15985,7 +16100,7 @@
         onRefineClick = _ref.onRefineClick,
         onClearClick = _ref.onClearClick,
         templateProps = _ref.templateProps;
-    return enableRefine && h("div", null, enableRefineControl && h("div", {
+    return h(d, null, enableRefine && h("div", null, enableRefineControl && h("div", {
       className: cssClasses.control
     }, isRefineOnMapMove || !hasMapMoveSinceLastRefine ? h(GeoSearchToggle, {
       classNameLabel: classnames(cssClasses.label, _defineProperty({}, cssClasses.selectedLabel, isRefineOnMapMove)),
@@ -16017,7 +16132,7 @@
     }, h(Template, _extends({}, templateProps, {
       templateKey: "reset",
       rootTagName: "span"
-    }))));
+    })))));
   };
 
   var refineWithMap = function refineWithMap(_ref) {
@@ -16484,15 +16599,12 @@
       }));
     };
 
-    var createMarker = !customHTMLMarker ? createBuiltInMarker : createCustomHTMLMarker; // prettier-ignore
-
+    var createMarker = !customHTMLMarker ? createBuiltInMarker : createCustomHTMLMarker;
     var markerOptions = !customHTMLMarker ? builtInMarker : customHTMLMarker;
     var makeWidget = connectGeoSearch(renderer$4, function () {
       return I(null, containerNode);
     });
     return _objectSpread2(_objectSpread2({}, makeWidget(_objectSpread2(_objectSpread2({}, otherWidgetParams), {}, {
-      // @ts-expect-error pattern not used in other widgets, but the
-      // renderState is stored on the connectorParams for usage in the renderer
       renderState: {},
       container: containerNode,
       googleReference: googleReference,
@@ -16946,7 +17058,6 @@
           }
         }));
         var shouldDisableSearchBox = this.props.searchIsAlwaysActive !== true && !(this.props.isFromSearch || !this.props.hasExhaustiveItems);
-        var templates = this.props.searchBoxTemplateProps ? this.props.searchBoxTemplateProps.templates : undefined;
         var searchBox = this.props.searchFacetValues && h("div", {
           className: this.props.cssClasses.searchBox
         }, h(SearchBox, {
@@ -16954,7 +17065,7 @@
           placeholder: this.props.searchPlaceholder,
           disabled: shouldDisableSearchBox,
           cssClasses: this.props.cssClasses.searchable,
-          templates: templates,
+          templates: this.props.searchBoxTemplateProps.templates,
           onChange: function onChange(event) {
             return _this2.props.searchFacetValues(event.target.value);
           },
@@ -17103,7 +17214,7 @@
         sortBy = _ref3.sortBy,
         transformItems = _ref3.transformItems,
         _ref3$templates = _ref3.templates,
-        templates = _ref3$templates === void 0 ? defaultTemplates$4 : _ref3$templates,
+        templates = _ref3$templates === void 0 ? {} : _ref3$templates,
         _ref3$cssClasses = _ref3.cssClasses,
         userCssClasses = _ref3$cssClasses === void 0 ? {} : _ref3$cssClasses;
 
@@ -17275,7 +17386,7 @@
         escapeHTML = _ref3.escapeHTML,
         transformItems = _ref3.transformItems,
         _ref3$templates = _ref3.templates,
-        templates = _ref3$templates === void 0 ? defaultTemplates$5 : _ref3$templates,
+        templates = _ref3$templates === void 0 ? {} : _ref3$templates,
         _ref3$cssClasses = _ref3.cssClasses,
         userCssClasses = _ref3$cssClasses === void 0 ? {} : _ref3$cssClasses;
 
@@ -17476,8 +17587,8 @@
   var InfiniteHitsWithInsightsListener = insightsListener(InfiniteHits);
 
   var renderer$8 = function renderer(_ref) {
-    var cssClasses = _ref.cssClasses,
-        containerNode = _ref.containerNode,
+    var containerNode = _ref.containerNode,
+        cssClasses = _ref.cssClasses,
         renderState = _ref.renderState,
         templates = _ref.templates,
         hasShowPrevious = _ref.showPrevious;
@@ -17526,7 +17637,7 @@
         escapeHTML = _ref3.escapeHTML,
         transformItems = _ref3.transformItems,
         _ref3$templates = _ref3.templates,
-        templates = _ref3$templates === void 0 ? defaultTemplates$6 : _ref3$templates,
+        templates = _ref3$templates === void 0 ? {} : _ref3$templates,
         _ref3$cssClasses = _ref3.cssClasses,
         userCssClasses = _ref3$cssClasses === void 0 ? {} : _ref3$cssClasses,
         showPrevious = _ref3.showPrevious,
@@ -17647,7 +17758,7 @@
         _ref3$cssClasses = _ref3.cssClasses,
         userCssClasses = _ref3$cssClasses === void 0 ? {} : _ref3$cssClasses,
         _ref3$templates = _ref3.templates,
-        templates = _ref3$templates === void 0 ? defaultTemplates$7 : _ref3$templates,
+        templates = _ref3$templates === void 0 ? {} : _ref3$templates,
         transformItems = _ref3.transformItems;
 
     if (!container) {
@@ -17800,7 +17911,7 @@
         _ref3$cssClasses = _ref3.cssClasses,
         userCssClasses = _ref3$cssClasses === void 0 ? {} : _ref3$cssClasses,
         _ref3$templates = _ref3.templates,
-        templates = _ref3$templates === void 0 ? defaultTemplates$8 : _ref3$templates,
+        templates = _ref3$templates === void 0 ? {} : _ref3$templates,
         transformItems = _ref3.transformItems;
 
     if (!container) {
@@ -17888,7 +17999,7 @@
         _ref3$cssClasses = _ref3.cssClasses,
         userCssClasses = _ref3$cssClasses === void 0 ? {} : _ref3$cssClasses,
         _ref3$templates = _ref3.templates,
-        templates = _ref3$templates === void 0 ? defaultTemplates$9 : _ref3$templates,
+        templates = _ref3$templates === void 0 ? {} : _ref3$templates,
         transformItems = _ref3.transformItems;
 
     if (!container) {
@@ -18740,17 +18851,23 @@
     });
   };
 
+  var defaultTemplates$b = {
+    default: function _default(_ref) {
+      var items = _ref.items;
+      return JSON.stringify(items, null, 2);
+    }
+  };
   var withUsage$K = createDocumentationMessageGenerator({
     name: 'query-rule-custom-data'
   });
   var suit$k = component('QueryRuleCustomData');
 
-  var renderer$f = function renderer(_ref) {
-    var containerNode = _ref.containerNode,
-        cssClasses = _ref.cssClasses,
-        templates = _ref.templates;
-    return function (_ref2) {
-      var items = _ref2.items;
+  var renderer$f = function renderer(_ref2) {
+    var containerNode = _ref2.containerNode,
+        cssClasses = _ref2.cssClasses,
+        templates = _ref2.templates;
+    return function (_ref3) {
+      var items = _ref3.items;
       I(h(QueryRuleCustomData, {
         cssClasses: cssClasses,
         templates: templates,
@@ -18760,16 +18877,16 @@
   };
 
   var queryRuleCustomData = function queryRuleCustomData(widgetParams) {
-    var _ref3 = widgetParams || {},
-        container = _ref3.container,
-        _ref3$cssClasses = _ref3.cssClasses,
-        userCssClasses = _ref3$cssClasses === void 0 ? {} : _ref3$cssClasses,
-        _ref3$templates = _ref3.templates,
-        userTemplates = _ref3$templates === void 0 ? {} : _ref3$templates,
-        _ref3$transformItems = _ref3.transformItems,
-        transformItems = _ref3$transformItems === void 0 ? function (items) {
+    var _ref4 = widgetParams || {},
+        container = _ref4.container,
+        _ref4$cssClasses = _ref4.cssClasses,
+        userCssClasses = _ref4$cssClasses === void 0 ? {} : _ref4$cssClasses,
+        _ref4$templates = _ref4.templates,
+        userTemplates = _ref4$templates === void 0 ? {} : _ref4$templates,
+        _ref4$transformItems = _ref4.transformItems,
+        transformItems = _ref4$transformItems === void 0 ? function (items) {
       return items;
-    } : _ref3$transformItems;
+    } : _ref4$transformItems;
 
     if (!container) {
       throw new Error(withUsage$K('The `container` option is required.'));
@@ -18779,14 +18896,8 @@
       root: classnames(suit$k(), userCssClasses.root)
     };
     var containerNode = getContainerNode(container);
-    var defaultTemplates = {
-      default: function _default(_ref4) {
-        var items = _ref4.items;
-        return JSON.stringify(items, null, 2);
-      }
-    };
 
-    var templates = _objectSpread2(_objectSpread2({}, defaultTemplates), userTemplates);
+    var templates = _objectSpread2(_objectSpread2({}, defaultTemplates$b), userTemplates);
 
     var specializedRenderer = renderer$f({
       containerNode: containerNode,
@@ -18920,7 +19031,7 @@
     name: 'range-input'
   });
   var suit$l = component('RangeInput');
-  var defaultTemplates$b = {
+  var defaultTemplates$c = {
     separatorText: 'to',
     submitText: 'Go'
   };
@@ -18939,7 +19050,7 @@
 
       if (isFirstRendering) {
         renderState.templateProps = prepareTemplateProps({
-          defaultTemplates: defaultTemplates$b,
+          defaultTemplates: defaultTemplates$c,
           templatesConfig: instantSearchInstance.templatesConfig,
           templates: templates
         });
@@ -18981,16 +19092,13 @@
         _ref3$cssClasses = _ref3.cssClasses,
         userCssClasses = _ref3$cssClasses === void 0 ? {} : _ref3$cssClasses,
         _ref3$templates = _ref3.templates,
-        userTemplates = _ref3$templates === void 0 ? {} : _ref3$templates;
+        templates = _ref3$templates === void 0 ? {} : _ref3$templates;
 
     if (!container) {
       throw new Error(withUsage$L('The `container` option is required.'));
     }
 
     var containerNode = getContainerNode(container);
-
-    var templates = _objectSpread2(_objectSpread2({}, defaultTemplates$b), userTemplates);
-
     var cssClasses = {
       root: classnames(suit$l(), userCssClasses.root),
       noRefinement: classnames(suit$l({
@@ -19758,8 +19866,9 @@
         return function (props) {
           // display only two decimals after comma,
           // and apply `tooltips.format()` if any
-          var roundedValue = Math.round(parseFloat(props['aria-valuenow']) * 100) / 100;
-          var value = tooltips && tooltips.format ? tooltips.format(roundedValue) : roundedValue;
+          var roundedValue = Math.round( // have to cast as a string, as the value given to the prop is a number, but becomes a string when read
+          parseFloat(props['aria-valuenow']) * 100) / 100;
+          var value = _typeof(tooltips) === 'object' && tooltips.format ? tooltips.format(roundedValue) : roundedValue;
           var className = classnames(props.className, {
             'rheostat-handle-lower': props['data-handle-key'] === 0,
             'rheostat-handle-upper': props['data-handle-key'] === 1
@@ -19818,7 +19927,7 @@
             step = _this$props.step,
             pips = _this$props.pips,
             values = _this$props.values,
-            cssClasses = _this$props.cssClasses;
+            cssClasses = _this$props.cssClasses; // @TODO: figure out why this.props needs to be non-null asserted
 
         var _ref4 = this.isDisabled ? {
           min: this.props.min,
@@ -19962,7 +20071,7 @@
     });
   };
 
-  var defaultTemplates$c = {
+  var defaultTemplates$d = {
     item: "{{#count}}<a class=\"{{cssClasses.link}}\" aria-label=\"{{value}} & up\" href=\"{{url}}\">{{/count}}{{^count}}<div class=\"{{cssClasses.link}}\" aria-label=\"{{value}} & up\" disabled>{{/count}}\n  {{#stars}}<svg class=\"{{cssClasses.starIcon}} {{#.}}{{cssClasses.fullStarIcon}}{{/.}}{{^.}}{{cssClasses.emptyStarIcon}}{{/.}}\" aria-hidden=\"true\" width=\"24\" height=\"24\">\n    {{#.}}<use xlink:href=\"#ais-RatingMenu-starSymbol\"></use>{{/.}}{{^.}}<use xlink:href=\"#ais-RatingMenu-starEmptySymbol\"></use>{{/.}}\n  </svg>{{/stars}}\n  <span class=\"{{cssClasses.label}}\">& Up</span>\n  {{#count}}<span class=\"{{cssClasses.count}}\">{{#helpers.formatNumber}}{{count}}{{/helpers.formatNumber}}</span>{{/count}}\n{{#count}}</a>{{/count}}{{^count}}</div>{{/count}}"
   };
 
@@ -19992,7 +20101,7 @@
 
       if (isFirstRendering) {
         renderState.templateProps = prepareTemplateProps({
-          defaultTemplates: defaultTemplates$c,
+          defaultTemplates: defaultTemplates$d,
           templatesConfig: instantSearchInstance.templatesConfig,
           templates: templates
         });
@@ -20058,7 +20167,7 @@
         _ref5$cssClasses = _ref5.cssClasses,
         userCssClasses = _ref5$cssClasses === void 0 ? {} : _ref5$cssClasses,
         _ref5$templates = _ref5.templates,
-        templates = _ref5$templates === void 0 ? defaultTemplates$c : _ref5$templates;
+        templates = _ref5$templates === void 0 ? {} : _ref5$templates;
 
     if (!container) {
       throw new Error(withUsage$N('The `container` option is required.'));
@@ -20122,11 +20231,16 @@
     });
   };
 
-  /* eslint max-len: 0 */
-  var defaultTemplates$d = {
+  var defaultTemplate = {
     reset: "\n<svg class=\"{{cssClasses.resetIcon}}\" xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 20 20\" width=\"10\" height=\"10\">\n  <path d=\"M8.114 10L.944 2.83 0 1.885 1.886 0l.943.943L10 8.113l7.17-7.17.944-.943L20 1.886l-.943.943-7.17 7.17 7.17 7.17.943.944L18.114 20l-.943-.943-7.17-7.17-7.17 7.17-.944.943L0 18.114l.943-.943L8.113 10z\"></path>\n</svg>\n  ",
     submit: "\n<svg class=\"{{cssClasses.submitIcon}}\" xmlns=\"http://www.w3.org/2000/svg\" width=\"10\" height=\"10\" viewBox=\"0 0 40 40\">\n  <path d=\"M26.804 29.01c-2.832 2.34-6.465 3.746-10.426 3.746C7.333 32.756 0 25.424 0 16.378 0 7.333 7.333 0 16.378 0c9.046 0 16.378 7.333 16.378 16.378 0 3.96-1.406 7.594-3.746 10.426l10.534 10.534c.607.607.61 1.59-.004 2.202-.61.61-1.597.61-2.202.004L26.804 29.01zm-10.426.627c7.323 0 13.26-5.936 13.26-13.26 0-7.32-5.937-13.257-13.26-13.257C9.056 3.12 3.12 9.056 3.12 16.378c0 7.323 5.936 13.26 13.258 13.26z\"></path>\n</svg>\n  ",
     loadingIndicator: "\n<svg class=\"{{cssClasses.loadingIcon}}\" width=\"16\" height=\"16\" viewBox=\"0 0 38 38\" xmlns=\"http://www.w3.org/2000/svg\" stroke=\"#444\">\n  <g fill=\"none\" fillRule=\"evenodd\">\n    <g transform=\"translate(1 1)\" strokeWidth=\"2\">\n      <circle strokeOpacity=\".5\" cx=\"18\" cy=\"18\" r=\"18\" />\n      <path d=\"M36 18c0-9.94-8.06-18-18-18\">\n        <animateTransform\n          attributeName=\"transform\"\n          type=\"rotate\"\n          from=\"0 18 18\"\n          to=\"360 18 18\"\n          dur=\"1s\"\n          repeatCount=\"indefinite\"\n        />\n      </path>\n    </g>\n  </g>\n</svg>\n  "
+  };
+
+  var defaultTemplates$e = {
+    item: "<label class=\"{{cssClasses.label}}\">\n  <input type=\"checkbox\"\n         class=\"{{cssClasses.checkbox}}\"\n         value=\"{{value}}\"\n         {{#isRefined}}checked{{/isRefined}} />\n  <span class=\"{{cssClasses.labelText}}\">{{#isFromSearch}}{{{highlighted}}}{{/isFromSearch}}{{^isFromSearch}}{{highlighted}}{{/isFromSearch}}</span>\n  <span class=\"{{cssClasses.count}}\">{{#helpers.formatNumber}}{{count}}{{/helpers.formatNumber}}</span>\n</label>",
+    showMoreText: "\n    {{#isShowingMore}}\n      Show less\n    {{/isShowingMore}}\n    {{^isShowingMore}}\n      Show more\n    {{/isShowingMore}}\n    ",
+    searchableNoResults: 'No results'
   };
 
   var withUsage$O = createDocumentationMessageGenerator({
@@ -20134,11 +20248,6 @@
   });
   var suit$o = component('RefinementList');
   var searchBoxSuit = component('SearchBox');
-  var defaultTemplates$e = {
-    item: "<label class=\"{{cssClasses.label}}\">\n  <input type=\"checkbox\"\n         class=\"{{cssClasses.checkbox}}\"\n         value=\"{{value}}\"\n         {{#isRefined}}checked{{/isRefined}} />\n  <span class=\"{{cssClasses.labelText}}\">{{#isFromSearch}}{{{highlighted}}}{{/isFromSearch}}{{^isFromSearch}}{{highlighted}}{{/isFromSearch}}</span>\n  <span class=\"{{cssClasses.count}}\">{{#helpers.formatNumber}}{{count}}{{/helpers.formatNumber}}</span>\n</label>",
-    showMoreText: "\n    {{#isShowingMore}}\n      Show less\n    {{/isShowingMore}}\n    {{^isShowingMore}}\n      Show more\n    {{/isShowingMore}}\n    ",
-    searchableNoResults: 'No results'
-  };
 
   var renderer$j = function renderer(_ref) {
     var containerNode = _ref.containerNode,
@@ -20169,7 +20278,7 @@
           templates: templates
         });
         renderState.searchBoxTemplateProps = prepareTemplateProps({
-          defaultTemplates: defaultTemplates$d,
+          defaultTemplates: defaultTemplate,
           templatesConfig: instantSearchInstance.templatesConfig,
           templates: searchBoxTemplates
         });
@@ -20235,7 +20344,7 @@
         _ref3$cssClasses = _ref3.cssClasses,
         userCssClasses = _ref3$cssClasses === void 0 ? {} : _ref3$cssClasses,
         _ref3$templates = _ref3.templates,
-        userTemplates = _ref3$templates === void 0 ? defaultTemplates$e : _ref3$templates,
+        templates = _ref3$templates === void 0 ? {} : _ref3$templates,
         transformItems = _ref3.transformItems;
 
     if (!container) {
@@ -20315,11 +20424,11 @@
     var specializedRenderer = renderer$j({
       containerNode: containerNode,
       cssClasses: cssClasses,
-      templates: userTemplates,
+      templates: templates,
       searchBoxTemplates: {
-        submit: userTemplates.searchableSubmit,
-        reset: userTemplates.searchableReset,
-        loadingIndicator: userTemplates.searchableLoadingIndicator
+        submit: templates.searchableSubmit,
+        reset: templates.searchableReset,
+        loadingIndicator: templates.searchableLoadingIndicator
       },
       renderState: {},
       searchable: searchable,
@@ -20514,7 +20623,8 @@
         _ref3$showLoadingIndi = _ref3.showLoadingIndicator,
         showLoadingIndicator = _ref3$showLoadingIndi === void 0 ? true : _ref3$showLoadingIndi,
         queryHook = _ref3.queryHook,
-        templates = _ref3.templates;
+        _ref3$templates = _ref3.templates,
+        userTemplates = _ref3$templates === void 0 ? {} : _ref3$templates;
 
     if (!container) {
       throw new Error(withUsage$Q('The `container` option is required.'));
@@ -20548,11 +20658,14 @@
         descendantName: 'loadingIcon'
       }), userCssClasses.loadingIcon)
     };
+
+    var templates = _objectSpread2(_objectSpread2({}, defaultTemplate), userTemplates);
+
     var specializedRenderer = renderer$l({
       containerNode: containerNode,
       cssClasses: cssClasses,
       placeholder: placeholder,
-      templates: _objectSpread2(_objectSpread2({}, defaultTemplates$d), templates),
+      templates: templates,
       autofocus: autofocus,
       searchAsYouType: searchAsYouType,
       showReset: showReset,
@@ -20730,7 +20843,7 @@
         _ref3$cssClasses = _ref3.cssClasses,
         userCssClasses = _ref3$cssClasses === void 0 ? {} : _ref3$cssClasses,
         _ref3$templates = _ref3.templates,
-        templates = _ref3$templates === void 0 ? defaultTemplates$g : _ref3$templates;
+        templates = _ref3$templates === void 0 ? {} : _ref3$templates;
 
     if (!container) {
       throw new Error(withUsage$S('The `container` option is required.'));
@@ -20841,7 +20954,7 @@
         _ref3$cssClasses = _ref3.cssClasses,
         userCssClasses = _ref3$cssClasses === void 0 ? {} : _ref3$cssClasses,
         _ref3$templates = _ref3.templates,
-        templates = _ref3$templates === void 0 ? defaultTemplates$h : _ref3$templates,
+        templates = _ref3$templates === void 0 ? {} : _ref3$templates,
         _ref3$on = _ref3.on,
         on = _ref3$on === void 0 ? true : _ref3$on,
         off = _ref3.off;
@@ -20965,35 +21078,37 @@
   var suit$u = component('VoiceSearch');
 
   var renderer$p = function renderer(_ref) {
-    var isBrowserSupported = _ref.isBrowserSupported,
-        isListening = _ref.isListening,
-        toggleListening = _ref.toggleListening,
-        voiceListeningState = _ref.voiceListeningState,
-        widgetParams = _ref.widgetParams;
-    var container = widgetParams.container,
-        cssClasses = widgetParams.cssClasses,
-        templates = widgetParams.templates;
-    I(h(VoiceSearch, {
-      cssClasses: cssClasses,
-      templates: templates,
-      isBrowserSupported: isBrowserSupported,
-      isListening: isListening,
-      toggleListening: toggleListening,
-      voiceListeningState: voiceListeningState
-    }), container);
+    var containerNode = _ref.containerNode,
+        cssClasses = _ref.cssClasses,
+        templates = _ref.templates;
+    return function (_ref2) {
+      var isBrowserSupported = _ref2.isBrowserSupported,
+          isListening = _ref2.isListening,
+          toggleListening = _ref2.toggleListening,
+          voiceListeningState = _ref2.voiceListeningState;
+      I(h(VoiceSearch, {
+        cssClasses: cssClasses,
+        templates: templates,
+        isBrowserSupported: isBrowserSupported,
+        isListening: isListening,
+        toggleListening: toggleListening,
+        voiceListeningState: voiceListeningState
+      }), containerNode);
+    };
   };
 
   var voiceSearch = function voiceSearch(widgetParams) {
-    var _ref2 = widgetParams || {},
-        container = _ref2.container,
-        _ref2$cssClasses = _ref2.cssClasses,
-        userCssClasses = _ref2$cssClasses === void 0 ? {} : _ref2$cssClasses,
-        templates = _ref2.templates,
-        _ref2$searchAsYouSpea = _ref2.searchAsYouSpeak,
-        searchAsYouSpeak = _ref2$searchAsYouSpea === void 0 ? false : _ref2$searchAsYouSpea,
-        language = _ref2.language,
-        additionalQueryParameters = _ref2.additionalQueryParameters,
-        createVoiceSearchHelper = _ref2.createVoiceSearchHelper;
+    var _ref3 = widgetParams || {},
+        container = _ref3.container,
+        _ref3$cssClasses = _ref3.cssClasses,
+        userCssClasses = _ref3$cssClasses === void 0 ? {} : _ref3$cssClasses,
+        _ref3$templates = _ref3.templates,
+        userTemplates = _ref3$templates === void 0 ? {} : _ref3$templates,
+        _ref3$searchAsYouSpea = _ref3.searchAsYouSpeak,
+        searchAsYouSpeak = _ref3$searchAsYouSpea === void 0 ? false : _ref3$searchAsYouSpea,
+        language = _ref3.language,
+        additionalQueryParameters = _ref3.additionalQueryParameters,
+        createVoiceSearchHelper = _ref3.createVoiceSearchHelper;
 
     if (!container) {
       throw new Error(withUsage$U('The `container` option is required.'));
@@ -21009,13 +21124,21 @@
         descendantName: 'status'
       }), userCssClasses.status)
     };
-    var makeWidget = connectVoiceSearch(renderer$p, function () {
+
+    var templates = _objectSpread2(_objectSpread2({}, defaultTemplates$i), userTemplates);
+
+    var specializedRenderer = renderer$p({
+      containerNode: containerNode,
+      cssClasses: cssClasses,
+      templates: templates
+    });
+    var makeWidget = connectVoiceSearch(specializedRenderer, function () {
       return I(null, containerNode);
     });
     return _objectSpread2(_objectSpread2({}, makeWidget({
       container: containerNode,
       cssClasses: cssClasses,
-      templates: _objectSpread2(_objectSpread2({}, defaultTemplates$i), templates),
+      templates: templates,
       searchAsYouSpeak: searchAsYouSpeak,
       language: language,
       additionalQueryParameters: additionalQueryParameters,

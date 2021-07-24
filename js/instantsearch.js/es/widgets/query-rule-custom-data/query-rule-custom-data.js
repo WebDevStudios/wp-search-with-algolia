@@ -11,17 +11,23 @@ import { getContainerNode, createDocumentationMessageGenerator } from '../../lib
 import { component } from '../../lib/suit';
 import connectQueryRules from '../../connectors/query-rules/connectQueryRules';
 import CustomData from '../../components/QueryRuleCustomData/QueryRuleCustomData';
+export var defaultTemplates = {
+  default: function _default(_ref) {
+    var items = _ref.items;
+    return JSON.stringify(items, null, 2);
+  }
+};
 var withUsage = createDocumentationMessageGenerator({
   name: 'query-rule-custom-data'
 });
 var suit = component('QueryRuleCustomData');
 
-var renderer = function renderer(_ref) {
-  var containerNode = _ref.containerNode,
-      cssClasses = _ref.cssClasses,
-      templates = _ref.templates;
-  return function (_ref2) {
-    var items = _ref2.items;
+var renderer = function renderer(_ref2) {
+  var containerNode = _ref2.containerNode,
+      cssClasses = _ref2.cssClasses,
+      templates = _ref2.templates;
+  return function (_ref3) {
+    var items = _ref3.items;
     render(h(CustomData, {
       cssClasses: cssClasses,
       templates: templates,
@@ -31,16 +37,16 @@ var renderer = function renderer(_ref) {
 };
 
 var queryRuleCustomData = function queryRuleCustomData(widgetParams) {
-  var _ref3 = widgetParams || {},
-      container = _ref3.container,
-      _ref3$cssClasses = _ref3.cssClasses,
-      userCssClasses = _ref3$cssClasses === void 0 ? {} : _ref3$cssClasses,
-      _ref3$templates = _ref3.templates,
-      userTemplates = _ref3$templates === void 0 ? {} : _ref3$templates,
-      _ref3$transformItems = _ref3.transformItems,
-      transformItems = _ref3$transformItems === void 0 ? function (items) {
+  var _ref4 = widgetParams || {},
+      container = _ref4.container,
+      _ref4$cssClasses = _ref4.cssClasses,
+      userCssClasses = _ref4$cssClasses === void 0 ? {} : _ref4$cssClasses,
+      _ref4$templates = _ref4.templates,
+      userTemplates = _ref4$templates === void 0 ? {} : _ref4$templates,
+      _ref4$transformItems = _ref4.transformItems,
+      transformItems = _ref4$transformItems === void 0 ? function (items) {
     return items;
-  } : _ref3$transformItems;
+  } : _ref4$transformItems;
 
   if (!container) {
     throw new Error(withUsage('The `container` option is required.'));
@@ -50,12 +56,6 @@ var queryRuleCustomData = function queryRuleCustomData(widgetParams) {
     root: cx(suit(), userCssClasses.root)
   };
   var containerNode = getContainerNode(container);
-  var defaultTemplates = {
-    default: function _default(_ref4) {
-      var items = _ref4.items;
-      return JSON.stringify(items, null, 2);
-    }
-  };
 
   var templates = _objectSpread(_objectSpread({}, defaultTemplates), userTemplates);
 

@@ -18,35 +18,37 @@ var withUsage = createDocumentationMessageGenerator({
 var suit = component('VoiceSearch');
 
 var renderer = function renderer(_ref) {
-  var isBrowserSupported = _ref.isBrowserSupported,
-      isListening = _ref.isListening,
-      toggleListening = _ref.toggleListening,
-      voiceListeningState = _ref.voiceListeningState,
-      widgetParams = _ref.widgetParams;
-  var container = widgetParams.container,
-      cssClasses = widgetParams.cssClasses,
-      templates = widgetParams.templates;
-  render(h(VoiceSearchComponent, {
-    cssClasses: cssClasses,
-    templates: templates,
-    isBrowserSupported: isBrowserSupported,
-    isListening: isListening,
-    toggleListening: toggleListening,
-    voiceListeningState: voiceListeningState
-  }), container);
+  var containerNode = _ref.containerNode,
+      cssClasses = _ref.cssClasses,
+      templates = _ref.templates;
+  return function (_ref2) {
+    var isBrowserSupported = _ref2.isBrowserSupported,
+        isListening = _ref2.isListening,
+        toggleListening = _ref2.toggleListening,
+        voiceListeningState = _ref2.voiceListeningState;
+    render(h(VoiceSearchComponent, {
+      cssClasses: cssClasses,
+      templates: templates,
+      isBrowserSupported: isBrowserSupported,
+      isListening: isListening,
+      toggleListening: toggleListening,
+      voiceListeningState: voiceListeningState
+    }), containerNode);
+  };
 };
 
 var voiceSearch = function voiceSearch(widgetParams) {
-  var _ref2 = widgetParams || {},
-      container = _ref2.container,
-      _ref2$cssClasses = _ref2.cssClasses,
-      userCssClasses = _ref2$cssClasses === void 0 ? {} : _ref2$cssClasses,
-      templates = _ref2.templates,
-      _ref2$searchAsYouSpea = _ref2.searchAsYouSpeak,
-      searchAsYouSpeak = _ref2$searchAsYouSpea === void 0 ? false : _ref2$searchAsYouSpea,
-      language = _ref2.language,
-      additionalQueryParameters = _ref2.additionalQueryParameters,
-      createVoiceSearchHelper = _ref2.createVoiceSearchHelper;
+  var _ref3 = widgetParams || {},
+      container = _ref3.container,
+      _ref3$cssClasses = _ref3.cssClasses,
+      userCssClasses = _ref3$cssClasses === void 0 ? {} : _ref3$cssClasses,
+      _ref3$templates = _ref3.templates,
+      userTemplates = _ref3$templates === void 0 ? {} : _ref3$templates,
+      _ref3$searchAsYouSpea = _ref3.searchAsYouSpeak,
+      searchAsYouSpeak = _ref3$searchAsYouSpea === void 0 ? false : _ref3$searchAsYouSpea,
+      language = _ref3.language,
+      additionalQueryParameters = _ref3.additionalQueryParameters,
+      createVoiceSearchHelper = _ref3.createVoiceSearchHelper;
 
   if (!container) {
     throw new Error(withUsage('The `container` option is required.'));
@@ -62,13 +64,21 @@ var voiceSearch = function voiceSearch(widgetParams) {
       descendantName: 'status'
     }), userCssClasses.status)
   };
-  var makeWidget = connectVoiceSearch(renderer, function () {
+
+  var templates = _objectSpread(_objectSpread({}, defaultTemplates), userTemplates);
+
+  var specializedRenderer = renderer({
+    containerNode: containerNode,
+    cssClasses: cssClasses,
+    templates: templates
+  });
+  var makeWidget = connectVoiceSearch(specializedRenderer, function () {
     return render(null, containerNode);
   });
   return _objectSpread(_objectSpread({}, makeWidget({
     container: containerNode,
     cssClasses: cssClasses,
-    templates: _objectSpread(_objectSpread({}, defaultTemplates), templates),
+    templates: templates,
     searchAsYouSpeak: searchAsYouSpeak,
     language: language,
     additionalQueryParameters: additionalQueryParameters,

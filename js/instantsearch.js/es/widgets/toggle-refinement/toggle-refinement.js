@@ -64,7 +64,7 @@ var toggleRefinement = function toggleRefinement(widgetParams) {
       _ref3$cssClasses = _ref3.cssClasses,
       userCssClasses = _ref3$cssClasses === void 0 ? {} : _ref3$cssClasses,
       _ref3$templates = _ref3.templates,
-      templates = _ref3$templates === void 0 ? defaultTemplates : _ref3$templates,
+      templates = _ref3$templates === void 0 ? {} : _ref3$templates,
       _ref3$on = _ref3.on,
       on = _ref3$on === void 0 ? true : _ref3$on,
       off = _ref3.off;

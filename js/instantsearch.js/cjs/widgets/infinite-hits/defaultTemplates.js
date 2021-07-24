@@ -4,7 +4,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
-var _default = {
+var defaultTemplates = {
   empty: 'No results',
   showPreviousText: 'Show previous results',
   showMoreText: 'Show more results',
@@ -12,4 +12,5 @@ var _default = {
     return JSON.stringify(data, null, 2);
   }
 };
+var _default = defaultTemplates;
 exports.default = _default;

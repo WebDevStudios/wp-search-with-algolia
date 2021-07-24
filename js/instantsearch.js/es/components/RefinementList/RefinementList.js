@@ -227,7 +227,6 @@ var RefinementList = /*#__PURE__*/function (_Component) {
         }
       }));
       var shouldDisableSearchBox = this.props.searchIsAlwaysActive !== true && !(this.props.isFromSearch || !this.props.hasExhaustiveItems);
-      var templates = this.props.searchBoxTemplateProps ? this.props.searchBoxTemplateProps.templates : undefined;
       var searchBox = this.props.searchFacetValues && h("div", {
         className: this.props.cssClasses.searchBox
       }, h(SearchBox, {
@@ -235,7 +234,7 @@ var RefinementList = /*#__PURE__*/function (_Component) {
         placeholder: this.props.searchPlaceholder,
         disabled: shouldDisableSearchBox,
         cssClasses: this.props.cssClasses.searchable,
-        templates: templates,
+        templates: this.props.searchBoxTemplateProps.templates,
         onChange: function onChange(event) {
           return _this2.props.searchFacetValues(event.target.value);
         },
