@@ -60,6 +60,7 @@ class Algolia_Scripts {
 				'jquery',
 				'underscore',
 				'wp-util',
+				'algolia-search',
 			],
 			ALGOLIA_VERSION,
 			$in_footer
@@ -82,6 +83,7 @@ class Algolia_Scripts {
 				'jquery',
 				'underscore',
 				'wp-util',
+				'algolia-search',
 			],
 			ALGOLIA_VERSION,
 			$in_footer
