@@ -486,7 +486,7 @@ class AdminSettings {
 	 * @since  1.0.0
 	 */
 	public function display_page() {
-		require_once ALGOLIA_PATH . 'partials/form-options.php';
+		require_once ALGOLIA_PATH . 'admin-partials/form-options.php';
 	}
 
 	/**

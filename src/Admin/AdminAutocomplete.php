@@ -205,7 +205,7 @@ class AdminAutocomplete {
 	public function autocomplete_config_callback() {
 		$indices = $this->autocomplete_config->get_form_data();
 
-		require_once ALGOLIA_PATH . 'partials/page-autocomplete-config.php';
+		require_once ALGOLIA_PATH . 'admin-partials/page-autocomplete-config.php';
 	}
 
 	/**
@@ -229,7 +229,7 @@ class AdminAutocomplete {
 	 * @since  1.0.0
 	 */
 	public function display_page() {
-		require_once ALGOLIA_PATH . 'partials/page-autocomplete.php';
+		require_once ALGOLIA_PATH . 'admin-partials/page-autocomplete.php';
 	}
 
 	/**

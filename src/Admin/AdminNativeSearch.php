@@ -136,7 +136,7 @@ class AdminNativeSearch {
 	public function override_native_search_callback() {
 		$value = $this->plugin->get_settings()->get_override_native_search();
 
-		require_once ALGOLIA_PATH . 'partials/form-override-search-option.php';
+		require_once ALGOLIA_PATH . 'admin-partials/form-override-search-option.php';
 	}
 
 	/**
@@ -185,7 +185,7 @@ class AdminNativeSearch {
 	 * @since  1.0.0
 	 */
 	public function display_page() {
-		require_once ALGOLIA_PATH . 'partials/page-search.php';
+		require_once ALGOLIA_PATH . 'admin-partials/page-search.php';
 	}
 
 	/**
