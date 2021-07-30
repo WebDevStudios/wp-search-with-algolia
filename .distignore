@@ -1,0 +1,14 @@
+/.github
+/.git
+/.wordpress-org
+/.vscode
+/node_modules
+.distignore
+.gitignore
+.nvmrc
+composer.json
+composer.lock
+package-lock.json
+package.json
+phpcs.xml
+readme.md
