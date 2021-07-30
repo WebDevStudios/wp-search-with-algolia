@@ -10,9 +10,9 @@
 
 namespace WebDevStudios\WPSWA\Admin;
 
-use WebDevStudios\WPSWA\Exception;
+use Exception;
+use RuntimeException;
 use WebDevStudios\WPSWA\Plugin;
-use WebDevStudios\WPSWA\RuntimeException;
 
 /**
  * Class Algolia_Admin

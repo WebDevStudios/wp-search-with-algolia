@@ -11,8 +11,8 @@
 namespace WebDevStudios\WPSWA\Indices;
 
 use WebDevStudios\WPSWA\Utilities\Utils;
-use WebDevStudios\WPSWA\WP_Post;
-use WebDevStudios\WPSWA\WP_Query;
+use WP_Post;
+use WP_Query;
 
 /**
  * Class Algolia_Posts_Index

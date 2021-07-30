@@ -10,10 +10,10 @@
 
 namespace WebDevStudios\WPSWA\Indices;
 
-use WebDevStudios\WPSWA\RuntimeException;
+use RuntimeException;
 use WebDevStudios\WPSWA\Utilities\Utils;
-use WebDevStudios\WPSWA\WP_Post;
-use WebDevStudios\WPSWA\WP_Query;
+use WP_Post;
+use WP_Query;
 
 /**
  * Class Algolia_Searchable_Posts_Index

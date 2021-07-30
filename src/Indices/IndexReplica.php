@@ -10,7 +10,7 @@
 
 namespace WebDevStudios\WPSWA\Indices;
 
-use WebDevStudios\WPSWA\InvalidArgumentException;
+use InvalidArgumentException;
 
 /**
  * Class Algolia_Index_Replica

@@ -13,10 +13,10 @@ namespace WebDevStudios\WPSWA\Indices;
 use Algolia\AlgoliaSearch\Exceptions\AlgoliaException;
 use Algolia\AlgoliaSearch\SearchClient;
 use Algolia\AlgoliaSearch\SearchIndex;
-use WebDevStudios\WPSWA\Exception;
-use WebDevStudios\WPSWA\InvalidArgumentException;
-use WebDevStudios\WPSWA\LogicException;
-use WebDevStudios\WPSWA\RuntimeException;
+use Exception;
+use InvalidArgumentException;
+use LogicException;
+use RuntimeException;
 
 /**
  * Class Algolia_Index

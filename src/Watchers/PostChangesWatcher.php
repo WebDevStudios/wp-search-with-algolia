@@ -11,7 +11,6 @@
 namespace WebDevStudios\WPSWA\Watchers;
 
 use Algolia\AlgoliaSearch\Exceptions\AlgoliaException;
-use WebDevStudios\WPSWA\Array;
 use WebDevStudios\WPSWA\Indices\AbstractIndex;
 
 /**
@@ -37,9 +36,9 @@ class PostChangesWatcher implements ChangesWatcher {
 	 * @author WebDevStudios <contact@webdevstudios.com>
 	 * @since  1.0.0
 	 *
-	 * @var Array
+	 * @var array
 	 */
-	private $posts_deleted = array();
+	private $posts_deleted = [];
 
 	/**
 	 * Algolia_Post_Changes_Watcher constructor.

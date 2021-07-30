@@ -12,7 +12,7 @@ namespace WebDevStudios\WPSWA\Watchers;
 
 use Algolia\AlgoliaSearch\Exceptions\AlgoliaException;
 use WebDevStudios\WPSWA\Indices\AbstractIndex;
-use WebDevStudios\WPSWA\WP_Post;
+use WP_Post;
 
 /**
  * Class Algolia_User_Changes_Watcher

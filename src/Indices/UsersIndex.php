@@ -10,7 +10,7 @@
 
 namespace WebDevStudios\WPSWA\Indices;
 
-use WebDevStudios\WPSWA\WP_User;
+use WP_User;
 
 /**
  * Class Algolia_Users_Index

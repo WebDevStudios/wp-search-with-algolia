@@ -10,7 +10,7 @@
 
 namespace WebDevStudios\WPSWA\Utilities;
 
-use WebDevStudios\WPSWA\Utilities\WP_Error;
+use WP_Error;
 
 /**
  * Class Algolia_Utils

@@ -12,6 +12,8 @@ namespace WebDevStudios\WPSWA;
 
 use Algolia\AlgoliaSearch\Exceptions\AlgoliaException;
 use WebDevStudios\WPSWA\Indices\AbstractIndex;
+use WP_Post;
+use WP_Query;
 
 /**
  * Class Algolia_Search

@@ -13,7 +13,8 @@ namespace WebDevStudios\WPSWA\Commands;
 use WebDevStudios\WPSWA\Factories\PluginFactory;
 use WebDevStudios\WPSWA\Indices\AbstractIndex;
 use WebDevStudios\WPSWA\Plugin;
-use WebDevStudios\WPSWA\WP_CLI;
+use WP_CLI;
+use WP_CLI_Command;
 
 /**
  * Class Algolia_CLI
@@ -22,7 +23,7 @@ use WebDevStudios\WPSWA\WP_CLI;
  *
  * @since 1.0.0
  */
-class Cli extends \WP_CLI_Command {
+class Cli extends WP_CLI_Command {
 
 	/**
 	 * The Algolia_Plugin instance.

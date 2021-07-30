@@ -10,8 +10,8 @@
 
 namespace WebDevStudios\WPSWA\Admin;
 
+use Exception;
 use WebDevStudios\WPSWA\Api;
-use WebDevStudios\WPSWA\Exception;
 use WebDevStudios\WPSWA\Plugin;
 
 /**
@@ -486,7 +486,7 @@ class AdminSettings {
 	 * @since  1.0.0
 	 */
 	public function display_page() {
-		require_once dirname( __FILE__ ) . '/partials/form-options.php';
+		require_once ALGOLIA_PATH . 'partials/form-options.php';
 	}
 
 	/**
