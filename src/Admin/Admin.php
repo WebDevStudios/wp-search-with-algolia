@@ -13,6 +13,7 @@ namespace WebDevStudios\WPSWA\Admin;
 use Exception;
 use RuntimeException;
 use WebDevStudios\WPSWA\Plugin;
+use const ALGOLIA_PLUGIN_URL;
 
 /**
  * Class Algolia_Admin
@@ -72,7 +73,12 @@ class Admin {
 	 * @since   1.0.0
 	 */
 	public function enqueue_styles() {
-		wp_enqueue_style( 'algolia-admin', plugin_dir_url( __FILE__ ) . 'css/algolia-admin.css', array(), ALGOLIA_VERSION );
+		wp_enqueue_style(
+			'algolia-admin',
+			ALGOLIA_PLUGIN_URL . 'css/admin/algolia-admin.css',
+			[],
+			ALGOLIA_VERSION
+		);
 	}
 
 	/**
@@ -84,22 +90,29 @@ class Admin {
 	public function enqueue_scripts() {
 		wp_enqueue_script(
 			'algolia-admin',
-			plugin_dir_url( __FILE__ ) . 'js/algolia-admin.js',
-			array( 'jquery', 'jquery-ui-sortable' ),
+			ALGOLIA_PLUGIN_URL . 'js/admin/algolia-admin.js',
+			[
+				'jquery',
+				'jquery-ui-sortable',
+			],
 			ALGOLIA_VERSION,
 			false
 		);
 		wp_enqueue_script(
 			'algolia-admin-reindex-button',
-			plugin_dir_url( __FILE__ ) . 'js/reindex-button.js',
-			array( 'jquery' ),
+			ALGOLIA_PLUGIN_URL . 'js/admin/reindex-button.js',
+			[
+				'jquery',
+			],
 			ALGOLIA_VERSION,
 			false
 		);
 		wp_enqueue_script(
 			'algolia-admin-push-settings-button',
-			plugin_dir_url( __FILE__ ) . 'js/push-settings-button.js',
-			array( 'jquery' ),
+			ALGOLIA_PLUGIN_URL . 'js/admin/push-settings-button.js',
+			[
+				'jquery',
+			],
 			ALGOLIA_VERSION,
 			false
 		);
