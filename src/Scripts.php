@@ -1,0 +1,96 @@
+<?php
+/**
+ * Algolia_Scripts class file.
+ *
+ * @author  WebDevStudios <contact@webdevstudios.com>
+ * @since   1.5.0
+ *
+ * @package WebDevStudios\WPSWA
+ */
+
+namespace WebDevStudios\WPSWA;
+
+use WebDevStudios\WPSWA\Utilities\Utils;
+
+/**
+ * Class Algolia_Scripts
+ *
+ * @since 1.5.0
+ */
+class Scripts {
+
+	/**
+	 * Algolia_Scripts constructor.
+	 *
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 * @since  1.5.0
+	 */
+	public function __construct() {
+		add_action( 'wp_enqueue_scripts', [ $this, 'register_scripts' ] );
+	}
+
+	/**
+	 * Register scripts.
+	 *
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 * @since  1.5.0
+	 */
+	public function register_scripts() {
+
+		$in_footer = Utils::get_scripts_in_footer_argument();
+
+		$suffix = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ? '' : '.min';
+
+		$ais_suffix = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG
+			? '.development'
+			: '.production';
+
+		wp_register_script(
+			'algolia-search',
+			ALGOLIA_PLUGIN_URL . 'js/algoliasearch/dist/algoliasearch-lite.umd.js',
+			[
+				'jquery',
+				'underscore',
+				'wp-util',
+			],
+			ALGOLIA_VERSION,
+			$in_footer
+		);
+
+		wp_register_script(
+			'algolia-autocomplete',
+			ALGOLIA_PLUGIN_URL . 'js/autocomplete.js/dist/autocomplete' . $suffix . '.js',
+			[
+				'jquery',
+				'underscore',
+				'wp-util',
+				'algolia-search',
+			],
+			ALGOLIA_VERSION,
+			$in_footer
+		);
+
+		wp_register_script(
+			'algolia-autocomplete-noconflict',
+			ALGOLIA_PLUGIN_URL . 'js/autocomplete-noconflict.js',
+			[
+				'algolia-autocomplete',
+			],
+			ALGOLIA_VERSION,
+			$in_footer
+		);
+
+		wp_register_script(
+			'algolia-instantsearch',
+			ALGOLIA_PLUGIN_URL . 'js/instantsearch.js/dist/instantsearch' . $ais_suffix . $suffix . '.js',
+			[
+				'jquery',
+				'underscore',
+				'wp-util',
+				'algolia-search',
+			],
+			ALGOLIA_VERSION,
+			$in_footer
+		);
+	}
+}
