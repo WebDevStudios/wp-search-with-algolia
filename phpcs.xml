@@ -99,6 +99,13 @@
 		</properties>
 	</rule>
 
+	<!--
+		We're PSR-4 autoloading, do not scan class files in src for lowercase and hyphenation
+	-->
+	<rule ref="WordPress.Files.FileName.NotHyphenatedLowercase">
+		<exclude-pattern>/src/*</exclude-pattern>
+	</rule>
+
 	<!-- Use WordPress PHP Compatibility. -->
 	<rule ref="PHPCompatibilityWP"/>
 
