@@ -147,7 +147,7 @@ class AdminAutocomplete {
 		);
 
 		add_settings_field(
-			'AutocompleteConfig',
+			'algolia_autocomplete_config',
 			esc_html__( 'Configuration', 'wp-search-with-algolia' ),
 			array( $this, 'autocomplete_config_callback' ),
 			$this->slug,
@@ -155,7 +155,7 @@ class AdminAutocomplete {
 		);
 
 		register_setting( $this->option_group, 'algolia_autocomplete_enabled', array( $this, 'sanitize_autocomplete_enabled' ) );
-		register_setting( $this->option_group, 'AutocompleteConfig', array( $this, 'sanitize_autocomplete_config' ) );
+		register_setting( $this->option_group, 'algolia_autocomplete_config', array( $this, 'sanitize_autocomplete_config' ) );
 	}
 
 	/**

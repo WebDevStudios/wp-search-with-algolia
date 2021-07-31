@@ -176,7 +176,7 @@ class AutocompleteConfig {
 			$entry['enabled']    = true;
 		}
 
-		$config = (array) apply_filters( 'AutocompleteConfig', $config );
+		$config = (array) apply_filters( 'algolia_autocomplete_config', $config );
 
 		// Remove manually disabled indices.
 		$config = array_filter(
