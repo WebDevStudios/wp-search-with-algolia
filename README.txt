@@ -106,6 +106,9 @@ WebDevStudios provides end-to-end WordPress opportunities from strategy and plan
 
 Follow along with the changelog on [Github](https://github.com/WebDevStudios/wp-search-with-algolia/releases).
 
+= NEXT =
+* Testing PHP Scoper
+
 = 2.0.1 =
 * Fix for users that enable intstantsearch but not autocomplete by adding algoliasearch client as direct dependency of both
 
