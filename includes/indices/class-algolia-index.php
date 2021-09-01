@@ -327,9 +327,19 @@ abstract class Algolia_Index {
 			return;
 		}
 
-		$index   = $this->get_index();
-		$records = $this->sanitize_json_data( $records );
-		$index->saveObjects( $records );
+		$index = $this->get_index();
+
+		try {
+			$records = $this->sanitize_json_data( $records );
+		} catch ( \Throwable $throwable ) {
+			error_log( $throwable->getMessage() ); // phpcs:ignore -- Need a real logger.
+		}
+
+		try {
+			$index->saveObjects( $records );
+		} catch ( \Throwable $throwable ) {
+			error_log( $throwable->getMessage() ); // phpcs:ignore -- Need a real logger.
+		}
 	}
 
 	/**
@@ -412,9 +422,17 @@ abstract class Algolia_Index {
 		if ( ! empty( $records ) ) {
 			$index = $this->get_index();
 
-			$records = $this->sanitize_json_data( $records );
+			try {
+				$records = $this->sanitize_json_data( $records );
+			} catch ( \Throwable $throwable ) {
+				error_log( $throwable->getMessage() ); // phpcs:ignore -- Need a real logger.
+			}
 
-			$index->saveObjects( $records );
+			try {
+				$index->saveObjects( $records );
+			} catch ( \Throwable $throwable ) {
+				error_log( $throwable->getMessage() ); // phpcs:ignore -- Need a real logger.
+			}
 		}
 
 		if ( $page === $max_num_pages ) {
