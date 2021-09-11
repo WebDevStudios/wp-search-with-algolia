@@ -60,6 +60,16 @@ abstract class Algolia_Index {
 	protected $contains_only;
 
 	/**
+	 * Whether the reindexing operation is running or not.
+	 *
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 * @since  2.1.0-dev
+	 *
+	 * @var bool
+	 */
+	protected $reindexing = false;
+
+	/**
 	 * Get the admin name for this index.
 	 *
 	 * @author WebDevStudios <contact@webdevstudios.com>
@@ -322,12 +332,20 @@ abstract class Algolia_Index {
 	 * @return void
 	 */
 	protected function update_records( $item, array $records ) {
+
 		if ( empty( $records ) ) {
 			$this->delete_item( $item );
 			return;
 		}
 
-		$index = $this->get_index();
+		/**
+		 * If update_records is called from re_index,
+		 * skip sanitizing and saving records here,
+		 * as it will trigger duplicate API calls.
+		 */
+		if ( true === $this->reindexing ) {
+			return;
+		}
 
 		try {
 			$sanitized_records = $this->sanitize_json_data( $records );
@@ -401,6 +419,7 @@ abstract class Algolia_Index {
 		}
 
 		$batch_size = (int) $this->get_re_index_batch_size();
+
 		if ( $batch_size < 1 ) {
 			throw new InvalidArgumentException( 'Re-index batch size can not be lower than 1.' );
 		}
@@ -412,6 +431,12 @@ abstract class Algolia_Index {
 		$items = $this->get_items( $page, $batch_size );
 
 		$records = array();
+
+		/**
+		 * Set the reindexing bit to true.
+		 */
+		$this->reindexing = true;
+
 		foreach ( $items as $item ) {
 			if ( ! $this->should_index( $item ) ) {
 				$this->delete_item( $item );
@@ -446,6 +471,11 @@ abstract class Algolia_Index {
 				error_log( $throwable->getMessage() ); // phpcs:ignore -- Need a real logger.
 			}
 		}
+
+		/**
+		 * Set the reindexing bit back to false.
+		 */
+		$this->reindexing = false;
 
 		if ( $page === $max_num_pages ) {
 			do_action( 'algolia_re_indexed_items', $this->get_id() );
