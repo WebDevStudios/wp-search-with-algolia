@@ -330,13 +330,20 @@ abstract class Algolia_Index {
 		$index = $this->get_index();
 
 		try {
-			$records = $this->sanitize_json_data( $records );
+			$sanitized_records = $this->sanitize_json_data( $records );
 		} catch ( \Throwable $throwable ) {
 			error_log( $throwable->getMessage() ); // phpcs:ignore -- Need a real logger.
 		}
 
+		// Don't saveObjects if sanitize_json_data failed.
+		if ( empty( $sanitized_records ) ) {
+			return;
+		}
+
+		$index = $this->get_index();
+
 		try {
-			$index->saveObjects( $records );
+			$index->saveObjects( $sanitized_records );
 		} catch ( \Throwable $throwable ) {
 			error_log( $throwable->getMessage() ); // phpcs:ignore -- Need a real logger.
 		}
@@ -420,16 +427,21 @@ abstract class Algolia_Index {
 		}
 
 		if ( ! empty( $records ) ) {
-			$index = $this->get_index();
 
 			try {
-				$records = $this->sanitize_json_data( $records );
+				$sanitized_records = $this->sanitize_json_data( $records );
 			} catch ( \Throwable $throwable ) {
 				error_log( $throwable->getMessage() ); // phpcs:ignore -- Need a real logger.
 			}
+		}
+
+		// Don't saveObjects if sanitize_json_data failed.
+		if ( ! empty( $sanitized_records ) ) {
+
+			$index = $this->get_index();
 
 			try {
-				$index->saveObjects( $records );
+				$index->saveObjects( $sanitized_records );
 			} catch ( \Throwable $throwable ) {
 				error_log( $throwable->getMessage() ); // phpcs:ignore -- Need a real logger.
 			}
