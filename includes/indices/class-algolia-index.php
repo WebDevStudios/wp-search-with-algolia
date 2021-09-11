@@ -523,6 +523,8 @@ abstract class Algolia_Index {
 	 * Sanitize data to allow non UTF-8 content to pass.
 	 * Here we use a private function introduced in WP 4.1.
 	 *
+	 * Since WPSWA v 1.1.0, minimum suppported WordPress version is 5.0.
+	 *
 	 * @author WebDevStudios <contact@webdevstudios.com>
 	 * @since  1.0.0
 	 *
@@ -530,14 +532,10 @@ abstract class Algolia_Index {
 	 *
 	 * @return mixed The sanitized data that shall be encoded to JSON.
 	 *
-	 * @throws Exception If depth is less than zero.
+	 * @throws Exception If depth limit is reached.
 	 */
 	protected function sanitize_json_data( $data ) {
-		if ( function_exists( '_wp_json_sanity_check' ) ) {
-			return _wp_json_sanity_check( $data, 512 );
-		}
-
-		return $data;
+		return _wp_json_sanity_check( $data, 512 );
 	}
 
 	/**
