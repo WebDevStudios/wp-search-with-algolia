@@ -123,7 +123,7 @@ final class Algolia_Users_Index extends Algolia_Index {
 	 */
 	protected function get_settings() {
 		$settings = array(
-			'attributesToIndex' => array(
+			'searchableAttributes' => array(
 				'unordered(display_name)',
 			),
 			'customRanking'     => array(

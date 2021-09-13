@@ -256,7 +256,7 @@ final class Algolia_Searchable_Posts_Index extends Algolia_Index {
 	 */
 	protected function get_settings() {
 		$settings = array(
-			'attributesToIndex'     => array(
+			'searchableAttributes'     => array(
 				'unordered(post_title)',
 				'unordered(taxonomies)',
 				'unordered(content)',
