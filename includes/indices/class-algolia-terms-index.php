@@ -143,6 +143,13 @@ final class Algolia_Terms_Index extends Algolia_Index {
 		$settings = (array) apply_filters( 'algolia_terms_index_settings', $settings, $this->taxonomy );
 		$settings = (array) apply_filters( 'algolia_terms_' . $this->taxonomy . '_index_settings', $settings );
 
+		if( array_key_exists('attributesToIndex', $settings) && is_array( $settings['attributesToIndex'] ) ) {
+			$settings['searchableAttributes'] = array_merge(
+				$settings['searchableAttributes'], 
+				$settings['attributesToIndex']);
+			unset($settings['attributesToIndex']);
+		}
+
 		return $settings;
 	}
 

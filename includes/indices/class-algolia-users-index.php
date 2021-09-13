@@ -131,7 +131,16 @@ final class Algolia_Users_Index extends Algolia_Index {
 			),
 		);
 
-		return (array) apply_filters( 'algolia_users_index_settings', $settings );
+		$settings = (array) apply_filters( 'algolia_users_index_settings', $settings );
+
+		if( array_key_exists('attributesToIndex', $settings) && is_array( $settings['attributesToIndex'] ) ) {
+			$settings['searchableAttributes'] = array_merge(
+				$settings['searchableAttributes'], 
+				$settings['attributesToIndex']);
+			unset($settings['attributesToIndex']);
+		}
+
+		return $settings;
 	}
 
 	/**
