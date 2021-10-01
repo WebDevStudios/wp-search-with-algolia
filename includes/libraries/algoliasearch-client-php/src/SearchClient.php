@@ -154,6 +154,11 @@ class SearchClient
         return $this->api->read('GET', api_path('/1/isalive'), $requestOptions);
     }
 
+    public function search($queries, $requestOptions = [])
+    {
+        return $this->multipleQueries($queries, $requestOptions);
+    }
+
     public function multipleQueries($queries, $requestOptions = [])
     {
         $queries = array_map(function ($query) {
@@ -260,7 +265,7 @@ class SearchClient
 
     /**
      * @deprecated endpoint will be deprecated
-     * @see RecommendationClient
+     * @see PersonalizationClient
      */
     public function getPersonalizationStrategy($requestOptions = [])
     {
@@ -269,7 +274,7 @@ class SearchClient
 
     /**
      * @deprecated endpoint will be deprecated
-     * @see RecommendationClient
+     * @see PersonalizationClient
      */
     public function setPersonalizationStrategy($strategy, $requestOptions = [])
     {
