@@ -63,7 +63,7 @@ abstract class Algolia_Index {
 	 * Whether the reindexing operation is running or not.
 	 *
 	 * @author WebDevStudios <contact@webdevstudios.com>
-	 * @since  2.1.0-dev
+	 * @since  2.1.0
 	 *
 	 * @var bool
 	 */
