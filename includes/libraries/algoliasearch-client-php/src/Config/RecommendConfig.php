@@ -2,18 +2,8 @@
 
 namespace Algolia\AlgoliaSearch\Config;
 
-/**
- * @deprecated Please use Algolia\AlgoliaSearch\Config\PersonalizationConfig instead
- */
-final class RecommendationConfig extends AbstractConfig
+final class RecommendConfig extends AbstractConfig
 {
-    /**
-     * @param string|null $appId
-     * @param string|null $apiKey
-     * @param string|null $region
-     *
-     * @return RecommendationConfig
-     */
     public static function create($appId = null, $apiKey = null, $region = null)
     {
         $config = [
@@ -22,7 +12,14 @@ final class RecommendationConfig extends AbstractConfig
             'region' => null !== $region ? $region : 'us',
         ];
 
-        return new self($config);
+        return new static($config);
+    }
+
+    public function setRegion($region)
+    {
+        $this->config['region'] = $region;
+
+        return $this;
     }
 
     public function getRegion()
