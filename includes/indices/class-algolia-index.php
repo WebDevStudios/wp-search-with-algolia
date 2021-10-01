@@ -60,6 +60,16 @@ abstract class Algolia_Index {
 	protected $contains_only;
 
 	/**
+	 * Whether the reindexing operation is running or not.
+	 *
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 * @since  2.1.0-dev
+	 *
+	 * @var bool
+	 */
+	protected $reindexing = false;
+
+	/**
 	 * Get the admin name for this index.
 	 *
 	 * @author WebDevStudios <contact@webdevstudios.com>
@@ -322,14 +332,55 @@ abstract class Algolia_Index {
 	 * @return void
 	 */
 	protected function update_records( $item, array $records ) {
+
 		if ( empty( $records ) ) {
 			$this->delete_item( $item );
 			return;
 		}
 
-		$index   = $this->get_index();
-		$records = $this->sanitize_json_data( $records );
-		$index->saveObjects( $records );
+		/**
+		 * If update_records is called from re_index,
+		 * skip sanitizing and saving records here,
+		 * as it will trigger duplicate API calls.
+		 */
+		if ( true === $this->reindexing ) {
+			return;
+		}
+
+		/**
+		 * Filters the records to be updated.
+		 *
+		 * @since 2.1.0
+		 *
+		 * @param array  $records  Array of records to update.
+		 * @param object $item     The item to update records for.
+		 * @param string $index_id The index ID without prefix.
+		 */
+		$records = apply_filters(
+			'algolia_update_records',
+			$records,
+			$item,
+			$this->get_id()
+		);
+
+		try {
+			$sanitized_records = $this->sanitize_json_data( $records );
+		} catch ( \Throwable $throwable ) {
+			error_log( $throwable->getMessage() ); // phpcs:ignore -- Need a real logger.
+		}
+
+		// Don't saveObjects if sanitize_json_data failed.
+		if ( empty( $sanitized_records ) ) {
+			return;
+		}
+
+		$index = $this->get_index();
+
+		try {
+			$index->saveObjects( $sanitized_records );
+		} catch ( \Throwable $throwable ) {
+			error_log( $throwable->getMessage() ); // phpcs:ignore -- Need a real logger.
+		}
 	}
 
 	/**
@@ -384,6 +435,7 @@ abstract class Algolia_Index {
 		}
 
 		$batch_size = (int) $this->get_re_index_batch_size();
+
 		if ( $batch_size < 1 ) {
 			throw new InvalidArgumentException( 'Re-index batch size can not be lower than 1.' );
 		}
@@ -395,6 +447,12 @@ abstract class Algolia_Index {
 		$items = $this->get_items( $page, $batch_size );
 
 		$records = array();
+
+		/**
+		 * Set the reindexing bit to true.
+		 */
+		$this->reindexing = true;
+
 		foreach ( $items as $item ) {
 			if ( ! $this->should_index( $item ) ) {
 				$this->delete_item( $item );
@@ -410,12 +468,46 @@ abstract class Algolia_Index {
 		}
 
 		if ( ! empty( $records ) ) {
+
+			/**
+			 * Filters the records to be reindexed.
+			 *
+			 * @since 2.1.0
+			 *
+			 * @param array  $records  Array of records to re-index.
+			 * @param int    $page     Page to re-index.
+			 * @param string $index_id The index ID without prefix.
+			 */
+			$records = apply_filters(
+				'algolia_re_index_records',
+				$records,
+				$page,
+				$this->get_id()
+			);
+
+			try {
+				$sanitized_records = $this->sanitize_json_data( $records );
+			} catch ( \Throwable $throwable ) {
+				error_log( $throwable->getMessage() ); // phpcs:ignore -- Need a real logger.
+			}
+		}
+
+		// Don't saveObjects if sanitize_json_data failed.
+		if ( ! empty( $sanitized_records ) ) {
+
 			$index = $this->get_index();
 
-			$records = $this->sanitize_json_data( $records );
-
-			$index->saveObjects( $records );
+			try {
+				$index->saveObjects( $sanitized_records );
+			} catch ( \Throwable $throwable ) {
+				error_log( $throwable->getMessage() ); // phpcs:ignore -- Need a real logger.
+			}
 		}
+
+		/**
+		 * Set the reindexing bit back to false.
+		 */
+		$this->reindexing = false;
 
 		if ( $page === $max_num_pages ) {
 			do_action( 'algolia_re_indexed_items', $this->get_id() );
@@ -505,6 +597,8 @@ abstract class Algolia_Index {
 	 * Sanitize data to allow non UTF-8 content to pass.
 	 * Here we use a private function introduced in WP 4.1.
 	 *
+	 * Since WPSWA v 1.1.0, minimum suppported WordPress version is 5.0.
+	 *
 	 * @author WebDevStudios <contact@webdevstudios.com>
 	 * @since  1.0.0
 	 *
@@ -512,14 +606,10 @@ abstract class Algolia_Index {
 	 *
 	 * @return mixed The sanitized data that shall be encoded to JSON.
 	 *
-	 * @throws Exception If depth is less than zero.
+	 * @throws Exception If depth limit is reached.
 	 */
 	protected function sanitize_json_data( $data ) {
-		if ( function_exists( '_wp_json_sanity_check' ) ) {
-			return _wp_json_sanity_check( $data, 512 );
-		}
-
-		return $data;
+		return _wp_json_sanity_check( $data, 512 );
 	}
 
 	/**

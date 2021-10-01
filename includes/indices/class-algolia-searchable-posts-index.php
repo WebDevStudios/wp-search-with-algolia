@@ -467,7 +467,7 @@ final class Algolia_Searchable_Posts_Index extends Algolia_Index {
 		return (int) get_post_meta( (int) $post_id, 'algolia_' . $this->get_id() . '_records_count', true );
 	}
 	/**
-	 * Get post records count.
+	 * Set post records count.
 	 *
 	 * @author WebDevStudios <contact@webdevstudios.com>
 	 * @since  1.0.0
