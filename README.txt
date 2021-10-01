@@ -4,7 +4,7 @@ Tags: Search, Algolia, Autocomplete, instant-search, relevant search, search hig
 Requires at least: 5.0
 Tested up to: 5.8
 Requires PHP: 7.2
-Stable tag: 2.0.1
+Stable tag: 2.1.0
 License: GNU General Public License v2.0, MIT License
 
 Improve search on your site. Autocomplete is included, along with full control over look, feel and relevance.
@@ -105,6 +105,13 @@ WebDevStudios provides end-to-end WordPress opportunities from strategy and plan
 == Changelog ==
 
 Follow along with the changelog on [Github](https://github.com/WebDevStudios/wp-search-with-algolia/releases).
+
+= 2.1.0 =
+* Add algolia_update_records filter to allow inspection and filtering records during update operation.
+* Add algolia_re_index_records filter to allow inspection and filtering records during re-index operation.
+* Catch some Aloglia PHP Client exceptions that were previously uncaught during record updating and re-indexing.
+* Fix an issue where SearchIndex::saveObjects was called twice during re-index operations.
+* Update Algolia PHP API Client to 3.1.0
 
 = 2.0.1 =
 * Fix for users that enable intstantsearch but not autocomplete by adding algoliasearch client as direct dependency of both
