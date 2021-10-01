@@ -469,6 +469,22 @@ abstract class Algolia_Index {
 
 		if ( ! empty( $records ) ) {
 
+			/**
+			 * Filters the records to be reindexed.
+			 *
+			 * @since 2.1.0
+			 *
+			 * @param array  $records  Array of records to re-index.
+			 * @param int    $page     Page to re-index.
+			 * @param string $index_id The index ID without prefix.
+			 */
+			$records = apply_filters(
+				'algolia_re_index_records',
+				$records,
+				$page,
+				$this->get_id()
+			);
+
 			try {
 				$sanitized_records = $this->sanitize_json_data( $records );
 			} catch ( \Throwable $throwable ) {
