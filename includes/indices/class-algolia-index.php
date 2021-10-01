@@ -347,6 +347,22 @@ abstract class Algolia_Index {
 			return;
 		}
 
+		/**
+		 * Filters the records to be updated.
+		 *
+		 * @since 2.1.0
+		 *
+		 * @param array  $records  Array of records to update.
+		 * @param object $item     The item to update records for.
+		 * @param string $index_id The index ID without prefix.
+		 */
+		$records = apply_filters(
+			'algolia_update_records',
+			$records,
+			$item,
+			$this->get_id()
+		);
+
 		try {
 			$sanitized_records = $this->sanitize_json_data( $records );
 		} catch ( \Throwable $throwable ) {
