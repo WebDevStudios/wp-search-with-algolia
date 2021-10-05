@@ -46,7 +46,7 @@ From your WordPress dashboard:
 
 = Is this plugin a fork? =
 
-Yes. The Algolia Team **[no longer supports their original plugin](https://community.algolia.com/wordpress/)**. The engineering team at WebDevStudios has forked the original plugin, and is now maintaining it.
+Yes. The Algolia Team **no longer supports** [their original plugin](https://community.algolia.com/wordpress/). The engineering team at WebDevStudios has forked the original plugin, and is now maintaining it.
 
 = Should I switch to this plugin? =
 
