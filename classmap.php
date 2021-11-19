@@ -12,10 +12,8 @@ if ( ! defined( 'ALGOLIA_PATH' ) ) {
 	exit();
 }
 
-// The Algolia Search PHP API SearchClient.
-if ( apply_filters( 'algolia_should_require_search_client', true ) ) {
-	require_once ALGOLIA_PATH . 'includes/libraries/algoliasearch-client-php/autoload.php';
-}
+// Vendor dependencies that have been prefixed to prevent namespace collision.
+require_once ALGOLIA_PATH . 'vendor_prefixed/autoload.php';
 
 require_once ALGOLIA_PATH . 'includes/factories/class-algolia-http-client-interface-factory.php';
 require_once ALGOLIA_PATH . 'includes/factories/class-algolia-search-client-factory.php';
@@ -23,6 +21,7 @@ require_once ALGOLIA_PATH . 'includes/factories/class-algolia-plugin-factory.php
 
 require_once ALGOLIA_PATH . 'includes/class-algolia-api.php';
 require_once ALGOLIA_PATH . 'includes/class-algolia-autocomplete-config.php';
+require_once ALGOLIA_PATH . 'includes/class-algolia-cli.php';
 require_once ALGOLIA_PATH . 'includes/class-algolia-compatibility.php';
 require_once ALGOLIA_PATH . 'includes/class-algolia-plugin.php';
 require_once ALGOLIA_PATH . 'includes/class-algolia-search.php';
@@ -48,10 +47,8 @@ require_once ALGOLIA_PATH . 'includes/utilities/class-algolia-template-utils.php
 require_once ALGOLIA_PATH . 'includes/utilities/class-algolia-version-utils.php';
 require_once ALGOLIA_PATH . 'includes/utilities/class-algolia-update-messages.php';
 
-if ( is_admin() ) {
-	require_once ALGOLIA_PATH . 'includes/admin/class-algolia-admin.php';
-	require_once ALGOLIA_PATH . 'includes/admin/class-algolia-admin-page-autocomplete.php';
-	require_once ALGOLIA_PATH . 'includes/admin/class-algolia-admin-page-native-search.php';
-	require_once ALGOLIA_PATH . 'includes/admin/class-algolia-admin-page-settings.php';
-	require_once ALGOLIA_PATH . 'includes/admin/class-algolia-admin-template-notices.php';
-}
+require_once ALGOLIA_PATH . 'includes/admin/class-algolia-admin.php';
+require_once ALGOLIA_PATH . 'includes/admin/class-algolia-admin-page-autocomplete.php';
+require_once ALGOLIA_PATH . 'includes/admin/class-algolia-admin-page-native-search.php';
+require_once ALGOLIA_PATH . 'includes/admin/class-algolia-admin-page-settings.php';
+require_once ALGOLIA_PATH . 'includes/admin/class-algolia-admin-template-notices.php';
