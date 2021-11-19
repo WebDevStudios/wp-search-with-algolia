@@ -16,38 +16,70 @@
   "type": "wordpress-plugin",
   "minimum-stability": "dev",
   "prefer-stable": true,
+  "config": {
+    "sort-packages": true
+  },
+  "autoload": {
+    "classmap": [
+      "includes/"
+    ]
+  },
   "require": {
-    "php": ">=7.2",
-    "composer/installers": "~1.0"
+    "php": ">=7.2"
   },
   "require-dev": {
-    "algolia/algoliasearch-client-php": "^3.0.2",
-    "psr/http-message": "~1.0.1",
-    "psr/log": "~1.0.2",
-    "psr/simple-cache": "~1.0.1",
-	"dealerdirect/phpcodesniffer-composer-installer": "^0.7.1",
+    "algolia/algoliasearch-client-php": "^3.1",
+    "brianhenryie/strauss": "^0.11.0",
+    "dealerdirect/phpcodesniffer-composer-installer": "^0.7.1",
     "phpcompatibility/phpcompatibility-wp": "^2.1.2",
-    "wp-coding-standards/wpcs": "^2.3.0",
-    "slowprog/composer-copy-file": "^0.3.3"
+    "roave/security-advisories": "dev-master",
+    "wp-coding-standards/wpcs": "^2.3.0"
   },
   "extra": {
     "installer-name": "wp-search-with-algolia",
-    "copy-file": {
-      "vendor/algolia": "includes/libraries"
-    },
-    "copy-file-dev": {
-      "vendor/algolia": "includes/libraries",
-      "vendor/psr": "includes/libraries/algoliasearch-client-php/vendor/psr"
+    "strauss": {
+      "target_directory": "vendor_prefixed",
+      "namespace_prefix": "WebDevStudios\\WPSWA\\",
+      "classmap_prefix": "WDS_WPSWA_",
+      "constant_prefix": "WDS_WPSWA_",
+      "packages": [
+        "algolia/algoliasearch-client-php"
+      ],
+      "override_autoload": {
+      },
+      "exclude_from_copy": {
+        "packages": [
+        ],
+        "namespaces": [
+        ],
+        "file_patterns": [
+        ]
+      },
+      "exclude_from_prefix": {
+        "packages": [
+        ],
+        "namespaces": [
+        ],
+        "file_patterns": [
+          "/^psr.*$/"
+        ]
+      },
+      "namespace_replacement_patterns" : {
+      },
+      "delete_vendor_files": false
     }
   },
   "scripts": {
     "lint": "@php ./vendor/squizlabs/php_codesniffer/bin/phpcs --standard=phpcs.xml --extensions=php .",
     "lint:fix": "@php ./vendor/squizlabs/php_codesniffer/bin/phpcbf --standard=phpcs.xml --extensions=php .",
+    "strauss": [
+      "@php ./vendor/bin/strauss"
+    ],
     "post-install-cmd": [
-      "SlowProg\\CopyFile\\ScriptHandler::copy"
+      "@strauss"
     ],
     "post-update-cmd": [
-      "SlowProg\\CopyFile\\ScriptHandler::copy"
+      "@strauss"
     ]
   }
 }
