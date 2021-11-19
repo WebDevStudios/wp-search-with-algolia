@@ -6,9 +6,9 @@
  * @package WebDevStudios\WPSWA
  */
 
-use Algolia\AlgoliaSearch\Http\Guzzle6HttpClient;
-use Algolia\AlgoliaSearch\Http\HttpClientInterface;
-use Algolia\AlgoliaSearch\Http\CurlHttpClient;
+use WebDevStudios\WPSWA\Algolia\AlgoliaSearch\Http\Guzzle6HttpClient;
+use WebDevStudios\WPSWA\Algolia\AlgoliaSearch\Http\HttpClientInterface;
+use WebDevStudios\WPSWA\Algolia\AlgoliaSearch\Http\CurlHttpClient;
 
 /**
  * Class Algolia_Http_Client_Interface_Factory

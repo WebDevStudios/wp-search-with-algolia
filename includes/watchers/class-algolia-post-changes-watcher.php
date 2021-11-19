@@ -8,7 +8,7 @@
  * @package WebDevStudios\WPSWA
  */
 
-use Algolia\AlgoliaSearch\Exceptions\AlgoliaException;
+use WebDevStudios\WPSWA\Algolia\AlgoliaSearch\Exceptions\AlgoliaException;
 
 /**
  * Class Algolia_Post_Changes_Watcher
