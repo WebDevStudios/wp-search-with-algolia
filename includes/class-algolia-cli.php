@@ -15,7 +15,7 @@
  *
  * @since 1.0.0
  */
-class Algolia_CLI extends \WP_CLI_Command {
+class Algolia_CLI {
 
 	/**
 	 * The Algolia_Plugin instance.
