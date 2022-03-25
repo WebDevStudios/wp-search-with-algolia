@@ -62,5 +62,5 @@
 	<br />
 	<?php esc_html_e( 'Use the `Max. Suggestions` column to configure the number of entries that will be displayed by section.', 'wp-search-with-algolia' ); ?>
 	<br />
-	<?php esc_html_e( 'Use the `Position` column to reflect the order of the sections in the dropdown menu.', 'wp-search-with-algolia' ); ?>
+	<?php esc_html_e( 'Use drag and drop to control the order of the sections in the autocomplete dropdown menu.', 'wp-search-with-algolia' ); ?>
 </p>
