@@ -37,6 +37,7 @@ class Algolia_Admin {
 
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_styles' ) );
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_scripts' ) );
+		add_action( 'admin_enqueue_scripts', array( $this, 'localize_scripts' ) );
 
 		$api = $plugin->get_api();
 		if ( $api->is_reachable() ) {
@@ -96,6 +97,23 @@ class Algolia_Admin {
 			array( 'jquery' ),
 			ALGOLIA_VERSION,
 			false
+		);
+	}
+
+	/**
+	 * Add localize strings to scripts.
+	 *
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 * @since  2.2.0-dev
+	 */
+	public function localize_scripts() {
+
+		wp_localize_script(
+			'algolia-admin-push-settings-button',
+			'algoliaPushSettingsButton',
+			array(
+				'pushBtnAlert' => __( 'Warning: Pushing settings will erase all the settings in the Algolia dashboard. Do you want to continue?', 'wp-search-with-algolia' ),
+			)
 		);
 	}
 
