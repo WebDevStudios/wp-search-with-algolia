@@ -112,7 +112,7 @@ class Algolia_Admin {
 			'algolia-admin-push-settings-button',
 			'algoliaPushSettingsButton',
 			array(
-				'pushBtnAlert' => __( 'Warning: Pushing settings will override the settings in the Algolia dashboard. Do you want to continue?', 'wp-search-with-algolia' ),
+				'pushBtnAlert' => esc_html__( 'Warning: Pushing settings will override the settings in the Algolia dashboard. Do you want to continue?', 'wp-search-with-algolia' ),
 			)
 		);
 	}
