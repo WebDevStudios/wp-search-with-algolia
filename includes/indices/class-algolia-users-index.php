@@ -133,6 +133,13 @@ final class Algolia_Users_Index extends Algolia_Index {
 
 		$settings = (array) apply_filters( 'algolia_users_index_settings', $settings );
 
+		/**
+		 * Replacing `attributesToIndex` with `searchableAttributes` as
+		 * it has been replaced by Algolia.
+		 *
+		 * @link  https://www.algolia.com/doc/api-reference/api-parameters/searchableAttributes/
+		 * @since 2.2.0-dev
+		 */
 		if (
 			array_key_exists( 'attributesToIndex', $settings )
 			&& is_array( $settings['attributesToIndex'] )
