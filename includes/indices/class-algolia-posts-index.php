@@ -299,11 +299,15 @@ final class Algolia_Posts_Index extends Algolia_Index {
 		$settings = (array) apply_filters( 'algolia_posts_index_settings', $settings, $this->post_type );
 		$settings = (array) apply_filters( 'algolia_posts_' . $this->post_type . '_index_settings', $settings );
 
-		if( array_key_exists('attributesToIndex', $settings) && is_array( $settings['attributesToIndex'] ) ) {
+		if (
+			array_key_exists( 'attributesToIndex', $settings )
+			&& is_array( $settings['attributesToIndex'] )
+		) {
 			$settings['searchableAttributes'] = array_merge(
-				$settings['searchableAttributes'], 
-				$settings['attributesToIndex']);
-			unset($settings['attributesToIndex']);
+				$settings['searchableAttributes'],
+				$settings['attributesToIndex']
+			);
+			unset( $settings['attributesToIndex'] );
 		}
 
 		return $settings;
