@@ -151,6 +151,11 @@
 	font-weight: bold;
 }
 
+.ais-HierarchicalMenu-item--selected {
+	/* Hierarchical Menu: Categories */
+	font-weight: bold;
+}
+
 .ais-Menu-count,
 .ais-HierarchicalMenu-count,
 .ais-RefinementList-count {
@@ -327,11 +332,6 @@
 
 .ais-root__collapsed .ais-body, .ais-root__collapsed .ais-footer {
 	display: none;
-}
-
-/* Hierarchical Menu: Categories */
-.ais-HierarchicalMenu--item__active > div > a {
-	font-weight: bold;
 }
 
 /* Responsive */
