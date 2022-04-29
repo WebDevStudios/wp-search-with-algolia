@@ -2,7 +2,7 @@ function _extends() { _extends = Object.assign || function (target) { for (var i
 
 /** @jsx h */
 import { h } from 'preact';
-import Template from '../Template/Template';
+import Template from "../Template/Template.js";
 
 function RefinementListItem(_ref) {
   var className = _ref.className,

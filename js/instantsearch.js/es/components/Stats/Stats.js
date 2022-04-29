@@ -13,7 +13,7 @@ function _objectWithoutPropertiesLoose(source, excluded) { if (source == null) r
 /** @jsx h */
 import { h } from 'preact';
 import cx from 'classnames';
-import Template from '../Template/Template';
+import Template from "../Template/Template.js";
 
 var Stats = function Stats(_ref) {
   var nbHits = _ref.nbHits,

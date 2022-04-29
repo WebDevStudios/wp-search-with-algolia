@@ -5,7 +5,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = void 0;
 
-var _utils = require("../../lib/utils");
+var _index = require("../../lib/utils/index.js");
 
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
@@ -17,14 +17,14 @@ function hasFindAnswersMethod(answersIndex) {
   return typeof answersIndex.findAnswers === 'function';
 }
 
-var withUsage = (0, _utils.createDocumentationMessageGenerator)({
+var withUsage = (0, _index.createDocumentationMessageGenerator)({
   name: 'answers',
   connector: true
 });
 
 var connectAnswers = function connectAnswers(renderFn) {
-  var unmountFn = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : _utils.noop;
-  (0, _utils.checkRendering)(renderFn, withUsage());
+  var unmountFn = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : _index.noop;
+  (0, _index.checkRendering)(renderFn, withUsage());
   return function (widgetParams) {
     var _ref = widgetParams || {},
         queryLanguages = _ref.queryLanguages,
@@ -38,17 +38,17 @@ var connectAnswers = function connectAnswers(renderFn) {
         _ref$escapeHTML = _ref.escapeHTML,
         escapeHTML = _ref$escapeHTML === void 0 ? true : _ref$escapeHTML,
         _ref$extraParameters = _ref.extraParameters,
-        extraParameters = _ref$extraParameters === void 0 ? {} : _ref$extraParameters; // @ts-ignore checking for the wrong value
+        extraParameters = _ref$extraParameters === void 0 ? {} : _ref$extraParameters; // @ts-expect-error checking for the wrong value
 
 
     if (!queryLanguages || queryLanguages.length === 0) {
       throw new Error(withUsage('The `queryLanguages` expects an array of strings.'));
     }
 
-    var runConcurrentSafePromise = (0, _utils.createConcurrentSafePromise)();
-    var lastResult;
+    var runConcurrentSafePromise = (0, _index.createConcurrentSafePromise)();
+    var lastHits = [];
     var isLoading = false;
-    var debouncedRender = (0, _utils.debounce)(renderFn, renderDebounceTime); // this does not directly use DebouncedFunction<findAnswers>, since then the generic will disappear
+    var debouncedRender = (0, _index.debounce)(renderFn, renderDebounceTime); // this does not directly use DebouncedFunction<findAnswers>, since then the generic will disappear
 
     var debouncedRefine;
     return {
@@ -62,7 +62,7 @@ var connectAnswers = function connectAnswers(renderFn) {
           throw new Error(withUsage('`algoliasearch` >= 4.8.0 required.'));
         }
 
-        debouncedRefine = (0, _utils.debounce)(answersIndex.findAnswers, searchDebounceTime);
+        debouncedRefine = (0, _index.debounce)(answersIndex.findAnswers, searchDebounceTime);
         renderFn(_objectSpread(_objectSpread({}, this.getWidgetRenderState(initOptions)), {}, {
           instantSearchInstance: initOptions.instantSearchInstance
         }), true);
@@ -74,7 +74,7 @@ var connectAnswers = function connectAnswers(renderFn) {
 
         if (!query) {
           // renders nothing with empty query
-          lastResult = {};
+          lastHits = [];
           isLoading = false;
           renderFn(_objectSpread(_objectSpread({}, this.getWidgetRenderState(renderOptions)), {}, {
             instantSearchInstance: renderOptions.instantSearchInstance
@@ -83,7 +83,7 @@ var connectAnswers = function connectAnswers(renderFn) {
         } // render the loader
 
 
-        lastResult = {};
+        lastHits = [];
         isLoading = true;
         renderFn(_objectSpread(_objectSpread({}, this.getWidgetRenderState(renderOptions)), {}, {
           instantSearchInstance: renderOptions.instantSearchInstance
@@ -92,24 +92,19 @@ var connectAnswers = function connectAnswers(renderFn) {
         runConcurrentSafePromise(debouncedRefine(query, queryLanguages, _objectSpread(_objectSpread({}, extraParameters), {}, {
           nbHits: nbHits,
           attributesForPrediction: attributesForPrediction
-        }))).then(function (results) {
-          if (!results) {
+        }))).then(function (result) {
+          if (!result) {
             // It's undefined when it's debounced.
             return;
           }
 
-          if (escapeHTML && results.hits.length > 0) {
-            results.hits = (0, _utils.escapeHits)(results.hits);
+          if (escapeHTML && result.hits.length > 0) {
+            result.hits = (0, _index.escapeHits)(result.hits);
           }
 
-          var initialEscaped = results.hits.__escaped;
-          results.hits = (0, _utils.addAbsolutePosition)(results.hits, 0, nbHits);
-          results.hits = (0, _utils.addQueryID)(results.hits, results.queryID); // Make sure the escaped tag stays, even after mapping over the hits.
-          // This prevents the hits from being double-escaped if there are multiple
-          // hits widgets mounted on the page.
-
-          results.hits.__escaped = initialEscaped;
-          lastResult = results;
+          var hitsWithAbsolutePosition = (0, _index.addAbsolutePosition)(result.hits, 0, nbHits);
+          var hitsWithAbsolutePositionAndQueryID = (0, _index.addQueryID)(hitsWithAbsolutePosition, result.queryID);
+          lastHits = hitsWithAbsolutePositionAndQueryID;
           isLoading = false;
           debouncedRender(_objectSpread(_objectSpread({}, _this.getWidgetRenderState(renderOptions)), {}, {
             instantSearchInstance: renderOptions.instantSearchInstance
@@ -122,10 +117,8 @@ var connectAnswers = function connectAnswers(renderFn) {
         });
       },
       getWidgetRenderState: function getWidgetRenderState() {
-        var _lastResult;
-
         return {
-          hits: ((_lastResult = lastResult) === null || _lastResult === void 0 ? void 0 : _lastResult.hits) || [],
+          hits: lastHits,
           isLoading: isLoading,
           widgetParams: widgetParams
         };

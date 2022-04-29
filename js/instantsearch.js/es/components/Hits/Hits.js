@@ -9,7 +9,7 @@ function _extends() { _extends = Object.assign || function (target) { for (var i
 /** @jsx h */
 import { h } from 'preact';
 import cx from 'classnames';
-import Template from '../Template/Template';
+import Template from "../Template/Template.js";
 
 var Hits = function Hits(_ref) {
   var results = _ref.results,
@@ -48,10 +48,4 @@ var Hits = function Hits(_ref) {
   })));
 };
 
-Hits.defaultProps = {
-  results: {
-    hits: []
-  },
-  hits: []
-};
 export default Hits;

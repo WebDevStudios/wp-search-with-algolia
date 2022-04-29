@@ -16,7 +16,7 @@ function _iterableToArrayLimit(arr, i) { if (typeof Symbol === "undefined" || !(
 
 function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 
-import { checkRendering, createDocumentationMessageGenerator, convertNumericRefinementsToFilters, isFiniteNumber, find, noop } from '../../lib/utils';
+import { checkRendering, createDocumentationMessageGenerator, convertNumericRefinementsToFilters, isFiniteNumber, find, noop } from "../../lib/utils/index.js";
 var withUsage = createDocumentationMessageGenerator({
   name: 'range-input',
   connector: true

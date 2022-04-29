@@ -29,6 +29,7 @@ InstantSearch.js is a vanilla JavaScript library that lets you create an instant
 - [Why](#why)
 - [Getting started](#getting-started)
 - [Installation](#installation)
+  - [TypeScript users](#typescript-users)
 - [Documentation](#documentation)
 - [Demos](#demos)
 - [Playground](#playground)
@@ -102,6 +103,28 @@ npm install instantsearch.js algoliasearch
 yarn add instantsearch.js algoliasearch
 ```
 
+### TypeScript users
+
+To use InstantSearch.js in a TypeScript environment, depending on your [`algoliasearch`](https://github.com/algolia/algoliasearch-client-javascript) version, you need to import different types.
+
+>You still need to import these types even if you don't use InstantSearch.js with [`algoliasearch`](https://github.com/algolia/algoliasearch-client-javascript).
+
+#### `algoliasearch` v4.x
+
+This version uses types provided by both `algoliasearch` and `@algolia/client-search`.
+
+```bash
+yarn add algoliasearch@4 @algolia/client-search
+```
+
+#### `algoliasearch` v3.x
+
+```bash
+yarn add @types/algoliasearch@3
+```
+
+>v3.x is deprecated and will soon no longer be supported.
+
 ## Documentation
 
 The documentation is available on the [Algolia website](https://www.algolia.com/doc/guides/building-search-ui/what-is-instantsearch/js/).
@@ -110,7 +133,7 @@ The documentation is available on the [Algolia website](https://www.algolia.com/
 
 | E-commerce                                                                                                                                                                                                                   | Media                                                                                                                                                                                                         | Travel                                                                                                                                                                                                              |
 | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| <a href="https://instantsearchjs.netlify.com/examples/e-commerce/"><img src="https://www.algolia.com/doc/assets/images/build-search-ui/demos/e-commerce-2c7ed6b6.png" width="250" alt="E-commerce demo preview"></a> | <a href="https://instantsearchjs.netlify.com/examples/media/"><img src="https://instantsearchjs.netlify.com/examples/media/capture.png" width="250" alt="Media demo preview"></a> | <a href="https://instantsearchjs.netlify.com/examples/tourism/"><img src="https://instantsearchjs.netlify.com/examples/tourism/capture.png" width="250" alt="Tourism demo preview"></a> |
+| <a href="https://instantsearchjs.netlify.com/examples/e-commerce/"><img src="https://www.algolia.com/doc/assets/images/build-search-ui/demos/e-commerce-2c7ed6b6.png" width="250" alt="E-commerce demo preview"></a> | <a href="https://instantsearchjs.netlify.com/examples/media/"><img src="./examples/media/capture.png" width="250" alt="Media demo preview"></a> | <a href="https://instantsearchjs.netlify.com/examples/tourism/"><img src="https://instantsearchjs.netlify.com/examples/tourism/capture.png" width="250" alt="Tourism demo preview"></a> |
 
 See more demos [on the website](https://www.algolia.com/doc/guides/building-search-ui/resources/demos/js/).
 

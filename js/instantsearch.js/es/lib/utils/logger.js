@@ -1,9 +1,9 @@
-import noop from './noop';
+import noop from "./noop.js";
 
 /**
  * Logs a warning when this function is called, in development environment only.
  */
-var deprecate = function deprecate(fn) {
+var deprecate = function deprecate(fn, message) {
   return fn;
 };
 /**

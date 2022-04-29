@@ -7,11 +7,11 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 /** @jsx h */
 import { h, render } from 'preact';
 import cx from 'classnames';
-import ToggleRefinement from '../../components/ToggleRefinement/ToggleRefinement';
-import connectToggleRefinement from '../../connectors/toggle-refinement/connectToggleRefinement';
-import defaultTemplates from './defaultTemplates';
-import { getContainerNode, prepareTemplateProps, createDocumentationMessageGenerator } from '../../lib/utils';
-import { component } from '../../lib/suit';
+import ToggleRefinement from "../../components/ToggleRefinement/ToggleRefinement.js";
+import connectToggleRefinement from "../../connectors/toggle-refinement/connectToggleRefinement.js";
+import defaultTemplates from "./defaultTemplates.js";
+import { getContainerNode, prepareTemplateProps, createDocumentationMessageGenerator } from "../../lib/utils/index.js";
+import { component } from "../../lib/suit.js";
 var withUsage = createDocumentationMessageGenerator({
   name: 'toggle-refinement'
 });

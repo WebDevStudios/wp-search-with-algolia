@@ -9,13 +9,13 @@ var _preact = require("preact");
 
 var _classnames = _interopRequireDefault(require("classnames"));
 
-var _Selector = _interopRequireDefault(require("../../components/Selector/Selector"));
+var _Selector = _interopRequireDefault(require("../../components/Selector/Selector.js"));
 
-var _connectSortBy = _interopRequireDefault(require("../../connectors/sort-by/connectSortBy"));
+var _connectSortBy = _interopRequireDefault(require("../../connectors/sort-by/connectSortBy.js"));
 
-var _utils = require("../../lib/utils");
+var _index = require("../../lib/utils/index.js");
 
-var _suit = require("../../lib/suit");
+var _suit = require("../../lib/suit.js");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -25,7 +25,7 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
-var withUsage = (0, _utils.createDocumentationMessageGenerator)({
+var withUsage = (0, _index.createDocumentationMessageGenerator)({
   name: 'sort-by'
 });
 var suit = (0, _suit.component)('SortBy');
@@ -70,7 +70,7 @@ var sortBy = function sortBy(widgetParams) {
     throw new Error(withUsage('The `container` option is required.'));
   }
 
-  var containerNode = (0, _utils.getContainerNode)(container);
+  var containerNode = (0, _index.getContainerNode)(container);
   var cssClasses = {
     root: (0, _classnames.default)(suit(), userCssClasses.root),
     select: (0, _classnames.default)(suit({

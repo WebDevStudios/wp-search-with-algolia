@@ -5,7 +5,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = void 0;
 
-var _utils = require("../../lib/utils");
+var _index = require("../../lib/utils/index.js");
 
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
@@ -25,7 +25,7 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) return _arrayLikeToAr
 
 function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
 
-var withUsage = (0, _utils.createDocumentationMessageGenerator)({
+var withUsage = (0, _index.createDocumentationMessageGenerator)({
   name: 'query-rules',
   connector: true
 });
@@ -47,7 +47,7 @@ function getRuleContextsFromTrackedFilters(_ref) {
       sharedHelperState = _ref.sharedHelperState,
       trackedFilters = _ref.trackedFilters;
   var ruleContexts = Object.keys(trackedFilters).reduce(function (facets, facetName) {
-    var facetRefinements = (0, _utils.getRefinements)(helper.lastResults || {}, sharedHelperState, true).filter(function (refinement) {
+    var facetRefinements = (0, _index.getRefinements)(helper.lastResults || {}, sharedHelperState, true).filter(function (refinement) {
       return refinement.attribute === facetName;
     }).map(function (refinement) {
       return refinement.numericValue || refinement.name;
@@ -76,10 +76,10 @@ function applyRuleContexts(event) {
     trackedFilters: trackedFilters
   });
   var nextRuleContexts = [].concat(_toConsumableArray(initialRuleContexts), _toConsumableArray(newRuleContexts));
-  process.env.NODE_ENV === 'development' ? (0, _utils.warning)(nextRuleContexts.length <= 10, "\nThe maximum number of `ruleContexts` is 10. They have been sliced to that limit.\nConsider using `transformRuleContexts` to minimize the number of rules sent to Algolia.\n") : void 0;
+  process.env.NODE_ENV === 'development' ? (0, _index.warning)(nextRuleContexts.length <= 10, "\nThe maximum number of `ruleContexts` is 10. They have been sliced to that limit.\nConsider using `transformRuleContexts` to minimize the number of rules sent to Algolia.\n") : void 0;
   var ruleContexts = transformRuleContexts(nextRuleContexts).slice(0, 10);
 
-  if (!(0, _utils.isEqual)(previousRuleContexts, ruleContexts)) {
+  if (!(0, _index.isEqual)(previousRuleContexts, ruleContexts)) {
     helper.overrideStateWithoutTriggeringChangeEvent(_objectSpread(_objectSpread({}, sharedHelperState), {}, {
       ruleContexts: ruleContexts
     }));
@@ -87,8 +87,8 @@ function applyRuleContexts(event) {
 }
 
 var connectQueryRules = function connectQueryRules(_render) {
-  var unmount = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : _utils.noop;
-  (0, _utils.checkRendering)(_render, withUsage());
+  var unmount = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : _index.noop;
+  (0, _index.checkRendering)(_render, withUsage());
   return function (widgetParams) {
     var _ref2 = widgetParams || {},
         _ref2$trackedFilters = _ref2.trackedFilters,
@@ -160,7 +160,9 @@ var connectQueryRules = function connectQueryRules(_render) {
             _ref4$userData = _ref4.userData,
             userData = _ref4$userData === void 0 ? [] : _ref4$userData;
 
-        var items = transformItems(userData);
+        var items = transformItems(userData, {
+          results: results
+        });
         return {
           items: items,
           widgetParams: widgetParams

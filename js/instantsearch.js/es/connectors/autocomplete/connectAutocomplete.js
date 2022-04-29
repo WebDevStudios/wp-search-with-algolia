@@ -4,7 +4,7 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
-import { escapeHits, TAG_PLACEHOLDER, checkRendering, createDocumentationMessageGenerator, createSendEventForHits, noop, warning } from '../../lib/utils';
+import { escapeHits, TAG_PLACEHOLDER, checkRendering, createDocumentationMessageGenerator, createSendEventForHits, noop, warning } from "../../lib/utils/index.js";
 var withUsage = createDocumentationMessageGenerator({
   name: 'autocomplete',
   connector: true
@@ -52,6 +52,7 @@ var connectAutocomplete = function connectAutocomplete(renderFn) {
         var _this = this;
 
         var helper = _ref4.helper,
+            state = _ref4.state,
             scopedResults = _ref4.scopedResults,
             instantSearchInstance = _ref4.instantSearchInstance;
 
@@ -79,7 +80,7 @@ var connectAutocomplete = function connectAutocomplete(renderFn) {
           };
         });
         return {
-          currentRefinement: helper.state.query || '',
+          currentRefinement: state.query || '',
           indices: indices,
           refine: connectorState.refine,
           widgetParams: widgetParams

@@ -5,7 +5,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 /** @jsx h */
 import { h } from 'preact';
 import cx from 'classnames';
-import Template from '../Template/Template';
+import Template from "../Template/Template.js";
 
 var ClearRefinements = function ClearRefinements(_ref) {
   var hasRefinements = _ref.hasRefinements,

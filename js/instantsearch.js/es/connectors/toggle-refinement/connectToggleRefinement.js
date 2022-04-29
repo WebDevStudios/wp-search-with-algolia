@@ -4,7 +4,7 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
-import { checkRendering, escapeRefinement, unescapeRefinement, createDocumentationMessageGenerator, find, noop, toArray } from '../../lib/utils';
+import { checkRendering, escapeFacetValue, createDocumentationMessageGenerator, find, noop, toArray } from "../../lib/utils/index.js";
 var withUsage = createDocumentationMessageGenerator({
   name: 'toggle-refinement',
   connector: true
@@ -81,8 +81,8 @@ var connectToggleRefinement = function connectToggleRefinement(renderFn) {
     }
 
     var hasAnOffValue = userOff !== undefined;
-    var on = toArray(userOn).map(escapeRefinement);
-    var off = hasAnOffValue ? toArray(userOff).map(escapeRefinement) : undefined;
+    var on = toArray(userOn).map(escapeFacetValue);
+    var off = hasAnOffValue ? toArray(userOff).map(escapeFacetValue) : undefined;
     var sendEvent;
 
     var toggleRefinementFactory = function toggleRefinementFactory(helper) {
@@ -177,7 +177,7 @@ var connectToggleRefinement = function connectToggleRefinement(renderFn) {
             createURL = _ref6.createURL,
             instantSearchInstance = _ref6.instantSearchInstance;
         var isRefined = results ? on.every(function (v) {
-          return helper.state.isDisjunctiveFacetRefined(attribute, v);
+          return state.isDisjunctiveFacetRefined(attribute, v);
         }) : on.every(function (v) {
           return state.isDisjunctiveFacetRefined(attribute, v);
         });
@@ -195,16 +195,16 @@ var connectToggleRefinement = function connectToggleRefinement(renderFn) {
           var allFacetValues = results.getFacetValues(attribute, {}) || [];
           var onData = on.map(function (v) {
             return find(allFacetValues, function (_ref7) {
-              var name = _ref7.name;
-              return name === unescapeRefinement(v);
+              var escapedValue = _ref7.escapedValue;
+              return escapedValue === escapeFacetValue(String(v));
             });
           }).filter(function (v) {
             return v !== undefined;
           });
           var offData = hasAnOffValue ? offValue.map(function (v) {
             return find(allFacetValues, function (_ref8) {
-              var name = _ref8.name;
-              return name === unescapeRefinement(v);
+              var escapedValue = _ref8.escapedValue;
+              return escapedValue === escapeFacetValue(String(v));
             });
           }).filter(function (v) {
             return v !== undefined;
@@ -228,14 +228,6 @@ var connectToggleRefinement = function connectToggleRefinement(renderFn) {
               return total + count;
             }, 0)
           };
-        } else if (hasAnOffValue && !isRefined) {
-          if (off) {
-            off.forEach(function (v) {
-              return helper.addDisjunctiveFacetRefinement(attribute, v);
-            });
-          }
-
-          helper.setPage(helper.state.page);
         }
 
         if (!sendEvent) {

@@ -27,7 +27,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 /** @jsx h */
 import { h, Component } from 'preact';
 import cx from 'classnames';
-import Template from '../Template/Template';
+import Template from "../Template/Template.js";
 
 var RangeInput = /*#__PURE__*/function (_Component) {
   _inherits(RangeInput, _Component);

@@ -5,7 +5,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = void 0;
 
-var _utils = require("../../lib/utils");
+var _index = require("../../lib/utils/index.js");
 
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
@@ -29,7 +29,7 @@ function _iterableToArrayLimit(arr, i) { if (typeof Symbol === "undefined" || !(
 
 function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 
-var withUsage = (0, _utils.createDocumentationMessageGenerator)({
+var withUsage = (0, _index.createDocumentationMessageGenerator)({
   name: 'hierarchical-menu',
   connector: true
 });
@@ -49,8 +49,8 @@ var DEFAULT_SORT = ['name:asc'];
  * @return {function(CustomHierarchicalMenuWidgetParams)} Re-usable widget factory for a custom **HierarchicalMenu** widget.
  */
 var connectHierarchicalMenu = function connectHierarchicalMenu(renderFn) {
-  var unmountFn = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : _utils.noop;
-  (0, _utils.checkRendering)(renderFn, withUsage());
+  var unmountFn = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : _index.noop;
+  (0, _index.checkRendering)(renderFn, withUsage());
   return function (widgetParams) {
     var _ref = widgetParams || {},
         attributes = _ref.attributes,
@@ -114,13 +114,14 @@ var connectHierarchicalMenu = function connectHierarchicalMenu(renderFn) {
     function _prepareFacetValues(facetValues) {
       return facetValues.slice(0, getLimit()).map(function (_ref2) {
         var label = _ref2.name,
-            value = _ref2.path,
+            value = _ref2.escapedValue,
             data = _ref2.data,
-            subValue = _objectWithoutProperties(_ref2, ["name", "path", "data"]);
+            path = _ref2.path,
+            subValue = _objectWithoutProperties(_ref2, ["name", "escapedValue", "data", "path"]);
 
         var item = _objectSpread(_objectSpread({}, subValue), {}, {
-          label: label,
           value: value,
+          label: label,
           data: null
         });
 
@@ -171,7 +172,7 @@ var connectHierarchicalMenu = function connectHierarchicalMenu(renderFn) {
         }
 
         if (!sendEvent) {
-          sendEvent = (0, _utils.createSendEventForFacet)({
+          sendEvent = (0, _index.createSendEventForFacet)({
             instantSearchInstance: instantSearchInstance,
             helper: helper,
             attribute: hierarchicalFacetName,
@@ -200,7 +201,9 @@ var connectHierarchicalMenu = function connectHierarchicalMenu(renderFn) {
 
           var hasExhaustiveItems = (state.maxValuesPerFacet || 0) > getLimit() ? facetItems.length <= getLimit() : facetItems.length < getLimit();
           canToggleShowMore = showMore && (isShowingMore || !hasExhaustiveItems);
-          items = transformItems(_prepareFacetValues(facetItems));
+          items = transformItems(_prepareFacetValues(facetItems), {
+            results: results
+          });
         }
 
         return {
@@ -233,7 +236,7 @@ var connectHierarchicalMenu = function connectHierarchicalMenu(renderFn) {
 
         if (searchParameters.isHierarchicalFacet(hierarchicalFacetName)) {
           var facet = searchParameters.getHierarchicalFacetByName(hierarchicalFacetName);
-          process.env.NODE_ENV === 'development' ? (0, _utils.warning)((0, _utils.isEqual)(facet.attributes, attributes) && facet.separator === separator && facet.rootPath === rootPath, 'Using Breadcrumb and HierarchicalMenu on the same facet with different options overrides the configuration of the HierarchicalMenu.') : void 0;
+          process.env.NODE_ENV === 'development' ? (0, _index.warning)((0, _index.isEqual)(facet.attributes, attributes) && facet.separator === separator && facet.rootPath === rootPath, 'Using Breadcrumb and HierarchicalMenu on the same facet with different options overrides the configuration of the HierarchicalMenu.') : void 0;
         }
 
         var withFacetConfiguration = searchParameters.removeHierarchicalFacet(hierarchicalFacetName).addHierarchicalFacet({
@@ -241,7 +244,6 @@ var connectHierarchicalMenu = function connectHierarchicalMenu(renderFn) {
           attributes: attributes,
           separator: separator,
           rootPath: rootPath,
-          // @ts-ignore `showParentLevel` is missing in the SearchParameters.HierarchicalFacet declaration
           showParentLevel: showParentLevel
         });
         var currentMaxValuesPerFacet = withFacetConfiguration.maxValuesPerFacet || 0;

@@ -7,13 +7,13 @@ exports.default = void 0;
 
 var _preact = require("preact");
 
-var _Rheostat = _interopRequireDefault(require("./Rheostat"));
+var _Rheostat = _interopRequireDefault(require("./Rheostat.js"));
 
 var _classnames = _interopRequireDefault(require("classnames"));
 
-var _utils = require("../../lib/utils");
+var _index = require("../../lib/utils/index.js");
 
-var _Pit = _interopRequireDefault(require("./Pit"));
+var _Pit = _interopRequireDefault(require("./Pit.js"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -115,7 +115,7 @@ var Slider = /*#__PURE__*/function (_Component) {
       var totalLength = max - min;
       var steps = 34;
       var stepsLength = totalLength / steps;
-      var pitPoints = [min].concat(_toConsumableArray((0, _utils.range)({
+      var pitPoints = [min].concat(_toConsumableArray((0, _index.range)({
         end: steps - 1
       }).map(function (step) {
         return min + stepsLength * (step + 1);
@@ -130,7 +130,7 @@ var Slider = /*#__PURE__*/function (_Component) {
           max = _ref3.max,
           step = _ref3.step;
       if (!step) return undefined;
-      return [].concat(_toConsumableArray((0, _utils.range)({
+      return [].concat(_toConsumableArray((0, _index.range)({
         start: min,
         end: max,
         step: step

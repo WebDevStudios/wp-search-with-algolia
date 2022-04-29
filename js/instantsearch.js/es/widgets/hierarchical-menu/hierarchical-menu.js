@@ -7,11 +7,11 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 /** @jsx h */
 import { h, render } from 'preact';
 import cx from 'classnames';
-import RefinementList from '../../components/RefinementList/RefinementList';
-import connectHierarchicalMenu from '../../connectors/hierarchical-menu/connectHierarchicalMenu';
-import defaultTemplates from './defaultTemplates';
-import { prepareTemplateProps, getContainerNode, createDocumentationMessageGenerator } from '../../lib/utils';
-import { component } from '../../lib/suit';
+import RefinementList from "../../components/RefinementList/RefinementList.js";
+import connectHierarchicalMenu from "../../connectors/hierarchical-menu/connectHierarchicalMenu.js";
+import defaultTemplates from "./defaultTemplates.js";
+import { prepareTemplateProps, getContainerNode, createDocumentationMessageGenerator } from "../../lib/utils/index.js";
+import { component } from "../../lib/suit.js";
 var withUsage = createDocumentationMessageGenerator({
   name: 'hierarchical-menu'
 });

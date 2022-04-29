@@ -9,13 +9,13 @@ var _preact = require("preact");
 
 var _classnames = _interopRequireDefault(require("classnames"));
 
-var _Slider = _interopRequireDefault(require("../../components/Slider/Slider"));
+var _Slider = _interopRequireDefault(require("../../components/Slider/Slider.js"));
 
-var _connectRange = _interopRequireDefault(require("../../connectors/range/connectRange"));
+var _connectRange = _interopRequireDefault(require("../../connectors/range/connectRange.js"));
 
-var _utils = require("../../lib/utils");
+var _index = require("../../lib/utils/index.js");
 
-var _suit = require("../../lib/suit");
+var _suit = require("../../lib/suit.js");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -37,7 +37,7 @@ function _iterableToArrayLimit(arr, i) { if (typeof Symbol === "undefined" || !(
 
 function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 
-var withUsage = (0, _utils.createDocumentationMessageGenerator)({
+var withUsage = (0, _index.createDocumentationMessageGenerator)({
   name: 'range-slider'
 });
 var suit = (0, _suit.component)('RangeSlider');
@@ -115,7 +115,7 @@ var rangeSlider = function rangeSlider(widgetParams) {
     throw new Error(withUsage('The `container` option is required.'));
   }
 
-  var containerNode = (0, _utils.getContainerNode)(container);
+  var containerNode = (0, _index.getContainerNode)(container);
   var cssClasses = {
     root: (0, _classnames.default)(suit(), userCssClasses.root),
     disabledRoot: (0, _classnames.default)(suit({

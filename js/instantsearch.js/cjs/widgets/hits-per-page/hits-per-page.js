@@ -9,13 +9,13 @@ var _preact = require("preact");
 
 var _classnames = _interopRequireDefault(require("classnames"));
 
-var _Selector = _interopRequireDefault(require("../../components/Selector/Selector"));
+var _Selector = _interopRequireDefault(require("../../components/Selector/Selector.js"));
 
-var _connectHitsPerPage = _interopRequireDefault(require("../../connectors/hits-per-page/connectHitsPerPage"));
+var _connectHitsPerPage = _interopRequireDefault(require("../../connectors/hits-per-page/connectHitsPerPage.js"));
 
-var _utils = require("../../lib/utils");
+var _index = require("../../lib/utils/index.js");
 
-var _suit = require("../../lib/suit");
+var _suit = require("../../lib/suit.js");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -25,7 +25,7 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
-var withUsage = (0, _utils.createDocumentationMessageGenerator)({
+var withUsage = (0, _index.createDocumentationMessageGenerator)({
   name: 'hits-per-page'
 });
 var suit = (0, _suit.component)('HitsPerPage');
@@ -38,7 +38,7 @@ var renderer = function renderer(_ref) {
         refine = _ref2.refine;
     if (isFirstRendering) return;
 
-    var _ref3 = (0, _utils.find)(items, function (_ref4) {
+    var _ref3 = (0, _index.find)(items, function (_ref4) {
       var isRefined = _ref4.isRefined;
       return isRefined;
     }) || {},
@@ -67,7 +67,7 @@ var hitsPerPage = function hitsPerPage(widgetParams) {
     throw new Error(withUsage('The `container` option is required.'));
   }
 
-  var containerNode = (0, _utils.getContainerNode)(container);
+  var containerNode = (0, _index.getContainerNode)(container);
   var cssClasses = {
     root: (0, _classnames.default)(suit(), userCssClasses.root),
     select: (0, _classnames.default)(suit({

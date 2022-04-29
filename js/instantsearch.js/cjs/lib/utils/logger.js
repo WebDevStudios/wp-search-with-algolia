@@ -5,14 +5,14 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.warning = exports.deprecate = exports.warn = void 0;
 
-var _noop = _interopRequireDefault(require("./noop"));
+var _noop = _interopRequireDefault(require("./noop.js"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 /**
  * Logs a warning when this function is called, in development environment only.
  */
-var deprecate = function deprecate(fn) {
+var deprecate = function deprecate(fn, message) {
   return fn;
 };
 /**

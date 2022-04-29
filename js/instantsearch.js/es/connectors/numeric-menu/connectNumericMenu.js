@@ -16,7 +16,7 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
-import { checkRendering, createDocumentationMessageGenerator, isFiniteNumber, convertNumericRefinementsToFilters, noop } from '../../lib/utils';
+import { checkRendering, createDocumentationMessageGenerator, isFiniteNumber, convertNumericRefinementsToFilters, noop } from "../../lib/utils/index.js";
 var withUsage = createDocumentationMessageGenerator({
   name: 'numeric-menu',
   connector: true
@@ -51,8 +51,8 @@ var createSendEvent = function createSendEvent(_ref) {
 
     if (filters && filters.length > 0) {
       /*
-          filters === ["price<=10", "price>=5"]
-        */
+        filters === ["price<=10", "price>=5"]
+      */
       instantSearchInstance.sendEventToInsights({
         insightsMethod: 'clickedFilters',
         widgetType: $$type,
@@ -78,8 +78,8 @@ var connectNumericMenu = function connectNumericMenu(renderFn) {
         _ref2$items = _ref2.items,
         items = _ref2$items === void 0 ? [] : _ref2$items,
         _ref2$transformItems = _ref2.transformItems,
-        transformItems = _ref2$transformItems === void 0 ? function (x) {
-      return x;
+        transformItems = _ref2$transformItems === void 0 ? function (item) {
+      return item;
     } : _ref2$transformItems;
 
     if (attribute === '') {
@@ -216,7 +216,9 @@ var connectNumericMenu = function connectNumericMenu(renderFn) {
 
         return {
           createURL: connectorState.createURL(state),
-          items: transformItems(prepareItems(state)),
+          items: transformItems(prepareItems(state), {
+            results: results
+          }),
           hasNoResults: results ? results.nbHits === 0 : true,
           refine: connectorState.refine,
           sendEvent: connectorState.sendEvent,
@@ -234,6 +236,8 @@ function isRefined(state, attribute, option) {
   if (option.start !== undefined && option.end !== undefined) {
     if (option.start === option.end) {
       return hasNumericRefinement(currentRefinements, '=', option.start);
+    } else {
+      return hasNumericRefinement(currentRefinements, '>=', option.start) && hasNumericRefinement(currentRefinements, '<=', option.end);
     }
   }
 
@@ -287,17 +291,17 @@ function getRefinedState(state, attribute, facetValue) {
   if (refinedOption.start !== undefined) {
     if (hasNumericRefinement(currentRefinements, '>=', refinedOption.start)) {
       resolvedState = resolvedState.removeNumericRefinement(attribute, '>=', refinedOption.start);
-    } else {
-      resolvedState = resolvedState.addNumericRefinement(attribute, '>=', refinedOption.start);
     }
+
+    resolvedState = resolvedState.addNumericRefinement(attribute, '>=', refinedOption.start);
   }
 
   if (refinedOption.end !== undefined) {
     if (hasNumericRefinement(currentRefinements, '<=', refinedOption.end)) {
       resolvedState = resolvedState.removeNumericRefinement(attribute, '<=', refinedOption.end);
-    } else {
-      resolvedState = resolvedState.addNumericRefinement(attribute, '<=', refinedOption.end);
     }
+
+    resolvedState = resolvedState.addNumericRefinement(attribute, '<=', refinedOption.end);
   }
 
   if (typeof resolvedState.page === 'number') {

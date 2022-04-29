@@ -7,11 +7,11 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 /** @jsx h */
 import { h, render } from 'preact';
 import cx from 'classnames';
-import { getContainerNode, createDocumentationMessageGenerator } from '../../lib/utils';
-import { component } from '../../lib/suit';
-import connectVoiceSearch from '../../connectors/voice-search/connectVoiceSearch';
-import VoiceSearchComponent from '../../components/VoiceSearch/VoiceSearch';
-import defaultTemplates from './defaultTemplates';
+import { getContainerNode, createDocumentationMessageGenerator } from "../../lib/utils/index.js";
+import { component } from "../../lib/suit.js";
+import connectVoiceSearch from "../../connectors/voice-search/connectVoiceSearch.js";
+import VoiceSearchComponent from "../../components/VoiceSearch/VoiceSearch.js";
+import defaultTemplates from "./defaultTemplates.js";
 var withUsage = createDocumentationMessageGenerator({
   name: 'voice-search'
 });

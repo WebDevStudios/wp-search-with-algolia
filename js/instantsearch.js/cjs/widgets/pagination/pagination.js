@@ -9,13 +9,13 @@ var _preact = require("preact");
 
 var _classnames = _interopRequireDefault(require("classnames"));
 
-var _Pagination = _interopRequireDefault(require("../../components/Pagination/Pagination"));
+var _Pagination = _interopRequireDefault(require("../../components/Pagination/Pagination.js"));
 
-var _connectPagination = _interopRequireDefault(require("../../connectors/pagination/connectPagination"));
+var _connectPagination = _interopRequireDefault(require("../../connectors/pagination/connectPagination.js"));
 
-var _utils = require("../../lib/utils");
+var _index = require("../../lib/utils/index.js");
 
-var _suit = require("../../lib/suit");
+var _suit = require("../../lib/suit.js");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -26,7 +26,7 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 var suit = (0, _suit.component)('Pagination');
-var withUsage = (0, _utils.createDocumentationMessageGenerator)({
+var withUsage = (0, _index.createDocumentationMessageGenerator)({
   name: 'pagination'
 });
 var defaultTemplates = {
@@ -105,9 +105,9 @@ var pagination = function pagination(widgetParams) {
     throw new Error(withUsage('The `container` option is required.'));
   }
 
-  var containerNode = (0, _utils.getContainerNode)(container);
+  var containerNode = (0, _index.getContainerNode)(container);
   var scrollTo = userScrollTo === true ? 'body' : userScrollTo;
-  var scrollToNode = scrollTo !== false ? (0, _utils.getContainerNode)(scrollTo) : false;
+  var scrollToNode = scrollTo !== false ? (0, _index.getContainerNode)(scrollTo) : false;
   var cssClasses = {
     root: (0, _classnames.default)(suit(), userCssClasses.root),
     noRefinementRoot: (0, _classnames.default)(suit({

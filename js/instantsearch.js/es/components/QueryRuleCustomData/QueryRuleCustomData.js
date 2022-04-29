@@ -1,6 +1,6 @@
 /** @jsx h */
 import { h } from 'preact';
-import Template from '../Template/Template';
+import Template from "../Template/Template.js";
 
 var QueryRuleCustomData = function QueryRuleCustomData(_ref) {
   var cssClasses = _ref.cssClasses,

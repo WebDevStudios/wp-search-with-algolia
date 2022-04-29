@@ -7,7 +7,7 @@ exports.default = void 0;
 
 var _preact = require("preact");
 
-var _utils = require("../../lib/utils");
+var _index = require("../../lib/utils/index.js");
 
 /** @jsx h */
 var createItemKey = function createItemKey(_ref) {
@@ -22,7 +22,7 @@ var createItemKey = function createItemKey(_ref) {
 
 var handleClick = function handleClick(callback) {
   return function (event) {
-    if ((0, _utils.isSpecialClick)(event)) {
+    if ((0, _index.isSpecialClick)(event)) {
       return;
     }
 
@@ -44,7 +44,7 @@ var CurrentRefinements = function CurrentRefinements(_ref2) {
       className: cssClasses.item
     }, (0, _preact.h)("span", {
       className: cssClasses.label
-    }, (0, _utils.capitalize)(item.label), ":"), item.refinements.map(function (refinement) {
+    }, (0, _index.capitalize)(item.label), ":"), item.refinements.map(function (refinement) {
       return (0, _preact.h)("span", {
         key: createItemKey(refinement),
         className: cssClasses.category

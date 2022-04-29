@@ -7,12 +7,12 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 /** @jsx h */
 import { h, render } from 'preact';
 import cx from 'classnames';
-import InfiniteHits from '../../components/InfiniteHits/InfiniteHits';
-import connectInfiniteHits from '../../connectors/infinite-hits/connectInfiniteHits';
-import { prepareTemplateProps, getContainerNode, createDocumentationMessageGenerator } from '../../lib/utils';
-import { component } from '../../lib/suit';
-import { withInsights, withInsightsListener } from '../../lib/insights';
-import defaultTemplates from './defaultTemplates';
+import InfiniteHits from "../../components/InfiniteHits/InfiniteHits.js";
+import connectInfiniteHits from "../../connectors/infinite-hits/connectInfiniteHits.js";
+import { prepareTemplateProps, getContainerNode, createDocumentationMessageGenerator } from "../../lib/utils/index.js";
+import { component } from "../../lib/suit.js";
+import { withInsights, withInsightsListener } from "../../lib/insights/index.js";
+import defaultTemplates from "./defaultTemplates.js";
 var withUsage = createDocumentationMessageGenerator({
   name: 'infinite-hits'
 });

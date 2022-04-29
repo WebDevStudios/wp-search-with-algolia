@@ -5,9 +5,9 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = void 0;
 
-var _utils = require("../../lib/utils");
+var _index = require("../../lib/utils/index.js");
 
-var _connectQueryRules = _interopRequireDefault(require("../../connectors/query-rules/connectQueryRules"));
+var _connectQueryRules = _interopRequireDefault(require("../../connectors/query-rules/connectQueryRules.js"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -17,7 +17,7 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
-var withUsage = (0, _utils.createDocumentationMessageGenerator)({
+var withUsage = (0, _index.createDocumentationMessageGenerator)({
   name: 'query-rule-context'
 });
 
@@ -28,7 +28,7 @@ var queryRuleContext = function queryRuleContext() {
     throw new Error(withUsage('The `trackedFilters` option is required.'));
   }
 
-  return _objectSpread(_objectSpread({}, (0, _connectQueryRules.default)(_utils.noop)(widgetParams)), {}, {
+  return _objectSpread(_objectSpread({}, (0, _connectQueryRules.default)(_index.noop)(widgetParams)), {}, {
     $$widgetType: 'ais.queryRuleContext'
   });
 };

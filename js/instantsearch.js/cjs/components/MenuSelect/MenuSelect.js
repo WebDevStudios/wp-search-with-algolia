@@ -9,9 +9,9 @@ var _preact = require("preact");
 
 var _classnames = _interopRequireDefault(require("classnames"));
 
-var _utils = require("../../lib/utils");
+var _index = require("../../lib/utils/index.js");
 
-var _Template = _interopRequireDefault(require("../Template/Template"));
+var _Template = _interopRequireDefault(require("../Template/Template.js"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -25,7 +25,7 @@ function MenuSelect(_ref) {
       items = _ref.items,
       refine = _ref.refine;
 
-  var _ref2 = (0, _utils.find)(items, function (item) {
+  var _ref2 = (0, _index.find)(items, function (item) {
     return item.isRefined;
   }) || {
     value: ''

@@ -18,9 +18,9 @@ function _iterableToArrayLimit(arr, i) { if (typeof Symbol === "undefined" || !(
 
 function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 
-import capitalize from './capitalize';
-import { warning } from './logger';
-import { keys } from './typedObject'; // Some connectors are responsible for multiple widgets so we need
+import capitalize from "./capitalize.js";
+import { warning } from "./logger.js";
+import { keys } from "./typedObject.js"; // Some connectors are responsible for multiple widgets so we need
 // to map them.
 
 function getWidgetNames(connectorName) {

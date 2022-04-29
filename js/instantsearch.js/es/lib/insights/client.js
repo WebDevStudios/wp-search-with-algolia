@@ -4,7 +4,7 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
-import { uniq, find, createDocumentationMessageGenerator, warning } from '../utils';
+import { uniq, find, createDocumentationMessageGenerator, warning } from "../utils/index.js";
 
 var getSelectedHits = function getSelectedHits(hits, selectedObjectIDs) {
   return selectedObjectIDs.map(function (objectID) {
@@ -78,7 +78,12 @@ export var inferPayload = function inferPayload(_ref) {
 };
 
 var wrapInsightsClient = function wrapInsightsClient(aa, results, hits) {
-  return function (method, payload) {
+  return function (method) {
+    for (var _len = arguments.length, payloads = new Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+      payloads[_key - 1] = arguments[_key];
+    }
+
+    var payload = payloads[0];
     process.env.NODE_ENV === 'development' ? warning(false, "`insights` function has been deprecated. It is still supported in 4.x releases, but not further. It is replaced by the `insights` middleware.\n\nFor more information, visit https://www.algolia.com/doc/guides/getting-insights-and-analytics/search-analytics/click-through-and-conversions/how-to/send-click-and-conversion-events-with-instantsearch/js/") : void 0;
 
     if (!aa) {

@@ -5,7 +5,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = void 0;
 
-var _utils = require("../../lib/utils");
+var _index = require("../../lib/utils/index.js");
 
 function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest(); }
 
@@ -25,7 +25,7 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
-var withUsage = (0, _utils.createDocumentationMessageGenerator)({
+var withUsage = (0, _index.createDocumentationMessageGenerator)({
   name: 'numeric-menu',
   connector: true
 });
@@ -55,12 +55,12 @@ var createSendEvent = function createSendEvent(_ref) {
     } // facetValue === "%7B%22start%22:5,%22end%22:10%7D"
 
 
-    var filters = (0, _utils.convertNumericRefinementsToFilters)(getRefinedState(helper.state, attribute, facetValue), attribute);
+    var filters = (0, _index.convertNumericRefinementsToFilters)(getRefinedState(helper.state, attribute, facetValue), attribute);
 
     if (filters && filters.length > 0) {
       /*
-          filters === ["price<=10", "price>=5"]
-        */
+        filters === ["price<=10", "price>=5"]
+      */
       instantSearchInstance.sendEventToInsights({
         insightsMethod: 'clickedFilters',
         widgetType: $$type,
@@ -77,8 +77,8 @@ var createSendEvent = function createSendEvent(_ref) {
 };
 
 var connectNumericMenu = function connectNumericMenu(renderFn) {
-  var unmountFn = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : _utils.noop;
-  (0, _utils.checkRendering)(renderFn, withUsage());
+  var unmountFn = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : _index.noop;
+  (0, _index.checkRendering)(renderFn, withUsage());
   return function (widgetParams) {
     var _ref2 = widgetParams || {},
         _ref2$attribute = _ref2.attribute,
@@ -86,8 +86,8 @@ var connectNumericMenu = function connectNumericMenu(renderFn) {
         _ref2$items = _ref2.items,
         items = _ref2$items === void 0 ? [] : _ref2$items,
         _ref2$transformItems = _ref2.transformItems,
-        transformItems = _ref2$transformItems === void 0 ? function (x) {
-      return x;
+        transformItems = _ref2$transformItems === void 0 ? function (item) {
+      return item;
     } : _ref2$transformItems;
 
     if (attribute === '') {
@@ -182,8 +182,8 @@ var connectNumericMenu = function connectNumericMenu(renderFn) {
             min = _value$split$map2[0],
             max = _value$split$map2[1];
 
-        var withMinRefinement = (0, _utils.isFiniteNumber)(min) ? withoutRefinements.addNumericRefinement(attribute, '>=', min) : withoutRefinements;
-        var withMaxRefinement = (0, _utils.isFiniteNumber)(max) ? withMinRefinement.addNumericRefinement(attribute, '<=', max) : withMinRefinement;
+        var withMinRefinement = (0, _index.isFiniteNumber)(min) ? withoutRefinements.addNumericRefinement(attribute, '>=', min) : withoutRefinements;
+        var withMaxRefinement = (0, _index.isFiniteNumber)(max) ? withMinRefinement.addNumericRefinement(attribute, '<=', max) : withMinRefinement;
         return withMaxRefinement;
       },
       getRenderState: function getRenderState(renderState, renderOptions) {
@@ -224,7 +224,9 @@ var connectNumericMenu = function connectNumericMenu(renderFn) {
 
         return {
           createURL: connectorState.createURL(state),
-          items: transformItems(prepareItems(state)),
+          items: transformItems(prepareItems(state), {
+            results: results
+          }),
           hasNoResults: results ? results.nbHits === 0 : true,
           refine: connectorState.refine,
           sendEvent: connectorState.sendEvent,
@@ -242,6 +244,8 @@ function isRefined(state, attribute, option) {
   if (option.start !== undefined && option.end !== undefined) {
     if (option.start === option.end) {
       return hasNumericRefinement(currentRefinements, '=', option.start);
+    } else {
+      return hasNumericRefinement(currentRefinements, '>=', option.start) && hasNumericRefinement(currentRefinements, '<=', option.end);
     }
   }
 
@@ -295,17 +299,17 @@ function getRefinedState(state, attribute, facetValue) {
   if (refinedOption.start !== undefined) {
     if (hasNumericRefinement(currentRefinements, '>=', refinedOption.start)) {
       resolvedState = resolvedState.removeNumericRefinement(attribute, '>=', refinedOption.start);
-    } else {
-      resolvedState = resolvedState.addNumericRefinement(attribute, '>=', refinedOption.start);
     }
+
+    resolvedState = resolvedState.addNumericRefinement(attribute, '>=', refinedOption.start);
   }
 
   if (refinedOption.end !== undefined) {
     if (hasNumericRefinement(currentRefinements, '<=', refinedOption.end)) {
       resolvedState = resolvedState.removeNumericRefinement(attribute, '<=', refinedOption.end);
-    } else {
-      resolvedState = resolvedState.addNumericRefinement(attribute, '<=', refinedOption.end);
     }
+
+    resolvedState = resolvedState.addNumericRefinement(attribute, '<=', refinedOption.end);
   }
 
   if (typeof resolvedState.page === 'number') {

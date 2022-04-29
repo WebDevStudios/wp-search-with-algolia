@@ -5,9 +5,13 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.createInsightsMiddleware = void 0;
 
-var _helpers = require("../helpers");
+var _index = require("../helpers/index.js");
 
-var _utils = require("../lib/utils");
+var _index2 = require("../lib/utils/index.js");
+
+var _connectConfigure = _interopRequireDefault(require("../connectors/configure/connectConfigure.js"));
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
@@ -42,14 +46,19 @@ var createInsightsMiddleware = function createInsightsMiddleware(props) {
   }
 
   var hasInsightsClient = Boolean(_insightsClient);
-  var insightsClient = _insightsClient === null ? _utils.noop : _insightsClient;
+  var insightsClient = _insightsClient === null ? _index2.noop : _insightsClient;
   return function (_ref2) {
     var instantSearchInstance = _ref2.instantSearchInstance;
 
-    var _getAppIdAndApiKey = (0, _utils.getAppIdAndApiKey)(instantSearchInstance.client),
+    var _getAppIdAndApiKey = (0, _index2.getAppIdAndApiKey)(instantSearchInstance.client),
         _getAppIdAndApiKey2 = _slicedToArray(_getAppIdAndApiKey, 2),
         appId = _getAppIdAndApiKey2[0],
-        apiKey = _getAppIdAndApiKey2[1];
+        apiKey = _getAppIdAndApiKey2[1]; // search-insights.js also throws an error so dev-only clarification is sufficient
+
+
+    if (process.env.NODE_ENV === 'development' && !(appId && apiKey)) {
+      throw new Error('[insights middleware]: could not extract Algolia credentials from searchClient');
+    }
 
     var queuedUserToken = undefined;
     var userTokenBeforeInit = undefined;
@@ -65,7 +74,7 @@ var createInsightsMiddleware = function createInsightsMiddleware(props) {
       // At this point, even though `search-insights` is not loaded yet,
       // we still want to read the token from the queue.
       // Otherwise, the first search call will be fired without the token.
-      var _ref3 = (0, _utils.find)(insightsClient.queue.slice().reverse(), function (_ref5) {
+      var _ref3 = (0, _index2.find)(insightsClient.queue.slice().reverse(), function (_ref5) {
         var _ref6 = _slicedToArray(_ref5, 1),
             method = _ref6[0];
 
@@ -89,26 +98,34 @@ var createInsightsMiddleware = function createInsightsMiddleware(props) {
       appId: appId,
       apiKey: apiKey
     }, insightsInitParams));
+    var createWidget = (0, _connectConfigure.default)(_index2.noop);
+    var configureClickAnalytics;
+    var configureUserToken;
     return {
       onStateChange: function onStateChange() {},
       subscribe: function subscribe() {
-        insightsClient('addAlgoliaAgent', 'insights-middleware'); // At the time this middleware is subscribed, `mainIndex.init()` is already called.
-        // It means `mainIndex.getHelper()` exists.
-
-        var helper = instantSearchInstance.mainIndex.getHelper();
+        insightsClient('addAlgoliaAgent', 'insights-middleware');
+        configureClickAnalytics = createWidget({
+          searchParameters: {
+            clickAnalytics: true
+          }
+        });
+        instantSearchInstance.addWidgets([configureClickAnalytics]);
 
         var setUserTokenToSearch = function setUserTokenToSearch(userToken) {
-          if (userToken) {
-            helper.setState(helper.state.setQueryParameter('userToken', userToken));
+          if (configureUserToken) {
+            instantSearchInstance.removeWidgets([configureUserToken]);
           }
+
+          configureUserToken = createWidget({
+            searchParameters: {
+              userToken: userToken
+            }
+          });
+          instantSearchInstance.addWidgets([configureUserToken]);
         };
 
-        var hasUserToken = function hasUserToken() {
-          return Boolean(helper.state.userToken);
-        };
-
-        helper.setState(helper.state.setQueryParameter('clickAnalytics', true));
-        var anonymousUserToken = (0, _helpers.getInsightsAnonymousUserTokenInternal)();
+        var anonymousUserToken = (0, _index.getInsightsAnonymousUserTokenInternal)();
 
         if (hasInsightsClient && anonymousUserToken) {
           // When `aa('init', { ... })` is called, it creates an anonymous user token in cookie.
@@ -133,19 +150,26 @@ var createInsightsMiddleware = function createInsightsMiddleware(props) {
           if (onEvent) {
             onEvent(event, _insightsClient);
           } else if (event.insightsMethod) {
-            if (hasUserToken()) {
+            // At this point, instantSearchInstance must be started and
+            // it means there is a configure widget (added above).
+            var hasUserToken = Boolean(instantSearchInstance.renderState[instantSearchInstance.indexName].configure.widgetParams.searchParameters.userToken);
+
+            if (hasUserToken) {
               insightsClient(event.insightsMethod, event.payload);
             } else {
-              process.env.NODE_ENV === 'development' ? (0, _utils.warning)(false, "\nCannot send event to Algolia Insights because `userToken` is not set.\n\nSee documentation: https://www.algolia.com/doc/guides/building-search-ui/going-further/send-insights-events/js/#setting-the-usertoken\n") : void 0;
+              process.env.NODE_ENV === 'development' ? (0, _index2.warning)(false, "\nCannot send event to Algolia Insights because `userToken` is not set.\n\nSee documentation: https://www.algolia.com/doc/guides/building-search-ui/going-further/send-insights-events/js/#setting-the-usertoken\n") : void 0;
             }
           } else {
-            process.env.NODE_ENV === 'development' ? (0, _utils.warning)(false, 'Cannot send event to Algolia Insights because `insightsMethod` option is missing.') : void 0;
+            process.env.NODE_ENV === 'development' ? (0, _index2.warning)(false, 'Cannot send event to Algolia Insights because `insightsMethod` option is missing.') : void 0;
           }
         };
       },
       unsubscribe: function unsubscribe() {
         insightsClient('onUserTokenChange', undefined);
-        instantSearchInstance.sendEventToInsights = _utils.noop;
+        instantSearchInstance.removeWidgets([configureClickAnalytics, configureUserToken]);
+        configureClickAnalytics = undefined;
+        configureUserToken = undefined;
+        instantSearchInstance.sendEventToInsights = _index2.noop;
       }
     };
   };

@@ -1,6 +1,6 @@
 /** @jsx h */
 import { h } from 'preact';
-import { isSpecialClick, capitalize } from '../../lib/utils';
+import { isSpecialClick, capitalize } from "../../lib/utils/index.js";
 
 var createItemKey = function createItemKey(_ref) {
   var attribute = _ref.attribute,

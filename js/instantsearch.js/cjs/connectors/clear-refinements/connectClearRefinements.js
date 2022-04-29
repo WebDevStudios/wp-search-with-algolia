@@ -5,7 +5,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = void 0;
 
-var _utils = require("../../lib/utils");
+var _index = require("../../lib/utils/index.js");
 
 function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread(); }
 
@@ -25,14 +25,14 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
-var withUsage = (0, _utils.createDocumentationMessageGenerator)({
+var withUsage = (0, _index.createDocumentationMessageGenerator)({
   name: 'clear-refinements',
   connector: true
 });
 
 var connectClearRefinements = function connectClearRefinements(renderFn) {
-  var unmountFn = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : _utils.noop;
-  (0, _utils.checkRendering)(renderFn, withUsage());
+  var unmountFn = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : _index.noop;
+  (0, _index.checkRendering)(renderFn, withUsage());
   return function (widgetParams) {
     var _ref = widgetParams || {},
         _ref$includedAttribut = _ref.includedAttributes,
@@ -49,7 +49,7 @@ var connectClearRefinements = function connectClearRefinements(renderFn) {
     }
 
     var connectorState = {
-      refine: _utils.noop,
+      refine: _index.noop,
       createURL: function createURL() {
         return '';
       },
@@ -88,13 +88,15 @@ var connectClearRefinements = function connectClearRefinements(renderFn) {
       },
       getWidgetRenderState: function getWidgetRenderState(_ref2) {
         var createURL = _ref2.createURL,
-            scopedResults = _ref2.scopedResults;
-        connectorState.attributesToClear = scopedResults.reduce(function (results, scopedResult) {
-          return results.concat(getAttributesToClear({
+            scopedResults = _ref2.scopedResults,
+            results = _ref2.results;
+        connectorState.attributesToClear = scopedResults.reduce(function (attributesToClear, scopedResult) {
+          return attributesToClear.concat(getAttributesToClear({
             scopedResult: scopedResult,
             includedAttributes: includedAttributes,
             excludedAttributes: excludedAttributes,
-            transformItems: transformItems
+            transformItems: transformItems,
+            results: results
           }));
         }, []);
 
@@ -102,7 +104,7 @@ var connectClearRefinements = function connectClearRefinements(renderFn) {
           connectorState.attributesToClear.forEach(function (_ref3) {
             var indexHelper = _ref3.helper,
                 items = _ref3.items;
-            indexHelper.setState((0, _utils.clearRefinements)({
+            indexHelper.setState((0, _index.clearRefinements)({
               helper: indexHelper,
               attributesToClear: items
             })).search();
@@ -110,10 +112,10 @@ var connectClearRefinements = function connectClearRefinements(renderFn) {
         };
 
         connectorState.createURL = function () {
-          return createURL(_utils.mergeSearchParameters.apply(void 0, _toConsumableArray(connectorState.attributesToClear.map(function (_ref4) {
+          return createURL(_index.mergeSearchParameters.apply(void 0, _toConsumableArray(connectorState.attributesToClear.map(function (_ref4) {
             var indexHelper = _ref4.helper,
                 items = _ref4.items;
-            return (0, _utils.clearRefinements)({
+            return (0, _index.clearRefinements)({
               helper: indexHelper,
               attributesToClear: items
             });
@@ -139,11 +141,12 @@ function getAttributesToClear(_ref5) {
   var scopedResult = _ref5.scopedResult,
       includedAttributes = _ref5.includedAttributes,
       excludedAttributes = _ref5.excludedAttributes,
-      transformItems = _ref5.transformItems;
+      transformItems = _ref5.transformItems,
+      results = _ref5.results;
   var includesQuery = includedAttributes.indexOf('query') !== -1 || excludedAttributes.indexOf('query') === -1;
   return {
     helper: scopedResult.helper,
-    items: transformItems((0, _utils.uniq)((0, _utils.getRefinements)(scopedResult.results, scopedResult.helper.state, includesQuery).map(function (refinement) {
+    items: transformItems((0, _index.uniq)((0, _index.getRefinements)(scopedResult.results, scopedResult.helper.state, includesQuery).map(function (refinement) {
       return refinement.attribute;
     }).filter(function (attribute) {
       return (// If the array is empty (default case), we keep all the attributes
@@ -155,7 +158,9 @@ function getAttributesToClear(_ref5) {
         attribute === 'query' && includesQuery || // Otherwise, ignore the excluded attributes
         excludedAttributes.indexOf(attribute) === -1
       );
-    })))
+    })), {
+      results: results
+    })
   };
 }
 

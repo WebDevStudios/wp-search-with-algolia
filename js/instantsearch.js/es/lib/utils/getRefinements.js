@@ -1,12 +1,13 @@
-import find from './find';
-import unescapeRefinement from './unescapeRefinement';
+import find from "./find.js";
+import { unescapeFacetValue, escapeFacetValue } from "./escapeFacetValue.js";
 
 function getRefinement(state, type, attribute, name) {
   var resultsFacets = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : [];
   var res = {
     type: type,
     attribute: attribute,
-    name: name
+    name: name,
+    escapedValue: escapeFacetValue(name)
   };
   var facet = find(resultsFacets, function (resultsFacet) {
     return resultsFacet.name === attribute;
@@ -40,20 +41,18 @@ function getRefinement(state, type, attribute, name) {
     count = facet && facet.data && facet.data[res.name];
   }
 
-  var exhaustive = facet && facet.exhaustive;
-
   if (count !== undefined) {
     res.count = count;
   }
 
-  if (exhaustive !== undefined) {
-    res.exhaustive = exhaustive;
+  if (facet && facet.exhaustive !== undefined) {
+    res.exhaustive = facet.exhaustive;
   }
 
   return res;
 }
 
-function getRefinements(results, state) {
+export default function getRefinements(results, state) {
   var includesQuery = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
   var refinements = [];
   var _state$facetsRefineme = state.facetsRefinements,
@@ -88,9 +87,9 @@ function getRefinements(results, state) {
   Object.keys(disjunctiveFacetsRefinements).forEach(function (attribute) {
     var refinementNames = disjunctiveFacetsRefinements[attribute];
     refinementNames.forEach(function (refinementName) {
-      refinements.push(getRefinement(state, 'disjunctive', attribute, // We unescape any disjunctive refined values with `unescapeRefinement` because
-      // they can be escaped on negative numeric values with `escapeRefinement`.
-      unescapeRefinement(refinementName), results.disjunctiveFacets));
+      refinements.push(getRefinement(state, 'disjunctive', attribute, // We unescape any disjunctive refined values with `unescapeFacetValue` because
+      // they can be escaped on negative numeric values with `escapeFacetValue`.
+      unescapeFacetValue(refinementName), results.disjunctiveFacets));
     });
   });
   Object.keys(hierarchicalFacetsRefinements).forEach(function (attribute) {
@@ -135,5 +134,3 @@ function getRefinements(results, state) {
 
   return refinements;
 }
-
-export default getRefinements;

@@ -5,6 +5,15 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = hasDetectedInsightsClient;
 
+var _safelyRunOnBrowser = require("./safelyRunOnBrowser.js");
+
 function hasDetectedInsightsClient() {
-  return typeof window !== 'undefined' && Boolean(window.AlgoliaAnalyticsObject);
+  return (0, _safelyRunOnBrowser.safelyRunOnBrowser)(function (_ref) {
+    var window = _ref.window;
+    return Boolean(window.AlgoliaAnalyticsObject);
+  }, {
+    fallback: function fallback() {
+      return false;
+    }
+  });
 }

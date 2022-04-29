@@ -7,10 +7,10 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 /** @jsx h */
 import { h, render } from 'preact';
 import cx from 'classnames';
-import Pagination from '../../components/Pagination/Pagination';
-import connectPagination from '../../connectors/pagination/connectPagination';
-import { getContainerNode, createDocumentationMessageGenerator } from '../../lib/utils';
-import { component } from '../../lib/suit';
+import Pagination from "../../components/Pagination/Pagination.js";
+import connectPagination from "../../connectors/pagination/connectPagination.js";
+import { getContainerNode, createDocumentationMessageGenerator } from "../../lib/utils/index.js";
+import { component } from "../../lib/suit.js";
 var suit = component('Pagination');
 var withUsage = createDocumentationMessageGenerator({
   name: 'pagination'

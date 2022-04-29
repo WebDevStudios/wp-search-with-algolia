@@ -5,9 +5,9 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = void 0;
 
-var _findIndex = _interopRequireDefault(require("./findIndex"));
+var _findIndex = _interopRequireDefault(require("./findIndex.js"));
 
-var _uniq = _interopRequireDefault(require("./uniq"));
+var _uniq = _interopRequireDefault(require("./uniq.js"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 

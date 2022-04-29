@@ -5,9 +5,9 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = void 0;
 
-var _utils = require("../../lib/utils");
+var _index = require("../../lib/utils/index.js");
 
-var _Paginator = _interopRequireDefault(require("./Paginator"));
+var _Paginator = _interopRequireDefault(require("./Paginator.js"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -17,7 +17,7 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
-var withUsage = (0, _utils.createDocumentationMessageGenerator)({
+var withUsage = (0, _index.createDocumentationMessageGenerator)({
   name: 'pagination',
   connector: true
 });
@@ -30,8 +30,8 @@ var withUsage = (0, _utils.createDocumentationMessageGenerator)({
  * beyond the 1000th hits by default. You can find more information on the [Algolia documentation](https://www.algolia.com/doc/guides/searching/pagination/#pagination-limitations).
  */
 var connectPagination = function connectPagination(renderFn) {
-  var unmountFn = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : _utils.noop;
-  (0, _utils.checkRendering)(renderFn, withUsage());
+  var unmountFn = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : _index.noop;
+  (0, _index.checkRendering)(renderFn, withUsage());
   return function (widgetParams) {
     var _ref = widgetParams || {},
         totalPages = _ref.totalPages,
@@ -89,6 +89,7 @@ var connectPagination = function connectPagination(renderFn) {
       getWidgetRenderState: function getWidgetRenderState(_ref6) {
         var results = _ref6.results,
             helper = _ref6.helper,
+            state = _ref6.state,
             createURL = _ref6.createURL;
 
         if (!connectorState.refine) {
@@ -99,14 +100,13 @@ var connectPagination = function connectPagination(renderFn) {
         }
 
         if (!connectorState.createURL) {
-          connectorState.createURL = function (state) {
+          connectorState.createURL = function (helperState) {
             return function (page) {
-              return createURL(state.setPage(page));
+              return createURL(helperState.setPage(page));
             };
           };
         }
 
-        var state = helper.state;
         var page = state.page || 0;
         var nbPages = getMaxPage(results || {
           nbPages: 0

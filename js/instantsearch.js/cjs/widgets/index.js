@@ -45,7 +45,7 @@ Object.defineProperty(exports, "EXPERIMENTAL_configureRelatedItems", {
     return _configureRelatedItems.default;
   }
 });
-Object.defineProperty(exports, "EXPERIMENTAL_dynamicWidgets", {
+Object.defineProperty(exports, "dynamicWidgets", {
   enumerable: true,
   get: function get() {
     return _dynamicWidgets.default;
@@ -78,7 +78,7 @@ Object.defineProperty(exports, "hitsPerPage", {
 Object.defineProperty(exports, "index", {
   enumerable: true,
   get: function get() {
-    return _index.default;
+    return _index2.default;
   }
 });
 Object.defineProperty(exports, "infiniteHits", {
@@ -201,71 +201,78 @@ Object.defineProperty(exports, "voiceSearch", {
     return _voiceSearch.default;
   }
 });
+exports.EXPERIMENTAL_dynamicWidgets = void 0;
 
-var _analytics = _interopRequireDefault(require("./analytics/analytics"));
+var _analytics = _interopRequireDefault(require("./analytics/analytics.js"));
 
-var _breadcrumb = _interopRequireDefault(require("./breadcrumb/breadcrumb"));
+var _breadcrumb = _interopRequireDefault(require("./breadcrumb/breadcrumb.js"));
 
-var _clearRefinements = _interopRequireDefault(require("./clear-refinements/clear-refinements"));
+var _clearRefinements = _interopRequireDefault(require("./clear-refinements/clear-refinements.js"));
 
-var _configure = _interopRequireDefault(require("./configure/configure"));
+var _configure = _interopRequireDefault(require("./configure/configure.js"));
 
-var _currentRefinements = _interopRequireDefault(require("./current-refinements/current-refinements"));
+var _currentRefinements = _interopRequireDefault(require("./current-refinements/current-refinements.js"));
 
-var _answers = _interopRequireDefault(require("./answers/answers"));
+var _answers = _interopRequireDefault(require("./answers/answers.js"));
 
-var _configureRelatedItems = _interopRequireDefault(require("./configure-related-items/configure-related-items"));
+var _configureRelatedItems = _interopRequireDefault(require("./configure-related-items/configure-related-items.js"));
 
-var _dynamicWidgets = _interopRequireDefault(require("./dynamic-widgets/dynamic-widgets"));
+var _dynamicWidgets = _interopRequireDefault(require("./dynamic-widgets/dynamic-widgets.js"));
 
-var _geoSearch = _interopRequireDefault(require("./geo-search/geo-search"));
+var _index = require("../lib/utils/index.js");
 
-var _hierarchicalMenu = _interopRequireDefault(require("./hierarchical-menu/hierarchical-menu"));
+var _geoSearch = _interopRequireDefault(require("./geo-search/geo-search.js"));
 
-var _hits = _interopRequireDefault(require("./hits/hits"));
+var _hierarchicalMenu = _interopRequireDefault(require("./hierarchical-menu/hierarchical-menu.js"));
 
-var _hitsPerPage = _interopRequireDefault(require("./hits-per-page/hits-per-page"));
+var _hits = _interopRequireDefault(require("./hits/hits.js"));
 
-var _index = _interopRequireDefault(require("./index/index"));
+var _hitsPerPage = _interopRequireDefault(require("./hits-per-page/hits-per-page.js"));
 
-var _infiniteHits = _interopRequireDefault(require("./infinite-hits/infinite-hits"));
+var _index2 = _interopRequireDefault(require("./index/index.js"));
 
-var _menu = _interopRequireDefault(require("./menu/menu"));
+var _infiniteHits = _interopRequireDefault(require("./infinite-hits/infinite-hits.js"));
 
-var _menuSelect = _interopRequireDefault(require("./menu-select/menu-select"));
+var _menu = _interopRequireDefault(require("./menu/menu.js"));
 
-var _numericMenu = _interopRequireDefault(require("./numeric-menu/numeric-menu"));
+var _menuSelect = _interopRequireDefault(require("./menu-select/menu-select.js"));
 
-var _pagination = _interopRequireDefault(require("./pagination/pagination"));
+var _numericMenu = _interopRequireDefault(require("./numeric-menu/numeric-menu.js"));
 
-var _panel = _interopRequireDefault(require("./panel/panel"));
+var _pagination = _interopRequireDefault(require("./pagination/pagination.js"));
 
-var _places = _interopRequireDefault(require("./places/places"));
+var _panel = _interopRequireDefault(require("./panel/panel.js"));
 
-var _poweredBy = _interopRequireDefault(require("./powered-by/powered-by"));
+var _places = _interopRequireDefault(require("./places/places.js"));
 
-var _queryRuleContext = _interopRequireDefault(require("./query-rule-context/query-rule-context"));
+var _poweredBy = _interopRequireDefault(require("./powered-by/powered-by.js"));
 
-var _queryRuleCustomData = _interopRequireDefault(require("./query-rule-custom-data/query-rule-custom-data"));
+var _queryRuleContext = _interopRequireDefault(require("./query-rule-context/query-rule-context.js"));
 
-var _rangeInput = _interopRequireDefault(require("./range-input/range-input"));
+var _queryRuleCustomData = _interopRequireDefault(require("./query-rule-custom-data/query-rule-custom-data.js"));
 
-var _rangeSlider = _interopRequireDefault(require("./range-slider/range-slider"));
+var _rangeInput = _interopRequireDefault(require("./range-input/range-input.js"));
 
-var _ratingMenu = _interopRequireDefault(require("./rating-menu/rating-menu"));
+var _rangeSlider = _interopRequireDefault(require("./range-slider/range-slider.js"));
 
-var _refinementList = _interopRequireDefault(require("./refinement-list/refinement-list"));
+var _ratingMenu = _interopRequireDefault(require("./rating-menu/rating-menu.js"));
 
-var _relevantSort = _interopRequireDefault(require("./relevant-sort/relevant-sort"));
+var _refinementList = _interopRequireDefault(require("./refinement-list/refinement-list.js"));
 
-var _searchBox = _interopRequireDefault(require("./search-box/search-box"));
+var _relevantSort = _interopRequireDefault(require("./relevant-sort/relevant-sort.js"));
 
-var _sortBy = _interopRequireDefault(require("./sort-by/sort-by"));
+var _searchBox = _interopRequireDefault(require("./search-box/search-box.js"));
 
-var _stats = _interopRequireDefault(require("./stats/stats"));
+var _sortBy = _interopRequireDefault(require("./sort-by/sort-by.js"));
 
-var _toggleRefinement = _interopRequireDefault(require("./toggle-refinement/toggle-refinement"));
+var _stats = _interopRequireDefault(require("./stats/stats.js"));
 
-var _voiceSearch = _interopRequireDefault(require("./voice-search/voice-search"));
+var _toggleRefinement = _interopRequireDefault(require("./toggle-refinement/toggle-refinement.js"));
+
+var _voiceSearch = _interopRequireDefault(require("./voice-search/voice-search.js"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+/** @deprecated use dynamicWidgets */
+var EXPERIMENTAL_dynamicWidgets = (0, _index.deprecate)(_dynamicWidgets.default, 'use dynamicWidgets');
+exports.EXPERIMENTAL_dynamicWidgets = EXPERIMENTAL_dynamicWidgets;

@@ -19,10 +19,10 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 /** @jsx h */
 import { h, render } from 'preact';
 import cx from 'classnames';
-import RangeInput from '../../components/RangeInput/RangeInput';
-import connectRange from '../../connectors/range/connectRange';
-import { prepareTemplateProps, getContainerNode, createDocumentationMessageGenerator } from '../../lib/utils';
-import { component } from '../../lib/suit';
+import RangeInput from "../../components/RangeInput/RangeInput.js";
+import connectRange from "../../connectors/range/connectRange.js";
+import { prepareTemplateProps, getContainerNode, createDocumentationMessageGenerator } from "../../lib/utils/index.js";
+import { component } from "../../lib/suit.js";
 var withUsage = createDocumentationMessageGenerator({
   name: 'range-input'
 });

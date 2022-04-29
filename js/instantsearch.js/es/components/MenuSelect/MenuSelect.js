@@ -5,8 +5,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 /** @jsx h */
 import { h } from 'preact';
 import cx from 'classnames';
-import { find } from '../../lib/utils';
-import Template from '../Template/Template';
+import { find } from "../../lib/utils/index.js";
+import Template from "../Template/Template.js";
 
 function MenuSelect(_ref) {
   var cssClasses = _ref.cssClasses,

@@ -7,10 +7,10 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 /** @jsx h */
 import { h, render } from 'preact';
 import cx from 'classnames';
-import { getContainerNode, createDocumentationMessageGenerator } from '../../lib/utils';
-import { component } from '../../lib/suit';
-import connectQueryRules from '../../connectors/query-rules/connectQueryRules';
-import CustomData from '../../components/QueryRuleCustomData/QueryRuleCustomData';
+import { getContainerNode, createDocumentationMessageGenerator } from "../../lib/utils/index.js";
+import { component } from "../../lib/suit.js";
+import connectQueryRules from "../../connectors/query-rules/connectQueryRules.js";
+import CustomData from "../../components/QueryRuleCustomData/QueryRuleCustomData.js";
 export var defaultTemplates = {
   default: function _default(_ref) {
     var items = _ref.items;

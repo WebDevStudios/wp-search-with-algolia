@@ -57,7 +57,7 @@ Object.defineProperty(exports, "getInsightsAnonymousUserTokenInternal", {
   }
 });
 
-var _highlight = _interopRequireWildcard(require("./highlight"));
+var _highlight = _interopRequireWildcard(require("./highlight.js"));
 
 Object.keys(_highlight).forEach(function (key) {
   if (key === "default" || key === "__esModule") return;
@@ -71,7 +71,7 @@ Object.keys(_highlight).forEach(function (key) {
   });
 });
 
-var _reverseHighlight = _interopRequireWildcard(require("./reverseHighlight"));
+var _reverseHighlight = _interopRequireWildcard(require("./reverseHighlight.js"));
 
 Object.keys(_reverseHighlight).forEach(function (key) {
   if (key === "default" || key === "__esModule") return;
@@ -85,7 +85,7 @@ Object.keys(_reverseHighlight).forEach(function (key) {
   });
 });
 
-var _snippet = _interopRequireWildcard(require("./snippet"));
+var _snippet = _interopRequireWildcard(require("./snippet.js"));
 
 Object.keys(_snippet).forEach(function (key) {
   if (key === "default" || key === "__esModule") return;
@@ -99,7 +99,7 @@ Object.keys(_snippet).forEach(function (key) {
   });
 });
 
-var _reverseSnippet = _interopRequireWildcard(require("./reverseSnippet"));
+var _reverseSnippet = _interopRequireWildcard(require("./reverseSnippet.js"));
 
 Object.keys(_reverseSnippet).forEach(function (key) {
   if (key === "default" || key === "__esModule") return;
@@ -113,9 +113,9 @@ Object.keys(_reverseSnippet).forEach(function (key) {
   });
 });
 
-var _insights = _interopRequireDefault(require("./insights"));
+var _insights = _interopRequireDefault(require("./insights.js"));
 
-var _getInsightsAnonymousUserToken = _interopRequireWildcard(require("./get-insights-anonymous-user-token"));
+var _getInsightsAnonymousUserToken = _interopRequireWildcard(require("./get-insights-anonymous-user-token.js"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 

@@ -7,11 +7,11 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 /** @jsx h */
 import { h, render } from 'preact';
 import cx from 'classnames';
-import Breadcrumb from '../../components/Breadcrumb/Breadcrumb';
-import connectBreadcrumb from '../../connectors/breadcrumb/connectBreadcrumb';
-import defaultTemplates from './defaultTemplates';
-import { getContainerNode, prepareTemplateProps, createDocumentationMessageGenerator } from '../../lib/utils';
-import { component } from '../../lib/suit';
+import Breadcrumb from "../../components/Breadcrumb/Breadcrumb.js";
+import connectBreadcrumb from "../../connectors/breadcrumb/connectBreadcrumb.js";
+import defaultTemplates from "./defaultTemplates.js";
+import { getContainerNode, prepareTemplateProps, createDocumentationMessageGenerator } from "../../lib/utils/index.js";
+import { component } from "../../lib/suit.js";
 var withUsage = createDocumentationMessageGenerator({
   name: 'breadcrumb'
 });

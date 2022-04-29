@@ -24,8 +24,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 /** @jsx h */
 import { h, createRef, Component } from 'preact';
-import { noop } from '../../lib/utils';
-import Template from '../Template/Template';
+import { noop } from "../../lib/utils/index.js";
+import Template from "../Template/Template.js";
 var defaultProps = {
   query: '',
   showSubmit: true,
@@ -184,8 +184,7 @@ var SearchBox = /*#__PURE__*/function (_Component) {
         role: "search",
         className: cssClasses.form,
         noValidate: true,
-        onSubmit: this.onSubmit // @ts-expect-error `onReset` attibute is missing in preact 10.0.0 JSX types
-        ,
+        onSubmit: this.onSubmit,
         onReset: this.onReset
       }, h("input", {
         ref: this.input,
@@ -196,9 +195,9 @@ var SearchBox = /*#__PURE__*/function (_Component) {
         placeholder: placeholder,
         autoFocus: autofocus,
         autoComplete: "off",
-        autoCorrect: "off" // @ts-expect-error `autoCapitalize` attibute is missing in preact 10.0.0 JSX types
+        autoCorrect: "off",
+        autoCapitalize: "off" // @ts-expect-error `spellCheck` attribute is missing in preact JSX types
         ,
-        autoCapitalize: "off",
         spellCheck: "false",
         maxLength: 512,
         onInput: this.onInput,

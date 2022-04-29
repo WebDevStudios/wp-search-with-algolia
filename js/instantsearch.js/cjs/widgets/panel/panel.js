@@ -9,11 +9,11 @@ var _preact = require("preact");
 
 var _classnames = _interopRequireDefault(require("classnames"));
 
-var _utils = require("../../lib/utils");
+var _index = require("../../lib/utils/index.js");
 
-var _suit = require("../../lib/suit");
+var _suit = require("../../lib/suit.js");
 
-var _Panel = _interopRequireDefault(require("../../components/Panel/Panel"));
+var _Panel = _interopRequireDefault(require("../../components/Panel/Panel.js"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -23,7 +23,7 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
-var withUsage = (0, _utils.createDocumentationMessageGenerator)({
+var withUsage = (0, _index.createDocumentationMessageGenerator)({
   name: 'panel'
 });
 var suit = (0, _suit.component)('Panel');
@@ -66,8 +66,8 @@ var panel = function panel(panelWidgetParams) {
       _ref3$cssClasses = _ref3.cssClasses,
       userCssClasses = _ref3$cssClasses === void 0 ? {} : _ref3$cssClasses;
 
-  process.env.NODE_ENV === 'development' ? (0, _utils.warning)(typeof hidden === 'function', "The `hidden` option in the \"panel\" widget expects a function returning a boolean (received type ".concat((0, _utils.getObjectType)(hidden), ").")) : void 0;
-  process.env.NODE_ENV === 'development' ? (0, _utils.warning)(typeof collapsed === 'undefined' || typeof collapsed === 'function', "The `collapsed` option in the \"panel\" widget expects a function returning a boolean (received type ".concat((0, _utils.getObjectType)(collapsed), ").")) : void 0;
+  process.env.NODE_ENV === 'development' ? (0, _index.warning)(typeof hidden === 'function', "The `hidden` option in the \"panel\" widget expects a function returning a boolean (received type ".concat((0, _index.getObjectType)(hidden), ").")) : void 0;
+  process.env.NODE_ENV === 'development' ? (0, _index.warning)(typeof collapsed === 'undefined' || typeof collapsed === 'function', "The `collapsed` option in the \"panel\" widget expects a function returning a boolean (received type ".concat((0, _index.getObjectType)(collapsed), ").")) : void 0;
   var bodyContainerNode = document.createElement('div');
   var collapsible = Boolean(collapsed);
   var collapsedFn = typeof collapsed === 'function' ? collapsed : function () {
@@ -106,7 +106,7 @@ var panel = function panel(panelWidgetParams) {
         throw new Error(withUsage("The `container` option is required in the widget within the panel."));
       }
 
-      var containerNode = (0, _utils.getContainerNode)(widgetParams.container);
+      var containerNode = (0, _index.getContainerNode)(widgetParams.container);
       var defaultTemplates = {
         header: '',
         footer: '',
@@ -121,34 +121,35 @@ var panel = function panel(panelWidgetParams) {
         cssClasses: cssClasses,
         templates: _objectSpread(_objectSpread({}, defaultTemplates), templates)
       });
-      renderPanel({
-        options: {},
-        hidden: true,
-        collapsible: collapsible,
-        collapsed: false
-      });
       var widget = widgetFactory(_objectSpread(_objectSpread({}, widgetParams), {}, {
         container: bodyContainerNode
       })); // TypeScript somehow loses track of the ...widget type, since it's
-      // not directly returned. Eventually the "as ReturnType<typeof widgetFactory>"
+      // not directly returned. Eventually the "as AugmentedWidget<typeof widgetFactory>"
       // will not be needed anymore.
       // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
 
       return _objectSpread(_objectSpread({}, widget), {}, {
-        dispose: function dispose() {
-          (0, _preact.render)(null, containerNode);
-
-          if (typeof widget.dispose === 'function') {
-            var _widget$dispose;
-
-            for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
-              args[_key] = arguments[_key];
-            }
-
-            return (_widget$dispose = widget.dispose).call.apply(_widget$dispose, [this].concat(args));
+        init: function init() {
+          for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+            args[_key] = arguments[_key];
           }
 
-          return undefined;
+          var renderOptions = args[0];
+
+          var options = _objectSpread(_objectSpread({}, widget.getWidgetRenderState ? widget.getWidgetRenderState(renderOptions) : {}), renderOptions);
+
+          renderPanel({
+            options: options,
+            hidden: true,
+            collapsible: collapsible,
+            collapsed: false
+          });
+
+          if (typeof widget.init === 'function') {
+            var _widget$init;
+
+            (_widget$init = widget.init).call.apply(_widget$init, [this].concat(args));
+          }
         },
         render: function render() {
           for (var _len2 = arguments.length, args = new Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
@@ -171,6 +172,21 @@ var panel = function panel(panelWidgetParams) {
 
             (_widget$render = widget.render).call.apply(_widget$render, [this].concat(args));
           }
+        },
+        dispose: function dispose() {
+          (0, _preact.render)(null, containerNode);
+
+          if (typeof widget.dispose === 'function') {
+            var _widget$dispose;
+
+            for (var _len3 = arguments.length, args = new Array(_len3), _key3 = 0; _key3 < _len3; _key3++) {
+              args[_key3] = arguments[_key3];
+            }
+
+            return (_widget$dispose = widget.dispose).call.apply(_widget$dispose, [this].concat(args));
+          }
+
+          return undefined;
         }
       });
     };

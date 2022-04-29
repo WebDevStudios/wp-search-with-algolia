@@ -16,7 +16,7 @@ function _iterableToArrayLimit(arr, i) { if (typeof Symbol === "undefined" || !(
 
 function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 
-import { checkRendering, warning, createDocumentationMessageGenerator, isEqual, noop } from '../../lib/utils';
+import { checkRendering, warning, createDocumentationMessageGenerator, isEqual, noop } from "../../lib/utils/index.js";
 var withUsage = createDocumentationMessageGenerator({
   name: 'breadcrumb',
   connector: true
@@ -49,7 +49,9 @@ var connectBreadcrumb = function connectBreadcrumb(renderFn) {
       if (!facetValue) {
         var breadcrumb = state.getHierarchicalFacetBreadcrumb(hierarchicalFacetName);
 
-        if (breadcrumb.length > 0) {
+        if (breadcrumb.length === 0) {
+          return state;
+        } else {
           return state.resetPage().toggleFacetRefinement(hierarchicalFacetName, breadcrumb[0]);
         }
       }
@@ -84,7 +86,10 @@ var connectBreadcrumb = function connectBreadcrumb(renderFn) {
             state = _ref2.state;
 
         function getItems() {
-          if (!results) {
+          // The hierarchicalFacets condition is required for flavors
+          // that render immediately with empty results, without relying
+          // on init() (like React InstantSearch Hooks).
+          if (!results || state.hierarchicalFacets.length === 0) {
             return [];
           }
 
@@ -93,7 +98,9 @@ var connectBreadcrumb = function connectBreadcrumb(renderFn) {
 
           var facetValues = results.getFacetValues(facetName, {});
           var data = Array.isArray(facetValues.data) ? facetValues.data : [];
-          var items = transformItems(shiftItemsValues(prepareItems(data)));
+          var items = transformItems(shiftItemsValues(prepareItems(data)), {
+            results: results
+          });
           return items;
         }
 
@@ -142,7 +149,7 @@ function prepareItems(data) {
     if (currentItem.isRefined) {
       result.push({
         label: currentItem.name,
-        value: currentItem.path
+        value: currentItem.escapedValue
       });
 
       if (Array.isArray(currentItem.data)) {

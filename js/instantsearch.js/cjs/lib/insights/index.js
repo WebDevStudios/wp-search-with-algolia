@@ -24,9 +24,9 @@ Object.defineProperty(exports, "withInsightsListener", {
   }
 });
 
-var _client = _interopRequireWildcard(require("./client"));
+var _client = _interopRequireWildcard(require("./client.js"));
 
-var _listener = _interopRequireDefault(require("./listener"));
+var _listener = _interopRequireDefault(require("./listener.js"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 

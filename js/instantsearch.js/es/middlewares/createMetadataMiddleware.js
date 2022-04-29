@@ -1,4 +1,4 @@
-function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+import { safelyRunOnBrowser } from "../lib/utils/index.js";
 
 function extractPayload(widgets, instantSearchInstance, payload) {
   var parent = instantSearchInstance.mainIndex;
@@ -22,7 +22,8 @@ function extractPayload(widgets, instantSearchInstance, payload) {
     if (widget.getWidgetRenderState) {
       var renderState = widget.getWidgetRenderState(initOptions);
 
-      if (renderState && _typeof(renderState.widgetParams) === 'object') {
+      if (renderState && renderState.widgetParams) {
+        // casting, as we just earlier checked widgetParams exists, and thus an object
         widgetParams = renderState.widgetParams;
       }
     } // since we destructure in all widgets, the parameters with defaults are set to "undefined"
@@ -44,7 +45,16 @@ function extractPayload(widgets, instantSearchInstance, payload) {
 }
 
 export function isMetadataEnabled() {
-  return typeof window !== 'undefined' && window.navigator.userAgent.indexOf('Algolia Crawler') > -1;
+  return safelyRunOnBrowser(function (_ref) {
+    var _window$navigator, _window$navigator$use;
+
+    var window = _ref.window;
+    return ((_window$navigator = window.navigator) === null || _window$navigator === void 0 ? void 0 : (_window$navigator$use = _window$navigator.userAgent) === null || _window$navigator$use === void 0 ? void 0 : _window$navigator$use.indexOf('Algolia Crawler')) > -1;
+  }, {
+    fallback: function fallback() {
+      return false;
+    }
+  });
 }
 /**
  * Exposes the metadata of mounted widgets in a custom
@@ -55,8 +65,8 @@ export function isMetadataEnabled() {
  */
 
 export function createMetadataMiddleware() {
-  return function (_ref) {
-    var instantSearchInstance = _ref.instantSearchInstance;
+  return function (_ref2) {
+    var instantSearchInstance = _ref2.instantSearchInstance;
     var payload = {
       widgets: []
     };

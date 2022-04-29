@@ -7,11 +7,11 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 /** @jsx h */
 import { h, render } from 'preact';
 import cx from 'classnames';
-import RefinementList from '../../components/RefinementList/RefinementList';
-import connectRatingMenu from '../../connectors/rating-menu/connectRatingMenu';
-import defaultTemplates from './defaultTemplates';
-import { prepareTemplateProps, getContainerNode, createDocumentationMessageGenerator } from '../../lib/utils';
-import { component } from '../../lib/suit';
+import RefinementList from "../../components/RefinementList/RefinementList.js";
+import connectRatingMenu from "../../connectors/rating-menu/connectRatingMenu.js";
+import defaultTemplates from "./defaultTemplates.js";
+import { prepareTemplateProps, getContainerNode, createDocumentationMessageGenerator } from "../../lib/utils/index.js";
+import { component } from "../../lib/suit.js";
 var withUsage = createDocumentationMessageGenerator({
   name: 'rating-menu'
 });
@@ -52,7 +52,6 @@ var renderer = function renderer(_ref) {
       templateProps: renderState.templateProps,
       toggleRefinement: refine
     }, h("svg", {
-      xmlns: "http://www.w3.org/2000/svg",
       style: "display:none;"
     }, h("symbol", {
       id: suit({
