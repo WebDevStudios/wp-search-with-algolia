@@ -104,7 +104,7 @@ class Algolia_Admin {
 	 * Add localize strings to scripts.
 	 *
 	 * @author WebDevStudios <contact@webdevstudios.com>
-	 * @since  2.2.0-dev
+	 * @since  2.2.0
 	 */
 	public function localize_scripts() {
 

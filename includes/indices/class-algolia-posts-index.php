@@ -304,7 +304,7 @@ final class Algolia_Posts_Index extends Algolia_Index {
 		 * it has been replaced by Algolia.
 		 *
 		 * @link  https://www.algolia.com/doc/api-reference/api-parameters/searchableAttributes/
-		 * @since 2.2.0-dev
+		 * @since 2.2.0
 		 */
 		if (
 			array_key_exists( 'attributesToIndex', $settings )
