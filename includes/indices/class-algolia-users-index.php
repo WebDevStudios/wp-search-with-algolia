@@ -126,7 +126,7 @@ final class Algolia_Users_Index extends Algolia_Index {
 			'searchableAttributes' => array(
 				'unordered(display_name)',
 			),
-			'customRanking'     => array(
+			'customRanking'        => array(
 				'desc(posts_count)',
 			),
 		);

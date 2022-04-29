@@ -135,7 +135,7 @@ final class Algolia_Terms_Index extends Algolia_Index {
 				'unordered(name)',
 				'unordered(description)',
 			),
-			'customRanking'     => array(
+			'customRanking'        => array(
 				'desc(posts_count)',
 			),
 		);
