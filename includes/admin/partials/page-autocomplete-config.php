@@ -47,7 +47,7 @@
 				<input type="text" name="algolia_autocomplete_config[<?php echo esc_attr( $index['index_id'] ); ?>][label]"  value="<?php echo esc_attr( $index['label'] ); ?>" />
 			</td>
 			<td>
-				<input style="width: 40px; text-align: center;" type="number" name="algolia_autocomplete_config[<?php echo esc_attr( $index['index_id'] ); ?>][max_suggestions]"  value="<?php echo (int) $index['max_suggestions']; ?>" />
+				<input type="number" class="small-text" name="algolia_autocomplete_config[<?php echo esc_attr( $index['index_id'] ); ?>][max_suggestions]"  value="<?php echo (int) $index['max_suggestions']; ?>" />
 			</td>
 			<td>
 				<button type="button" class="algolia-reindex-button button button-primary" data-index="<?php echo esc_attr( $index['index_id'] ); ?>"><?php esc_html_e( 'Re-index', 'wp-search-with-algolia' ); ?></button>
@@ -62,5 +62,5 @@
 	<br />
 	<?php esc_html_e( 'Use the `Max. Suggestions` column to configure the number of entries that will be displayed by section.', 'wp-search-with-algolia' ); ?>
 	<br />
-	<?php esc_html_e( 'Use the `Position` column to reflect the order of the sections in the dropdown menu.', 'wp-search-with-algolia' ); ?>
+	<?php esc_html_e( 'Use drag and drop to control the order of the sections in the autocomplete dropdown menu.', 'wp-search-with-algolia' ); ?>
 </p>

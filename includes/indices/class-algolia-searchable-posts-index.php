@@ -256,7 +256,7 @@ final class Algolia_Searchable_Posts_Index extends Algolia_Index {
 	 */
 	protected function get_settings() {
 		$settings = array(
-			'attributesToIndex'     => array(
+			'searchableAttributes'     => array(
 				'unordered(post_title)',
 				'unordered(taxonomies)',
 				'unordered(content)',
@@ -282,6 +282,24 @@ final class Algolia_Searchable_Posts_Index extends Algolia_Index {
 		);
 
 		$settings = (array) apply_filters( 'algolia_searchable_posts_index_settings', $settings );
+
+		/**
+		 * Replacing `attributesToIndex` with `searchableAttributes` as
+		 * it has been replaced by Algolia.
+		 *
+		 * @link  https://www.algolia.com/doc/api-reference/api-parameters/searchableAttributes/
+		 * @since 2.2.0-dev
+		 */
+		if (
+			array_key_exists( 'attributesToIndex', $settings )
+			&& is_array( $settings['attributesToIndex'] )
+		) {
+			$settings['searchableAttributes'] = array_merge(
+				$settings['searchableAttributes'],
+				$settings['attributesToIndex']
+			);
+			unset( $settings['attributesToIndex'] );
+		}
 
 		return $settings;
 	}
@@ -467,7 +485,7 @@ final class Algolia_Searchable_Posts_Index extends Algolia_Index {
 		return (int) get_post_meta( (int) $post_id, 'algolia_' . $this->get_id() . '_records_count', true );
 	}
 	/**
-	 * Get post records count.
+	 * Set post records count.
 	 *
 	 * @author WebDevStudios <contact@webdevstudios.com>
 	 * @since  1.0.0

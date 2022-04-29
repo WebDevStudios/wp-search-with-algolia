@@ -1,5 +1,7 @@
 (function($) {
 
+	/* global algoliaPushSettingsButton */
+
 	$(
 		function() {
 			var $buttons = $( '.algolia-push-settings-button' );
@@ -12,6 +14,10 @@
 		var index      = $clickedButton.data( 'index' );
 		if ( ! index) {
 			throw new Error( 'Clicked button has no "data-index" set.' );
+		}
+
+		if ( ! window.confirm( algoliaPushSettingsButton.pushBtnAlert ) ) {
+			return;
 		}
 
 		disableButton( $clickedButton );
