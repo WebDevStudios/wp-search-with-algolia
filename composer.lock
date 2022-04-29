@@ -157,16 +157,16 @@
     "packages-dev": [
         {
             "name": "algolia/algoliasearch-client-php",
-            "version": "3.1.0",
+            "version": "3.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/algolia/algoliasearch-client-php.git",
-                "reference": "42793a97c99a68adfe8e39eadadd970b5196f208"
+                "reference": "8d78421f831b31868506e429828935c4dd1a0f23"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/algolia/algoliasearch-client-php/zipball/42793a97c99a68adfe8e39eadadd970b5196f208",
-                "reference": "42793a97c99a68adfe8e39eadadd970b5196f208",
+                "url": "https://api.github.com/repos/algolia/algoliasearch-client-php/zipball/8d78421f831b31868506e429828935c4dd1a0f23",
+                "reference": "8d78421f831b31868506e429828935c4dd1a0f23",
                 "shasum": ""
             },
             "require": {
@@ -175,8 +175,8 @@
                 "ext-mbstring": "*",
                 "php": "^7.2 || ^8.0",
                 "psr/http-message": "^1.0",
-                "psr/log": "^1.0",
-                "psr/simple-cache": "^1.0"
+                "psr/log": "^1.0 || ^2.0 || ^3.0",
+                "psr/simple-cache": "^1.0 || ^2.0 || ^3.0"
             },
             "require-dev": {
                 "friendsofphp/php-cs-fixer": "^2.0",
@@ -197,13 +197,13 @@
                 }
             },
             "autoload": {
-                "psr-4": {
-                    "Algolia\\AlgoliaSearch\\": "src/"
-                },
                 "files": [
                     "src/Http/Psr7/functions.php",
                     "src/functions.php"
-                ]
+                ],
+                "psr-4": {
+                    "Algolia\\AlgoliaSearch\\": "src/"
+                }
             },
             "notification-url": "https://packagist.org/downloads/",
             "license": [
@@ -223,7 +223,7 @@
                 "php",
                 "search"
             ],
-            "time": "2021-08-31T14:17:19+00:00"
+            "time": "2022-01-04T15:48:50+00:00"
         },
         {
             "name": "dealerdirect/phpcodesniffer-composer-installer",
