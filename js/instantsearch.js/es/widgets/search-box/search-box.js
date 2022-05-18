@@ -7,11 +7,11 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 /** @jsx h */
 import { h, render } from 'preact';
 import cx from 'classnames';
-import { getContainerNode, createDocumentationMessageGenerator } from '../../lib/utils';
-import { component } from '../../lib/suit';
-import connectSearchBox from '../../connectors/search-box/connectSearchBox';
-import SearchBox from '../../components/SearchBox/SearchBox';
-import defaultTemplates from './defaultTemplates';
+import { getContainerNode, createDocumentationMessageGenerator } from "../../lib/utils/index.js";
+import { component } from "../../lib/suit.js";
+import connectSearchBox from "../../connectors/search-box/connectSearchBox.js";
+import SearchBox from "../../components/SearchBox/SearchBox.js";
+import defaultTemplates from "./defaultTemplates.js";
 var withUsage = createDocumentationMessageGenerator({
   name: 'search-box'
 });

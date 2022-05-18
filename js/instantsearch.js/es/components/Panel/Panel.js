@@ -16,7 +16,7 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 import { h } from 'preact';
 import { useState, useEffect, useRef } from 'preact/hooks';
 import cx from 'classnames';
-import Template from '../Template/Template';
+import Template from "../Template/Template.js";
 
 function Panel(props) {
   var _cx;
@@ -33,13 +33,15 @@ function Panel(props) {
 
   var bodyRef = useRef(null);
   useEffect(function () {
-    if (!bodyRef.current) {
+    var node = bodyRef.current;
+
+    if (!node) {
       return undefined;
     }
 
-    bodyRef.current.appendChild(props.bodyElement);
+    node.appendChild(props.bodyElement);
     return function () {
-      bodyRef.current.removeChild(props.bodyElement);
+      node.removeChild(props.bodyElement);
     };
   }, [bodyRef, props.bodyElement]);
 

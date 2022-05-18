@@ -5,7 +5,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = void 0;
 
-var _utils = require("../../lib/utils");
+var _index = require("../../lib/utils/index.js");
 
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
@@ -13,7 +13,7 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
-var withUsage = (0, _utils.createDocumentationMessageGenerator)({
+var withUsage = (0, _index.createDocumentationMessageGenerator)({
   name: 'stats',
   connector: true
 });
@@ -23,8 +23,8 @@ var withUsage = (0, _utils.createDocumentationMessageGenerator)({
  */
 
 var connectStats = function connectStats(renderFn) {
-  var unmountFn = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : _utils.noop;
-  (0, _utils.checkRendering)(renderFn, withUsage());
+  var unmountFn = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : _index.noop;
+  (0, _index.checkRendering)(renderFn, withUsage());
   return function (widgetParams) {
     return {
       $$type: 'ais.stats',
@@ -50,18 +50,18 @@ var connectStats = function connectStats(renderFn) {
       },
       getWidgetRenderState: function getWidgetRenderState(_ref) {
         var results = _ref.results,
-            helper = _ref.helper;
+            state = _ref.state;
 
         if (!results) {
           return {
-            hitsPerPage: helper.state.hitsPerPage,
+            hitsPerPage: state.hitsPerPage,
             nbHits: 0,
             nbSortedHits: undefined,
             areHitsSorted: false,
             nbPages: 0,
-            page: helper.state.page || 0,
+            page: state.page || 0,
             processingTimeMS: -1,
-            query: helper.state.query || '',
+            query: state.query || '',
             widgetParams: widgetParams
           };
         }

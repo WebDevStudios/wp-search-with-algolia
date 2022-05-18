@@ -5,7 +5,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = void 0;
 
-var _utils = require("../../lib/utils");
+var _index = require("../../lib/utils/index.js");
 
 function _objectWithoutProperties(source, excluded) { if (source == null) return {}; var target = _objectWithoutPropertiesLoose(source, excluded); var key, i; if (Object.getOwnPropertySymbols) { var sourceSymbolKeys = Object.getOwnPropertySymbols(source); for (i = 0; i < sourceSymbolKeys.length; i++) { key = sourceSymbolKeys[i]; if (excluded.indexOf(key) >= 0) continue; if (!Object.prototype.propertyIsEnumerable.call(source, key)) continue; target[key] = source[key]; } } return target; }
 
@@ -29,7 +29,7 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
-var withUsage = (0, _utils.createDocumentationMessageGenerator)({
+var withUsage = (0, _index.createDocumentationMessageGenerator)({
   name: 'menu',
   connector: true
 });
@@ -45,8 +45,8 @@ var DEFAULT_SORT = ['isRefined', 'name:asc'];
  * **Requirement:** the attribute passed as `attribute` must be present in "attributes for faceting" on the Algolia dashboard or configured as attributesForFaceting via a set settings call to the Algolia API.
  */
 var connectMenu = function connectMenu(renderFn) {
-  var unmountFn = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : _utils.noop;
-  (0, _utils.checkRendering)(renderFn, withUsage());
+  var unmountFn = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : _index.noop;
+  (0, _index.checkRendering)(renderFn, withUsage());
   return function (widgetParams) {
     var _ref = widgetParams || {},
         attribute = _ref.attribute,
@@ -131,7 +131,7 @@ var connectMenu = function connectMenu(renderFn) {
         var canToggleShowMore = false;
 
         if (!sendEvent) {
-          sendEvent = (0, _utils.createSendEventForFacet)({
+          sendEvent = (0, _index.createSendEventForFacet)({
             instantSearchInstance: instantSearchInstance,
             helper: helper,
             attribute: attribute,
@@ -169,14 +169,17 @@ var connectMenu = function connectMenu(renderFn) {
           canToggleShowMore = showMore && (isShowingMore || facetItems.length > getLimit());
           items = transformItems(facetItems.slice(0, getLimit()).map(function (_ref3) {
             var label = _ref3.name,
-                value = _ref3.path,
-                item = _objectWithoutProperties(_ref3, ["name", "path"]);
+                value = _ref3.escapedValue,
+                path = _ref3.path,
+                item = _objectWithoutProperties(_ref3, ["name", "escapedValue", "path"]);
 
             return _objectSpread(_objectSpread({}, item), {}, {
               label: label,
               value: value
             });
-          }));
+          }), {
+            results: results
+          });
         }
 
         return {

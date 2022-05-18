@@ -9,15 +9,15 @@ var _preact = require("preact");
 
 var _classnames = _interopRequireDefault(require("classnames"));
 
-var _utils = require("../../lib/utils");
+var _index = require("../../lib/utils/index.js");
 
-var _suit = require("../../lib/suit");
+var _suit = require("../../lib/suit.js");
 
-var _connectRelevantSort = _interopRequireDefault(require("../../connectors/relevant-sort/connectRelevantSort"));
+var _connectRelevantSort = _interopRequireDefault(require("../../connectors/relevant-sort/connectRelevantSort.js"));
 
-var _RelevantSort = _interopRequireDefault(require("../../components/RelevantSort/RelevantSort"));
+var _RelevantSort = _interopRequireDefault(require("../../components/RelevantSort/RelevantSort.js"));
 
-var _defaultTemplates = _interopRequireDefault(require("./defaultTemplates"));
+var _defaultTemplates = _interopRequireDefault(require("./defaultTemplates.js"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -27,7 +27,7 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
-var withUsage = (0, _utils.createDocumentationMessageGenerator)({
+var withUsage = (0, _index.createDocumentationMessageGenerator)({
   name: 'relevant-sort'
 });
 var suit = (0, _suit.component)('RelevantSort');
@@ -61,7 +61,7 @@ var relevantSort = function relevantSort(widgetParams) {
     throw new Error(withUsage('The `container` option is required.'));
   }
 
-  var containerNode = (0, _utils.getContainerNode)(container);
+  var containerNode = (0, _index.getContainerNode)(container);
   var cssClasses = {
     root: (0, _classnames.default)(suit(), userCssClasses.root),
     text: (0, _classnames.default)(suit({

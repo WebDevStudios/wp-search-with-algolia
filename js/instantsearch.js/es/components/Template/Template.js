@@ -26,7 +26,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 /** @jsx h */
 import { h, Component } from 'preact';
-import { renderTemplate, isEqual } from '../../lib/utils';
+import { renderTemplate, isEqual } from "../../lib/utils/index.js";
 var defaultProps = {
   data: {},
   rootTagName: 'div',

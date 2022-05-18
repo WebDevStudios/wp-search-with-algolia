@@ -7,9 +7,9 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 /** @jsx h */
 import { h, render } from 'preact';
 import cx from 'classnames';
-import { createDocumentationMessageGenerator, getContainerNode, getObjectType, warning } from '../../lib/utils';
-import { component } from '../../lib/suit';
-import Panel from '../../components/Panel/Panel';
+import { createDocumentationMessageGenerator, getContainerNode, getObjectType, warning } from "../../lib/utils/index.js";
+import { component } from "../../lib/suit.js";
+import Panel from "../../components/Panel/Panel.js";
 var withUsage = createDocumentationMessageGenerator({
   name: 'panel'
 });
@@ -108,34 +108,35 @@ var panel = function panel(panelWidgetParams) {
         cssClasses: cssClasses,
         templates: _objectSpread(_objectSpread({}, defaultTemplates), templates)
       });
-      renderPanel({
-        options: {},
-        hidden: true,
-        collapsible: collapsible,
-        collapsed: false
-      });
       var widget = widgetFactory(_objectSpread(_objectSpread({}, widgetParams), {}, {
         container: bodyContainerNode
       })); // TypeScript somehow loses track of the ...widget type, since it's
-      // not directly returned. Eventually the "as ReturnType<typeof widgetFactory>"
+      // not directly returned. Eventually the "as AugmentedWidget<typeof widgetFactory>"
       // will not be needed anymore.
       // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
 
       return _objectSpread(_objectSpread({}, widget), {}, {
-        dispose: function dispose() {
-          render(null, containerNode);
-
-          if (typeof widget.dispose === 'function') {
-            var _widget$dispose;
-
-            for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
-              args[_key] = arguments[_key];
-            }
-
-            return (_widget$dispose = widget.dispose).call.apply(_widget$dispose, [this].concat(args));
+        init: function init() {
+          for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+            args[_key] = arguments[_key];
           }
 
-          return undefined;
+          var renderOptions = args[0];
+
+          var options = _objectSpread(_objectSpread({}, widget.getWidgetRenderState ? widget.getWidgetRenderState(renderOptions) : {}), renderOptions);
+
+          renderPanel({
+            options: options,
+            hidden: true,
+            collapsible: collapsible,
+            collapsed: false
+          });
+
+          if (typeof widget.init === 'function') {
+            var _widget$init;
+
+            (_widget$init = widget.init).call.apply(_widget$init, [this].concat(args));
+          }
         },
         render: function render() {
           for (var _len2 = arguments.length, args = new Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
@@ -158,6 +159,21 @@ var panel = function panel(panelWidgetParams) {
 
             (_widget$render = widget.render).call.apply(_widget$render, [this].concat(args));
           }
+        },
+        dispose: function dispose() {
+          render(null, containerNode);
+
+          if (typeof widget.dispose === 'function') {
+            var _widget$dispose;
+
+            for (var _len3 = arguments.length, args = new Array(_len3), _key3 = 0; _key3 < _len3; _key3++) {
+              args[_key3] = arguments[_key3];
+            }
+
+            return (_widget$dispose = widget.dispose).call.apply(_widget$dispose, [this].concat(args));
+          }
+
+          return undefined;
         }
       });
     };

@@ -5,7 +5,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = void 0;
 
-var _utils = require("../../lib/utils");
+var _index = require("../../lib/utils/index.js");
 
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
@@ -13,7 +13,7 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
-var withUsage = (0, _utils.createDocumentationMessageGenerator)({
+var withUsage = (0, _index.createDocumentationMessageGenerator)({
   name: 'toggle-refinement',
   connector: true
 });
@@ -75,8 +75,8 @@ var createSendEvent = function createSendEvent(_ref) {
  *  - switch between two values.
  */
 var connectToggleRefinement = function connectToggleRefinement(renderFn) {
-  var unmountFn = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : _utils.noop;
-  (0, _utils.checkRendering)(renderFn, withUsage());
+  var unmountFn = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : _index.noop;
+  (0, _index.checkRendering)(renderFn, withUsage());
   return function (widgetParams) {
     var _ref2 = widgetParams || {},
         attribute = _ref2.attribute,
@@ -89,8 +89,8 @@ var connectToggleRefinement = function connectToggleRefinement(renderFn) {
     }
 
     var hasAnOffValue = userOff !== undefined;
-    var on = (0, _utils.toArray)(userOn).map(_utils.escapeRefinement);
-    var off = hasAnOffValue ? (0, _utils.toArray)(userOff).map(_utils.escapeRefinement) : undefined;
+    var on = (0, _index.toArray)(userOn).map(_index.escapeFacetValue);
+    var off = hasAnOffValue ? (0, _index.toArray)(userOff).map(_index.escapeFacetValue) : undefined;
     var sendEvent;
 
     var toggleRefinementFactory = function toggleRefinementFactory(helper) {
@@ -185,7 +185,7 @@ var connectToggleRefinement = function connectToggleRefinement(renderFn) {
             createURL = _ref6.createURL,
             instantSearchInstance = _ref6.instantSearchInstance;
         var isRefined = results ? on.every(function (v) {
-          return helper.state.isDisjunctiveFacetRefined(attribute, v);
+          return state.isDisjunctiveFacetRefined(attribute, v);
         }) : on.every(function (v) {
           return state.isDisjunctiveFacetRefined(attribute, v);
         });
@@ -199,20 +199,20 @@ var connectToggleRefinement = function connectToggleRefinement(renderFn) {
         };
 
         if (results) {
-          var offValue = (0, _utils.toArray)(off || false);
+          var offValue = (0, _index.toArray)(off || false);
           var allFacetValues = results.getFacetValues(attribute, {}) || [];
           var onData = on.map(function (v) {
-            return (0, _utils.find)(allFacetValues, function (_ref7) {
-              var name = _ref7.name;
-              return name === (0, _utils.unescapeRefinement)(v);
+            return (0, _index.find)(allFacetValues, function (_ref7) {
+              var escapedValue = _ref7.escapedValue;
+              return escapedValue === (0, _index.escapeFacetValue)(String(v));
             });
           }).filter(function (v) {
             return v !== undefined;
           });
           var offData = hasAnOffValue ? offValue.map(function (v) {
-            return (0, _utils.find)(allFacetValues, function (_ref8) {
-              var name = _ref8.name;
-              return name === (0, _utils.unescapeRefinement)(v);
+            return (0, _index.find)(allFacetValues, function (_ref8) {
+              var escapedValue = _ref8.escapedValue;
+              return escapedValue === (0, _index.escapeFacetValue)(String(v));
             });
           }).filter(function (v) {
             return v !== undefined;
@@ -236,14 +236,6 @@ var connectToggleRefinement = function connectToggleRefinement(renderFn) {
               return total + count;
             }, 0)
           };
-        } else if (hasAnOffValue && !isRefined) {
-          if (off) {
-            off.forEach(function (v) {
-              return helper.addDisjunctiveFacetRefinement(attribute, v);
-            });
-          }
-
-          helper.setPage(helper.state.page);
         }
 
         if (!sendEvent) {

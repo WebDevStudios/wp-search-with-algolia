@@ -207,7 +207,7 @@ function encode(format, ...args) {
     return format.replace(/%s/g, () => encodeURIComponent(args[i++]));
 }
 
-const version = '4.10.3';
+const version = '4.13.0';
 
 const AuthMode = {
     /**
@@ -983,6 +983,15 @@ const copySynonyms = (base) => {
     };
 };
 
+const customRequest = (base) => {
+    return (request, requestOptions) => {
+        if (request.method === MethodEnum.Get) {
+            return base.transporter.read(request, requestOptions);
+        }
+        return base.transporter.write(request, requestOptions);
+    };
+};
+
 const deleteApiKey = (base) => {
     return (apiKey, requestOptions) => {
         const wait = (_, waitRequestOptions) => {
@@ -1026,6 +1035,15 @@ const getApiKey = (base) => {
     };
 };
 
+const getAppTask = (base) => {
+    return (taskID, requestOptions) => {
+        return base.transporter.read({
+            method: MethodEnum.Get,
+            path: encode('1/task/%s', taskID.toString()),
+        }, requestOptions);
+    };
+};
+
 const getDictionarySettings = (base) => {
     return (requestOptions) => {
         return base.transporter.read({
@@ -1049,15 +1067,6 @@ const getTopUserIDs = (base) => {
         return base.transporter.read({
             method: MethodEnum.Get,
             path: '1/clusters/mapping/top',
-        }, requestOptions);
-    };
-};
-
-const getAppTask = (base) => {
-    return (taskID, requestOptions) => {
-        return base.transporter.read({
-            method: MethodEnum.Get,
-            path: encode('1/task/%s', taskID.toString()),
         }, requestOptions);
     };
 };
@@ -2139,6 +2148,7 @@ function algoliasearch(appId, apiKey, options) {
             searchDictionaryEntries,
             setDictionarySettings,
             waitAppTask,
+            customRequest,
             initIndex: base => (indexName) => {
                 return initIndex(base)(indexName, {
                     methods: {

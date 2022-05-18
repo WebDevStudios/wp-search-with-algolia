@@ -9,13 +9,13 @@ var _preact = require("preact");
 
 var _classnames = _interopRequireDefault(require("classnames"));
 
-var _PoweredBy = _interopRequireDefault(require("../../components/PoweredBy/PoweredBy"));
+var _PoweredBy = _interopRequireDefault(require("../../components/PoweredBy/PoweredBy.js"));
 
-var _connectPoweredBy = _interopRequireDefault(require("../../connectors/powered-by/connectPoweredBy"));
+var _connectPoweredBy = _interopRequireDefault(require("../../connectors/powered-by/connectPoweredBy.js"));
 
-var _utils = require("../../lib/utils");
+var _index = require("../../lib/utils/index.js");
 
-var _suit = require("../../lib/suit");
+var _suit = require("../../lib/suit.js");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -26,7 +26,7 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 var suit = (0, _suit.component)('PoweredBy');
-var withUsage = (0, _utils.createDocumentationMessageGenerator)({
+var withUsage = (0, _index.createDocumentationMessageGenerator)({
   name: 'powered-by'
 });
 
@@ -62,7 +62,7 @@ var poweredBy = function poweredBy(widgetParams) {
     throw new Error(withUsage('The `container` option is required.'));
   }
 
-  var containerNode = (0, _utils.getContainerNode)(container);
+  var containerNode = (0, _index.getContainerNode)(container);
   var cssClasses = {
     root: (0, _classnames.default)(suit(), suit({
       modifierName: theme === 'dark' ? 'dark' : 'light'

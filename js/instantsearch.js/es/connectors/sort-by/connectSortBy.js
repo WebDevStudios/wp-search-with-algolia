@@ -4,7 +4,7 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
-import { checkRendering, createDocumentationMessageGenerator, find, warning, noop } from '../../lib/utils';
+import { checkRendering, createDocumentationMessageGenerator, find, warning, noop } from "../../lib/utils/index.js";
 var withUsage = createDocumentationMessageGenerator({
   name: 'sort-by',
   connector: true
@@ -64,6 +64,7 @@ var connectSortBy = function connectSortBy(renderFn) {
       getWidgetRenderState: function getWidgetRenderState(_ref3) {
         var results = _ref3.results,
             helper = _ref3.helper,
+            state = _ref3.state,
             parent = _ref3.parent;
 
         if (!connectorState.initialIndex && parent) {
@@ -77,8 +78,10 @@ var connectSortBy = function connectSortBy(renderFn) {
         }
 
         return {
-          currentRefinement: helper.state.index,
-          options: transformItems(items),
+          currentRefinement: state.index,
+          options: transformItems(items, {
+            results: results
+          }),
           refine: connectorState.setIndex,
           hasNoResults: results ? results.nbHits === 0 : true,
           widgetParams: widgetParams

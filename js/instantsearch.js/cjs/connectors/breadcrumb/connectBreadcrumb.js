@@ -5,7 +5,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = void 0;
 
-var _utils = require("../../lib/utils");
+var _index = require("../../lib/utils/index.js");
 
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
@@ -25,14 +25,14 @@ function _iterableToArrayLimit(arr, i) { if (typeof Symbol === "undefined" || !(
 
 function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 
-var withUsage = (0, _utils.createDocumentationMessageGenerator)({
+var withUsage = (0, _index.createDocumentationMessageGenerator)({
   name: 'breadcrumb',
   connector: true
 });
 
 var connectBreadcrumb = function connectBreadcrumb(renderFn) {
-  var unmountFn = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : _utils.noop;
-  (0, _utils.checkRendering)(renderFn, withUsage());
+  var unmountFn = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : _index.noop;
+  (0, _index.checkRendering)(renderFn, withUsage());
   var connectorState = {};
   return function (widgetParams) {
     var _ref = widgetParams || {},
@@ -57,7 +57,9 @@ var connectBreadcrumb = function connectBreadcrumb(renderFn) {
       if (!facetValue) {
         var breadcrumb = state.getHierarchicalFacetBreadcrumb(hierarchicalFacetName);
 
-        if (breadcrumb.length > 0) {
+        if (breadcrumb.length === 0) {
+          return state;
+        } else {
           return state.resetPage().toggleFacetRefinement(hierarchicalFacetName, breadcrumb[0]);
         }
       }
@@ -92,7 +94,10 @@ var connectBreadcrumb = function connectBreadcrumb(renderFn) {
             state = _ref2.state;
 
         function getItems() {
-          if (!results) {
+          // The hierarchicalFacets condition is required for flavors
+          // that render immediately with empty results, without relying
+          // on init() (like React InstantSearch Hooks).
+          if (!results || state.hierarchicalFacets.length === 0) {
             return [];
           }
 
@@ -101,7 +106,9 @@ var connectBreadcrumb = function connectBreadcrumb(renderFn) {
 
           var facetValues = results.getFacetValues(facetName, {});
           var data = Array.isArray(facetValues.data) ? facetValues.data : [];
-          var items = transformItems(shiftItemsValues(prepareItems(data)));
+          var items = transformItems(shiftItemsValues(prepareItems(data)), {
+            results: results
+          });
           return items;
         }
 
@@ -130,7 +137,7 @@ var connectBreadcrumb = function connectBreadcrumb(renderFn) {
       getWidgetSearchParameters: function getWidgetSearchParameters(searchParameters) {
         if (searchParameters.isHierarchicalFacet(hierarchicalFacetName)) {
           var facet = searchParameters.getHierarchicalFacetByName(hierarchicalFacetName);
-          process.env.NODE_ENV === 'development' ? (0, _utils.warning)((0, _utils.isEqual)(facet.attributes, attributes) && facet.separator === separator && facet.rootPath === rootPath, 'Using Breadcrumb and HierarchicalMenu on the same facet with different options overrides the configuration of the HierarchicalMenu.') : void 0;
+          process.env.NODE_ENV === 'development' ? (0, _index.warning)((0, _index.isEqual)(facet.attributes, attributes) && facet.separator === separator && facet.rootPath === rootPath, 'Using Breadcrumb and HierarchicalMenu on the same facet with different options overrides the configuration of the HierarchicalMenu.') : void 0;
           return searchParameters;
         }
 
@@ -150,7 +157,7 @@ function prepareItems(data) {
     if (currentItem.isRefined) {
       result.push({
         label: currentItem.name,
-        value: currentItem.path
+        value: currentItem.escapedValue
       });
 
       if (Array.isArray(currentItem.data)) {

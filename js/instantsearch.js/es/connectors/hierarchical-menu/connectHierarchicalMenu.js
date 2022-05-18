@@ -20,7 +20,7 @@ function _iterableToArrayLimit(arr, i) { if (typeof Symbol === "undefined" || !(
 
 function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 
-import { checkRendering, warning, createDocumentationMessageGenerator, createSendEventForFacet, isEqual, noop } from '../../lib/utils';
+import { checkRendering, warning, createDocumentationMessageGenerator, createSendEventForFacet, isEqual, noop } from "../../lib/utils/index.js";
 var withUsage = createDocumentationMessageGenerator({
   name: 'hierarchical-menu',
   connector: true
@@ -106,13 +106,14 @@ var connectHierarchicalMenu = function connectHierarchicalMenu(renderFn) {
     function _prepareFacetValues(facetValues) {
       return facetValues.slice(0, getLimit()).map(function (_ref2) {
         var label = _ref2.name,
-            value = _ref2.path,
+            value = _ref2.escapedValue,
             data = _ref2.data,
-            subValue = _objectWithoutProperties(_ref2, ["name", "path", "data"]);
+            path = _ref2.path,
+            subValue = _objectWithoutProperties(_ref2, ["name", "escapedValue", "data", "path"]);
 
         var item = _objectSpread(_objectSpread({}, subValue), {}, {
-          label: label,
           value: value,
+          label: label,
           data: null
         });
 
@@ -192,7 +193,9 @@ var connectHierarchicalMenu = function connectHierarchicalMenu(renderFn) {
 
           var hasExhaustiveItems = (state.maxValuesPerFacet || 0) > getLimit() ? facetItems.length <= getLimit() : facetItems.length < getLimit();
           canToggleShowMore = showMore && (isShowingMore || !hasExhaustiveItems);
-          items = transformItems(_prepareFacetValues(facetItems));
+          items = transformItems(_prepareFacetValues(facetItems), {
+            results: results
+          });
         }
 
         return {
@@ -233,7 +236,6 @@ var connectHierarchicalMenu = function connectHierarchicalMenu(renderFn) {
           attributes: attributes,
           separator: separator,
           rootPath: rootPath,
-          // @ts-ignore `showParentLevel` is missing in the SearchParameters.HierarchicalFacet declaration
           showParentLevel: showParentLevel
         });
         var currentMaxValuesPerFacet = withFacetConfiguration.maxValuesPerFacet || 0;

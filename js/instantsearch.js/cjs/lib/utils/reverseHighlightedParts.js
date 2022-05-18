@@ -5,7 +5,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = reverseHighlightedParts;
 
-var _getHighlightFromSiblings = _interopRequireDefault(require("./getHighlightFromSiblings"));
+var _getHighlightFromSiblings = _interopRequireDefault(require("./getHighlightFromSiblings.js"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 

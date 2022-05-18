@@ -27,13 +27,13 @@ function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.g
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 import algoliasearchHelper from 'algoliasearch-helper';
-import EventEmitter from 'events';
-import index, { isIndexWidget } from '../widgets/index/index';
-import version from './version';
-import createHelpers from './createHelpers';
-import { createDocumentationMessageGenerator, createDocumentationLink, defer, noop, warning, checkIndexUiState } from './utils';
-import { createRouterMiddleware } from '../middlewares/createRouterMiddleware';
-import { createMetadataMiddleware, isMetadataEnabled } from '../middlewares/createMetadataMiddleware';
+import EventEmitter from '@algolia/events';
+import index, { isIndexWidget } from "../widgets/index/index.js";
+import version from "./version.js";
+import createHelpers from "./createHelpers.js";
+import { createDocumentationMessageGenerator, createDocumentationLink, defer, noop, warning, checkIndexUiState } from "./utils/index.js";
+import { createRouterMiddleware } from "../middlewares/createRouterMiddleware.js";
+import { createMetadataMiddleware, isMetadataEnabled } from "../middlewares/createMetadataMiddleware.js";
 var withUsage = createDocumentationMessageGenerator({
   name: 'instantsearch'
 });
@@ -90,6 +90,8 @@ var InstantSearch = /*#__PURE__*/function (_EventEmitter) {
     _defineProperty(_assertThisInitialized(_this), "_isSearchStalled", void 0);
 
     _defineProperty(_assertThisInitialized(_this), "_initialUiState", void 0);
+
+    _defineProperty(_assertThisInitialized(_this), "_initialResults", void 0);
 
     _defineProperty(_assertThisInitialized(_this), "_createURL", void 0);
 
@@ -195,6 +197,7 @@ var InstantSearch = /*#__PURE__*/function (_EventEmitter) {
     _this._isSearchStalled = false;
     _this._createURL = defaultCreateURL;
     _this._initialUiState = initialUiState;
+    _this._initialResults = null;
 
     if (searchFunction) {
       _this._searchFunction = searchFunction;
@@ -422,23 +425,46 @@ var InstantSearch = /*#__PURE__*/function (_EventEmitter) {
 
       mainHelper.on('error', function (_ref4) {
         var error = _ref4.error;
+        // If an error is emitted, it is re-thrown by events. In previous versions
+        // we emitted {error}, which is thrown as:
+        // "Uncaught, unspecified \"error\" event. ([object Object])"
+        // To avoid breaking changes, we make the error available in both
+        // `error` and `error.error`
+        // @MAJOR emit only error
+        error.error = error;
 
-        _this3.emit('error', {
-          error: error
-        });
+        _this3.emit('error', error);
       });
       this.mainHelper = mainHelper;
+      this.middleware.forEach(function (_ref5) {
+        var instance = _ref5.instance;
+        instance.subscribe();
+      });
       this.mainIndex.init({
         instantSearchInstance: this,
         parent: null,
         uiState: this._initialUiState
       });
-      this.middleware.forEach(function (_ref5) {
-        var instance = _ref5.instance;
-        instance.subscribe();
-      });
-      mainHelper.search(); // Keep the previous reference for legacy purpose, some pattern use
+
+      if (this._initialResults) {
+        var originalScheduleSearch = this.scheduleSearch; // We don't schedule a first search when initial results are provided
+        // because we already have the results to render. This skips the initial
+        // network request on the browser on `start`.
+
+        this.scheduleSearch = defer(noop); // We also skip the initial network request when widgets are dynamically
+        // added in the first tick (that's the case in all the framework-based flavors).
+        // When we add a widget to `index`, it calls `scheduleSearch`. We can rely
+        // on our `defer` util to restore the original `scheduleSearch` value once
+        // widgets are added to hook back to the regular lifecycle.
+
+        defer(function () {
+          _this3.scheduleSearch = originalScheduleSearch;
+        })();
+      } else {
+        this.scheduleSearch();
+      } // Keep the previous reference for legacy purpose, some pattern use
       // the direct Helper access `search.helper` (e.g multi-index).
+
 
       this.helper = this.mainIndex.getHelper(); // track we started the search if we add more widgets,
       // to init them directly after add
@@ -501,15 +527,17 @@ var InstantSearch = /*#__PURE__*/function (_EventEmitter) {
       var nextUiState = typeof uiState === 'function' ? uiState(this.mainIndex.getWidgetUiState({})) : uiState;
 
       var setIndexHelperState = function setIndexHelperState(indexWidget) {
+        var nextIndexUiState = nextUiState[indexWidget.getIndexId()] || {};
+
         if (process.env.NODE_ENV === 'development') {
           checkIndexUiState({
             index: indexWidget,
-            indexUiState: nextUiState[indexWidget.getIndexId()]
+            indexUiState: nextIndexUiState
           });
         }
 
         indexWidget.getHelper().setState(indexWidget.getWidgetSearchParameters(indexWidget.getHelper().state, {
-          uiState: nextUiState[indexWidget.getIndexId()]
+          uiState: nextIndexUiState
         }));
         indexWidget.getWidgets().filter(isIndexWidget).forEach(setIndexHelperState);
       };

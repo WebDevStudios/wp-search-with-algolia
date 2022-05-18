@@ -5,7 +5,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = void 0;
 
-var _utils = require("../../lib/utils");
+var _index = require("../../lib/utils/index.js");
 
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
@@ -25,7 +25,7 @@ function _iterableToArrayLimit(arr, i) { if (typeof Symbol === "undefined" || !(
 
 function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 
-var withUsage = (0, _utils.createDocumentationMessageGenerator)({
+var withUsage = (0, _index.createDocumentationMessageGenerator)({
   name: 'range-input',
   connector: true
 }, {
@@ -54,8 +54,8 @@ function toPrecision(_ref) {
 
 
 var connectRange = function connectRange(renderFn) {
-  var unmountFn = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : _utils.noop;
-  (0, _utils.checkRendering)(renderFn, withUsage());
+  var unmountFn = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : _index.noop;
+  (0, _index.checkRendering)(renderFn, withUsage());
   return function (widgetParams) {
     var _ref2 = widgetParams || {},
         _ref2$attribute = _ref2.attribute,
@@ -69,7 +69,7 @@ var connectRange = function connectRange(renderFn) {
       throw new Error(withUsage('The `attribute` option is required.'));
     }
 
-    if ((0, _utils.isFiniteNumber)(minBound) && (0, _utils.isFiniteNumber)(maxBound) && minBound > maxBound) {
+    if ((0, _index.isFiniteNumber)(minBound) && (0, _index.isFiniteNumber)(maxBound) && minBound > maxBound) {
       throw new Error(withUsage("The `max` option can't be lower than `min`."));
     }
 
@@ -112,9 +112,9 @@ var connectRange = function connectRange(renderFn) {
 
       var newNextMin;
 
-      if (!(0, _utils.isFiniteNumber)(minBound) && currentRangeMin === nextMinAsNumber) {
+      if (!(0, _index.isFiniteNumber)(minBound) && currentRangeMin === nextMinAsNumber) {
         newNextMin = undefined;
-      } else if ((0, _utils.isFiniteNumber)(minBound) && isResetMin) {
+      } else if ((0, _index.isFiniteNumber)(minBound) && isResetMin) {
         newNextMin = minBound;
       } else {
         newNextMin = nextMinAsNumber;
@@ -122,31 +122,31 @@ var connectRange = function connectRange(renderFn) {
 
       var newNextMax;
 
-      if (!(0, _utils.isFiniteNumber)(maxBound) && currentRangeMax === nextMaxAsNumber) {
+      if (!(0, _index.isFiniteNumber)(maxBound) && currentRangeMax === nextMaxAsNumber) {
         newNextMax = undefined;
-      } else if ((0, _utils.isFiniteNumber)(maxBound) && isResetMax) {
+      } else if ((0, _index.isFiniteNumber)(maxBound) && isResetMax) {
         newNextMax = maxBound;
       } else {
         newNextMax = nextMaxAsNumber;
       }
 
       var isResetNewNextMin = newNextMin === undefined;
-      var isGreaterThanCurrentRange = (0, _utils.isFiniteNumber)(currentRangeMin) && currentRangeMin <= newNextMin;
-      var isMinValid = isResetNewNextMin || (0, _utils.isFiniteNumber)(newNextMin) && (!(0, _utils.isFiniteNumber)(currentRangeMin) || isGreaterThanCurrentRange);
+      var isGreaterThanCurrentRange = (0, _index.isFiniteNumber)(currentRangeMin) && currentRangeMin <= newNextMin;
+      var isMinValid = isResetNewNextMin || (0, _index.isFiniteNumber)(newNextMin) && (!(0, _index.isFiniteNumber)(currentRangeMin) || isGreaterThanCurrentRange);
       var isResetNewNextMax = newNextMax === undefined;
-      var isLowerThanRange = (0, _utils.isFiniteNumber)(newNextMax) && currentRangeMax >= newNextMax;
-      var isMaxValid = isResetNewNextMax || (0, _utils.isFiniteNumber)(newNextMax) && (!(0, _utils.isFiniteNumber)(currentRangeMax) || isLowerThanRange);
+      var isLowerThanRange = (0, _index.isFiniteNumber)(newNextMax) && currentRangeMax >= newNextMax;
+      var isMaxValid = isResetNewNextMax || (0, _index.isFiniteNumber)(newNextMax) && (!(0, _index.isFiniteNumber)(currentRangeMax) || isLowerThanRange);
       var hasMinChange = min !== newNextMin;
       var hasMaxChange = max !== newNextMax;
 
       if ((hasMinChange || hasMaxChange) && isMinValid && isMaxValid) {
         resolvedState = resolvedState.removeNumericRefinement(attribute);
 
-        if ((0, _utils.isFiniteNumber)(newNextMin)) {
+        if ((0, _index.isFiniteNumber)(newNextMin)) {
           resolvedState = resolvedState.addNumericRefinement(attribute, '>=', newNextMin);
         }
 
-        if ((0, _utils.isFiniteNumber)(newNextMax)) {
+        if ((0, _index.isFiniteNumber)(newNextMax)) {
           resolvedState = resolvedState.addNumericRefinement(attribute, '<=', newNextMax);
         }
 
@@ -158,7 +158,7 @@ var connectRange = function connectRange(renderFn) {
 
     var sendEventWithRefinedState = function sendEventWithRefinedState(refinedState, instantSearchInstance, helper) {
       var eventName = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 'Filter Applied';
-      var filters = (0, _utils.convertNumericRefinementsToFilters)(refinedState, attribute);
+      var filters = (0, _index.convertNumericRefinementsToFilters)(refinedState, attribute);
 
       if (filters && filters.length > 0) {
         instantSearchInstance.sendEventToInsights({
@@ -206,9 +206,9 @@ var connectRange = function connectRange(renderFn) {
     function _getCurrentRange(stats) {
       var min;
 
-      if ((0, _utils.isFiniteNumber)(minBound)) {
+      if ((0, _index.isFiniteNumber)(minBound)) {
         min = minBound;
-      } else if ((0, _utils.isFiniteNumber)(stats.min)) {
+      } else if ((0, _index.isFiniteNumber)(stats.min)) {
         min = stats.min;
       } else {
         min = 0;
@@ -216,9 +216,9 @@ var connectRange = function connectRange(renderFn) {
 
       var max;
 
-      if ((0, _utils.isFiniteNumber)(maxBound)) {
+      if ((0, _index.isFiniteNumber)(maxBound)) {
         max = maxBound;
-      } else if ((0, _utils.isFiniteNumber)(stats.max)) {
+      } else if ((0, _index.isFiniteNumber)(stats.max)) {
         max = stats.max;
       } else {
         max = 0;
@@ -240,8 +240,8 @@ var connectRange = function connectRange(renderFn) {
           _ref10 = _slicedToArray(_ref9, 1),
           maxValue = _ref10[0];
 
-      var min = (0, _utils.isFiniteNumber)(minValue) ? minValue : -Infinity;
-      var max = (0, _utils.isFiniteNumber)(maxValue) ? maxValue : Infinity;
+      var min = (0, _index.isFiniteNumber)(minValue) ? minValue : -Infinity;
+      var max = (0, _index.isFiniteNumber)(maxValue) ? maxValue : Infinity;
       return [min, max];
     }
 
@@ -283,7 +283,7 @@ var connectRange = function connectRange(renderFn) {
             helper = _ref13.helper,
             instantSearchInstance = _ref13.instantSearchInstance;
         var facetsFromResults = results && results.disjunctiveFacets || [];
-        var facet = (0, _utils.find)(facetsFromResults, function (facetResult) {
+        var facet = (0, _index.find)(facetsFromResults, function (facetResult) {
           return facetResult.name === attribute;
         });
         var stats = facet && facet.stats || {
@@ -349,11 +349,11 @@ var connectRange = function connectRange(renderFn) {
           numericRefinements: _objectSpread(_objectSpread({}, searchParameters.numericRefinements), {}, _defineProperty({}, attribute, {}))
         });
 
-        if ((0, _utils.isFiniteNumber)(minBound)) {
+        if ((0, _index.isFiniteNumber)(minBound)) {
           widgetSearchParameters = widgetSearchParameters.addNumericRefinement(attribute, '>=', minBound);
         }
 
-        if ((0, _utils.isFiniteNumber)(maxBound)) {
+        if ((0, _index.isFiniteNumber)(maxBound)) {
           widgetSearchParameters = widgetSearchParameters.addNumericRefinement(attribute, '<=', maxBound);
         }
 
@@ -368,12 +368,12 @@ var connectRange = function connectRange(renderFn) {
             lowerBound = _value$split$map2[0],
             upperBound = _value$split$map2[1];
 
-        if ((0, _utils.isFiniteNumber)(lowerBound) && (!(0, _utils.isFiniteNumber)(minBound) || minBound < lowerBound)) {
+        if ((0, _index.isFiniteNumber)(lowerBound) && (!(0, _index.isFiniteNumber)(minBound) || minBound < lowerBound)) {
           widgetSearchParameters = widgetSearchParameters.removeNumericRefinement(attribute, '>=');
           widgetSearchParameters = widgetSearchParameters.addNumericRefinement(attribute, '>=', lowerBound);
         }
 
-        if ((0, _utils.isFiniteNumber)(upperBound) && (!(0, _utils.isFiniteNumber)(maxBound) || upperBound < maxBound)) {
+        if ((0, _index.isFiniteNumber)(upperBound) && (!(0, _index.isFiniteNumber)(maxBound) || upperBound < maxBound)) {
           widgetSearchParameters = widgetSearchParameters.removeNumericRefinement(attribute, '<=');
           widgetSearchParameters = widgetSearchParameters.addNumericRefinement(attribute, '<=', upperBound);
         }

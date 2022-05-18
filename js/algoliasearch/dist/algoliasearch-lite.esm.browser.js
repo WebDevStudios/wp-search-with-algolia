@@ -181,7 +181,7 @@ function encode(format, ...args) {
     return format.replace(/%s/g, () => encodeURIComponent(args[i++]));
 }
 
-const version = '4.10.3';
+const version = '4.13.0';
 
 const AuthMode = {
     /**
@@ -690,6 +690,15 @@ const createSearchClient = options => {
     return addMethods(base, options.methods);
 };
 
+const customRequest = (base) => {
+    return (request, requestOptions) => {
+        if (request.method === MethodEnum.Get) {
+            return base.transporter.read(request, requestOptions);
+        }
+        return base.transporter.write(request, requestOptions);
+    };
+};
+
 const initIndex = (base) => {
     return (indexName, options = {}) => {
         const searchIndex = {
@@ -891,6 +900,7 @@ function algoliasearch(appId, apiKey, options) {
             searchForFacetValues: multipleSearchForFacetValues,
             multipleQueries,
             multipleSearchForFacetValues,
+            customRequest,
             initIndex: base => (indexName) => {
                 return initIndex(base)(indexName, {
                     methods: { search, searchForFacetValues, findAnswers },

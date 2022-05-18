@@ -5,7 +5,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = getHighlightedParts;
 
-var _escapeHighlight = require("./escape-highlight");
+var _escapeHighlight = require("./escape-highlight.js");
 
 function getHighlightedParts(highlightedValue) {
   var highlightPostTag = _escapeHighlight.TAG_REPLACEMENT.highlightPostTag,

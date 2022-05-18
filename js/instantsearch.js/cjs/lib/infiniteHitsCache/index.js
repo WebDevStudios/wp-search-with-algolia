@@ -10,6 +10,6 @@ Object.defineProperty(exports, "createInfiniteHitsSessionStorageCache", {
   }
 });
 
-var _sessionStorage = _interopRequireDefault(require("./sessionStorage"));
+var _sessionStorage = _interopRequireDefault(require("./sessionStorage.js"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }

@@ -5,7 +5,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = void 0;
 
-var _utils = require("../../lib/utils");
+var _index = require("../../lib/utils/index.js");
 
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
@@ -15,31 +15,35 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
-var withUsage = (0, _utils.createDocumentationMessageGenerator)({
+var withUsage = (0, _index.createDocumentationMessageGenerator)({
   name: 'dynamic-widgets',
   connector: true
 });
+var MAX_WILDCARD_FACETS = 20;
 
 var connectDynamicWidgets = function connectDynamicWidgets(renderFn) {
-  var unmountFn = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : _utils.noop;
-  (0, _utils.checkRendering)(renderFn, withUsage());
+  var unmountFn = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : _index.noop;
+  (0, _index.checkRendering)(renderFn, withUsage());
   return function (widgetParams) {
     var widgets = widgetParams.widgets,
+        _widgetParams$maxValu = widgetParams.maxValuesPerFacet,
+        maxValuesPerFacet = _widgetParams$maxValu === void 0 ? 20 : _widgetParams$maxValu,
+        _widgetParams$facets = widgetParams.facets,
+        facets = _widgetParams$facets === void 0 ? ['*'] : _widgetParams$facets,
         _widgetParams$transfo = widgetParams.transformItems,
         transformItems = _widgetParams$transfo === void 0 ? function (items) {
       return items;
-    } : _widgetParams$transfo;
+    } : _widgetParams$transfo,
+        fallbackWidget = widgetParams.fallbackWidget;
 
-    if (!widgets || !Array.isArray(widgets) || widgets.some(function (widget) {
-      return _typeof(widget) !== 'object';
-    })) {
+    if (!(widgets && Array.isArray(widgets) && widgets.every(function (widget) {
+      return _typeof(widget) === 'object';
+    }))) {
       throw new Error(withUsage('The `widgets` option expects an array of widgets.'));
     }
 
-    if (!widgets || !Array.isArray(widgets) || widgets.some(function (widget) {
-      return _typeof(widget) !== 'object';
-    })) {
-      throw new Error(withUsage('The `widgets` option expects an array of widgets.'));
+    if (!(Array.isArray(facets) && facets.length <= 1 && (facets[0] === '*' || facets[0] === undefined))) {
+      throw new Error(withUsage("The `facets` option only accepts [] or [\"*\"], you passed ".concat(JSON.stringify(facets))));
     }
 
     var localWidgets = new Map();
@@ -47,13 +51,12 @@ var connectDynamicWidgets = function connectDynamicWidgets(renderFn) {
       $$type: 'ais.dynamicWidgets',
       init: function init(initOptions) {
         widgets.forEach(function (widget) {
-          var attribute = (0, _utils.getWidgetAttribute)(widget, initOptions);
+          var attribute = (0, _index.getWidgetAttribute)(widget, initOptions);
           localWidgets.set(attribute, {
             widget: widget,
-            isMounted: true
+            isMounted: false
           });
         });
-        initOptions.parent.addWidgets(widgets);
         renderFn(_objectSpread(_objectSpread({}, this.getWidgetRenderState(initOptions)), {}, {
           instantSearchInstance: initOptions.instantSearchInstance
         }), true);
@@ -63,6 +66,21 @@ var connectDynamicWidgets = function connectDynamicWidgets(renderFn) {
         var renderState = this.getWidgetRenderState(renderOptions);
         var widgetsToUnmount = [];
         var widgetsToMount = [];
+
+        if (fallbackWidget) {
+          renderState.attributesToRender.forEach(function (attribute) {
+            if (!localWidgets.has(attribute)) {
+              var widget = fallbackWidget({
+                attribute: attribute
+              });
+              localWidgets.set(attribute, {
+                widget: widget,
+                isMounted: false
+              });
+            }
+          });
+        }
+
         localWidgets.forEach(function (_ref, attribute) {
           var widget = _ref.widget,
               isMounted = _ref.isMounted;
@@ -107,6 +125,14 @@ var connectDynamicWidgets = function connectDynamicWidgets(renderFn) {
         parent.removeWidgets(toRemove);
         unmountFn();
       },
+      getWidgetSearchParameters: function getWidgetSearchParameters(state) {
+        // broadening the scope of facets to avoid conflict between never and *
+        return facets.reduce(function (acc, curr) {
+          return acc.addFacet(curr);
+        }, state.setQueryParameters({
+          maxValuesPerFacet: Math.max(maxValuesPerFacet || 0, state.maxValuesPerFacet || 0)
+        }));
+      },
       getRenderState: function getRenderState(renderState, renderOptions) {
         return _objectSpread(_objectSpread({}, renderState), {}, {
           dynamicWidgets: this.getWidgetRenderState(renderOptions)
@@ -115,7 +141,8 @@ var connectDynamicWidgets = function connectDynamicWidgets(renderFn) {
       getWidgetRenderState: function getWidgetRenderState(_ref4) {
         var _results$renderingCon, _results$renderingCon2, _results$renderingCon3, _results$renderingCon4;
 
-        var results = _ref4.results;
+        var results = _ref4.results,
+            state = _ref4.state;
 
         if (!results) {
           return {
@@ -124,11 +151,18 @@ var connectDynamicWidgets = function connectDynamicWidgets(renderFn) {
           };
         }
 
-        var attributesToRender = (_results$renderingCon = (_results$renderingCon2 = results.renderingContent) === null || _results$renderingCon2 === void 0 ? void 0 : (_results$renderingCon3 = _results$renderingCon2.facetOrdering) === null || _results$renderingCon3 === void 0 ? void 0 : (_results$renderingCon4 = _results$renderingCon3.facets) === null || _results$renderingCon4 === void 0 ? void 0 : _results$renderingCon4.order) !== null && _results$renderingCon !== void 0 ? _results$renderingCon : [];
+        var attributesToRender = transformItems((_results$renderingCon = (_results$renderingCon2 = results.renderingContent) === null || _results$renderingCon2 === void 0 ? void 0 : (_results$renderingCon3 = _results$renderingCon2.facetOrdering) === null || _results$renderingCon3 === void 0 ? void 0 : (_results$renderingCon4 = _results$renderingCon3.facets) === null || _results$renderingCon4 === void 0 ? void 0 : _results$renderingCon4.order) !== null && _results$renderingCon !== void 0 ? _results$renderingCon : [], {
+          results: results
+        });
+
+        if (!Array.isArray(attributesToRender)) {
+          throw new Error(withUsage('The `transformItems` option expects a function that returns an Array.'));
+        }
+
+        process.env.NODE_ENV === 'development' ? (0, _index.warning)(maxValuesPerFacet >= (state.maxValuesPerFacet || 0), "The maxValuesPerFacet set by dynamic widgets (".concat(maxValuesPerFacet, ") is smaller than one of the limits set by a widget (").concat(state.maxValuesPerFacet, "). This causes a mismatch in query parameters and thus an extra network request when that widget is mounted.")) : void 0;
+        process.env.NODE_ENV === 'development' ? (0, _index.warning)(attributesToRender.length <= MAX_WILDCARD_FACETS || widgetParams.facets !== undefined, "More than ".concat(MAX_WILDCARD_FACETS, " facets are requested to be displayed without explicitly setting which facets to retrieve. This could have a performance impact. Set \"facets\" to [] to do two smaller network requests, or explicitly to ['*'] to avoid this warning.")) : void 0;
         return {
-          attributesToRender: transformItems(attributesToRender, {
-            results: results
-          }),
+          attributesToRender: attributesToRender,
           widgetParams: widgetParams
         };
       }

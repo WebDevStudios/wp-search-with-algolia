@@ -5,7 +5,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.createSendEventForFacet = createSendEventForFacet;
 
-var _isFacetRefined = _interopRequireDefault(require("./isFacetRefined"));
+var _isFacetRefined = _interopRequireDefault(require("./isFacetRefined.js"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 

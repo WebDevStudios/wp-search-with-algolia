@@ -9,15 +9,15 @@ var _preact = require("preact");
 
 var _classnames = _interopRequireDefault(require("classnames"));
 
-var _RefinementList = _interopRequireDefault(require("../../components/RefinementList/RefinementList"));
+var _RefinementList = _interopRequireDefault(require("../../components/RefinementList/RefinementList.js"));
 
-var _connectNumericMenu = _interopRequireDefault(require("../../connectors/numeric-menu/connectNumericMenu"));
+var _connectNumericMenu = _interopRequireDefault(require("../../connectors/numeric-menu/connectNumericMenu.js"));
 
-var _defaultTemplates = _interopRequireDefault(require("./defaultTemplates"));
+var _defaultTemplates = _interopRequireDefault(require("./defaultTemplates.js"));
 
-var _utils = require("../../lib/utils");
+var _index = require("../../lib/utils/index.js");
 
-var _suit = require("../../lib/suit");
+var _suit = require("../../lib/suit.js");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -27,7 +27,7 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
-var withUsage = (0, _utils.createDocumentationMessageGenerator)({
+var withUsage = (0, _index.createDocumentationMessageGenerator)({
   name: 'numeric-menu'
 });
 var suit = (0, _suit.component)('NumericMenu');
@@ -45,7 +45,7 @@ var renderer = function renderer(_ref) {
         items = _ref2.items;
 
     if (isFirstRendering) {
-      renderState.templateProps = (0, _utils.prepareTemplateProps)({
+      renderState.templateProps = (0, _index.prepareTemplateProps)({
         defaultTemplates: _defaultTemplates.default,
         templatesConfig: instantSearchInstance.templatesConfig,
         templates: templates
@@ -79,7 +79,7 @@ var numericMenu = function numericMenu(widgetParams) {
     throw new Error(withUsage('The `container` option is required.'));
   }
 
-  var containerNode = (0, _utils.getContainerNode)(container);
+  var containerNode = (0, _index.getContainerNode)(container);
   var cssClasses = {
     root: (0, _classnames.default)(suit(), userCssClasses.root),
     noRefinementRoot: (0, _classnames.default)(suit({

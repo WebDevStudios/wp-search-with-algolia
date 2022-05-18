@@ -24,7 +24,7 @@ function _iterableToArrayLimit(arr, i) { if (typeof Symbol === "undefined" || !(
 
 function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 
-import { checkRendering, createDocumentationLink, createDocumentationMessageGenerator, noop, warning } from '../../lib/utils';
+import { checkRendering, createDocumentationLink, createDocumentationMessageGenerator, noop, warning } from "../../lib/utils/index.js";
 var withUsage = createDocumentationMessageGenerator({
   name: 'rating-menu',
   connector: true

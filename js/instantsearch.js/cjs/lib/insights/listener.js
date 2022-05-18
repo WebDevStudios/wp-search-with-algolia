@@ -7,9 +7,9 @@ exports.default = void 0;
 
 var _preact = require("preact");
 
-var _utils = require("../utils");
+var _index = require("../utils/index.js");
 
-var _insights = require("../../helpers/insights");
+var _insights = require("../../helpers/insights.js");
 
 /** @jsx h */
 var findInsightsTarget = function findInsightsTarget(startElement, endElement, validator) {
@@ -34,7 +34,7 @@ var parseInsightsEvent = function parseInsightsEvent(element) {
   }
 
   try {
-    return (0, _utils.deserializePayload)(serializedPayload);
+    return (0, _index.deserializePayload)(serializedPayload);
   } catch (error) {
     throw new Error('The insights middleware was unable to parse `data-insights-event`.');
   }
@@ -51,7 +51,9 @@ var insightsListener = function insightsListener(BaseComponent) {
 
         if (targetWithEvent) {
           var payload = parseInsightsEvent(targetWithEvent);
-          props.sendEvent(payload);
+          payload.forEach(function (single) {
+            return props.sendEvent(single);
+          });
         }
       } // old way, e.g. instantsearch.insights("clickedObjectIDsAfterSearch", { .. })
 

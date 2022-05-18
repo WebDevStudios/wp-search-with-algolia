@@ -5,7 +5,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = void 0;
 
-var _utils = require("../../lib/utils");
+var _index = require("../../lib/utils/index.js");
 
 function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread(); }
 
@@ -33,7 +33,7 @@ function _iterableToArrayLimit(arr, i) { if (typeof Symbol === "undefined" || !(
 
 function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 
-var withUsage = (0, _utils.createDocumentationMessageGenerator)({
+var withUsage = (0, _index.createDocumentationMessageGenerator)({
   name: 'rating-menu',
   connector: true
 });
@@ -92,8 +92,8 @@ var createSendEvent = function createSendEvent(_ref) {
  * with `items.value`.
  */
 var connectRatingMenu = function connectRatingMenu(renderFn) {
-  var unmountFn = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : _utils.noop;
-  (0, _utils.checkRendering)(renderFn, withUsage());
+  var unmountFn = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : _index.noop;
+  (0, _index.checkRendering)(renderFn, withUsage());
   return function (widgetParams) {
     var _ref2 = widgetParams || {},
         attribute = _ref2.attribute,
@@ -144,7 +144,7 @@ var connectRatingMenu = function connectRatingMenu(renderFn) {
       }
 
       if (maxValuesPerFacet < maxFacetsInRange) {
-        solutions.push("- Increase the maximum number of facet values to ".concat(maxFacetsInRange, " using the \"configure\" widget ").concat((0, _utils.createDocumentationLink)({
+        solutions.push("- Increase the maximum number of facet values to ".concat(maxFacetsInRange, " using the \"configure\" widget ").concat((0, _index.createDocumentationLink)({
           name: 'configure'
         }), " and the \"maxValuesPerFacet\" parameter https://www.algolia.com/doc/api-reference/api-parameters/maxValuesPerFacet/"));
       }
@@ -223,7 +223,7 @@ var connectRatingMenu = function connectRatingMenu(renderFn) {
           var maxValuesPerFacet = facetResults.length;
           var maxDecimalPlaces = getFacetsMaxDecimalPlaces(facetResults);
           var maxFacets = Math.pow(10, maxDecimalPlaces) * max;
-          process.env.NODE_ENV === 'development' ? (0, _utils.warning)(maxFacets <= maxValuesPerFacet, getFacetValuesWarningMessage({
+          process.env.NODE_ENV === 'development' ? (0, _index.warning)(maxFacets <= maxValuesPerFacet, getFacetValuesWarningMessage({
             maxDecimalPlaces: maxDecimalPlaces,
             maxFacets: maxFacets,
             maxValuesPerFacet: maxValuesPerFacet

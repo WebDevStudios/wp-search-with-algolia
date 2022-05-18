@@ -5,7 +5,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = void 0;
 
-var _utils = require("../../lib/utils");
+var _index = require("../../lib/utils/index.js");
 
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
@@ -29,7 +29,7 @@ function _objectWithoutProperties(source, excluded) { if (source == null) return
 
 function _objectWithoutPropertiesLoose(source, excluded) { if (source == null) return {}; var target = {}; var sourceKeys = Object.keys(source); var key, i; for (i = 0; i < sourceKeys.length; i++) { key = sourceKeys[i]; if (excluded.indexOf(key) >= 0) continue; target[key] = source[key]; } return target; }
 
-var withUsage = (0, _utils.createDocumentationMessageGenerator)({
+var withUsage = (0, _index.createDocumentationMessageGenerator)({
   name: 'infinite-hits',
   connector: true
 });
@@ -48,7 +48,7 @@ function getInMemoryCache() {
   return {
     read: function read(_ref2) {
       var state = _ref2.state;
-      return (0, _utils.isEqual)(cachedState, getStateWithoutPage(state)) ? cachedHits : null;
+      return (0, _index.isEqual)(cachedState, getStateWithoutPage(state)) ? cachedHits : null;
     },
     write: function write(_ref3) {
       var state = _ref3.state,
@@ -68,8 +68,9 @@ function extractHitsFromCachedHits(cachedHits) {
 }
 
 var connectInfiniteHits = function connectInfiniteHits(renderFn) {
-  var unmountFn = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : _utils.noop;
-  (0, _utils.checkRendering)(renderFn, withUsage());
+  var unmountFn = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : _index.noop;
+  (0, _index.checkRendering)(renderFn, withUsage()); // @TODO: this should be a generic, but a Connector can not yet be generic itself
+
   return function (widgetParams) {
     var _ref4 = widgetParams || {},
         _ref4$escapeHTML = _ref4.escapeHTML,
@@ -140,10 +141,10 @@ var connectInfiniteHits = function connectInfiniteHits(renderFn) {
       render: function render(renderOptions) {
         var instantSearchInstance = renderOptions.instantSearchInstance;
         var widgetRenderState = this.getWidgetRenderState(renderOptions);
-        sendEvent('view', widgetRenderState.currentPageHits);
         renderFn(_objectSpread(_objectSpread({}, widgetRenderState), {}, {
           instantSearchInstance: instantSearchInstance
         }), false);
+        sendEvent('view', widgetRenderState.currentPageHits);
       },
       getRenderState: function getRenderState(renderState, renderOptions) {
         return _objectSpread(_objectSpread({}, renderState), {}, {
@@ -164,42 +165,39 @@ var connectInfiniteHits = function connectInfiniteHits(renderFn) {
         if (!results) {
           showPrevious = getShowPrevious(helper);
           showMore = getShowMore(helper);
-          sendEvent = (0, _utils.createSendEventForHits)({
+          sendEvent = (0, _index.createSendEventForHits)({
             instantSearchInstance: instantSearchInstance,
             index: helper.getIndex(),
             widgetType: this.$$type
           });
-          bindEvent = (0, _utils.createBindEventForHits)({
+          bindEvent = (0, _index.createBindEventForHits)({
             index: helper.getIndex(),
             widgetType: this.$$type
           });
-          isFirstPage = helper.state.page === undefined || getFirstReceivedPage(helper.state, cachedHits) === 0;
+          isFirstPage = state.page === undefined || getFirstReceivedPage(state, cachedHits) === 0;
         } else {
           var _state$page3 = state.page,
               _page = _state$page3 === void 0 ? 0 : _state$page3;
 
           if (escapeHTML && results.hits.length > 0) {
-            results.hits = (0, _utils.escapeHits)(results.hits);
+            results.hits = (0, _index.escapeHits)(results.hits);
           }
 
-          var initialEscaped = results.hits.__escaped;
-          results.hits = (0, _utils.addAbsolutePosition)(results.hits, results.page, results.hitsPerPage);
-          results.hits = (0, _utils.addQueryID)(results.hits, results.queryID);
-          results.hits = transformItems(results.hits); // Make sure the escaped tag stays after mapping over the hits.
-          // This prevents the hits from being double-escaped if there are multiple
-          // hits widgets mounted on the page.
+          var hitsWithAbsolutePosition = (0, _index.addAbsolutePosition)(results.hits, results.page, results.hitsPerPage);
+          var hitsWithAbsolutePositionAndQueryID = (0, _index.addQueryID)(hitsWithAbsolutePosition, results.queryID);
+          var transformedHits = transformItems(hitsWithAbsolutePositionAndQueryID, {
+            results: results
+          });
 
-          results.hits.__escaped = initialEscaped;
-
-          if (cachedHits[_page] === undefined) {
-            cachedHits[_page] = results.hits;
+          if (cachedHits[_page] === undefined && !results.__isArtificial) {
+            cachedHits[_page] = transformedHits;
             cache.write({
               state: state,
               hits: cachedHits
             });
           }
 
-          currentPageHits = results.hits;
+          currentPageHits = transformedHits;
           isFirstPage = getFirstReceivedPage(state, cachedHits) === 0;
         }
 
@@ -227,7 +225,7 @@ var connectInfiniteHits = function connectInfiniteHits(renderFn) {
           return stateWithoutPage;
         }
 
-        return stateWithoutPage.setQueryParameters(Object.keys(_utils.TAG_PLACEHOLDER).reduce(function (acc, key) {
+        return stateWithoutPage.setQueryParameters(Object.keys(_index.TAG_PLACEHOLDER).reduce(function (acc, key) {
           return _objectSpread(_objectSpread({}, acc), {}, _defineProperty({}, key, undefined));
         }, {}));
       },
@@ -252,7 +250,7 @@ var connectInfiniteHits = function connectInfiniteHits(renderFn) {
         var widgetSearchParameters = searchParameters;
 
         if (escapeHTML) {
-          widgetSearchParameters = searchParameters.setQueryParameters(_utils.TAG_PLACEHOLDER);
+          widgetSearchParameters = searchParameters.setQueryParameters(_index.TAG_PLACEHOLDER);
         } // The page in the search parameters is decremented by one
         // to get to the actual parameter value from the UI state.
 

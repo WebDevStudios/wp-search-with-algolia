@@ -1,5 +1,5 @@
-import { TAG_REPLACEMENT, getPropertyByPath, getHighlightedParts, reverseHighlightedParts, concatHighlightedParts } from '../lib/utils';
-import { component } from '../lib/suit';
+import { TAG_REPLACEMENT, getPropertyByPath, getHighlightedParts, reverseHighlightedParts, concatHighlightedParts, warning } from "../lib/utils/index.js";
+import { component } from "../lib/suit.js";
 var suit = component('ReverseSnippet');
 export default function reverseSnippet(_ref) {
   var attribute = _ref.attribute,
@@ -8,8 +8,11 @@ export default function reverseSnippet(_ref) {
       hit = _ref.hit,
       _ref$cssClasses = _ref.cssClasses,
       cssClasses = _ref$cssClasses === void 0 ? {} : _ref$cssClasses;
+  var snippetAttributeResult = getPropertyByPath(hit._snippetResult, attribute); // @MAJOR fallback to attribute value if snippet is not found
 
-  var _ref2 = getPropertyByPath(hit._snippetResult, attribute) || {},
+  process.env.NODE_ENV === 'development' ? warning(snippetAttributeResult, "Could not enable reverse snippet for \"".concat(attribute, "\", will display an empty string.\nPlease check whether this attribute exists and is specified in `attributesToSnippet`.\n\nSee: https://alg.li/highlighting\n")) : void 0;
+
+  var _ref2 = snippetAttributeResult || {},
       _ref2$value = _ref2.value,
       attributeValue = _ref2$value === void 0 ? '' : _ref2$value; // cx is not used, since it would be bundled as a dependency for Vue & Angular
 

@@ -171,69 +171,76 @@ Object.defineProperty(exports, "connectRelevantSort", {
     return _connectRelevantSort.default;
   }
 });
-Object.defineProperty(exports, "EXPERIMENTAL_connectDynamicWidgets", {
+Object.defineProperty(exports, "connectDynamicWidgets", {
   enumerable: true,
   get: function get() {
     return _connectDynamicWidgets.default;
   }
 });
+exports.EXPERIMENTAL_connectDynamicWidgets = void 0;
 
-var _connectClearRefinements = _interopRequireDefault(require("./clear-refinements/connectClearRefinements"));
+var _connectClearRefinements = _interopRequireDefault(require("./clear-refinements/connectClearRefinements.js"));
 
-var _connectCurrentRefinements = _interopRequireDefault(require("./current-refinements/connectCurrentRefinements"));
+var _connectCurrentRefinements = _interopRequireDefault(require("./current-refinements/connectCurrentRefinements.js"));
 
-var _connectHierarchicalMenu = _interopRequireDefault(require("./hierarchical-menu/connectHierarchicalMenu"));
+var _connectHierarchicalMenu = _interopRequireDefault(require("./hierarchical-menu/connectHierarchicalMenu.js"));
 
-var _connectHits = _interopRequireDefault(require("./hits/connectHits"));
+var _connectHits = _interopRequireDefault(require("./hits/connectHits.js"));
 
-var _connectHitsWithInsights = _interopRequireDefault(require("./hits/connectHitsWithInsights"));
+var _connectHitsWithInsights = _interopRequireDefault(require("./hits/connectHitsWithInsights.js"));
 
-var _connectHitsPerPage = _interopRequireDefault(require("./hits-per-page/connectHitsPerPage"));
+var _connectHitsPerPage = _interopRequireDefault(require("./hits-per-page/connectHitsPerPage.js"));
 
-var _connectInfiniteHits = _interopRequireDefault(require("./infinite-hits/connectInfiniteHits"));
+var _connectInfiniteHits = _interopRequireDefault(require("./infinite-hits/connectInfiniteHits.js"));
 
-var _connectInfiniteHitsWithInsights = _interopRequireDefault(require("./infinite-hits/connectInfiniteHitsWithInsights"));
+var _connectInfiniteHitsWithInsights = _interopRequireDefault(require("./infinite-hits/connectInfiniteHitsWithInsights.js"));
 
-var _connectMenu = _interopRequireDefault(require("./menu/connectMenu"));
+var _connectMenu = _interopRequireDefault(require("./menu/connectMenu.js"));
 
-var _connectNumericMenu = _interopRequireDefault(require("./numeric-menu/connectNumericMenu"));
+var _connectNumericMenu = _interopRequireDefault(require("./numeric-menu/connectNumericMenu.js"));
 
-var _connectPagination = _interopRequireDefault(require("./pagination/connectPagination"));
+var _connectPagination = _interopRequireDefault(require("./pagination/connectPagination.js"));
 
-var _connectRange = _interopRequireDefault(require("./range/connectRange"));
+var _connectRange = _interopRequireDefault(require("./range/connectRange.js"));
 
-var _connectRefinementList = _interopRequireDefault(require("./refinement-list/connectRefinementList"));
+var _connectRefinementList = _interopRequireDefault(require("./refinement-list/connectRefinementList.js"));
 
-var _connectSearchBox = _interopRequireDefault(require("./search-box/connectSearchBox"));
+var _connectSearchBox = _interopRequireDefault(require("./search-box/connectSearchBox.js"));
 
-var _connectSortBy = _interopRequireDefault(require("./sort-by/connectSortBy"));
+var _connectSortBy = _interopRequireDefault(require("./sort-by/connectSortBy.js"));
 
-var _connectRatingMenu = _interopRequireDefault(require("./rating-menu/connectRatingMenu"));
+var _connectRatingMenu = _interopRequireDefault(require("./rating-menu/connectRatingMenu.js"));
 
-var _connectStats = _interopRequireDefault(require("./stats/connectStats"));
+var _connectStats = _interopRequireDefault(require("./stats/connectStats.js"));
 
-var _connectToggleRefinement = _interopRequireDefault(require("./toggle-refinement/connectToggleRefinement"));
+var _connectToggleRefinement = _interopRequireDefault(require("./toggle-refinement/connectToggleRefinement.js"));
 
-var _connectBreadcrumb = _interopRequireDefault(require("./breadcrumb/connectBreadcrumb"));
+var _connectBreadcrumb = _interopRequireDefault(require("./breadcrumb/connectBreadcrumb.js"));
 
-var _connectGeoSearch = _interopRequireDefault(require("./geo-search/connectGeoSearch"));
+var _connectGeoSearch = _interopRequireDefault(require("./geo-search/connectGeoSearch.js"));
 
-var _connectPoweredBy = _interopRequireDefault(require("./powered-by/connectPoweredBy"));
+var _connectPoweredBy = _interopRequireDefault(require("./powered-by/connectPoweredBy.js"));
 
-var _connectConfigure = _interopRequireDefault(require("./configure/connectConfigure"));
+var _connectConfigure = _interopRequireDefault(require("./configure/connectConfigure.js"));
 
-var _connectConfigureRelatedItems = _interopRequireDefault(require("./configure-related-items/connectConfigureRelatedItems"));
+var _connectConfigureRelatedItems = _interopRequireDefault(require("./configure-related-items/connectConfigureRelatedItems.js"));
 
-var _connectAutocomplete = _interopRequireDefault(require("./autocomplete/connectAutocomplete"));
+var _connectAutocomplete = _interopRequireDefault(require("./autocomplete/connectAutocomplete.js"));
 
-var _connectQueryRules = _interopRequireDefault(require("./query-rules/connectQueryRules"));
+var _connectQueryRules = _interopRequireDefault(require("./query-rules/connectQueryRules.js"));
 
-var _connectVoiceSearch = _interopRequireDefault(require("./voice-search/connectVoiceSearch"));
+var _connectVoiceSearch = _interopRequireDefault(require("./voice-search/connectVoiceSearch.js"));
 
-var _connectAnswers = _interopRequireDefault(require("./answers/connectAnswers"));
+var _connectAnswers = _interopRequireDefault(require("./answers/connectAnswers.js"));
 
-var _connectRelevantSort = _interopRequireDefault(require("./relevant-sort/connectRelevantSort"));
+var _connectRelevantSort = _interopRequireDefault(require("./relevant-sort/connectRelevantSort.js"));
 
-var _connectDynamicWidgets = _interopRequireDefault(require("./dynamic-widgets/connectDynamicWidgets"));
+var _connectDynamicWidgets = _interopRequireDefault(require("./dynamic-widgets/connectDynamicWidgets.js"));
+
+var _index = require("../lib/utils/index.js");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+/** @deprecated use connectDynamicWidgets */
+var EXPERIMENTAL_connectDynamicWidgets = (0, _index.deprecate)(_connectDynamicWidgets.default, 'use connectDynamicWidgets');
+exports.EXPERIMENTAL_connectDynamicWidgets = EXPERIMENTAL_connectDynamicWidgets;

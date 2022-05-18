@@ -8,7 +8,7 @@ function _objectWithoutProperties(source, excluded) { if (source == null) return
 
 function _objectWithoutPropertiesLoose(source, excluded) { if (source == null) return {}; var target = {}; var sourceKeys = Object.keys(source); var key, i; for (i = 0; i < sourceKeys.length; i++) { key = sourceKeys[i]; if (excluded.indexOf(key) >= 0) continue; target[key] = source[key]; } return target; }
 
-import { escapeFacets, TAG_PLACEHOLDER, TAG_REPLACEMENT, checkRendering, createDocumentationMessageGenerator, createSendEventForFacet, noop } from '../../lib/utils';
+import { escapeFacets, TAG_PLACEHOLDER, TAG_REPLACEMENT, checkRendering, createDocumentationMessageGenerator, createSendEventForFacet, noop } from "../../lib/utils/index.js";
 var withUsage = createDocumentationMessageGenerator({
   name: 'refinement-list',
   connector: true
@@ -64,11 +64,12 @@ var connectRefinementList = function connectRefinementList(renderFn) {
 
     var formatItems = function formatItems(_ref2) {
       var label = _ref2.name,
-          item = _objectWithoutProperties(_ref2, ["name"]);
+          value = _ref2.escapedValue,
+          item = _objectWithoutProperties(_ref2, ["name", "escapedValue"]);
 
       return _objectSpread(_objectSpread({}, item), {}, {
+        value: value,
         label: label,
-        value: label,
         highlighted: label
       });
     };
@@ -105,7 +106,8 @@ var connectRefinementList = function connectRefinementList(renderFn) {
     var createSearchForFacetValues = function createSearchForFacetValues(helper, widget) {
       return function (renderOptions) {
         return function (query) {
-          var instantSearchInstance = renderOptions.instantSearchInstance;
+          var instantSearchInstance = renderOptions.instantSearchInstance,
+              searchResults = renderOptions.results;
 
           if (query === '' && lastItemsFromMainSearch) {
             // render with previous data from the helper.
@@ -125,14 +127,17 @@ var connectRefinementList = function connectRefinementList(renderFn) {
             Math.min(getLimit(), 100), tags).then(function (results) {
               var facetValues = escapeFacetValues ? escapeFacets(results.facetHits) : results.facetHits;
               var normalizedFacetValues = transformItems(facetValues.map(function (_ref3) {
-                var value = _ref3.value,
-                    item = _objectWithoutProperties(_ref3, ["value"]);
+                var escapedValue = _ref3.escapedValue,
+                    value = _ref3.value,
+                    item = _objectWithoutProperties(_ref3, ["escapedValue", "value"]);
 
                 return _objectSpread(_objectSpread({}, item), {}, {
-                  value: value,
+                  value: escapedValue,
                   label: value
                 });
-              }));
+              }), {
+                results: searchResults
+              });
               renderFn(_objectSpread(_objectSpread({}, widget.getWidgetRenderState(_objectSpread(_objectSpread({}, renderOptions), {}, {
                 results: lastResultsFromMainSearch
               }))), {}, {
@@ -196,7 +201,9 @@ var connectRefinementList = function connectRefinementList(renderFn) {
             facetOrdering: sortBy === DEFAULT_SORT
           });
           facetValues = values && Array.isArray(values) ? values : [];
-          items = transformItems(facetValues.slice(0, getLimit()).map(formatItems));
+          items = transformItems(facetValues.slice(0, getLimit()).map(formatItems), {
+            results: results
+          });
           var maxValuesPerFacetConfig = state.maxValuesPerFacet;
           var currentLimit = getLimit(); // If the limit is the max number of facet retrieved it is impossible to know
           // if the facets are exhaustive. The only moment we are sure it is exhaustive

@@ -35,10 +35,10 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 /** @jsx h */
 import { h, createRef, Component } from 'preact';
 import cx from 'classnames';
-import { isSpecialClick, isEqual } from '../../lib/utils';
-import Template from '../Template/Template';
-import RefinementListItem from './RefinementListItem';
-import SearchBox from '../SearchBox/SearchBox';
+import { isSpecialClick, isEqual } from "../../lib/utils/index.js";
+import Template from "../Template/Template.js";
+import RefinementListItem from "./RefinementListItem.js";
+import SearchBox from "../SearchBox/SearchBox.js";
 var defaultProps = {
   cssClasses: {},
   depth: 0

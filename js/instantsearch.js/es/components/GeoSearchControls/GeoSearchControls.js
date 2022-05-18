@@ -5,9 +5,9 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 /** @jsx h */
 import { h, Fragment } from 'preact';
 import cx from 'classnames';
-import Template from '../Template/Template';
-import GeoSearchButton from './GeoSearchButton';
-import GeoSearchToggle from './GeoSearchToggle';
+import Template from "../Template/Template.js";
+import GeoSearchButton from "./GeoSearchButton.js";
+import GeoSearchToggle from "./GeoSearchToggle.js";
 
 var GeoSearchControls = function GeoSearchControls(_ref) {
   var cssClasses = _ref.cssClasses,

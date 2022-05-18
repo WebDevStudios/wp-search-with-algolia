@@ -4,7 +4,7 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
-import { escapeHits, TAG_PLACEHOLDER, checkRendering, createDocumentationMessageGenerator, addAbsolutePosition, addQueryID, createSendEventForHits, createBindEventForHits, noop } from '../../lib/utils';
+import { escapeHits, TAG_PLACEHOLDER, checkRendering, createDocumentationMessageGenerator, addAbsolutePosition, addQueryID, createSendEventForHits, createBindEventForHits, noop } from "../../lib/utils/index.js";
 var withUsage = createDocumentationMessageGenerator({
   name: 'hits',
   connector: true
@@ -33,10 +33,10 @@ var connectHits = function connectHits(renderFn) {
       },
       render: function render(renderOptions) {
         var renderState = this.getWidgetRenderState(renderOptions);
-        renderState.sendEvent('view', renderState.hits);
         renderFn(_objectSpread(_objectSpread({}, renderState), {}, {
           instantSearchInstance: renderOptions.instantSearchInstance
         }), false);
+        renderState.sendEvent('view', renderState.hits);
       },
       getRenderState: function getRenderState(renderState, renderOptions) {
         return _objectSpread(_objectSpread({}, renderState), {}, {
@@ -77,16 +77,13 @@ var connectHits = function connectHits(renderFn) {
           results.hits = escapeHits(results.hits);
         }
 
-        var initialEscaped = results.hits.__escaped;
-        results.hits = addAbsolutePosition(results.hits, results.page, results.hitsPerPage);
-        results.hits = addQueryID(results.hits, results.queryID);
-        results.hits = transformItems(results.hits); // Make sure the escaped tag stays, even after mapping over the hits.
-        // This prevents the hits from being double-escaped if there are multiple
-        // hits widgets mounted on the page.
-
-        results.hits.__escaped = initialEscaped;
+        var hitsWithAbsolutePosition = addAbsolutePosition(results.hits, results.page, results.hitsPerPage);
+        var hitsWithAbsolutePositionAndQueryID = addQueryID(hitsWithAbsolutePosition, results.queryID);
+        var transformedHits = transformItems(hitsWithAbsolutePositionAndQueryID, {
+          results: results
+        });
         return {
-          hits: results.hits,
+          hits: transformedHits,
           results: results,
           sendEvent: sendEvent,
           bindEvent: bindEvent,

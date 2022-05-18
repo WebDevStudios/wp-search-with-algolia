@@ -9,11 +9,11 @@ var _preact = require("preact");
 
 var _classnames = _interopRequireDefault(require("classnames"));
 
-var _Template = _interopRequireDefault(require("../Template/Template"));
+var _Template = _interopRequireDefault(require("../Template/Template.js"));
 
-var _GeoSearchButton = _interopRequireDefault(require("./GeoSearchButton"));
+var _GeoSearchButton = _interopRequireDefault(require("./GeoSearchButton.js"));
 
-var _GeoSearchToggle = _interopRequireDefault(require("./GeoSearchToggle"));
+var _GeoSearchToggle = _interopRequireDefault(require("./GeoSearchToggle.js"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 

@@ -7,10 +7,10 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 /** @jsx h */
 import { h, render } from 'preact';
 import cx from 'classnames';
-import CurrentRefinements from '../../components/CurrentRefinements/CurrentRefinements';
-import connectCurrentRefinements from '../../connectors/current-refinements/connectCurrentRefinements';
-import { getContainerNode, createDocumentationMessageGenerator } from '../../lib/utils';
-import { component } from '../../lib/suit';
+import CurrentRefinements from "../../components/CurrentRefinements/CurrentRefinements.js";
+import connectCurrentRefinements from "../../connectors/current-refinements/connectCurrentRefinements.js";
+import { getContainerNode, createDocumentationMessageGenerator } from "../../lib/utils/index.js";
+import { component } from "../../lib/suit.js";
 var withUsage = createDocumentationMessageGenerator({
   name: 'current-refinements'
 });

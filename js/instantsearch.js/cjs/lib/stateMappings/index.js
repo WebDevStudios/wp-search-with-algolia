@@ -16,8 +16,8 @@ Object.defineProperty(exports, "singleIndex", {
   }
 });
 
-var _simple = _interopRequireDefault(require("./simple"));
+var _simple = _interopRequireDefault(require("./simple.js"));
 
-var _singleIndex = _interopRequireDefault(require("./singleIndex"));
+var _singleIndex = _interopRequireDefault(require("./singleIndex.js"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }

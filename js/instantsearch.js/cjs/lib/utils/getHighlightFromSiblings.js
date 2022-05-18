@@ -5,7 +5,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = getHighlightFromSiblings;
 
-var _unescape = _interopRequireDefault(require("./unescape"));
+var _unescape = _interopRequireDefault(require("./unescape.js"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 

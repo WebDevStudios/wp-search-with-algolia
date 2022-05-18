@@ -5,7 +5,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = createInfiniteHitsSessionStorageCache;
 
-var _utils = require("../utils");
+var _index = require("../utils/index.js");
 
 function _objectWithoutProperties(source, excluded) { if (source == null) return {}; var target = _objectWithoutPropertiesLoose(source, excluded); var key, i; if (Object.getOwnPropertySymbols) { var sourceSymbolKeys = Object.getOwnPropertySymbols(source); for (i = 0; i < sourceSymbolKeys.length; i++) { key = sourceSymbolKeys[i]; if (excluded.indexOf(key) >= 0) continue; if (!Object.prototype.propertyIsEnumerable.call(source, key)) continue; target[key] = source[key]; } } return target; }
 
@@ -21,27 +21,27 @@ function getStateWithoutPage(state) {
 
 var KEY = 'ais.infiniteHits';
 
-function hasSessionStorage() {
-  return typeof window !== 'undefined' && typeof window.sessionStorage !== 'undefined';
-}
-
 function createInfiniteHitsSessionStorageCache() {
   return {
     read: function read(_ref2) {
       var state = _ref2.state;
+      var sessionStorage = (0, _index.safelyRunOnBrowser)(function (_ref3) {
+        var window = _ref3.window;
+        return window.sessionStorage;
+      });
 
-      if (!hasSessionStorage()) {
+      if (!sessionStorage) {
         return null;
       }
 
       try {
         var cache = JSON.parse( // @ts-expect-error JSON.parse() requires a string, but it actually accepts null, too.
-        window.sessionStorage.getItem(KEY));
-        return cache && (0, _utils.isEqual)(cache.state, getStateWithoutPage(state)) ? cache.hits : null;
+        sessionStorage.getItem(KEY));
+        return cache && (0, _index.isEqual)(cache.state, getStateWithoutPage(state)) ? cache.hits : null;
       } catch (error) {
         if (error instanceof SyntaxError) {
           try {
-            window.sessionStorage.removeItem(KEY);
+            sessionStorage.removeItem(KEY);
           } catch (err) {// do nothing
           }
         }
@@ -49,16 +49,20 @@ function createInfiniteHitsSessionStorageCache() {
         return null;
       }
     },
-    write: function write(_ref3) {
-      var state = _ref3.state,
-          hits = _ref3.hits;
+    write: function write(_ref4) {
+      var state = _ref4.state,
+          hits = _ref4.hits;
+      var sessionStorage = (0, _index.safelyRunOnBrowser)(function (_ref5) {
+        var window = _ref5.window;
+        return window.sessionStorage;
+      });
 
-      if (!hasSessionStorage()) {
+      if (!sessionStorage) {
         return;
       }
 
       try {
-        window.sessionStorage.setItem(KEY, JSON.stringify({
+        sessionStorage.setItem(KEY, JSON.stringify({
           state: getStateWithoutPage(state),
           hits: hits
         }));

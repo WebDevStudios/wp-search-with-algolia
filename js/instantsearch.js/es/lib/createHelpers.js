@@ -4,7 +4,7 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
-import { highlight as _highlight, reverseHighlight as _reverseHighlight, snippet as _snippet, reverseSnippet as _reverseSnippet, insights as _insights } from '../helpers';
+import { highlight as _highlight, reverseHighlight as _reverseHighlight, snippet as _snippet, reverseSnippet as _reverseSnippet, insights as _insights } from "../helpers/index.js";
 export default function hoganHelpers(_ref) {
   var numberLocale = _ref.numberLocale;
   return {

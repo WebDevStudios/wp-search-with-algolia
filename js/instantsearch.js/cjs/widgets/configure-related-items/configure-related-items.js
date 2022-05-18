@@ -5,9 +5,9 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = void 0;
 
-var _utils = require("../../lib/utils");
+var _index = require("../../lib/utils/index.js");
 
-var _connectConfigureRelatedItems = _interopRequireDefault(require("../../connectors/configure-related-items/connectConfigureRelatedItems"));
+var _connectConfigureRelatedItems = _interopRequireDefault(require("../../connectors/configure-related-items/connectConfigureRelatedItems.js"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -18,7 +18,7 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 var configureRelatedItems = function configureRelatedItems(widgetParams) {
-  var makeWidget = (0, _connectConfigureRelatedItems.default)(_utils.noop);
+  var makeWidget = (0, _connectConfigureRelatedItems.default)(_index.noop);
   return _objectSpread(_objectSpread({}, makeWidget(widgetParams)), {}, {
     $$widgetType: 'ais.configureRelatedItems'
   });

@@ -5,7 +5,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = void 0;
 
-var _utils = require("../../lib/utils");
+var _index = require("../../lib/utils/index.js");
 
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
@@ -13,37 +13,33 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
-var withUsage = (0, _utils.createDocumentationMessageGenerator)({
+var withUsage = (0, _index.createDocumentationMessageGenerator)({
   name: 'search-box',
   connector: true
 });
 
+var defaultQueryHook = function defaultQueryHook(query, hook) {
+  return hook(query);
+};
 /**
  * **SearchBox** connector provides the logic to build a widget that will let the user search for a query.
  *
  * The connector provides to the rendering: `refine()` to set the query. The behaviour of this function
  * may be impacted by the `queryHook` widget parameter.
  */
+
+
 var connectSearchBox = function connectSearchBox(renderFn) {
-  var unmountFn = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : _utils.noop;
-  (0, _utils.checkRendering)(renderFn, withUsage());
+  var unmountFn = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : _index.noop;
+  (0, _index.checkRendering)(renderFn, withUsage());
   return function (widgetParams) {
     var _ref = widgetParams || {},
-        queryHook = _ref.queryHook;
-
-    function clear(helper) {
-      return function () {
-        helper.setQuery('').search();
-      };
-    }
+        _ref$queryHook = _ref.queryHook,
+        queryHook = _ref$queryHook === void 0 ? defaultQueryHook : _ref$queryHook;
 
     var _refine;
 
-    var _clear = function _clear() {};
-
-    function _cachedClear() {
-      _clear();
-    }
+    var _clear;
 
     return {
       $$type: 'ais.searchBox',
@@ -71,30 +67,25 @@ var connectSearchBox = function connectSearchBox(renderFn) {
       },
       getWidgetRenderState: function getWidgetRenderState(_ref3) {
         var helper = _ref3.helper,
-            searchMetadata = _ref3.searchMetadata;
+            searchMetadata = _ref3.searchMetadata,
+            state = _ref3.state;
 
         if (!_refine) {
-          var setQueryAndSearch = function setQueryAndSearch(query) {
-            if (query !== helper.state.query) {
-              helper.setQuery(query).search();
-            }
+          _refine = function _refine(query) {
+            queryHook(query, function (q) {
+              return helper.setQuery(q).search();
+            });
           };
 
-          _refine = function _refine(query) {
-            if (queryHook) {
-              queryHook(query, setQueryAndSearch);
-              return;
-            }
-
-            setQueryAndSearch(query);
+          _clear = function _clear() {
+            helper.setQuery('').search();
           };
         }
 
-        _clear = clear(helper);
         return {
-          query: helper.state.query || '',
+          query: state.query || '',
           refine: _refine,
-          clear: _cachedClear,
+          clear: _clear,
           widgetParams: widgetParams,
           isSearchStalled: searchMetadata.isSearchStalled
         };

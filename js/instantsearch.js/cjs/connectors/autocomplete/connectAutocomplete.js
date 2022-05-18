@@ -5,7 +5,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = void 0;
 
-var _utils = require("../../lib/utils");
+var _index = require("../../lib/utils/index.js");
 
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
@@ -13,20 +13,20 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
-var withUsage = (0, _utils.createDocumentationMessageGenerator)({
+var withUsage = (0, _index.createDocumentationMessageGenerator)({
   name: 'autocomplete',
   connector: true
 });
 
 var connectAutocomplete = function connectAutocomplete(renderFn) {
-  var unmountFn = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : _utils.noop;
-  (0, _utils.checkRendering)(renderFn, withUsage());
+  var unmountFn = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : _index.noop;
+  (0, _index.checkRendering)(renderFn, withUsage());
   return function (widgetParams) {
     var _ref = widgetParams || {},
         _ref$escapeHTML = _ref.escapeHTML,
         escapeHTML = _ref$escapeHTML === void 0 ? true : _ref$escapeHTML;
 
-    process.env.NODE_ENV === 'development' ? (0, _utils.warning)(!widgetParams.indices, "\nThe option `indices` has been removed from the Autocomplete connector.\n\nThe indices to target are now inferred from the widgets tree.\n".concat(Array.isArray(widgetParams.indices) ? "\nAn alternative would be:\n\nconst autocomplete = connectAutocomplete(renderer);\n\nsearch.addWidgets([\n  ".concat(widgetParams.indices.map(function (_ref2) {
+    process.env.NODE_ENV === 'development' ? (0, _index.warning)(!widgetParams.indices, "\nThe option `indices` has been removed from the Autocomplete connector.\n\nThe indices to target are now inferred from the widgets tree.\n".concat(Array.isArray(widgetParams.indices) ? "\nAn alternative would be:\n\nconst autocomplete = connectAutocomplete(renderer);\n\nsearch.addWidgets([\n  ".concat(widgetParams.indices.map(function (_ref2) {
       var value = _ref2.value;
       return "index({ indexName: '".concat(value, "' }),");
     }).join('\n  '), "\n  autocomplete()\n]);\n") : '', "\n      ")) : void 0;
@@ -60,6 +60,7 @@ var connectAutocomplete = function connectAutocomplete(renderFn) {
         var _this = this;
 
         var helper = _ref4.helper,
+            state = _ref4.state,
             scopedResults = _ref4.scopedResults,
             instantSearchInstance = _ref4.instantSearchInstance;
 
@@ -72,8 +73,8 @@ var connectAutocomplete = function connectAutocomplete(renderFn) {
         var indices = scopedResults.map(function (scopedResult) {
           // We need to escape the hits because highlighting
           // exposes HTML tags to the end-user.
-          scopedResult.results.hits = escapeHTML ? (0, _utils.escapeHits)(scopedResult.results.hits) : scopedResult.results.hits;
-          var sendEvent = (0, _utils.createSendEventForHits)({
+          scopedResult.results.hits = escapeHTML ? (0, _index.escapeHits)(scopedResult.results.hits) : scopedResult.results.hits;
+          var sendEvent = (0, _index.createSendEventForHits)({
             instantSearchInstance: instantSearchInstance,
             index: scopedResult.results.index,
             widgetType: _this.$$type
@@ -87,7 +88,7 @@ var connectAutocomplete = function connectAutocomplete(renderFn) {
           };
         });
         return {
-          currentRefinement: helper.state.query || '',
+          currentRefinement: state.query || '',
           indices: indices,
           refine: connectorState.refine,
           widgetParams: widgetParams
@@ -115,7 +116,7 @@ var connectAutocomplete = function connectAutocomplete(renderFn) {
           return searchParameters.setQueryParameters(parameters);
         }
 
-        return searchParameters.setQueryParameters(_objectSpread(_objectSpread({}, parameters), _utils.TAG_PLACEHOLDER));
+        return searchParameters.setQueryParameters(_objectSpread(_objectSpread({}, parameters), _index.TAG_PLACEHOLDER));
       },
       dispose: function dispose(_ref7) {
         var state = _ref7.state;
@@ -126,7 +127,7 @@ var connectAutocomplete = function connectAutocomplete(renderFn) {
           return stateWithoutQuery;
         }
 
-        return stateWithoutQuery.setQueryParameters(Object.keys(_utils.TAG_PLACEHOLDER).reduce(function (acc, key) {
+        return stateWithoutQuery.setQueryParameters(Object.keys(_index.TAG_PLACEHOLDER).reduce(function (acc, key) {
           return _objectSpread(_objectSpread({}, acc), {}, _defineProperty({}, key, undefined));
         }, {}));
       }

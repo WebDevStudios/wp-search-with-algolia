@@ -5,7 +5,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = void 0;
 
-var _utils = require("../../lib/utils");
+var _index = require("../../lib/utils/index.js");
 
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
@@ -13,7 +13,7 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
-var withUsage = (0, _utils.createDocumentationMessageGenerator)({
+var withUsage = (0, _index.createDocumentationMessageGenerator)({
   name: 'powered-by',
   connector: true
 });
@@ -23,13 +23,22 @@ var withUsage = (0, _utils.createDocumentationMessageGenerator)({
  * the logo to redirect to Algolia.
  */
 var connectPoweredBy = function connectPoweredBy(renderFn) {
-  var unmountFn = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : _utils.noop;
-  (0, _utils.checkRendering)(renderFn, withUsage());
-  var defaultUrl = 'https://www.algolia.com/?' + 'utm_source=instantsearch.js&' + 'utm_medium=website&' + "utm_content=".concat(typeof window !== 'undefined' && window.location ? window.location.hostname : '', "&") + 'utm_campaign=poweredby';
+  var unmountFn = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : _index.noop;
+  (0, _index.checkRendering)(renderFn, withUsage());
+  var defaultUrl = 'https://www.algolia.com/?' + 'utm_source=instantsearch.js&' + 'utm_medium=website&' + "utm_content=".concat((0, _index.safelyRunOnBrowser)(function (_ref) {
+    var _window$location;
+
+    var window = _ref.window;
+    return ((_window$location = window.location) === null || _window$location === void 0 ? void 0 : _window$location.hostname) || '';
+  }, {
+    fallback: function fallback() {
+      return '';
+    }
+  }), "&") + 'utm_campaign=poweredby';
   return function (widgetParams) {
-    var _ref = widgetParams || {},
-        _ref$url = _ref.url,
-        url = _ref$url === void 0 ? defaultUrl : _ref$url;
+    var _ref2 = widgetParams || {},
+        _ref2$url = _ref2.url,
+        url = _ref2$url === void 0 ? defaultUrl : _ref2$url;
 
     return {
       $$type: 'ais.poweredBy',

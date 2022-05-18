@@ -20,7 +20,7 @@ function _objectWithoutProperties(source, excluded) { if (source == null) return
 
 function _objectWithoutPropertiesLoose(source, excluded) { if (source == null) return {}; var target = {}; var sourceKeys = Object.keys(source); var key, i; for (i = 0; i < sourceKeys.length; i++) { key = sourceKeys[i]; if (excluded.indexOf(key) >= 0) continue; target[key] = source[key]; } return target; }
 
-import { escapeHits, TAG_PLACEHOLDER, checkRendering, createDocumentationMessageGenerator, isEqual, addAbsolutePosition, addQueryID, noop, createSendEventForHits, createBindEventForHits } from '../../lib/utils';
+import { escapeHits, TAG_PLACEHOLDER, checkRendering, createDocumentationMessageGenerator, isEqual, addAbsolutePosition, addQueryID, noop, createSendEventForHits, createBindEventForHits } from "../../lib/utils/index.js";
 var withUsage = createDocumentationMessageGenerator({
   name: 'infinite-hits',
   connector: true
@@ -61,7 +61,8 @@ function extractHitsFromCachedHits(cachedHits) {
 
 var connectInfiniteHits = function connectInfiniteHits(renderFn) {
   var unmountFn = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : noop;
-  checkRendering(renderFn, withUsage());
+  checkRendering(renderFn, withUsage()); // @TODO: this should be a generic, but a Connector can not yet be generic itself
+
   return function (widgetParams) {
     var _ref4 = widgetParams || {},
         _ref4$escapeHTML = _ref4.escapeHTML,
@@ -132,10 +133,10 @@ var connectInfiniteHits = function connectInfiniteHits(renderFn) {
       render: function render(renderOptions) {
         var instantSearchInstance = renderOptions.instantSearchInstance;
         var widgetRenderState = this.getWidgetRenderState(renderOptions);
-        sendEvent('view', widgetRenderState.currentPageHits);
         renderFn(_objectSpread(_objectSpread({}, widgetRenderState), {}, {
           instantSearchInstance: instantSearchInstance
         }), false);
+        sendEvent('view', widgetRenderState.currentPageHits);
       },
       getRenderState: function getRenderState(renderState, renderOptions) {
         return _objectSpread(_objectSpread({}, renderState), {}, {
@@ -165,7 +166,7 @@ var connectInfiniteHits = function connectInfiniteHits(renderFn) {
             index: helper.getIndex(),
             widgetType: this.$$type
           });
-          isFirstPage = helper.state.page === undefined || getFirstReceivedPage(helper.state, cachedHits) === 0;
+          isFirstPage = state.page === undefined || getFirstReceivedPage(state, cachedHits) === 0;
         } else {
           var _state$page3 = state.page,
               _page = _state$page3 === void 0 ? 0 : _state$page3;
@@ -174,24 +175,21 @@ var connectInfiniteHits = function connectInfiniteHits(renderFn) {
             results.hits = escapeHits(results.hits);
           }
 
-          var initialEscaped = results.hits.__escaped;
-          results.hits = addAbsolutePosition(results.hits, results.page, results.hitsPerPage);
-          results.hits = addQueryID(results.hits, results.queryID);
-          results.hits = transformItems(results.hits); // Make sure the escaped tag stays after mapping over the hits.
-          // This prevents the hits from being double-escaped if there are multiple
-          // hits widgets mounted on the page.
+          var hitsWithAbsolutePosition = addAbsolutePosition(results.hits, results.page, results.hitsPerPage);
+          var hitsWithAbsolutePositionAndQueryID = addQueryID(hitsWithAbsolutePosition, results.queryID);
+          var transformedHits = transformItems(hitsWithAbsolutePositionAndQueryID, {
+            results: results
+          });
 
-          results.hits.__escaped = initialEscaped;
-
-          if (cachedHits[_page] === undefined) {
-            cachedHits[_page] = results.hits;
+          if (cachedHits[_page] === undefined && !results.__isArtificial) {
+            cachedHits[_page] = transformedHits;
             cache.write({
               state: state,
               hits: cachedHits
             });
           }
 
-          currentPageHits = results.hits;
+          currentPageHits = transformedHits;
           isFirstPage = getFirstReceivedPage(state, cachedHits) === 0;
         }
 

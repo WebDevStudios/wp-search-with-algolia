@@ -2,7 +2,7 @@ function _objectWithoutProperties(source, excluded) { if (source == null) return
 
 function _objectWithoutPropertiesLoose(source, excluded) { if (source == null) return {}; var target = {}; var sourceKeys = Object.keys(source); var key, i; for (i = 0; i < sourceKeys.length; i++) { key = sourceKeys[i]; if (excluded.indexOf(key) >= 0) continue; target[key] = source[key]; } return target; }
 
-import { isEqual } from '../utils';
+import { isEqual, safelyRunOnBrowser } from "../utils/index.js";
 
 function getStateWithoutPage(state) {
   var _ref = state || {},
@@ -13,28 +13,27 @@ function getStateWithoutPage(state) {
 }
 
 var KEY = 'ais.infiniteHits';
-
-function hasSessionStorage() {
-  return typeof window !== 'undefined' && typeof window.sessionStorage !== 'undefined';
-}
-
 export default function createInfiniteHitsSessionStorageCache() {
   return {
     read: function read(_ref2) {
       var state = _ref2.state;
+      var sessionStorage = safelyRunOnBrowser(function (_ref3) {
+        var window = _ref3.window;
+        return window.sessionStorage;
+      });
 
-      if (!hasSessionStorage()) {
+      if (!sessionStorage) {
         return null;
       }
 
       try {
         var cache = JSON.parse( // @ts-expect-error JSON.parse() requires a string, but it actually accepts null, too.
-        window.sessionStorage.getItem(KEY));
+        sessionStorage.getItem(KEY));
         return cache && isEqual(cache.state, getStateWithoutPage(state)) ? cache.hits : null;
       } catch (error) {
         if (error instanceof SyntaxError) {
           try {
-            window.sessionStorage.removeItem(KEY);
+            sessionStorage.removeItem(KEY);
           } catch (err) {// do nothing
           }
         }
@@ -42,16 +41,20 @@ export default function createInfiniteHitsSessionStorageCache() {
         return null;
       }
     },
-    write: function write(_ref3) {
-      var state = _ref3.state,
-          hits = _ref3.hits;
+    write: function write(_ref4) {
+      var state = _ref4.state,
+          hits = _ref4.hits;
+      var sessionStorage = safelyRunOnBrowser(function (_ref5) {
+        var window = _ref5.window;
+        return window.sessionStorage;
+      });
 
-      if (!hasSessionStorage()) {
+      if (!sessionStorage) {
         return;
       }
 
       try {
-        window.sessionStorage.setItem(KEY, JSON.stringify({
+        sessionStorage.setItem(KEY, JSON.stringify({
           state: getStateWithoutPage(state),
           hits: hits
         }));

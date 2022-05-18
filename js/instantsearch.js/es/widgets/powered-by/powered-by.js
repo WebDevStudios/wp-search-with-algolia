@@ -7,10 +7,10 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 /** @jsx h */
 import { h, render } from 'preact';
 import cx from 'classnames';
-import PoweredBy from '../../components/PoweredBy/PoweredBy';
-import connectPoweredBy from '../../connectors/powered-by/connectPoweredBy';
-import { getContainerNode, createDocumentationMessageGenerator } from '../../lib/utils';
-import { component } from '../../lib/suit';
+import PoweredBy from "../../components/PoweredBy/PoweredBy.js";
+import connectPoweredBy from "../../connectors/powered-by/connectPoweredBy.js";
+import { getContainerNode, createDocumentationMessageGenerator } from "../../lib/utils/index.js";
+import { component } from "../../lib/suit.js";
 var suit = component('PoweredBy');
 var withUsage = createDocumentationMessageGenerator({
   name: 'powered-by'

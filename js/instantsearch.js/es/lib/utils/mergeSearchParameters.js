@@ -8,8 +8,8 @@ function _objectWithoutProperties(source, excluded) { if (source == null) return
 
 function _objectWithoutPropertiesLoose(source, excluded) { if (source == null) return {}; var target = {}; var sourceKeys = Object.keys(source); var key, i; for (i = 0; i < sourceKeys.length; i++) { key = sourceKeys[i]; if (excluded.indexOf(key) >= 0) continue; target[key] = source[key]; } return target; }
 
-import findIndex from './findIndex';
-import uniq from './uniq';
+import findIndex from "./findIndex.js";
+import uniq from "./uniq.js";
 
 var mergeWithRest = function mergeWithRest(left, right) {
   var facets = right.facets,

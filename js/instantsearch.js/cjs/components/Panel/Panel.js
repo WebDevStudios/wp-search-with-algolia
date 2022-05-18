@@ -11,7 +11,7 @@ var _hooks = require("preact/hooks");
 
 var _classnames = _interopRequireDefault(require("classnames"));
 
-var _Template = _interopRequireDefault(require("../Template/Template"));
+var _Template = _interopRequireDefault(require("../Template/Template.js"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -44,13 +44,15 @@ function Panel(props) {
 
   var bodyRef = (0, _hooks.useRef)(null);
   (0, _hooks.useEffect)(function () {
-    if (!bodyRef.current) {
+    var node = bodyRef.current;
+
+    if (!node) {
       return undefined;
     }
 
-    bodyRef.current.appendChild(props.bodyElement);
+    node.appendChild(props.bodyElement);
     return function () {
-      bodyRef.current.removeChild(props.bodyElement);
+      node.removeChild(props.bodyElement);
     };
   }, [bodyRef, props.bodyElement]);
 

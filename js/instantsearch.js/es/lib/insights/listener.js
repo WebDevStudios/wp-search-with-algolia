@@ -1,7 +1,7 @@
 /** @jsx h */
 import { h } from 'preact';
-import { deserializePayload } from '../utils';
-import { readDataAttributes, hasDataAttributes } from '../../helpers/insights';
+import { deserializePayload } from "../utils/index.js";
+import { readDataAttributes, hasDataAttributes } from "../../helpers/insights.js";
 
 var findInsightsTarget = function findInsightsTarget(startElement, endElement, validator) {
   var element = startElement;
@@ -42,7 +42,9 @@ var insightsListener = function insightsListener(BaseComponent) {
 
         if (targetWithEvent) {
           var payload = parseInsightsEvent(targetWithEvent);
-          props.sendEvent(payload);
+          payload.forEach(function (single) {
+            return props.sendEvent(single);
+          });
         }
       } // old way, e.g. instantsearch.insights("clickedObjectIDsAfterSearch", { .. })
 

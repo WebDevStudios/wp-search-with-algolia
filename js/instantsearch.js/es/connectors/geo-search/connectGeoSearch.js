@@ -4,7 +4,7 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
-import { checkRendering, aroundLatLngToPosition, insideBoundingBoxToBoundingBox, createDocumentationMessageGenerator, createSendEventForHits, noop } from '../../lib/utils';
+import { checkRendering, aroundLatLngToPosition, insideBoundingBoxToBoundingBox, createDocumentationMessageGenerator, createSendEventForHits, noop } from "../../lib/utils/index.js";
 var withUsage = createDocumentationMessageGenerator({
   name: 'geo-search',
   connector: true
@@ -161,7 +161,9 @@ var connectGeoSearch = function connectGeoSearch(renderFn) {
         var state = helper.state;
         var items = results ? transformItems(results.hits.filter(function (hit) {
           return hit._geoloc;
-        })) : [];
+        }), {
+          results: results
+        }) : [];
 
         if (!sendEvent) {
           sendEvent = createSendEventForHits({

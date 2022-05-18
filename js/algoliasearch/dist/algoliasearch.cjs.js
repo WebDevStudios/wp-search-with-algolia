@@ -83,6 +83,7 @@ function algoliasearch(appId, apiKey, options) {
             searchDictionaryEntries: clientSearch.searchDictionaryEntries,
             setDictionarySettings: clientSearch.setDictionarySettings,
             waitAppTask: clientSearch.waitAppTask,
+            customRequest: clientSearch.customRequest,
             initIndex: base => (indexName) => {
                 return clientSearch.initIndex(base)(indexName, {
                     methods: {

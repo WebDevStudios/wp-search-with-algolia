@@ -21,7 +21,7 @@ function _objectWithoutProperties(source, excluded) { if (source == null) return
 function _objectWithoutPropertiesLoose(source, excluded) { if (source == null) return {}; var target = {}; var sourceKeys = Object.keys(source); var key, i; for (i = 0; i < sourceKeys.length; i++) { key = sourceKeys[i]; if (excluded.indexOf(key) >= 0) continue; target[key] = source[key]; } return target; }
 
 import algoliasearchHelper from 'algoliasearch-helper';
-import { checkIndexUiState, createDocumentationMessageGenerator, resolveSearchParameters, mergeSearchParameters, warning } from '../../lib/utils';
+import { checkIndexUiState, createDocumentationMessageGenerator, resolveSearchParameters, mergeSearchParameters, warning } from "../../lib/utils/index.js";
 var withUsage = createDocumentationMessageGenerator({
   name: 'index-widget'
 });
@@ -275,7 +275,8 @@ var index = function index(widgetParams) {
       return this;
     },
     init: function init(_ref2) {
-      var _this3 = this;
+      var _this3 = this,
+          _instantSearchInstanc;
 
       var instantSearchInstance = _ref2.instantSearchInstance,
           parent = _ref2.parent,
@@ -333,10 +334,20 @@ var index = function index(widgetParams) {
 
       derivedHelper = mainHelper.derive(function () {
         return mergeSearchParameters.apply(void 0, _toConsumableArray(resolveSearchParameters(_this3)));
-      }); // Subscribe to the Helper state changes for the page before widgets
+      });
+      var indexInitialResults = (_instantSearchInstanc = instantSearchInstance._initialResults) === null || _instantSearchInstanc === void 0 ? void 0 : _instantSearchInstanc[this.getIndexId()];
+
+      if (indexInitialResults) {
+        // We restore the shape of the results provided to the instance to respect
+        // the helper's structure.
+        var results = new algoliasearchHelper.SearchResults(new algoliasearchHelper.SearchParameters(indexInitialResults.state), indexInitialResults.results);
+        derivedHelper.lastResults = results;
+        helper.lastResults = results;
+      } // Subscribe to the Helper state changes for the page before widgets
       // are initialized. This behavior mimics the original one of the Helper.
       // It makes sense to replicate it at the `init` step. We have another
       // listener on `change` below, once `init` is done.
+
 
       helper.on('change', function (_ref3) {
         var isPageReset = _ref3.isPageReset;
@@ -438,6 +449,13 @@ var index = function index(widgetParams) {
           instantSearchInstance.onInternalStateChange();
         }
       });
+
+      if (indexInitialResults) {
+        // If there are initial results, we're not notified of the next results
+        // because we don't trigger an initial search. We therefore need to directly
+        // schedule a render that will render the results injected on the helper.
+        instantSearchInstance.scheduleRender();
+      }
     },
     render: function render(_ref5) {
       var _this4 = this;
@@ -541,7 +559,7 @@ var index = function index(widgetParams) {
       localUiState = getLocalWidgetsUiState(localWidgets, {
         searchParameters: this.getHelper().state,
         helper: this.getHelper()
-      });
+      }, localUiState);
     }
   };
 };

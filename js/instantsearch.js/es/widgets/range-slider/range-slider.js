@@ -19,10 +19,10 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 /** @jsx h */
 import { h, render } from 'preact';
 import cx from 'classnames';
-import Slider from '../../components/Slider/Slider';
-import connectRange from '../../connectors/range/connectRange';
-import { getContainerNode, createDocumentationMessageGenerator } from '../../lib/utils';
-import { component } from '../../lib/suit';
+import Slider from "../../components/Slider/Slider.js";
+import connectRange from "../../connectors/range/connectRange.js";
+import { getContainerNode, createDocumentationMessageGenerator } from "../../lib/utils/index.js";
+import { component } from "../../lib/suit.js";
 var withUsage = createDocumentationMessageGenerator({
   name: 'range-slider'
 });

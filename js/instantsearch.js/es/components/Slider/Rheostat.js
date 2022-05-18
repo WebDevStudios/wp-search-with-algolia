@@ -80,7 +80,7 @@ function Button(props) {
   return h("button", _extends({}, props, {
     type: "button"
   }));
-} // Preact doesn't have builtin types for Style, h.JSX.HTMLAttributes['style'] is just object
+} // Preact doesn't have builtin types for Style, JSX.HTMLAttributes['style'] is just object
 // maybe migrate to csstype later?
 
 

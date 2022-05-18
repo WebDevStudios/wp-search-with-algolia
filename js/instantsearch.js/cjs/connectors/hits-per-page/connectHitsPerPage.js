@@ -5,7 +5,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = void 0;
 
-var _utils = require("../../lib/utils");
+var _index = require("../../lib/utils/index.js");
 
 function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread(); }
 
@@ -25,14 +25,14 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
-var withUsage = (0, _utils.createDocumentationMessageGenerator)({
+var withUsage = (0, _index.createDocumentationMessageGenerator)({
   name: 'hits-per-page',
   connector: true
 });
 
 var connectHitsPerPage = function connectHitsPerPage(renderFn) {
-  var unmountFn = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : _utils.noop;
-  (0, _utils.checkRendering)(renderFn, withUsage());
+  var unmountFn = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : _index.noop;
+  (0, _index.checkRendering)(renderFn, withUsage());
   return function (widgetParams) {
     var _ref = widgetParams || {},
         userItems = _ref.items,
@@ -93,8 +93,8 @@ var connectHitsPerPage = function connectHitsPerPage(renderFn) {
         });
 
         if (!isCurrentInOptions) {
-          process.env.NODE_ENV === 'development' ? (0, _utils.warning)(state.hitsPerPage !== undefined, "\n`hitsPerPage` is not defined.\nThe option `hitsPerPage` needs to be set using the `configure` widget.\n\nLearn more: https://www.algolia.com/doc/api-reference/widgets/hits-per-page/js/\n            ") : void 0;
-          process.env.NODE_ENV === 'development' ? (0, _utils.warning)(false, "\nThe `items` option of `hitsPerPage` does not contain the \"hits per page\" value coming from the state: ".concat(state.hitsPerPage, ".\n\nYou may want to add another entry to the `items` option with this value.")) : void 0;
+          process.env.NODE_ENV === 'development' ? (0, _index.warning)(state.hitsPerPage !== undefined, "\n`hitsPerPage` is not defined.\nThe option `hitsPerPage` needs to be set using the `configure` widget.\n\nLearn more: https://www.algolia.com/doc/api-reference/widgets/hits-per-page/js/\n            ") : void 0;
+          process.env.NODE_ENV === 'development' ? (0, _index.warning)(false, "\nThe `items` option of `hitsPerPage` does not contain the \"hits per page\" value coming from the state: ".concat(state.hitsPerPage, ".\n\nYou may want to add another entry to the `items` option with this value.")) : void 0;
           items = [// The helper will convert the empty string to `undefined`.
           {
             value: '',
@@ -128,7 +128,9 @@ var connectHitsPerPage = function connectHitsPerPage(renderFn) {
             createURL = _ref5.createURL,
             helper = _ref5.helper;
         return {
-          items: transformItems(normalizeItems(state)),
+          items: transformItems(normalizeItems(state), {
+            results: results
+          }),
           refine: connectorState.getRefine(helper),
           createURL: connectorState.createURLFactory({
             state: state,

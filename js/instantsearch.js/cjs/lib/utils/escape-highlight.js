@@ -7,9 +7,9 @@ exports.escapeHits = escapeHits;
 exports.escapeFacets = escapeFacets;
 exports.TAG_REPLACEMENT = exports.TAG_PLACEHOLDER = void 0;
 
-var _escape = _interopRequireDefault(require("./escape"));
+var _escape = _interopRequireDefault(require("./escape.js"));
 
-var _isPlainObject = _interopRequireDefault(require("./isPlainObject"));
+var _isPlainObject = _interopRequireDefault(require("./isPlainObject.js"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 

@@ -1,4 +1,4 @@
-import unescape from './unescape';
+import unescape from "./unescape.js";
 var hasAlphanumeric = new RegExp(/\w/i);
 export default function getHighlightFromSiblings(parts, i) {
   var _parts, _parts2;

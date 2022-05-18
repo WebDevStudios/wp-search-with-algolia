@@ -9,9 +9,9 @@ exports.default = void 0;
 
 var _preact = require("preact");
 
-var _utils = require("../../lib/utils");
+var _index = require("../../lib/utils/index.js");
 
-var _Template = _interopRequireDefault(require("../Template/Template"));
+var _Template = _interopRequireDefault(require("../Template/Template.js"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -46,10 +46,10 @@ var defaultProps = {
   searchAsYouType: true,
   isSearchStalled: false,
   disabled: false,
-  onChange: _utils.noop,
-  onSubmit: _utils.noop,
-  onReset: _utils.noop,
-  refine: _utils.noop
+  onChange: _index.noop,
+  onSubmit: _index.noop,
+  onReset: _index.noop,
+  refine: _index.noop
 };
 
 var SearchBox = /*#__PURE__*/function (_Component) {
@@ -195,8 +195,7 @@ var SearchBox = /*#__PURE__*/function (_Component) {
         role: "search",
         className: cssClasses.form,
         noValidate: true,
-        onSubmit: this.onSubmit // @ts-expect-error `onReset` attibute is missing in preact 10.0.0 JSX types
-        ,
+        onSubmit: this.onSubmit,
         onReset: this.onReset
       }, (0, _preact.h)("input", {
         ref: this.input,
@@ -207,9 +206,9 @@ var SearchBox = /*#__PURE__*/function (_Component) {
         placeholder: placeholder,
         autoFocus: autofocus,
         autoComplete: "off",
-        autoCorrect: "off" // @ts-expect-error `autoCapitalize` attibute is missing in preact 10.0.0 JSX types
+        autoCorrect: "off",
+        autoCapitalize: "off" // @ts-expect-error `spellCheck` attribute is missing in preact JSX types
         ,
-        autoCapitalize: "off",
         spellCheck: "false",
         maxLength: 512,
         onInput: this.onInput,

@@ -65,6 +65,7 @@ import { PersonalizationClientOptions } from '@algolia/client-personalization';
 import { PersonalizationStrategy } from '@algolia/client-personalization';
 import { RemoveUserIDResponse } from '@algolia/client-search';
 import { ReplaceAllObjectsOptions } from '@algolia/client-search';
+import { Request } from '@algolia/transporter';
 import { RequestOptions } from '@algolia/transporter';
 import { RestoreApiKeyResponse } from '@algolia/client-search';
 import { Rule } from '@algolia/client-search';
@@ -190,6 +191,7 @@ export declare type SearchClient = SearchClient_2 & {
     readonly getDictionarySettings: (requestOptions?: RequestOptions) => Readonly<Promise<GetDictionarySettingsResponse>>;
     readonly setDictionarySettings: (settings: DictionarySettings, requestOptions?: RequestOptions) => Readonly<WaitablePromise<DictionaryEntriesResponse>>;
     readonly getAppTask: (taskID: number, requestOptions?: RequestOptions) => Readonly<Promise<TaskStatusResponse>>;
+    readonly customRequest: <TResponse>(request: Request, requestOptions?: RequestOptions) => Readonly<Promise<TResponse>>;
     readonly initAnalytics: (options?: InitAnalyticsOptions) => AnalyticsClient;
     readonly initPersonalization: (options?: InitPersonalizationOptions) => PersonalizationClient;
     /**
