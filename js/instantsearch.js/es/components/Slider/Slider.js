@@ -38,10 +38,10 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 /** @jsx h */
 import { h, Component } from 'preact';
-import Rheostat from './Rheostat';
+import Rheostat from "./Rheostat.js";
 import cx from 'classnames';
-import { range } from '../../lib/utils';
-import Pit from './Pit';
+import { range } from "../../lib/utils/index.js";
+import Pit from "./Pit.js";
 
 var Slider = /*#__PURE__*/function (_Component) {
   _inherits(Slider, _Component);

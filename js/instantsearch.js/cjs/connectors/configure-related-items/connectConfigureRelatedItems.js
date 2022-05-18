@@ -7,9 +7,9 @@ exports.default = void 0;
 
 var _algoliasearchHelper = _interopRequireDefault(require("algoliasearch-helper"));
 
-var _utils = require("../../lib/utils");
+var _index = require("../../lib/utils/index.js");
 
-var _connectConfigure = _interopRequireDefault(require("../configure/connectConfigure"));
+var _connectConfigure = _interopRequireDefault(require("../configure/connectConfigure.js"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -31,7 +31,7 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) return _arrayLikeToAr
 
 function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
 
-var withUsage = (0, _utils.createDocumentationMessageGenerator)({
+var withUsage = (0, _index.createDocumentationMessageGenerator)({
   name: 'configure-related-items',
   connector: true
 });
@@ -63,7 +63,7 @@ var connectConfigureRelatedItems = function connectConfigureRelatedItems(renderF
 
     var optionalFilters = Object.keys(matchingPatterns).reduce(function (acc, attributeName) {
       var attribute = matchingPatterns[attributeName];
-      var attributeValue = (0, _utils.getPropertyByPath)(hit, attributeName);
+      var attributeValue = (0, _index.getPropertyByPath)(hit, attributeName);
       var attributeScore = attribute.score;
 
       if (Array.isArray(attributeValue)) {
@@ -84,7 +84,7 @@ var connectConfigureRelatedItems = function connectConfigureRelatedItems(renderF
         })]);
       }
 
-      process.env.NODE_ENV === 'development' ? (0, _utils.warning)(false, "\nThe `matchingPatterns` option returned a value of type ".concat((0, _utils.getObjectType)(attributeValue), " for the \"").concat(attributeName, "\" key. This value was not sent to Algolia because `optionalFilters` only supports strings and array of strings.\n\nYou can remove the \"").concat(attributeName, "\" key from the `matchingPatterns` option.\n\nSee https://www.algolia.com/doc/api-reference/api-parameters/optionalFilters/\n            ")) : void 0;
+      process.env.NODE_ENV === 'development' ? (0, _index.warning)(false, "\nThe `matchingPatterns` option returned a value of type ".concat((0, _index.getObjectType)(attributeValue), " for the \"").concat(attributeName, "\" key. This value was not sent to Algolia because `optionalFilters` only supports strings and array of strings.\n\nYou can remove the \"").concat(attributeName, "\" key from the `matchingPatterns` option.\n\nSee https://www.algolia.com/doc/api-reference/api-parameters/optionalFilters/\n            ")) : void 0;
       return acc;
     }, []);
 

@@ -1,4 +1,4 @@
-import { withInsights } from '../../lib/insights';
-import connectHits from './connectHits';
+import { withInsights } from "../../lib/insights/index.js";
+import connectHits from "./connectHits.js";
 var connectHitsWithInsights = withInsights(connectHits);
 export default connectHitsWithInsights;

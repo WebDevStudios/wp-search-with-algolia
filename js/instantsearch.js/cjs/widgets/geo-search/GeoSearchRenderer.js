@@ -7,9 +7,9 @@ exports.default = void 0;
 
 var _preact = require("preact");
 
-var _utils = require("../../lib/utils");
+var _index = require("../../lib/utils/index.js");
 
-var _GeoSearchControls = _interopRequireDefault(require("../../components/GeoSearchControls/GeoSearchControls"));
+var _GeoSearchControls = _interopRequireDefault(require("../../components/GeoSearchControls/GeoSearchControls.js"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -143,7 +143,7 @@ var renderer = function renderer(_ref4, isFirstRendering) {
     };
 
     googleReference.maps.event.addListenerOnce(renderState.mapInstance, 'idle', setupListenersWhenMapIsReady);
-    renderState.templateProps = (0, _utils.prepareTemplateProps)({
+    renderState.templateProps = (0, _index.prepareTemplateProps)({
       templatesConfig: instantSearchInstance.templatesConfig,
       templates: templates
     });

@@ -5,7 +5,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = void 0;
 
-var _isDomElement = _interopRequireDefault(require("./isDomElement"));
+var _isDomElement = _interopRequireDefault(require("./isDomElement.js"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 

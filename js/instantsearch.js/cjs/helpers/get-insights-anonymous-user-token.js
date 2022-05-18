@@ -7,7 +7,7 @@ exports.getInsightsAnonymousUserTokenInternal = getInsightsAnonymousUserTokenInt
 exports.default = getInsightsAnonymousUserToken;
 exports.ANONYMOUS_TOKEN_COOKIE_KEY = void 0;
 
-var _utils = require("../lib/utils");
+var _index = require("../lib/utils/index.js");
 
 var ANONYMOUS_TOKEN_COOKIE_KEY = '_ALGOLIA';
 exports.ANONYMOUS_TOKEN_COOKIE_KEY = ANONYMOUS_TOKEN_COOKIE_KEY;
@@ -40,6 +40,6 @@ function getInsightsAnonymousUserTokenInternal() {
 
 
 function getInsightsAnonymousUserToken() {
-  process.env.NODE_ENV === 'development' ? (0, _utils.warning)(false, "`getInsightsAnonymousUserToken` function has been deprecated. It is still supported in 4.x releases, but not further. It is replaced by the `insights` middleware.\n\nFor more information, visit https://www.algolia.com/doc/guides/getting-insights-and-analytics/search-analytics/click-through-and-conversions/how-to/send-click-and-conversion-events-with-instantsearch/js/") : void 0;
+  process.env.NODE_ENV === 'development' ? (0, _index.warning)(false, "`getInsightsAnonymousUserToken` function has been deprecated. It is still supported in 4.x releases, but not further. It is replaced by the `insights` middleware.\n\nFor more information, visit https://www.algolia.com/doc/guides/getting-insights-and-analytics/search-analytics/click-through-and-conversions/how-to/send-click-and-conversion-events-with-instantsearch/js/") : void 0;
   return getInsightsAnonymousUserTokenInternal();
 }

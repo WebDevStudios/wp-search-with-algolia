@@ -1,6 +1,6 @@
 function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
-import { warning, serializePayload, deserializePayload } from '../lib/utils';
+import { warning, serializePayload, deserializePayload } from "../lib/utils/index.js";
 export function readDataAttributes(domElement) {
   var method = domElement.getAttribute('data-insights-method');
   var serializedPayload = domElement.getAttribute('data-insights-payload');

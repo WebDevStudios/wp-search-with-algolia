@@ -5,7 +5,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = hoganHelpers;
 
-var _helpers = require("../helpers");
+var _index = require("../helpers/index.js");
 
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
@@ -22,7 +22,7 @@ function hoganHelpers(_ref) {
     highlight: function highlight(options, render) {
       try {
         var highlightOptions = JSON.parse(options);
-        return render((0, _helpers.highlight)(_objectSpread(_objectSpread({}, highlightOptions), {}, {
+        return render((0, _index.highlight)(_objectSpread(_objectSpread({}, highlightOptions), {}, {
           hit: this
         })));
       } catch (error) {
@@ -32,7 +32,7 @@ function hoganHelpers(_ref) {
     reverseHighlight: function reverseHighlight(options, render) {
       try {
         var reverseHighlightOptions = JSON.parse(options);
-        return render((0, _helpers.reverseHighlight)(_objectSpread(_objectSpread({}, reverseHighlightOptions), {}, {
+        return render((0, _index.reverseHighlight)(_objectSpread(_objectSpread({}, reverseHighlightOptions), {}, {
           hit: this
         })));
       } catch (error) {
@@ -42,7 +42,7 @@ function hoganHelpers(_ref) {
     snippet: function snippet(options, render) {
       try {
         var snippetOptions = JSON.parse(options);
-        return render((0, _helpers.snippet)(_objectSpread(_objectSpread({}, snippetOptions), {}, {
+        return render((0, _index.snippet)(_objectSpread(_objectSpread({}, snippetOptions), {}, {
           hit: this
         })));
       } catch (error) {
@@ -52,7 +52,7 @@ function hoganHelpers(_ref) {
     reverseSnippet: function reverseSnippet(options, render) {
       try {
         var reverseSnippetOptions = JSON.parse(options);
-        return render((0, _helpers.reverseSnippet)(_objectSpread(_objectSpread({}, reverseSnippetOptions), {}, {
+        return render((0, _index.reverseSnippet)(_objectSpread(_objectSpread({}, reverseSnippetOptions), {}, {
           hit: this
         })));
       } catch (error) {
@@ -65,7 +65,7 @@ function hoganHelpers(_ref) {
             method = _JSON$parse.method,
             payload = _JSON$parse.payload;
 
-        return render((0, _helpers.insights)(method, _objectSpread({
+        return render((0, _index.insights)(method, _objectSpread({
           objectIDs: [this.objectID]
         }, payload)));
       } catch (error) {

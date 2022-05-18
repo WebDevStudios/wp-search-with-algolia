@@ -4,7 +4,7 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
-import { checkRendering, createDocumentationMessageGenerator, createConcurrentSafePromise, addQueryID, debounce, addAbsolutePosition, noop, escapeHits } from '../../lib/utils';
+import { checkRendering, createDocumentationMessageGenerator, createConcurrentSafePromise, addQueryID, debounce, addAbsolutePosition, noop, escapeHits } from "../../lib/utils/index.js";
 
 function hasFindAnswersMethod(answersIndex) {
   return typeof answersIndex.findAnswers === 'function';
@@ -31,7 +31,7 @@ var connectAnswers = function connectAnswers(renderFn) {
         _ref$escapeHTML = _ref.escapeHTML,
         escapeHTML = _ref$escapeHTML === void 0 ? true : _ref$escapeHTML,
         _ref$extraParameters = _ref.extraParameters,
-        extraParameters = _ref$extraParameters === void 0 ? {} : _ref$extraParameters; // @ts-ignore checking for the wrong value
+        extraParameters = _ref$extraParameters === void 0 ? {} : _ref$extraParameters; // @ts-expect-error checking for the wrong value
 
 
     if (!queryLanguages || queryLanguages.length === 0) {
@@ -39,7 +39,7 @@ var connectAnswers = function connectAnswers(renderFn) {
     }
 
     var runConcurrentSafePromise = createConcurrentSafePromise();
-    var lastResult;
+    var lastHits = [];
     var isLoading = false;
     var debouncedRender = debounce(renderFn, renderDebounceTime); // this does not directly use DebouncedFunction<findAnswers>, since then the generic will disappear
 
@@ -67,7 +67,7 @@ var connectAnswers = function connectAnswers(renderFn) {
 
         if (!query) {
           // renders nothing with empty query
-          lastResult = {};
+          lastHits = [];
           isLoading = false;
           renderFn(_objectSpread(_objectSpread({}, this.getWidgetRenderState(renderOptions)), {}, {
             instantSearchInstance: renderOptions.instantSearchInstance
@@ -76,7 +76,7 @@ var connectAnswers = function connectAnswers(renderFn) {
         } // render the loader
 
 
-        lastResult = {};
+        lastHits = [];
         isLoading = true;
         renderFn(_objectSpread(_objectSpread({}, this.getWidgetRenderState(renderOptions)), {}, {
           instantSearchInstance: renderOptions.instantSearchInstance
@@ -85,24 +85,19 @@ var connectAnswers = function connectAnswers(renderFn) {
         runConcurrentSafePromise(debouncedRefine(query, queryLanguages, _objectSpread(_objectSpread({}, extraParameters), {}, {
           nbHits: nbHits,
           attributesForPrediction: attributesForPrediction
-        }))).then(function (results) {
-          if (!results) {
+        }))).then(function (result) {
+          if (!result) {
             // It's undefined when it's debounced.
             return;
           }
 
-          if (escapeHTML && results.hits.length > 0) {
-            results.hits = escapeHits(results.hits);
+          if (escapeHTML && result.hits.length > 0) {
+            result.hits = escapeHits(result.hits);
           }
 
-          var initialEscaped = results.hits.__escaped;
-          results.hits = addAbsolutePosition(results.hits, 0, nbHits);
-          results.hits = addQueryID(results.hits, results.queryID); // Make sure the escaped tag stays, even after mapping over the hits.
-          // This prevents the hits from being double-escaped if there are multiple
-          // hits widgets mounted on the page.
-
-          results.hits.__escaped = initialEscaped;
-          lastResult = results;
+          var hitsWithAbsolutePosition = addAbsolutePosition(result.hits, 0, nbHits);
+          var hitsWithAbsolutePositionAndQueryID = addQueryID(hitsWithAbsolutePosition, result.queryID);
+          lastHits = hitsWithAbsolutePositionAndQueryID;
           isLoading = false;
           debouncedRender(_objectSpread(_objectSpread({}, _this.getWidgetRenderState(renderOptions)), {}, {
             instantSearchInstance: renderOptions.instantSearchInstance
@@ -115,10 +110,8 @@ var connectAnswers = function connectAnswers(renderFn) {
         });
       },
       getWidgetRenderState: function getWidgetRenderState() {
-        var _lastResult;
-
         return {
-          hits: ((_lastResult = lastResult) === null || _lastResult === void 0 ? void 0 : _lastResult.hits) || [],
+          hits: lastHits,
           isLoading: isLoading,
           widgetParams: widgetParams
         };

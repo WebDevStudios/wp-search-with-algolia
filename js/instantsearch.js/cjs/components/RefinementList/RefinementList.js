@@ -11,13 +11,13 @@ var _preact = require("preact");
 
 var _classnames = _interopRequireDefault(require("classnames"));
 
-var _utils = require("../../lib/utils");
+var _index = require("../../lib/utils/index.js");
 
-var _Template = _interopRequireDefault(require("../Template/Template"));
+var _Template = _interopRequireDefault(require("../Template/Template.js"));
 
-var _RefinementListItem = _interopRequireDefault(require("./RefinementListItem"));
+var _RefinementListItem = _interopRequireDefault(require("./RefinementListItem.js"));
 
-var _SearchBox = _interopRequireDefault(require("../SearchBox/SearchBox"));
+var _SearchBox = _interopRequireDefault(require("../SearchBox/SearchBox.js"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -83,7 +83,7 @@ var RefinementList = /*#__PURE__*/function (_Component) {
   _createClass(RefinementList, [{
     key: "shouldComponentUpdate",
     value: function shouldComponentUpdate(nextProps) {
-      var areFacetValuesDifferent = !(0, _utils.isEqual)(this.props.facetValues, nextProps.facetValues);
+      var areFacetValuesDifferent = !(0, _index.isEqual)(this.props.facetValues, nextProps.facetValues);
       return areFacetValuesDifferent;
     }
   }, {
@@ -168,7 +168,7 @@ var RefinementList = /*#__PURE__*/function (_Component) {
           isRefined = _ref.isRefined,
           originalEvent = _ref.originalEvent;
 
-      if ((0, _utils.isSpecialClick)(originalEvent)) {
+      if ((0, _index.isSpecialClick)(originalEvent)) {
         // do not alter the default browser behavior
         // if one special key is down
         return;

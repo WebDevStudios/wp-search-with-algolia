@@ -16,7 +16,7 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) return _arrayLikeToAr
 
 function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
 
-import { checkRendering, createDocumentationMessageGenerator, warning, getRefinements, isEqual, noop } from '../../lib/utils';
+import { checkRendering, createDocumentationMessageGenerator, warning, getRefinements, isEqual, noop } from "../../lib/utils/index.js";
 var withUsage = createDocumentationMessageGenerator({
   name: 'query-rules',
   connector: true
@@ -152,7 +152,9 @@ var connectQueryRules = function connectQueryRules(_render) {
             _ref4$userData = _ref4.userData,
             userData = _ref4$userData === void 0 ? [] : _ref4$userData;
 
-        var items = transformItems(userData);
+        var items = transformItems(userData, {
+          results: results
+        });
         return {
           items: items,
           widgetParams: widgetParams

@@ -4,6 +4,7 @@ import { FindAnswersResponse } from '@algolia/client-search';
 import { MultipleQueriesOptions } from '@algolia/client-search';
 import { MultipleQueriesQuery } from '@algolia/client-search';
 import { MultipleQueriesResponse } from '@algolia/client-search';
+import { Request } from '@algolia/transporter';
 import { RequestOptions } from '@algolia/transporter';
 import { SearchClient as SearchClient_2 } from '@algolia/client-search';
 import { SearchClientOptions } from '@algolia/client-search';
@@ -34,6 +35,7 @@ export declare type SearchClient = SearchClient_2 & {
         readonly indexName: string;
         readonly params: SearchForFacetValuesQueryParams & SearchOptions;
     }>, requestOptions?: RequestOptions) => Readonly<Promise<readonly SearchForFacetValuesResponse[]>>;
+    readonly customRequest: <TResponse>(request: Request, requestOptions?: RequestOptions) => Readonly<Promise<TResponse>>;
 };
 
 export declare type SearchIndex = SearchIndex_2 & {

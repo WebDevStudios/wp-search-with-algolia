@@ -16,7 +16,7 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
-import { getRefinements, checkRendering, createDocumentationMessageGenerator, noop, warning } from '../../lib/utils';
+import { getRefinements, checkRendering, createDocumentationMessageGenerator, noop, warning } from "../../lib/utils/index.js";
 var withUsage = createDocumentationMessageGenerator({
   name: 'current-refinements',
   connector: true
@@ -74,7 +74,9 @@ var connectCurrentRefinements = function connectCurrentRefinements(renderFn) {
               helper: helper,
               includedAttributes: includedAttributes,
               excludedAttributes: excludedAttributes
-            }));
+            }), {
+              results: results
+            });
           }
 
           return scopedResults.reduce(function (accResults, scopedResult) {
@@ -83,7 +85,9 @@ var connectCurrentRefinements = function connectCurrentRefinements(renderFn) {
               helper: scopedResult.helper,
               includedAttributes: includedAttributes,
               excludedAttributes: excludedAttributes
-            })));
+            }), {
+              results: results
+            }));
           }, []);
         }
 
@@ -183,7 +187,7 @@ function getOperatorSymbol(operator) {
 }
 
 function normalizeRefinement(refinement) {
-  var value = refinement.type === 'numeric' ? Number(refinement.name) : refinement.name;
+  var value = getValue(refinement);
   var label = refinement.operator ? "".concat(getOperatorSymbol(refinement.operator), " ").concat(refinement.name) : refinement.name;
   var normalizedRefinement = {
     attribute: refinement.attribute,
@@ -205,6 +209,18 @@ function normalizeRefinement(refinement) {
   }
 
   return normalizedRefinement;
+}
+
+function getValue(refinement) {
+  if (refinement.type === 'numeric') {
+    return Number(refinement.name);
+  }
+
+  if ('escapedValue' in refinement) {
+    return refinement.escapedValue;
+  }
+
+  return refinement.name;
 }
 
 export default connectCurrentRefinements;

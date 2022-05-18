@@ -7,11 +7,11 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 /** @jsx h */
 import { h, render } from 'preact';
 import cx from 'classnames';
-import connectMenu from '../../connectors/menu/connectMenu';
-import MenuSelect from '../../components/MenuSelect/MenuSelect';
-import defaultTemplates from './defaultTemplates';
-import { prepareTemplateProps, getContainerNode, createDocumentationMessageGenerator } from '../../lib/utils';
-import { component } from '../../lib/suit';
+import connectMenu from "../../connectors/menu/connectMenu.js";
+import MenuSelect from "../../components/MenuSelect/MenuSelect.js";
+import defaultTemplates from "./defaultTemplates.js";
+import { prepareTemplateProps, getContainerNode, createDocumentationMessageGenerator } from "../../lib/utils/index.js";
+import { component } from "../../lib/suit.js";
 var withUsage = createDocumentationMessageGenerator({
   name: 'menu-select'
 });

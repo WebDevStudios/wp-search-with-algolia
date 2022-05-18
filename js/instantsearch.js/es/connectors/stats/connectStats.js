@@ -4,7 +4,7 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
-import { checkRendering, createDocumentationMessageGenerator, noop } from '../../lib/utils';
+import { checkRendering, createDocumentationMessageGenerator, noop } from "../../lib/utils/index.js";
 var withUsage = createDocumentationMessageGenerator({
   name: 'stats',
   connector: true
@@ -42,18 +42,18 @@ var connectStats = function connectStats(renderFn) {
       },
       getWidgetRenderState: function getWidgetRenderState(_ref) {
         var results = _ref.results,
-            helper = _ref.helper;
+            state = _ref.state;
 
         if (!results) {
           return {
-            hitsPerPage: helper.state.hitsPerPage,
+            hitsPerPage: state.hitsPerPage,
             nbHits: 0,
             nbSortedHits: undefined,
             areHitsSorted: false,
             nbPages: 0,
-            page: helper.state.page || 0,
+            page: state.page || 0,
             processingTimeMS: -1,
-            query: helper.state.query || '',
+            query: state.query || '',
             widgetParams: widgetParams
           };
         }

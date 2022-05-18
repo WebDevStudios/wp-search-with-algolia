@@ -5,11 +5,11 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.createRouterMiddleware = void 0;
 
-var _simple = _interopRequireDefault(require("../lib/stateMappings/simple"));
+var _simple = _interopRequireDefault(require("../lib/stateMappings/simple.js"));
 
-var _history = _interopRequireDefault(require("../lib/routers/history"));
+var _history = _interopRequireDefault(require("../lib/routers/history.js"));
 
-var _utils = require("../lib/utils");
+var _index = require("../lib/utils/index.js");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -34,22 +34,25 @@ var createRouterMiddleware = function createRouterMiddleware() {
       }, instantSearchInstance.mainIndex.getWidgetUiState({}));
       var route = stateMapping.stateToRoute(uiState);
       return router.createURL(route);
-    }
+    } // casting to UiState here to keep createURL unaware of custom UiState
+    // (as long as it's an object, it's ok)
+
 
     instantSearchInstance._createURL = topLevelCreateURL;
-    instantSearchInstance._initialUiState = _objectSpread(_objectSpread({}, instantSearchInstance._initialUiState), stateMapping.routeToState(router.read()));
     var lastRouteState = undefined;
+    var initialUiState = instantSearchInstance._initialUiState;
     return {
       onStateChange: function onStateChange(_ref2) {
         var uiState = _ref2.uiState;
         var routeState = stateMapping.stateToRoute(uiState);
 
-        if (lastRouteState === undefined || !(0, _utils.isEqual)(lastRouteState, routeState)) {
+        if (lastRouteState === undefined || !(0, _index.isEqual)(lastRouteState, routeState)) {
           router.write(routeState);
           lastRouteState = routeState;
         }
       },
       subscribe: function subscribe() {
+        instantSearchInstance._initialUiState = _objectSpread(_objectSpread({}, initialUiState), stateMapping.routeToState(router.read()));
         router.onUpdate(function (route) {
           instantSearchInstance.setUiState(stateMapping.routeToState(route));
         });

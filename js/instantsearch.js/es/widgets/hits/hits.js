@@ -7,12 +7,12 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 /** @jsx h */
 import { h, render } from 'preact';
 import cx from 'classnames';
-import connectHits from '../../connectors/hits/connectHits';
-import Hits from '../../components/Hits/Hits';
-import defaultTemplates from './defaultTemplates';
-import { prepareTemplateProps, getContainerNode, createDocumentationMessageGenerator } from '../../lib/utils';
-import { component } from '../../lib/suit';
-import { withInsights, withInsightsListener } from '../../lib/insights';
+import connectHits from "../../connectors/hits/connectHits.js";
+import Hits from "../../components/Hits/Hits.js";
+import defaultTemplates from "./defaultTemplates.js";
+import { prepareTemplateProps, getContainerNode, createDocumentationMessageGenerator } from "../../lib/utils/index.js";
+import { component } from "../../lib/suit.js";
+import { withInsights, withInsightsListener } from "../../lib/insights/index.js";
 var withUsage = createDocumentationMessageGenerator({
   name: 'hits'
 });

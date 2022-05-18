@@ -10,4 +10,4 @@ Object.defineProperty(exports, "default", {
   }
 });
 
-var _stats = require("./stats");
+var _stats = require("./stats.js");

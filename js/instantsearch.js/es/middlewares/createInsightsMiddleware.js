@@ -16,8 +16,9 @@ function _iterableToArrayLimit(arr, i) { if (typeof Symbol === "undefined" || !(
 
 function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 
-import { getInsightsAnonymousUserTokenInternal } from '../helpers';
-import { warning, noop, getAppIdAndApiKey, find } from '../lib/utils';
+import { getInsightsAnonymousUserTokenInternal } from "../helpers/index.js";
+import { warning, noop, getAppIdAndApiKey, find } from "../lib/utils/index.js";
+import connectConfigure from "../connectors/configure/connectConfigure.js";
 export var createInsightsMiddleware = function createInsightsMiddleware(props) {
   var _ref = props || {},
       _insightsClient = _ref.insightsClient,
@@ -40,7 +41,12 @@ export var createInsightsMiddleware = function createInsightsMiddleware(props) {
     var _getAppIdAndApiKey = getAppIdAndApiKey(instantSearchInstance.client),
         _getAppIdAndApiKey2 = _slicedToArray(_getAppIdAndApiKey, 2),
         appId = _getAppIdAndApiKey2[0],
-        apiKey = _getAppIdAndApiKey2[1];
+        apiKey = _getAppIdAndApiKey2[1]; // search-insights.js also throws an error so dev-only clarification is sufficient
+
+
+    if (process.env.NODE_ENV === 'development' && !(appId && apiKey)) {
+      throw new Error('[insights middleware]: could not extract Algolia credentials from searchClient');
+    }
 
     var queuedUserToken = undefined;
     var userTokenBeforeInit = undefined;
@@ -80,25 +86,33 @@ export var createInsightsMiddleware = function createInsightsMiddleware(props) {
       appId: appId,
       apiKey: apiKey
     }, insightsInitParams));
+    var createWidget = connectConfigure(noop);
+    var configureClickAnalytics;
+    var configureUserToken;
     return {
       onStateChange: function onStateChange() {},
       subscribe: function subscribe() {
-        insightsClient('addAlgoliaAgent', 'insights-middleware'); // At the time this middleware is subscribed, `mainIndex.init()` is already called.
-        // It means `mainIndex.getHelper()` exists.
-
-        var helper = instantSearchInstance.mainIndex.getHelper();
+        insightsClient('addAlgoliaAgent', 'insights-middleware');
+        configureClickAnalytics = createWidget({
+          searchParameters: {
+            clickAnalytics: true
+          }
+        });
+        instantSearchInstance.addWidgets([configureClickAnalytics]);
 
         var setUserTokenToSearch = function setUserTokenToSearch(userToken) {
-          if (userToken) {
-            helper.setState(helper.state.setQueryParameter('userToken', userToken));
+          if (configureUserToken) {
+            instantSearchInstance.removeWidgets([configureUserToken]);
           }
+
+          configureUserToken = createWidget({
+            searchParameters: {
+              userToken: userToken
+            }
+          });
+          instantSearchInstance.addWidgets([configureUserToken]);
         };
 
-        var hasUserToken = function hasUserToken() {
-          return Boolean(helper.state.userToken);
-        };
-
-        helper.setState(helper.state.setQueryParameter('clickAnalytics', true));
         var anonymousUserToken = getInsightsAnonymousUserTokenInternal();
 
         if (hasInsightsClient && anonymousUserToken) {
@@ -124,7 +138,11 @@ export var createInsightsMiddleware = function createInsightsMiddleware(props) {
           if (onEvent) {
             onEvent(event, _insightsClient);
           } else if (event.insightsMethod) {
-            if (hasUserToken()) {
+            // At this point, instantSearchInstance must be started and
+            // it means there is a configure widget (added above).
+            var hasUserToken = Boolean(instantSearchInstance.renderState[instantSearchInstance.indexName].configure.widgetParams.searchParameters.userToken);
+
+            if (hasUserToken) {
               insightsClient(event.insightsMethod, event.payload);
             } else {
               process.env.NODE_ENV === 'development' ? warning(false, "\nCannot send event to Algolia Insights because `userToken` is not set.\n\nSee documentation: https://www.algolia.com/doc/guides/building-search-ui/going-further/send-insights-events/js/#setting-the-usertoken\n") : void 0;
@@ -136,6 +154,9 @@ export var createInsightsMiddleware = function createInsightsMiddleware(props) {
       },
       unsubscribe: function unsubscribe() {
         insightsClient('onUserTokenChange', undefined);
+        instantSearchInstance.removeWidgets([configureClickAnalytics, configureUserToken]);
+        configureClickAnalytics = undefined;
+        configureUserToken = undefined;
         instantSearchInstance.sendEventToInsights = noop;
       }
     };

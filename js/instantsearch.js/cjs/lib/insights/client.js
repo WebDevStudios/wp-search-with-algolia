@@ -6,7 +6,7 @@ Object.defineProperty(exports, "__esModule", {
 exports.default = withInsights;
 exports.inferPayload = void 0;
 
-var _utils = require("../utils");
+var _index = require("../utils/index.js");
 
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
@@ -16,7 +16,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 var getSelectedHits = function getSelectedHits(hits, selectedObjectIDs) {
   return selectedObjectIDs.map(function (objectID) {
-    var hit = (0, _utils.find)(hits, function (h) {
+    var hit = (0, _index.find)(hits, function (h) {
       return h.objectID === objectID;
     });
 
@@ -29,7 +29,7 @@ var getSelectedHits = function getSelectedHits(hits, selectedObjectIDs) {
 };
 
 var getQueryID = function getQueryID(selectedHits) {
-  var queryIDs = (0, _utils.uniq)(selectedHits.map(function (hit) {
+  var queryIDs = (0, _index.uniq)(selectedHits.map(function (hit) {
     return hit.__queryID;
   }));
 
@@ -88,11 +88,16 @@ var inferPayload = function inferPayload(_ref) {
 exports.inferPayload = inferPayload;
 
 var wrapInsightsClient = function wrapInsightsClient(aa, results, hits) {
-  return function (method, payload) {
-    process.env.NODE_ENV === 'development' ? (0, _utils.warning)(false, "`insights` function has been deprecated. It is still supported in 4.x releases, but not further. It is replaced by the `insights` middleware.\n\nFor more information, visit https://www.algolia.com/doc/guides/getting-insights-and-analytics/search-analytics/click-through-and-conversions/how-to/send-click-and-conversion-events-with-instantsearch/js/") : void 0;
+  return function (method) {
+    for (var _len = arguments.length, payloads = new Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+      payloads[_key - 1] = arguments[_key];
+    }
+
+    var payload = payloads[0];
+    process.env.NODE_ENV === 'development' ? (0, _index.warning)(false, "`insights` function has been deprecated. It is still supported in 4.x releases, but not further. It is replaced by the `insights` middleware.\n\nFor more information, visit https://www.algolia.com/doc/guides/getting-insights-and-analytics/search-analytics/click-through-and-conversions/how-to/send-click-and-conversion-events-with-instantsearch/js/") : void 0;
 
     if (!aa) {
-      var withInstantSearchUsage = (0, _utils.createDocumentationMessageGenerator)({
+      var withInstantSearchUsage = (0, _index.createDocumentationMessageGenerator)({
         name: 'instantsearch'
       });
       throw new Error(withInstantSearchUsage('The `insightsClient` option has not been provided to `instantsearch`.'));

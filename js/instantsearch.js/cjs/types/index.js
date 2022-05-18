@@ -4,7 +4,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _utils = require("./utils");
+var _utils = require("./utils.js");
 
 Object.keys(_utils).forEach(function (key) {
   if (key === "default" || key === "__esModule") return;
@@ -17,7 +17,7 @@ Object.keys(_utils).forEach(function (key) {
   });
 });
 
-var _algoliasearch = require("./algoliasearch");
+var _algoliasearch = require("./algoliasearch.js");
 
 Object.keys(_algoliasearch).forEach(function (key) {
   if (key === "default" || key === "__esModule") return;
@@ -30,7 +30,7 @@ Object.keys(_algoliasearch).forEach(function (key) {
   });
 });
 
-var _results = require("./results");
+var _results = require("./results.js");
 
 Object.keys(_results).forEach(function (key) {
   if (key === "default" || key === "__esModule") return;
@@ -43,7 +43,7 @@ Object.keys(_results).forEach(function (key) {
   });
 });
 
-var _component = require("./component");
+var _component = require("./component.js");
 
 Object.keys(_component).forEach(function (key) {
   if (key === "default" || key === "__esModule") return;
@@ -56,7 +56,7 @@ Object.keys(_component).forEach(function (key) {
   });
 });
 
-var _instantsearch = require("./instantsearch");
+var _instantsearch = require("./instantsearch.js");
 
 Object.keys(_instantsearch).forEach(function (key) {
   if (key === "default" || key === "__esModule") return;
@@ -69,7 +69,7 @@ Object.keys(_instantsearch).forEach(function (key) {
   });
 });
 
-var _middleware = require("./middleware");
+var _middleware = require("./middleware.js");
 
 Object.keys(_middleware).forEach(function (key) {
   if (key === "default" || key === "__esModule") return;
@@ -82,7 +82,7 @@ Object.keys(_middleware).forEach(function (key) {
   });
 });
 
-var _router = require("./router");
+var _router = require("./router.js");
 
 Object.keys(_router).forEach(function (key) {
   if (key === "default" || key === "__esModule") return;
@@ -95,7 +95,7 @@ Object.keys(_router).forEach(function (key) {
   });
 });
 
-var _insights = require("./insights");
+var _insights = require("./insights.js");
 
 Object.keys(_insights).forEach(function (key) {
   if (key === "default" || key === "__esModule") return;
@@ -108,7 +108,7 @@ Object.keys(_insights).forEach(function (key) {
   });
 });
 
-var _connector = require("./connector");
+var _connector = require("./connector.js");
 
 Object.keys(_connector).forEach(function (key) {
   if (key === "default" || key === "__esModule") return;
@@ -121,7 +121,7 @@ Object.keys(_connector).forEach(function (key) {
   });
 });
 
-var _widgetFactory = require("./widget-factory");
+var _widgetFactory = require("./widget-factory.js");
 
 Object.keys(_widgetFactory).forEach(function (key) {
   if (key === "default" || key === "__esModule") return;
@@ -134,7 +134,7 @@ Object.keys(_widgetFactory).forEach(function (key) {
   });
 });
 
-var _widget = require("./widget");
+var _widget = require("./widget.js");
 
 Object.keys(_widget).forEach(function (key) {
   if (key === "default" || key === "__esModule") return;
@@ -147,7 +147,7 @@ Object.keys(_widget).forEach(function (key) {
   });
 });
 
-var _uiState = require("./ui-state");
+var _uiState = require("./ui-state.js");
 
 Object.keys(_uiState).forEach(function (key) {
   if (key === "default" || key === "__esModule") return;
@@ -160,7 +160,7 @@ Object.keys(_uiState).forEach(function (key) {
   });
 });
 
-var _renderState = require("./render-state");
+var _renderState = require("./render-state.js");
 
 Object.keys(_renderState).forEach(function (key) {
   if (key === "default" || key === "__esModule") return;
@@ -173,7 +173,7 @@ Object.keys(_renderState).forEach(function (key) {
   });
 });
 
-var _templates = require("./templates");
+var _templates = require("./templates.js");
 
 Object.keys(_templates).forEach(function (key) {
   if (key === "default" || key === "__esModule") return;

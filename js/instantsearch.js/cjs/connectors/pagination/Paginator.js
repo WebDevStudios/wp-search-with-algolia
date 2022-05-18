@@ -5,7 +5,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = void 0;
 
-var _utils = require("../../lib/utils");
+var _index = require("../../lib/utils/index.js");
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -40,7 +40,7 @@ var Paginator = /*#__PURE__*/function () {
       var totalDisplayedPages = this.nbPagesDisplayed(padding, total);
 
       if (totalDisplayedPages === total) {
-        return (0, _utils.range)({
+        return (0, _index.range)({
           end: total
         });
       }
@@ -49,7 +49,7 @@ var Paginator = /*#__PURE__*/function () {
       var paddingRight = totalDisplayedPages - paddingLeft;
       var first = currentPage - paddingLeft;
       var last = currentPage + paddingRight;
-      return (0, _utils.range)({
+      return (0, _index.range)({
         start: first,
         end: last
       });

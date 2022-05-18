@@ -13,12 +13,12 @@ function _objectWithoutPropertiesLoose(source, excluded) { if (source == null) r
 /* global google */
 import cx from 'classnames';
 import { render } from 'preact';
-import { getContainerNode, renderTemplate, createDocumentationMessageGenerator } from '../../lib/utils';
-import { component } from '../../lib/suit';
-import connectGeoSearch from '../../connectors/geo-search/connectGeoSearch';
-import renderer from './GeoSearchRenderer';
-import defaultTemplates from './defaultTemplates';
-import createHTMLMarker from './createHTMLMarker';
+import { getContainerNode, renderTemplate, createDocumentationMessageGenerator } from "../../lib/utils/index.js";
+import { component } from "../../lib/suit.js";
+import connectGeoSearch from "../../connectors/geo-search/connectGeoSearch.js";
+import renderer from "./GeoSearchRenderer.js";
+import defaultTemplates from "./defaultTemplates.js";
+import createHTMLMarker from "./createHTMLMarker.js";
 var withUsage = createDocumentationMessageGenerator({
   name: 'geo-search'
 });

@@ -5,7 +5,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = void 0;
 
-var _utils = require("../../lib/utils");
+var _index = require("../../lib/utils/index.js");
 
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
@@ -13,7 +13,7 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
-var withUsage = (0, _utils.createDocumentationMessageGenerator)({
+var withUsage = (0, _index.createDocumentationMessageGenerator)({
   name: 'geo-search',
   connector: true
 }); // in this connector, we assume insideBoundingBox is only a string,
@@ -40,8 +40,8 @@ var $$type = 'ais.geoSearch';
  * Currently, the feature is not compatible with multiple values in the _geoloc attribute.
  */
 var connectGeoSearch = function connectGeoSearch(renderFn) {
-  var unmountFn = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : _utils.noop;
-  (0, _utils.checkRendering)(renderFn, withUsage());
+  var unmountFn = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : _index.noop;
+  (0, _index.checkRendering)(renderFn, withUsage());
   return function (widgetParams) {
     var _ref = widgetParams || {},
         _ref$enableRefineOnMa = _ref.enableRefineOnMapMove,
@@ -57,16 +57,16 @@ var connectGeoSearch = function connectGeoSearch(renderFn) {
       hasMapMoveSinceLastRefine: false,
       lastRefinePosition: '',
       lastRefineBoundingBox: '',
-      internalToggleRefineOnMapMove: _utils.noop,
-      internalSetMapMoveSinceLastRefine: _utils.noop
+      internalToggleRefineOnMapMove: _index.noop,
+      internalSetMapMoveSinceLastRefine: _index.noop
     };
 
     var getPositionFromState = function getPositionFromState(state) {
-      return state.aroundLatLng ? (0, _utils.aroundLatLngToPosition)(state.aroundLatLng) : undefined;
+      return state.aroundLatLng ? (0, _index.aroundLatLngToPosition)(state.aroundLatLng) : undefined;
     };
 
     var getCurrentRefinementFromState = function getCurrentRefinementFromState(state) {
-      return state.insideBoundingBox && (0, _utils.insideBoundingBoxToBoundingBox)(state.insideBoundingBox);
+      return state.insideBoundingBox && (0, _index.insideBoundingBoxToBoundingBox)(state.insideBoundingBox);
     };
 
     var refine = function refine(helper) {
@@ -132,8 +132,8 @@ var connectGeoSearch = function connectGeoSearch(renderFn) {
       init: function init(initArgs) {
         var instantSearchInstance = initArgs.instantSearchInstance;
         var isFirstRendering = true;
-        widgetState.internalToggleRefineOnMapMove = createInternalToggleRefinementOnMapMove(initArgs, _utils.noop);
-        widgetState.internalSetMapMoveSinceLastRefine = createInternalSetMapMoveSinceLastRefine(initArgs, _utils.noop);
+        widgetState.internalToggleRefineOnMapMove = createInternalToggleRefinementOnMapMove(initArgs, _index.noop);
+        widgetState.internalSetMapMoveSinceLastRefine = createInternalSetMapMoveSinceLastRefine(initArgs, _index.noop);
         renderFn(_objectSpread(_objectSpread({}, this.getWidgetRenderState(initArgs)), {}, {
           instantSearchInstance: instantSearchInstance
         }), isFirstRendering);
@@ -169,10 +169,12 @@ var connectGeoSearch = function connectGeoSearch(renderFn) {
         var state = helper.state;
         var items = results ? transformItems(results.hits.filter(function (hit) {
           return hit._geoloc;
-        })) : [];
+        }), {
+          results: results
+        }) : [];
 
         if (!sendEvent) {
-          sendEvent = (0, _utils.createSendEventForHits)({
+          sendEvent = (0, _index.createSendEventForHits)({
             instantSearchInstance: instantSearchInstance,
             index: helper.getIndex(),
             widgetType: $$type

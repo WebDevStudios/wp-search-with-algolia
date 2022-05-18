@@ -5,7 +5,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = void 0;
 
-var _utils = require("../../lib/utils");
+var _index = require("../../lib/utils/index.js");
 
 function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread(); }
 
@@ -25,14 +25,14 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
-var withUsage = (0, _utils.createDocumentationMessageGenerator)({
+var withUsage = (0, _index.createDocumentationMessageGenerator)({
   name: 'current-refinements',
   connector: true
 });
 
 var connectCurrentRefinements = function connectCurrentRefinements(renderFn) {
-  var unmountFn = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : _utils.noop;
-  (0, _utils.checkRendering)(renderFn, withUsage());
+  var unmountFn = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : _index.noop;
+  (0, _index.checkRendering)(renderFn, withUsage());
   return function (widgetParams) {
     if ((widgetParams || {}).includedAttributes && (widgetParams || {}).excludedAttributes) {
       throw new Error(withUsage('The options `includedAttributes` and `excludedAttributes` cannot be used together.'));
@@ -82,7 +82,9 @@ var connectCurrentRefinements = function connectCurrentRefinements(renderFn) {
               helper: helper,
               includedAttributes: includedAttributes,
               excludedAttributes: excludedAttributes
-            }));
+            }), {
+              results: results
+            });
           }
 
           return scopedResults.reduce(function (accResults, scopedResult) {
@@ -91,7 +93,9 @@ var connectCurrentRefinements = function connectCurrentRefinements(renderFn) {
               helper: scopedResult.helper,
               includedAttributes: includedAttributes,
               excludedAttributes: excludedAttributes
-            })));
+            }), {
+              results: results
+            }));
           }, []);
         }
 
@@ -123,7 +127,7 @@ function getRefinementsItems(_ref3) {
   } : function (item) {
     return excludedAttributes.indexOf(item.attribute) === -1;
   };
-  var items = (0, _utils.getRefinements)(results, helper.state, includesQuery).map(normalizeRefinement).filter(filterFunction);
+  var items = (0, _index.getRefinements)(results, helper.state, includesQuery).map(normalizeRefinement).filter(filterFunction);
   return items.reduce(function (allItems, currentItem) {
     return [].concat(_toConsumableArray(allItems.filter(function (item) {
       return item.attribute !== currentItem.attribute;
@@ -168,7 +172,7 @@ function clearRefinementFromState(state, refinement) {
       return state.setQueryParameter('query', '');
 
     default:
-      process.env.NODE_ENV === 'development' ? (0, _utils.warning)(false, "The refinement type \"".concat(refinement.type, "\" does not exist and cannot be cleared from the current refinements.")) : void 0;
+      process.env.NODE_ENV === 'development' ? (0, _index.warning)(false, "The refinement type \"".concat(refinement.type, "\" does not exist and cannot be cleared from the current refinements.")) : void 0;
       return state;
   }
 }
@@ -191,7 +195,7 @@ function getOperatorSymbol(operator) {
 }
 
 function normalizeRefinement(refinement) {
-  var value = refinement.type === 'numeric' ? Number(refinement.name) : refinement.name;
+  var value = getValue(refinement);
   var label = refinement.operator ? "".concat(getOperatorSymbol(refinement.operator), " ").concat(refinement.name) : refinement.name;
   var normalizedRefinement = {
     attribute: refinement.attribute,
@@ -213,6 +217,18 @@ function normalizeRefinement(refinement) {
   }
 
   return normalizedRefinement;
+}
+
+function getValue(refinement) {
+  if (refinement.type === 'numeric') {
+    return Number(refinement.name);
+  }
+
+  if ('escapedValue' in refinement) {
+    return refinement.escapedValue;
+  }
+
+  return refinement.name;
 }
 
 var _default = connectCurrentRefinements;

@@ -20,7 +20,7 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
-import { checkRendering, createDocumentationMessageGenerator, createSendEventForFacet, noop } from '../../lib/utils';
+import { checkRendering, createDocumentationMessageGenerator, createSendEventForFacet, noop } from "../../lib/utils/index.js";
 var withUsage = createDocumentationMessageGenerator({
   name: 'menu',
   connector: true
@@ -161,14 +161,17 @@ var connectMenu = function connectMenu(renderFn) {
           canToggleShowMore = showMore && (isShowingMore || facetItems.length > getLimit());
           items = transformItems(facetItems.slice(0, getLimit()).map(function (_ref3) {
             var label = _ref3.name,
-                value = _ref3.path,
-                item = _objectWithoutProperties(_ref3, ["name", "path"]);
+                value = _ref3.escapedValue,
+                path = _ref3.path,
+                item = _objectWithoutProperties(_ref3, ["name", "escapedValue", "path"]);
 
             return _objectSpread(_objectSpread({}, item), {}, {
               label: label,
               value: value
             });
-          }));
+          }), {
+            results: results
+          });
         }
 
         return {

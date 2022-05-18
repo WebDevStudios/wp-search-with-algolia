@@ -9,13 +9,13 @@ var _preact = require("preact");
 
 var _classnames = _interopRequireDefault(require("classnames"));
 
-var _Stats = _interopRequireDefault(require("../../components/Stats/Stats"));
+var _Stats = _interopRequireDefault(require("../../components/Stats/Stats.js"));
 
-var _connectStats = _interopRequireDefault(require("../../connectors/stats/connectStats"));
+var _connectStats = _interopRequireDefault(require("../../connectors/stats/connectStats.js"));
 
-var _utils = require("../../lib/utils");
+var _index = require("../../lib/utils/index.js");
 
-var _suit = require("../../lib/suit");
+var _suit = require("../../lib/suit.js");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -25,7 +25,7 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
-var withUsage = (0, _utils.createDocumentationMessageGenerator)({
+var withUsage = (0, _index.createDocumentationMessageGenerator)({
   name: 'stats'
 });
 var suit = (0, _suit.component)('Stats');
@@ -51,7 +51,7 @@ var renderer = function renderer(_ref) {
         instantSearchInstance = _ref2.instantSearchInstance;
 
     if (isFirstRendering) {
-      renderState.templateProps = (0, _utils.prepareTemplateProps)({
+      renderState.templateProps = (0, _index.prepareTemplateProps)({
         defaultTemplates: defaultTemplates,
         templatesConfig: instantSearchInstance.templatesConfig,
         templates: templates
@@ -93,7 +93,7 @@ var stats = function stats(widgetParams) {
     throw new Error(withUsage('The `container` option is required.'));
   }
 
-  var containerNode = (0, _utils.getContainerNode)(container);
+  var containerNode = (0, _index.getContainerNode)(container);
   var cssClasses = {
     root: (0, _classnames.default)(suit(), userCssClasses.root),
     text: (0, _classnames.default)(suit({

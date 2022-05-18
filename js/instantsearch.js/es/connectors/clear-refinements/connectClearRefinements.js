@@ -16,7 +16,7 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
-import { checkRendering, clearRefinements, getRefinements, createDocumentationMessageGenerator, noop, uniq, mergeSearchParameters } from '../../lib/utils';
+import { checkRendering, clearRefinements, getRefinements, createDocumentationMessageGenerator, noop, uniq, mergeSearchParameters } from "../../lib/utils/index.js";
 var withUsage = createDocumentationMessageGenerator({
   name: 'clear-refinements',
   connector: true
@@ -80,13 +80,15 @@ var connectClearRefinements = function connectClearRefinements(renderFn) {
       },
       getWidgetRenderState: function getWidgetRenderState(_ref2) {
         var createURL = _ref2.createURL,
-            scopedResults = _ref2.scopedResults;
-        connectorState.attributesToClear = scopedResults.reduce(function (results, scopedResult) {
-          return results.concat(getAttributesToClear({
+            scopedResults = _ref2.scopedResults,
+            results = _ref2.results;
+        connectorState.attributesToClear = scopedResults.reduce(function (attributesToClear, scopedResult) {
+          return attributesToClear.concat(getAttributesToClear({
             scopedResult: scopedResult,
             includedAttributes: includedAttributes,
             excludedAttributes: excludedAttributes,
-            transformItems: transformItems
+            transformItems: transformItems,
+            results: results
           }));
         }, []);
 
@@ -131,7 +133,8 @@ function getAttributesToClear(_ref5) {
   var scopedResult = _ref5.scopedResult,
       includedAttributes = _ref5.includedAttributes,
       excludedAttributes = _ref5.excludedAttributes,
-      transformItems = _ref5.transformItems;
+      transformItems = _ref5.transformItems,
+      results = _ref5.results;
   var includesQuery = includedAttributes.indexOf('query') !== -1 || excludedAttributes.indexOf('query') === -1;
   return {
     helper: scopedResult.helper,
@@ -147,7 +150,9 @@ function getAttributesToClear(_ref5) {
         attribute === 'query' && includesQuery || // Otherwise, ignore the excluded attributes
         excludedAttributes.indexOf(attribute) === -1
       );
-    })))
+    })), {
+      results: results
+    })
   };
 }
 

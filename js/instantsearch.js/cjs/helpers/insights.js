@@ -8,7 +8,7 @@ exports.hasDataAttributes = hasDataAttributes;
 exports.writeDataAttributes = writeDataAttributes;
 exports.default = insights;
 
-var _utils = require("../lib/utils");
+var _index = require("../lib/utils/index.js");
 
 function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
@@ -21,7 +21,7 @@ function readDataAttributes(domElement) {
   }
 
   try {
-    var payload = (0, _utils.deserializePayload)(serializedPayload);
+    var payload = (0, _index.deserializePayload)(serializedPayload);
     return {
       method: method,
       payload: payload
@@ -46,7 +46,7 @@ function writeDataAttributes(_ref) {
   var serializedPayload;
 
   try {
-    serializedPayload = (0, _utils.serializePayload)(payload);
+    serializedPayload = (0, _index.serializePayload)(payload);
   } catch (error) {
     throw new Error("Could not JSON serialize the payload object.");
   }
@@ -59,7 +59,7 @@ function writeDataAttributes(_ref) {
 
 
 function insights(method, payload) {
-  process.env.NODE_ENV === 'development' ? (0, _utils.warning)(false, "`insights` function has been deprecated. It is still supported in 4.x releases, but not further. It is replaced by the `insights` middleware.\n\nFor more information, visit https://www.algolia.com/doc/guides/getting-insights-and-analytics/search-analytics/click-through-and-conversions/how-to/send-click-and-conversion-events-with-instantsearch/js/") : void 0;
+  process.env.NODE_ENV === 'development' ? (0, _index.warning)(false, "`insights` function has been deprecated. It is still supported in 4.x releases, but not further. It is replaced by the `insights` middleware.\n\nFor more information, visit https://www.algolia.com/doc/guides/getting-insights-and-analytics/search-analytics/click-through-and-conversions/how-to/send-click-and-conversion-events-with-instantsearch/js/") : void 0;
   return writeDataAttributes({
     method: method,
     payload: payload

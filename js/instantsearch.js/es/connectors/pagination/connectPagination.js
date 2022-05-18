@@ -4,8 +4,8 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
-import { checkRendering, createDocumentationMessageGenerator, noop } from '../../lib/utils';
-import Paginator from './Paginator';
+import { checkRendering, createDocumentationMessageGenerator, noop } from "../../lib/utils/index.js";
+import Paginator from "./Paginator.js";
 var withUsage = createDocumentationMessageGenerator({
   name: 'pagination',
   connector: true
@@ -78,6 +78,7 @@ var connectPagination = function connectPagination(renderFn) {
       getWidgetRenderState: function getWidgetRenderState(_ref6) {
         var results = _ref6.results,
             helper = _ref6.helper,
+            state = _ref6.state,
             createURL = _ref6.createURL;
 
         if (!connectorState.refine) {
@@ -88,14 +89,13 @@ var connectPagination = function connectPagination(renderFn) {
         }
 
         if (!connectorState.createURL) {
-          connectorState.createURL = function (state) {
+          connectorState.createURL = function (helperState) {
             return function (page) {
-              return createURL(state.setPage(page));
+              return createURL(helperState.setPage(page));
             };
           };
         }
 
-        var state = helper.state;
         var page = state.page || 0;
         var nbPages = getMaxPage(results || {
           nbPages: 0

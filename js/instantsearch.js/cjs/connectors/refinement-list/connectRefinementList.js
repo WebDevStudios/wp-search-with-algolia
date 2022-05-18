@@ -5,7 +5,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = void 0;
 
-var _utils = require("../../lib/utils");
+var _index = require("../../lib/utils/index.js");
 
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
@@ -17,7 +17,7 @@ function _objectWithoutProperties(source, excluded) { if (source == null) return
 
 function _objectWithoutPropertiesLoose(source, excluded) { if (source == null) return {}; var target = {}; var sourceKeys = Object.keys(source); var key, i; for (i = 0; i < sourceKeys.length; i++) { key = sourceKeys[i]; if (excluded.indexOf(key) >= 0) continue; target[key] = source[key]; } return target; }
 
-var withUsage = (0, _utils.createDocumentationMessageGenerator)({
+var withUsage = (0, _index.createDocumentationMessageGenerator)({
   name: 'refinement-list',
   connector: true
 });
@@ -36,8 +36,8 @@ var DEFAULT_SORT = ['isRefined', 'count:desc', 'name:asc'];
  * - a `searchForItems()` function to search within the items.
  */
 var connectRefinementList = function connectRefinementList(renderFn) {
-  var unmountFn = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : _utils.noop;
-  (0, _utils.checkRendering)(renderFn, withUsage());
+  var unmountFn = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : _index.noop;
+  (0, _index.checkRendering)(renderFn, withUsage());
   return function (widgetParams) {
     var _ref = widgetParams || {},
         attribute = _ref.attribute,
@@ -72,11 +72,12 @@ var connectRefinementList = function connectRefinementList(renderFn) {
 
     var formatItems = function formatItems(_ref2) {
       var label = _ref2.name,
-          item = _objectWithoutProperties(_ref2, ["name"]);
+          value = _ref2.escapedValue,
+          item = _objectWithoutProperties(_ref2, ["name", "escapedValue"]);
 
       return _objectSpread(_objectSpread({}, item), {}, {
+        value: value,
         label: label,
-        value: label,
         highlighted: label
       });
     };
@@ -113,7 +114,8 @@ var connectRefinementList = function connectRefinementList(renderFn) {
     var createSearchForFacetValues = function createSearchForFacetValues(helper, widget) {
       return function (renderOptions) {
         return function (query) {
-          var instantSearchInstance = renderOptions.instantSearchInstance;
+          var instantSearchInstance = renderOptions.instantSearchInstance,
+              searchResults = renderOptions.results;
 
           if (query === '' && lastItemsFromMainSearch) {
             // render with previous data from the helper.
@@ -124,23 +126,26 @@ var connectRefinementList = function connectRefinementList(renderFn) {
             }), false);
           } else {
             var tags = {
-              highlightPreTag: escapeFacetValues ? _utils.TAG_PLACEHOLDER.highlightPreTag : _utils.TAG_REPLACEMENT.highlightPreTag,
-              highlightPostTag: escapeFacetValues ? _utils.TAG_PLACEHOLDER.highlightPostTag : _utils.TAG_REPLACEMENT.highlightPostTag
+              highlightPreTag: escapeFacetValues ? _index.TAG_PLACEHOLDER.highlightPreTag : _index.TAG_REPLACEMENT.highlightPreTag,
+              highlightPostTag: escapeFacetValues ? _index.TAG_PLACEHOLDER.highlightPostTag : _index.TAG_REPLACEMENT.highlightPostTag
             };
             helper.searchForFacetValues(attribute, query, // We cap the `maxFacetHits` value to 100 because the Algolia API
             // doesn't support a greater number.
             // See https://www.algolia.com/doc/api-reference/api-parameters/maxFacetHits/
             Math.min(getLimit(), 100), tags).then(function (results) {
-              var facetValues = escapeFacetValues ? (0, _utils.escapeFacets)(results.facetHits) : results.facetHits;
+              var facetValues = escapeFacetValues ? (0, _index.escapeFacets)(results.facetHits) : results.facetHits;
               var normalizedFacetValues = transformItems(facetValues.map(function (_ref3) {
-                var value = _ref3.value,
-                    item = _objectWithoutProperties(_ref3, ["value"]);
+                var escapedValue = _ref3.escapedValue,
+                    value = _ref3.value,
+                    item = _objectWithoutProperties(_ref3, ["escapedValue", "value"]);
 
                 return _objectSpread(_objectSpread({}, item), {}, {
-                  value: value,
+                  value: escapedValue,
                   label: value
                 });
-              }));
+              }), {
+                results: searchResults
+              });
               renderFn(_objectSpread(_objectSpread({}, widget.getWidgetRenderState(_objectSpread(_objectSpread({}, renderOptions), {}, {
                 results: lastResultsFromMainSearch
               }))), {}, {
@@ -183,7 +188,7 @@ var connectRefinementList = function connectRefinementList(renderFn) {
         var facetValues = [];
 
         if (!sendEvent || !triggerRefine || !searchForFacetValues) {
-          sendEvent = (0, _utils.createSendEventForFacet)({
+          sendEvent = (0, _index.createSendEventForFacet)({
             instantSearchInstance: instantSearchInstance,
             helper: helper,
             attribute: attribute,
@@ -204,7 +209,9 @@ var connectRefinementList = function connectRefinementList(renderFn) {
             facetOrdering: sortBy === DEFAULT_SORT
           });
           facetValues = values && Array.isArray(values) ? values : [];
-          items = transformItems(facetValues.slice(0, getLimit()).map(formatItems));
+          items = transformItems(facetValues.slice(0, getLimit()).map(formatItems), {
+            results: results
+          });
           var maxValuesPerFacetConfig = state.maxValuesPerFacet;
           var currentLimit = getLimit(); // If the limit is the max number of facet retrieved it is impossible to know
           // if the facets are exhaustive. The only moment we are sure it is exhaustive

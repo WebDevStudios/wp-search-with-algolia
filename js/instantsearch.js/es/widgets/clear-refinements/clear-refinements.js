@@ -6,12 +6,12 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 /** @jsx h */
 import { h, render } from 'preact';
-import ClearRefinements from '../../components/ClearRefinements/ClearRefinements';
+import ClearRefinements from "../../components/ClearRefinements/ClearRefinements.js";
 import cx from 'classnames';
-import connectClearRefinements from '../../connectors/clear-refinements/connectClearRefinements';
-import defaultTemplates from './defaultTemplates';
-import { getContainerNode, prepareTemplateProps, createDocumentationMessageGenerator } from '../../lib/utils';
-import { component } from '../../lib/suit';
+import connectClearRefinements from "../../connectors/clear-refinements/connectClearRefinements.js";
+import defaultTemplates from "./defaultTemplates.js";
+import { getContainerNode, prepareTemplateProps, createDocumentationMessageGenerator } from "../../lib/utils/index.js";
+import { component } from "../../lib/suit.js";
 var withUsage = createDocumentationMessageGenerator({
   name: 'clear-refinements'
 });

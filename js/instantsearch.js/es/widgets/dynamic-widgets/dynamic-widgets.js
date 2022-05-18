@@ -4,27 +4,41 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
-import connectDynamicWidgets from '../../connectors/dynamic-widgets/connectDynamicWidgets';
-import { component } from '../../lib/suit';
-import { createDocumentationMessageGenerator, getContainerNode, getWidgetAttribute } from '../../lib/utils';
+function _objectWithoutProperties(source, excluded) { if (source == null) return {}; var target = _objectWithoutPropertiesLoose(source, excluded); var key, i; if (Object.getOwnPropertySymbols) { var sourceSymbolKeys = Object.getOwnPropertySymbols(source); for (i = 0; i < sourceSymbolKeys.length; i++) { key = sourceSymbolKeys[i]; if (excluded.indexOf(key) >= 0) continue; if (!Object.prototype.propertyIsEnumerable.call(source, key)) continue; target[key] = source[key]; } } return target; }
+
+function _objectWithoutPropertiesLoose(source, excluded) { if (source == null) return {}; var target = {}; var sourceKeys = Object.keys(source); var key, i; for (i = 0; i < sourceKeys.length; i++) { key = sourceKeys[i]; if (excluded.indexOf(key) >= 0) continue; target[key] = source[key]; } return target; }
+
+import connectDynamicWidgets from "../../connectors/dynamic-widgets/connectDynamicWidgets.js";
+import { component } from "../../lib/suit.js";
+import { createDocumentationMessageGenerator, getContainerNode, getWidgetAttribute } from "../../lib/utils/index.js";
 var withUsage = createDocumentationMessageGenerator({
   name: 'dynamic-widgets'
 });
 var suit = component('DynamicWidgets');
 
+function createContainer(rootContainer) {
+  var container = document.createElement('div');
+  container.className = suit({
+    descendantName: 'widget'
+  });
+  rootContainer.appendChild(container);
+  return container;
+}
+
 var dynamicWidgets = function dynamicWidgets(widgetParams) {
   var _ref = widgetParams || {},
       containerSelector = _ref.container,
-      transformItems = _ref.transformItems,
-      widgets = _ref.widgets;
+      widgets = _ref.widgets,
+      fallbackWidget = _ref.fallbackWidget,
+      otherWidgetParams = _objectWithoutProperties(_ref, ["container", "widgets", "fallbackWidget"]);
 
   if (!containerSelector) {
     throw new Error(withUsage('The `container` option is required.'));
   }
 
-  if (!widgets || !Array.isArray(widgets) || widgets.some(function (widget) {
-    return typeof widget !== 'function';
-  })) {
+  if (!(widgets && Array.isArray(widgets) && widgets.every(function (widget) {
+    return typeof widget === 'function';
+  }))) {
     throw new Error(withUsage('The `widgets` option expects an array of callbacks.'));
   }
 
@@ -51,18 +65,22 @@ var dynamicWidgets = function dynamicWidgets(widgetParams) {
   }, function () {
     userContainer.removeChild(rootContainer);
   });
-  var widget = makeWidget({
-    transformItems: transformItems,
-    widgets: connectorWidgets
-  });
+  var widget = makeWidget(_objectSpread(_objectSpread({}, otherWidgetParams), {}, {
+    widgets: connectorWidgets,
+    fallbackWidget: typeof fallbackWidget === 'function' ? function (_ref3) {
+      var attribute = _ref3.attribute;
+      var container = createContainer(rootContainer);
+      containers.set(attribute, container);
+      return fallbackWidget({
+        attribute: attribute,
+        container: container
+      });
+    } : undefined
+  }));
   return _objectSpread(_objectSpread({}, widget), {}, {
     init: function init(initOptions) {
       widgets.forEach(function (cb) {
-        var container = document.createElement('div');
-        container.className = suit({
-          descendantName: 'widget'
-        });
-        rootContainer.appendChild(container);
+        var container = createContainer(rootContainer);
         var childWidget = cb(container);
         var attribute = getWidgetAttribute(childWidget, initOptions);
         containers.set(attribute, container);

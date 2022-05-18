@@ -1,60 +1,71 @@
 {
-  "_from": "instantsearch.js@^4.25.2",
-  "_id": "instantsearch.js@4.25.2",
-  "_inBundle": false,
-  "_integrity": "sha512-Ty1hShNHukErvYtxeV4BH1L9VGQt2yAUykrmrv1ECdQJ+ag+ECo8wm3A250RheykREVTb7+3DdH0fPDzX3f+eg==",
-  "_location": "/instantsearch.js",
-  "_phantomChildren": {},
-  "_requested": {
-    "type": "range",
-    "registry": true,
-    "raw": "instantsearch.js@^4.25.2",
-    "name": "instantsearch.js",
-    "escapedName": "instantsearch.js",
-    "rawSpec": "^4.25.2",
-    "saveSpec": null,
-    "fetchSpec": "^4.25.2"
-  },
-  "_requiredBy": [
-    "#USER"
+  "name": "instantsearch.js",
+  "version": "4.40.5",
+  "description": "InstantSearch.js is a JavaScript library for building performant and instant search experiences with Algolia.",
+  "homepage": "https://www.algolia.com/doc/guides/building-search-ui/what-is-instantsearch/js/",
+  "types": "es/index.d.ts",
+  "keywords": [
+    "algolia",
+    "instantsearch",
+    "search",
+    "widget",
+    "vanilla"
   ],
-  "_resolved": "https://registry.npmjs.org/instantsearch.js/-/instantsearch.js-4.25.2.tgz",
-  "_shasum": "7637448b42a9b3d720359063825ee84ba992ad8c",
-  "_spec": "instantsearch.js@^4.25.2",
-  "_where": "/Users/raber/Local Sites/algolia/app/public/wp-content/plugins/wp-search-with-algolia",
-  "author": {
-    "name": "Algolia",
-    "email": "support@algolia.com"
+  "author": "Algolia <support@algolia.com>",
+  "license": "MIT",
+  "repository": "algolia/instantsearch.js",
+  "main": "cjs/index.js",
+  "module": "es/index.js",
+  "jsdelivr": "dist/instantsearch.production.min.js",
+  "unpkg": "dist/instantsearch.production.min.js",
+  "sideEffects": false,
+  "scripts": {
+    "start": "yarn run dev",
+    "dev": "yarn run storybook",
+    "build": "yarn run build:cjs && yarn run build:es && yarn run build:umd && yarn run build:types",
+    "build:umd": "rm -rf dist && BABEL_ENV=umd rollup --config scripts/rollup/config.js",
+    "build:cjs": "rm -rf cjs && BABEL_ENV=cjs babel src --extensions '.js,.ts,.tsx' --out-dir cjs/ --ignore 'src/index.es.ts','**/__tests__','**/__mocks__' --quiet",
+    "build:es": "rm -rf es && BABEL_ENV=es babel src --extensions '.js,.ts,.tsx' --out-dir es/ --ignore 'src/index.es.ts','**/__tests__','**/__mocks__' --quiet && BABEL_ENV=es babel src/index.es.ts --out-file es/index.js --quiet && echo '{\"type\":\"module\",\"sideEffects\":false}' > es/package.json",
+    "build:types": "./scripts/typescript/extract.js",
+    "doctoc": "doctoc --no-title --maxlevel 3 README.md CONTRIBUTING.md",
+    "storybook": "start-storybook --quiet --port 6006 --ci --static-dir .storybook/static",
+    "storybook:build": "build-storybook --quiet --output-dir website/stories --static-dir .storybook/static",
+    "website:build": "yarn build && ./scripts/website/build-examples.sh",
+    "lint": "eslint --ext .js,.ts,.tsx .",
+    "lint:fix": "eslint --ext .js,.ts,.tsx --fix .",
+    "type-check": "tsc",
+    "type-check:v3": "tsc --project tsconfig.v3.json",
+    "type-check:watch": "yarn type-check --watch",
+    "test": "jest",
+    "test:watch": "jest --watch --bail",
+    "test:e2e": "yarn test:e2e:local",
+    "test:e2e:local": "wdio scripts/wdio/local.conf.js",
+    "test:e2e:saucelabs": "wdio scripts/wdio/saucelabs.conf.js",
+    "test:size": "bundlesize",
+    "test:argos": "argos upload functional-tests/screenshots --token $ARGOS_TOKEN || true",
+    "test:exports": "node test/module/is-es-module.mjs",
+    "release": "shipjs prepare"
   },
-  "bugs": {
-    "url": "https://github.com/algolia/instantsearch.js/issues"
-  },
-  "bundleDependencies": false,
-  "bundlesize": [
-    {
-      "path": "./dist/instantsearch.production.min.js",
-      "maxSize": "69 kB"
-    },
-    {
-      "path": "./dist/instantsearch.development.js",
-      "maxSize": "155.00 kB"
-    }
+  "files": [
+    "dist",
+    "cjs",
+    "es",
+    "scripts/transforms"
   ],
   "dependencies": {
     "@types/google.maps": "^3.45.3",
     "@types/hogan.js": "^3.0.0",
     "@types/qs": "^6.5.3",
-    "algoliasearch-helper": "^3.5.4",
+    "algoliasearch-helper": "^3.8.2",
     "classnames": "^2.2.5",
-    "events": "^1.1.0",
+    "@algolia/events": "^4.0.1",
     "hogan.js": "^3.0.2",
-    "preact": "^10.0.0",
-    "qs": "^6.5.1 < 6.10"
+    "preact": "^10.6.0",
+    "qs": "^6.5.1 < 6.10",
+    "search-insights": "^2.1.0"
   },
-  "deprecated": false,
-  "description": "InstantSearch.js is a JavaScript library for building performant and instant search experiences with Algolia.",
   "devDependencies": {
-    "@algolia/client-search": "4.10.3",
+    "@algolia/client-search": "4.11.0",
     "@babel/cli": "7.8.4",
     "@babel/core": "7.9.6",
     "@babel/plugin-proposal-class-properties": "7.8.3",
@@ -71,9 +82,9 @@
     "@testing-library/preact": "1.0.2",
     "@types/classnames": "^2.2.7",
     "@types/enzyme": "^3.1.15",
-    "@types/jest": "^26.0.22",
-    "@types/jest-diff": "^24.3.0",
-    "@types/scriptjs": "0.0.2",
+    "@types/jest": "^27.0.1",
+    "@types/jsdom": "^16.2.13",
+    "@types/scriptjs": "^0.0.2",
     "@types/storybook__addon-actions": "^3.4.2",
     "@typescript-eslint/eslint-plugin": "4.15.1",
     "@typescript-eslint/parser": "4.15.1",
@@ -85,10 +96,10 @@
     "@wdio/selenium-standalone-service": "5.16.5",
     "@wdio/spec-reporter": "5.16.5",
     "@wdio/static-server-service": "5.16.5",
-    "algoliasearch": "4.10.3",
+    "algoliasearch": "4.11.0",
     "algoliasearch-v3": "npm:algoliasearch@3.35.1",
     "babel-eslint": "10.0.3",
-    "babel-jest": "26.6.3",
+    "babel-jest": "27.1.0",
     "babel-loader": "8.0.6",
     "babel-plugin-inline-replace-variables": "1.3.1",
     "babel-plugin-polyfill-es-shims": "0.0.7",
@@ -106,20 +117,20 @@
     "eslint-plugin-import": "2.18.2",
     "eslint-plugin-jasmine": "4.1.0",
     "eslint-plugin-jest": "24.3.5",
-    "eslint-plugin-prettier": "3.3.1",
+    "eslint-plugin-prettier": "3.4.0",
     "eslint-plugin-react": "7.18.0",
     "eslint-plugin-react-hooks": "2.3.0",
-    "instantsearch-e2e-tests": "github:algolia/instantsearch-e2e-tests#1.3.0",
-    "jest": "26.6.3",
-    "jest-diff": "26.6.2",
-    "jest-environment-jsdom": "26.6.2",
+    "instantsearch-e2e-tests": "algolia/instantsearch-e2e-tests#2.0.2",
+    "jest": "27.1.0",
+    "jest-diff": "27.1.0",
+    "jest-environment-jsdom": "27.1.0",
     "jest-environment-jsdom-global": "2.0.4",
     "jest-junit": "12.2.0",
-    "jest-watch-typeahead": "0.6.2",
+    "jest-watch-typeahead": "0.6.4",
     "jscodeshift": "0.7.0",
     "jsdom-global": "3.0.2",
     "places.js": "1.17.1",
-    "prettier": "1.19.1",
+    "prettier": "2.3.2",
     "rollup": "1.29.1",
     "rollup-plugin-babel": "4.3.3",
     "rollup-plugin-commonjs": "10.1.0",
@@ -128,67 +139,26 @@
     "rollup-plugin-replace": "2.2.0",
     "rollup-plugin-uglify": "6.0.4",
     "scriptjs": "2.5.9",
-    "search-insights": "1.7.2",
     "semver": "6.3.0",
-    "shelljs": "0.8.3",
+    "shelljs": "0.8.4",
     "shipjs": "0.21.0",
     "typescript": "4.3.5",
     "webpack": "4.41.5"
   },
-  "files": [
-    "dist",
-    "cjs",
-    "es",
-    "scripts/transforms"
-  ],
-  "homepage": "https://www.algolia.com/doc/guides/building-search-ui/what-is-instantsearch/js/",
-  "jsdelivr": "dist/instantsearch.production.min.js",
-  "keywords": [
-    "algolia",
-    "instantsearch",
-    "search",
-    "widget",
-    "vanilla"
-  ],
-  "license": "MIT",
-  "main": "cjs/index.js",
-  "module": "es/index.js",
-  "name": "instantsearch.js",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/algolia/instantsearch.js.git"
+  "peerDependencies": {
+    "algoliasearch": ">= 3.1 < 5"
   },
   "resolutions": {
     "places.js/algoliasearch": "3.35.0"
   },
-  "scripts": {
-    "build": "yarn run build:cjs && yarn run build:es && yarn run build:umd",
-    "build:cjs": "rm -rf cjs && BABEL_ENV=cjs babel src --extensions '.js,.ts,.tsx' --out-dir cjs/ --ignore 'src/index.es.ts','**/__tests__','**/__mocks__' --quiet",
-    "build:es": "rm -rf es && BABEL_ENV=es babel src --extensions '.js,.ts,.tsx' --out-dir es/ --ignore 'src/index.es.ts','**/__tests__','**/__mocks__' --quiet && BABEL_ENV=es babel src/index.es.ts --out-file es/index.js --quiet",
-    "build:types": "./scripts/build/types.js",
-    "build:umd": "rm -rf dist && BABEL_ENV=umd rollup --config scripts/rollup/config.js",
-    "dev": "yarn run storybook",
-    "doctoc": "doctoc --no-title --maxlevel 3 README.md CONTRIBUTING.md",
-    "lint": "eslint --ext .js,.ts,.tsx .",
-    "lint:fix": "eslint --ext .js,.ts,.tsx --fix .",
-    "release": "shipjs prepare",
-    "start": "yarn run dev",
-    "storybook": "start-storybook --quiet --port 6006 --ci --static-dir .storybook/static",
-    "storybook:build": "build-storybook --quiet --output-dir website/stories --static-dir .storybook/static",
-    "test": "jest",
-    "test:argos": "argos upload functional-tests/screenshots --token $ARGOS_TOKEN || true",
-    "test:e2e": "yarn test:e2e:local",
-    "test:e2e:local": "wdio wdio.local.conf.js",
-    "test:e2e:saucelabs": "wdio wdio.saucelabs.conf.js",
-    "test:size": "bundlesize",
-    "test:watch": "jest --watch --bail",
-    "type-check": "tsc",
-    "type-check:v3": "tsc --project tsconfig.v3.json",
-    "type-check:watch": "yarn type-check --watch",
-    "website:build": "yarn build && ./scripts/website/build-examples.sh"
-  },
-  "sideEffects": false,
-  "types": "es/index.d.ts",
-  "unpkg": "dist/instantsearch.production.min.js",
-  "version": "4.25.2"
+  "bundlesize": [
+    {
+      "path": "./dist/instantsearch.production.min.js",
+      "maxSize": "70.25 kB"
+    },
+    {
+      "path": "./dist/instantsearch.development.js",
+      "maxSize": "155.00 kB"
+    }
+  ]
 }

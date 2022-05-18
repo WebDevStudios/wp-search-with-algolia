@@ -5,7 +5,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = void 0;
 
-var _getObjectType = _interopRequireDefault(require("./getObjectType"));
+var _getObjectType = _interopRequireDefault(require("./getObjectType.js"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 

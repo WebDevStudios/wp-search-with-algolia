@@ -5,11 +5,11 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.checkIndexUiState = checkIndexUiState;
 
-var _capitalize = _interopRequireDefault(require("./capitalize"));
+var _capitalize = _interopRequireDefault(require("./capitalize.js"));
 
-var _logger = require("./logger");
+var _logger = require("./logger.js");
 
-var _typedObject = require("./typedObject");
+var _typedObject = require("./typedObject.js");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 

@@ -1,4 +1,4 @@
-import getObjectType from './getObjectType';
+import getObjectType from "./getObjectType.js";
 
 function checkRendering(rendering, usage) {
   if (rendering === undefined || typeof rendering !== 'function') {

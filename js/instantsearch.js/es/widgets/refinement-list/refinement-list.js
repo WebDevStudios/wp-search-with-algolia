@@ -7,12 +7,12 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 /** @jsx h */
 import { h, render } from 'preact';
 import cx from 'classnames';
-import RefinementList from '../../components/RefinementList/RefinementList';
-import connectRefinementList from '../../connectors/refinement-list/connectRefinementList';
-import { prepareTemplateProps, getContainerNode, createDocumentationMessageGenerator } from '../../lib/utils';
-import { component } from '../../lib/suit';
-import searchBoxDefaultTemplates from '../search-box/defaultTemplates';
-import defaultTemplates from './defaultTemplates';
+import RefinementList from "../../components/RefinementList/RefinementList.js";
+import connectRefinementList from "../../connectors/refinement-list/connectRefinementList.js";
+import { prepareTemplateProps, getContainerNode, createDocumentationMessageGenerator } from "../../lib/utils/index.js";
+import { component } from "../../lib/suit.js";
+import searchBoxDefaultTemplates from "../search-box/defaultTemplates.js";
+import defaultTemplates from "./defaultTemplates.js";
 var withUsage = createDocumentationMessageGenerator({
   name: 'refinement-list'
 });

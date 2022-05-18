@@ -9,17 +9,17 @@ var _classnames = _interopRequireDefault(require("classnames"));
 
 var _preact = require("preact");
 
-var _utils = require("../../lib/utils");
+var _index = require("../../lib/utils/index.js");
 
-var _suit = require("../../lib/suit");
+var _suit = require("../../lib/suit.js");
 
-var _connectGeoSearch = _interopRequireDefault(require("../../connectors/geo-search/connectGeoSearch"));
+var _connectGeoSearch = _interopRequireDefault(require("../../connectors/geo-search/connectGeoSearch.js"));
 
-var _GeoSearchRenderer = _interopRequireDefault(require("./GeoSearchRenderer"));
+var _GeoSearchRenderer = _interopRequireDefault(require("./GeoSearchRenderer.js"));
 
-var _defaultTemplates = _interopRequireDefault(require("./defaultTemplates"));
+var _defaultTemplates = _interopRequireDefault(require("./defaultTemplates.js"));
 
-var _createHTMLMarker = _interopRequireDefault(require("./createHTMLMarker"));
+var _createHTMLMarker = _interopRequireDefault(require("./createHTMLMarker.js"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -33,7 +33,7 @@ function _objectWithoutProperties(source, excluded) { if (source == null) return
 
 function _objectWithoutPropertiesLoose(source, excluded) { if (source == null) return {}; var target = {}; var sourceKeys = Object.keys(source); var key, i; for (i = 0; i < sourceKeys.length; i++) { key = sourceKeys[i]; if (excluded.indexOf(key) >= 0) continue; target[key] = source[key]; } return target; }
 
-var withUsage = (0, _utils.createDocumentationMessageGenerator)({
+var withUsage = (0, _index.createDocumentationMessageGenerator)({
   name: 'geo-search'
 });
 var suit = (0, _suit.component)('GeoSearch');
@@ -98,7 +98,7 @@ var geoSearch = function geoSearch(widgetParams) {
     throw new Error(withUsage('The `googleReference` option is required.'));
   }
 
-  var containerNode = (0, _utils.getContainerNode)(container);
+  var containerNode = (0, _index.getContainerNode)(container);
   var cssClasses = {
     root: (0, _classnames.default)(suit(), userCssClasses.root),
     // Required only to mount / unmount the Preact tree
@@ -164,7 +164,7 @@ var geoSearch = function geoSearch(widgetParams) {
       className: (0, _classnames.default)(suit({
         descendantName: 'marker'
       })),
-      template: (0, _utils.renderTemplate)({
+      template: (0, _index.renderTemplate)({
         templateKey: 'HTMLMarker',
         templates: templates,
         data: item

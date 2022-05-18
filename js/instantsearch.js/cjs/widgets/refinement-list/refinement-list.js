@@ -9,17 +9,17 @@ var _preact = require("preact");
 
 var _classnames = _interopRequireDefault(require("classnames"));
 
-var _RefinementList = _interopRequireDefault(require("../../components/RefinementList/RefinementList"));
+var _RefinementList = _interopRequireDefault(require("../../components/RefinementList/RefinementList.js"));
 
-var _connectRefinementList = _interopRequireDefault(require("../../connectors/refinement-list/connectRefinementList"));
+var _connectRefinementList = _interopRequireDefault(require("../../connectors/refinement-list/connectRefinementList.js"));
 
-var _utils = require("../../lib/utils");
+var _index = require("../../lib/utils/index.js");
 
-var _suit = require("../../lib/suit");
+var _suit = require("../../lib/suit.js");
 
-var _defaultTemplates = _interopRequireDefault(require("../search-box/defaultTemplates"));
+var _defaultTemplates = _interopRequireDefault(require("../search-box/defaultTemplates.js"));
 
-var _defaultTemplates2 = _interopRequireDefault(require("./defaultTemplates"));
+var _defaultTemplates2 = _interopRequireDefault(require("./defaultTemplates.js"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -29,7 +29,7 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
-var withUsage = (0, _utils.createDocumentationMessageGenerator)({
+var withUsage = (0, _index.createDocumentationMessageGenerator)({
   name: 'refinement-list'
 });
 var suit = (0, _suit.component)('RefinementList');
@@ -58,12 +58,12 @@ var renderer = function renderer(_ref) {
         canToggleShowMore = _ref2.canToggleShowMore;
 
     if (isFirstRendering) {
-      renderState.templateProps = (0, _utils.prepareTemplateProps)({
+      renderState.templateProps = (0, _index.prepareTemplateProps)({
         defaultTemplates: _defaultTemplates2.default,
         templatesConfig: instantSearchInstance.templatesConfig,
         templates: templates
       });
-      renderState.searchBoxTemplateProps = (0, _utils.prepareTemplateProps)({
+      renderState.searchBoxTemplateProps = (0, _index.prepareTemplateProps)({
         defaultTemplates: _defaultTemplates.default,
         templatesConfig: instantSearchInstance.templatesConfig,
         templates: searchBoxTemplates
@@ -138,7 +138,7 @@ var refinementList = function refinementList(widgetParams) {
   }
 
   var escapeFacetValues = searchable ? Boolean(searchableEscapeFacetValues) : false;
-  var containerNode = (0, _utils.getContainerNode)(container);
+  var containerNode = (0, _index.getContainerNode)(container);
   var cssClasses = {
     root: (0, _classnames.default)(suit(), userCssClasses.root),
     noRefinementRoot: (0, _classnames.default)(suit({

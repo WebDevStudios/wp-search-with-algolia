@@ -9,7 +9,7 @@ var _preact = require("preact");
 
 var _classnames = _interopRequireDefault(require("classnames"));
 
-var _Template = _interopRequireDefault(require("../Template/Template"));
+var _Template = _interopRequireDefault(require("../Template/Template.js"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -58,11 +58,5 @@ var Hits = function Hits(_ref) {
   })));
 };
 
-Hits.defaultProps = {
-  results: {
-    hits: []
-  },
-  hits: []
-};
 var _default = Hits;
 exports.default = _default;

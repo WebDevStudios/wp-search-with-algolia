@@ -8,7 +8,7 @@ exports.default = void 0;
 
 var _algoliasearchHelper = _interopRequireDefault(require("algoliasearch-helper"));
 
-var _utils = require("../../lib/utils");
+var _index = require("../../lib/utils/index.js");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -34,7 +34,7 @@ function _objectWithoutProperties(source, excluded) { if (source == null) return
 
 function _objectWithoutPropertiesLoose(source, excluded) { if (source == null) return {}; var target = {}; var sourceKeys = Object.keys(source); var key, i; for (i = 0; i < sourceKeys.length; i++) { key = sourceKeys[i]; if (excluded.indexOf(key) >= 0) continue; target[key] = source[key]; } return target; }
 
-var withUsage = (0, _utils.createDocumentationMessageGenerator)({
+var withUsage = (0, _index.createDocumentationMessageGenerator)({
   name: 'index-widget'
 });
 
@@ -289,7 +289,8 @@ var index = function index(widgetParams) {
       return this;
     },
     init: function init(_ref2) {
-      var _this3 = this;
+      var _this3 = this,
+          _instantSearchInstanc;
 
       var instantSearchInstance = _ref2.instantSearchInstance,
           parent = _ref2.parent,
@@ -346,11 +347,21 @@ var index = function index(widgetParams) {
       };
 
       derivedHelper = mainHelper.derive(function () {
-        return _utils.mergeSearchParameters.apply(void 0, _toConsumableArray((0, _utils.resolveSearchParameters)(_this3)));
-      }); // Subscribe to the Helper state changes for the page before widgets
+        return _index.mergeSearchParameters.apply(void 0, _toConsumableArray((0, _index.resolveSearchParameters)(_this3)));
+      });
+      var indexInitialResults = (_instantSearchInstanc = instantSearchInstance._initialResults) === null || _instantSearchInstanc === void 0 ? void 0 : _instantSearchInstanc[this.getIndexId()];
+
+      if (indexInitialResults) {
+        // We restore the shape of the results provided to the instance to respect
+        // the helper's structure.
+        var results = new _algoliasearchHelper.default.SearchResults(new _algoliasearchHelper.default.SearchParameters(indexInitialResults.state), indexInitialResults.results);
+        derivedHelper.lastResults = results;
+        helper.lastResults = results;
+      } // Subscribe to the Helper state changes for the page before widgets
       // are initialized. This behavior mimics the original one of the Helper.
       // It makes sense to replicate it at the `init` step. We have another
       // listener on `change` below, once `init` is done.
+
 
       helper.on('change', function (_ref3) {
         var isPageReset = _ref3.isPageReset;
@@ -367,7 +378,7 @@ var index = function index(widgetParams) {
         instantSearchInstance.scheduleStalledRender();
 
         if (process.env.NODE_ENV === 'development') {
-          (0, _utils.checkIndexUiState)({
+          (0, _index.checkIndexUiState)({
             index: _this3,
             indexUiState: localUiState
           });
@@ -412,7 +423,7 @@ var index = function index(widgetParams) {
         }
       });
       localWidgets.forEach(function (widget) {
-        process.env.NODE_ENV === 'development' ? (0, _utils.warning)( // if it has NO getWidgetState or if it has getWidgetUiState, we don't warn
+        process.env.NODE_ENV === 'development' ? (0, _index.warning)( // if it has NO getWidgetState or if it has getWidgetUiState, we don't warn
         // aka we warn if there's _only_ getWidgetState
         !widget.getWidgetState || Boolean(widget.getWidgetUiState), 'The `getWidgetState` method is renamed `getWidgetUiState` and will no longer exist under that name in InstantSearch.js 5.x. Please use `getWidgetUiState` instead.') : void 0;
 
@@ -452,6 +463,13 @@ var index = function index(widgetParams) {
           instantSearchInstance.onInternalStateChange();
         }
       });
+
+      if (indexInitialResults) {
+        // If there are initial results, we're not notified of the next results
+        // because we don't trigger an initial search. We therefore need to directly
+        // schedule a render that will render the results injected on the helper.
+        instantSearchInstance.scheduleRender();
+      }
     },
     render: function render(_ref5) {
       var _this4 = this;
@@ -541,7 +559,7 @@ var index = function index(widgetParams) {
       }, _objectSpread(_objectSpread({}, uiState), {}, _defineProperty({}, this.getIndexId(), localUiState)));
     },
     getWidgetState: function getWidgetState(uiState) {
-      process.env.NODE_ENV === 'development' ? (0, _utils.warning)(false, 'The `getWidgetState` method is renamed `getWidgetUiState` and will no longer exist under that name in InstantSearch.js 5.x. Please use `getWidgetUiState` instead.') : void 0;
+      process.env.NODE_ENV === 'development' ? (0, _index.warning)(false, 'The `getWidgetState` method is renamed `getWidgetUiState` and will no longer exist under that name in InstantSearch.js 5.x. Please use `getWidgetUiState` instead.') : void 0;
       return this.getWidgetUiState(uiState);
     },
     getWidgetSearchParameters: function getWidgetSearchParameters(searchParameters, _ref6) {
@@ -555,7 +573,7 @@ var index = function index(widgetParams) {
       localUiState = getLocalWidgetsUiState(localWidgets, {
         searchParameters: this.getHelper().state,
         helper: this.getHelper()
-      });
+      }, localUiState);
     }
   };
 };

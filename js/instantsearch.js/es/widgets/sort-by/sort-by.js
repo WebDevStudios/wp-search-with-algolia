@@ -7,10 +7,10 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 /** @jsx h */
 import { h, render } from 'preact';
 import cx from 'classnames';
-import Selector from '../../components/Selector/Selector';
-import connectSortBy from '../../connectors/sort-by/connectSortBy';
-import { getContainerNode, createDocumentationMessageGenerator } from '../../lib/utils';
-import { component } from '../../lib/suit';
+import Selector from "../../components/Selector/Selector.js";
+import connectSortBy from "../../connectors/sort-by/connectSortBy.js";
+import { getContainerNode, createDocumentationMessageGenerator } from "../../lib/utils/index.js";
+import { component } from "../../lib/suit.js";
 var withUsage = createDocumentationMessageGenerator({
   name: 'sort-by'
 });

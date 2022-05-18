@@ -13,8 +13,8 @@ var _exportNames = {
   renderTemplate: true,
   getRefinements: true,
   clearRefinements: true,
-  escapeRefinement: true,
-  unescapeRefinement: true,
+  escapeFacetValue: true,
+  unescapeFacetValue: true,
   checkRendering: true,
   checkIndexUiState: true,
   getPropertyByPath: true,
@@ -55,7 +55,8 @@ var _exportNames = {
   debounce: true,
   serializePayload: true,
   deserializePayload: true,
-  getWidgetAttribute: true
+  getWidgetAttribute: true,
+  safelyRunOnBrowser: true
 };
 Object.defineProperty(exports, "capitalize", {
   enumerable: true,
@@ -111,16 +112,16 @@ Object.defineProperty(exports, "clearRefinements", {
     return _clearRefinements.default;
   }
 });
-Object.defineProperty(exports, "escapeRefinement", {
+Object.defineProperty(exports, "escapeFacetValue", {
   enumerable: true,
   get: function get() {
-    return _escapeRefinement.default;
+    return _escapeFacetValue.escapeFacetValue;
   }
 });
-Object.defineProperty(exports, "unescapeRefinement", {
+Object.defineProperty(exports, "unescapeFacetValue", {
   enumerable: true,
   get: function get() {
-    return _unescapeRefinement.default;
+    return _escapeFacetValue.unescapeFacetValue;
   }
 });
 Object.defineProperty(exports, "checkRendering", {
@@ -369,86 +370,90 @@ Object.defineProperty(exports, "getWidgetAttribute", {
     return _getWidgetAttribute.getWidgetAttribute;
   }
 });
+Object.defineProperty(exports, "safelyRunOnBrowser", {
+  enumerable: true,
+  get: function get() {
+    return _safelyRunOnBrowser.safelyRunOnBrowser;
+  }
+});
 
-var _capitalize = _interopRequireDefault(require("./capitalize"));
+var _capitalize = _interopRequireDefault(require("./capitalize.js"));
 
-var _defer = _interopRequireDefault(require("./defer"));
+var _defer = _interopRequireDefault(require("./defer.js"));
 
-var _isDomElement = _interopRequireDefault(require("./isDomElement"));
+var _isDomElement = _interopRequireDefault(require("./isDomElement.js"));
 
-var _getContainerNode = _interopRequireDefault(require("./getContainerNode"));
+var _getContainerNode = _interopRequireDefault(require("./getContainerNode.js"));
 
-var _isSpecialClick = _interopRequireDefault(require("./isSpecialClick"));
+var _isSpecialClick = _interopRequireDefault(require("./isSpecialClick.js"));
 
-var _prepareTemplateProps = _interopRequireDefault(require("./prepareTemplateProps"));
+var _prepareTemplateProps = _interopRequireDefault(require("./prepareTemplateProps.js"));
 
-var _renderTemplate = _interopRequireDefault(require("./renderTemplate"));
+var _renderTemplate = _interopRequireDefault(require("./renderTemplate.js"));
 
-var _getRefinements = _interopRequireDefault(require("./getRefinements"));
+var _getRefinements = _interopRequireDefault(require("./getRefinements.js"));
 
-var _clearRefinements = _interopRequireDefault(require("./clearRefinements"));
+var _clearRefinements = _interopRequireDefault(require("./clearRefinements.js"));
 
-var _escapeRefinement = _interopRequireDefault(require("./escapeRefinement"));
+var _escapeFacetValue = require("./escapeFacetValue.js");
 
-var _unescapeRefinement = _interopRequireDefault(require("./unescapeRefinement"));
+var _checkRendering = _interopRequireDefault(require("./checkRendering.js"));
 
-var _checkRendering = _interopRequireDefault(require("./checkRendering"));
+var _checkIndexUiState = require("./checkIndexUiState.js");
 
-var _checkIndexUiState = require("./checkIndexUiState");
+var _getPropertyByPath = _interopRequireDefault(require("./getPropertyByPath.js"));
 
-var _getPropertyByPath = _interopRequireDefault(require("./getPropertyByPath"));
+var _getObjectType = _interopRequireDefault(require("./getObjectType.js"));
 
-var _getObjectType = _interopRequireDefault(require("./getObjectType"));
+var _noop = _interopRequireDefault(require("./noop.js"));
 
-var _noop = _interopRequireDefault(require("./noop"));
+var _isFiniteNumber = _interopRequireDefault(require("./isFiniteNumber.js"));
 
-var _isFiniteNumber = _interopRequireDefault(require("./isFiniteNumber"));
+var _isPlainObject = _interopRequireDefault(require("./isPlainObject.js"));
 
-var _isPlainObject = _interopRequireDefault(require("./isPlainObject"));
+var _uniq = _interopRequireDefault(require("./uniq.js"));
 
-var _uniq = _interopRequireDefault(require("./uniq"));
+var _range = _interopRequireDefault(require("./range.js"));
 
-var _range = _interopRequireDefault(require("./range"));
+var _isEqual = _interopRequireDefault(require("./isEqual.js"));
 
-var _isEqual = _interopRequireDefault(require("./isEqual"));
+var _escape = _interopRequireDefault(require("./escape.js"));
 
-var _escape = _interopRequireDefault(require("./escape"));
+var _unescape = _interopRequireDefault(require("./unescape.js"));
 
-var _unescape = _interopRequireDefault(require("./unescape"));
+var _concatHighlightedParts = _interopRequireDefault(require("./concatHighlightedParts.js"));
 
-var _concatHighlightedParts = _interopRequireDefault(require("./concatHighlightedParts"));
+var _getHighlightedParts = _interopRequireDefault(require("./getHighlightedParts.js"));
 
-var _getHighlightedParts = _interopRequireDefault(require("./getHighlightedParts"));
+var _getHighlightFromSiblings = _interopRequireDefault(require("./getHighlightFromSiblings.js"));
 
-var _getHighlightFromSiblings = _interopRequireDefault(require("./getHighlightFromSiblings"));
+var _reverseHighlightedParts = _interopRequireDefault(require("./reverseHighlightedParts.js"));
 
-var _reverseHighlightedParts = _interopRequireDefault(require("./reverseHighlightedParts"));
+var _find = _interopRequireDefault(require("./find.js"));
 
-var _find = _interopRequireDefault(require("./find"));
+var _findIndex = _interopRequireDefault(require("./findIndex.js"));
 
-var _findIndex = _interopRequireDefault(require("./findIndex"));
+var _mergeSearchParameters = _interopRequireDefault(require("./mergeSearchParameters.js"));
 
-var _mergeSearchParameters = _interopRequireDefault(require("./mergeSearchParameters"));
+var _resolveSearchParameters = _interopRequireDefault(require("./resolveSearchParameters.js"));
 
-var _resolveSearchParameters = _interopRequireDefault(require("./resolveSearchParameters"));
+var _toArray = _interopRequireDefault(require("./toArray.js"));
 
-var _toArray = _interopRequireDefault(require("./toArray"));
+var _logger = require("./logger.js");
 
-var _logger = require("./logger");
+var _escapeHighlight = require("./escape-highlight.js");
 
-var _escapeHighlight = require("./escape-highlight");
+var _documentation = require("./documentation.js");
 
-var _documentation = require("./documentation");
+var _geoSearch = require("./geo-search.js");
 
-var _geoSearch = require("./geo-search");
+var _hitsAbsolutePosition = require("./hits-absolute-position.js");
 
-var _hitsAbsolutePosition = require("./hits-absolute-position");
+var _hitsQueryId = require("./hits-query-id.js");
 
-var _hitsQueryId = require("./hits-query-id");
+var _isFacetRefined = _interopRequireDefault(require("./isFacetRefined.js"));
 
-var _isFacetRefined = _interopRequireDefault(require("./isFacetRefined"));
-
-var _createSendEventForFacet = require("./createSendEventForFacet");
+var _createSendEventForFacet = require("./createSendEventForFacet.js");
 
 Object.keys(_createSendEventForFacet).forEach(function (key) {
   if (key === "default" || key === "__esModule") return;
@@ -462,7 +467,7 @@ Object.keys(_createSendEventForFacet).forEach(function (key) {
   });
 });
 
-var _createSendEventForHits = require("./createSendEventForHits");
+var _createSendEventForHits = require("./createSendEventForHits.js");
 
 Object.keys(_createSendEventForHits).forEach(function (key) {
   if (key === "default" || key === "__esModule") return;
@@ -476,16 +481,18 @@ Object.keys(_createSendEventForHits).forEach(function (key) {
   });
 });
 
-var _getAppIdAndApiKey = require("./getAppIdAndApiKey");
+var _getAppIdAndApiKey = require("./getAppIdAndApiKey.js");
 
-var _convertNumericRefinementsToFilters = require("./convertNumericRefinementsToFilters");
+var _convertNumericRefinementsToFilters = require("./convertNumericRefinementsToFilters.js");
 
-var _createConcurrentSafePromise = require("./createConcurrentSafePromise");
+var _createConcurrentSafePromise = require("./createConcurrentSafePromise.js");
 
-var _debounce = require("./debounce");
+var _debounce = require("./debounce.js");
 
-var _serializer = require("./serializer");
+var _serializer = require("./serializer.js");
 
-var _getWidgetAttribute = require("./getWidgetAttribute");
+var _getWidgetAttribute = require("./getWidgetAttribute.js");
+
+var _safelyRunOnBrowser = require("./safelyRunOnBrowser.js");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }

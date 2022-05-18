@@ -7,7 +7,7 @@ exports.default = void 0;
 
 var _algoliasearchHelper = _interopRequireDefault(require("algoliasearch-helper"));
 
-var _utils = require("../../lib/utils");
+var _index = require("../../lib/utils/index.js");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -17,7 +17,7 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
-var withUsage = (0, _utils.createDocumentationMessageGenerator)({
+var withUsage = (0, _index.createDocumentationMessageGenerator)({
   name: 'configure',
   connector: true
 });
@@ -32,10 +32,10 @@ function getInitialSearchParameters(state, widgetParams) {
 }
 
 var connectConfigure = function connectConfigure() {
-  var renderFn = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : _utils.noop;
-  var unmountFn = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : _utils.noop;
+  var renderFn = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : _index.noop;
+  var unmountFn = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : _index.noop;
   return function (widgetParams) {
-    if (!widgetParams || !(0, _utils.isPlainObject)(widgetParams.searchParameters)) {
+    if (!widgetParams || !(0, _index.isPlainObject)(widgetParams.searchParameters)) {
       throw new Error(withUsage('The `searchParameters` option expects an object.'));
     }
 
@@ -45,7 +45,7 @@ var connectConfigure = function connectConfigure() {
       return function (searchParameters) {
         // Merge new `searchParameters` with the ones set from other widgets
         var actualState = getInitialSearchParameters(helper.state, widgetParams);
-        var nextSearchParameters = (0, _utils.mergeSearchParameters)(actualState, new _algoliasearchHelper.default.SearchParameters(searchParameters)); // Update original `widgetParams.searchParameters` to the new refined one
+        var nextSearchParameters = (0, _index.mergeSearchParameters)(actualState, new _algoliasearchHelper.default.SearchParameters(searchParameters)); // Update original `widgetParams.searchParameters` to the new refined one
 
         widgetParams.searchParameters = searchParameters; // Trigger a search with the resolved search parameters
 
@@ -79,7 +79,7 @@ var connectConfigure = function connectConfigure() {
         return _objectSpread(_objectSpread({}, renderState), {}, {
           configure: _objectSpread(_objectSpread({}, widgetRenderState), {}, {
             widgetParams: _objectSpread(_objectSpread({}, widgetRenderState.widgetParams), {}, {
-              searchParameters: (0, _utils.mergeSearchParameters)(new _algoliasearchHelper.default.SearchParameters((_renderState$configur = renderState.configure) === null || _renderState$configur === void 0 ? void 0 : _renderState$configur.widgetParams.searchParameters), new _algoliasearchHelper.default.SearchParameters(widgetRenderState.widgetParams.searchParameters)).getQueryParams()
+              searchParameters: (0, _index.mergeSearchParameters)(new _algoliasearchHelper.default.SearchParameters((_renderState$configur = renderState.configure) === null || _renderState$configur === void 0 ? void 0 : _renderState$configur.widgetParams.searchParameters), new _algoliasearchHelper.default.SearchParameters(widgetRenderState.widgetParams.searchParameters)).getQueryParams()
             })
           })
         });
@@ -98,7 +98,7 @@ var connectConfigure = function connectConfigure() {
       },
       getWidgetSearchParameters: function getWidgetSearchParameters(state, _ref3) {
         var uiState = _ref3.uiState;
-        return (0, _utils.mergeSearchParameters)(state, new _algoliasearchHelper.default.SearchParameters(_objectSpread(_objectSpread({}, uiState.configure), widgetParams.searchParameters)));
+        return (0, _index.mergeSearchParameters)(state, new _algoliasearchHelper.default.SearchParameters(_objectSpread(_objectSpread({}, uiState.configure), widgetParams.searchParameters)));
       },
       getWidgetUiState: function getWidgetUiState(uiState) {
         return _objectSpread(_objectSpread({}, uiState), {}, {

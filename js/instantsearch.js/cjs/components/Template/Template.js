@@ -9,7 +9,7 @@ exports.default = void 0;
 
 var _preact = require("preact");
 
-var _utils = require("../../lib/utils");
+var _index = require("../../lib/utils/index.js");
 
 function _extends() { _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; return _extends.apply(this, arguments); }
 
@@ -58,7 +58,7 @@ var Template = /*#__PURE__*/function (_Component) {
   _createClass(Template, [{
     key: "shouldComponentUpdate",
     value: function shouldComponentUpdate(nextProps) {
-      return !(0, _utils.isEqual)(this.props.data, nextProps.data) || this.props.templateKey !== nextProps.templateKey || !(0, _utils.isEqual)(this.props.rootProps, nextProps.rootProps);
+      return !(0, _index.isEqual)(this.props.data, nextProps.data) || this.props.templateKey !== nextProps.templateKey || !(0, _index.isEqual)(this.props.rootProps, nextProps.rootProps);
     }
   }, {
     key: "render",
@@ -66,7 +66,7 @@ var Template = /*#__PURE__*/function (_Component) {
       var RootTagName = this.props.rootTagName;
       var useCustomCompileOptions = this.props.useCustomCompileOptions[this.props.templateKey];
       var compileOptions = useCustomCompileOptions ? this.props.templatesConfig.compileOptions : {};
-      var content = (0, _utils.renderTemplate)({
+      var content = (0, _index.renderTemplate)({
         templates: this.props.templates,
         templateKey: this.props.templateKey,
         compileOptions: compileOptions,

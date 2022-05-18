@@ -4,8 +4,8 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
-import connectConfigure from '../../connectors/configure/connectConfigure';
-import { noop } from '../../lib/utils';
+import connectConfigure from "../../connectors/configure/connectConfigure.js";
+import { noop } from "../../lib/utils/index.js";
 /**
  * A list of [search parameters](https://www.algolia.com/doc/api-reference/search-api-parameters/)
  * to enable when the widget mounts.

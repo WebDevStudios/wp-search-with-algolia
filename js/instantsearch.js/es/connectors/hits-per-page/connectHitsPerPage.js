@@ -16,7 +16,7 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
-import { checkRendering, warning, createDocumentationMessageGenerator, noop } from '../../lib/utils';
+import { checkRendering, warning, createDocumentationMessageGenerator, noop } from "../../lib/utils/index.js";
 var withUsage = createDocumentationMessageGenerator({
   name: 'hits-per-page',
   connector: true
@@ -120,7 +120,9 @@ var connectHitsPerPage = function connectHitsPerPage(renderFn) {
             createURL = _ref5.createURL,
             helper = _ref5.helper;
         return {
-          items: transformItems(normalizeItems(state)),
+          items: transformItems(normalizeItems(state), {
+            results: results
+          }),
           refine: connectorState.getRefine(helper),
           createURL: connectorState.createURLFactory({
             state: state,

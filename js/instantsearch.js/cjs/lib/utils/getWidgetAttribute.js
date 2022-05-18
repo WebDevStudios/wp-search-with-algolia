@@ -6,15 +6,25 @@ Object.defineProperty(exports, "__esModule", {
 exports.getWidgetAttribute = getWidgetAttribute;
 
 function getWidgetAttribute(widget, initOptions) {
-  try {
-    // assume the type to be the correct one, but throw a nice error if it isn't the case
-    var _getWidgetRenderState = widget.getWidgetRenderState(initOptions),
-        widgetParams = _getWidgetRenderState.widgetParams;
+  var _widget$getWidgetRend;
 
-    var attribute = 'attribute' in widgetParams ? widgetParams.attribute : widgetParams.attributes[0];
-    if (typeof attribute !== 'string') throw new Error();
-    return attribute;
-  } catch (e) {
+  var renderState = (_widget$getWidgetRend = widget.getWidgetRenderState) === null || _widget$getWidgetRend === void 0 ? void 0 : _widget$getWidgetRend.call(widget, initOptions);
+  var attribute = null;
+
+  if (renderState && renderState.widgetParams) {
+    // casting as widgetParams is checked just before
+    var widgetParams = renderState.widgetParams;
+
+    if (widgetParams.attribute) {
+      attribute = widgetParams.attribute;
+    } else if (Array.isArray(widgetParams.attributes)) {
+      attribute = widgetParams.attributes[0];
+    }
+  }
+
+  if (typeof attribute !== 'string') {
     throw new Error("Could not find the attribute of the widget:\n\n".concat(JSON.stringify(widget), "\n\nPlease check whether the widget's getWidgetRenderState returns widgetParams.attribute correctly."));
   }
+
+  return attribute;
 }

@@ -5,9 +5,9 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = void 0;
 
-var _utils = require("../../lib/utils");
+var _index = require("../../lib/utils/index.js");
 
-var _voiceSearchHelper2 = _interopRequireDefault(require("../../lib/voiceSearchHelper"));
+var _index2 = _interopRequireDefault(require("../../lib/voiceSearchHelper/index.js"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -17,21 +17,21 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
-var withUsage = (0, _utils.createDocumentationMessageGenerator)({
+var withUsage = (0, _index.createDocumentationMessageGenerator)({
   name: 'voice-search',
   connector: true
 });
 
 var connectVoiceSearch = function connectVoiceSearch(renderFn) {
-  var unmountFn = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : _utils.noop;
-  (0, _utils.checkRendering)(renderFn, withUsage());
+  var unmountFn = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : _index.noop;
+  (0, _index.checkRendering)(renderFn, withUsage());
   return function (widgetParams) {
     var _widgetParams$searchA = widgetParams.searchAsYouSpeak,
         searchAsYouSpeak = _widgetParams$searchA === void 0 ? false : _widgetParams$searchA,
         language = widgetParams.language,
         additionalQueryParameters = widgetParams.additionalQueryParameters,
         _widgetParams$createV = widgetParams.createVoiceSearchHelper,
-        createVoiceSearchHelper = _widgetParams$createV === void 0 ? _voiceSearchHelper2.default : _widgetParams$createV;
+        createVoiceSearchHelper = _widgetParams$createV === void 0 ? _index2.default : _widgetParams$createV;
     return {
       $$type: 'ais.voiceSearch',
       init: function init(initOptions) {
@@ -67,7 +67,7 @@ var connectVoiceSearch = function connectVoiceSearch(renderFn) {
                 helper.setState(helper.state.setQueryParameters(_objectSpread({
                   ignorePlurals: true,
                   removeStopWords: true,
-                  // @ts-ignore (optionalWords only allows array, while string is also valid)
+                  // @ts-ignore (optionalWords only allows array in v3, while string is also valid)
                   optionalWords: query
                 }, additionalQueryParameters({
                   query: query
@@ -131,12 +131,12 @@ var connectVoiceSearch = function connectVoiceSearch(renderFn) {
             query: ''
           });
           var toReset = additional ? Object.keys(additional).reduce(function (acc, current) {
-            // @ts-ignore search parameters is typed as readonly
+            // @ts-ignore search parameters is typed as readonly in v4
             acc[current] = undefined;
             return acc;
           }, {}) : {};
           newState = state.setQueryParameters(_objectSpread({
-            // @ts-ignore (queryLanguages is not yet added to algoliasearch)
+            // @ts-ignore (queryLanguages is not added to algoliasearch v3)
             queryLanguages: undefined,
             ignorePlurals: undefined,
             removeStopWords: undefined,

@@ -9,19 +9,19 @@ exports.default = void 0;
 
 var _algoliasearchHelper = _interopRequireDefault(require("algoliasearch-helper"));
 
-var _events = _interopRequireDefault(require("events"));
+var _events = _interopRequireDefault(require("@algolia/events"));
 
-var _index = _interopRequireWildcard(require("../widgets/index/index"));
+var _index = _interopRequireWildcard(require("../widgets/index/index.js"));
 
-var _version = _interopRequireDefault(require("./version"));
+var _version = _interopRequireDefault(require("./version.js"));
 
-var _createHelpers = _interopRequireDefault(require("./createHelpers"));
+var _createHelpers = _interopRequireDefault(require("./createHelpers.js"));
 
-var _utils = require("./utils");
+var _index2 = require("./utils/index.js");
 
-var _createRouterMiddleware = require("../middlewares/createRouterMiddleware");
+var _createRouterMiddleware = require("../middlewares/createRouterMiddleware.js");
 
-var _createMetadataMiddleware = require("../middlewares/createMetadataMiddleware");
+var _createMetadataMiddleware = require("../middlewares/createMetadataMiddleware.js");
 
 function _getRequireWildcardCache() { if (typeof WeakMap !== "function") return null; var cache = new WeakMap(); _getRequireWildcardCache = function _getRequireWildcardCache() { return cache; }; return cache; }
 
@@ -55,7 +55,7 @@ function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.g
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
-var withUsage = (0, _utils.createDocumentationMessageGenerator)({
+var withUsage = (0, _index2.createDocumentationMessageGenerator)({
   name: 'instantsearch'
 });
 
@@ -112,6 +112,8 @@ var InstantSearch = /*#__PURE__*/function (_EventEmitter) {
 
     _defineProperty(_assertThisInitialized(_this), "_initialUiState", void 0);
 
+    _defineProperty(_assertThisInitialized(_this), "_initialResults", void 0);
+
     _defineProperty(_assertThisInitialized(_this), "_createURL", void 0);
 
     _defineProperty(_assertThisInitialized(_this), "_searchFunction", void 0);
@@ -122,13 +124,13 @@ var InstantSearch = /*#__PURE__*/function (_EventEmitter) {
 
     _defineProperty(_assertThisInitialized(_this), "sendEventToInsights", void 0);
 
-    _defineProperty(_assertThisInitialized(_this), "scheduleSearch", (0, _utils.defer)(function () {
+    _defineProperty(_assertThisInitialized(_this), "scheduleSearch", (0, _index2.defer)(function () {
       if (_this.started) {
         _this.mainHelper.search();
       }
     }));
 
-    _defineProperty(_assertThisInitialized(_this), "scheduleRender", (0, _utils.defer)(function () {
+    _defineProperty(_assertThisInitialized(_this), "scheduleRender", (0, _index2.defer)(function () {
       if (!_this.mainHelper.hasPendingRequests()) {
         clearTimeout(_this._searchStalledTimer);
         _this._searchStalledTimer = null;
@@ -142,7 +144,7 @@ var InstantSearch = /*#__PURE__*/function (_EventEmitter) {
       _this.emit('render');
     }));
 
-    _defineProperty(_assertThisInitialized(_this), "onInternalStateChange", (0, _utils.defer)(function () {
+    _defineProperty(_assertThisInitialized(_this), "onInternalStateChange", (0, _index2.defer)(function () {
       var nextUiState = _this.mainIndex.getWidgetUiState({});
 
       _this.middleware.forEach(function (_ref) {
@@ -186,13 +188,13 @@ var InstantSearch = /*#__PURE__*/function (_EventEmitter) {
       searchClient.addAlgoliaAgent("instantsearch.js (".concat(_version.default, ")"));
     }
 
-    process.env.NODE_ENV === 'development' ? (0, _utils.warning)(insightsClient === null, "`insightsClient` property has been deprecated. It is still supported in 4.x releases, but not further. It is replaced by the `insights` middleware.\n\nFor more information, visit https://www.algolia.com/doc/guides/getting-insights-and-analytics/search-analytics/click-through-and-conversions/how-to/send-click-and-conversion-events-with-instantsearch/js/") : void 0;
+    process.env.NODE_ENV === 'development' ? (0, _index2.warning)(insightsClient === null, "`insightsClient` property has been deprecated. It is still supported in 4.x releases, but not further. It is replaced by the `insights` middleware.\n\nFor more information, visit https://www.algolia.com/doc/guides/getting-insights-and-analytics/search-analytics/click-through-and-conversions/how-to/send-click-and-conversion-events-with-instantsearch/js/") : void 0;
 
     if (insightsClient && typeof insightsClient !== 'function') {
       throw new Error(withUsage('The `insightsClient` option should be a function.'));
     }
 
-    process.env.NODE_ENV === 'development' ? (0, _utils.warning)(!options.searchParameters, "The `searchParameters` option is deprecated and will not be supported in InstantSearch.js 4.x.\n\nYou can replace it with the `configure` widget:\n\n```\nsearch.addWidgets([\n  configure(".concat(JSON.stringify(options.searchParameters, null, 2), ")\n]);\n```\n\nSee ").concat((0, _utils.createDocumentationLink)({
+    process.env.NODE_ENV === 'development' ? (0, _index2.warning)(!options.searchParameters, "The `searchParameters` option is deprecated and will not be supported in InstantSearch.js 4.x.\n\nYou can replace it with the `configure` widget:\n\n```\nsearch.addWidgets([\n  configure(".concat(JSON.stringify(options.searchParameters, null, 2), ")\n]);\n```\n\nSee ").concat((0, _index2.createDocumentationLink)({
       name: 'configure'
     }))) : void 0;
     _this.client = searchClient;
@@ -216,12 +218,13 @@ var InstantSearch = /*#__PURE__*/function (_EventEmitter) {
     _this._isSearchStalled = false;
     _this._createURL = defaultCreateURL;
     _this._initialUiState = initialUiState;
+    _this._initialResults = null;
 
     if (searchFunction) {
       _this._searchFunction = searchFunction;
     }
 
-    _this.sendEventToInsights = _utils.noop;
+    _this.sendEventToInsights = _index2.noop;
 
     if (routing) {
       var routerOptions = typeof routing === 'boolean' ? undefined : routing;
@@ -251,9 +254,9 @@ var InstantSearch = /*#__PURE__*/function (_EventEmitter) {
 
       var newMiddlewareList = middleware.map(function (fn) {
         var newMiddleware = _objectSpread({
-          subscribe: _utils.noop,
-          unsubscribe: _utils.noop,
-          onStateChange: _utils.noop
+          subscribe: _index2.noop,
+          unsubscribe: _index2.noop,
+          onStateChange: _index2.noop
         }, fn({
           instantSearchInstance: _this2
         }));
@@ -300,7 +303,7 @@ var InstantSearch = /*#__PURE__*/function (_EventEmitter) {
   }, {
     key: "EXPERIMENTAL_use",
     value: function EXPERIMENTAL_use() {
-      process.env.NODE_ENV === 'development' ? (0, _utils.warning)(false, 'The middleware API is now considered stable, so we recommend replacing `EXPERIMENTAL_use` with `use` before upgrading to the next major version.') : void 0;
+      process.env.NODE_ENV === 'development' ? (0, _index2.warning)(false, 'The middleware API is now considered stable, so we recommend replacing `EXPERIMENTAL_use` with `use` before upgrading to the next major version.') : void 0;
       return this.use.apply(this, arguments);
     }
     /**
@@ -314,7 +317,7 @@ var InstantSearch = /*#__PURE__*/function (_EventEmitter) {
   }, {
     key: "addWidget",
     value: function addWidget(widget) {
-      process.env.NODE_ENV === 'development' ? (0, _utils.warning)(false, 'addWidget will still be supported in 4.x releases, but not further. It is replaced by `addWidgets([widget])`') : void 0;
+      process.env.NODE_ENV === 'development' ? (0, _index2.warning)(false, 'addWidget will still be supported in 4.x releases, but not further. It is replaced by `addWidgets([widget])`') : void 0;
       return this.addWidgets([widget]);
     }
     /**
@@ -350,7 +353,7 @@ var InstantSearch = /*#__PURE__*/function (_EventEmitter) {
   }, {
     key: "removeWidget",
     value: function removeWidget(widget) {
-      process.env.NODE_ENV === 'development' ? (0, _utils.warning)(false, 'removeWidget will still be supported in 4.x releases, but not further. It is replaced by `removeWidgets([widget])`') : void 0;
+      process.env.NODE_ENV === 'development' ? (0, _index2.warning)(false, 'removeWidget will still be supported in 4.x releases, but not further. It is replaced by `removeWidgets([widget])`') : void 0;
       return this.removeWidgets([widget]);
     }
     /**
@@ -412,7 +415,7 @@ var InstantSearch = /*#__PURE__*/function (_EventEmitter) {
         // to not throw errors
         var fakeClient = {
           search: function search() {
-            return new Promise(_utils.noop);
+            return new Promise(_index2.noop);
           }
         };
         this._mainHelperSearch = mainHelper.search.bind(mainHelper);
@@ -443,23 +446,46 @@ var InstantSearch = /*#__PURE__*/function (_EventEmitter) {
 
       mainHelper.on('error', function (_ref4) {
         var error = _ref4.error;
+        // If an error is emitted, it is re-thrown by events. In previous versions
+        // we emitted {error}, which is thrown as:
+        // "Uncaught, unspecified \"error\" event. ([object Object])"
+        // To avoid breaking changes, we make the error available in both
+        // `error` and `error.error`
+        // @MAJOR emit only error
+        error.error = error;
 
-        _this3.emit('error', {
-          error: error
-        });
+        _this3.emit('error', error);
       });
       this.mainHelper = mainHelper;
+      this.middleware.forEach(function (_ref5) {
+        var instance = _ref5.instance;
+        instance.subscribe();
+      });
       this.mainIndex.init({
         instantSearchInstance: this,
         parent: null,
         uiState: this._initialUiState
       });
-      this.middleware.forEach(function (_ref5) {
-        var instance = _ref5.instance;
-        instance.subscribe();
-      });
-      mainHelper.search(); // Keep the previous reference for legacy purpose, some pattern use
+
+      if (this._initialResults) {
+        var originalScheduleSearch = this.scheduleSearch; // We don't schedule a first search when initial results are provided
+        // because we already have the results to render. This skips the initial
+        // network request on the browser on `start`.
+
+        this.scheduleSearch = (0, _index2.defer)(_index2.noop); // We also skip the initial network request when widgets are dynamically
+        // added in the first tick (that's the case in all the framework-based flavors).
+        // When we add a widget to `index`, it calls `scheduleSearch`. We can rely
+        // on our `defer` util to restore the original `scheduleSearch` value once
+        // widgets are added to hook back to the regular lifecycle.
+
+        (0, _index2.defer)(function () {
+          _this3.scheduleSearch = originalScheduleSearch;
+        })();
+      } else {
+        this.scheduleSearch();
+      } // Keep the previous reference for legacy purpose, some pattern use
       // the direct Helper access `search.helper` (e.g multi-index).
+
 
       this.helper = this.mainIndex.getHelper(); // track we started the search if we add more widgets,
       // to init them directly after add
@@ -522,15 +548,17 @@ var InstantSearch = /*#__PURE__*/function (_EventEmitter) {
       var nextUiState = typeof uiState === 'function' ? uiState(this.mainIndex.getWidgetUiState({})) : uiState;
 
       var setIndexHelperState = function setIndexHelperState(indexWidget) {
+        var nextIndexUiState = nextUiState[indexWidget.getIndexId()] || {};
+
         if (process.env.NODE_ENV === 'development') {
-          (0, _utils.checkIndexUiState)({
+          (0, _index2.checkIndexUiState)({
             index: indexWidget,
-            indexUiState: nextUiState[indexWidget.getIndexId()]
+            indexUiState: nextIndexUiState
           });
         }
 
         indexWidget.getHelper().setState(indexWidget.getWidgetSearchParameters(indexWidget.getHelper().state, {
-          uiState: nextUiState[indexWidget.getIndexId()]
+          uiState: nextIndexUiState
         }));
         indexWidget.getWidgets().filter(_index.isIndexWidget).forEach(setIndexHelperState);
       };

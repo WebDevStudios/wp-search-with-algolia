@@ -4,6 +4,11 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
+// `SpeechRecognition` is an API used on the browser so we can safely disable
+// the `window` check.
+
+/* eslint-disable no-restricted-globals */
+
 /* global SpeechRecognition SpeechRecognitionEvent */
 var createVoiceSearchHelper = function createVoiceSearchHelper(_ref) {
   var searchAsYouSpeak = _ref.searchAsYouSpeak,

@@ -9,13 +9,13 @@ var _preact = require("preact");
 
 var _classnames = _interopRequireDefault(require("classnames"));
 
-var _utils = require("../../lib/utils");
+var _index = require("../../lib/utils/index.js");
 
-var _suit = require("../../lib/suit");
+var _suit = require("../../lib/suit.js");
 
-var _connectQueryRules = _interopRequireDefault(require("../../connectors/query-rules/connectQueryRules"));
+var _connectQueryRules = _interopRequireDefault(require("../../connectors/query-rules/connectQueryRules.js"));
 
-var _QueryRuleCustomData = _interopRequireDefault(require("../../components/QueryRuleCustomData/QueryRuleCustomData"));
+var _QueryRuleCustomData = _interopRequireDefault(require("../../components/QueryRuleCustomData/QueryRuleCustomData.js"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -32,7 +32,7 @@ var defaultTemplates = {
   }
 };
 exports.defaultTemplates = defaultTemplates;
-var withUsage = (0, _utils.createDocumentationMessageGenerator)({
+var withUsage = (0, _index.createDocumentationMessageGenerator)({
   name: 'query-rule-custom-data'
 });
 var suit = (0, _suit.component)('QueryRuleCustomData');
@@ -70,7 +70,7 @@ var queryRuleCustomData = function queryRuleCustomData(widgetParams) {
   var cssClasses = {
     root: (0, _classnames.default)(suit(), userCssClasses.root)
   };
-  var containerNode = (0, _utils.getContainerNode)(container);
+  var containerNode = (0, _index.getContainerNode)(container);
 
   var templates = _objectSpread(_objectSpread({}, defaultTemplates), userTemplates);
 
