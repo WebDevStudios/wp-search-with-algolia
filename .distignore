@@ -3,7 +3,9 @@
 /.wordpress-org
 /.vscode
 /node_modules
+/vendor
 .distignore
+.gitattributes
 .gitignore
 .nvmrc
 composer.json
