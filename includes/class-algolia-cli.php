@@ -51,6 +51,9 @@ class Algolia_CLI extends \WP_CLI_Command {
 	 * [--all]
 	 * : Re-indexes all the enabled indices.
 	 *
+	 * [--from_page=<from_page>]
+	 * : Re-index starting from the provided page (instead of the first page).
+	 *
 	 * ## EXAMPLES
 	 *
 	 *     wp algolia re-index
@@ -68,9 +71,10 @@ class Algolia_CLI extends \WP_CLI_Command {
 			WP_CLI::error( 'The configuration for this website does not allow to contact the Algolia API.' );
 		}
 
-		$index_id = isset( $args[0] ) ? $args[0] : null;
-		$clear    = WP_CLI\Utils\get_flag_value( $assoc_args, 'clear' );
-		$all      = WP_CLI\Utils\get_flag_value( $assoc_args, 'all' );
+		$index_id  = isset( $args[0] ) ? $args[0] : null;
+		$clear     = WP_CLI\Utils\get_flag_value( $assoc_args, 'clear' );
+		$all       = WP_CLI\Utils\get_flag_value( $assoc_args, 'all' );
+		$from_page = isset( $assoc_args['from_page'] ) ? intval($assoc_args['from_page']) ? 1;
 
 		if ( ! $index_id && ! $all ) {
 			WP_CLI::error( 'You need to either provide an index name or specify the --all argument to re-index all enabled indices.' );
@@ -95,7 +99,7 @@ class Algolia_CLI extends \WP_CLI_Command {
 		}
 
 		foreach ( $indices as $index ) {
-			$this->do_reindex( $index, $clear );
+			$this->do_reindex( $index, $clear, $page);
 		}
 	}
 
@@ -107,10 +111,11 @@ class Algolia_CLI extends \WP_CLI_Command {
 	 *
 	 * @param Algolia_Index $index Algolia_Index instance.
 	 * @param bool          $clear Clear all existing records prior to pushing the records.
+	 * @param int           $from_page The page to start indexing from.
 	 *
 	 * @return void
 	 */
-	private function do_reindex( Algolia_Index $index, $clear ) {
+	private function do_reindex( Algolia_Index $index, $clear, $from_page) {
 
 		if ( $clear ) {
 			/* translators: the placeholder will contain the name of the index. */
@@ -120,7 +125,7 @@ class Algolia_CLI extends \WP_CLI_Command {
 			WP_CLI::success( sprintf( __( 'Correctly cleared index "%s".', 'wp-search-with-algolia' ), $index->get_name() ) );
 		}
 
-		$total_pages = $index->get_re_index_max_num_pages();
+		$total_pages = $index->get_re_index_max_num_pages() - ( $from_page - 1 );
 
 		if ( 0 === $total_pages ) {
 			$index->re_index( 1 );
@@ -131,9 +136,11 @@ class Algolia_CLI extends \WP_CLI_Command {
 
 		$progress = WP_CLI\Utils\make_progress_bar( sprintf( 'Processing %s pages of results.', $total_pages ), $total_pages );
 
-		$page = 1;
+		$page = $from_page;
 		do {
+			WP_CLI::log( sprintf('Indexing page %s.', $page );
 			$index->re_index( $page++ );
+			WP_CLI::log( sprintf('Indexed page %s.', ( $page - 1 ));
 			$progress->tick();
 		} while ( $page <= $total_pages );
 
