@@ -99,7 +99,7 @@ class Algolia_CLI extends \WP_CLI_Command {
 		}
 
 		foreach ( $indices as $index ) {
-			$this->do_reindex( $index, $clear, $from_page);
+			$this->do_reindex( $index, $clear, $from_page );
 		}
 	}
 
