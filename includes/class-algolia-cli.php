@@ -74,7 +74,7 @@ class Algolia_CLI extends \WP_CLI_Command {
 		$index_id  = isset( $args[0] ) ? $args[0] : null;
 		$clear     = WP_CLI\Utils\get_flag_value( $assoc_args, 'clear' );
 		$all       = WP_CLI\Utils\get_flag_value( $assoc_args, 'all' );
-		$from_page = isset( $assoc_args['from_page'] ) ? intval($assoc_args['from_page']) ? 1;
+		$from_page = isset( $assoc_args['from_page'] ) ? intval( $assoc_args['from_page'] ) ? 1;
 
 		if ( ! $index_id && ! $all ) {
 			WP_CLI::error( 'You need to either provide an index name or specify the --all argument to re-index all enabled indices.' );
@@ -115,7 +115,7 @@ class Algolia_CLI extends \WP_CLI_Command {
 	 *
 	 * @return void
 	 */
-	private function do_reindex( Algolia_Index $index, $clear, $from_page) {
+	private function do_reindex( Algolia_Index $index, $clear, $from_page ) {
 
 		if ( $clear ) {
 			/* translators: the placeholder will contain the name of the index. */
@@ -140,7 +140,7 @@ class Algolia_CLI extends \WP_CLI_Command {
 		do {
 			WP_CLI::log( sprintf('Indexing page %s.', $page );
 			$index->re_index( $page++ );
-			WP_CLI::log( sprintf('Indexed page %s.', ( $page - 1 ));
+			WP_CLI::log( sprintf('Indexed page %s.', ( $page - 1 ) );
 			$progress->tick();
 		} while ( $page <= $total_pages );
 
