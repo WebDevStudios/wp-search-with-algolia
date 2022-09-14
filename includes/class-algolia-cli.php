@@ -74,7 +74,7 @@ class Algolia_CLI extends \WP_CLI_Command {
 		$index_id  = isset( $args[0] ) ? $args[0] : null;
 		$clear     = WP_CLI\Utils\get_flag_value( $assoc_args, 'clear' );
 		$all       = WP_CLI\Utils\get_flag_value( $assoc_args, 'all' );
-		$from_page = isset( $assoc_args['from_page'] ) ? intval( $assoc_args['from_page'] ) ? 1;
+		$from_page = intval( WP_CLI\Utils\get_flag_value( $assoc_args, 'from_page', 1 ) );
 
 		if ( ! $index_id && ! $all ) {
 			WP_CLI::error( 'You need to either provide an index name or specify the --all argument to re-index all enabled indices.' );
