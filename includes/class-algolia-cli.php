@@ -111,7 +111,7 @@ class Algolia_CLI extends \WP_CLI_Command {
 	 *
 	 * @param Algolia_Index $index Algolia_Index instance.
 	 * @param bool          $clear Clear all existing records prior to pushing the records.
-	 * @param int           $from_page The page to start indexing from.
+	 * @param int           $from_batch The batch to start indexing from.
 	 *
 	 * @return void
 	 */
@@ -125,7 +125,7 @@ class Algolia_CLI extends \WP_CLI_Command {
 			WP_CLI::success( sprintf( __( 'Correctly cleared index "%s".', 'wp-search-with-algolia' ), $index->get_name() ) );
 		}
 
-		$total_pages = $index->get_re_index_max_num_pages() - ( $from_page - 1 );
+		$total_pages = $index->get_re_index_max_num_pages() - ( $from_batch - 1 );
 
 		if ( 0 === $total_pages ) {
 			$index->re_index( 1 );
