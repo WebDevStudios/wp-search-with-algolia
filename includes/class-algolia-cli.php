@@ -51,8 +51,8 @@ class Algolia_CLI extends \WP_CLI_Command {
 	 * [--all]
 	 * : Re-indexes all the enabled indices.
 	 *
-	 * [--from_page=<from_page>]
-	 * : Re-index starting from the provided page (instead of the first page).
+	 * [--from_batch=<from_batch>]
+	 * : Re-index starting from the provided batch (instead of the first page).
 	 *
 	 * ## EXAMPLES
 	 *
@@ -74,7 +74,7 @@ class Algolia_CLI extends \WP_CLI_Command {
 		$index_id  = isset( $args[0] ) ? $args[0] : null;
 		$clear     = WP_CLI\Utils\get_flag_value( $assoc_args, 'clear' );
 		$all       = WP_CLI\Utils\get_flag_value( $assoc_args, 'all' );
-		$from_page = intval( WP_CLI\Utils\get_flag_value( $assoc_args, 'from_page', 1 ) );
+		$from_batch = intval( WP_CLI\Utils\get_flag_value( $assoc_args, 'from_batch', 1 ) );
 
 		if ( ! $index_id && ! $all ) {
 			WP_CLI::error( 'You need to either provide an index name or specify the --all argument to re-index all enabled indices.' );
@@ -99,7 +99,7 @@ class Algolia_CLI extends \WP_CLI_Command {
 		}
 
 		foreach ( $indices as $index ) {
-			$this->do_reindex( $index, $clear, $from_page );
+			$this->do_reindex( $index, $clear, $from_batch );
 		}
 	}
 
@@ -115,7 +115,7 @@ class Algolia_CLI extends \WP_CLI_Command {
 	 *
 	 * @return void
 	 */
-	private function do_reindex( Algolia_Index $index, $clear, $from_page ) {
+	private function do_reindex( Algolia_Index $index, $clear, $from_batch ) {
 
 		if ( $clear ) {
 			/* translators: the placeholder will contain the name of the index. */
@@ -134,18 +134,18 @@ class Algolia_CLI extends \WP_CLI_Command {
 			return;
 		}
 
-		$progress = WP_CLI\Utils\make_progress_bar( sprintf( 'Processing %s pages of results.', $total_pages ), $total_pages );
+		$progress = WP_CLI\Utils\make_progress_bar( sprintf( 'Processing %s batches of results.', $total_pages ), $total_pages );
 
-		$page = $from_page;
+		$page = $from_batch;
 		do {
-			WP_CLI::log( sprintf( 'Indexing page %s.', $page ) );
+			WP_CLI::log( sprintf( 'Indexing batch %s.', $page ) );
 			$index->re_index( $page++ );
-			WP_CLI::log( sprintf( 'Indexed page %s.', ( $page - 1 ) ) );
+			WP_CLI::log( sprintf( 'Indexed batch %s.', ( $page - 1 ) ) );
 			$progress->tick();
 		} while ( $page <= $total_pages );
 
 		$progress->finish();
 
-		WP_CLI::success( sprintf( 'Indexed "%s" pages of results inside index "%s"', $total_pages, $index->get_name() ) );
+		WP_CLI::success( sprintf( 'Indexed "%s" batches of results inside index "%s"', $total_pages, $index->get_name() ) );
 	}
 }
