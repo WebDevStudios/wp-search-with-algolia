@@ -138,9 +138,9 @@ class Algolia_CLI extends \WP_CLI_Command {
 
 		$page = $from_page;
 		do {
-			WP_CLI::log( sprintf('Indexing page %s.', $page );
+			WP_CLI::log( sprintf( 'Indexing page %s.', $page ) );
 			$index->re_index( $page++ );
-			WP_CLI::log( sprintf('Indexed page %s.', ( $page - 1 ) );
+			WP_CLI::log( sprintf( 'Indexed page %s.', ( $page - 1 ) ) );
 			$progress->tick();
 		} while ( $page <= $total_pages );
 
