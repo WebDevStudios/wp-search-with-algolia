@@ -25,7 +25,8 @@ var buildPayloads = function buildPayloads(_ref) {
   var index = _ref.index,
       widgetType = _ref.widgetType,
       methodName = _ref.methodName,
-      args = _ref.args;
+      args = _ref.args,
+      isSearchStalled = _ref.isSearchStalled;
 
   // when there's only one argument, that means it's custom
   if (args.length === 1 && _typeof(args[0]) === 'object') {
@@ -72,6 +73,10 @@ var buildPayloads = function buildPayloads(_ref) {
   });
 
   if (eventType === 'view') {
+    if (isSearchStalled) {
+      return [];
+    }
+
     return hitsChunks.map(function (batch, i) {
       return {
         insightsMethod: 'viewedObjectIDs',
@@ -142,7 +147,8 @@ function createSendEventForHits(_ref2) {
       widgetType: widgetType,
       index: index,
       methodName: 'sendEvent',
-      args: args
+      args: args,
+      isSearchStalled: instantSearchInstance._isSearchStalled
     });
     payloads.forEach(function (payload) {
       return instantSearchInstance.sendEventToInsights(payload);
@@ -165,7 +171,8 @@ function createBindEventForHits(_ref3) {
       widgetType: widgetType,
       index: index,
       methodName: 'bindEvent',
-      args: args
+      args: args,
+      isSearchStalled: false
     });
     return payloads.length ? "data-insights-event=".concat((0, _serializer.serializePayload)(payloads)) : '';
   };

@@ -5,7 +5,9 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = void 0;
 var defaultTemplates = {
-  resetLabel: 'Clear refinements'
+  resetLabel: function resetLabel() {
+    return 'Clear refinements';
+  }
 };
 var _default = defaultTemplates;
 exports.default = _default;

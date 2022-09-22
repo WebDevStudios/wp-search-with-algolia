@@ -1,4 +1,4 @@
-/** @jsx h */
+
 import type { WidgetFactory, Template, Hit } from '../../types';
 import type { AnswersConnectorParams, AnswersWidgetDescription } from '../../connectors/answers/connectAnswers';
 export declare type AnswersTemplates = Partial<{

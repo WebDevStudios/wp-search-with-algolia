@@ -3,7 +3,6 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.isIndexWidget = isIndexWidget;
 exports.default = void 0;
 
 var _algoliasearchHelper = _interopRequireDefault(require("algoliasearch-helper"));
@@ -38,16 +37,11 @@ var withUsage = (0, _index.createDocumentationMessageGenerator)({
   name: 'index-widget'
 });
 
-function isIndexWidget(widget) {
-  return widget.$$type === 'ais.index';
-}
 /**
  * This is the same content as helper._change / setState, but allowing for extra
  * UiState to be synchronized.
  * see: https://github.com/algolia/algoliasearch-helper-js/blob/6b835ffd07742f2d6b314022cce6848f5cfecd4a/src/algoliasearch.helper.js#L1311-L1324
  */
-
-
 function privateHelperSetState(helper, _ref) {
   var state = _ref.state,
       isPageReset = _ref.isPageReset,
@@ -67,7 +61,7 @@ function privateHelperSetState(helper, _ref) {
 function getLocalWidgetsUiState(widgets, widgetStateOptions) {
   var initialUiState = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
   return widgets.reduce(function (uiState, widget) {
-    if (isIndexWidget(widget)) {
+    if ((0, _index.isIndexWidget)(widget)) {
       return uiState;
     }
 
@@ -88,7 +82,7 @@ function getLocalWidgetsSearchParameters(widgets, widgetSearchParametersOptions)
       rest = _objectWithoutProperties(widgetSearchParametersOptions, ["initialSearchParameters"]);
 
   return widgets.filter(function (widget) {
-    return !isIndexWidget(widget);
+    return !(0, _index.isIndexWidget)(widget);
   }).reduce(function (state, widget) {
     if (!widget.getWidgetSearchParameters) {
       return state;
@@ -99,7 +93,7 @@ function getLocalWidgetsSearchParameters(widgets, widgetSearchParametersOptions)
 }
 
 function resetPageFromWidgets(widgets) {
-  var indexWidgets = widgets.filter(isIndexWidget);
+  var indexWidgets = widgets.filter(_index.isIndexWidget);
 
   if (indexWidgets.length === 0) {
     return;
@@ -116,7 +110,7 @@ function resetPageFromWidgets(widgets) {
 }
 
 function resolveScopedResultsFromWidgets(widgets) {
-  var indexWidgets = widgets.filter(isIndexWidget);
+  var indexWidgets = widgets.filter(_index.isIndexWidget);
   return indexWidgets.reduce(function (scopedResults, current) {
     return scopedResults.concat.apply(scopedResults, [{
       indexId: current.getIndexId(),
@@ -326,7 +320,9 @@ var index = function index(widgetParams) {
         if (instantSearchInstance.onStateChange) {
           instantSearchInstance.onStateChange({
             uiState: instantSearchInstance.mainIndex.getWidgetUiState({}),
-            setUiState: instantSearchInstance.setUiState.bind(instantSearchInstance)
+            setUiState: function setUiState(nextState) {
+              return instantSearchInstance.setUiState(nextState, false);
+            }
           }); // We don't trigger a search when controlled because it becomes the
           // responsibility of `setUiState`.
 
@@ -554,7 +550,7 @@ var index = function index(widgetParams) {
       derivedHelper = null;
     },
     getWidgetUiState: function getWidgetUiState(uiState) {
-      return localWidgets.filter(isIndexWidget).reduce(function (previousUiState, innerIndex) {
+      return localWidgets.filter(_index.isIndexWidget).reduce(function (previousUiState, innerIndex) {
         return innerIndex.getWidgetUiState(previousUiState);
       }, _objectSpread(_objectSpread({}, uiState), {}, _defineProperty({}, this.getIndexId(), localUiState)));
     },

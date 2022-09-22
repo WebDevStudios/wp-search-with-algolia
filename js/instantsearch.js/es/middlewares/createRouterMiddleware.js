@@ -45,6 +45,7 @@ export var createRouterMiddleware = function createRouterMiddleware() {
           instantSearchInstance.setUiState(stateMapping.routeToState(route));
         });
       },
+      started: function started() {},
       unsubscribe: function unsubscribe() {
         router.dispose();
       }

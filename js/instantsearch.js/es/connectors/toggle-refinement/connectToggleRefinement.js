@@ -80,7 +80,9 @@ var connectToggleRefinement = function connectToggleRefinement(renderFn) {
       throw new Error(withUsage('The `attribute` option is required.'));
     }
 
-    var hasAnOffValue = userOff !== undefined;
+    var hasAnOffValue = userOff !== undefined; // even though facet values can be numbers and boolean,
+    // the helper methods only accept string in the type
+
     var on = toArray(userOn).map(escapeFacetValue);
     var off = hasAnOffValue ? toArray(userOff).map(escapeFacetValue) : undefined;
     var sendEvent;

@@ -1,7 +1,7 @@
-/** @jsx h */
+
 import type { JSX } from 'preact';
 import { Component } from 'preact';
-import type { PreparedTemplateProps } from '../../lib/utils/prepareTemplateProps';
+import type { PreparedTemplateProps } from '../../lib/templating';
 import type { SearchBoxComponentCSSClasses, SearchBoxComponentTemplates } from '../SearchBox/SearchBox';
 import type { HierarchicalMenuItem } from '../../connectors/hierarchical-menu/connectHierarchicalMenu';
 import type { ComponentCSSClasses, CreateURL, Templates } from '../../types';

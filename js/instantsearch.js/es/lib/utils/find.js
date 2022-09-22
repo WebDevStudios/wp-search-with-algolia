@@ -4,7 +4,7 @@
 // was decided as too risky.
 // @MAJOR Replace with the native `Array.prototype.find` method
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/find
-function find(items, predicate) {
+export function find(items, predicate) {
   var value;
 
   for (var i = 0; i < items.length; i++) {
@@ -17,5 +17,3 @@ function find(items, predicate) {
 
   return undefined;
 }
-
-export default find;

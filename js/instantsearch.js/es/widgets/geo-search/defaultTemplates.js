@@ -1,7 +1,19 @@
+import { h } from 'preact';
+
+var _ref = h("p", null, "Your custom HTML Marker");
+
 var defaultTemplates = {
-  HTMLMarker: '<p>Your custom HTML Marker</p>',
-  reset: 'Clear the map refinement',
-  toggle: 'Search as I move the map',
-  redo: 'Redo search here'
+  HTMLMarker: function HTMLMarker() {
+    return _ref;
+  },
+  reset: function reset() {
+    return 'Clear the map refinement';
+  },
+  toggle: function toggle() {
+    return 'Search as I move the map';
+  },
+  redo: function redo() {
+    return 'Redo search here';
+  }
 };
 export default defaultTemplates;

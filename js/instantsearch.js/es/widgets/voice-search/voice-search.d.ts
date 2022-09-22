@@ -1,4 +1,4 @@
-/** @jsx h */
+
 import type { PlainSearchParameters } from 'algoliasearch-helper';
 import type { VoiceSearchConnectorParams, VoiceSearchWidgetDescription } from '../../connectors/voice-search/connectVoiceSearch';
 import type { WidgetFactory, Template } from '../../types';

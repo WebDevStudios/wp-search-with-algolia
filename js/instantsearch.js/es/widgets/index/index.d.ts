@@ -1,11 +1,17 @@
 import type { AlgoliaSearchHelper as Helper, SearchParameters, SearchResults } from 'algoliasearch-helper';
-import type { UiState, IndexUiState, Widget, InitOptions, RenderOptions, ScopedResult } from '../../types';
+import type { InstantSearch, UiState, IndexUiState, Widget, ScopedResult } from '../../types';
 export declare type IndexWidgetParams = {
     indexName: string;
     indexId?: string;
 };
-declare type IndexInitOptions = Pick<InitOptions, 'instantSearchInstance' | 'parent' | 'uiState'>;
-declare type IndexRenderOptions = Pick<RenderOptions, 'instantSearchInstance'>;
+export declare type IndexInitOptions = {
+    instantSearchInstance: InstantSearch;
+    parent: IndexWidget | null;
+    uiState: UiState;
+};
+export declare type IndexRenderOptions = {
+    instantSearchInstance: InstantSearch;
+};
 export declare type IndexWidgetDescription = {
     $$type: 'ais.index';
     $$widgetType: 'ais.index';
@@ -36,6 +42,5 @@ export declare type IndexWidget = Omit<Widget<IndexWidgetDescription & {
     }): SearchParameters;
     refreshUiState(): void;
 };
-export declare function isIndexWidget(widget: Widget | IndexWidget): widget is IndexWidget;
 declare const index: (widgetParams: IndexWidgetParams) => IndexWidget;
 export default index;

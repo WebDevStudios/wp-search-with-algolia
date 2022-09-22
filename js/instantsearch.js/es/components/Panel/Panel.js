@@ -12,7 +12,6 @@ function _iterableToArrayLimit(arr, i) { if (typeof Symbol === "undefined" || !(
 
 function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 
-/** @jsx h */
 import { h } from 'preact';
 import { useState, useEffect, useRef } from 'preact/hooks';
 import cx from 'classnames';

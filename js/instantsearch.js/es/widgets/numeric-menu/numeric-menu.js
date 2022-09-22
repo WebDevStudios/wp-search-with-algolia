@@ -4,14 +4,14 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
-/** @jsx h */
 import { h, render } from 'preact';
 import cx from 'classnames';
 import RefinementList from "../../components/RefinementList/RefinementList.js";
 import connectNumericMenu from "../../connectors/numeric-menu/connectNumericMenu.js";
 import defaultTemplates from "./defaultTemplates.js";
-import { prepareTemplateProps, getContainerNode, createDocumentationMessageGenerator } from "../../lib/utils/index.js";
+import { getContainerNode, createDocumentationMessageGenerator } from "../../lib/utils/index.js";
 import { component } from "../../lib/suit.js";
+import { prepareTemplateProps } from "../../lib/templating/index.js";
 var withUsage = createDocumentationMessageGenerator({
   name: 'numeric-menu'
 });

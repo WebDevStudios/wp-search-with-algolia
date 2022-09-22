@@ -1,7 +1,5 @@
 "use strict";
 
-function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
-
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
@@ -11,7 +9,11 @@ var _preact = require("preact");
 
 var _index = require("../../lib/utils/index.js");
 
+var _index2 = require("../../lib/templating/index.js");
+
 function _extends() { _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; return _extends.apply(this, arguments); }
+
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -63,22 +65,32 @@ var Template = /*#__PURE__*/function (_Component) {
   }, {
     key: "render",
     value: function render() {
+      var _this = this;
+
+      process.env.NODE_ENV === 'development' ? (0, _index.warning)(Object.keys(this.props.templates).every(function (key) {
+        return typeof _this.props.templates[key] === 'function';
+      }), "Hogan.js and string-based templates are deprecated and will not be supported in InstantSearch.js 5.x.\n\nYou can replace them with function-form templates and use either the provided `html` function or JSX templates.\n\nSee: https://www.algolia.com/doc/guides/building-search-ui/upgrade-guides/js/#upgrade-templates") : void 0;
       var RootTagName = this.props.rootTagName;
       var useCustomCompileOptions = this.props.useCustomCompileOptions[this.props.templateKey];
       var compileOptions = useCustomCompileOptions ? this.props.templatesConfig.compileOptions : {};
-      var content = (0, _index.renderTemplate)({
+      var content = (0, _index2.renderTemplate)({
         templates: this.props.templates,
         templateKey: this.props.templateKey,
         compileOptions: compileOptions,
         helpers: this.props.templatesConfig.helpers,
         data: this.props.data,
-        bindEvent: this.props.bindEvent
+        bindEvent: this.props.bindEvent,
+        sendEvent: this.props.sendEvent
       });
 
       if (content === null) {
         // Adds a noscript to the DOM but virtual DOM is null
         // See http://facebook.github.io/react/docs/component-specs.html#render
         return null;
+      }
+
+      if (_typeof(content) === 'object') {
+        return (0, _preact.h)(RootTagName, this.props.rootProps, content);
       }
 
       return (0, _preact.h)(RootTagName, _extends({}, this.props.rootProps, {

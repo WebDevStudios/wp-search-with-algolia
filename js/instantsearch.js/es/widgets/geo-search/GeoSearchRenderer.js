@@ -16,9 +16,8 @@ function _iterableToArrayLimit(arr, i) { if (typeof Symbol === "undefined" || !(
 
 function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 
-/** @jsx h */
 import { h, render } from 'preact';
-import { prepareTemplateProps } from "../../lib/utils/index.js";
+import { prepareTemplateProps } from "../../lib/templating/index.js";
 import GeoSearchControls from "../../components/GeoSearchControls/GeoSearchControls.js";
 
 var refineWithMap = function refineWithMap(_ref) {

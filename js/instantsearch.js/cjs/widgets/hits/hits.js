@@ -17,9 +17,11 @@ var _defaultTemplates = _interopRequireDefault(require("./defaultTemplates.js"))
 
 var _index = require("../../lib/utils/index.js");
 
+var _index2 = require("../../lib/templating/index.js");
+
 var _suit = require("../../lib/suit.js");
 
-var _index2 = require("../../lib/insights/index.js");
+var _index3 = require("../../lib/insights/index.js");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -33,7 +35,7 @@ var withUsage = (0, _index.createDocumentationMessageGenerator)({
   name: 'hits'
 });
 var suit = (0, _suit.component)('Hits');
-var HitsWithInsightsListener = (0, _index2.withInsightsListener)(_Hits.default);
+var HitsWithInsightsListener = (0, _index3.withInsightsListener)(_Hits.default);
 
 var renderer = function renderer(_ref) {
   var renderState = _ref.renderState,
@@ -48,7 +50,7 @@ var renderer = function renderer(_ref) {
         bindEvent = _ref2.bindEvent;
 
     if (isFirstRendering) {
-      renderState.templateProps = (0, _index.prepareTemplateProps)({
+      renderState.templateProps = (0, _index2.prepareTemplateProps)({
         defaultTemplates: _defaultTemplates.default,
         templatesConfig: instantSearchInstance.templatesConfig,
         templates: templates
@@ -103,7 +105,7 @@ var hits = function hits(widgetParams) {
     renderState: {},
     templates: templates
   });
-  var makeWidget = (0, _index2.withInsights)(_connectHits.default)(specializedRenderer, function () {
+  var makeWidget = (0, _index3.withInsights)(_connectHits.default)(specializedRenderer, function () {
     return (0, _preact.render)(null, containerNode);
   });
   return _objectSpread(_objectSpread({}, makeWidget({

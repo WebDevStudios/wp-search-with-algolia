@@ -1,4 +1,4 @@
-/** @jsx h */
+
 import type { SortByConnectorParams, SortByItem, SortByWidgetDescription } from '../../connectors/sort-by/connectSortBy';
 import type { TransformItems, WidgetFactory } from '../../types';
 export declare type SortByWidgetCssClasses = Partial<{

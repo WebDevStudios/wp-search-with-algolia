@@ -5,11 +5,12 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 import { highlight as _highlight, reverseHighlight as _reverseHighlight, snippet as _snippet, reverseSnippet as _reverseSnippet, insights as _insights } from "../helpers/index.js";
+import { formatNumber as _formatNumber } from "./formatNumber.js";
 export default function hoganHelpers(_ref) {
   var numberLocale = _ref.numberLocale;
   return {
     formatNumber: function formatNumber(value, render) {
-      return Number(render(value)).toLocaleString(numberLocale);
+      return _formatNumber(Number(render(value)), numberLocale);
     },
     highlight: function highlight(options, render) {
       try {

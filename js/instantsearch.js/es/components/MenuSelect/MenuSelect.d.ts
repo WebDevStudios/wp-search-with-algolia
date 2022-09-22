@@ -1,4 +1,4 @@
-/** @jsx h */
+
 import { h } from 'preact';
 import type { MenuSelectCSSClasses, MenuSelectTemplates } from '../../widgets/menu-select/menu-select';
 import type { MenuRenderState } from '../../connectors/menu/connectMenu';

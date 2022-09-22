@@ -16,20 +16,24 @@ function _iterableToArrayLimit(arr, i) { if (typeof Symbol === "undefined" || !(
 
 function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 
-/** @jsx h */
 import { h, render } from 'preact';
 import cx from 'classnames';
 import RangeInput from "../../components/RangeInput/RangeInput.js";
 import connectRange from "../../connectors/range/connectRange.js";
-import { prepareTemplateProps, getContainerNode, createDocumentationMessageGenerator } from "../../lib/utils/index.js";
+import { getContainerNode, createDocumentationMessageGenerator } from "../../lib/utils/index.js";
+import { prepareTemplateProps } from "../../lib/templating/index.js";
 import { component } from "../../lib/suit.js";
 var withUsage = createDocumentationMessageGenerator({
   name: 'range-input'
 });
 var suit = component('RangeInput');
 var defaultTemplates = {
-  separatorText: 'to',
-  submitText: 'Go'
+  separatorText: function separatorText() {
+    return 'to';
+  },
+  submitText: function submitText() {
+    return 'Go';
+  }
 };
 
 var renderer = function renderer(_ref) {

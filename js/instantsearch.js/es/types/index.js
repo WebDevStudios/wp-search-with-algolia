@@ -1,5 +1,6 @@
 // internal
 export * from "./utils.js"; // Algolia-related
+// eslint-disable-next-line import/export
 
 export * from "./algoliasearch.js";
 export * from "./results.js"; // component-related

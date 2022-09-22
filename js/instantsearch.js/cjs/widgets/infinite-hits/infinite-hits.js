@@ -15,9 +15,11 @@ var _connectInfiniteHits = _interopRequireDefault(require("../../connectors/infi
 
 var _index = require("../../lib/utils/index.js");
 
+var _index2 = require("../../lib/templating/index.js");
+
 var _suit = require("../../lib/suit.js");
 
-var _index2 = require("../../lib/insights/index.js");
+var _index3 = require("../../lib/insights/index.js");
 
 var _defaultTemplates = _interopRequireDefault(require("./defaultTemplates.js"));
 
@@ -33,7 +35,7 @@ var withUsage = (0, _index.createDocumentationMessageGenerator)({
   name: 'infinite-hits'
 });
 var suit = (0, _suit.component)('InfiniteHits');
-var InfiniteHitsWithInsightsListener = (0, _index2.withInsightsListener)(_InfiniteHits.default);
+var InfiniteHitsWithInsightsListener = (0, _index3.withInsightsListener)(_InfiniteHits.default);
 
 var renderer = function renderer(_ref) {
   var containerNode = _ref.containerNode,
@@ -53,7 +55,7 @@ var renderer = function renderer(_ref) {
         bindEvent = _ref2.bindEvent;
 
     if (isFirstRendering) {
-      renderState.templateProps = (0, _index.prepareTemplateProps)({
+      renderState.templateProps = (0, _index2.prepareTemplateProps)({
         defaultTemplates: _defaultTemplates.default,
         templatesConfig: instantSearchInstance.templatesConfig,
         templates: templates
@@ -130,7 +132,7 @@ var infiniteHits = function infiniteHits(widgetParams) {
     showPrevious: showPrevious,
     renderState: {}
   });
-  var makeWidget = (0, _index2.withInsights)(_connectInfiniteHits.default)(specializedRenderer, function () {
+  var makeWidget = (0, _index3.withInsights)(_connectInfiniteHits.default)(specializedRenderer, function () {
     return (0, _preact.render)(null, containerNode);
   });
   return _objectSpread(_objectSpread({}, makeWidget({

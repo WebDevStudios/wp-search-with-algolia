@@ -15,6 +15,8 @@ var _connectRange = _interopRequireDefault(require("../../connectors/range/conne
 
 var _index = require("../../lib/utils/index.js");
 
+var _index2 = require("../../lib/templating/index.js");
+
 var _suit = require("../../lib/suit.js");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
@@ -42,8 +44,12 @@ var withUsage = (0, _index.createDocumentationMessageGenerator)({
 });
 var suit = (0, _suit.component)('RangeInput');
 var defaultTemplates = {
-  separatorText: 'to',
-  submitText: 'Go'
+  separatorText: function separatorText() {
+    return 'to';
+  },
+  submitText: function submitText() {
+    return 'Go';
+  }
 };
 
 var renderer = function renderer(_ref) {
@@ -59,7 +65,7 @@ var renderer = function renderer(_ref) {
         instantSearchInstance = _ref2.instantSearchInstance;
 
     if (isFirstRendering) {
-      renderState.templateProps = (0, _index.prepareTemplateProps)({
+      renderState.templateProps = (0, _index2.prepareTemplateProps)({
         defaultTemplates: defaultTemplates,
         templatesConfig: instantSearchInstance.templatesConfig,
         templates: templates

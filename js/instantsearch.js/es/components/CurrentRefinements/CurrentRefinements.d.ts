@@ -1,4 +1,4 @@
-/** @jsx h */
+
 import { h } from 'preact';
 import type { CurrentRefinementsConnectorParamsItem } from '../../connectors/current-refinements/connectCurrentRefinements';
 import type { CurrentRefinementsCSSClasses } from '../../widgets/current-refinements/current-refinements';

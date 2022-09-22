@@ -43,8 +43,13 @@ export declare type SortByRenderState = {
     refine: (value: string) => void;
     /**
      * `true` if the last search contains no result.
+     * @deprecated Use `canRefine` instead.
      */
     hasNoResults: boolean;
+    /**
+     * `true` if we can refine.
+     */
+    canRefine: boolean;
 };
 export declare type SortByWidgetDescription = {
     $$type: 'ais.sortBy';

@@ -1,4 +1,4 @@
-/** @jsx h */
+
 import type { MenuConnectorParams, MenuWidgetDescription } from '../../connectors/menu/connectMenu';
 import type { Template, WidgetFactory } from '../../types';
 export declare type MenuSelectCSSClasses = Partial<{

@@ -1,5 +1,3 @@
-function getObjectType(object) {
+export function getObjectType(object) {
   return Object.prototype.toString.call(object).slice(8, -1);
 }
-
-export default getObjectType;

@@ -21,12 +21,13 @@ export declare type ToggleRefinementConnectorParams = {
      * Value to filter on when toggled.
      * @default "true"
      */
-    on?: string | string[] | boolean | boolean[] | number | number[];
+    on?: FacetValue | FacetValue[];
     /**
      * Value to filter on when not toggled.
      */
-    off?: string | string[] | boolean | boolean[] | number | number[];
+    off?: FacetValue | FacetValue[];
 };
+declare type FacetValue = string | boolean | number;
 export declare type ToggleRefinementRenderState = {
     /** The current toggle value */
     value: {

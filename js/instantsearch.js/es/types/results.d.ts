@@ -38,7 +38,7 @@ export declare type AlgoliaHit<THit extends BaseHit = Record<string, any>> = {
         };
     };
     _distinctSeqID?: number;
-    _geoLoc?: GeoLoc;
+    _geoloc?: GeoLoc;
 } & THit;
 export declare type BaseHit = Record<string, unknown>;
 export declare type Hit<THit extends BaseHit = Record<string, any>> = {

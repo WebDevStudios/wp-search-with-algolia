@@ -1,3 +1,5 @@
+function _createForOfIteratorHelper(o, allowArrayLike) { var it; if (typeof Symbol === "undefined" || o[Symbol.iterator] == null) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e2) { throw _e2; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = o[Symbol.iterator](); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e3) { didErr = true; err = _e3; }, f: function f() { try { if (!normalCompletion && it.return != null) it.return(); } finally { if (didErr) throw err; } } }; }
+
 function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest(); }
 
 function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
@@ -16,7 +18,7 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
-import { checkRendering, createDocumentationMessageGenerator, isFiniteNumber, convertNumericRefinementsToFilters, noop } from "../../lib/utils/index.js";
+import { checkRendering, createDocumentationMessageGenerator, isFiniteNumber, noop } from "../../lib/utils/index.js";
 var withUsage = createDocumentationMessageGenerator({
   name: 'numeric-menu',
   connector: true
@@ -24,46 +26,11 @@ var withUsage = createDocumentationMessageGenerator({
 var $$type = 'ais.numericMenu';
 
 var createSendEvent = function createSendEvent(_ref) {
-  var instantSearchInstance = _ref.instantSearchInstance,
-      helper = _ref.helper,
-      attribute = _ref.attribute;
+  var instantSearchInstance = _ref.instantSearchInstance;
   return function () {
-    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
-      args[_key] = arguments[_key];
-    }
-
-    if (args.length === 1) {
-      instantSearchInstance.sendEventToInsights(args[0]);
+    if (arguments.length === 1) {
+      instantSearchInstance.sendEventToInsights(arguments.length <= 0 ? undefined : arguments[0]);
       return;
-    }
-
-    var eventType = args[0],
-        facetValue = args[1],
-        _args$ = args[2],
-        eventName = _args$ === void 0 ? 'Filter Applied' : _args$;
-
-    if (eventType !== 'click') {
-      return;
-    } // facetValue === "%7B%22start%22:5,%22end%22:10%7D"
-
-
-    var filters = convertNumericRefinementsToFilters(getRefinedState(helper.state, attribute, facetValue), attribute);
-
-    if (filters && filters.length > 0) {
-      /*
-        filters === ["price<=10", "price>=5"]
-      */
-      instantSearchInstance.sendEventToInsights({
-        insightsMethod: 'clickedFilters',
-        widgetType: $$type,
-        eventType: eventType,
-        payload: {
-          eventName: eventName,
-          index: helper.getIndex(),
-          filters: filters
-        },
-        attribute: attribute
-      });
     }
   };
 };
@@ -208,18 +175,39 @@ var connectNumericMenu = function connectNumericMenu(renderFn) {
 
         if (!connectorState.sendEvent) {
           connectorState.sendEvent = createSendEvent({
-            instantSearchInstance: instantSearchInstance,
-            helper: helper,
-            attribute: attribute
+            instantSearchInstance: instantSearchInstance
           });
+        }
+
+        var hasNoResults = results ? results.nbHits === 0 : true;
+        var preparedItems = prepareItems(state);
+        var allIsSelected = true;
+
+        var _iterator = _createForOfIteratorHelper(preparedItems),
+            _step;
+
+        try {
+          for (_iterator.s(); !(_step = _iterator.n()).done;) {
+            var item = _step.value;
+
+            if (item.isRefined && decodeURI(item.value) !== '{}') {
+              allIsSelected = false;
+              break;
+            }
+          }
+        } catch (err) {
+          _iterator.e(err);
+        } finally {
+          _iterator.f();
         }
 
         return {
           createURL: connectorState.createURL(state),
-          items: transformItems(prepareItems(state), {
+          items: transformItems(preparedItems, {
             results: results
           }),
-          hasNoResults: results ? results.nbHits === 0 : true,
+          hasNoResults: hasNoResults,
+          canRefine: !(hasNoResults && allIsSelected),
           refine: connectorState.refine,
           sendEvent: connectorState.sendEvent,
           widgetParams: widgetParams

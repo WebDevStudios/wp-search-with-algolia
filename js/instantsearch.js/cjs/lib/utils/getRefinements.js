@@ -3,13 +3,11 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.default = getRefinements;
+exports.getRefinements = getRefinements;
 
-var _find = _interopRequireDefault(require("./find.js"));
+var _find = require("./find.js");
 
 var _escapeFacetValue = require("./escapeFacetValue.js");
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function getRefinement(state, type, attribute, name) {
   var resultsFacets = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : [];
@@ -19,7 +17,7 @@ function getRefinement(state, type, attribute, name) {
     name: name,
     escapedValue: (0, _escapeFacetValue.escapeFacetValue)(name)
   };
-  var facet = (0, _find.default)(resultsFacets, function (resultsFacet) {
+  var facet = (0, _find.find)(resultsFacets, function (resultsFacet) {
     return resultsFacet.name === attribute;
   });
   var count;
@@ -36,7 +34,7 @@ function getRefinement(state, type, attribute, name) {
       };
 
       var _loop = function _loop(i) {
-        facet = facet && facet.data && (0, _find.default)(Object.keys(facet.data).map(getFacetRefinement(facet.data)), function (refinement) {
+        facet = facet && facet.data && (0, _find.find)(Object.keys(facet.data).map(getFacetRefinement(facet.data)), function (refinement) {
           return refinement.name === nameParts[i];
         });
       };

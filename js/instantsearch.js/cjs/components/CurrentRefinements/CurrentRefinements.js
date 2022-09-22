@@ -9,7 +9,6 @@ var _preact = require("preact");
 
 var _index = require("../../lib/utils/index.js");
 
-/** @jsx h */
 var createItemKey = function createItemKey(_ref) {
   var attribute = _ref.attribute,
       value = _ref.value,

@@ -3,7 +3,7 @@
  *
  * @see https://github.com/airbnb/rheostat
  */
-/** @jsx h */
+
 import type { ComponentChildren, ComponentType, JSX } from 'preact';
 import { Component } from 'preact';
 declare type BoundingBox = {

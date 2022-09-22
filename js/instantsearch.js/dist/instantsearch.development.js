@@ -1,4 +1,4 @@
-/*! InstantSearch.js 4.40.5 | © Algolia, Inc. and contributors; MIT License | https://github.com/algolia/instantsearch.js */
+/*! InstantSearch.js 4.46.2 | © Algolia, Inc. and contributors; MIT License | https://github.com/algolia/instantsearch.js */
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
   typeof define === 'function' && define.amd ? define(factory) :
@@ -295,6 +295,63 @@
 
   function _nonIterableRest() {
     throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
+  }
+
+  function _createForOfIteratorHelper(o, allowArrayLike) {
+    var it;
+
+    if (typeof Symbol === "undefined" || o[Symbol.iterator] == null) {
+      if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") {
+        if (it) o = it;
+        var i = 0;
+
+        var F = function () {};
+
+        return {
+          s: F,
+          n: function () {
+            if (i >= o.length) return {
+              done: true
+            };
+            return {
+              done: false,
+              value: o[i++]
+            };
+          },
+          e: function (e) {
+            throw e;
+          },
+          f: F
+        };
+      }
+
+      throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
+    }
+
+    var normalCompletion = true,
+        didErr = false,
+        err;
+    return {
+      s: function () {
+        it = o[Symbol.iterator]();
+      },
+      n: function () {
+        var step = it.next();
+        normalCompletion = step.done;
+        return step;
+      },
+      e: function (e) {
+        didErr = true;
+        err = e;
+      },
+      f: function () {
+        try {
+          if (!normalCompletion && it.return != null) it.return();
+        } finally {
+          if (didErr) throw err;
+        }
+      }
+    };
   }
 
   function clone(value) {
@@ -2989,7 +3046,7 @@
       nextDisjunctiveResult++;
     });
 
-    // if we have some root level values for hierarchical facets, merge them
+    // if we have some parent level values for hierarchical facets, merge them
     state.getRefinedHierarchicalFacets().forEach(function(refinedFacet) {
       var hierarchicalFacet = state.getHierarchicalFacetByName(refinedFacet);
       var separator = state._getHierarchicalFacetSeparator(hierarchicalFacet);
@@ -3001,47 +3058,49 @@
         return;
       }
 
-      var result = results[nextDisjunctiveResult];
-      var facets = result && result.facets
-        ? result.facets
-        : {};
-      Object.keys(facets).forEach(function(dfacet) {
-        var facetResults = facets[dfacet];
-        var position = findIndex(state.hierarchicalFacets, function(f) {
-          return f.name === hierarchicalFacet.name;
+      results.slice(nextDisjunctiveResult).forEach(function(result) {
+        var facets = result && result.facets
+          ? result.facets
+          : {};
+
+        Object.keys(facets).forEach(function(dfacet) {
+          var facetResults = facets[dfacet];
+          var position = findIndex(state.hierarchicalFacets, function(f) {
+            return f.name === hierarchicalFacet.name;
+          });
+          var attributeIndex = findIndex(self.hierarchicalFacets[position], function(f) {
+            return f.attribute === dfacet;
+          });
+
+          // previous refinements and no results so not able to find it
+          if (attributeIndex === -1) {
+            return;
+          }
+
+          // when we always get root levels, if the hits refinement is `beers > IPA` (count: 5),
+          // then the disjunctive values will be `beers` (count: 100),
+          // but we do not want to display
+          //   | beers (100)
+          //     > IPA (5)
+          // We want
+          //   | beers (5)
+          //     > IPA (5)
+          var defaultData = {};
+
+          if (currentRefinement.length > 0) {
+            var root = currentRefinement[0].split(separator)[0];
+            defaultData[root] = self.hierarchicalFacets[position][attributeIndex].data[root];
+          }
+
+          self.hierarchicalFacets[position][attributeIndex].data = defaultsPure(
+            defaultData,
+            facetResults,
+            self.hierarchicalFacets[position][attributeIndex].data
+          );
         });
-        var attributeIndex = findIndex(self.hierarchicalFacets[position], function(f) {
-          return f.attribute === dfacet;
-        });
 
-        // previous refinements and no results so not able to find it
-        if (attributeIndex === -1) {
-          return;
-        }
-
-        // when we always get root levels, if the hits refinement is `beers > IPA` (count: 5),
-        // then the disjunctive values will be `beers` (count: 100),
-        // but we do not want to display
-        //   | beers (100)
-        //     > IPA (5)
-        // We want
-        //   | beers (5)
-        //     > IPA (5)
-        var defaultData = {};
-
-        if (currentRefinement.length > 0) {
-          var root = currentRefinement[0].split(separator)[0];
-          defaultData[root] = self.hierarchicalFacets[position][attributeIndex].data[root];
-        }
-
-        self.hierarchicalFacets[position][attributeIndex].data = defaultsPure(
-          defaultData,
-          facetResults,
-          self.hierarchicalFacets[position][attributeIndex].data
-        );
+        nextDisjunctiveResult++;
       });
-
-      nextDisjunctiveResult++;
     });
 
     // add the excludes
@@ -3845,6 +3904,17 @@
 
   var DerivedHelper_1 = DerivedHelper;
 
+  function sortObject(obj) {
+    return Object.keys(obj)
+      .sort(function(a, b) {
+        return a.localeCompare(b);
+      })
+      .reduce(function(acc, curr) {
+        acc[curr] = obj[curr];
+        return acc;
+      }, {});
+  }
+
   var requestBuilder = {
     /**
      * Get all the queries to send to the client, those queries can used directly
@@ -3869,18 +3939,67 @@
         });
       });
 
-      // maybe more to get the root level of hierarchical facets when activated
+      // More to get the parent levels of the hierarchical facets when refined
       state.getRefinedHierarchicalFacets().forEach(function(refinedFacet) {
         var hierarchicalFacet = state.getHierarchicalFacetByName(refinedFacet);
-
         var currentRefinement = state.getHierarchicalRefinement(refinedFacet);
-        // if we are deeper than level 0 (starting from `beer > IPA`)
-        // we want to get the root values
         var separator = state._getHierarchicalFacetSeparator(hierarchicalFacet);
+
+        // If we are deeper than level 0 (starting from `beer > IPA`)
+        // we want to get all parent values
         if (currentRefinement.length > 0 && currentRefinement[0].split(separator).length > 1) {
-          queries.push({
-            indexName: index,
-            params: requestBuilder._getDisjunctiveFacetSearchParams(state, refinedFacet, true)
+          // We generate a map of the filters we will use for our facet values queries
+          var filtersMap = currentRefinement[0].split(separator).slice(0, -1).reduce(
+            function createFiltersMap(map, segment, level) {
+              return map.concat({
+                attribute: hierarchicalFacet.attributes[level],
+                value: level === 0
+                  ? segment
+                  : [map[map.length - 1].value, segment].join(separator)
+              });
+            }
+          , []);
+
+          filtersMap.forEach(function(filter, level) {
+            var params = requestBuilder._getDisjunctiveFacetSearchParams(
+              state,
+              filter.attribute,
+              level === 0
+            );
+
+            // Keep facet filters unrelated to current hierarchical attributes
+            function hasHierarchicalFacetFilter(value) {
+              return hierarchicalFacet.attributes.some(function(attribute) {
+                return attribute === value.split(':')[0];
+              });
+            }
+
+            var filteredFacetFilters = (params.facetFilters || []).reduce(function(acc, facetFilter) {
+              if (Array.isArray(facetFilter)) {
+                var filtered = facetFilter.filter(function(filterValue) {
+                  return !hasHierarchicalFacetFilter(filterValue);
+                });
+
+                if (filtered.length > 0) {
+                  acc.push(filtered);
+                }
+              }
+
+              if (typeof facetFilter === 'string' && !hasHierarchicalFacetFilter(facetFilter)) {
+                acc.push(facetFilter);
+              }
+
+              return acc;
+            }, []);
+
+            var parent = filtersMap[level - 1];
+            if (level > 0) {
+              params.facetFilters = filteredFacetFilters.concat(parent.attribute + ':' + parent.value);
+            } else {
+              params.facetFilters = filteredFacetFilters.length > 0 ? filteredFacetFilters : undefined;
+            }
+
+            queries.push({indexName: index, params: params});
           });
         }
       });
@@ -3915,7 +4034,7 @@
         additionalParams.numericFilters = numericFilters;
       }
 
-      return merge_1({}, state.getQueryParams(), additionalParams);
+      return sortObject(merge_1({}, state.getQueryParams(), additionalParams));
     },
 
     /**
@@ -3930,15 +4049,15 @@
       var numericFilters = requestBuilder._getNumericFilters(state, facet);
       var tagFilters = requestBuilder._getTagFilters(state);
       var additionalParams = {
-        hitsPerPage: 1,
+        hitsPerPage: 0,
         page: 0,
-        attributesToRetrieve: [],
-        attributesToHighlight: [],
-        attributesToSnippet: [],
-        tagFilters: tagFilters,
         analytics: false,
         clickAnalytics: false
       };
+
+      if (tagFilters.length > 0) {
+        additionalParams.tagFilters = tagFilters;
+      }
 
       var hierarchicalFacet = state.getHierarchicalFacetByName(facet);
 
@@ -3960,7 +4079,7 @@
         additionalParams.facetFilters = facetFilters;
       }
 
-      return merge_1({}, state.getQueryParams(), additionalParams);
+      return sortObject(merge_1({}, state.getQueryParams(), additionalParams));
     },
 
     /**
@@ -4153,17 +4272,17 @@
       if (typeof maxFacetHits === 'number') {
         searchForFacetSearchParameters.maxFacetHits = maxFacetHits;
       }
-      return merge_1(
+      return sortObject(merge_1(
         {},
         requestBuilder._getHitsSearchParams(stateForSearchForFacetValues),
         searchForFacetSearchParameters
-      );
+      ));
     }
   };
 
   var requestBuilder_1 = requestBuilder;
 
-  var version = '3.8.2';
+  var version = '3.11.1';
 
   var escapeFacetValue$3 = escapeFacetValue_1.escapeFacetValue;
 
@@ -4483,30 +4602,57 @@
    */
   AlgoliaSearchHelper.prototype.searchForFacetValues = function(facet, query, maxFacetHits, userState) {
     var clientHasSFFV = typeof this.client.searchForFacetValues === 'function';
+    var clientHasInitIndex = typeof this.client.initIndex === 'function';
     if (
       !clientHasSFFV &&
-      typeof this.client.initIndex !== 'function'
+      !clientHasInitIndex &&
+      typeof this.client.search !== 'function'
     ) {
       throw new Error(
         'search for facet values (searchable) was called, but this client does not have a function client.searchForFacetValues or client.initIndex(index).searchForFacetValues'
       );
     }
+
     var state = this.state.setQueryParameters(userState || {});
     var isDisjunctive = state.isDisjunctiveFacet(facet);
     var algoliaQuery = requestBuilder_1.getSearchForFacetQuery(facet, query, maxFacetHits, state);
 
     this._currentNbQueries++;
     var self = this;
+    var searchForFacetValuesPromise;
+    // newer algoliasearch ^3.27.1 - ~4.0.0
+    if (clientHasSFFV) {
+      searchForFacetValuesPromise = this.client.searchForFacetValues([
+        {indexName: state.index, params: algoliaQuery}
+      ]);
+      // algoliasearch < 3.27.1
+    } else if (clientHasInitIndex) {
+      searchForFacetValuesPromise = this.client
+        .initIndex(state.index)
+        .searchForFacetValues(algoliaQuery);
+      // algoliasearch ~5.0.0
+    } else {
+      // @MAJOR only use client.search
+      delete algoliaQuery.facetName;
+      searchForFacetValuesPromise = this.client
+        .search([
+          {
+            type: 'facet',
+            facet: facet,
+            indexName: state.index,
+            params: algoliaQuery
+          }
+        ])
+        .then(function processResponse(response) {
+          return response.results[0];
+        });
+    }
 
     this.emit('searchForFacetValues', {
       state: state,
       facet: facet,
       query: query
     });
-
-    var searchForFacetValuesPromise = clientHasSFFV
-      ? this.client.searchForFacetValues([{indexName: state.index, params: algoliaQuery}])
-      : this.client.initIndex(state.index).searchForFacetValues(algoliaQuery);
 
     return searchForFacetValuesPromise.then(function addIsRefined(content) {
       self._currentNbQueries--;
@@ -5690,1174 +5836,6 @@
     return text.toString().charAt(0).toUpperCase() + text.toString().slice(1);
   }
 
-  var nextMicroTask = Promise.resolve();
-
-  var defer = function defer(callback) {
-    var progress = null;
-    var cancelled = false;
-
-    var fn = function fn() {
-      for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
-        args[_key] = arguments[_key];
-      }
-
-      if (progress !== null) {
-        return;
-      }
-
-      progress = nextMicroTask.then(function () {
-        progress = null;
-
-        if (cancelled) {
-          cancelled = false;
-          return;
-        }
-
-        callback.apply(void 0, args);
-      });
-    };
-
-    fn.wait = function () {
-      if (progress === null) {
-        throw new Error('The deferred function should be called before calling `wait()`');
-      }
-
-      return progress;
-    };
-
-    fn.cancel = function () {
-      if (progress === null) {
-        return;
-      }
-
-      cancelled = true;
-    };
-
-    return fn;
-  };
-
-  function isDomElement(object) {
-    return object instanceof HTMLElement || Boolean(object) && object.nodeType > 0;
-  }
-
-  /**
-   * Return the container. If it's a string, it is considered a
-   * css selector and retrieves the first matching element. Otherwise
-   * test if it validates that it's a correct DOMElement.
-   *
-   * @param {string|HTMLElement} selectorOrHTMLElement CSS Selector or container node.
-   * @return {HTMLElement} Container node
-   * @throws Error when the type is not correct
-   */
-
-  function getContainerNode(selectorOrHTMLElement) {
-    var isSelectorString = typeof selectorOrHTMLElement === 'string';
-    var domElement = isSelectorString ? document.querySelector(selectorOrHTMLElement) : selectorOrHTMLElement;
-
-    if (!isDomElement(domElement)) {
-      var errorMessage = 'Container must be `string` or `HTMLElement`.';
-
-      if (isSelectorString) {
-        errorMessage += " Unable to find ".concat(selectorOrHTMLElement);
-      }
-
-      throw new Error(errorMessage);
-    }
-
-    return domElement;
-  }
-
-  function isSpecialClick(event) {
-    var isMiddleClick = event.button === 1;
-    return isMiddleClick || event.altKey || event.ctrlKey || event.metaKey || event.shiftKey;
-  }
-
-  function uniq(array) {
-    return array.filter(function (value, index, self) {
-      return self.indexOf(value) === index;
-    });
-  }
-
-  function prepareTemplates( // can not use = {} here, since the template could have different constraints
-  defaultTemplates) {
-    var templates = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-    var allKeys = uniq([].concat(_toConsumableArray(Object.keys(defaultTemplates || {})), _toConsumableArray(Object.keys(templates))));
-    return allKeys.reduce(function (config, key) {
-      var defaultTemplate = defaultTemplates ? defaultTemplates[key] : undefined;
-      var customTemplate = templates[key];
-      var isCustomTemplate = customTemplate !== undefined && customTemplate !== defaultTemplate;
-      config.templates[key] = isCustomTemplate ? customTemplate // typescript doesn't recognize that this condition asserts customTemplate is defined
-      : defaultTemplate;
-      config.useCustomCompileOptions[key] = isCustomTemplate;
-      return config;
-    }, {
-      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-      templates: {},
-      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-      useCustomCompileOptions: {}
-    });
-  }
-  /**
-   * Prepares an object to be passed to the Template widget
-   */
-
-
-  function prepareTemplateProps(_ref) {
-    var defaultTemplates = _ref.defaultTemplates,
-        templates = _ref.templates,
-        templatesConfig = _ref.templatesConfig;
-    var preparedTemplates = prepareTemplates(defaultTemplates, templates);
-    return _objectSpread2({
-      templatesConfig: templatesConfig
-    }, preparedTemplates);
-  }
-
-  function createCommonjsModule(fn, module) {
-  	return module = { exports: {} }, fn(module, module.exports), module.exports;
-  }
-
-  var compiler = createCommonjsModule(function (module, exports) {
-  /*
-   *  Copyright 2011 Twitter, Inc.
-   *  Licensed under the Apache License, Version 2.0 (the "License");
-   *  you may not use this file except in compliance with the License.
-   *  You may obtain a copy of the License at
-   *
-   *  http://www.apache.org/licenses/LICENSE-2.0
-   *
-   *  Unless required by applicable law or agreed to in writing, software
-   *  distributed under the License is distributed on an "AS IS" BASIS,
-   *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-   *  See the License for the specific language governing permissions and
-   *  limitations under the License.
-   */
-
-  (function (Hogan) {
-    // Setup regex  assignments
-    // remove whitespace according to Mustache spec
-    var rIsWhitespace = /\S/,
-        rQuot = /\"/g,
-        rNewline =  /\n/g,
-        rCr = /\r/g,
-        rSlash = /\\/g,
-        rLineSep = /\u2028/,
-        rParagraphSep = /\u2029/;
-
-    Hogan.tags = {
-      '#': 1, '^': 2, '<': 3, '$': 4,
-      '/': 5, '!': 6, '>': 7, '=': 8, '_v': 9,
-      '{': 10, '&': 11, '_t': 12
-    };
-
-    Hogan.scan = function scan(text, delimiters) {
-      var len = text.length,
-          IN_TEXT = 0,
-          IN_TAG_TYPE = 1,
-          IN_TAG = 2,
-          state = IN_TEXT,
-          tagType = null,
-          tag = null,
-          buf = '',
-          tokens = [],
-          seenTag = false,
-          i = 0,
-          lineStart = 0,
-          otag = '{{',
-          ctag = '}}';
-
-      function addBuf() {
-        if (buf.length > 0) {
-          tokens.push({tag: '_t', text: new String(buf)});
-          buf = '';
-        }
-      }
-
-      function lineIsWhitespace() {
-        var isAllWhitespace = true;
-        for (var j = lineStart; j < tokens.length; j++) {
-          isAllWhitespace =
-            (Hogan.tags[tokens[j].tag] < Hogan.tags['_v']) ||
-            (tokens[j].tag == '_t' && tokens[j].text.match(rIsWhitespace) === null);
-          if (!isAllWhitespace) {
-            return false;
-          }
-        }
-
-        return isAllWhitespace;
-      }
-
-      function filterLine(haveSeenTag, noNewLine) {
-        addBuf();
-
-        if (haveSeenTag && lineIsWhitespace()) {
-          for (var j = lineStart, next; j < tokens.length; j++) {
-            if (tokens[j].text) {
-              if ((next = tokens[j+1]) && next.tag == '>') {
-                // set indent to token value
-                next.indent = tokens[j].text.toString();
-              }
-              tokens.splice(j, 1);
-            }
-          }
-        } else if (!noNewLine) {
-          tokens.push({tag:'\n'});
-        }
-
-        seenTag = false;
-        lineStart = tokens.length;
-      }
-
-      function changeDelimiters(text, index) {
-        var close = '=' + ctag,
-            closeIndex = text.indexOf(close, index),
-            delimiters = trim(
-              text.substring(text.indexOf('=', index) + 1, closeIndex)
-            ).split(' ');
-
-        otag = delimiters[0];
-        ctag = delimiters[delimiters.length - 1];
-
-        return closeIndex + close.length - 1;
-      }
-
-      if (delimiters) {
-        delimiters = delimiters.split(' ');
-        otag = delimiters[0];
-        ctag = delimiters[1];
-      }
-
-      for (i = 0; i < len; i++) {
-        if (state == IN_TEXT) {
-          if (tagChange(otag, text, i)) {
-            --i;
-            addBuf();
-            state = IN_TAG_TYPE;
-          } else {
-            if (text.charAt(i) == '\n') {
-              filterLine(seenTag);
-            } else {
-              buf += text.charAt(i);
-            }
-          }
-        } else if (state == IN_TAG_TYPE) {
-          i += otag.length - 1;
-          tag = Hogan.tags[text.charAt(i + 1)];
-          tagType = tag ? text.charAt(i + 1) : '_v';
-          if (tagType == '=') {
-            i = changeDelimiters(text, i);
-            state = IN_TEXT;
-          } else {
-            if (tag) {
-              i++;
-            }
-            state = IN_TAG;
-          }
-          seenTag = i;
-        } else {
-          if (tagChange(ctag, text, i)) {
-            tokens.push({tag: tagType, n: trim(buf), otag: otag, ctag: ctag,
-                         i: (tagType == '/') ? seenTag - otag.length : i + ctag.length});
-            buf = '';
-            i += ctag.length - 1;
-            state = IN_TEXT;
-            if (tagType == '{') {
-              if (ctag == '}}') {
-                i++;
-              } else {
-                cleanTripleStache(tokens[tokens.length - 1]);
-              }
-            }
-          } else {
-            buf += text.charAt(i);
-          }
-        }
-      }
-
-      filterLine(seenTag, true);
-
-      return tokens;
-    };
-
-    function cleanTripleStache(token) {
-      if (token.n.substr(token.n.length - 1) === '}') {
-        token.n = token.n.substring(0, token.n.length - 1);
-      }
-    }
-
-    function trim(s) {
-      if (s.trim) {
-        return s.trim();
-      }
-
-      return s.replace(/^\s*|\s*$/g, '');
-    }
-
-    function tagChange(tag, text, index) {
-      if (text.charAt(index) != tag.charAt(0)) {
-        return false;
-      }
-
-      for (var i = 1, l = tag.length; i < l; i++) {
-        if (text.charAt(index + i) != tag.charAt(i)) {
-          return false;
-        }
-      }
-
-      return true;
-    }
-
-    // the tags allowed inside super templates
-    var allowedInSuper = {'_t': true, '\n': true, '$': true, '/': true};
-
-    function buildTree(tokens, kind, stack, customTags) {
-      var instructions = [],
-          opener = null,
-          tail = null,
-          token = null;
-
-      tail = stack[stack.length - 1];
-
-      while (tokens.length > 0) {
-        token = tokens.shift();
-
-        if (tail && tail.tag == '<' && !(token.tag in allowedInSuper)) {
-          throw new Error('Illegal content in < super tag.');
-        }
-
-        if (Hogan.tags[token.tag] <= Hogan.tags['$'] || isOpener(token, customTags)) {
-          stack.push(token);
-          token.nodes = buildTree(tokens, token.tag, stack, customTags);
-        } else if (token.tag == '/') {
-          if (stack.length === 0) {
-            throw new Error('Closing tag without opener: /' + token.n);
-          }
-          opener = stack.pop();
-          if (token.n != opener.n && !isCloser(token.n, opener.n, customTags)) {
-            throw new Error('Nesting error: ' + opener.n + ' vs. ' + token.n);
-          }
-          opener.end = token.i;
-          return instructions;
-        } else if (token.tag == '\n') {
-          token.last = (tokens.length == 0) || (tokens[0].tag == '\n');
-        }
-
-        instructions.push(token);
-      }
-
-      if (stack.length > 0) {
-        throw new Error('missing closing tag: ' + stack.pop().n);
-      }
-
-      return instructions;
-    }
-
-    function isOpener(token, tags) {
-      for (var i = 0, l = tags.length; i < l; i++) {
-        if (tags[i].o == token.n) {
-          token.tag = '#';
-          return true;
-        }
-      }
-    }
-
-    function isCloser(close, open, tags) {
-      for (var i = 0, l = tags.length; i < l; i++) {
-        if (tags[i].c == close && tags[i].o == open) {
-          return true;
-        }
-      }
-    }
-
-    function stringifySubstitutions(obj) {
-      var items = [];
-      for (var key in obj) {
-        items.push('"' + esc(key) + '": function(c,p,t,i) {' + obj[key] + '}');
-      }
-      return "{ " + items.join(",") + " }";
-    }
-
-    function stringifyPartials(codeObj) {
-      var partials = [];
-      for (var key in codeObj.partials) {
-        partials.push('"' + esc(key) + '":{name:"' + esc(codeObj.partials[key].name) + '", ' + stringifyPartials(codeObj.partials[key]) + "}");
-      }
-      return "partials: {" + partials.join(",") + "}, subs: " + stringifySubstitutions(codeObj.subs);
-    }
-
-    Hogan.stringify = function(codeObj, text, options) {
-      return "{code: function (c,p,i) { " + Hogan.wrapMain(codeObj.code) + " }," + stringifyPartials(codeObj) +  "}";
-    };
-
-    var serialNo = 0;
-    Hogan.generate = function(tree, text, options) {
-      serialNo = 0;
-      var context = { code: '', subs: {}, partials: {} };
-      Hogan.walk(tree, context);
-
-      if (options.asString) {
-        return this.stringify(context, text, options);
-      }
-
-      return this.makeTemplate(context, text, options);
-    };
-
-    Hogan.wrapMain = function(code) {
-      return 'var t=this;t.b(i=i||"");' + code + 'return t.fl();';
-    };
-
-    Hogan.template = Hogan.Template;
-
-    Hogan.makeTemplate = function(codeObj, text, options) {
-      var template = this.makePartials(codeObj);
-      template.code = new Function('c', 'p', 'i', this.wrapMain(codeObj.code));
-      return new this.template(template, text, this, options);
-    };
-
-    Hogan.makePartials = function(codeObj) {
-      var key, template = {subs: {}, partials: codeObj.partials, name: codeObj.name};
-      for (key in template.partials) {
-        template.partials[key] = this.makePartials(template.partials[key]);
-      }
-      for (key in codeObj.subs) {
-        template.subs[key] = new Function('c', 'p', 't', 'i', codeObj.subs[key]);
-      }
-      return template;
-    };
-
-    function esc(s) {
-      return s.replace(rSlash, '\\\\')
-              .replace(rQuot, '\\\"')
-              .replace(rNewline, '\\n')
-              .replace(rCr, '\\r')
-              .replace(rLineSep, '\\u2028')
-              .replace(rParagraphSep, '\\u2029');
-    }
-
-    function chooseMethod(s) {
-      return (~s.indexOf('.')) ? 'd' : 'f';
-    }
-
-    function createPartial(node, context) {
-      var prefix = "<" + (context.prefix || "");
-      var sym = prefix + node.n + serialNo++;
-      context.partials[sym] = {name: node.n, partials: {}};
-      context.code += 't.b(t.rp("' +  esc(sym) + '",c,p,"' + (node.indent || '') + '"));';
-      return sym;
-    }
-
-    Hogan.codegen = {
-      '#': function(node, context) {
-        context.code += 'if(t.s(t.' + chooseMethod(node.n) + '("' + esc(node.n) + '",c,p,1),' +
-                        'c,p,0,' + node.i + ',' + node.end + ',"' + node.otag + " " + node.ctag + '")){' +
-                        't.rs(c,p,' + 'function(c,p,t){';
-        Hogan.walk(node.nodes, context);
-        context.code += '});c.pop();}';
-      },
-
-      '^': function(node, context) {
-        context.code += 'if(!t.s(t.' + chooseMethod(node.n) + '("' + esc(node.n) + '",c,p,1),c,p,1,0,0,"")){';
-        Hogan.walk(node.nodes, context);
-        context.code += '};';
-      },
-
-      '>': createPartial,
-      '<': function(node, context) {
-        var ctx = {partials: {}, code: '', subs: {}, inPartial: true};
-        Hogan.walk(node.nodes, ctx);
-        var template = context.partials[createPartial(node, context)];
-        template.subs = ctx.subs;
-        template.partials = ctx.partials;
-      },
-
-      '$': function(node, context) {
-        var ctx = {subs: {}, code: '', partials: context.partials, prefix: node.n};
-        Hogan.walk(node.nodes, ctx);
-        context.subs[node.n] = ctx.code;
-        if (!context.inPartial) {
-          context.code += 't.sub("' + esc(node.n) + '",c,p,i);';
-        }
-      },
-
-      '\n': function(node, context) {
-        context.code += write('"\\n"' + (node.last ? '' : ' + i'));
-      },
-
-      '_v': function(node, context) {
-        context.code += 't.b(t.v(t.' + chooseMethod(node.n) + '("' + esc(node.n) + '",c,p,0)));';
-      },
-
-      '_t': function(node, context) {
-        context.code += write('"' + esc(node.text) + '"');
-      },
-
-      '{': tripleStache,
-
-      '&': tripleStache
-    };
-
-    function tripleStache(node, context) {
-      context.code += 't.b(t.t(t.' + chooseMethod(node.n) + '("' + esc(node.n) + '",c,p,0)));';
-    }
-
-    function write(s) {
-      return 't.b(' + s + ');';
-    }
-
-    Hogan.walk = function(nodelist, context) {
-      var func;
-      for (var i = 0, l = nodelist.length; i < l; i++) {
-        func = Hogan.codegen[nodelist[i].tag];
-        func && func(nodelist[i], context);
-      }
-      return context;
-    };
-
-    Hogan.parse = function(tokens, text, options) {
-      options = options || {};
-      return buildTree(tokens, '', [], options.sectionTags || []);
-    };
-
-    Hogan.cache = {};
-
-    Hogan.cacheKey = function(text, options) {
-      return [text, !!options.asString, !!options.disableLambda, options.delimiters, !!options.modelGet].join('||');
-    };
-
-    Hogan.compile = function(text, options) {
-      options = options || {};
-      var key = Hogan.cacheKey(text, options);
-      var template = this.cache[key];
-
-      if (template) {
-        var partials = template.partials;
-        for (var name in partials) {
-          delete partials[name].instance;
-        }
-        return template;
-      }
-
-      template = this.generate(this.parse(this.scan(text, options.delimiters), text, options), text, options);
-      return this.cache[key] = template;
-    };
-  })( exports );
-  });
-
-  var template = createCommonjsModule(function (module, exports) {
-
-  (function (Hogan) {
-    Hogan.Template = function (codeObj, text, compiler, options) {
-      codeObj = codeObj || {};
-      this.r = codeObj.code || this.r;
-      this.c = compiler;
-      this.options = options || {};
-      this.text = text || '';
-      this.partials = codeObj.partials || {};
-      this.subs = codeObj.subs || {};
-      this.buf = '';
-    };
-
-    Hogan.Template.prototype = {
-      // render: replaced by generated code.
-      r: function (context, partials, indent) { return ''; },
-
-      // variable escaping
-      v: hoganEscape,
-
-      // triple stache
-      t: coerceToString,
-
-      render: function render(context, partials, indent) {
-        return this.ri([context], partials || {}, indent);
-      },
-
-      // render internal -- a hook for overrides that catches partials too
-      ri: function (context, partials, indent) {
-        return this.r(context, partials, indent);
-      },
-
-      // ensurePartial
-      ep: function(symbol, partials) {
-        var partial = this.partials[symbol];
-
-        // check to see that if we've instantiated this partial before
-        var template = partials[partial.name];
-        if (partial.instance && partial.base == template) {
-          return partial.instance;
-        }
-
-        if (typeof template == 'string') {
-          if (!this.c) {
-            throw new Error("No compiler available.");
-          }
-          template = this.c.compile(template, this.options);
-        }
-
-        if (!template) {
-          return null;
-        }
-
-        // We use this to check whether the partials dictionary has changed
-        this.partials[symbol].base = template;
-
-        if (partial.subs) {
-          // Make sure we consider parent template now
-          if (!partials.stackText) partials.stackText = {};
-          for (key in partial.subs) {
-            if (!partials.stackText[key]) {
-              partials.stackText[key] = (this.activeSub !== undefined && partials.stackText[this.activeSub]) ? partials.stackText[this.activeSub] : this.text;
-            }
-          }
-          template = createSpecializedPartial(template, partial.subs, partial.partials,
-            this.stackSubs, this.stackPartials, partials.stackText);
-        }
-        this.partials[symbol].instance = template;
-
-        return template;
-      },
-
-      // tries to find a partial in the current scope and render it
-      rp: function(symbol, context, partials, indent) {
-        var partial = this.ep(symbol, partials);
-        if (!partial) {
-          return '';
-        }
-
-        return partial.ri(context, partials, indent);
-      },
-
-      // render a section
-      rs: function(context, partials, section) {
-        var tail = context[context.length - 1];
-
-        if (!isArray(tail)) {
-          section(context, partials, this);
-          return;
-        }
-
-        for (var i = 0; i < tail.length; i++) {
-          context.push(tail[i]);
-          section(context, partials, this);
-          context.pop();
-        }
-      },
-
-      // maybe start a section
-      s: function(val, ctx, partials, inverted, start, end, tags) {
-        var pass;
-
-        if (isArray(val) && val.length === 0) {
-          return false;
-        }
-
-        if (typeof val == 'function') {
-          val = this.ms(val, ctx, partials, inverted, start, end, tags);
-        }
-
-        pass = !!val;
-
-        if (!inverted && pass && ctx) {
-          ctx.push((typeof val == 'object') ? val : ctx[ctx.length - 1]);
-        }
-
-        return pass;
-      },
-
-      // find values with dotted names
-      d: function(key, ctx, partials, returnFound) {
-        var found,
-            names = key.split('.'),
-            val = this.f(names[0], ctx, partials, returnFound),
-            doModelGet = this.options.modelGet,
-            cx = null;
-
-        if (key === '.' && isArray(ctx[ctx.length - 2])) {
-          val = ctx[ctx.length - 1];
-        } else {
-          for (var i = 1; i < names.length; i++) {
-            found = findInScope(names[i], val, doModelGet);
-            if (found !== undefined) {
-              cx = val;
-              val = found;
-            } else {
-              val = '';
-            }
-          }
-        }
-
-        if (returnFound && !val) {
-          return false;
-        }
-
-        if (!returnFound && typeof val == 'function') {
-          ctx.push(cx);
-          val = this.mv(val, ctx, partials);
-          ctx.pop();
-        }
-
-        return val;
-      },
-
-      // find values with normal names
-      f: function(key, ctx, partials, returnFound) {
-        var val = false,
-            v = null,
-            found = false,
-            doModelGet = this.options.modelGet;
-
-        for (var i = ctx.length - 1; i >= 0; i--) {
-          v = ctx[i];
-          val = findInScope(key, v, doModelGet);
-          if (val !== undefined) {
-            found = true;
-            break;
-          }
-        }
-
-        if (!found) {
-          return (returnFound) ? false : "";
-        }
-
-        if (!returnFound && typeof val == 'function') {
-          val = this.mv(val, ctx, partials);
-        }
-
-        return val;
-      },
-
-      // higher order templates
-      ls: function(func, cx, partials, text, tags) {
-        var oldTags = this.options.delimiters;
-
-        this.options.delimiters = tags;
-        this.b(this.ct(coerceToString(func.call(cx, text)), cx, partials));
-        this.options.delimiters = oldTags;
-
-        return false;
-      },
-
-      // compile text
-      ct: function(text, cx, partials) {
-        if (this.options.disableLambda) {
-          throw new Error('Lambda features disabled.');
-        }
-        return this.c.compile(text, this.options).render(cx, partials);
-      },
-
-      // template result buffering
-      b: function(s) { this.buf += s; },
-
-      fl: function() { var r = this.buf; this.buf = ''; return r; },
-
-      // method replace section
-      ms: function(func, ctx, partials, inverted, start, end, tags) {
-        var textSource,
-            cx = ctx[ctx.length - 1],
-            result = func.call(cx);
-
-        if (typeof result == 'function') {
-          if (inverted) {
-            return true;
-          } else {
-            textSource = (this.activeSub && this.subsText && this.subsText[this.activeSub]) ? this.subsText[this.activeSub] : this.text;
-            return this.ls(result, cx, partials, textSource.substring(start, end), tags);
-          }
-        }
-
-        return result;
-      },
-
-      // method replace variable
-      mv: function(func, ctx, partials) {
-        var cx = ctx[ctx.length - 1];
-        var result = func.call(cx);
-
-        if (typeof result == 'function') {
-          return this.ct(coerceToString(result.call(cx)), cx, partials);
-        }
-
-        return result;
-      },
-
-      sub: function(name, context, partials, indent) {
-        var f = this.subs[name];
-        if (f) {
-          this.activeSub = name;
-          f(context, partials, this, indent);
-          this.activeSub = false;
-        }
-      }
-
-    };
-
-    //Find a key in an object
-    function findInScope(key, scope, doModelGet) {
-      var val;
-
-      if (scope && typeof scope == 'object') {
-
-        if (scope[key] !== undefined) {
-          val = scope[key];
-
-        // try lookup with get for backbone or similar model data
-        } else if (doModelGet && scope.get && typeof scope.get == 'function') {
-          val = scope.get(key);
-        }
-      }
-
-      return val;
-    }
-
-    function createSpecializedPartial(instance, subs, partials, stackSubs, stackPartials, stackText) {
-      function PartialTemplate() {}    PartialTemplate.prototype = instance;
-      function Substitutions() {}    Substitutions.prototype = instance.subs;
-      var key;
-      var partial = new PartialTemplate();
-      partial.subs = new Substitutions();
-      partial.subsText = {};  //hehe. substext.
-      partial.buf = '';
-
-      stackSubs = stackSubs || {};
-      partial.stackSubs = stackSubs;
-      partial.subsText = stackText;
-      for (key in subs) {
-        if (!stackSubs[key]) stackSubs[key] = subs[key];
-      }
-      for (key in stackSubs) {
-        partial.subs[key] = stackSubs[key];
-      }
-
-      stackPartials = stackPartials || {};
-      partial.stackPartials = stackPartials;
-      for (key in partials) {
-        if (!stackPartials[key]) stackPartials[key] = partials[key];
-      }
-      for (key in stackPartials) {
-        partial.partials[key] = stackPartials[key];
-      }
-
-      return partial;
-    }
-
-    var rAmp = /&/g,
-        rLt = /</g,
-        rGt = />/g,
-        rApos = /\'/g,
-        rQuot = /\"/g,
-        hChars = /[&<>\"\']/;
-
-    function coerceToString(val) {
-      return String((val === null || val === undefined) ? '' : val);
-    }
-
-    function hoganEscape(str) {
-      str = coerceToString(str);
-      return hChars.test(str) ?
-        str
-          .replace(rAmp, '&amp;')
-          .replace(rLt, '&lt;')
-          .replace(rGt, '&gt;')
-          .replace(rApos, '&#39;')
-          .replace(rQuot, '&quot;') :
-        str;
-    }
-
-    var isArray = Array.isArray || function(a) {
-      return Object.prototype.toString.call(a) === '[object Array]';
-    };
-
-  })( exports );
-  });
-
-  /*
-   *  Copyright 2011 Twitter, Inc.
-   *  Licensed under the Apache License, Version 2.0 (the "License");
-   *  you may not use this file except in compliance with the License.
-   *  You may obtain a copy of the License at
-   *
-   *  http://www.apache.org/licenses/LICENSE-2.0
-   *
-   *  Unless required by applicable law or agreed to in writing, software
-   *  distributed under the License is distributed on an "AS IS" BASIS,
-   *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-   *  See the License for the specific language governing permissions and
-   *  limitations under the License.
-   */
-
-  // This file is for use with Node.js. See dist/ for browser files.
-
-
-  compiler.Template = template.Template;
-  compiler.template = compiler.Template;
-  var hogan = compiler;
-
-  // We add all our template helper methods to the template as lambdas. Note
-  // that lambdas in Mustache are supposed to accept a second argument of
-  // `render` to get the rendered value, not the literal `{{value}}`. But
-  // this is currently broken (see https://github.com/twitter/hogan.js/issues/222).
-  function transformHelpersToHogan() {
-    var helpers = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-    var compileOptions = arguments.length > 1 ? arguments[1] : undefined;
-    var data = arguments.length > 2 ? arguments[2] : undefined;
-    return Object.keys(helpers).reduce(function (acc, helperKey) {
-      return _objectSpread2(_objectSpread2({}, acc), {}, _defineProperty({}, helperKey, function () {
-        var _this = this;
-
-        return function (text) {
-          var render = function render(value) {
-            return hogan.compile(value, compileOptions).render(_this);
-          };
-
-          return helpers[helperKey].call(data, text, render);
-        };
-      }));
-    }, {});
-  }
-
-  function renderTemplate(_ref) {
-    var templates = _ref.templates,
-        templateKey = _ref.templateKey,
-        compileOptions = _ref.compileOptions,
-        helpers = _ref.helpers,
-        data = _ref.data,
-        bindEvent = _ref.bindEvent;
-    var template = templates[templateKey];
-
-    if (typeof template !== 'string' && typeof template !== 'function') {
-      throw new Error("Template must be 'string' or 'function', was '".concat(_typeof(template), "' (key: ").concat(templateKey, ")"));
-    }
-
-    if (typeof template === 'function') {
-      return template(data, bindEvent);
-    }
-
-    var transformedHelpers = transformHelpersToHogan(helpers, compileOptions, data);
-    return hogan.compile(template, compileOptions).render(_objectSpread2(_objectSpread2({}, data), {}, {
-      helpers: transformedHelpers
-    })).replace(/[ \n\r\t\f\xA0]+/g, function (spaces) {
-      return spaces.replace(/(^|\xA0+)[^\xA0]+/g, '$1 ');
-    }).trim();
-  }
-
-  // We aren't using the native `Array.prototype.find` because the refactor away from Lodash is not
-  // published as a major version.
-  // Relying on the `find` polyfill on user-land, which before was only required for niche use-cases,
-  // was decided as too risky.
-  // @MAJOR Replace with the native `Array.prototype.find` method
-  // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/find
-  function find$1(items, predicate) {
-    var value;
-
-    for (var i = 0; i < items.length; i++) {
-      value = items[i]; // inlined for performance: if (Call(predicate, thisArg, [value, i, list])) {
-
-      if (predicate(value, i, items)) {
-        return value;
-      }
-    }
-
-    return undefined;
-  }
-
-  function unescapeFacetValue$3(value) {
-    if (typeof value === 'string') {
-      return value.replace(/^\\-/, '-');
-    }
-
-    return value;
-  }
-  function escapeFacetValue$4(value) {
-    if (typeof value === 'number' && value < 0 || typeof value === 'string') {
-      return String(value).replace(/^-/, '\\-');
-    }
-
-    return value;
-  }
-
-  function getRefinement$1(state, type, attribute, name) {
-    var resultsFacets = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : [];
-    var res = {
-      type: type,
-      attribute: attribute,
-      name: name,
-      escapedValue: escapeFacetValue$4(name)
-    };
-    var facet = find$1(resultsFacets, function (resultsFacet) {
-      return resultsFacet.name === attribute;
-    });
-    var count;
-
-    if (type === 'hierarchical') {
-      (function () {
-        var facetDeclaration = state.getHierarchicalFacetByName(attribute);
-        var nameParts = name.split(facetDeclaration.separator);
-
-        var getFacetRefinement = function getFacetRefinement(facetData) {
-          return function (refinementKey) {
-            return facetData[refinementKey];
-          };
-        };
-
-        var _loop = function _loop(i) {
-          facet = facet && facet.data && find$1(Object.keys(facet.data).map(getFacetRefinement(facet.data)), function (refinement) {
-            return refinement.name === nameParts[i];
-          });
-        };
-
-        for (var i = 0; facet !== undefined && i < nameParts.length; ++i) {
-          _loop(i);
-        }
-
-        count = facet && facet.count;
-      })();
-    } else {
-      count = facet && facet.data && facet.data[res.name];
-    }
-
-    if (count !== undefined) {
-      res.count = count;
-    }
-
-    if (facet && facet.exhaustive !== undefined) {
-      res.exhaustive = facet.exhaustive;
-    }
-
-    return res;
-  }
-
-  function getRefinements(results, state) {
-    var includesQuery = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
-    var refinements = [];
-    var _state$facetsRefineme = state.facetsRefinements,
-        facetsRefinements = _state$facetsRefineme === void 0 ? {} : _state$facetsRefineme,
-        _state$facetsExcludes = state.facetsExcludes,
-        facetsExcludes = _state$facetsExcludes === void 0 ? {} : _state$facetsExcludes,
-        _state$disjunctiveFac = state.disjunctiveFacetsRefinements,
-        disjunctiveFacetsRefinements = _state$disjunctiveFac === void 0 ? {} : _state$disjunctiveFac,
-        _state$hierarchicalFa = state.hierarchicalFacetsRefinements,
-        hierarchicalFacetsRefinements = _state$hierarchicalFa === void 0 ? {} : _state$hierarchicalFa,
-        _state$numericRefinem = state.numericRefinements,
-        numericRefinements = _state$numericRefinem === void 0 ? {} : _state$numericRefinem,
-        _state$tagRefinements = state.tagRefinements,
-        tagRefinements = _state$tagRefinements === void 0 ? [] : _state$tagRefinements;
-    Object.keys(facetsRefinements).forEach(function (attribute) {
-      var refinementNames = facetsRefinements[attribute];
-      refinementNames.forEach(function (refinementName) {
-        refinements.push(getRefinement$1(state, 'facet', attribute, refinementName, results.facets));
-      });
-    });
-    Object.keys(facetsExcludes).forEach(function (attribute) {
-      var refinementNames = facetsExcludes[attribute];
-      refinementNames.forEach(function (refinementName) {
-        refinements.push({
-          type: 'exclude',
-          attribute: attribute,
-          name: refinementName,
-          exclude: true
-        });
-      });
-    });
-    Object.keys(disjunctiveFacetsRefinements).forEach(function (attribute) {
-      var refinementNames = disjunctiveFacetsRefinements[attribute];
-      refinementNames.forEach(function (refinementName) {
-        refinements.push(getRefinement$1(state, 'disjunctive', attribute, // We unescape any disjunctive refined values with `unescapeFacetValue` because
-        // they can be escaped on negative numeric values with `escapeFacetValue`.
-        unescapeFacetValue$3(refinementName), results.disjunctiveFacets));
-      });
-    });
-    Object.keys(hierarchicalFacetsRefinements).forEach(function (attribute) {
-      var refinementNames = hierarchicalFacetsRefinements[attribute];
-      refinementNames.forEach(function (refinement) {
-        refinements.push(getRefinement$1(state, 'hierarchical', attribute, refinement, results.hierarchicalFacets));
-      });
-    });
-    Object.keys(numericRefinements).forEach(function (attribute) {
-      var operators = numericRefinements[attribute];
-      Object.keys(operators).forEach(function (operatorOriginal) {
-        var operator = operatorOriginal;
-        var valueOrValues = operators[operator];
-        var refinementNames = Array.isArray(valueOrValues) ? valueOrValues : [valueOrValues];
-        refinementNames.forEach(function (refinementName) {
-          refinements.push({
-            type: 'numeric',
-            attribute: attribute,
-            name: "".concat(refinementName),
-            numericValue: refinementName,
-            operator: operator
-          });
-        });
-      });
-    });
-    tagRefinements.forEach(function (refinementName) {
-      refinements.push({
-        type: 'tag',
-        attribute: '_tags',
-        name: refinementName
-      });
-    });
-
-    if (includesQuery && state.query && state.query.trim()) {
-      refinements.push({
-        attribute: 'query',
-        type: 'query',
-        name: state.query,
-        query: state.query
-      });
-    }
-
-    return refinements;
-  }
-
-  /**
-   * Clears the refinements of a SearchParameters object based on rules provided.
-   * The included attributes list is applied before the excluded attributes list. If the list
-   * is not provided, this list of all the currently refined attributes is used as included attributes.
-   * @param {object} $0 parameters
-   * @param {Helper} $0.helper instance of the Helper
-   * @param {string[]} [$0.attributesToClear = []] list of parameters to clear
-   * @returns {SearchParameters} search parameters with refinements cleared
-   */
-  function clearRefinements(_ref) {
-    var helper = _ref.helper,
-        _ref$attributesToClea = _ref.attributesToClear,
-        attributesToClear = _ref$attributesToClea === void 0 ? [] : _ref$attributesToClea;
-    var finalState = helper.state.setPage(0);
-    finalState = attributesToClear.reduce(function (state, attribute) {
-      if (finalState.isNumericRefined(attribute)) {
-        return state.removeNumericRefinement(attribute);
-      }
-
-      if (finalState.isHierarchicalFacet(attribute)) {
-        return state.removeHierarchicalFacetRefinement(attribute);
-      }
-
-      if (finalState.isDisjunctiveFacet(attribute)) {
-        return state.removeDisjunctiveFacetRefinement(attribute);
-      }
-
-      if (finalState.isConjunctiveFacet(attribute)) {
-        return state.removeFacetRefinement(attribute);
-      }
-
-      return state;
-    }, finalState);
-
-    if (attributesToClear.indexOf('query') !== -1) {
-      finalState = finalState.setQuery('');
-    }
-
-    return finalState;
-  }
-
-  function getObjectType(object) {
-    return Object.prototype.toString.call(object).slice(8, -1);
-  }
-
-  function checkRendering(rendering, usage) {
-    if (rendering === undefined || typeof rendering !== 'function') {
-      throw new Error("The render function is not valid (received type ".concat(getObjectType(rendering), ").\n\n").concat(usage));
-    }
-  }
-
   function noop() {}
 
   /**
@@ -7065,18 +6043,104 @@
     }).join(',\n  '), "\n]);\n```\n\nIf you're using custom widgets that do set these query parameters, we recommend using connectors instead.\n\nSee https://www.algolia.com/doc/guides/building-search-ui/widgets/customize-an-existing-widget/js/#customize-the-complete-ui-of-the-widgets")) ;
   }
 
-  function getPropertyByPath(object, path) {
-    var parts = Array.isArray(path) ? path : path.split('.');
-    return parts.reduce(function (current, key) {
-      return current && current[key];
-    }, object);
+  function getObjectType(object) {
+    return Object.prototype.toString.call(object).slice(8, -1);
   }
 
-  // This is the `Number.isFinite()` polyfill recommended by MDN.
-  // We do not provide any tests for this function.
-  // See: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/isFinite#Polyfill
-  function isFiniteNumber(value) {
-    return typeof value === 'number' && isFinite(value);
+  function checkRendering(rendering, usage) {
+    if (rendering === undefined || typeof rendering !== 'function') {
+      throw new Error("The render function is not valid (received type ".concat(getObjectType(rendering), ").\n\n").concat(usage));
+    }
+  }
+
+  /**
+   * Clears the refinements of a SearchParameters object based on rules provided.
+   * The included attributes list is applied before the excluded attributes list. If the list
+   * is not provided, this list of all the currently refined attributes is used as included attributes.
+   * @returns search parameters with refinements cleared
+   */
+  function clearRefinements(_ref) {
+    var helper = _ref.helper,
+        _ref$attributesToClea = _ref.attributesToClear,
+        attributesToClear = _ref$attributesToClea === void 0 ? [] : _ref$attributesToClea;
+    var finalState = helper.state.setPage(0);
+    finalState = attributesToClear.reduce(function (state, attribute) {
+      if (finalState.isNumericRefined(attribute)) {
+        return state.removeNumericRefinement(attribute);
+      }
+
+      if (finalState.isHierarchicalFacet(attribute)) {
+        return state.removeHierarchicalFacetRefinement(attribute);
+      }
+
+      if (finalState.isDisjunctiveFacet(attribute)) {
+        return state.removeDisjunctiveFacetRefinement(attribute);
+      }
+
+      if (finalState.isConjunctiveFacet(attribute)) {
+        return state.removeFacetRefinement(attribute);
+      }
+
+      return state;
+    }, finalState);
+
+    if (attributesToClear.indexOf('query') !== -1) {
+      finalState = finalState.setQuery('');
+    }
+
+    return finalState;
+  }
+
+  /**
+   * This implementation is taken from Lodash implementation.
+   * See: https://github.com/lodash/lodash/blob/4.17.11-npm/escape.js
+   */
+  // Used to map characters to HTML entities.
+  var htmlEntities = {
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#39;'
+  }; // Used to match HTML entities and HTML characters.
+
+  var regexUnescapedHtml = /[&<>"']/g;
+  var regexHasUnescapedHtml = RegExp(regexUnescapedHtml.source);
+  /**
+   * Converts the characters "&", "<", ">", '"', and "'" in `string` to their
+   * corresponding HTML entities.
+   */
+
+  function escape$1(value) {
+    return value && regexHasUnescapedHtml.test(value) ? value.replace(regexUnescapedHtml, function (character) {
+      return htmlEntities[character];
+    }) : value;
+  }
+  /**
+   * This implementation is taken from Lodash implementation.
+   * See: https://github.com/lodash/lodash/blob/4.17.11-npm/unescape.js
+   */
+  // Used to map HTML entities to characters.
+
+  var htmlCharacters = {
+    '&amp;': '&',
+    '&lt;': '<',
+    '&gt;': '>',
+    '&quot;': '"',
+    '&#39;': "'"
+  }; // Used to match HTML entities and HTML characters.
+
+  var regexEscapedHtml = /&(amp|quot|lt|gt|#39);/g;
+  var regexHasEscapedHtml = RegExp(regexEscapedHtml.source);
+  /**
+   * Converts the HTML entities "&", "<", ">", '"', and "'" in `string` to their
+   * characters.
+   */
+
+  function unescape$1(value) {
+    return value && regexHasEscapedHtml.test(value) ? value.replace(regexEscapedHtml, function (character) {
+      return htmlCharacters[character];
+    }) : value;
   }
 
   /**
@@ -7118,109 +6182,6 @@
     }
 
     return Object.getPrototypeOf(value) === proto;
-  }
-
-  function range(_ref) {
-    var _ref$start = _ref.start,
-        start = _ref$start === void 0 ? 0 : _ref$start,
-        end = _ref.end,
-        _ref$step = _ref.step,
-        step = _ref$step === void 0 ? 1 : _ref$step;
-    // We can't divide by 0 so we re-assign the step to 1 if it happens.
-    var limitStep = step === 0 ? 1 : step; // In some cases the array to create has a decimal length.
-    // We therefore need to round the value.
-    // Example:
-    //   { start: 1, end: 5000, step: 500 }
-    //   => Array length = (5000 - 1) / 500 = 9.998
-
-    var arrayLength = Math.round((end - start) / limitStep);
-    return _toConsumableArray(Array(arrayLength)).map(function (_, current) {
-      return start + current * limitStep;
-    });
-  }
-
-  function isPrimitive(obj) {
-    return obj !== Object(obj);
-  }
-
-  function isEqual(first, second) {
-    if (first === second) {
-      return true;
-    }
-
-    if (isPrimitive(first) || isPrimitive(second) || typeof first === 'function' || typeof second === 'function') {
-      return first === second;
-    }
-
-    if (Object.keys(first).length !== Object.keys(second).length) {
-      return false;
-    }
-
-    for (var _i = 0, _Object$keys = Object.keys(first); _i < _Object$keys.length; _i++) {
-      var key = _Object$keys[_i];
-
-      if (!(key in second)) {
-        return false;
-      }
-
-      if (!isEqual(first[key], second[key])) {
-        return false;
-      }
-    }
-
-    return true;
-  }
-
-  /**
-   * This implementation is taken from Lodash implementation.
-   * See: https://github.com/lodash/lodash/blob/4.17.11-npm/escape.js
-   */
-  // Used to map characters to HTML entities.
-  var htmlEscapes = {
-    '&': '&amp;',
-    '<': '&lt;',
-    '>': '&gt;',
-    '"': '&quot;',
-    "'": '&#39;'
-  }; // Used to match HTML entities and HTML characters.
-
-  var regexUnescapedHtml = /[&<>"']/g;
-  var regexHasUnescapedHtml = RegExp(regexUnescapedHtml.source);
-  /**
-   * Converts the characters "&", "<", ">", '"', and "'" in `string` to their
-   * corresponding HTML entities.
-   */
-
-  function escape$1(value) {
-    return value && regexHasUnescapedHtml.test(value) ? value.replace(regexUnescapedHtml, function (character) {
-      return htmlEscapes[character];
-    }) : value;
-  }
-
-  /**
-   * This implementation is taken from Lodash implementation.
-   * See: https://github.com/lodash/lodash/blob/4.17.11-npm/unescape.js
-   */
-  // Used to map HTML entities to characters.
-  var htmlEscapes$1 = {
-    '&amp;': '&',
-    '&lt;': '<',
-    '&gt;': '>',
-    '&quot;': '"',
-    '&#39;': "'"
-  }; // Used to match HTML entities and HTML characters.
-
-  var regexEscapedHtml = /&(amp|quot|lt|gt|#39);/g;
-  var regexHasEscapedHtml = RegExp(regexEscapedHtml.source);
-  /**
-   * Converts the HTML entities "&", "<", ">", '"', and "'" in `string` to their
-   * characters.
-   */
-
-  function unescape$1(value) {
-    return value && regexHasEscapedHtml.test(value) ? value.replace(regexEscapedHtml, function (character) {
-      return htmlEscapes$1[character];
-    }) : value;
   }
 
   var TAG_PLACEHOLDER = {
@@ -7290,6 +6251,562 @@
     }).join('');
   }
 
+  // copied from
+  // https://github.com/algolia/autocomplete.js/blob/307a7acc4283e10a19cb7d067f04f1bea79dc56f/packages/autocomplete-core/src/utils/createConcurrentSafePromise.ts#L1:L1
+
+  /**
+   * Creates a runner that executes promises in a concurrent-safe way.
+   *
+   * This is useful to prevent older promises to resolve after a newer promise,
+   * otherwise resulting in stale resolved values.
+   */
+  function createConcurrentSafePromise() {
+    var basePromiseId = -1;
+    var latestResolvedId = -1;
+    var latestResolvedValue = undefined;
+    return function runConcurrentSafePromise(promise) {
+      var currentPromiseId = ++basePromiseId;
+      return Promise.resolve(promise).then(function (x) {
+        // The promise might take too long to resolve and get outdated. This would
+        // result in resolving stale values.
+        // When this happens, we ignore the promise value and return the one
+        // coming from the latest resolved value.
+        //
+        // +----------------------------------+
+        // |        100ms                     |
+        // | run(1) +--->  R1                 |
+        // |        300ms                     |
+        // | run(2) +-------------> R2 (SKIP) |
+        // |        200ms                     |
+        // | run(3) +--------> R3             |
+        // +----------------------------------+
+        if (latestResolvedValue && currentPromiseId < latestResolvedId) {
+          return latestResolvedValue;
+        }
+
+        latestResolvedId = currentPromiseId;
+        latestResolvedValue = x;
+        return x;
+      });
+    };
+  }
+
+  function isFacetRefined(helper, facet, value) {
+    if (helper.state.isHierarchicalFacet(facet)) {
+      return helper.state.isHierarchicalFacetRefined(facet, value);
+    } else if (helper.state.isConjunctiveFacet(facet)) {
+      return helper.state.isFacetRefined(facet, value);
+    } else {
+      return helper.state.isDisjunctiveFacetRefined(facet, value);
+    }
+  }
+
+  function createSendEventForFacet(_ref) {
+    var instantSearchInstance = _ref.instantSearchInstance,
+        helper = _ref.helper,
+        attribute = _ref.attribute,
+        widgetType = _ref.widgetType;
+
+    var sendEventForFacet = function sendEventForFacet() {
+      for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+        args[_key] = arguments[_key];
+      }
+
+      var eventType = args[0],
+          facetValue = args[1],
+          _args$ = args[2],
+          eventName = _args$ === void 0 ? 'Filter Applied' : _args$;
+
+      if (args.length === 1 && _typeof(args[0]) === 'object') {
+        instantSearchInstance.sendEventToInsights(args[0]);
+      } else if (eventType === 'click' && (args.length === 2 || args.length === 3)) {
+        if (!isFacetRefined(helper, attribute, facetValue)) {
+          // send event only when the facet is being checked "ON"
+          instantSearchInstance.sendEventToInsights({
+            insightsMethod: 'clickedFilters',
+            widgetType: widgetType,
+            eventType: eventType,
+            payload: {
+              eventName: eventName,
+              index: helper.getIndex(),
+              filters: ["".concat(attribute, ":").concat(facetValue)]
+            },
+            attribute: attribute
+          });
+        }
+      } else {
+        throw new Error("You need to pass two arguments like:\n  sendEvent('click', facetValue);\n\nIf you want to send a custom payload, you can pass one object: sendEvent(customPayload);\n");
+      }
+    };
+
+    return sendEventForFacet;
+  }
+
+  function serializePayload(payload) {
+    return btoa(encodeURIComponent(JSON.stringify(payload)));
+  }
+  function deserializePayload(serialized) {
+    return JSON.parse(decodeURIComponent(atob(serialized)));
+  }
+
+  function chunk(arr) {
+    var chunkSize = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 20;
+    var chunks = [];
+
+    for (var i = 0; i < Math.ceil(arr.length / chunkSize); i++) {
+      chunks.push(arr.slice(i * chunkSize, (i + 1) * chunkSize));
+    }
+
+    return chunks;
+  }
+
+  var buildPayloads = function buildPayloads(_ref) {
+    var index = _ref.index,
+        widgetType = _ref.widgetType,
+        methodName = _ref.methodName,
+        args = _ref.args,
+        isSearchStalled = _ref.isSearchStalled;
+
+    // when there's only one argument, that means it's custom
+    if (args.length === 1 && _typeof(args[0]) === 'object') {
+      return [args[0]];
+    }
+
+    var eventType = args[0];
+    var hits = args[1];
+    var eventName = args[2];
+
+    if (!hits) {
+      {
+        throw new Error("You need to pass hit or hits as the second argument like:\n  ".concat(methodName, "(eventType, hit);\n  "));
+      }
+    }
+
+    if ((eventType === 'click' || eventType === 'conversion') && !eventName) {
+      {
+        throw new Error("You need to pass eventName as the third argument for 'click' or 'conversion' events like:\n  ".concat(methodName, "('click', hit, 'Product Purchased');\n\n  To learn more about event naming: https://www.algolia.com/doc/guides/getting-insights-and-analytics/search-analytics/click-through-and-conversions/in-depth/clicks-conversions-best-practices/\n  "));
+      }
+    }
+
+    var hitsArray = Array.isArray(hits) ? removeEscapedFromHits(hits) : [hits];
+
+    if (hitsArray.length === 0) {
+      return [];
+    }
+
+    var queryID = hitsArray[0].__queryID;
+    var hitsChunks = chunk(hitsArray);
+    var objectIDsByChunk = hitsChunks.map(function (batch) {
+      return batch.map(function (hit) {
+        return hit.objectID;
+      });
+    });
+    var positionsByChunk = hitsChunks.map(function (batch) {
+      return batch.map(function (hit) {
+        return hit.__position;
+      });
+    });
+
+    if (eventType === 'view') {
+      if (isSearchStalled) {
+        return [];
+      }
+
+      return hitsChunks.map(function (batch, i) {
+        return {
+          insightsMethod: 'viewedObjectIDs',
+          widgetType: widgetType,
+          eventType: eventType,
+          payload: {
+            eventName: eventName || 'Hits Viewed',
+            index: index,
+            objectIDs: objectIDsByChunk[i]
+          },
+          hits: batch
+        };
+      });
+    } else if (eventType === 'click') {
+      return hitsChunks.map(function (batch, i) {
+        return {
+          insightsMethod: 'clickedObjectIDsAfterSearch',
+          widgetType: widgetType,
+          eventType: eventType,
+          payload: {
+            eventName: eventName,
+            index: index,
+            queryID: queryID,
+            objectIDs: objectIDsByChunk[i],
+            positions: positionsByChunk[i]
+          },
+          hits: batch
+        };
+      });
+    } else if (eventType === 'conversion') {
+      return hitsChunks.map(function (batch, i) {
+        return {
+          insightsMethod: 'convertedObjectIDsAfterSearch',
+          widgetType: widgetType,
+          eventType: eventType,
+          payload: {
+            eventName: eventName,
+            index: index,
+            queryID: queryID,
+            objectIDs: objectIDsByChunk[i]
+          },
+          hits: batch
+        };
+      });
+    } else {
+      throw new Error("eventType(\"".concat(eventType, "\") is not supported.\n    If you want to send a custom payload, you can pass one object: ").concat(methodName, "(customPayload);\n    "));
+    }
+  };
+
+  function removeEscapedFromHits(hits) {
+    // remove `hits.__escaped` without mutating
+    return hits.slice();
+  }
+
+  function createSendEventForHits(_ref2) {
+    var instantSearchInstance = _ref2.instantSearchInstance,
+        index = _ref2.index,
+        widgetType = _ref2.widgetType;
+
+    var sendEventForHits = function sendEventForHits() {
+      for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+        args[_key] = arguments[_key];
+      }
+
+      var payloads = buildPayloads({
+        widgetType: widgetType,
+        index: index,
+        methodName: 'sendEvent',
+        args: args,
+        isSearchStalled: instantSearchInstance._isSearchStalled
+      });
+      payloads.forEach(function (payload) {
+        return instantSearchInstance.sendEventToInsights(payload);
+      });
+    };
+
+    return sendEventForHits;
+  }
+  function createBindEventForHits(_ref3) {
+    var index = _ref3.index,
+        widgetType = _ref3.widgetType;
+
+    var bindEventForHits = function bindEventForHits() {
+      for (var _len2 = arguments.length, args = new Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
+        args[_key2] = arguments[_key2];
+      }
+
+      var payloads = buildPayloads({
+        widgetType: widgetType,
+        index: index,
+        methodName: 'bindEvent',
+        args: args,
+        isSearchStalled: false
+      });
+      return payloads.length ? "data-insights-event=".concat(serializePayload(payloads)) : '';
+    };
+
+    return bindEventForHits;
+  }
+
+  function isIndexWidget(widget) {
+    return widget.$$type === 'ais.index';
+  }
+
+  function setIndexHelperState(finalUiState, indexWidget) {
+    var nextIndexUiState = finalUiState[indexWidget.getIndexId()] || {};
+
+    {
+      checkIndexUiState({
+        index: indexWidget,
+        indexUiState: nextIndexUiState
+      });
+    }
+
+    indexWidget.getHelper().setState(indexWidget.getWidgetSearchParameters(indexWidget.getHelper().state, {
+      uiState: nextIndexUiState
+    }));
+    indexWidget.getWidgets().filter(isIndexWidget).forEach(function (widget) {
+      return setIndexHelperState(finalUiState, widget);
+    });
+  }
+
+  function cx(cssClasses) {
+    return Array.isArray(cssClasses) ? cssClasses.filter(Boolean).join(' ') : cssClasses || '';
+  }
+
+  // Debounce a function call to the trailing edge.
+  // The debounced function returns a promise.
+  function debounce(func, wait) {
+    var lastTimeout = null;
+    return function () {
+      for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+        args[_key] = arguments[_key];
+      }
+
+      return new Promise(function (resolve, reject) {
+        if (lastTimeout) {
+          clearTimeout(lastTimeout);
+        }
+
+        lastTimeout = setTimeout(function () {
+          lastTimeout = null;
+          Promise.resolve(func.apply(void 0, args)).then(resolve).catch(reject);
+        }, wait);
+      });
+    };
+  }
+
+  var nextMicroTask = Promise.resolve();
+  function defer(callback) {
+    var progress = null;
+    var cancelled = false;
+
+    var fn = function fn() {
+      for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+        args[_key] = arguments[_key];
+      }
+
+      if (progress !== null) {
+        return;
+      }
+
+      progress = nextMicroTask.then(function () {
+        progress = null;
+
+        if (cancelled) {
+          cancelled = false;
+          return;
+        }
+
+        callback.apply(void 0, args);
+      });
+    };
+
+    fn.wait = function () {
+      if (progress === null) {
+        throw new Error('The deferred function should be called before calling `wait()`');
+      }
+
+      return progress;
+    };
+
+    fn.cancel = function () {
+      if (progress === null) {
+        return;
+      }
+
+      cancelled = true;
+    };
+
+    return fn;
+  }
+
+  function createDocumentationLink(_ref) {
+    var name = _ref.name,
+        _ref$connector = _ref.connector,
+        connector = _ref$connector === void 0 ? false : _ref$connector;
+    return ['https://www.algolia.com/doc/api-reference/widgets/', name, '/js/', connector ? '#connector' : ''].join('');
+  }
+  function createDocumentationMessageGenerator() {
+    for (var _len = arguments.length, widgets = new Array(_len), _key = 0; _key < _len; _key++) {
+      widgets[_key] = arguments[_key];
+    }
+
+    var links = widgets.map(function (widget) {
+      return createDocumentationLink(widget);
+    }).join(', ');
+    return function (message) {
+      return [message, "See documentation: ".concat(links)].filter(Boolean).join('\n\n');
+    };
+  }
+
+  function unescapeFacetValue$3(value) {
+    if (typeof value === 'string') {
+      return value.replace(/^\\-/, '-');
+    }
+
+    return value;
+  }
+  function escapeFacetValue$4(value) {
+    if (typeof value === 'number' && value < 0 || typeof value === 'string') {
+      return String(value).replace(/^-/, '\\-');
+    }
+
+    return value;
+  }
+
+  // We aren't using the native `Array.prototype.find` because the refactor away from Lodash is not
+  // published as a major version.
+  // Relying on the `find` polyfill on user-land, which before was only required for niche use-cases,
+  // was decided as too risky.
+  // @MAJOR Replace with the native `Array.prototype.find` method
+  // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/find
+  function find$1(items, predicate) {
+    var value;
+
+    for (var i = 0; i < items.length; i++) {
+      value = items[i]; // inlined for performance: if (Call(predicate, thisArg, [value, i, list])) {
+
+      if (predicate(value, i, items)) {
+        return value;
+      }
+    }
+
+    return undefined;
+  }
+
+  // We aren't using the native `Array.prototype.findIndex` because the refactor away from Lodash is not
+  // published as a major version.
+  // Relying on the `findIndex` polyfill on user-land, which before was only required for niche use-cases,
+  // was decided as too risky.
+  // @MAJOR Replace with the native `Array.prototype.findIndex` method
+  // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/findIndex
+  function findIndex$1(array, comparator) {
+    if (!Array.isArray(array)) {
+      return -1;
+    }
+
+    for (var i = 0; i < array.length; i++) {
+      if (comparator(array[i])) {
+        return i;
+      }
+    }
+
+    return -1;
+  }
+
+  var latLngRegExp = /^(-?\d+(?:\.\d+)?),\s*(-?\d+(?:\.\d+)?)$/;
+  function aroundLatLngToPosition(value) {
+    var pattern = value.match(latLngRegExp); // Since the value provided is the one send with the request, the API should
+    // throw an error due to the wrong format. So throw an error should be safe.
+
+    if (!pattern) {
+      throw new Error("Invalid value for \"aroundLatLng\" parameter: \"".concat(value, "\""));
+    }
+
+    return {
+      lat: parseFloat(pattern[1]),
+      lng: parseFloat(pattern[2])
+    };
+  }
+
+  function insideBoundingBoxArrayToBoundingBox(value) {
+    var _value = _slicedToArray(value, 1),
+        _value$ = _value[0];
+
+    _value$ = _value$ === void 0 ? [undefined, undefined, undefined, undefined] : _value$;
+
+    var _value$2 = _slicedToArray(_value$, 4),
+        neLat = _value$2[0],
+        neLng = _value$2[1],
+        swLat = _value$2[2],
+        swLng = _value$2[3]; // Since the value provided is the one send with the request, the API should
+    // throw an error due to the wrong format. So throw an error should be safe.
+
+
+    if (!neLat || !neLng || !swLat || !swLng) {
+      throw new Error("Invalid value for \"insideBoundingBox\" parameter: [".concat(value, "]"));
+    }
+
+    return {
+      northEast: {
+        lat: neLat,
+        lng: neLng
+      },
+      southWest: {
+        lat: swLat,
+        lng: swLng
+      }
+    };
+  }
+
+  function insideBoundingBoxStringToBoundingBox(value) {
+    var _value$split$map = value.split(',').map(parseFloat),
+        _value$split$map2 = _slicedToArray(_value$split$map, 4),
+        neLat = _value$split$map2[0],
+        neLng = _value$split$map2[1],
+        swLat = _value$split$map2[2],
+        swLng = _value$split$map2[3]; // Since the value provided is the one send with the request, the API should
+    // throw an error due to the wrong format. So throw an error should be safe.
+
+
+    if (!neLat || !neLng || !swLat || !swLng) {
+      throw new Error("Invalid value for \"insideBoundingBox\" parameter: \"".concat(value, "\""));
+    }
+
+    return {
+      northEast: {
+        lat: neLat,
+        lng: neLng
+      },
+      southWest: {
+        lat: swLat,
+        lng: swLng
+      }
+    };
+  }
+
+  function insideBoundingBoxToBoundingBox(value) {
+    if (Array.isArray(value)) {
+      return insideBoundingBoxArrayToBoundingBox(value);
+    }
+
+    return insideBoundingBoxStringToBoundingBox(value);
+  }
+
+  // typed as any, since it accepts the _real_ js clients, not the interface we otherwise expect
+  function getAppIdAndApiKey(searchClient) {
+    if (searchClient.transporter) {
+      // searchClient v4
+      var _searchClient$transpo = searchClient.transporter,
+          headers = _searchClient$transpo.headers,
+          queryParameters = _searchClient$transpo.queryParameters;
+      var APP_ID = 'x-algolia-application-id';
+      var API_KEY = 'x-algolia-api-key';
+      var appId = headers[APP_ID] || queryParameters[APP_ID];
+      var apiKey = headers[API_KEY] || queryParameters[API_KEY];
+      return [appId, apiKey];
+    } else {
+      // searchClient v3
+      return [searchClient.applicationID, searchClient.apiKey];
+    }
+  }
+
+  function isDomElement(object) {
+    return object instanceof HTMLElement || Boolean(object) && object.nodeType > 0;
+  }
+
+  /**
+   * Return the container. If it's a string, it is considered a
+   * css selector and retrieves the first matching element. Otherwise
+   * test if it validates that it's a correct DOMElement.
+   *
+   * @param {string|HTMLElement} selectorOrHTMLElement CSS Selector or container node.
+   * @return {HTMLElement} Container node
+   * @throws Error when the type is not correct
+   */
+
+  function getContainerNode(selectorOrHTMLElement) {
+    var isSelectorString = typeof selectorOrHTMLElement === 'string';
+    var domElement = isSelectorString ? document.querySelector(selectorOrHTMLElement) : selectorOrHTMLElement;
+
+    if (!isDomElement(domElement)) {
+      var errorMessage = 'Container must be `string` or `HTMLElement`.';
+
+      if (isSelectorString) {
+        errorMessage += " Unable to find ".concat(selectorOrHTMLElement);
+      }
+
+      throw new Error(errorMessage);
+    }
+
+    return domElement;
+  }
+
   function getHighlightedParts(highlightedValue) {
     var highlightPostTag = TAG_REPLACEMENT.highlightPostTag,
         highlightPreTag = TAG_REPLACEMENT.highlightPreTag;
@@ -7331,42 +6848,240 @@
     return current.isHighlighted;
   }
 
-  function reverseHighlightedParts(parts) {
-    if (!parts.some(function (part) {
-      return part.isHighlighted;
-    })) {
-      return parts.map(function (part) {
-        return _objectSpread2(_objectSpread2({}, part), {}, {
-          isHighlighted: false
+  function getPropertyByPath(object, path) {
+    var parts = Array.isArray(path) ? path : path.split('.');
+    return parts.reduce(function (current, key) {
+      return current && current[key];
+    }, object);
+  }
+
+  function getRefinement$1(state, type, attribute, name) {
+    var resultsFacets = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : [];
+    var res = {
+      type: type,
+      attribute: attribute,
+      name: name,
+      escapedValue: escapeFacetValue$4(name)
+    };
+    var facet = find$1(resultsFacets, function (resultsFacet) {
+      return resultsFacet.name === attribute;
+    });
+    var count;
+
+    if (type === 'hierarchical') {
+      (function () {
+        var facetDeclaration = state.getHierarchicalFacetByName(attribute);
+        var nameParts = name.split(facetDeclaration.separator);
+
+        var getFacetRefinement = function getFacetRefinement(facetData) {
+          return function (refinementKey) {
+            return facetData[refinementKey];
+          };
+        };
+
+        var _loop = function _loop(i) {
+          facet = facet && facet.data && find$1(Object.keys(facet.data).map(getFacetRefinement(facet.data)), function (refinement) {
+            return refinement.name === nameParts[i];
+          });
+        };
+
+        for (var i = 0; facet !== undefined && i < nameParts.length; ++i) {
+          _loop(i);
+        }
+
+        count = facet && facet.count;
+      })();
+    } else {
+      count = facet && facet.data && facet.data[res.name];
+    }
+
+    if (count !== undefined) {
+      res.count = count;
+    }
+
+    if (facet && facet.exhaustive !== undefined) {
+      res.exhaustive = facet.exhaustive;
+    }
+
+    return res;
+  }
+
+  function getRefinements(results, state) {
+    var includesQuery = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
+    var refinements = [];
+    var _state$facetsRefineme = state.facetsRefinements,
+        facetsRefinements = _state$facetsRefineme === void 0 ? {} : _state$facetsRefineme,
+        _state$facetsExcludes = state.facetsExcludes,
+        facetsExcludes = _state$facetsExcludes === void 0 ? {} : _state$facetsExcludes,
+        _state$disjunctiveFac = state.disjunctiveFacetsRefinements,
+        disjunctiveFacetsRefinements = _state$disjunctiveFac === void 0 ? {} : _state$disjunctiveFac,
+        _state$hierarchicalFa = state.hierarchicalFacetsRefinements,
+        hierarchicalFacetsRefinements = _state$hierarchicalFa === void 0 ? {} : _state$hierarchicalFa,
+        _state$numericRefinem = state.numericRefinements,
+        numericRefinements = _state$numericRefinem === void 0 ? {} : _state$numericRefinem,
+        _state$tagRefinements = state.tagRefinements,
+        tagRefinements = _state$tagRefinements === void 0 ? [] : _state$tagRefinements;
+    Object.keys(facetsRefinements).forEach(function (attribute) {
+      var refinementNames = facetsRefinements[attribute];
+      refinementNames.forEach(function (refinementName) {
+        refinements.push(getRefinement$1(state, 'facet', attribute, refinementName, results.facets));
+      });
+    });
+    Object.keys(facetsExcludes).forEach(function (attribute) {
+      var refinementNames = facetsExcludes[attribute];
+      refinementNames.forEach(function (refinementName) {
+        refinements.push({
+          type: 'exclude',
+          attribute: attribute,
+          name: refinementName,
+          exclude: true
         });
+      });
+    });
+    Object.keys(disjunctiveFacetsRefinements).forEach(function (attribute) {
+      var refinementNames = disjunctiveFacetsRefinements[attribute];
+      refinementNames.forEach(function (refinementName) {
+        refinements.push(getRefinement$1(state, 'disjunctive', attribute, // We unescape any disjunctive refined values with `unescapeFacetValue` because
+        // they can be escaped on negative numeric values with `escapeFacetValue`.
+        unescapeFacetValue$3(refinementName), results.disjunctiveFacets));
+      });
+    });
+    Object.keys(hierarchicalFacetsRefinements).forEach(function (attribute) {
+      var refinementNames = hierarchicalFacetsRefinements[attribute];
+      refinementNames.forEach(function (refinement) {
+        refinements.push(getRefinement$1(state, 'hierarchical', attribute, refinement, results.hierarchicalFacets));
+      });
+    });
+    Object.keys(numericRefinements).forEach(function (attribute) {
+      var operators = numericRefinements[attribute];
+      Object.keys(operators).forEach(function (operatorOriginal) {
+        var operator = operatorOriginal;
+        var valueOrValues = operators[operator];
+        var refinementNames = Array.isArray(valueOrValues) ? valueOrValues : [valueOrValues];
+        refinementNames.forEach(function (refinementName) {
+          refinements.push({
+            type: 'numeric',
+            attribute: attribute,
+            name: "".concat(refinementName),
+            numericValue: refinementName,
+            operator: operator
+          });
+        });
+      });
+    });
+    tagRefinements.forEach(function (refinementName) {
+      refinements.push({
+        type: 'tag',
+        attribute: '_tags',
+        name: refinementName
+      });
+    });
+
+    if (includesQuery && state.query && state.query.trim()) {
+      refinements.push({
+        attribute: 'query',
+        type: 'query',
+        name: state.query,
+        query: state.query
       });
     }
 
-    return parts.map(function (part, i) {
-      return _objectSpread2(_objectSpread2({}, part), {}, {
-        isHighlighted: !getHighlightFromSiblings(parts, i)
+    return refinements;
+  }
+
+  function getWidgetAttribute(widget, initOptions) {
+    var _widget$getWidgetRend;
+
+    var renderState = (_widget$getWidgetRend = widget.getWidgetRenderState) === null || _widget$getWidgetRend === void 0 ? void 0 : _widget$getWidgetRend.call(widget, initOptions);
+    var attribute = null;
+
+    if (renderState && renderState.widgetParams) {
+      // casting as widgetParams is checked just before
+      var widgetParams = renderState.widgetParams;
+
+      if (widgetParams.attribute) {
+        attribute = widgetParams.attribute;
+      } else if (Array.isArray(widgetParams.attributes)) {
+        attribute = widgetParams.attributes[0];
+      }
+    }
+
+    if (typeof attribute !== 'string') {
+      throw new Error("Could not find the attribute of the widget:\n\n".concat(JSON.stringify(widget), "\n\nPlease check whether the widget's getWidgetRenderState returns widgetParams.attribute correctly."));
+    }
+
+    return attribute;
+  }
+
+  function addAbsolutePosition(hits, page, hitsPerPage) {
+    return hits.map(function (hit, idx) {
+      return _objectSpread2(_objectSpread2({}, hit), {}, {
+        __position: hitsPerPage * page + idx + 1
       });
     });
   }
 
-  // We aren't using the native `Array.prototype.findIndex` because the refactor away from Lodash is not
-  // published as a major version.
-  // Relying on the `findIndex` polyfill on user-land, which before was only required for niche use-cases,
-  // was decided as too risky.
-  // @MAJOR Replace with the native `Array.prototype.findIndex` method
-  // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/findIndex
-  function findIndex$1(array, comparator) {
-    if (!Array.isArray(array)) {
-      return -1;
+  function addQueryID(hits, queryID) {
+    if (!queryID) {
+      return hits;
     }
 
-    for (var i = 0; i < array.length; i++) {
-      if (comparator(array[i])) {
-        return i;
+    return hits.map(function (hit) {
+      return _objectSpread2(_objectSpread2({}, hit), {}, {
+        __queryID: queryID
+      });
+    });
+  }
+
+  function isPrimitive(obj) {
+    return obj !== Object(obj);
+  }
+
+  function isEqual(first, second) {
+    if (first === second) {
+      return true;
+    }
+
+    if (isPrimitive(first) || isPrimitive(second) || typeof first === 'function' || typeof second === 'function') {
+      return first === second;
+    }
+
+    if (Object.keys(first).length !== Object.keys(second).length) {
+      return false;
+    }
+
+    for (var _i = 0, _Object$keys = Object.keys(first); _i < _Object$keys.length; _i++) {
+      var key = _Object$keys[_i];
+
+      if (!(key in second)) {
+        return false;
+      }
+
+      if (!isEqual(first[key], second[key])) {
+        return false;
       }
     }
 
-    return -1;
+    return true;
+  }
+
+  // This is the `Number.isFinite()` polyfill recommended by MDN.
+  // We do not provide any tests for this function.
+  // See: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/isFinite#Polyfill
+  // @MAJOR Replace with the native `Number.isFinite` method
+  function isFiniteNumber(value) {
+    return typeof value === 'number' && isFinite(value);
+  }
+
+  function isSpecialClick(event) {
+    var isMiddleClick = event.button === 1;
+    return isMiddleClick || event.altKey || event.ctrlKey || event.metaKey || event.shiftKey;
+  }
+
+  function uniq(array) {
+    return array.filter(function (value, index, self) {
+      return self.indexOf(value) === index;
+    });
   }
 
   var mergeWithRest = function mergeWithRest(left, right) {
@@ -7465,7 +7180,7 @@
     return left;
   };
 
-  var merge$1 = function merge() {
+  var mergeSearchParameters = function mergeSearchParameters() {
     for (var _len = arguments.length, parameters = new Array(_len), _key = 0; _key < _len; _key++) {
       parameters[_key] = arguments[_key];
     }
@@ -7485,7 +7200,26 @@
     });
   };
 
-  var resolveSearchParameters = function resolveSearchParameters(current) {
+  function range(_ref) {
+    var _ref$start = _ref.start,
+        start = _ref$start === void 0 ? 0 : _ref$start,
+        end = _ref.end,
+        _ref$step = _ref.step,
+        step = _ref$step === void 0 ? 1 : _ref$step;
+    // We can't divide by 0 so we re-assign the step to 1 if it happens.
+    var limitStep = step === 0 ? 1 : step; // In some cases the array to create has a decimal length.
+    // We therefore need to round the value.
+    // Example:
+    //   { start: 1, end: 5000, step: 500 }
+    //   => Array length = (5000 - 1) / 500 = 9.998
+
+    var arrayLength = Math.round((end - start) / limitStep);
+    return _toConsumableArray(Array(arrayLength)).map(function (_, current) {
+      return start + current * limitStep;
+    });
+  }
+
+  function resolveSearchParameters(current) {
     var parent = current.getParent();
     var states = [current.getHelper().state];
 
@@ -7495,477 +7229,30 @@
     }
 
     return states;
-  };
-
-  function toArray(value) {
-    return Array.isArray(value) ? value : [value];
   }
 
-  var createDocumentationLink = function createDocumentationLink(_ref) {
-    var name = _ref.name,
-        _ref$connector = _ref.connector,
-        connector = _ref$connector === void 0 ? false : _ref$connector;
-    return ['https://www.algolia.com/doc/api-reference/widgets/', name, '/js/', connector ? '#connector' : ''].join('');
-  };
-  var createDocumentationMessageGenerator = function createDocumentationMessageGenerator() {
-    for (var _len = arguments.length, widgets = new Array(_len), _key = 0; _key < _len; _key++) {
-      widgets[_key] = arguments[_key];
+  function reverseHighlightedParts(parts) {
+    if (!parts.some(function (part) {
+      return part.isHighlighted;
+    })) {
+      return parts.map(function (part) {
+        return _objectSpread2(_objectSpread2({}, part), {}, {
+          isHighlighted: false
+        });
+      });
     }
 
-    var links = widgets.map(function (widget) {
-      return createDocumentationLink(widget);
-    }).join(', ');
-    return function (message) {
-      return [message, "See documentation: ".concat(links)].filter(Boolean).join('\n\n');
-    };
-  };
-
-  var latLngRegExp = /^(-?\d+(?:\.\d+)?),\s*(-?\d+(?:\.\d+)?)$/;
-  function aroundLatLngToPosition(value) {
-    var pattern = value.match(latLngRegExp); // Since the value provided is the one send with the request, the API should
-    // throw an error due to the wrong format. So throw an error should be safe.
-
-    if (!pattern) {
-      throw new Error("Invalid value for \"aroundLatLng\" parameter: \"".concat(value, "\""));
-    }
-
-    return {
-      lat: parseFloat(pattern[1]),
-      lng: parseFloat(pattern[2])
-    };
-  }
-
-  function insideBoundingBoxArrayToBoundingBox(value) {
-    var _value = _slicedToArray(value, 1),
-        _value$ = _value[0];
-
-    _value$ = _value$ === void 0 ? [undefined, undefined, undefined, undefined] : _value$;
-
-    var _value$2 = _slicedToArray(_value$, 4),
-        neLat = _value$2[0],
-        neLng = _value$2[1],
-        swLat = _value$2[2],
-        swLng = _value$2[3]; // Since the value provided is the one send with the request, the API should
-    // throw an error due to the wrong format. So throw an error should be safe.
-
-
-    if (!neLat || !neLng || !swLat || !swLng) {
-      throw new Error("Invalid value for \"insideBoundingBox\" parameter: [".concat(value, "]"));
-    }
-
-    return {
-      northEast: {
-        lat: neLat,
-        lng: neLng
-      },
-      southWest: {
-        lat: swLat,
-        lng: swLng
-      }
-    };
-  }
-
-  function insideBoundingBoxStringToBoundingBox(value) {
-    var _value$split$map = value.split(',').map(parseFloat),
-        _value$split$map2 = _slicedToArray(_value$split$map, 4),
-        neLat = _value$split$map2[0],
-        neLng = _value$split$map2[1],
-        swLat = _value$split$map2[2],
-        swLng = _value$split$map2[3]; // Since the value provided is the one send with the request, the API should
-    // throw an error due to the wrong format. So throw an error should be safe.
-
-
-    if (!neLat || !neLng || !swLat || !swLng) {
-      throw new Error("Invalid value for \"insideBoundingBox\" parameter: \"".concat(value, "\""));
-    }
-
-    return {
-      northEast: {
-        lat: neLat,
-        lng: neLng
-      },
-      southWest: {
-        lat: swLat,
-        lng: swLng
-      }
-    };
-  }
-
-  function insideBoundingBoxToBoundingBox(value) {
-    if (Array.isArray(value)) {
-      return insideBoundingBoxArrayToBoundingBox(value);
-    }
-
-    return insideBoundingBoxStringToBoundingBox(value);
-  }
-
-  function addAbsolutePosition(hits, page, hitsPerPage) {
-    return hits.map(function (hit, idx) {
-      return _objectSpread2(_objectSpread2({}, hit), {}, {
-        __position: hitsPerPage * page + idx + 1
+    return parts.map(function (part, i) {
+      return _objectSpread2(_objectSpread2({}, part), {}, {
+        isHighlighted: !getHighlightFromSiblings(parts, i)
       });
     });
-  }
-
-  function addQueryID(hits, queryID) {
-    if (!queryID) {
-      return hits;
-    }
-
-    return hits.map(function (hit) {
-      return _objectSpread2(_objectSpread2({}, hit), {}, {
-        __queryID: queryID
-      });
-    });
-  }
-
-  function isFacetRefined(helper, facet, value) {
-    if (helper.state.isHierarchicalFacet(facet)) {
-      return helper.state.isHierarchicalFacetRefined(facet, value);
-    } else if (helper.state.isConjunctiveFacet(facet)) {
-      return helper.state.isFacetRefined(facet, value);
-    } else {
-      return helper.state.isDisjunctiveFacetRefined(facet, value);
-    }
-  }
-
-  function createSendEventForFacet(_ref) {
-    var instantSearchInstance = _ref.instantSearchInstance,
-        helper = _ref.helper,
-        attribute = _ref.attribute,
-        widgetType = _ref.widgetType;
-
-    var sendEventForFacet = function sendEventForFacet() {
-      for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
-        args[_key] = arguments[_key];
-      }
-
-      var eventType = args[0],
-          facetValue = args[1],
-          _args$ = args[2],
-          eventName = _args$ === void 0 ? 'Filter Applied' : _args$;
-
-      if (args.length === 1 && _typeof(args[0]) === 'object') {
-        instantSearchInstance.sendEventToInsights(args[0]);
-      } else if (eventType === 'click' && (args.length === 2 || args.length === 3)) {
-        if (!isFacetRefined(helper, attribute, facetValue)) {
-          // send event only when the facet is being checked "ON"
-          instantSearchInstance.sendEventToInsights({
-            insightsMethod: 'clickedFilters',
-            widgetType: widgetType,
-            eventType: eventType,
-            payload: {
-              eventName: eventName,
-              index: helper.getIndex(),
-              filters: ["".concat(attribute, ":").concat(facetValue)]
-            },
-            attribute: attribute
-          });
-        }
-      } else {
-        throw new Error("You need to pass two arguments like:\n  sendEvent('click', facetValue);\n\nIf you want to send a custom payload, you can pass one object: sendEvent(customPayload);\n");
-      }
-    };
-
-    return sendEventForFacet;
-  }
-
-  function serializePayload(payload) {
-    return btoa(encodeURIComponent(JSON.stringify(payload)));
-  }
-  function deserializePayload(serialized) {
-    return JSON.parse(decodeURIComponent(atob(serialized)));
-  }
-
-  function chunk(arr) {
-    var chunkSize = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 20;
-    var chunks = [];
-
-    for (var i = 0; i < Math.ceil(arr.length / chunkSize); i++) {
-      chunks.push(arr.slice(i * chunkSize, (i + 1) * chunkSize));
-    }
-
-    return chunks;
-  }
-
-  var buildPayloads = function buildPayloads(_ref) {
-    var index = _ref.index,
-        widgetType = _ref.widgetType,
-        methodName = _ref.methodName,
-        args = _ref.args;
-
-    // when there's only one argument, that means it's custom
-    if (args.length === 1 && _typeof(args[0]) === 'object') {
-      return [args[0]];
-    }
-
-    var eventType = args[0];
-    var hits = args[1];
-    var eventName = args[2];
-
-    if (!hits) {
-      {
-        throw new Error("You need to pass hit or hits as the second argument like:\n  ".concat(methodName, "(eventType, hit);\n  "));
-      }
-    }
-
-    if ((eventType === 'click' || eventType === 'conversion') && !eventName) {
-      {
-        throw new Error("You need to pass eventName as the third argument for 'click' or 'conversion' events like:\n  ".concat(methodName, "('click', hit, 'Product Purchased');\n\n  To learn more about event naming: https://www.algolia.com/doc/guides/getting-insights-and-analytics/search-analytics/click-through-and-conversions/in-depth/clicks-conversions-best-practices/\n  "));
-      }
-    }
-
-    var hitsArray = Array.isArray(hits) ? removeEscapedFromHits(hits) : [hits];
-
-    if (hitsArray.length === 0) {
-      return [];
-    }
-
-    var queryID = hitsArray[0].__queryID;
-    var hitsChunks = chunk(hitsArray);
-    var objectIDsByChunk = hitsChunks.map(function (batch) {
-      return batch.map(function (hit) {
-        return hit.objectID;
-      });
-    });
-    var positionsByChunk = hitsChunks.map(function (batch) {
-      return batch.map(function (hit) {
-        return hit.__position;
-      });
-    });
-
-    if (eventType === 'view') {
-      return hitsChunks.map(function (batch, i) {
-        return {
-          insightsMethod: 'viewedObjectIDs',
-          widgetType: widgetType,
-          eventType: eventType,
-          payload: {
-            eventName: eventName || 'Hits Viewed',
-            index: index,
-            objectIDs: objectIDsByChunk[i]
-          },
-          hits: batch
-        };
-      });
-    } else if (eventType === 'click') {
-      return hitsChunks.map(function (batch, i) {
-        return {
-          insightsMethod: 'clickedObjectIDsAfterSearch',
-          widgetType: widgetType,
-          eventType: eventType,
-          payload: {
-            eventName: eventName,
-            index: index,
-            queryID: queryID,
-            objectIDs: objectIDsByChunk[i],
-            positions: positionsByChunk[i]
-          },
-          hits: batch
-        };
-      });
-    } else if (eventType === 'conversion') {
-      return hitsChunks.map(function (batch, i) {
-        return {
-          insightsMethod: 'convertedObjectIDsAfterSearch',
-          widgetType: widgetType,
-          eventType: eventType,
-          payload: {
-            eventName: eventName,
-            index: index,
-            queryID: queryID,
-            objectIDs: objectIDsByChunk[i]
-          },
-          hits: batch
-        };
-      });
-    } else {
-      throw new Error("eventType(\"".concat(eventType, "\") is not supported.\n    If you want to send a custom payload, you can pass one object: ").concat(methodName, "(customPayload);\n    "));
-    }
-  };
-
-  function removeEscapedFromHits(hits) {
-    // remove `hits.__escaped` without mutating
-    return hits.slice();
-  }
-
-  function createSendEventForHits(_ref2) {
-    var instantSearchInstance = _ref2.instantSearchInstance,
-        index = _ref2.index,
-        widgetType = _ref2.widgetType;
-
-    var sendEventForHits = function sendEventForHits() {
-      for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
-        args[_key] = arguments[_key];
-      }
-
-      var payloads = buildPayloads({
-        widgetType: widgetType,
-        index: index,
-        methodName: 'sendEvent',
-        args: args
-      });
-      payloads.forEach(function (payload) {
-        return instantSearchInstance.sendEventToInsights(payload);
-      });
-    };
-
-    return sendEventForHits;
-  }
-  function createBindEventForHits(_ref3) {
-    var index = _ref3.index,
-        widgetType = _ref3.widgetType;
-
-    var bindEventForHits = function bindEventForHits() {
-      for (var _len2 = arguments.length, args = new Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
-        args[_key2] = arguments[_key2];
-      }
-
-      var payloads = buildPayloads({
-        widgetType: widgetType,
-        index: index,
-        methodName: 'bindEvent',
-        args: args
-      });
-      return payloads.length ? "data-insights-event=".concat(serializePayload(payloads)) : '';
-    };
-
-    return bindEventForHits;
-  }
-
-  // typed as any, since it accepts the _real_ js clients, not the interface we otherwise expect
-  function getAppIdAndApiKey(searchClient) {
-    if (searchClient.transporter) {
-      // searchClient v4
-      var _searchClient$transpo = searchClient.transporter,
-          headers = _searchClient$transpo.headers,
-          queryParameters = _searchClient$transpo.queryParameters;
-      var APP_ID = 'x-algolia-application-id';
-      var API_KEY = 'x-algolia-api-key';
-      var appId = headers[APP_ID] || queryParameters[APP_ID];
-      var apiKey = headers[API_KEY] || queryParameters[API_KEY];
-      return [appId, apiKey];
-    } else {
-      // searchClient v3
-      return [searchClient.applicationID, searchClient.apiKey];
-    }
-  }
-
-  function convertNumericRefinementsToFilters(state, attribute) {
-    if (!state) {
-      return null;
-    }
-
-    var filtersObj = state.numericRefinements[attribute];
-    /*
-      filtersObj === {
-        "<=": [10],
-        "=": [],
-        ">=": [5]
-      }
-    */
-
-    var filters = [];
-    Object.keys(filtersObj).filter(function (operator) {
-      return Array.isArray(filtersObj[operator]) && filtersObj[operator].length > 0;
-    }).forEach(function (operator) {
-      filtersObj[operator].forEach(function (value) {
-        filters.push("".concat(attribute).concat(operator).concat(value));
-      });
-    });
-    return filters;
-  }
-
-  // copied from
-  // https://github.com/algolia/autocomplete.js/blob/307a7acc4283e10a19cb7d067f04f1bea79dc56f/packages/autocomplete-core/src/utils/createConcurrentSafePromise.ts#L1:L1
-
-  /**
-   * Creates a runner that executes promises in a concurrent-safe way.
-   *
-   * This is useful to prevent older promises to resolve after a newer promise,
-   * otherwise resulting in stale resolved values.
-   */
-  function createConcurrentSafePromise() {
-    var basePromiseId = -1;
-    var latestResolvedId = -1;
-    var latestResolvedValue = undefined;
-    return function runConcurrentSafePromise(promise) {
-      var currentPromiseId = ++basePromiseId;
-      return Promise.resolve(promise).then(function (x) {
-        // The promise might take too long to resolve and get outdated. This would
-        // result in resolving stale values.
-        // When this happens, we ignore the promise value and return the one
-        // coming from the latest resolved value.
-        //
-        // +----------------------------------+
-        // |        100ms                     |
-        // | run(1) +--->  R1                 |
-        // |        300ms                     |
-        // | run(2) +-------------> R2 (SKIP) |
-        // |        200ms                     |
-        // | run(3) +--------> R3             |
-        // +----------------------------------+
-        if (latestResolvedValue && currentPromiseId < latestResolvedId) {
-          return latestResolvedValue;
-        }
-
-        latestResolvedId = currentPromiseId;
-        latestResolvedValue = x;
-        return x;
-      });
-    };
-  }
-
-  // Debounce a function call to the trailing edge.
-  // The debounced function returns a promise.
-  function debounce(func, wait) {
-    var lastTimeout = null;
-    return function () {
-      for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
-        args[_key] = arguments[_key];
-      }
-
-      return new Promise(function (resolve, reject) {
-        if (lastTimeout) {
-          clearTimeout(lastTimeout);
-        }
-
-        lastTimeout = setTimeout(function () {
-          lastTimeout = null;
-          Promise.resolve(func.apply(void 0, args)).then(resolve).catch(reject);
-        }, wait);
-      });
-    };
-  }
-
-  function getWidgetAttribute(widget, initOptions) {
-    var _widget$getWidgetRend;
-
-    var renderState = (_widget$getWidgetRend = widget.getWidgetRenderState) === null || _widget$getWidgetRend === void 0 ? void 0 : _widget$getWidgetRend.call(widget, initOptions);
-    var attribute = null;
-
-    if (renderState && renderState.widgetParams) {
-      // casting as widgetParams is checked just before
-      var widgetParams = renderState.widgetParams;
-
-      if (widgetParams.attribute) {
-        attribute = widgetParams.attribute;
-      } else if (Array.isArray(widgetParams.attributes)) {
-        attribute = widgetParams.attributes[0];
-      }
-    }
-
-    if (typeof attribute !== 'string') {
-      throw new Error("Could not find the attribute of the widget:\n\n".concat(JSON.stringify(widget), "\n\nPlease check whether the widget's getWidgetRenderState returns widgetParams.attribute correctly."));
-    }
-
-    return attribute;
   }
 
   // eslint-disable-next-line no-restricted-globals
 
   /**
-   * Runs code on browser enviromnents safely.
+   * Runs code on browser environments safely.
    */
   function safelyRunOnBrowser(callback) {
     var _ref = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {
@@ -7986,18 +7273,19 @@
     });
   }
 
+  function toArray(value) {
+    return Array.isArray(value) ? value : [value];
+  }
+
   var withUsage = createDocumentationMessageGenerator({
     name: 'index-widget'
   });
-  function isIndexWidget(widget) {
-    return widget.$$type === 'ais.index';
-  }
+
   /**
    * This is the same content as helper._change / setState, but allowing for extra
    * UiState to be synchronized.
    * see: https://github.com/algolia/algoliasearch-helper-js/blob/6b835ffd07742f2d6b314022cce6848f5cfecd4a/src/algoliasearch.helper.js#L1311-L1324
    */
-
   function privateHelperSetState(helper, _ref) {
     var state = _ref.state,
         isPageReset = _ref.isPageReset,
@@ -8276,7 +7564,9 @@
           if (instantSearchInstance.onStateChange) {
             instantSearchInstance.onStateChange({
               uiState: instantSearchInstance.mainIndex.getWidgetUiState({}),
-              setUiState: instantSearchInstance.setUiState.bind(instantSearchInstance)
+              setUiState: function setUiState(nextState) {
+                return instantSearchInstance.setUiState(nextState, false);
+              }
             }); // We don't trigger a search when controlled because it becomes the
             // responsibility of `setUiState`.
 
@@ -8297,7 +7587,7 @@
         };
 
         derivedHelper = mainHelper.derive(function () {
-          return merge$1.apply(void 0, _toConsumableArray(resolveSearchParameters(_this3)));
+          return mergeSearchParameters.apply(void 0, _toConsumableArray(resolveSearchParameters(_this3)));
         });
         var indexInitialResults = (_instantSearchInstanc = instantSearchInstance._initialResults) === null || _instantSearchInstanc === void 0 ? void 0 : _instantSearchInstanc[this.getIndexId()];
 
@@ -8536,7 +7826,7 @@
     instantSearchInstance.renderState = _objectSpread2(_objectSpread2({}, instantSearchInstance.renderState), {}, _defineProperty({}, parentIndexName, _objectSpread2(_objectSpread2({}, instantSearchInstance.renderState[parentIndexName]), renderState)));
   }
 
-  var version$1 = '4.40.5';
+  var version$1 = '4.46.2';
 
   var NAMESPACE = 'ais';
   var component = function component(componentName) {
@@ -8721,11 +8011,15 @@
     return getCookie(ANONYMOUS_TOKEN_COOKIE_KEY);
   }
 
+  function formatNumber(value, numberLocale) {
+    return value.toLocaleString(numberLocale);
+  }
+
   function hoganHelpers(_ref) {
     var numberLocale = _ref.numberLocale;
     return {
-      formatNumber: function formatNumber(value, render) {
-        return Number(render(value)).toLocaleString(numberLocale);
+      formatNumber: function formatNumber$1(value, render) {
+        return formatNumber(Number(render(value)), numberLocale);
       },
       highlight: function highlight$1(options, render) {
         try {
@@ -8873,7 +8167,7 @@
       return obj;
   };
 
-  var merge$2 = function merge(target, source, options) {
+  var merge$1 = function merge(target, source, options) {
       /* eslint no-param-reassign: 0 */
       if (!source) {
           return target;
@@ -9076,7 +8370,7 @@
       isBuffer: isBuffer,
       isRegExp: isRegExp,
       maybeMap: maybeMap,
-      merge: merge$2
+      merge: merge$1
   };
 
   var has$1 = Object.prototype.hasOwnProperty;
@@ -9921,6 +9215,7 @@
             instantSearchInstance.setUiState(stateMapping.routeToState(route));
           });
         },
+        started: function started() {},
         unsubscribe: function unsubscribe() {
           router.dispose();
         }
@@ -10013,6 +9308,7 @@
             refNode.appendChild(payloadContainer);
           }, 0);
         },
+        started: function started() {},
         unsubscribe: function unsubscribe() {
           payloadContainer.remove();
         }
@@ -10026,10 +9322,9 @@
 
   function defaultCreateURL() {
     return '#';
-  }
-  /**
-   * Global options for an InstantSearch instance.
-   */
+  } // this purposely breaks typescript's type inference to ensure it's not used
+  // as it's used for a default parameter for example
+  // source: https://github.com/Microsoft/TypeScript/issues/14829#issuecomment-504042546
 
 
   /**
@@ -10220,6 +9515,7 @@
         var newMiddlewareList = middleware.map(function (fn) {
           var newMiddleware = _objectSpread2({
             subscribe: noop,
+            started: noop,
             unsubscribe: noop,
             onStateChange: noop
           }, fn({
@@ -10238,6 +9534,7 @@
         if (this.started) {
           newMiddlewareList.forEach(function (m) {
             m.subscribe();
+            m.started();
           });
         }
 
@@ -10411,12 +9708,22 @@
 
         mainHelper.on('error', function (_ref4) {
           var error = _ref4.error;
-          // If an error is emitted, it is re-thrown by events. In previous versions
+
+          if (!(error instanceof Error)) {
+            // typescript lies here, error is in some cases { name: string, message: string }
+            var err = error;
+            error = Object.keys(err).reduce(function (acc, key) {
+              acc[key] = err[key];
+              return acc;
+            }, new Error(err.message));
+          } // If an error is emitted, it is re-thrown by events. In previous versions
           // we emitted {error}, which is thrown as:
           // "Uncaught, unspecified \"error\" event. ([object Object])"
           // To avoid breaking changes, we make the error available in both
           // `error` and `error.error`
           // @MAJOR emit only error
+
+
           error.error = error;
 
           _this3.emit('error', error);
@@ -10446,9 +9753,17 @@
           defer(function () {
             _this3.scheduleSearch = originalScheduleSearch;
           })();
-        } else {
-          this.scheduleSearch();
-        } // Keep the previous reference for legacy purpose, some pattern use
+        } // We only schedule a search when widgets have been added before `start()`
+        // because there are listeners that can use these results.
+        // This is especially useful in framework-based flavors that wait for
+        // dynamically-added widgets to trigger a network request. It avoids
+        // having to batch this initial network request with the one coming from
+        // `addWidgets()`.
+        // Later, we could also skip `index()` widgets and widgets that don't read
+        // the results, but this is an optimization that has a very low impact for now.
+        else if (this.mainIndex.getWidgets().length > 0) {
+            this.scheduleSearch();
+          } // Keep the previous reference for legacy purpose, some pattern use
         // the direct Helper access `search.helper` (e.g multi-index).
 
 
@@ -10456,6 +9771,10 @@
         // to init them directly after add
 
         this.started = true;
+        this.middleware.forEach(function (_ref6) {
+          var instance = _ref6.instance;
+          instance.started();
+        });
       }
       /**
        * Removes all widgets without triggering a search afterwards. This is an **EXPERIMENTAL** feature,
@@ -10482,8 +9801,8 @@
         this.mainHelper.removeAllListeners();
         this.mainHelper = null;
         this.helper = null;
-        this.middleware.forEach(function (_ref6) {
-          var instance = _ref6.instance;
+        this.middleware.forEach(function (_ref7) {
+          var instance = _ref7.instance;
           instance.unsubscribe();
         });
       }
@@ -10500,9 +9819,19 @@
           }, this._stalledSearchDelay);
         }
       }
+      /**
+       * Set the UI state and trigger a search.
+       * @param uiState The next UI state or a function computing it from the current state
+       * @param callOnStateChange private parameter used to know if the method is called from a state change
+       */
+
     }, {
       key: "setUiState",
       value: function setUiState(uiState) {
+        var _this5 = this;
+
+        var callOnStateChange = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
+
         if (!this.mainHelper) {
           throw new Error(withUsage$1('The `start` method needs to be called before `setUiState`.'));
         } // We refresh the index UI state to update the local UI state that the
@@ -10512,25 +9841,22 @@
         this.mainIndex.refreshUiState();
         var nextUiState = typeof uiState === 'function' ? uiState(this.mainIndex.getWidgetUiState({})) : uiState;
 
-        var setIndexHelperState = function setIndexHelperState(indexWidget) {
-          var nextIndexUiState = nextUiState[indexWidget.getIndexId()] || {};
+        if (this.onStateChange && callOnStateChange) {
+          this.onStateChange({
+            uiState: nextUiState,
+            setUiState: function setUiState(finalUiState) {
+              setIndexHelperState(typeof finalUiState === 'function' ? finalUiState(nextUiState) : finalUiState, _this5.mainIndex);
 
-          {
-            checkIndexUiState({
-              index: indexWidget,
-              indexUiState: nextIndexUiState
-            });
-          }
+              _this5.scheduleSearch();
 
-          indexWidget.getHelper().setState(indexWidget.getWidgetSearchParameters(indexWidget.getHelper().state, {
-            uiState: nextIndexUiState
-          }));
-          indexWidget.getWidgets().filter(isIndexWidget).forEach(setIndexHelperState);
-        };
-
-        setIndexHelperState(this.mainIndex);
-        this.scheduleSearch();
-        this.onInternalStateChange();
+              _this5.onInternalStateChange();
+            }
+          });
+        } else {
+          setIndexHelperState(nextUiState, this.mainIndex);
+          this.scheduleSearch();
+          this.onInternalStateChange();
+        }
       }
     }, {
       key: "getUiState",
@@ -10654,7 +9980,7 @@
           };
 
           connectorState.createURL = function () {
-            return createURL(merge$1.apply(void 0, _toConsumableArray(connectorState.attributesToClear.map(function (_ref4) {
+            return createURL(mergeSearchParameters.apply(void 0, _toConsumableArray(connectorState.attributesToClear.map(function (_ref4) {
               var indexHelper = _ref4.helper,
                   items = _ref4.items;
               return clearRefinements({
@@ -11378,9 +10704,7 @@
     };
   }
 
-  var n,l,u,t,r,o,f,e={},c=[],s=/acit|ex(?:s|g|n|p|$)|rph|grid|ows|mnc|ntw|ine[ch]|zoo|^ord|itera/i;function a(n,l){for(var u in l)n[u]=l[u];return n}function h(n){var l=n.parentNode;l&&l.removeChild(n);}function v(l,u,i){var t,r,o,f={};for(o in u)"key"==o?t=u[o]:"ref"==o?r=u[o]:f[o]=u[o];if(arguments.length>2&&(f.children=arguments.length>3?n.call(arguments,2):i),"function"==typeof l&&null!=l.defaultProps)for(o in l.defaultProps)void 0===f[o]&&(f[o]=l.defaultProps[o]);return y(l,f,t,r,null)}function y(n,i,t,r,o){var f={type:n,props:i,key:t,ref:r,__k:null,__:null,__b:0,__e:null,__d:void 0,__c:null,__h:null,constructor:void 0,__v:null==o?++u:o};return null==o&&null!=l.vnode&&l.vnode(f),f}function p(){return {current:null}}function d(n){return n.children}function _(n,l){this.props=n,this.context=l;}function k(n,l){if(null==l)return n.__?k(n.__,n.__.__k.indexOf(n)+1):null;for(var u;l<n.__k.length;l++)if(null!=(u=n.__k[l])&&null!=u.__e)return u.__e;return "function"==typeof n.type?k(n):null}function b(n){var l,u;if(null!=(n=n.__)&&null!=n.__c){for(n.__e=n.__c.base=null,l=0;l<n.__k.length;l++)if(null!=(u=n.__k[l])&&null!=u.__e){n.__e=n.__c.base=u.__e;break}return b(n)}}function m(n){(!n.__d&&(n.__d=!0)&&t.push(n)&&!g.__r++||o!==l.debounceRendering)&&((o=l.debounceRendering)||r)(g);}function g(){for(var n;g.__r=t.length;)n=t.sort(function(n,l){return n.__v.__b-l.__v.__b}),t=[],n.some(function(n){var l,u,i,t,r,o;n.__d&&(r=(t=(l=n).__v).__e,(o=l.__P)&&(u=[],(i=a({},t)).__v=t.__v+1,j(o,t,i,l.__n,void 0!==o.ownerSVGElement,null!=t.__h?[r]:null,u,null==r?k(t):r,t.__h),z(u,t),t.__e!=r&&b(t)));});}function w(n,l,u,i,t,r,o,f,s,a){var h,v,p,_,b,m,g,w=i&&i.__k||c,A=w.length;for(u.__k=[],h=0;h<l.length;h++)if(null!=(_=u.__k[h]=null==(_=l[h])||"boolean"==typeof _?null:"string"==typeof _||"number"==typeof _||"bigint"==typeof _?y(null,_,null,null,_):Array.isArray(_)?y(d,{children:_},null,null,null):_.__b>0?y(_.type,_.props,_.key,null,_.__v):_)){if(_.__=u,_.__b=u.__b+1,null===(p=w[h])||p&&_.key==p.key&&_.type===p.type)w[h]=void 0;else for(v=0;v<A;v++){if((p=w[v])&&_.key==p.key&&_.type===p.type){w[v]=void 0;break}p=null;}j(n,_,p=p||e,t,r,o,f,s,a),b=_.__e,(v=_.ref)&&p.ref!=v&&(g||(g=[]),p.ref&&g.push(p.ref,null,_),g.push(v,_.__c||b,_)),null!=b?(null==m&&(m=b),"function"==typeof _.type&&_.__k===p.__k?_.__d=s=x(_,s,n):s=P(n,_,p,w,b,s),"function"==typeof u.type&&(u.__d=s)):s&&p.__e==s&&s.parentNode!=n&&(s=k(p));}for(u.__e=m,h=A;h--;)null!=w[h]&&("function"==typeof u.type&&null!=w[h].__e&&w[h].__e==u.__d&&(u.__d=k(i,h+1)),N(w[h],w[h]));if(g)for(h=0;h<g.length;h++)M(g[h],g[++h],g[++h]);}function x(n,l,u){for(var i,t=n.__k,r=0;t&&r<t.length;r++)(i=t[r])&&(i.__=n,l="function"==typeof i.type?x(i,l,u):P(u,i,i,t,i.__e,l));return l}function P(n,l,u,i,t,r){var o,f,e;if(void 0!==l.__d)o=l.__d,l.__d=void 0;else if(null==u||t!=r||null==t.parentNode)n:if(null==r||r.parentNode!==n)n.appendChild(t),o=null;else{for(f=r,e=0;(f=f.nextSibling)&&e<i.length;e+=2)if(f==t)break n;n.insertBefore(t,r),o=r;}return void 0!==o?o:t.nextSibling}function C(n,l,u,i,t){var r;for(r in u)"children"===r||"key"===r||r in l||H(n,r,null,u[r],i);for(r in l)t&&"function"!=typeof l[r]||"children"===r||"key"===r||"value"===r||"checked"===r||u[r]===l[r]||H(n,r,l[r],u[r],i);}function $(n,l,u){"-"===l[0]?n.setProperty(l,u):n[l]=null==u?"":"number"!=typeof u||s.test(l)?u:u+"px";}function H(n,l,u,i,t){var r;n:if("style"===l)if("string"==typeof u)n.style.cssText=u;else{if("string"==typeof i&&(n.style.cssText=i=""),i)for(l in i)u&&l in u||$(n.style,l,"");if(u)for(l in u)i&&u[l]===i[l]||$(n.style,l,u[l]);}else if("o"===l[0]&&"n"===l[1])r=l!==(l=l.replace(/Capture$/,"")),l=l.toLowerCase()in n?l.toLowerCase().slice(2):l.slice(2),n.l||(n.l={}),n.l[l+r]=u,u?i||n.addEventListener(l,r?T:I,r):n.removeEventListener(l,r?T:I,r);else if("dangerouslySetInnerHTML"!==l){if(t)l=l.replace(/xlink[H:h]/,"h").replace(/sName$/,"s");else if("href"!==l&&"list"!==l&&"form"!==l&&"tabIndex"!==l&&"download"!==l&&l in n)try{n[l]=null==u?"":u;break n}catch(n){}"function"==typeof u||(null!=u&&(!1!==u||"a"===l[0]&&"r"===l[1])?n.setAttribute(l,u):n.removeAttribute(l));}}function I(n){this.l[n.type+!1](l.event?l.event(n):n);}function T(n){this.l[n.type+!0](l.event?l.event(n):n);}function j(n,u,i,t,r,o,f,e,c){var s,h,v,y,p,k,b,m,g,x,A,P=u.type;if(void 0!==u.constructor)return null;null!=i.__h&&(c=i.__h,e=u.__e=i.__e,u.__h=null,o=[e]),(s=l.__b)&&s(u);try{n:if("function"==typeof P){if(m=u.props,g=(s=P.contextType)&&t[s.__c],x=s?g?g.props.value:s.__:t,i.__c?b=(h=u.__c=i.__c).__=h.__E:("prototype"in P&&P.prototype.render?u.__c=h=new P(m,x):(u.__c=h=new _(m,x),h.constructor=P,h.render=O),g&&g.sub(h),h.props=m,h.state||(h.state={}),h.context=x,h.__n=t,v=h.__d=!0,h.__h=[]),null==h.__s&&(h.__s=h.state),null!=P.getDerivedStateFromProps&&(h.__s==h.state&&(h.__s=a({},h.__s)),a(h.__s,P.getDerivedStateFromProps(m,h.__s))),y=h.props,p=h.state,v)null==P.getDerivedStateFromProps&&null!=h.componentWillMount&&h.componentWillMount(),null!=h.componentDidMount&&h.__h.push(h.componentDidMount);else{if(null==P.getDerivedStateFromProps&&m!==y&&null!=h.componentWillReceiveProps&&h.componentWillReceiveProps(m,x),!h.__e&&null!=h.shouldComponentUpdate&&!1===h.shouldComponentUpdate(m,h.__s,x)||u.__v===i.__v){h.props=m,h.state=h.__s,u.__v!==i.__v&&(h.__d=!1),h.__v=u,u.__e=i.__e,u.__k=i.__k,u.__k.forEach(function(n){n&&(n.__=u);}),h.__h.length&&f.push(h);break n}null!=h.componentWillUpdate&&h.componentWillUpdate(m,h.__s,x),null!=h.componentDidUpdate&&h.__h.push(function(){h.componentDidUpdate(y,p,k);});}h.context=x,h.props=m,h.state=h.__s,(s=l.__r)&&s(u),h.__d=!1,h.__v=u,h.__P=n,s=h.render(h.props,h.state,h.context),h.state=h.__s,null!=h.getChildContext&&(t=a(a({},t),h.getChildContext())),v||null==h.getSnapshotBeforeUpdate||(k=h.getSnapshotBeforeUpdate(y,p)),A=null!=s&&s.type===d&&null==s.key?s.props.children:s,w(n,Array.isArray(A)?A:[A],u,i,t,r,o,f,e,c),h.base=u.__e,u.__h=null,h.__h.length&&f.push(h),b&&(h.__E=h.__=null),h.__e=!1;}else null==o&&u.__v===i.__v?(u.__k=i.__k,u.__e=i.__e):u.__e=L(i.__e,u,i,t,r,o,f,c);(s=l.diffed)&&s(u);}catch(n){u.__v=null,(c||null!=o)&&(u.__e=e,u.__h=!!c,o[o.indexOf(e)]=null),l.__e(n,u,i);}}function z(n,u){l.__c&&l.__c(u,n),n.some(function(u){try{n=u.__h,u.__h=[],n.some(function(n){n.call(u);});}catch(n){l.__e(n,u.__v);}});}function L(l,u,i,t,r,o,f,c){var s,a,v,y=i.props,p=u.props,d=u.type,_=0;if("svg"===d&&(r=!0),null!=o)for(;_<o.length;_++)if((s=o[_])&&"setAttribute"in s==!!d&&(d?s.localName===d:3===s.nodeType)){l=s,o[_]=null;break}if(null==l){if(null===d)return document.createTextNode(p);l=r?document.createElementNS("http://www.w3.org/2000/svg",d):document.createElement(d,p.is&&p),o=null,c=!1;}if(null===d)y===p||c&&l.data===p||(l.data=p);else{if(o=o&&n.call(l.childNodes),a=(y=i.props||e).dangerouslySetInnerHTML,v=p.dangerouslySetInnerHTML,!c){if(null!=o)for(y={},_=0;_<l.attributes.length;_++)y[l.attributes[_].name]=l.attributes[_].value;(v||a)&&(v&&(a&&v.__html==a.__html||v.__html===l.innerHTML)||(l.innerHTML=v&&v.__html||""));}if(C(l,p,y,r,c),v)u.__k=[];else if(_=u.props.children,w(l,Array.isArray(_)?_:[_],u,i,t,r&&"foreignObject"!==d,o,f,o?o[0]:i.__k&&k(i,0),c),null!=o)for(_=o.length;_--;)null!=o[_]&&h(o[_]);c||("value"in p&&void 0!==(_=p.value)&&(_!==y.value||_!==l.value||"progress"===d&&!_)&&H(l,"value",_,y.value,!1),"checked"in p&&void 0!==(_=p.checked)&&_!==l.checked&&H(l,"checked",_,y.checked,!1));}return l}function M(n,u,i){try{"function"==typeof n?n(u):n.current=u;}catch(n){l.__e(n,i);}}function N(n,u,i){var t,r;if(l.unmount&&l.unmount(n),(t=n.ref)&&(t.current&&t.current!==n.__e||M(t,null,u)),null!=(t=n.__c)){if(t.componentWillUnmount)try{t.componentWillUnmount();}catch(n){l.__e(n,u);}t.base=t.__P=null;}if(t=n.__k)for(r=0;r<t.length;r++)t[r]&&N(t[r],u,"function"!=typeof n.type);i||null==n.__e||h(n.__e),n.__e=n.__d=void 0;}function O(n,l,u){return this.constructor(n,u)}function S(u,i,t){var r,o,f;l.__&&l.__(u,i),o=(r="function"==typeof t)?null:t&&t.__k||i.__k,f=[],j(i,u=(!r&&t||i).__k=v(d,null,[u]),o||e,e,void 0!==i.ownerSVGElement,!r&&t?[t]:o?null:i.firstChild?n.call(i.childNodes):null,f,!r&&t?t:o?o.__e:i.firstChild,r),z(f,u);}n=c.slice,l={__e:function(n,l){for(var u,i,t;l=l.__;)if((u=l.__c)&&!u.__)try{if((i=u.constructor)&&null!=i.getDerivedStateFromError&&(u.setState(i.getDerivedStateFromError(n)),t=u.__d),null!=u.componentDidCatch&&(u.componentDidCatch(n),t=u.__d),t)return u.__E=u}catch(l){n=l;}throw n}},u=0,_.prototype.setState=function(n,l){var u;u=null!=this.__s&&this.__s!==this.state?this.__s:this.__s=a({},this.state),"function"==typeof n&&(n=n(a({},u),this.props)),n&&a(u,n),null!=n&&this.__v&&(l&&this.__h.push(l),m(this));},_.prototype.forceUpdate=function(n){this.__v&&(this.__e=!0,n&&this.__h.push(n),m(this));},_.prototype.render=d,t=[],r="function"==typeof Promise?Promise.prototype.then.bind(Promise.resolve()):setTimeout,g.__r=0,f=0;
-
-  /** @jsx h */
+  var n,l,u,t,o,r,f={},e=[],c=/acit|ex(?:s|g|n|p|$)|rph|grid|ows|mnc|ntw|ine[ch]|zoo|^ord|itera/i;function s(n,l){for(var u in l)n[u]=l[u];return n}function a(n){var l=n.parentNode;l&&l.removeChild(n);}function h(l,u,i){var t,o,r,f={};for(r in u)"key"==r?t=u[r]:"ref"==r?o=u[r]:f[r]=u[r];if(arguments.length>2&&(f.children=arguments.length>3?n.call(arguments,2):i),"function"==typeof l&&null!=l.defaultProps)for(r in l.defaultProps)void 0===f[r]&&(f[r]=l.defaultProps[r]);return v(l,f,t,o,null)}function v(n,i,t,o,r){var f={type:n,props:i,key:t,ref:o,__k:null,__:null,__b:0,__e:null,__d:void 0,__c:null,__h:null,constructor:void 0,__v:null==r?++u:r};return null==r&&null!=l.vnode&&l.vnode(f),f}function y(){return {current:null}}function p(n){return n.children}function d(n,l){this.props=n,this.context=l;}function _(n,l){if(null==l)return n.__?_(n.__,n.__.__k.indexOf(n)+1):null;for(var u;l<n.__k.length;l++)if(null!=(u=n.__k[l])&&null!=u.__e)return u.__e;return "function"==typeof n.type?_(n):null}function k(n){var l,u;if(null!=(n=n.__)&&null!=n.__c){for(n.__e=n.__c.base=null,l=0;l<n.__k.length;l++)if(null!=(u=n.__k[l])&&null!=u.__e){n.__e=n.__c.base=u.__e;break}return k(n)}}function b(n){(!n.__d&&(n.__d=!0)&&t.push(n)&&!g.__r++||o!==l.debounceRendering)&&((o=l.debounceRendering)||setTimeout)(g);}function g(){for(var n;g.__r=t.length;)n=t.sort(function(n,l){return n.__v.__b-l.__v.__b}),t=[],n.some(function(n){var l,u,i,t,o,r;n.__d&&(o=(t=(l=n).__v).__e,(r=l.__P)&&(u=[],(i=s({},t)).__v=t.__v+1,j(r,t,i,l.__n,void 0!==r.ownerSVGElement,null!=t.__h?[o]:null,u,null==o?_(t):o,t.__h),z(u,t),t.__e!=o&&k(t)));});}function w(n,l,u,i,t,o,r,c,s,a){var h,y,d,k,b,g,w,x=i&&i.__k||e,C=x.length;for(u.__k=[],h=0;h<l.length;h++)if(null!=(k=u.__k[h]=null==(k=l[h])||"boolean"==typeof k?null:"string"==typeof k||"number"==typeof k||"bigint"==typeof k?v(null,k,null,null,k):Array.isArray(k)?v(p,{children:k},null,null,null):k.__b>0?v(k.type,k.props,k.key,null,k.__v):k)){if(k.__=u,k.__b=u.__b+1,null===(d=x[h])||d&&k.key==d.key&&k.type===d.type)x[h]=void 0;else for(y=0;y<C;y++){if((d=x[y])&&k.key==d.key&&k.type===d.type){x[y]=void 0;break}d=null;}j(n,k,d=d||f,t,o,r,c,s,a),b=k.__e,(y=k.ref)&&d.ref!=y&&(w||(w=[]),d.ref&&w.push(d.ref,null,k),w.push(y,k.__c||b,k)),null!=b?(null==g&&(g=b),"function"==typeof k.type&&k.__k===d.__k?k.__d=s=m(k,s,n):s=A(n,k,d,x,b,s),"function"==typeof u.type&&(u.__d=s)):s&&d.__e==s&&s.parentNode!=n&&(s=_(d));}for(u.__e=g,h=C;h--;)null!=x[h]&&("function"==typeof u.type&&null!=x[h].__e&&x[h].__e==u.__d&&(u.__d=_(i,h+1)),N(x[h],x[h]));if(w)for(h=0;h<w.length;h++)M(w[h],w[++h],w[++h]);}function m(n,l,u){for(var i,t=n.__k,o=0;t&&o<t.length;o++)(i=t[o])&&(i.__=n,l="function"==typeof i.type?m(i,l,u):A(u,i,i,t,i.__e,l));return l}function A(n,l,u,i,t,o){var r,f,e;if(void 0!==l.__d)r=l.__d,l.__d=void 0;else if(null==u||t!=o||null==t.parentNode)n:if(null==o||o.parentNode!==n)n.appendChild(t),r=null;else{for(f=o,e=0;(f=f.nextSibling)&&e<i.length;e+=2)if(f==t)break n;n.insertBefore(t,o),r=o;}return void 0!==r?r:t.nextSibling}function C(n,l,u,i,t){var o;for(o in u)"children"===o||"key"===o||o in l||H(n,o,null,u[o],i);for(o in l)t&&"function"!=typeof l[o]||"children"===o||"key"===o||"value"===o||"checked"===o||u[o]===l[o]||H(n,o,l[o],u[o],i);}function $(n,l,u){"-"===l[0]?n.setProperty(l,u):n[l]=null==u?"":"number"!=typeof u||c.test(l)?u:u+"px";}function H(n,l,u,i,t){var o;n:if("style"===l)if("string"==typeof u)n.style.cssText=u;else{if("string"==typeof i&&(n.style.cssText=i=""),i)for(l in i)u&&l in u||$(n.style,l,"");if(u)for(l in u)i&&u[l]===i[l]||$(n.style,l,u[l]);}else if("o"===l[0]&&"n"===l[1])o=l!==(l=l.replace(/Capture$/,"")),l=l.toLowerCase()in n?l.toLowerCase().slice(2):l.slice(2),n.l||(n.l={}),n.l[l+o]=u,u?i||n.addEventListener(l,o?T:I,o):n.removeEventListener(l,o?T:I,o);else if("dangerouslySetInnerHTML"!==l){if(t)l=l.replace(/xlink(H|:h)/,"h").replace(/sName$/,"s");else if("href"!==l&&"list"!==l&&"form"!==l&&"tabIndex"!==l&&"download"!==l&&l in n)try{n[l]=null==u?"":u;break n}catch(n){}"function"==typeof u||(null!=u&&(!1!==u||"a"===l[0]&&"r"===l[1])?n.setAttribute(l,u):n.removeAttribute(l));}}function I(n){this.l[n.type+!1](l.event?l.event(n):n);}function T(n){this.l[n.type+!0](l.event?l.event(n):n);}function j(n,u,i,t,o,r,f,e,c){var a,h,v,y,_,k,b,g,m,x,A,C,$,H=u.type;if(void 0!==u.constructor)return null;null!=i.__h&&(c=i.__h,e=u.__e=i.__e,u.__h=null,r=[e]),(a=l.__b)&&a(u);try{n:if("function"==typeof H){if(g=u.props,m=(a=H.contextType)&&t[a.__c],x=a?m?m.props.value:a.__:t,i.__c?b=(h=u.__c=i.__c).__=h.__E:("prototype"in H&&H.prototype.render?u.__c=h=new H(g,x):(u.__c=h=new d(g,x),h.constructor=H,h.render=O),m&&m.sub(h),h.props=g,h.state||(h.state={}),h.context=x,h.__n=t,v=h.__d=!0,h.__h=[]),null==h.__s&&(h.__s=h.state),null!=H.getDerivedStateFromProps&&(h.__s==h.state&&(h.__s=s({},h.__s)),s(h.__s,H.getDerivedStateFromProps(g,h.__s))),y=h.props,_=h.state,v)null==H.getDerivedStateFromProps&&null!=h.componentWillMount&&h.componentWillMount(),null!=h.componentDidMount&&h.__h.push(h.componentDidMount);else{if(null==H.getDerivedStateFromProps&&g!==y&&null!=h.componentWillReceiveProps&&h.componentWillReceiveProps(g,x),!h.__e&&null!=h.shouldComponentUpdate&&!1===h.shouldComponentUpdate(g,h.__s,x)||u.__v===i.__v){h.props=g,h.state=h.__s,u.__v!==i.__v&&(h.__d=!1),h.__v=u,u.__e=i.__e,u.__k=i.__k,u.__k.forEach(function(n){n&&(n.__=u);}),h.__h.length&&f.push(h);break n}null!=h.componentWillUpdate&&h.componentWillUpdate(g,h.__s,x),null!=h.componentDidUpdate&&h.__h.push(function(){h.componentDidUpdate(y,_,k);});}if(h.context=x,h.props=g,h.__v=u,h.__P=n,A=l.__r,C=0,"prototype"in H&&H.prototype.render)h.state=h.__s,h.__d=!1,A&&A(u),a=h.render(h.props,h.state,h.context);else do{h.__d=!1,A&&A(u),a=h.render(h.props,h.state,h.context),h.state=h.__s;}while(h.__d&&++C<25);h.state=h.__s,null!=h.getChildContext&&(t=s(s({},t),h.getChildContext())),v||null==h.getSnapshotBeforeUpdate||(k=h.getSnapshotBeforeUpdate(y,_)),$=null!=a&&a.type===p&&null==a.key?a.props.children:a,w(n,Array.isArray($)?$:[$],u,i,t,o,r,f,e,c),h.base=u.__e,u.__h=null,h.__h.length&&f.push(h),b&&(h.__E=h.__=null),h.__e=!1;}else null==r&&u.__v===i.__v?(u.__k=i.__k,u.__e=i.__e):u.__e=L(i.__e,u,i,t,o,r,f,c);(a=l.diffed)&&a(u);}catch(n){u.__v=null,(c||null!=r)&&(u.__e=e,u.__h=!!c,r[r.indexOf(e)]=null),l.__e(n,u,i);}}function z(n,u){l.__c&&l.__c(u,n),n.some(function(u){try{n=u.__h,u.__h=[],n.some(function(n){n.call(u);});}catch(n){l.__e(n,u.__v);}});}function L(l,u,i,t,o,r,e,c){var s,h,v,y=i.props,p=u.props,d=u.type,k=0;if("svg"===d&&(o=!0),null!=r)for(;k<r.length;k++)if((s=r[k])&&"setAttribute"in s==!!d&&(d?s.localName===d:3===s.nodeType)){l=s,r[k]=null;break}if(null==l){if(null===d)return document.createTextNode(p);l=o?document.createElementNS("http://www.w3.org/2000/svg",d):document.createElement(d,p.is&&p),r=null,c=!1;}if(null===d)y===p||c&&l.data===p||(l.data=p);else{if(r=r&&n.call(l.childNodes),h=(y=i.props||f).dangerouslySetInnerHTML,v=p.dangerouslySetInnerHTML,!c){if(null!=r)for(y={},k=0;k<l.attributes.length;k++)y[l.attributes[k].name]=l.attributes[k].value;(v||h)&&(v&&(h&&v.__html==h.__html||v.__html===l.innerHTML)||(l.innerHTML=v&&v.__html||""));}if(C(l,p,y,o,c),v)u.__k=[];else if(k=u.props.children,w(l,Array.isArray(k)?k:[k],u,i,t,o&&"foreignObject"!==d,r,e,r?r[0]:i.__k&&_(i,0),c),null!=r)for(k=r.length;k--;)null!=r[k]&&a(r[k]);c||("value"in p&&void 0!==(k=p.value)&&(k!==l.value||"progress"===d&&!k||"option"===d&&k!==y.value)&&H(l,"value",k,y.value,!1),"checked"in p&&void 0!==(k=p.checked)&&k!==l.checked&&H(l,"checked",k,y.checked,!1));}return l}function M(n,u,i){try{"function"==typeof n?n(u):n.current=u;}catch(n){l.__e(n,i);}}function N(n,u,i){var t,o;if(l.unmount&&l.unmount(n),(t=n.ref)&&(t.current&&t.current!==n.__e||M(t,null,u)),null!=(t=n.__c)){if(t.componentWillUnmount)try{t.componentWillUnmount();}catch(n){l.__e(n,u);}t.base=t.__P=null;}if(t=n.__k)for(o=0;o<t.length;o++)t[o]&&N(t[o],u,"function"!=typeof n.type);i||null==n.__e||a(n.__e),n.__e=n.__d=void 0;}function O(n,l,u){return this.constructor(n,u)}function P(u,i,t){var o,r,e;l.__&&l.__(u,i),r=(o="function"==typeof t)?null:t&&t.__k||i.__k,e=[],j(i,u=(!o&&t||i).__k=h(p,null,[u]),r||f,f,void 0!==i.ownerSVGElement,!o&&t?[t]:r?null:i.firstChild?n.call(i.childNodes):null,e,!o&&t?t:r?r.__e:i.firstChild,o),z(e,u);}n=e.slice,l={__e:function(n,l,u,i){for(var t,o,r;l=l.__;)if((t=l.__c)&&!t.__)try{if((o=t.constructor)&&null!=o.getDerivedStateFromError&&(t.setState(o.getDerivedStateFromError(n)),r=t.__d),null!=t.componentDidCatch&&(t.componentDidCatch(n,i||{}),r=t.__d),r)return t.__E=t}catch(l){n=l;}throw n}},u=0,d.prototype.setState=function(n,l){var u;u=null!=this.__s&&this.__s!==this.state?this.__s:this.__s=s({},this.state),"function"==typeof n&&(n=n(s({},u),this.props)),n&&s(u,n),null!=n&&this.__v&&(l&&this.__h.push(l),b(this));},d.prototype.forceUpdate=function(n){this.__v&&(this.__e=!0,n&&this.__h.push(n),b(this));},d.prototype.render=p,t=[],g.__r=0,r=0;
 
   var findInsightsTarget = function findInsightsTarget(startElement, endElement, validator) {
     var element = startElement;
@@ -11441,9 +10765,9 @@
         }
       };
 
-      return v("div", {
+      return h("div", {
         onClick: handleClick
-      }, v(BaseComponent, props));
+      }, h(BaseComponent, props));
     }
 
     return WithInsightsListener;
@@ -11553,6 +10877,7 @@
               results = _ref5.results,
               createURL = _ref5.createURL,
               helper = _ref5.helper;
+          var canRefine = results ? results.nbHits > 0 : false;
           return {
             items: transformItems(normalizeItems(state), {
               results: results
@@ -11562,7 +10887,8 @@
               state: state,
               createURL: createURL
             }),
-            hasNoResults: results ? results.nbHits === 0 : true,
+            hasNoResults: !canRefine,
+            canRefine: canRefine,
             widgetParams: widgetParams
           };
         },
@@ -12033,46 +11359,11 @@
   var $$type = 'ais.numericMenu';
 
   var createSendEvent = function createSendEvent(_ref) {
-    var instantSearchInstance = _ref.instantSearchInstance,
-        helper = _ref.helper,
-        attribute = _ref.attribute;
+    var instantSearchInstance = _ref.instantSearchInstance;
     return function () {
-      for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
-        args[_key] = arguments[_key];
-      }
-
-      if (args.length === 1) {
-        instantSearchInstance.sendEventToInsights(args[0]);
+      if (arguments.length === 1) {
+        instantSearchInstance.sendEventToInsights(arguments.length <= 0 ? undefined : arguments[0]);
         return;
-      }
-
-      var eventType = args[0],
-          facetValue = args[1],
-          _args$ = args[2],
-          eventName = _args$ === void 0 ? 'Filter Applied' : _args$;
-
-      if (eventType !== 'click') {
-        return;
-      } // facetValue === "%7B%22start%22:5,%22end%22:10%7D"
-
-
-      var filters = convertNumericRefinementsToFilters(getRefinedState(helper.state, attribute, facetValue), attribute);
-
-      if (filters && filters.length > 0) {
-        /*
-          filters === ["price<=10", "price>=5"]
-        */
-        instantSearchInstance.sendEventToInsights({
-          insightsMethod: 'clickedFilters',
-          widgetType: $$type,
-          eventType: eventType,
-          payload: {
-            eventName: eventName,
-            index: helper.getIndex(),
-            filters: filters
-          },
-          attribute: attribute
-        });
       }
     };
   };
@@ -12217,18 +11508,39 @@
 
           if (!connectorState.sendEvent) {
             connectorState.sendEvent = createSendEvent({
-              instantSearchInstance: instantSearchInstance,
-              helper: helper,
-              attribute: attribute
+              instantSearchInstance: instantSearchInstance
             });
+          }
+
+          var hasNoResults = results ? results.nbHits === 0 : true;
+          var preparedItems = prepareItems(state);
+          var allIsSelected = true;
+
+          var _iterator = _createForOfIteratorHelper(preparedItems),
+              _step;
+
+          try {
+            for (_iterator.s(); !(_step = _iterator.n()).done;) {
+              var item = _step.value;
+
+              if (item.isRefined && decodeURI(item.value) !== '{}') {
+                allIsSelected = false;
+                break;
+              }
+            }
+          } catch (err) {
+            _iterator.e(err);
+          } finally {
+            _iterator.f();
           }
 
           return {
             createURL: connectorState.createURL(state),
-            items: transformItems(prepareItems(state), {
+            items: transformItems(preparedItems, {
               results: results
             }),
-            hasNoResults: results ? results.nbHits === 0 : true,
+            hasNoResults: hasNoResults,
+            canRefine: !(hasNoResults && allIsSelected),
             refine: connectorState.refine,
             sendEvent: connectorState.sendEvent,
             widgetParams: widgetParams
@@ -12645,50 +11957,12 @@
         return null;
       };
 
-      var sendEventWithRefinedState = function sendEventWithRefinedState(refinedState, instantSearchInstance, helper) {
-        var eventName = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 'Filter Applied';
-        var filters = convertNumericRefinementsToFilters(refinedState, attribute);
-
-        if (filters && filters.length > 0) {
-          instantSearchInstance.sendEventToInsights({
-            insightsMethod: 'clickedFilters',
-            widgetType: $$type$1,
-            eventType: 'click',
-            payload: {
-              eventName: eventName,
-              index: helper.getIndex(),
-              filters: filters
-            },
-            attribute: attribute
-          });
-        }
-      };
-
-      var createSendEvent = function createSendEvent(instantSearchInstance, helper, currentRange) {
+      var createSendEvent = function createSendEvent(instantSearchInstance) {
         return function () {
-          for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
-            args[_key] = arguments[_key];
-          }
-
-          if (args.length === 1) {
-            instantSearchInstance.sendEventToInsights(args[0]);
+          if (arguments.length === 1) {
+            instantSearchInstance.sendEventToInsights(arguments.length <= 0 ? undefined : arguments[0]);
             return;
           }
-
-          var eventType = args[0],
-              facetValue = args[1],
-              eventName = args[2];
-
-          if (eventType !== 'click') {
-            return;
-          }
-
-          var _facetValue = _slicedToArray(facetValue, 2),
-              nextMin = _facetValue[0],
-              nextMax = _facetValue[1];
-
-          var refinedState = getRefinedState(helper, currentRange, nextMin, nextMax);
-          sendEventWithRefinedState(refinedState, instantSearchInstance, helper, eventName);
         };
       };
 
@@ -12734,7 +12008,7 @@
         return [min, max];
       }
 
-      function _refine(instantSearchInstance, helper, currentRange) {
+      function _refine(helper, currentRange) {
         return function () {
           var _ref11 = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [undefined, undefined],
               _ref12 = _slicedToArray(_ref11, 2),
@@ -12744,7 +12018,6 @@
           var refinedState = getRefinedState(helper, currentRange, nextMin, nextMax);
 
           if (refinedState) {
-            sendEventWithRefinedState(refinedState, instantSearchInstance, helper);
             helper.setState(refinedState).search();
           }
         };
@@ -12790,12 +12063,12 @@
             // On first render pass an empty range
             // to be able to bypass the validation
             // related to it
-            refine = _refine(instantSearchInstance, helper, {
+            refine = _refine(helper, {
               min: undefined,
               max: undefined
             });
           } else {
-            refine = _refine(instantSearchInstance, helper, currentRange);
+            refine = _refine(helper, currentRange);
           }
 
           return {
@@ -12803,7 +12076,7 @@
             canRefine: currentRange.min !== currentRange.max,
             format: rangeFormatter,
             range: currentRange,
-            sendEvent: createSendEvent(instantSearchInstance, helper, currentRange),
+            sendEvent: createSendEvent(instantSearchInstance),
             widgetParams: _objectSpread2(_objectSpread2({}, widgetParams), {}, {
               precision: precision
             }),
@@ -13323,13 +12596,15 @@
             };
           }
 
+          var hasNoResults = results ? results.nbHits === 0 : true;
           return {
             currentRefinement: state.index,
             options: transformItems(items, {
               results: results
             }),
             refine: connectorState.setIndex,
-            hasNoResults: results ? results.nbHits === 0 : true,
+            hasNoResults: hasNoResults,
+            canRefine: !hasNoResults && items.length > 0,
             widgetParams: widgetParams
           };
         },
@@ -13533,12 +12808,15 @@
             });
           }
 
-          if (results) {
-            var facetResults = results.getFacetValues(attribute, {});
+          var refinementIsApplied = false;
+          var totalCount = 0;
+          var facetResults = results === null || results === void 0 ? void 0 : results.getFacetValues(attribute, {});
+
+          if (results && facetResults) {
             var maxValuesPerFacet = facetResults.length;
             var maxDecimalPlaces = getFacetsMaxDecimalPlaces(facetResults);
             var maxFacets = Math.pow(10, maxDecimalPlaces) * max;
-             _warning(maxFacets <= maxValuesPerFacet, getFacetValuesWarningMessage({
+             _warning(maxFacets <= maxValuesPerFacet || Boolean(results.__isArtificial), getFacetValuesWarningMessage({
               maxDecimalPlaces: maxDecimalPlaces,
               maxFacets: maxFacets,
               maxValuesPerFacet: maxValuesPerFacet
@@ -13548,6 +12826,7 @@
 
             var _loop = function _loop(star) {
               var isRefined = refinedStar === star;
+              refinementIsApplied = refinementIsApplied || isRefined;
               var count = facetResults.filter(function (f) {
                 return Number(f.name) >= star && Number(f.name) <= max;
               }).map(function (f) {
@@ -13555,6 +12834,7 @@
               }).reduce(function (sum, current) {
                 return sum + current;
               }, 0);
+              totalCount += count;
 
               if (refinedStar && !isRefined && count === 0) {
                 // skip count==0 when at least 1 refinement is enabled
@@ -13584,10 +12864,11 @@
           }
 
           facetValues = facetValues.reverse();
+          var hasNoResults = results ? results.nbHits === 0 : true;
           return {
             items: facetValues,
-            hasNoResults: results ? results.nbHits === 0 : true,
-            canRefine: facetValues.length > 0,
+            hasNoResults: hasNoResults,
+            canRefine: (!hasNoResults || refinementIsApplied) && totalCount > 0,
             refine: connectorState.toggleRefinementFactory(helper),
             sendEvent: sendEvent,
             createURL: connectorState.createURLFactory({
@@ -13777,7 +13058,9 @@
         throw new Error(withUsage$h('The `attribute` option is required.'));
       }
 
-      var hasAnOffValue = userOff !== undefined;
+      var hasAnOffValue = userOff !== undefined; // even though facet values can be numbers and boolean,
+      // the helper methods only accept string in the type
+
       var on = toArray(userOn).map(escapeFacetValue$4);
       var off = hasAnOffValue ? toArray(userOff).map(escapeFacetValue$4) : undefined;
       var sendEvent;
@@ -14468,7 +13751,7 @@
         return function (searchParameters) {
           // Merge new `searchParameters` with the ones set from other widgets
           var actualState = getInitialSearchParameters(helper.state, widgetParams);
-          var nextSearchParameters = merge$1(actualState, new algoliasearchHelper_1.SearchParameters(searchParameters)); // Update original `widgetParams.searchParameters` to the new refined one
+          var nextSearchParameters = mergeSearchParameters(actualState, new algoliasearchHelper_1.SearchParameters(searchParameters)); // Update original `widgetParams.searchParameters` to the new refined one
 
           widgetParams.searchParameters = searchParameters; // Trigger a search with the resolved search parameters
 
@@ -14502,7 +13785,7 @@
           return _objectSpread2(_objectSpread2({}, renderState), {}, {
             configure: _objectSpread2(_objectSpread2({}, widgetRenderState), {}, {
               widgetParams: _objectSpread2(_objectSpread2({}, widgetRenderState.widgetParams), {}, {
-                searchParameters: merge$1(new algoliasearchHelper_1.SearchParameters((_renderState$configur = renderState.configure) === null || _renderState$configur === void 0 ? void 0 : _renderState$configur.widgetParams.searchParameters), new algoliasearchHelper_1.SearchParameters(widgetRenderState.widgetParams.searchParameters)).getQueryParams()
+                searchParameters: mergeSearchParameters(new algoliasearchHelper_1.SearchParameters((_renderState$configur = renderState.configure) === null || _renderState$configur === void 0 ? void 0 : _renderState$configur.widgetParams.searchParameters), new algoliasearchHelper_1.SearchParameters(widgetRenderState.widgetParams.searchParameters)).getQueryParams()
               })
             })
           });
@@ -14521,7 +13804,7 @@
         },
         getWidgetSearchParameters: function getWidgetSearchParameters(state, _ref3) {
           var uiState = _ref3.uiState;
-          return merge$1(state, new algoliasearchHelper_1.SearchParameters(_objectSpread2(_objectSpread2({}, uiState.configure), widgetParams.searchParameters)));
+          return mergeSearchParameters(state, new algoliasearchHelper_1.SearchParameters(_objectSpread2(_objectSpread2({}, uiState.configure), widgetParams.searchParameters)));
         },
         getWidgetUiState: function getWidgetUiState(uiState) {
           return _objectSpread2(_objectSpread2({}, uiState), {}, {
@@ -15728,6 +15011,10 @@
     };
   };
 
+  function createCommonjsModule(fn, module) {
+  	return module = { exports: {} }, fn(module, module.exports), module.exports;
+  }
+
   var classnames = createCommonjsModule(function (module) {
   /*!
     Copyright (c) 2017 Jed Watson.
@@ -15777,6 +15064,1158 @@
   }());
   });
 
+  function prepareTemplates( // can not use = {} here, since the template could have different constraints
+  defaultTemplates) {
+    var templates = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+    var allKeys = uniq([].concat(_toConsumableArray(Object.keys(defaultTemplates || {})), _toConsumableArray(Object.keys(templates))));
+    return allKeys.reduce(function (config, key) {
+      var defaultTemplate = defaultTemplates ? defaultTemplates[key] : undefined;
+      var customTemplate = templates[key];
+      var isCustomTemplate = customTemplate !== undefined && customTemplate !== defaultTemplate;
+      config.templates[key] = isCustomTemplate ? customTemplate // typescript doesn't recognize that this condition asserts customTemplate is defined
+      : defaultTemplate;
+      config.useCustomCompileOptions[key] = isCustomTemplate;
+      return config;
+    }, {
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+      templates: {},
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+      useCustomCompileOptions: {}
+    });
+  }
+  /**
+   * Prepares an object to be passed to the Template widget
+   */
+
+
+  function prepareTemplateProps(_ref) {
+    var defaultTemplates = _ref.defaultTemplates,
+        templates = _ref.templates,
+        templatesConfig = _ref.templatesConfig;
+    var preparedTemplates = prepareTemplates(defaultTemplates, templates);
+    return _objectSpread2({
+      templatesConfig: templatesConfig
+    }, preparedTemplates);
+  }
+
+  var compiler = createCommonjsModule(function (module, exports) {
+  /*
+   *  Copyright 2011 Twitter, Inc.
+   *  Licensed under the Apache License, Version 2.0 (the "License");
+   *  you may not use this file except in compliance with the License.
+   *  You may obtain a copy of the License at
+   *
+   *  http://www.apache.org/licenses/LICENSE-2.0
+   *
+   *  Unless required by applicable law or agreed to in writing, software
+   *  distributed under the License is distributed on an "AS IS" BASIS,
+   *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   *  See the License for the specific language governing permissions and
+   *  limitations under the License.
+   */
+
+  (function (Hogan) {
+    // Setup regex  assignments
+    // remove whitespace according to Mustache spec
+    var rIsWhitespace = /\S/,
+        rQuot = /\"/g,
+        rNewline =  /\n/g,
+        rCr = /\r/g,
+        rSlash = /\\/g,
+        rLineSep = /\u2028/,
+        rParagraphSep = /\u2029/;
+
+    Hogan.tags = {
+      '#': 1, '^': 2, '<': 3, '$': 4,
+      '/': 5, '!': 6, '>': 7, '=': 8, '_v': 9,
+      '{': 10, '&': 11, '_t': 12
+    };
+
+    Hogan.scan = function scan(text, delimiters) {
+      var len = text.length,
+          IN_TEXT = 0,
+          IN_TAG_TYPE = 1,
+          IN_TAG = 2,
+          state = IN_TEXT,
+          tagType = null,
+          tag = null,
+          buf = '',
+          tokens = [],
+          seenTag = false,
+          i = 0,
+          lineStart = 0,
+          otag = '{{',
+          ctag = '}}';
+
+      function addBuf() {
+        if (buf.length > 0) {
+          tokens.push({tag: '_t', text: new String(buf)});
+          buf = '';
+        }
+      }
+
+      function lineIsWhitespace() {
+        var isAllWhitespace = true;
+        for (var j = lineStart; j < tokens.length; j++) {
+          isAllWhitespace =
+            (Hogan.tags[tokens[j].tag] < Hogan.tags['_v']) ||
+            (tokens[j].tag == '_t' && tokens[j].text.match(rIsWhitespace) === null);
+          if (!isAllWhitespace) {
+            return false;
+          }
+        }
+
+        return isAllWhitespace;
+      }
+
+      function filterLine(haveSeenTag, noNewLine) {
+        addBuf();
+
+        if (haveSeenTag && lineIsWhitespace()) {
+          for (var j = lineStart, next; j < tokens.length; j++) {
+            if (tokens[j].text) {
+              if ((next = tokens[j+1]) && next.tag == '>') {
+                // set indent to token value
+                next.indent = tokens[j].text.toString();
+              }
+              tokens.splice(j, 1);
+            }
+          }
+        } else if (!noNewLine) {
+          tokens.push({tag:'\n'});
+        }
+
+        seenTag = false;
+        lineStart = tokens.length;
+      }
+
+      function changeDelimiters(text, index) {
+        var close = '=' + ctag,
+            closeIndex = text.indexOf(close, index),
+            delimiters = trim(
+              text.substring(text.indexOf('=', index) + 1, closeIndex)
+            ).split(' ');
+
+        otag = delimiters[0];
+        ctag = delimiters[delimiters.length - 1];
+
+        return closeIndex + close.length - 1;
+      }
+
+      if (delimiters) {
+        delimiters = delimiters.split(' ');
+        otag = delimiters[0];
+        ctag = delimiters[1];
+      }
+
+      for (i = 0; i < len; i++) {
+        if (state == IN_TEXT) {
+          if (tagChange(otag, text, i)) {
+            --i;
+            addBuf();
+            state = IN_TAG_TYPE;
+          } else {
+            if (text.charAt(i) == '\n') {
+              filterLine(seenTag);
+            } else {
+              buf += text.charAt(i);
+            }
+          }
+        } else if (state == IN_TAG_TYPE) {
+          i += otag.length - 1;
+          tag = Hogan.tags[text.charAt(i + 1)];
+          tagType = tag ? text.charAt(i + 1) : '_v';
+          if (tagType == '=') {
+            i = changeDelimiters(text, i);
+            state = IN_TEXT;
+          } else {
+            if (tag) {
+              i++;
+            }
+            state = IN_TAG;
+          }
+          seenTag = i;
+        } else {
+          if (tagChange(ctag, text, i)) {
+            tokens.push({tag: tagType, n: trim(buf), otag: otag, ctag: ctag,
+                         i: (tagType == '/') ? seenTag - otag.length : i + ctag.length});
+            buf = '';
+            i += ctag.length - 1;
+            state = IN_TEXT;
+            if (tagType == '{') {
+              if (ctag == '}}') {
+                i++;
+              } else {
+                cleanTripleStache(tokens[tokens.length - 1]);
+              }
+            }
+          } else {
+            buf += text.charAt(i);
+          }
+        }
+      }
+
+      filterLine(seenTag, true);
+
+      return tokens;
+    };
+
+    function cleanTripleStache(token) {
+      if (token.n.substr(token.n.length - 1) === '}') {
+        token.n = token.n.substring(0, token.n.length - 1);
+      }
+    }
+
+    function trim(s) {
+      if (s.trim) {
+        return s.trim();
+      }
+
+      return s.replace(/^\s*|\s*$/g, '');
+    }
+
+    function tagChange(tag, text, index) {
+      if (text.charAt(index) != tag.charAt(0)) {
+        return false;
+      }
+
+      for (var i = 1, l = tag.length; i < l; i++) {
+        if (text.charAt(index + i) != tag.charAt(i)) {
+          return false;
+        }
+      }
+
+      return true;
+    }
+
+    // the tags allowed inside super templates
+    var allowedInSuper = {'_t': true, '\n': true, '$': true, '/': true};
+
+    function buildTree(tokens, kind, stack, customTags) {
+      var instructions = [],
+          opener = null,
+          tail = null,
+          token = null;
+
+      tail = stack[stack.length - 1];
+
+      while (tokens.length > 0) {
+        token = tokens.shift();
+
+        if (tail && tail.tag == '<' && !(token.tag in allowedInSuper)) {
+          throw new Error('Illegal content in < super tag.');
+        }
+
+        if (Hogan.tags[token.tag] <= Hogan.tags['$'] || isOpener(token, customTags)) {
+          stack.push(token);
+          token.nodes = buildTree(tokens, token.tag, stack, customTags);
+        } else if (token.tag == '/') {
+          if (stack.length === 0) {
+            throw new Error('Closing tag without opener: /' + token.n);
+          }
+          opener = stack.pop();
+          if (token.n != opener.n && !isCloser(token.n, opener.n, customTags)) {
+            throw new Error('Nesting error: ' + opener.n + ' vs. ' + token.n);
+          }
+          opener.end = token.i;
+          return instructions;
+        } else if (token.tag == '\n') {
+          token.last = (tokens.length == 0) || (tokens[0].tag == '\n');
+        }
+
+        instructions.push(token);
+      }
+
+      if (stack.length > 0) {
+        throw new Error('missing closing tag: ' + stack.pop().n);
+      }
+
+      return instructions;
+    }
+
+    function isOpener(token, tags) {
+      for (var i = 0, l = tags.length; i < l; i++) {
+        if (tags[i].o == token.n) {
+          token.tag = '#';
+          return true;
+        }
+      }
+    }
+
+    function isCloser(close, open, tags) {
+      for (var i = 0, l = tags.length; i < l; i++) {
+        if (tags[i].c == close && tags[i].o == open) {
+          return true;
+        }
+      }
+    }
+
+    function stringifySubstitutions(obj) {
+      var items = [];
+      for (var key in obj) {
+        items.push('"' + esc(key) + '": function(c,p,t,i) {' + obj[key] + '}');
+      }
+      return "{ " + items.join(",") + " }";
+    }
+
+    function stringifyPartials(codeObj) {
+      var partials = [];
+      for (var key in codeObj.partials) {
+        partials.push('"' + esc(key) + '":{name:"' + esc(codeObj.partials[key].name) + '", ' + stringifyPartials(codeObj.partials[key]) + "}");
+      }
+      return "partials: {" + partials.join(",") + "}, subs: " + stringifySubstitutions(codeObj.subs);
+    }
+
+    Hogan.stringify = function(codeObj, text, options) {
+      return "{code: function (c,p,i) { " + Hogan.wrapMain(codeObj.code) + " }," + stringifyPartials(codeObj) +  "}";
+    };
+
+    var serialNo = 0;
+    Hogan.generate = function(tree, text, options) {
+      serialNo = 0;
+      var context = { code: '', subs: {}, partials: {} };
+      Hogan.walk(tree, context);
+
+      if (options.asString) {
+        return this.stringify(context, text, options);
+      }
+
+      return this.makeTemplate(context, text, options);
+    };
+
+    Hogan.wrapMain = function(code) {
+      return 'var t=this;t.b(i=i||"");' + code + 'return t.fl();';
+    };
+
+    Hogan.template = Hogan.Template;
+
+    Hogan.makeTemplate = function(codeObj, text, options) {
+      var template = this.makePartials(codeObj);
+      template.code = new Function('c', 'p', 'i', this.wrapMain(codeObj.code));
+      return new this.template(template, text, this, options);
+    };
+
+    Hogan.makePartials = function(codeObj) {
+      var key, template = {subs: {}, partials: codeObj.partials, name: codeObj.name};
+      for (key in template.partials) {
+        template.partials[key] = this.makePartials(template.partials[key]);
+      }
+      for (key in codeObj.subs) {
+        template.subs[key] = new Function('c', 'p', 't', 'i', codeObj.subs[key]);
+      }
+      return template;
+    };
+
+    function esc(s) {
+      return s.replace(rSlash, '\\\\')
+              .replace(rQuot, '\\\"')
+              .replace(rNewline, '\\n')
+              .replace(rCr, '\\r')
+              .replace(rLineSep, '\\u2028')
+              .replace(rParagraphSep, '\\u2029');
+    }
+
+    function chooseMethod(s) {
+      return (~s.indexOf('.')) ? 'd' : 'f';
+    }
+
+    function createPartial(node, context) {
+      var prefix = "<" + (context.prefix || "");
+      var sym = prefix + node.n + serialNo++;
+      context.partials[sym] = {name: node.n, partials: {}};
+      context.code += 't.b(t.rp("' +  esc(sym) + '",c,p,"' + (node.indent || '') + '"));';
+      return sym;
+    }
+
+    Hogan.codegen = {
+      '#': function(node, context) {
+        context.code += 'if(t.s(t.' + chooseMethod(node.n) + '("' + esc(node.n) + '",c,p,1),' +
+                        'c,p,0,' + node.i + ',' + node.end + ',"' + node.otag + " " + node.ctag + '")){' +
+                        't.rs(c,p,' + 'function(c,p,t){';
+        Hogan.walk(node.nodes, context);
+        context.code += '});c.pop();}';
+      },
+
+      '^': function(node, context) {
+        context.code += 'if(!t.s(t.' + chooseMethod(node.n) + '("' + esc(node.n) + '",c,p,1),c,p,1,0,0,"")){';
+        Hogan.walk(node.nodes, context);
+        context.code += '};';
+      },
+
+      '>': createPartial,
+      '<': function(node, context) {
+        var ctx = {partials: {}, code: '', subs: {}, inPartial: true};
+        Hogan.walk(node.nodes, ctx);
+        var template = context.partials[createPartial(node, context)];
+        template.subs = ctx.subs;
+        template.partials = ctx.partials;
+      },
+
+      '$': function(node, context) {
+        var ctx = {subs: {}, code: '', partials: context.partials, prefix: node.n};
+        Hogan.walk(node.nodes, ctx);
+        context.subs[node.n] = ctx.code;
+        if (!context.inPartial) {
+          context.code += 't.sub("' + esc(node.n) + '",c,p,i);';
+        }
+      },
+
+      '\n': function(node, context) {
+        context.code += write('"\\n"' + (node.last ? '' : ' + i'));
+      },
+
+      '_v': function(node, context) {
+        context.code += 't.b(t.v(t.' + chooseMethod(node.n) + '("' + esc(node.n) + '",c,p,0)));';
+      },
+
+      '_t': function(node, context) {
+        context.code += write('"' + esc(node.text) + '"');
+      },
+
+      '{': tripleStache,
+
+      '&': tripleStache
+    };
+
+    function tripleStache(node, context) {
+      context.code += 't.b(t.t(t.' + chooseMethod(node.n) + '("' + esc(node.n) + '",c,p,0)));';
+    }
+
+    function write(s) {
+      return 't.b(' + s + ');';
+    }
+
+    Hogan.walk = function(nodelist, context) {
+      var func;
+      for (var i = 0, l = nodelist.length; i < l; i++) {
+        func = Hogan.codegen[nodelist[i].tag];
+        func && func(nodelist[i], context);
+      }
+      return context;
+    };
+
+    Hogan.parse = function(tokens, text, options) {
+      options = options || {};
+      return buildTree(tokens, '', [], options.sectionTags || []);
+    };
+
+    Hogan.cache = {};
+
+    Hogan.cacheKey = function(text, options) {
+      return [text, !!options.asString, !!options.disableLambda, options.delimiters, !!options.modelGet].join('||');
+    };
+
+    Hogan.compile = function(text, options) {
+      options = options || {};
+      var key = Hogan.cacheKey(text, options);
+      var template = this.cache[key];
+
+      if (template) {
+        var partials = template.partials;
+        for (var name in partials) {
+          delete partials[name].instance;
+        }
+        return template;
+      }
+
+      template = this.generate(this.parse(this.scan(text, options.delimiters), text, options), text, options);
+      return this.cache[key] = template;
+    };
+  })( exports );
+  });
+
+  var template = createCommonjsModule(function (module, exports) {
+
+  (function (Hogan) {
+    Hogan.Template = function (codeObj, text, compiler, options) {
+      codeObj = codeObj || {};
+      this.r = codeObj.code || this.r;
+      this.c = compiler;
+      this.options = options || {};
+      this.text = text || '';
+      this.partials = codeObj.partials || {};
+      this.subs = codeObj.subs || {};
+      this.buf = '';
+    };
+
+    Hogan.Template.prototype = {
+      // render: replaced by generated code.
+      r: function (context, partials, indent) { return ''; },
+
+      // variable escaping
+      v: hoganEscape,
+
+      // triple stache
+      t: coerceToString,
+
+      render: function render(context, partials, indent) {
+        return this.ri([context], partials || {}, indent);
+      },
+
+      // render internal -- a hook for overrides that catches partials too
+      ri: function (context, partials, indent) {
+        return this.r(context, partials, indent);
+      },
+
+      // ensurePartial
+      ep: function(symbol, partials) {
+        var partial = this.partials[symbol];
+
+        // check to see that if we've instantiated this partial before
+        var template = partials[partial.name];
+        if (partial.instance && partial.base == template) {
+          return partial.instance;
+        }
+
+        if (typeof template == 'string') {
+          if (!this.c) {
+            throw new Error("No compiler available.");
+          }
+          template = this.c.compile(template, this.options);
+        }
+
+        if (!template) {
+          return null;
+        }
+
+        // We use this to check whether the partials dictionary has changed
+        this.partials[symbol].base = template;
+
+        if (partial.subs) {
+          // Make sure we consider parent template now
+          if (!partials.stackText) partials.stackText = {};
+          for (key in partial.subs) {
+            if (!partials.stackText[key]) {
+              partials.stackText[key] = (this.activeSub !== undefined && partials.stackText[this.activeSub]) ? partials.stackText[this.activeSub] : this.text;
+            }
+          }
+          template = createSpecializedPartial(template, partial.subs, partial.partials,
+            this.stackSubs, this.stackPartials, partials.stackText);
+        }
+        this.partials[symbol].instance = template;
+
+        return template;
+      },
+
+      // tries to find a partial in the current scope and render it
+      rp: function(symbol, context, partials, indent) {
+        var partial = this.ep(symbol, partials);
+        if (!partial) {
+          return '';
+        }
+
+        return partial.ri(context, partials, indent);
+      },
+
+      // render a section
+      rs: function(context, partials, section) {
+        var tail = context[context.length - 1];
+
+        if (!isArray(tail)) {
+          section(context, partials, this);
+          return;
+        }
+
+        for (var i = 0; i < tail.length; i++) {
+          context.push(tail[i]);
+          section(context, partials, this);
+          context.pop();
+        }
+      },
+
+      // maybe start a section
+      s: function(val, ctx, partials, inverted, start, end, tags) {
+        var pass;
+
+        if (isArray(val) && val.length === 0) {
+          return false;
+        }
+
+        if (typeof val == 'function') {
+          val = this.ms(val, ctx, partials, inverted, start, end, tags);
+        }
+
+        pass = !!val;
+
+        if (!inverted && pass && ctx) {
+          ctx.push((typeof val == 'object') ? val : ctx[ctx.length - 1]);
+        }
+
+        return pass;
+      },
+
+      // find values with dotted names
+      d: function(key, ctx, partials, returnFound) {
+        var found,
+            names = key.split('.'),
+            val = this.f(names[0], ctx, partials, returnFound),
+            doModelGet = this.options.modelGet,
+            cx = null;
+
+        if (key === '.' && isArray(ctx[ctx.length - 2])) {
+          val = ctx[ctx.length - 1];
+        } else {
+          for (var i = 1; i < names.length; i++) {
+            found = findInScope(names[i], val, doModelGet);
+            if (found !== undefined) {
+              cx = val;
+              val = found;
+            } else {
+              val = '';
+            }
+          }
+        }
+
+        if (returnFound && !val) {
+          return false;
+        }
+
+        if (!returnFound && typeof val == 'function') {
+          ctx.push(cx);
+          val = this.mv(val, ctx, partials);
+          ctx.pop();
+        }
+
+        return val;
+      },
+
+      // find values with normal names
+      f: function(key, ctx, partials, returnFound) {
+        var val = false,
+            v = null,
+            found = false,
+            doModelGet = this.options.modelGet;
+
+        for (var i = ctx.length - 1; i >= 0; i--) {
+          v = ctx[i];
+          val = findInScope(key, v, doModelGet);
+          if (val !== undefined) {
+            found = true;
+            break;
+          }
+        }
+
+        if (!found) {
+          return (returnFound) ? false : "";
+        }
+
+        if (!returnFound && typeof val == 'function') {
+          val = this.mv(val, ctx, partials);
+        }
+
+        return val;
+      },
+
+      // higher order templates
+      ls: function(func, cx, partials, text, tags) {
+        var oldTags = this.options.delimiters;
+
+        this.options.delimiters = tags;
+        this.b(this.ct(coerceToString(func.call(cx, text)), cx, partials));
+        this.options.delimiters = oldTags;
+
+        return false;
+      },
+
+      // compile text
+      ct: function(text, cx, partials) {
+        if (this.options.disableLambda) {
+          throw new Error('Lambda features disabled.');
+        }
+        return this.c.compile(text, this.options).render(cx, partials);
+      },
+
+      // template result buffering
+      b: function(s) { this.buf += s; },
+
+      fl: function() { var r = this.buf; this.buf = ''; return r; },
+
+      // method replace section
+      ms: function(func, ctx, partials, inverted, start, end, tags) {
+        var textSource,
+            cx = ctx[ctx.length - 1],
+            result = func.call(cx);
+
+        if (typeof result == 'function') {
+          if (inverted) {
+            return true;
+          } else {
+            textSource = (this.activeSub && this.subsText && this.subsText[this.activeSub]) ? this.subsText[this.activeSub] : this.text;
+            return this.ls(result, cx, partials, textSource.substring(start, end), tags);
+          }
+        }
+
+        return result;
+      },
+
+      // method replace variable
+      mv: function(func, ctx, partials) {
+        var cx = ctx[ctx.length - 1];
+        var result = func.call(cx);
+
+        if (typeof result == 'function') {
+          return this.ct(coerceToString(result.call(cx)), cx, partials);
+        }
+
+        return result;
+      },
+
+      sub: function(name, context, partials, indent) {
+        var f = this.subs[name];
+        if (f) {
+          this.activeSub = name;
+          f(context, partials, this, indent);
+          this.activeSub = false;
+        }
+      }
+
+    };
+
+    //Find a key in an object
+    function findInScope(key, scope, doModelGet) {
+      var val;
+
+      if (scope && typeof scope == 'object') {
+
+        if (scope[key] !== undefined) {
+          val = scope[key];
+
+        // try lookup with get for backbone or similar model data
+        } else if (doModelGet && scope.get && typeof scope.get == 'function') {
+          val = scope.get(key);
+        }
+      }
+
+      return val;
+    }
+
+    function createSpecializedPartial(instance, subs, partials, stackSubs, stackPartials, stackText) {
+      function PartialTemplate() {}    PartialTemplate.prototype = instance;
+      function Substitutions() {}    Substitutions.prototype = instance.subs;
+      var key;
+      var partial = new PartialTemplate();
+      partial.subs = new Substitutions();
+      partial.subsText = {};  //hehe. substext.
+      partial.buf = '';
+
+      stackSubs = stackSubs || {};
+      partial.stackSubs = stackSubs;
+      partial.subsText = stackText;
+      for (key in subs) {
+        if (!stackSubs[key]) stackSubs[key] = subs[key];
+      }
+      for (key in stackSubs) {
+        partial.subs[key] = stackSubs[key];
+      }
+
+      stackPartials = stackPartials || {};
+      partial.stackPartials = stackPartials;
+      for (key in partials) {
+        if (!stackPartials[key]) stackPartials[key] = partials[key];
+      }
+      for (key in stackPartials) {
+        partial.partials[key] = stackPartials[key];
+      }
+
+      return partial;
+    }
+
+    var rAmp = /&/g,
+        rLt = /</g,
+        rGt = />/g,
+        rApos = /\'/g,
+        rQuot = /\"/g,
+        hChars = /[&<>\"\']/;
+
+    function coerceToString(val) {
+      return String((val === null || val === undefined) ? '' : val);
+    }
+
+    function hoganEscape(str) {
+      str = coerceToString(str);
+      return hChars.test(str) ?
+        str
+          .replace(rAmp, '&amp;')
+          .replace(rLt, '&lt;')
+          .replace(rGt, '&gt;')
+          .replace(rApos, '&#39;')
+          .replace(rQuot, '&quot;') :
+        str;
+    }
+
+    var isArray = Array.isArray || function(a) {
+      return Object.prototype.toString.call(a) === '[object Array]';
+    };
+
+  })( exports );
+  });
+
+  /*
+   *  Copyright 2011 Twitter, Inc.
+   *  Licensed under the Apache License, Version 2.0 (the "License");
+   *  you may not use this file except in compliance with the License.
+   *  You may obtain a copy of the License at
+   *
+   *  http://www.apache.org/licenses/LICENSE-2.0
+   *
+   *  Unless required by applicable law or agreed to in writing, software
+   *  distributed under the License is distributed on an "AS IS" BASIS,
+   *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   *  See the License for the specific language governing permissions and
+   *  limitations under the License.
+   */
+
+  // This file is for use with Node.js. See dist/ for browser files.
+
+
+  compiler.Template = template.Template;
+  compiler.template = compiler.Template;
+  var hogan = compiler;
+
+  var n$1=function(t,s,r,e){var u;s[0]=0;for(var h=1;h<s.length;h++){var p=s[h++],a=s[h]?(s[0]|=p?1:2,r[s[h++]]):s[++h];3===p?e[0]=a:4===p?e[1]=Object.assign(e[1]||{},a):5===p?(e[1]=e[1]||{})[s[++h]]=a:6===p?e[1][s[++h]]+=a+"":p?(u=t.apply(a,n$1(t,a,r,["",null])),e.push(u),a[0]?s[0]|=2:(s[h-2]=0,s[h]=u)):e.push(a);}return e},t$1=new Map;function e$1(s){var r=t$1.get(this);return r||(r=new Map,t$1.set(this,r)),(r=n$1(this,r.get(s)||(r.set(s,r=function(n){for(var t,s,r=1,e="",u="",h=[0],p=function(n){1===r&&(n||(e=e.replace(/^\s*\n\s*|\s*\n\s*$/g,"")))?h.push(0,n,e):3===r&&(n||e)?(h.push(3,n,e),r=2):2===r&&"..."===e&&n?h.push(4,n,0):2===r&&e&&!n?h.push(5,0,!0,e):r>=5&&((e||!n&&5===r)&&(h.push(r,0,e,s),r=6),n&&(h.push(r,n,0,s),r=6)),e="";},a=0;a<n.length;a++){a&&(1===r&&p(),p(a));for(var l=0;l<n[a].length;l++)t=n[a][l],1===r?"<"===t?(p(),h=[h],r=3):e+=t:4===r?"--"===e&&">"===t?(r=1,e=""):e=t+e[0]:u?t===u?u="":e+=t:'"'===t||"'"===t?u=t:">"===t?(p(),r=1):r&&("="===t?(r=5,s=e,e=""):"/"===t&&(r<5||">"===n[a][l+1])?(p(),3===r&&(h=h[0]),r=h,(h=h[0]).push(2,0,r),r=0):" "===t||"\t"===t||"\n"===t||"\r"===t?(p(),r=2):e+=t),3===r&&"!--"===e&&(r=4,h=h[0]);}return p(),h}(s)),r),arguments,[])).length>1?r:r[0]}
+
+  var m$1=e$1.bind(h);
+
+  function cx$1() {
+    for (var _len = arguments.length, classNames = new Array(_len), _key = 0; _key < _len; _key++) {
+      classNames[_key] = arguments[_key];
+    }
+
+    return classNames.filter(Boolean).join(' ') || undefined;
+  }
+
+  var _extends_1 = createCommonjsModule(function (module) {
+  function _extends() {
+    module.exports = _extends = Object.assign || function (target) {
+      for (var i = 1; i < arguments.length; i++) {
+        var source = arguments[i];
+
+        for (var key in source) {
+          if (Object.prototype.hasOwnProperty.call(source, key)) {
+            target[key] = source[key];
+          }
+        }
+      }
+
+      return target;
+    };
+
+    return _extends.apply(this, arguments);
+  }
+
+  module.exports = _extends;
+  });
+
+  function _objectWithoutPropertiesLoose$2(source, excluded) {
+    if (source == null) return {};
+    var target = {};
+    var sourceKeys = Object.keys(source);
+    var key, i;
+
+    for (i = 0; i < sourceKeys.length; i++) {
+      key = sourceKeys[i];
+      if (excluded.indexOf(key) >= 0) continue;
+      target[key] = source[key];
+    }
+
+    return target;
+  }
+
+  var objectWithoutPropertiesLoose = _objectWithoutPropertiesLoose$2;
+
+  function _objectWithoutProperties$1(source, excluded) {
+    if (source == null) return {};
+    var target = objectWithoutPropertiesLoose(source, excluded);
+    var key, i;
+
+    if (Object.getOwnPropertySymbols) {
+      var sourceSymbolKeys = Object.getOwnPropertySymbols(source);
+
+      for (i = 0; i < sourceSymbolKeys.length; i++) {
+        key = sourceSymbolKeys[i];
+        if (excluded.indexOf(key) >= 0) continue;
+        if (!Object.prototype.propertyIsEnumerable.call(source, key)) continue;
+        target[key] = source[key];
+      }
+    }
+
+    return target;
+  }
+
+  var objectWithoutProperties = _objectWithoutProperties$1;
+
+  var _excluded = ["parts", "highlightedTagName", "nonHighlightedTagName", "separator", "className", "classNames"];
+
+  function createHighlightPartComponent(_ref) {
+    var createElement = _ref.createElement;
+    return function HighlightPart(_ref2) {
+      var classNames = _ref2.classNames,
+          children = _ref2.children,
+          highlightedTagName = _ref2.highlightedTagName,
+          isHighlighted = _ref2.isHighlighted,
+          nonHighlightedTagName = _ref2.nonHighlightedTagName;
+      var TagName = isHighlighted ? highlightedTagName : nonHighlightedTagName;
+      return createElement(TagName, {
+        className: isHighlighted ? classNames.highlighted : classNames.nonHighlighted
+      }, children);
+    };
+  }
+
+  function createHighlightComponent(_ref3) {
+    var createElement = _ref3.createElement,
+        Fragment = _ref3.Fragment;
+    var HighlightPart = createHighlightPartComponent({
+      createElement: createElement,
+      Fragment: Fragment
+    });
+    return function Highlight(_ref4) {
+      var parts = _ref4.parts,
+          _ref4$highlightedTagN = _ref4.highlightedTagName,
+          highlightedTagName = _ref4$highlightedTagN === void 0 ? 'mark' : _ref4$highlightedTagN,
+          _ref4$nonHighlightedT = _ref4.nonHighlightedTagName,
+          nonHighlightedTagName = _ref4$nonHighlightedT === void 0 ? 'span' : _ref4$nonHighlightedT,
+          _ref4$separator = _ref4.separator,
+          separator = _ref4$separator === void 0 ? ', ' : _ref4$separator,
+          className = _ref4.className,
+          _ref4$classNames = _ref4.classNames,
+          classNames = _ref4$classNames === void 0 ? {} : _ref4$classNames,
+          props = objectWithoutProperties(_ref4, _excluded);
+
+      return createElement("span", _extends_1({}, props, {
+        className: cx$1(classNames.root, className)
+      }), parts.map(function (part, partIndex) {
+        var isLastPart = partIndex === parts.length - 1;
+        return createElement(Fragment, {
+          key: partIndex
+        }, part.map(function (subPart, subPartIndex) {
+          return createElement(HighlightPart, {
+            key: subPartIndex,
+            classNames: classNames,
+            highlightedTagName: highlightedTagName,
+            nonHighlightedTagName: nonHighlightedTagName,
+            isHighlighted: subPart.isHighlighted
+          }, subPart.value);
+        }), !isLastPart && createElement("span", {
+          className: classNames.separator
+        }, separator));
+      }));
+    };
+  }
+
+  var InternalHighlight = createHighlightComponent({
+    createElement: h,
+    Fragment: p
+  });
+
+  function Highlight(_ref) {
+    var _ref$classNames = _ref.classNames,
+        classNames = _ref$classNames === void 0 ? {} : _ref$classNames,
+        props = _objectWithoutProperties(_ref, ["classNames"]);
+
+    return h(InternalHighlight, _extends({
+      classNames: {
+        root: cx$1('ais-Highlight', classNames.root),
+        highlighted: cx$1('ais-Highlight-highlighted', classNames.highlighted),
+        nonHighlighted: cx$1('ais-Highlight-nonHighlighted', classNames.nonHighlighted),
+        separator: cx$1('ais-Highlight-separator', classNames.separator)
+      }
+    }, props));
+  }
+
+  function Highlight$1(_ref) {
+    var hit = _ref.hit,
+        attribute = _ref.attribute,
+        cssClasses = _ref.cssClasses,
+        props = _objectWithoutProperties(_ref, ["hit", "attribute", "cssClasses"]);
+
+    var property = getPropertyByPath(hit._highlightResult, attribute) || [];
+    var properties = toArray(property);
+     _warning(Boolean(properties.length), "Could not enable highlight for \"".concat(attribute.toString(), "\", will display an empty string.\nPlease check whether this attribute exists and is either searchable or specified in `attributesToHighlight`.\n\nSee: https://alg.li/highlighting\n")) ;
+    var parts = properties.map(function (_ref2) {
+      var value = _ref2.value;
+      return getHighlightedParts(unescape$1(value || ''));
+    });
+    return h(Highlight, _extends({}, props, {
+      parts: parts,
+      classNames: cssClasses
+    }));
+  }
+
+  function ReverseHighlight(_ref) {
+    var _ref$classNames = _ref.classNames,
+        classNames = _ref$classNames === void 0 ? {} : _ref$classNames,
+        props = _objectWithoutProperties(_ref, ["classNames"]);
+
+    return h(InternalHighlight, _extends({
+      classNames: {
+        root: cx$1('ais-ReverseHighlight', classNames.root),
+        highlighted: cx$1('ais-ReverseHighlight-highlighted', classNames.highlighted),
+        nonHighlighted: cx$1('ais-ReverseHighlight-nonHighlighted', classNames.nonHighlighted),
+        separator: cx$1('ais-ReverseHighlight-separator', classNames.separator)
+      }
+    }, props));
+  }
+
+  function ReverseHighlight$1(_ref) {
+    var hit = _ref.hit,
+        attribute = _ref.attribute,
+        cssClasses = _ref.cssClasses,
+        props = _objectWithoutProperties(_ref, ["hit", "attribute", "cssClasses"]);
+
+    var property = getPropertyByPath(hit._highlightResult, attribute) || [];
+    var properties = toArray(property);
+     _warning(Boolean(properties.length), "Could not enable highlight for \"".concat(attribute.toString(), "\", will display an empty string.\nPlease check whether this attribute exists and is either searchable or specified in `attributesToHighlight`.\n\nSee: https://alg.li/highlighting\n")) ;
+    var parts = properties.map(function (_ref2) {
+      var value = _ref2.value;
+      return getHighlightedParts(unescape$1(value || '')).map(function (_ref3) {
+        var isHighlighted = _ref3.isHighlighted,
+            rest = _objectWithoutProperties(_ref3, ["isHighlighted"]);
+
+        return _objectSpread2(_objectSpread2({}, rest), {}, {
+          isHighlighted: !isHighlighted
+        });
+      });
+    });
+    return h(ReverseHighlight, _extends({}, props, {
+      parts: parts,
+      classNames: cssClasses
+    }));
+  }
+
+  function ReverseSnippet(_ref) {
+    var _ref$classNames = _ref.classNames,
+        classNames = _ref$classNames === void 0 ? {} : _ref$classNames,
+        props = _objectWithoutProperties(_ref, ["classNames"]);
+
+    return h(InternalHighlight, _extends({
+      classNames: {
+        root: cx$1('ais-ReverseSnippet', classNames.root),
+        highlighted: cx$1('ais-ReverseSnippet-highlighted', classNames.highlighted),
+        nonHighlighted: cx$1('ais-ReverseSnippet-nonHighlighted', classNames.nonHighlighted),
+        separator: cx$1('ais-ReverseSnippet-separator', classNames.separator)
+      }
+    }, props));
+  }
+
+  function ReverseSnippet$1(_ref) {
+    var hit = _ref.hit,
+        attribute = _ref.attribute,
+        cssClasses = _ref.cssClasses,
+        props = _objectWithoutProperties(_ref, ["hit", "attribute", "cssClasses"]);
+
+    var property = getPropertyByPath(hit._snippetResult, attribute) || [];
+    var properties = toArray(property);
+     _warning(Boolean(properties.length), "Could not enable snippet for \"".concat(attribute.toString(), "\", will display an empty string.\nPlease check whether this attribute exists and is specified in `attributesToSnippet`.\n\nSee: https://alg.li/highlighting\n")) ;
+    var parts = properties.map(function (_ref2) {
+      var value = _ref2.value;
+      return getHighlightedParts(unescape$1(value || '')).map(function (_ref3) {
+        var isHighlighted = _ref3.isHighlighted,
+            rest = _objectWithoutProperties(_ref3, ["isHighlighted"]);
+
+        return _objectSpread2(_objectSpread2({}, rest), {}, {
+          isHighlighted: !isHighlighted
+        });
+      });
+    });
+    return h(ReverseSnippet, _extends({}, props, {
+      parts: parts,
+      classNames: cssClasses
+    }));
+  }
+
+  function Snippet(_ref) {
+    var _ref$classNames = _ref.classNames,
+        classNames = _ref$classNames === void 0 ? {} : _ref$classNames,
+        props = _objectWithoutProperties(_ref, ["classNames"]);
+
+    return h(InternalHighlight, _extends({
+      classNames: {
+        root: cx$1('ais-Snippet', classNames.root),
+        highlighted: cx$1('ais-Snippet-highlighted', classNames.highlighted),
+        nonHighlighted: cx$1('ais-Snippet-nonHighlighted', classNames.nonHighlighted),
+        separator: cx$1('ais-Snippet-separator', classNames.separator)
+      }
+    }, props));
+  }
+
+  function Snippet$1(_ref) {
+    var hit = _ref.hit,
+        attribute = _ref.attribute,
+        cssClasses = _ref.cssClasses,
+        props = _objectWithoutProperties(_ref, ["hit", "attribute", "cssClasses"]);
+
+    var property = getPropertyByPath(hit._snippetResult, attribute) || [];
+    var properties = toArray(property);
+     _warning(Boolean(properties.length), "Could not enable snippet for \"".concat(attribute.toString(), "\", will display an empty string.\nPlease check whether this attribute exists and is specified in `attributesToSnippet`.\n\nSee: https://alg.li/highlighting\n")) ;
+    var parts = properties.map(function (_ref2) {
+      var value = _ref2.value;
+      return getHighlightedParts(unescape$1(value || ''));
+    });
+    return h(Snippet, _extends({}, props, {
+      parts: parts,
+      classNames: cssClasses
+    }));
+  }
+
+  // We add all our template helper methods to the template as lambdas. Note
+  // that lambdas in Mustache are supposed to accept a second argument of
+  // `render` to get the rendered value, not the literal `{{value}}`. But
+  // this is currently broken (see https://github.com/twitter/hogan.js/issues/222).
+  function transformHelpersToHogan() {
+    var helpers = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+    var compileOptions = arguments.length > 1 ? arguments[1] : undefined;
+    var data = arguments.length > 2 ? arguments[2] : undefined;
+    return Object.keys(helpers).reduce(function (acc, helperKey) {
+      return _objectSpread2(_objectSpread2({}, acc), {}, _defineProperty({}, helperKey, function () {
+        var _this = this;
+
+        return function (text) {
+          var render = function render(value) {
+            return hogan.compile(value, compileOptions).render(_this);
+          };
+
+          return helpers[helperKey].call(data, text, render);
+        };
+      }));
+    }, {});
+  }
+
+  function renderTemplate(_ref) {
+    var templates = _ref.templates,
+        templateKey = _ref.templateKey,
+        compileOptions = _ref.compileOptions,
+        helpers = _ref.helpers,
+        data = _ref.data,
+        bindEvent = _ref.bindEvent,
+        sendEvent = _ref.sendEvent;
+    var template = templates[templateKey];
+
+    if (typeof template !== 'string' && typeof template !== 'function') {
+      throw new Error("Template must be 'string' or 'function', was '".concat(_typeof(template), "' (key: ").concat(templateKey, ")"));
+    }
+
+    if (typeof template === 'function') {
+      // @MAJOR no longer pass bindEvent when string templates are removed
+      var params = bindEvent || {};
+      params.html = m$1;
+      params.sendEvent = sendEvent;
+      params.components = {
+        Highlight: Highlight$1,
+        ReverseHighlight: ReverseHighlight$1,
+        Snippet: Snippet$1,
+        ReverseSnippet: ReverseSnippet$1
+      };
+      return template(data, params);
+    }
+
+    var transformedHelpers = transformHelpersToHogan(helpers, compileOptions, data);
+    return hogan.compile(template, compileOptions).render(_objectSpread2(_objectSpread2({}, data), {}, {
+      helpers: transformedHelpers
+    })).replace(/[ \n\r\t\f\xA0]+/g, function (spaces) {
+      return spaces.replace(/(^|\xA0+)[^\xA0]+/g, '$1 ');
+    }).trim();
+  }
+
   var defaultProps = {
     data: {},
     rootTagName: 'div',
@@ -15805,6 +16244,11 @@
     }, {
       key: "render",
       value: function render() {
+        var _this = this;
+
+         _warning(Object.keys(this.props.templates).every(function (key) {
+          return typeof _this.props.templates[key] === 'function';
+        }), "Hogan.js and string-based templates are deprecated and will not be supported in InstantSearch.js 5.x.\n\nYou can replace them with function-form templates and use either the provided `html` function or JSX templates.\n\nSee: https://www.algolia.com/doc/guides/building-search-ui/upgrade-guides/js/#upgrade-templates") ;
         var RootTagName = this.props.rootTagName;
         var useCustomCompileOptions = this.props.useCustomCompileOptions[this.props.templateKey];
         var compileOptions = useCustomCompileOptions ? this.props.templatesConfig.compileOptions : {};
@@ -15814,7 +16258,8 @@
           compileOptions: compileOptions,
           helpers: this.props.templatesConfig.helpers,
           data: this.props.data,
-          bindEvent: this.props.bindEvent
+          bindEvent: this.props.bindEvent,
+          sendEvent: this.props.sendEvent
         });
 
         if (content === null) {
@@ -15823,7 +16268,11 @@
           return null;
         }
 
-        return v(RootTagName, _extends({}, this.props.rootProps, {
+        if (_typeof(content) === 'object') {
+          return h(RootTagName, this.props.rootProps, content);
+        }
+
+        return h(RootTagName, _extends({}, this.props.rootProps, {
           dangerouslySetInnerHTML: {
             __html: content
           }
@@ -15832,7 +16281,7 @@
     }]);
 
     return Template;
-  }(_);
+  }(d);
 
   _defineProperty(Template, "defaultProps", defaultProps);
 
@@ -15842,13 +16291,13 @@
         templateProps = _ref.templateProps,
         createURL = _ref.createURL,
         refine = _ref.refine;
-    return v("div", {
+    return h("div", {
       className: classnames(cssClasses.root, _defineProperty({}, cssClasses.noRefinementRoot, items.length === 0))
-    }, v("ul", {
+    }, h("ul", {
       className: cssClasses.list
-    }, v("li", {
+    }, h("li", {
       className: classnames(cssClasses.item, _defineProperty({}, cssClasses.selectedItem, items.length === 0))
-    }, v(Template, _extends({}, templateProps, {
+    }, h(Template, _extends({}, templateProps, {
       templateKey: "home",
       rootTagName: "a",
       rootProps: {
@@ -15861,17 +16310,17 @@
       }
     }))), items.map(function (item, idx) {
       var isLast = idx === items.length - 1;
-      return v("li", {
+      return h("li", {
         key: item.label + idx,
         className: classnames(cssClasses.item, _defineProperty({}, cssClasses.selectedItem, isLast))
-      }, v(Template, _extends({}, templateProps, {
+      }, h(Template, _extends({}, templateProps, {
         templateKey: "separator",
         rootTagName: "span",
         rootProps: {
           className: cssClasses.separator,
           'aria-hidden': true
         }
-      })), isLast ? item.label : v("a", {
+      })), isLast ? item.label : h("a", {
         className: cssClasses.link,
         href: createURL(item.value),
         onClick: function onClick(event) {
@@ -15883,8 +16332,12 @@
   };
 
   var defaultTemplates = {
-    home: 'Home',
-    separator: '>'
+    home: function home() {
+      return 'Home';
+    },
+    separator: function separator() {
+      return '>';
+    }
   };
 
   var withUsage$t = createDocumentationMessageGenerator({
@@ -15913,7 +16366,7 @@
         return;
       }
 
-      S(v(Breadcrumb, {
+      P(h(Breadcrumb, {
         canRefine: canRefine,
         cssClasses: cssClasses,
         createURL: createURL,
@@ -15970,7 +16423,7 @@
       templates: templates
     });
     var makeWidget = connectBreadcrumb(specializedRenderer, function () {
-      return S(null, containerNode);
+      return P(null, containerNode);
     });
     return _objectSpread2(_objectSpread2({}, makeWidget({
       attributes: attributes,
@@ -15987,9 +16440,9 @@
         refine = _ref.refine,
         cssClasses = _ref.cssClasses,
         templateProps = _ref.templateProps;
-    return v("div", {
+    return h("div", {
       className: cssClasses.root
-    }, v(Template, _extends({}, templateProps, {
+    }, h(Template, _extends({}, templateProps, {
       templateKey: "resetLabel",
       rootTagName: "button",
       rootProps: {
@@ -16004,7 +16457,9 @@
   };
 
   var defaultTemplates$1 = {
-    resetLabel: 'Clear refinements'
+    resetLabel: function resetLabel() {
+      return 'Clear refinements';
+    }
   };
 
   var withUsage$u = createDocumentationMessageGenerator({
@@ -16019,7 +16474,7 @@
         templates = _ref.templates;
     return function (_ref2, isFirstRendering) {
       var refine = _ref2.refine,
-          hasRefinements = _ref2.hasRefinements,
+          canRefine = _ref2.canRefine,
           instantSearchInstance = _ref2.instantSearchInstance;
 
       if (isFirstRendering) {
@@ -16031,10 +16486,10 @@
         return;
       }
 
-      S(v(ClearRefinements, {
+      P(h(ClearRefinements, {
         refine: refine,
         cssClasses: cssClasses,
-        hasRefinements: hasRefinements,
+        hasRefinements: canRefine,
         templateProps: renderState.templateProps
       }), containerNode);
     };
@@ -16073,7 +16528,7 @@
       templates: templates
     });
     var makeWidget = connectClearRefinements(specializedRenderer, function () {
-      return S(null, containerNode);
+      return P(null, containerNode);
     });
     return _objectSpread2(_objectSpread2({}, makeWidget({
       includedAttributes: includedAttributes,
@@ -16100,8 +16555,6 @@
     });
   };
 
-  /** @jsx h */
-
   var createItemKey = function createItemKey(_ref) {
     var attribute = _ref.attribute,
         value = _ref.value,
@@ -16126,23 +16579,23 @@
   var CurrentRefinements = function CurrentRefinements(_ref2) {
     var items = _ref2.items,
         cssClasses = _ref2.cssClasses;
-    return v("div", {
+    return h("div", {
       className: cssClasses.root
-    }, v("ul", {
+    }, h("ul", {
       className: cssClasses.list
     }, items.map(function (item, index) {
-      return v("li", {
+      return h("li", {
         key: "".concat(item.indexName, "-").concat(item.attribute, "-").concat(index),
         className: cssClasses.item
-      }, v("span", {
+      }, h("span", {
         className: cssClasses.label
       }, capitalize(item.label), ":"), item.refinements.map(function (refinement) {
-        return v("span", {
+        return h("span", {
           key: createItemKey(refinement),
           className: cssClasses.category
-        }, v("span", {
+        }, h("span", {
           className: cssClasses.categoryLabel
-        }, refinement.attribute === 'query' ? v("q", null, refinement.label) : refinement.label), v("button", {
+        }, refinement.attribute === 'query' ? h("q", null, refinement.label) : refinement.label), h("button", {
           className: cssClasses.delete,
           onClick: handleClick(item.refine.bind(null, refinement))
         }, "\u2715"));
@@ -16166,7 +16619,7 @@
     var _ref2 = widgetParams,
         container = _ref2.container,
         cssClasses = _ref2.cssClasses;
-    S(v(CurrentRefinements, {
+    P(h(CurrentRefinements, {
       cssClasses: cssClasses,
       items: items
     }), container);
@@ -16208,7 +16661,7 @@
       }), userCssClasses.delete)
     };
     var makeWidget = connectCurrentRefinements(renderer$2, function () {
-      return S(null, containerNode);
+      return P(null, containerNode);
     });
     return _objectSpread2(_objectSpread2({}, makeWidget({
       container: containerNode,
@@ -16222,8 +16675,12 @@
   };
 
   var defaultTemplates$2 = {
-    header: '',
-    loader: '',
+    header: function header() {
+      return '';
+    },
+    loader: function loader() {
+      return '';
+    },
     item: function item(_item) {
       return JSON.stringify(_item);
     }
@@ -16234,9 +16691,9 @@
         isLoading = _ref.isLoading,
         cssClasses = _ref.cssClasses,
         templateProps = _ref.templateProps;
-    return v("div", {
+    return h("div", {
       className: classnames(cssClasses.root, _defineProperty({}, cssClasses.emptyRoot, hits.length === 0))
-    }, v(Template, _extends({}, templateProps, {
+    }, h(Template, _extends({}, templateProps, {
       templateKey: "header",
       rootProps: {
         className: cssClasses.header
@@ -16245,15 +16702,15 @@
         hits: hits,
         isLoading: isLoading
       }
-    })), isLoading ? v(Template, _extends({}, templateProps, {
+    })), isLoading ? h(Template, _extends({}, templateProps, {
       templateKey: "loader",
       rootProps: {
         className: cssClasses.loader
       }
-    })) : v("ul", {
+    })) : h("ul", {
       className: cssClasses.list
     }, hits.map(function (hit, position) {
-      return v(Template, _extends({}, templateProps, {
+      return h(Template, _extends({}, templateProps, {
         templateKey: "item",
         rootTagName: "li",
         rootProps: {
@@ -16291,7 +16748,7 @@
         return;
       }
 
-      S(v(Answers, {
+      P(h(Answers, {
         cssClasses: cssClasses,
         hits: hits,
         isLoading: isLoading,
@@ -16345,7 +16802,7 @@
       renderState: {}
     });
     var makeWidget = connectAnswers(specializedRenderer, function () {
-      return S(null, containerNode);
+      return P(null, containerNode);
     });
     return _objectSpread2(_objectSpread2({}, makeWidget({
       attributesForPrediction: attributesForPrediction,
@@ -16448,22 +16905,18 @@
     });
   };
 
-  /** @jsx h */
-
   var GeoSearchButton = function GeoSearchButton(_ref) {
     var className = _ref.className,
         _ref$disabled = _ref.disabled,
         disabled = _ref$disabled === void 0 ? false : _ref$disabled,
         onClick = _ref.onClick,
         children = _ref.children;
-    return v("button", {
+    return h("button", {
       className: className,
       onClick: onClick,
       disabled: disabled
     }, children);
   };
-
-  /** @jsx h */
 
   var GeoSearchToggle = function GeoSearchToggle(_ref) {
     var classNameLabel = _ref.classNameLabel,
@@ -16471,9 +16924,9 @@
         checked = _ref.checked,
         onToggle = _ref.onToggle,
         children = _ref.children;
-    return v("label", {
+    return h("label", {
       className: classNameLabel
-    }, v("input", {
+    }, h("input", {
       className: classNameInput,
       type: "checkbox",
       checked: checked,
@@ -16493,36 +16946,36 @@
         onRefineClick = _ref.onRefineClick,
         onClearClick = _ref.onClearClick,
         templateProps = _ref.templateProps;
-    return v(d, null, enableRefine && v("div", null, enableRefineControl && v("div", {
+    return h(p, null, enableRefine && h("div", null, enableRefineControl && h("div", {
       className: cssClasses.control
-    }, isRefineOnMapMove || !hasMapMoveSinceLastRefine ? v(GeoSearchToggle, {
+    }, isRefineOnMapMove || !hasMapMoveSinceLastRefine ? h(GeoSearchToggle, {
       classNameLabel: classnames(cssClasses.label, _defineProperty({}, cssClasses.selectedLabel, isRefineOnMapMove)),
       classNameInput: cssClasses.input,
       checked: isRefineOnMapMove,
       onToggle: onRefineToggle
-    }, v(Template, _extends({}, templateProps, {
+    }, h(Template, _extends({}, templateProps, {
       templateKey: "toggle",
       rootTagName: "span"
-    }))) : v(GeoSearchButton, {
+    }))) : h(GeoSearchButton, {
       className: cssClasses.redo,
       disabled: !hasMapMoveSinceLastRefine,
       onClick: onRefineClick
-    }, v(Template, _extends({}, templateProps, {
+    }, h(Template, _extends({}, templateProps, {
       templateKey: "redo",
       rootTagName: "span"
-    })))), !enableRefineControl && !isRefineOnMapMove && v("div", {
+    })))), !enableRefineControl && !isRefineOnMapMove && h("div", {
       className: cssClasses.control
-    }, v(GeoSearchButton, {
+    }, h(GeoSearchButton, {
       className: classnames(cssClasses.redo, _defineProperty({}, cssClasses.disabledRedo, !hasMapMoveSinceLastRefine)),
       disabled: !hasMapMoveSinceLastRefine,
       onClick: onRefineClick
-    }, v(Template, _extends({}, templateProps, {
+    }, h(Template, _extends({}, templateProps, {
       templateKey: "redo",
       rootTagName: "span"
-    })))), enableClearMapRefinement && isRefinedWithMap && v(GeoSearchButton, {
+    })))), enableClearMapRefinement && isRefinedWithMap && h(GeoSearchButton, {
       className: cssClasses.reset,
       onClick: onClearClick
-    }, v(Template, _extends({}, templateProps, {
+    }, h(Template, _extends({}, templateProps, {
       templateKey: "reset",
       rootTagName: "span"
     })))));
@@ -16706,7 +17159,7 @@
       });
     }
 
-    S(v(GeoSearchControls, {
+    P(h(GeoSearchControls, {
       cssClasses: cssClasses,
       enableRefine: enableRefine,
       enableRefineControl: enableRefineControl,
@@ -16726,14 +17179,23 @@
     }), container.querySelector(".".concat(cssClasses.tree)));
   };
 
+  var _ref = h("p", null, "Your custom HTML Marker");
+
   var defaultTemplates$3 = {
-    HTMLMarker: '<p>Your custom HTML Marker</p>',
-    reset: 'Clear the map refinement',
-    toggle: 'Search as I move the map',
-    redo: 'Redo search here'
+    HTMLMarker: function HTMLMarker() {
+      return _ref;
+    },
+    reset: function reset() {
+      return 'Clear the map refinement';
+    },
+    toggle: function toggle() {
+      return 'Search as I move the map';
+    },
+    redo: function redo() {
+      return 'Redo search here';
+    }
   };
 
-  /* global google EventListener */
   var createHTMLMarker = function createHTMLMarker(googleReference) {
     var HTMLMarker = /*#__PURE__*/function (_googleReference$maps) {
       _inherits(HTMLMarker, _googleReference$maps);
@@ -16777,7 +17239,12 @@
         _this.element = document.createElement('div');
         _this.element.className = className;
         _this.element.style.position = 'absolute';
-        _this.element.innerHTML = template;
+
+        if (_typeof(template) === 'object') {
+          P(template, _this.element);
+        } else {
+          _this.element.innerHTML = template;
+        }
 
         _this.setMap(map);
 
@@ -16995,7 +17462,7 @@
     var createMarker = !customHTMLMarker ? createBuiltInMarker : createCustomHTMLMarker;
     var markerOptions = !customHTMLMarker ? builtInMarker : customHTMLMarker;
     var makeWidget = connectGeoSearch(renderer$4, function () {
-      return S(null, containerNode);
+      return P(null, containerNode);
     });
     return _objectSpread2(_objectSpread2({}, makeWidget(_objectSpread2(_objectSpread2({}, otherWidgetParams), {}, {
       renderState: {},
@@ -17024,7 +17491,7 @@
         templateKey = _ref.templateKey,
         templateData = _ref.templateData,
         subItems = _ref.subItems;
-    return v("li", {
+    return h("li", {
       className: className,
       onClick: function onClick(originalEvent) {
         handleClick({
@@ -17033,7 +17500,7 @@
           originalEvent: originalEvent
         });
       }
-    }, v(Template, _extends({}, templateProps, {
+    }, h(Template, _extends({}, templateProps, {
       templateKey: templateKey,
       data: templateData
     })), subItems);
@@ -17075,7 +17542,7 @@
         focused: false
       });
 
-      _defineProperty(_assertThisInitialized(_this), "input", p());
+      _defineProperty(_assertThisInitialized(_this), "input", y());
 
       _defineProperty(_assertThisInitialized(_this), "onInput", function (event) {
         var _this$props = _this.props,
@@ -17190,16 +17657,16 @@
             showLoadingIndicator = _this$props4.showLoadingIndicator,
             templates = _this$props4.templates,
             isSearchStalled = _this$props4.isSearchStalled;
-        return v("div", {
+        return h("div", {
           className: cssClasses.root
-        }, v("form", {
+        }, h("form", {
           action: "",
           role: "search",
           className: cssClasses.form,
           noValidate: true,
           onSubmit: this.onSubmit,
           onReset: this.onReset
-        }, v("input", {
+        }, h("input", {
           ref: this.input,
           value: this.state.query,
           disabled: this.props.disabled,
@@ -17216,7 +17683,7 @@
           onInput: this.onInput,
           onBlur: this.onBlur,
           onFocus: this.onFocus
-        }), v(Template, {
+        }), h(Template, {
           templateKey: "submit",
           rootTagName: "button",
           rootProps: {
@@ -17229,7 +17696,7 @@
           data: {
             cssClasses: cssClasses
           }
-        }), v(Template, {
+        }), h(Template, {
           templateKey: "reset",
           rootTagName: "button",
           rootProps: {
@@ -17242,7 +17709,7 @@
           data: {
             cssClasses: cssClasses
           }
-        }), showLoadingIndicator && v(Template, {
+        }), showLoadingIndicator && h(Template, {
           templateKey: "loadingIndicator",
           rootTagName: "span",
           rootProps: {
@@ -17258,7 +17725,7 @@
     }]);
 
     return SearchBox;
-  }(_);
+  }(d);
 
   _defineProperty(SearchBox, "defaultProps", defaultProps$1);
 
@@ -17283,7 +17750,7 @@
 
       _this = _super.call(this, props);
 
-      _defineProperty(_assertThisInitialized(_this), "searchBox", p());
+      _defineProperty(_assertThisInitialized(_this), "searchBox", y());
 
       _this.handleItemClick = _this.handleItemClick.bind(_assertThisInitialized(_this));
       return _this;
@@ -17312,7 +17779,7 @@
               root = _this$props$cssClasse.root,
               cssClasses = _objectWithoutProperties(_this$props$cssClasse, ["root"]);
 
-          subItems = v(RefinementList, _extends({}, this.props, {
+          subItems = h(RefinementList, _extends({}, this.props, {
             // We want to keep `root` required for external usage but not for the
             // sub items.
             cssClasses: cssClasses,
@@ -17343,7 +17810,7 @@
         }
 
         var refinementListItemClassName = classnames(this.props.cssClasses.item, (_cx = {}, _defineProperty(_cx, this.props.cssClasses.selectedItem, facetValue.isRefined), _defineProperty(_cx, this.props.cssClasses.disabledItem, !facetValue.count), _defineProperty(_cx, this.props.cssClasses.parentItem, isHierarchicalMenuItem(facetValue) && Array.isArray(facetValue.data) && facetValue.data.length > 0), _cx));
-        return v(RefinementListItem, {
+        return h(RefinementListItem, {
           templateKey: "item",
           key: key,
           facetValueToRefine: facetValue.value,
@@ -17437,7 +17904,7 @@
         var _this2 = this;
 
         var showMoreButtonClassName = classnames(this.props.cssClasses.showMore, _defineProperty({}, this.props.cssClasses.disabledShowMore, !(this.props.showMore === true && this.props.canToggleShowMore)));
-        var showMoreButton = this.props.showMore === true && v(Template, _extends({}, this.props.templateProps, {
+        var showMoreButton = this.props.showMore === true && h(Template, _extends({}, this.props.templateProps, {
           templateKey: "showMoreText",
           rootTagName: "button",
           rootProps: {
@@ -17450,9 +17917,9 @@
           }
         }));
         var shouldDisableSearchBox = this.props.searchIsAlwaysActive !== true && !(this.props.isFromSearch || !this.props.hasExhaustiveItems);
-        var searchBox = this.props.searchFacetValues && v("div", {
+        var searchBox = this.props.searchFacetValues && h("div", {
           className: this.props.cssClasses.searchBox
-        }, v(SearchBox, {
+        }, h(SearchBox, {
           ref: this.searchBox,
           placeholder: this.props.searchPlaceholder,
           disabled: shouldDisableSearchBox,
@@ -17471,30 +17938,46 @@
           ,
           searchAsYouType: false
         }));
-        var facetValues = this.props.facetValues && this.props.facetValues.length > 0 && v("ul", {
+        var facetValues = this.props.facetValues && this.props.facetValues.length > 0 && h("ul", {
           className: this.props.cssClasses.list
         }, this.props.facetValues.map(this._generateFacetItem, this));
-        var noResults = this.props.searchFacetValues && this.props.isFromSearch && (!this.props.facetValues || this.props.facetValues.length === 0) && v(Template, _extends({}, this.props.templateProps, {
+        var noResults = this.props.searchFacetValues && this.props.isFromSearch && (!this.props.facetValues || this.props.facetValues.length === 0) && h(Template, _extends({}, this.props.templateProps, {
           templateKey: "searchableNoResults",
           rootProps: {
             className: this.props.cssClasses.noResults
           }
         }));
         var rootClassName = classnames(this.props.cssClasses.root, _defineProperty({}, this.props.cssClasses.noRefinementRoot, !this.props.facetValues || this.props.facetValues.length === 0), this.props.className);
-        return v("div", {
+        return h("div", {
           className: rootClassName
         }, this.props.children, searchBox, facetValues, noResults, showMoreButton);
       }
     }]);
 
     return RefinementList;
-  }(_);
+  }(d);
 
   _defineProperty(RefinementList$1, "defaultProps", defaultProps$2);
 
   var defaultTemplates$4 = {
-    item: '<a class="{{cssClasses.link}}" href="{{url}}">' + '<span class="{{cssClasses.label}}">{{label}}</span>' + '<span class="{{cssClasses.count}}">{{#helpers.formatNumber}}{{count}}{{/helpers.formatNumber}}</span>' + '</a>',
-    showMoreText: "\n    {{#isShowingMore}}\n      Show less\n    {{/isShowingMore}}\n    {{^isShowingMore}}\n      Show more\n    {{/isShowingMore}}\n  "
+    item: function item(_ref) {
+      var url = _ref.url,
+          label = _ref.label,
+          count = _ref.count,
+          cssClasses = _ref.cssClasses;
+      return h("a", {
+        className: cx(cssClasses.link),
+        href: url
+      }, h("span", {
+        className: cx(cssClasses.label)
+      }, label), h("span", {
+        className: cx(cssClasses.count)
+      }, formatNumber(count)));
+    },
+    showMoreText: function showMoreText(_ref2) {
+      var isShowingMore = _ref2.isShowingMore;
+      return isShowingMore ? 'Show less' : 'Show more';
+    }
   };
 
   var withUsage$z = createDocumentationMessageGenerator({
@@ -17526,7 +18009,7 @@
         return;
       }
 
-      S(v(RefinementList$1, {
+      P(h(RefinementList$1, {
         createURL: createURL,
         cssClasses: cssClasses,
         facetValues: items,
@@ -17663,7 +18146,7 @@
       renderState: {}
     });
     var makeWidget = connectHierarchicalMenu(specializedRenderer, function () {
-      return S(null, containerNode);
+      return P(null, containerNode);
     });
     return _objectSpread2(_objectSpread2({}, makeWidget({
       attributes: attributes,
@@ -17684,11 +18167,12 @@
     var results = _ref.results,
         hits = _ref.hits,
         bindEvent = _ref.bindEvent,
+        sendEvent = _ref.sendEvent,
         cssClasses = _ref.cssClasses,
         templateProps = _ref.templateProps;
 
     if (results.hits.length === 0) {
-      return v(Template, _extends({}, templateProps, {
+      return h(Template, _extends({}, templateProps, {
         templateKey: "empty",
         rootProps: {
           className: classnames(cssClasses.root, cssClasses.emptyRoot)
@@ -17697,12 +18181,12 @@
       }));
     }
 
-    return v("div", {
+    return h("div", {
       className: cssClasses.root
-    }, v("ol", {
+    }, h("ol", {
       className: cssClasses.list
     }, hits.map(function (hit, index) {
-      return v(Template, _extends({}, templateProps, {
+      return h(Template, _extends({}, templateProps, {
         templateKey: "item",
         rootTagName: "li",
         rootProps: {
@@ -17712,13 +18196,16 @@
         data: _objectSpread2(_objectSpread2({}, hit), {}, {
           __hitIndex: index
         }),
-        bindEvent: bindEvent
+        bindEvent: bindEvent,
+        sendEvent: sendEvent
       }));
     })));
   };
 
   var defaultTemplates$5 = {
-    empty: 'No results',
+    empty: function empty() {
+      return 'No results';
+    },
     item: function item(data) {
       return JSON.stringify(data, null, 2);
     }
@@ -17751,7 +18238,7 @@
         return;
       }
 
-      S(v(HitsWithInsightsListener, {
+      P(h(HitsWithInsightsListener, {
         cssClasses: cssClasses,
         hits: receivedHits,
         results: results,
@@ -17799,7 +18286,7 @@
       templates: templates
     });
     var makeWidget = withInsights(connectHits)(specializedRenderer, function () {
-      return S(null, containerNode);
+      return P(null, containerNode);
     });
     return _objectSpread2(_objectSpread2({}, makeWidget({
       escapeHTML: escapeHTML,
@@ -17809,21 +18296,19 @@
     });
   };
 
-  /** @jsx h */
-
   function Selector(_ref) {
     var currentValue = _ref.currentValue,
         options = _ref.options,
         cssClasses = _ref.cssClasses,
         setValue = _ref.setValue;
-    return v("select", {
+    return h("select", {
       className: classnames(cssClasses.select),
       onChange: function onChange(event) {
         return setValue(event.target.value);
       },
       value: "".concat(currentValue)
     }, options.map(function (option) {
-      return v("option", {
+      return h("option", {
         className: classnames(cssClasses.option),
         key: option.label + option.value,
         value: "".concat(option.value)
@@ -17850,9 +18335,9 @@
       }) || {},
           currentValue = _ref3.value;
 
-      S(v("div", {
+      P(h("div", {
         className: cssClasses.root
-      }, v(Selector, {
+      }, h(Selector, {
         cssClasses: cssClasses,
         currentValue: currentValue,
         options: items,
@@ -17888,7 +18373,7 @@
       cssClasses: cssClasses
     });
     var makeWidget = connectHitsPerPage(specializedRenderer, function () {
-      return S(null, containerNode);
+      return P(null, containerNode);
     });
     return _objectSpread2(_objectSpread2({}, makeWidget({
       items: items,
@@ -17902,6 +18387,7 @@
     var results = _ref.results,
         hits = _ref.hits,
         bindEvent = _ref.bindEvent,
+        sendEvent = _ref.sendEvent,
         hasShowPrevious = _ref.hasShowPrevious,
         showPrevious = _ref.showPrevious,
         showMore = _ref.showMore,
@@ -17911,7 +18397,7 @@
         templateProps = _ref.templateProps;
 
     if (results.hits.length === 0) {
-      return v(Template, _extends({}, templateProps, {
+      return h(Template, _extends({}, templateProps, {
         templateKey: "empty",
         rootProps: {
           className: classnames(cssClasses.root, cssClasses.emptyRoot)
@@ -17920,9 +18406,9 @@
       }));
     }
 
-    return v("div", {
+    return h("div", {
       className: cssClasses.root
-    }, hasShowPrevious && v(Template, _extends({}, templateProps, {
+    }, hasShowPrevious && h(Template, _extends({}, templateProps, {
       templateKey: "showPreviousText",
       rootTagName: "button",
       rootProps: {
@@ -17930,10 +18416,10 @@
         disabled: isFirstPage,
         onClick: showPrevious
       }
-    })), v("ol", {
+    })), h("ol", {
       className: cssClasses.list
     }, hits.map(function (hit, position) {
-      return v(Template, _extends({}, templateProps, {
+      return h(Template, _extends({}, templateProps, {
         templateKey: "item",
         rootTagName: "li",
         rootProps: {
@@ -17943,9 +18429,10 @@
         data: _objectSpread2(_objectSpread2({}, hit), {}, {
           __hitIndex: position
         }),
-        bindEvent: bindEvent
+        bindEvent: bindEvent,
+        sendEvent: sendEvent
       }));
-    })), v(Template, _extends({}, templateProps, {
+    })), h(Template, _extends({}, templateProps, {
       templateKey: "showMoreText",
       rootTagName: "button",
       rootProps: {
@@ -17957,9 +18444,15 @@
   };
 
   var defaultTemplates$6 = {
-    empty: 'No results',
-    showPreviousText: 'Show previous results',
-    showMoreText: 'Show more results',
+    empty: function empty() {
+      return 'No results';
+    },
+    showPreviousText: function showPreviousText() {
+      return 'Show previous results';
+    },
+    showMoreText: function showMoreText() {
+      return 'Show more results';
+    },
     item: function item(data) {
       return JSON.stringify(data, null, 2);
     }
@@ -17997,7 +18490,7 @@
         return;
       }
 
-      S(v(InfiniteHitsWithInsightsListener, {
+      P(h(InfiniteHitsWithInsightsListener, {
         cssClasses: cssClasses,
         hits: hits,
         results: results,
@@ -18067,7 +18560,7 @@
       renderState: {}
     });
     var makeWidget = withInsights(connectInfiniteHits)(specializedRenderer, function () {
-      return S(null, containerNode);
+      return P(null, containerNode);
     });
     return _objectSpread2(_objectSpread2({}, makeWidget({
       escapeHTML: escapeHTML,
@@ -18080,8 +18573,24 @@
   };
 
   var defaultTemplates$7 = {
-    item: '<a class="{{cssClasses.link}}" href="{{url}}">' + '<span class="{{cssClasses.label}}">{{label}}</span>' + '<span class="{{cssClasses.count}}">{{#helpers.formatNumber}}{{count}}{{/helpers.formatNumber}}</span>' + '</a>',
-    showMoreText: "\n    {{#isShowingMore}}\n      Show less\n    {{/isShowingMore}}\n    {{^isShowingMore}}\n      Show more\n    {{/isShowingMore}}\n  "
+    item: function item(_ref) {
+      var cssClasses = _ref.cssClasses,
+          url = _ref.url,
+          label = _ref.label,
+          count = _ref.count;
+      return h("a", {
+        className: cx(cssClasses.link),
+        href: url
+      }, h("span", {
+        className: cx(cssClasses.label)
+      }, label), h("span", {
+        className: cx(cssClasses.count)
+      }, formatNumber(count)));
+    },
+    showMoreText: function showMoreText(_ref2) {
+      var isShowingMore = _ref2.isShowingMore;
+      return isShowingMore ? 'Show less' : 'Show more';
+    }
   };
 
   var withUsage$D = createDocumentationMessageGenerator({
@@ -18118,7 +18627,7 @@
           url: createURL(facetValue.value)
         });
       });
-      S(v(RefinementList$1, {
+      P(h(RefinementList$1, {
         createURL: createURL,
         cssClasses: cssClasses,
         facetValues: facetValues,
@@ -18191,7 +18700,7 @@
       showMore: showMore
     });
     var makeWidget = connectMenu(specializedRenderer, function () {
-      return S(null, containerNode);
+      return P(null, containerNode);
     });
     return _objectSpread2(_objectSpread2({}, makeWidget({
       attribute: attribute,
@@ -18218,15 +18727,15 @@
     },
         selectedValue = _ref2.value;
 
-    return v("div", {
+    return h("div", {
       className: classnames(cssClasses.root, _defineProperty({}, cssClasses.noRefinementRoot, items.length === 0))
-    }, v("select", {
+    }, h("select", {
       className: cssClasses.select,
       value: selectedValue,
       onChange: function onChange(event) {
         refine(event.target.value);
       }
-    }, v(Template, _extends({}, templateProps, {
+    }, h(Template, _extends({}, templateProps, {
       templateKey: "defaultOption",
       rootTagName: "option",
       rootProps: {
@@ -18234,7 +18743,7 @@
         className: cssClasses.option
       }
     })), items.map(function (item) {
-      return v(Template, _extends({}, templateProps, {
+      return h(Template, _extends({}, templateProps, {
         templateKey: "item",
         rootTagName: "option",
         rootProps: {
@@ -18248,8 +18757,14 @@
   }
 
   var defaultTemplates$8 = {
-    item: '{{label}} ({{#helpers.formatNumber}}{{count}}{{/helpers.formatNumber}})',
-    defaultOption: 'See all'
+    item: function item(_ref) {
+      var label = _ref.label,
+          count = _ref.count;
+      return "".concat(label, " (").concat(formatNumber(count), ")");
+    },
+    defaultOption: function defaultOption() {
+      return 'See all';
+    }
   };
 
   var withUsage$E = createDocumentationMessageGenerator({
@@ -18276,7 +18791,7 @@
         return;
       }
 
-      S(v(MenuSelect, {
+      P(h(MenuSelect, {
         cssClasses: cssClasses,
         items: items,
         refine: refine,
@@ -18323,7 +18838,7 @@
       templates: templates
     });
     var makeWidget = connectMenu(specializedRenderer, function () {
-      return S(null, containerNode);
+      return P(null, containerNode);
     });
     return _objectSpread2(_objectSpread2({}, makeWidget({
       attribute: attribute,
@@ -18336,7 +18851,22 @@
   };
 
   var defaultTemplates$9 = {
-    item: "<label class=\"{{cssClasses.label}}\">\n  <input type=\"radio\" class=\"{{cssClasses.radio}}\" name=\"{{attribute}}\"{{#isRefined}} checked{{/isRefined}} />\n  <span class=\"{{cssClasses.labelText}}\">{{label}}</span>\n</label>"
+    item: function item(_ref) {
+      var cssClasses = _ref.cssClasses,
+          attribute = _ref.attribute,
+          label = _ref.label,
+          isRefined = _ref.isRefined;
+      return h("label", {
+        className: cssClasses.label
+      }, h("input", {
+        type: "radio",
+        className: cssClasses.radio,
+        name: attribute,
+        defaultChecked: isRefined
+      }), h("span", {
+        className: cssClasses.labelText
+      }, label));
+    }
   };
 
   var withUsage$F = createDocumentationMessageGenerator({
@@ -18365,7 +18895,7 @@
         return;
       }
 
-      S(v(RefinementList$1, {
+      P(h(RefinementList$1, {
         createURL: createURL,
         cssClasses: cssClasses,
         facetValues: items,
@@ -18425,7 +18955,7 @@
       templates: templates
     });
     var makeWidget = connectNumericMenu(specializedRenderer, function () {
-      return S(null, containerNode);
+      return P(null, containerNode);
     });
     return _objectSpread2(_objectSpread2({}, makeWidget({
       attribute: attribute,
@@ -18450,11 +18980,11 @@
       };
     }
 
-    return v("div", {
+    return h("div", {
       className: classnames(props.cssClasses.root, _defineProperty({}, props.cssClasses.noRefinementRoot, props.nbPages <= 1))
-    }, v("ul", {
+    }, h("ul", {
       className: props.cssClasses.list
-    }, props.showFirst && v(PaginationLink, {
+    }, props.showFirst && h(PaginationLink, {
       ariaLabel: "First",
       className: props.cssClasses.firstPageItem,
       isDisabled: props.isFirstPage,
@@ -18463,7 +18993,7 @@
       createURL: props.createURL,
       cssClasses: props.cssClasses,
       createClickHandler: createClickHandler
-    }), props.showPrevious && v(PaginationLink, {
+    }), props.showPrevious && h(PaginationLink, {
       ariaLabel: "Previous",
       className: props.cssClasses.previousPageItem,
       isDisabled: props.isFirstPage,
@@ -18473,7 +19003,7 @@
       cssClasses: props.cssClasses,
       createClickHandler: createClickHandler
     }), props.pages.map(function (pageNumber) {
-      return v(PaginationLink, {
+      return h(PaginationLink, {
         key: pageNumber,
         ariaLabel: "".concat(pageNumber + 1),
         className: props.cssClasses.pageItem,
@@ -18484,7 +19014,7 @@
         cssClasses: props.cssClasses,
         createClickHandler: createClickHandler
       });
-    }), props.showNext && v(PaginationLink, {
+    }), props.showNext && h(PaginationLink, {
       ariaLabel: "Next",
       className: props.cssClasses.nextPageItem,
       isDisabled: props.isLastPage,
@@ -18493,7 +19023,7 @@
       createURL: props.createURL,
       cssClasses: props.cssClasses,
       createClickHandler: createClickHandler
-    }), props.showLast && v(PaginationLink, {
+    }), props.showLast && h(PaginationLink, {
       ariaLabel: "Last",
       className: props.cssClasses.lastPageItem,
       isDisabled: props.isLastPage,
@@ -18517,14 +19047,14 @@
         cssClasses = _ref.cssClasses,
         createURL = _ref.createURL,
         createClickHandler = _ref.createClickHandler;
-    return v("li", {
+    return h("li", {
       className: classnames(cssClasses.item, className, isDisabled && cssClasses.disabledItem, isSelected && cssClasses.selectedItem)
-    }, isDisabled ? v("span", {
+    }, isDisabled ? h("span", {
       className: cssClasses.link,
       dangerouslySetInnerHTML: {
         __html: label
       }
-    }) : v("a", {
+    }) : h("a", {
       className: cssClasses.link,
       "aria-label": ariaLabel,
       href: createURL(pageNumber),
@@ -18573,7 +19103,7 @@
         }
       };
 
-      S(v(Pagination, {
+      P(h(Pagination, {
         createURL: createURL,
         cssClasses: cssClasses,
         currentPage: currentRefinement,
@@ -18675,7 +19205,7 @@
       scrollToNode: scrollToNode
     });
     var makeWidget = connectPagination(specializedRenderer, function () {
-      return S(null, containerNode);
+      return P(null, containerNode);
     });
     return _objectSpread2(_objectSpread2({}, makeWidget({
       totalPages: totalPages,
@@ -18685,23 +19215,23 @@
     });
   };
 
-  var t$1,u$1,r$1,o$1=0,i=[],c$1=l.__b,f$1=l.__r,e$1=l.diffed,a$1=l.__c,v$1=l.unmount;function m$1(t,r){l.__h&&l.__h(u$1,t,o$1||r),o$1=0;var i=u$1.__H||(u$1.__H={__:[],__h:[]});return t>=i.__.length&&i.__.push({}),i.__[t]}function l$1(n){return o$1=1,p$1(w$1,n)}function p$1(n,r,o){var i=m$1(t$1++,2);return i.t=n,i.__c||(i.__=[o?o(r):w$1(void 0,r),function(n){var t=i.t(i.__[0],n);i.__[0]!==t&&(i.__=[t,i.__[1]],i.__c.setState({}));}],i.__c=u$1),i.__}function y$1(r,o){var i=m$1(t$1++,3);!l.__s&&k$1(i.__H,o)&&(i.__=r,i.__H=o,u$1.__H.__h.push(i));}function s$1(n){return o$1=5,d$1(function(){return {current:n}},[])}function d$1(n,u){var r=m$1(t$1++,7);return k$1(r.__H,u)&&(r.__=n(),r.__H=u,r.__h=n),r.__}function x$1(){var t;for(i.sort(function(n,t){return n.__v.__b-t.__v.__b});t=i.pop();)if(t.__P)try{t.__H.__h.forEach(g$1),t.__H.__h.forEach(j$1),t.__H.__h=[];}catch(u){t.__H.__h=[],l.__e(u,t.__v);}}l.__b=function(n){u$1=null,c$1&&c$1(n);},l.__r=function(n){f$1&&f$1(n),t$1=0;var r=(u$1=n.__c).__H;r&&(r.__h.forEach(g$1),r.__h.forEach(j$1),r.__h=[]);},l.diffed=function(t){e$1&&e$1(t);var o=t.__c;o&&o.__H&&o.__H.__h.length&&(1!==i.push(o)&&r$1===l.requestAnimationFrame||((r$1=l.requestAnimationFrame)||function(n){var t,u=function(){clearTimeout(r),b$1&&cancelAnimationFrame(t),setTimeout(n);},r=setTimeout(u,100);b$1&&(t=requestAnimationFrame(u));})(x$1)),u$1=null;},l.__c=function(t,u){u.some(function(t){try{t.__h.forEach(g$1),t.__h=t.__h.filter(function(n){return !n.__||j$1(n)});}catch(r){u.some(function(n){n.__h&&(n.__h=[]);}),u=[],l.__e(r,t.__v);}}),a$1&&a$1(t,u);},l.unmount=function(t){v$1&&v$1(t);var u,r=t.__c;r&&r.__H&&(r.__H.__.forEach(function(n){try{g$1(n);}catch(n){u=n;}}),u&&l.__e(u,r.__v));};var b$1="function"==typeof requestAnimationFrame;function g$1(n){var t=u$1,r=n.__c;"function"==typeof r&&(n.__c=void 0,r()),u$1=t;}function j$1(n){var t=u$1;n.__c=n.__(),u$1=t;}function k$1(n,t){return !n||n.length!==t.length||t.some(function(t,u){return t!==n[u]})}function w$1(n,t){return "function"==typeof t?t(n):t}
+  var t$2,r$1,u$1,i,o$1=0,c$1=[],f$1=[],e$2=l.__b,a$1=l.__r,v$1=l.diffed,l$1=l.__c,m$2=l.unmount;function d$1(t,u){l.__h&&l.__h(r$1,t,o$1||u),o$1=0;var i=r$1.__H||(r$1.__H={__:[],__h:[]});return t>=i.__.length&&i.__.push({__V:f$1}),i.__[t]}function p$1(n){return o$1=1,y$1(z$1,n)}function y$1(n,u,i){var o=d$1(t$2++,2);if(o.t=n,!o.__c&&(o.__=[i?i(u):z$1(void 0,u),function(n){var t=o.__N?o.__N[0]:o.__[0],r=o.t(t,n);t!==r&&(o.__N=[r,o.__[1]],o.__c.setState({}));}],o.__c=r$1,!r$1.u)){r$1.u=!0;var c=r$1.shouldComponentUpdate;r$1.shouldComponentUpdate=function(n,t,r){if(!o.__c.__H)return !0;var u=o.__c.__H.__.filter(function(n){return n.__c});return u.every(function(n){return !n.__N})?!c||c.call(this,n,t,r):!u.every(function(n){if(!n.__N)return !0;var t=n.__[0];return n.__=n.__N,n.__N=void 0,t===n.__[0]})&&(!c||c.call(this,n,t,r))};}return o.__N||o.__}function h$1(u,i){var o=d$1(t$2++,3);!l.__s&&w$1(o.__H,i)&&(o.__=u,o.i=i,r$1.__H.__h.push(o));}function _$1(n){return o$1=5,F(function(){return {current:n}},[])}function F(n,r){var u=d$1(t$2++,7);return w$1(u.__H,r)?(u.__V=n(),u.i=r,u.__h=n,u.__V):u.__}function b$1(){for(var t;t=c$1.shift();)if(t.__P&&t.__H)try{t.__H.__h.forEach(j$1),t.__H.__h.forEach(k$1),t.__H.__h=[];}catch(r){t.__H.__h=[],l.__e(r,t.__v);}}l.__b=function(n){r$1=null,e$2&&e$2(n);},l.__r=function(n){a$1&&a$1(n),t$2=0;var i=(r$1=n.__c).__H;i&&(u$1===r$1?(i.__h=[],r$1.__h=[],i.__.forEach(function(n){n.__N&&(n.__=n.__N),n.__V=f$1,n.__N=n.i=void 0;})):(i.__h.forEach(j$1),i.__h.forEach(k$1),i.__h=[])),u$1=r$1;},l.diffed=function(t){v$1&&v$1(t);var o=t.__c;o&&o.__H&&(o.__H.__h.length&&(1!==c$1.push(o)&&i===l.requestAnimationFrame||((i=l.requestAnimationFrame)||function(n){var t,r=function(){clearTimeout(u),g$1&&cancelAnimationFrame(t),setTimeout(n);},u=setTimeout(r,100);g$1&&(t=requestAnimationFrame(r));})(b$1)),o.__H.__.forEach(function(n){n.i&&(n.__H=n.i),n.__V!==f$1&&(n.__=n.__V),n.i=void 0,n.__V=f$1;})),u$1=r$1=null;},l.__c=function(t,r){r.some(function(t){try{t.__h.forEach(j$1),t.__h=t.__h.filter(function(n){return !n.__||k$1(n)});}catch(u){r.some(function(n){n.__h&&(n.__h=[]);}),r=[],l.__e(u,t.__v);}}),l$1&&l$1(t,r);},l.unmount=function(t){m$2&&m$2(t);var r,u=t.__c;u&&u.__H&&(u.__H.__.forEach(function(n){try{j$1(n);}catch(n){r=n;}}),r&&l.__e(r,u.__v));};var g$1="function"==typeof requestAnimationFrame;function j$1(n){var t=r$1,u=n.__c;"function"==typeof u&&(n.__c=void 0,u()),r$1=t;}function k$1(n){var t=r$1;n.__c=n.__(),r$1=t;}function w$1(n,t){return !n||n.length!==t.length||t.some(function(t,r){return t!==n[r]})}function z$1(n,t){return "function"==typeof t?t(n):t}
 
   function Panel(props) {
     var _cx;
 
-    var _useState = l$1(props.isCollapsed),
+    var _useState = p$1(props.isCollapsed),
         _useState2 = _slicedToArray(_useState, 2),
         isCollapsed = _useState2[0],
         setIsCollapsed = _useState2[1];
 
-    var _useState3 = l$1(false),
+    var _useState3 = p$1(false),
         _useState4 = _slicedToArray(_useState3, 2),
         isControlled = _useState4[0],
         setIsControlled = _useState4[1];
 
-    var bodyRef = s$1(null);
-    y$1(function () {
+    var bodyRef = _$1(null);
+    h$1(function () {
       var node = bodyRef.current;
 
       if (!node) {
@@ -18718,17 +19248,17 @@
       setIsCollapsed(props.isCollapsed);
     }
 
-    return v("div", {
+    return h("div", {
       className: classnames(props.cssClasses.root, (_cx = {}, _defineProperty(_cx, props.cssClasses.noRefinementRoot, props.hidden), _defineProperty(_cx, props.cssClasses.collapsibleRoot, props.collapsible), _defineProperty(_cx, props.cssClasses.collapsedRoot, isCollapsed), _cx)),
       hidden: props.hidden
-    }, props.templates.header && v("div", {
+    }, props.templates.header && h("div", {
       className: props.cssClasses.header
-    }, v(Template, {
+    }, h(Template, {
       templates: props.templates,
       templateKey: "header",
       rootTagName: "span",
       data: props.data
-    }), props.collapsible && v("button", {
+    }), props.collapsible && h("button", {
       className: props.cssClasses.collapseButton,
       "aria-expanded": !isCollapsed,
       onClick: function onClick(event) {
@@ -18738,17 +19268,17 @@
           return !prevIsCollapsed;
         });
       }
-    }, v(Template, {
+    }, h(Template, {
       templates: props.templates,
       templateKey: "collapseButtonText",
       rootTagName: "span",
       data: {
         collapsed: isCollapsed
       }
-    }))), v("div", {
+    }))), h("div", {
       className: props.cssClasses.body,
       ref: bodyRef
-    }), props.templates.footer && v(Template, {
+    }), props.templates.footer && h(Template, {
       templates: props.templates,
       templateKey: "footer",
       rootProps: {
@@ -18773,7 +19303,7 @@
           hidden = _ref2.hidden,
           collapsible = _ref2.collapsible,
           collapsed = _ref2.collapsed;
-      S(v(Panel, {
+      P(h(Panel, {
         cssClasses: cssClasses,
         hidden: hidden,
         collapsible: collapsible,
@@ -18909,7 +19439,7 @@
             }
           },
           dispose: function dispose() {
-            S(null, containerNode);
+            P(null, containerNode);
 
             if (typeof widget.dispose === 'function') {
               var _widget$dispose;
@@ -19031,14 +19561,12 @@
     };
   };
 
-  /** @jsx h */
-
-  var _ref2 = v("path", {
+  var _ref2 = h("path", {
     fill: "#5468FF",
     d: "M78.99.94h16.6a2.97 2.97 0 012.96 2.96v16.6a2.97 2.97 0 01-2.97 2.96h-16.6a2.97 2.97 0 01-2.96-2.96V3.9A2.96 2.96 0 0179 .94"
   });
 
-  var _ref3 = v("path", {
+  var _ref3 = h("path", {
     fill: "#FFF",
     d: "M89.63 5.97v-.78a.98.98 0 00-.98-.97h-2.28a.98.98 0 00-.97.97V6c0 .09.08.15.17.13a7.13 7.13 0 013.9-.02c.08.02.16-.04.16-.13m-6.25 1L83 6.6a.98.98 0 00-1.38 0l-.46.46a.97.97 0 000 1.38l.38.39c.06.06.15.04.2-.02a7.49 7.49 0 011.63-1.62c.07-.04.08-.14.02-.2m4.16 2.45v3.34c0 .1.1.17.2.12l2.97-1.54c.06-.03.08-.12.05-.18a3.7 3.7 0 00-3.08-1.87c-.07 0-.14.06-.14.13m0 8.05a4.49 4.49 0 110-8.98 4.49 4.49 0 010 8.98m0-10.85a6.37 6.37 0 100 12.74 6.37 6.37 0 000-12.74"
   });
@@ -19047,15 +19575,15 @@
     var url = _ref.url,
         theme = _ref.theme,
         cssClasses = _ref.cssClasses;
-    return v("div", {
+    return h("div", {
       className: cssClasses.root
-    }, v("a", {
+    }, h("a", {
       href: url,
       target: "_blank",
       className: cssClasses.link,
       "aria-label": "Search by Algolia",
       rel: "noopener noreferrer"
-    }, v("svg", {
+    }, h("svg", {
       height: "1.2em",
       className: cssClasses.logo,
       viewBox: "0 0 168 24" // This style is necessary as long as it's not included in InstantSearch.css.
@@ -19064,10 +19592,10 @@
       style: {
         width: 'auto'
       }
-    }, v("path", {
+    }, h("path", {
       fill: theme === 'dark' ? '#FFF' : '#5D6494',
       d: "M6.97 6.68V8.3a4.47 4.47 0 00-2.42-.67 2.2 2.2 0 00-1.38.4c-.34.26-.5.6-.5 1.02 0 .43.16.77.49 1.03.33.25.83.53 1.51.83a7.04 7.04 0 011.9 1.08c.34.24.58.54.73.89.15.34.23.74.23 1.18 0 .95-.33 1.7-1 2.24a4 4 0 01-2.6.81 5.71 5.71 0 01-2.94-.68v-1.71c.84.63 1.81.94 2.92.94.58 0 1.05-.14 1.39-.4.34-.28.5-.65.5-1.13 0-.29-.1-.55-.3-.8a2.2 2.2 0 00-.65-.53 23.03 23.03 0 00-1.64-.78 13.67 13.67 0 01-1.11-.64c-.12-.1-.28-.22-.46-.4a1.72 1.72 0 01-.39-.5 4.46 4.46 0 01-.22-.6c-.07-.23-.1-.48-.1-.75 0-.91.33-1.63 1-2.17a4 4 0 012.57-.8c.97 0 1.8.18 2.47.52zm7.47 5.7v-.3a2.26 2.26 0 00-.5-1.44c-.3-.35-.74-.53-1.32-.53-.53 0-.99.2-1.37.58a2.9 2.9 0 00-.72 1.68h3.91zm1 2.79v1.4c-.6.34-1.38.51-2.36.51a4.02 4.02 0 01-3-1.13 4.04 4.04 0 01-1.11-2.97c0-1.3.34-2.32 1.02-3.06a3.38 3.38 0 012.6-1.1c1.03 0 1.85.32 2.46.96.6.64.9 1.57.9 2.78 0 .33-.03.68-.09 1.04h-5.31c.1.7.4 1.24.89 1.61.49.38 1.1.56 1.85.56.86 0 1.58-.2 2.15-.6zm6.61-1.78h-1.21c-.6 0-1.05.12-1.35.36-.3.23-.46.53-.46.89 0 .37.12.66.36.88.23.2.57.32 1.02.32.5 0 .9-.15 1.2-.43.3-.28.44-.65.44-1.1v-.92zm-4.07-2.55V9.33a4.96 4.96 0 012.5-.55c2.1 0 3.17 1.03 3.17 3.08V17H22.1v-.96c-.42.68-1.15 1.02-2.19 1.02-.76 0-1.38-.22-1.84-.66-.46-.44-.7-1-.7-1.68 0-.78.3-1.38.88-1.81.59-.43 1.4-.65 2.46-.65h1.34v-.46c0-.55-.13-.97-.4-1.25-.26-.29-.7-.43-1.32-.43-.86 0-1.65.24-2.35.72zm9.34-1.93v1.42c.39-1 1.1-1.5 2.12-1.5.15 0 .31.02.5.05v1.53c-.23-.1-.48-.14-.76-.14-.54 0-.99.24-1.34.71a2.8 2.8 0 00-.52 1.71V17h-1.57V8.91h1.57zm5 4.09a3 3 0 00.76 2.01c.47.53 1.14.8 2 .8.64 0 1.24-.18 1.8-.53v1.4c-.53.32-1.2.48-2 .48a3.98 3.98 0 01-4.17-4.18c0-1.16.38-2.15 1.14-2.98a4 4 0 013.1-1.23c.7 0 1.34.15 1.92.44v1.44a3.24 3.24 0 00-1.77-.5A2.65 2.65 0 0032.33 13zm7.92-7.28v4.58c.46-1 1.3-1.5 2.5-1.5.8 0 1.42.24 1.9.73.48.5.72 1.17.72 2.05V17H43.8v-5.1c0-.56-.14-.99-.43-1.29-.28-.3-.65-.45-1.1-.45-.54 0-1 .2-1.42.6-.4.4-.61 1.02-.61 1.85V17h-1.56V5.72h1.56zM55.2 15.74c.6 0 1.1-.25 1.5-.76.4-.5.6-1.16.6-1.95 0-.92-.2-1.62-.6-2.12-.4-.5-.92-.74-1.55-.74-.56 0-1.05.22-1.5.67-.44.45-.66 1.13-.66 2.06 0 .96.22 1.67.64 2.14.43.47.95.7 1.57.7zM53 5.72v4.42a2.74 2.74 0 012.43-1.34c1.03 0 1.86.38 2.51 1.15.65.76.97 1.78.97 3.05 0 1.13-.3 2.1-.92 2.9-.62.81-1.47 1.21-2.54 1.21s-1.9-.45-2.46-1.34V17h-1.58V5.72H53zm9.9 11.1l-3.22-7.9h1.74l1 2.62 1.26 3.42c.1-.32.48-1.46 1.15-3.42l.91-2.63h1.66l-2.92 7.87c-.78 2.07-1.96 3.1-3.56 3.1-.28 0-.53-.02-.73-.07v-1.34c.17.04.35.06.54.06 1.03 0 1.76-.57 2.17-1.7z"
-    }), _ref2, _ref3, v("path", {
+    }), _ref2, _ref3, h("path", {
       fill: theme === 'dark' ? '#FFF' : '#5468FF',
       d: "M120.92 18.8c-4.38.02-4.38-3.54-4.38-4.1V1.36l2.67-.42v13.25c0 .32 0 2.36 1.71 2.37v2.24zm-10.84-2.18c.82 0 1.43-.04 1.85-.12v-2.72a5.48 5.48 0 00-1.57-.2c-.3 0-.6.02-.9.07-.3.04-.57.12-.81.24-.24.11-.44.28-.58.49a.93.93 0 00-.22.65c0 .63.22 1 .61 1.23.4.24.94.36 1.62.36zm-.23-9.7c.88 0 1.62.11 2.23.33.6.22 1.09.53 1.44.92.36.4.61.92.76 1.48.16.56.23 1.17.23 1.85v6.87a21.69 21.69 0 01-4.68.5c-.69 0-1.32-.07-1.9-.2a4 4 0 01-1.46-.63 3.3 3.3 0 01-.96-1.13 4.3 4.3 0 01-.34-1.8 3.13 3.13 0 011.43-2.63c.45-.3.95-.5 1.54-.62a8.8 8.8 0 013.79.05v-.44c0-.3-.04-.6-.11-.87a1.78 1.78 0 00-1.1-1.22 3.2 3.2 0 00-1.15-.2 9.75 9.75 0 00-2.95.46l-.33-2.19a11.43 11.43 0 013.56-.53zm52.84 9.63c.82 0 1.43-.05 1.85-.13V13.7a5.42 5.42 0 00-1.57-.2c-.3 0-.6.02-.9.07-.3.04-.57.12-.81.24-.24.12-.44.28-.58.5a.93.93 0 00-.22.65c0 .63.22.99.61 1.23.4.24.94.36 1.62.36zm-.23-9.7c.88 0 1.63.11 2.23.33.6.22 1.1.53 1.45.92.35.39.6.92.76 1.48.15.56.23 1.18.23 1.85v6.88c-.41.08-1.03.19-1.87.31-.83.12-1.77.18-2.81.18-.7 0-1.33-.06-1.9-.2a4 4 0 01-1.47-.63c-.4-.3-.72-.67-.95-1.13a4.3 4.3 0 01-.34-1.8c0-.66.13-1.08.38-1.53.26-.45.61-.82 1.05-1.1.44-.3.95-.5 1.53-.62a8.8 8.8 0 013.8.05v-.43c0-.31-.04-.6-.12-.88-.07-.28-.2-.52-.38-.73a1.78 1.78 0 00-.73-.5c-.3-.1-.68-.2-1.14-.2a9.85 9.85 0 00-2.95.47l-.32-2.19a11.63 11.63 0 013.55-.53zm-8.03-1.27a1.62 1.62 0 000-3.24 1.62 1.62 0 100 3.24zm1.35 13.22h-2.7V7.27l2.7-.42V18.8zm-4.72 0c-4.38.02-4.38-3.54-4.38-4.1l-.01-13.34 2.67-.42v13.25c0 .32 0 2.36 1.72 2.37v2.24zm-8.7-5.9a4.7 4.7 0 00-.74-2.79 2.4 2.4 0 00-2.07-1 2.4 2.4 0 00-2.06 1 4.7 4.7 0 00-.74 2.8c0 1.16.25 1.94.74 2.62a2.4 2.4 0 002.07 1.02c.88 0 1.57-.34 2.07-1.02a4.2 4.2 0 00.73-2.63zm2.74 0a6.46 6.46 0 01-1.52 4.23c-.49.53-1.07.94-1.76 1.22-.68.29-1.73.45-2.26.45a6.6 6.6 0 01-2.25-.45 5.1 5.1 0 01-2.88-3.13 7.3 7.3 0 01-.01-4.84 5.13 5.13 0 012.9-3.1 5.67 5.67 0 012.22-.42c.81 0 1.56.14 2.24.42.69.29 1.28.69 1.75 1.22.49.52.87 1.15 1.14 1.89a7 7 0 01.43 2.5zm-20.14 0c0 1.11.25 2.36.74 2.88.5.52 1.13.78 1.91.78a4.07 4.07 0 002.12-.6V9.33c-.19-.04-.99-.2-1.76-.23a2.67 2.67 0 00-2.23 1 4.73 4.73 0 00-.78 2.8zm7.44 5.27c0 1.82-.46 3.16-1.4 4-.94.85-2.37 1.27-4.3 1.27-.7 0-2.17-.13-3.34-.4l.43-2.11c.98.2 2.27.26 2.95.26 1.08 0 1.84-.22 2.3-.66.46-.43.68-1.08.68-1.94v-.44a5.2 5.2 0 01-2.54.6 5.6 5.6 0 01-2.01-.36 4.2 4.2 0 01-2.58-2.71 9.88 9.88 0 01.02-5.35 4.92 4.92 0 012.93-2.96 6.6 6.6 0 012.43-.46 19.64 19.64 0 014.43.66v10.6z"
     }))));
@@ -19088,7 +19616,7 @@
       if (isFirstRendering) {
         var _widgetParams$theme = widgetParams.theme,
             theme = _widgetParams$theme === void 0 ? 'light' : _widgetParams$theme;
-        S(v(PoweredBy, {
+        P(h(PoweredBy, {
           cssClasses: cssClasses,
           url: url,
           theme: theme
@@ -19127,7 +19655,7 @@
       cssClasses: cssClasses
     });
     var makeWidget = connectPoweredBy(specializedRenderer, function () {
-      return S(null, containerNode);
+      return P(null, containerNode);
     });
     return _objectSpread2(_objectSpread2({}, makeWidget({
       theme: theme
@@ -19152,13 +19680,11 @@
     });
   };
 
-  /** @jsx h */
-
   var QueryRuleCustomData = function QueryRuleCustomData(_ref) {
     var cssClasses = _ref.cssClasses,
         templates = _ref.templates,
         items = _ref.items;
-    return v(Template, {
+    return h(Template, {
       templateKey: "default",
       templates: templates,
       rootProps: {
@@ -19187,7 +19713,7 @@
         templates = _ref2.templates;
     return function (_ref3) {
       var items = _ref3.items;
-      S(v(QueryRuleCustomData, {
+      P(h(QueryRuleCustomData, {
         cssClasses: cssClasses,
         templates: templates,
         items: items
@@ -19225,7 +19751,7 @@
       templates: templates
     });
     var makeWidget = connectQueryRules(specializedRenderer, function () {
-      S(null, containerNode);
+      P(null, containerNode);
     });
     return _objectSpread2(_objectSpread2({}, makeWidget({
       transformItems: transformItems
@@ -19296,14 +19822,14 @@
         var isDisabled = min && max ? min >= max : false;
         var hasRefinements = Boolean(minValue || maxValue);
         var rootClassNames = classnames(cssClasses.root, _defineProperty({}, cssClasses.noRefinement, !hasRefinements));
-        return v("div", {
+        return h("div", {
           className: rootClassNames
-        }, v("form", {
+        }, h("form", {
           className: cssClasses.form,
           onSubmit: this.onSubmit
-        }, v("label", {
+        }, h("label", {
           className: cssClasses.label
-        }, v("input", {
+        }, h("input", {
           className: classnames(cssClasses.input, cssClasses.inputMin),
           type: "number",
           min: min,
@@ -19313,15 +19839,15 @@
           onInput: this.onInput('min'),
           placeholder: min === null || min === void 0 ? void 0 : min.toString(),
           disabled: isDisabled
-        })), v(Template, _extends({}, templateProps, {
+        })), h(Template, _extends({}, templateProps, {
           templateKey: "separatorText",
           rootTagName: "span",
           rootProps: {
             className: cssClasses.separator
           }
-        })), v("label", {
+        })), h("label", {
           className: cssClasses.label
-        }, v("input", {
+        }, h("input", {
           className: classnames(cssClasses.input, cssClasses.inputMax),
           type: "number",
           min: min,
@@ -19331,7 +19857,7 @@
           onInput: this.onInput('max'),
           placeholder: max === null || max === void 0 ? void 0 : max.toString(),
           disabled: isDisabled
-        })), v(Template, _extends({}, templateProps, {
+        })), h(Template, _extends({}, templateProps, {
           templateKey: "submitText",
           rootTagName: "button",
           rootProps: {
@@ -19344,15 +19870,19 @@
     }]);
 
     return RangeInput;
-  }(_);
+  }(d);
 
   var withUsage$L = createDocumentationMessageGenerator({
     name: 'range-input'
   });
   var suit$l = component('RangeInput');
   var defaultTemplates$c = {
-    separatorText: 'to',
-    submitText: 'Go'
+    separatorText: function separatorText() {
+      return 'to';
+    },
+    submitText: function submitText() {
+      return 'Go';
+    }
   };
 
   var renderer$g = function renderer(_ref) {
@@ -19388,7 +19918,7 @@
         min: minValue !== -Infinity && minValue !== rangeMin ? minValue : undefined,
         max: maxValue !== Infinity && maxValue !== rangeMax ? maxValue : undefined
       };
-      S(v(RangeInput, {
+      P(h(RangeInput, {
         min: rangeMin,
         max: rangeMax,
         step: step,
@@ -19454,7 +19984,7 @@
       renderState: {}
     });
     var makeWidget = connectRange(specializedRenderer, function () {
-      return S(null, containerNode);
+      return P(null, containerNode);
     });
     return _objectSpread2(_objectSpread2({}, makeWidget({
       attribute: attribute,
@@ -19512,14 +20042,14 @@
   }
 
   function Button(props) {
-    return v("button", _extends({}, props, {
+    return h("button", _extends({}, props, {
       type: "button"
     }));
   } // Preact doesn't have builtin types for Style, JSX.HTMLAttributes['style'] is just object
   // maybe migrate to csstype later?
 
 
-  var _ref6 = v("div", {
+  var _ref6 = h("div", {
     className: "rheostat-background"
   });
 
@@ -19549,7 +20079,7 @@
         values: _this.props.values
       });
 
-      _defineProperty(_assertThisInitialized(_this), "rheostat", p());
+      _defineProperty(_assertThisInitialized(_this), "rheostat", y());
 
       _this.getPublicState = _this.getPublicState.bind(_assertThisInitialized(_this));
       _this.getSliderBoundingBox = _this.getSliderBoundingBox.bind(_assertThisInitialized(_this));
@@ -20053,7 +20583,7 @@
             className = _this$state6.className,
             handlePos = _this$state6.handlePos,
             values = _this$state6.values;
-        return v("div", {
+        return h("div", {
           className: className,
           ref: this.rheostat,
           onClick: disabled ? undefined : this.handleClick,
@@ -20068,7 +20598,7 @@
             left: "".concat(pos, "%"),
             position: 'absolute'
           };
-          return v(Handle, {
+          return h(Handle, {
             "aria-valuemax": _this7.getMaxValue(idx),
             "aria-valuemin": _this7.getMinValue(idx),
             "aria-valuenow": values[idx],
@@ -20089,7 +20619,7 @@
             return null;
           }
 
-          return v(ProgressBar, {
+          return h(ProgressBar, {
             className: "rheostat-progress",
             key: "progress-bar-".concat(idx),
             style: _this7.getProgressStyle(idx)
@@ -20103,7 +20633,7 @@
             left: "".concat(pos, "%"),
             position: 'absolute'
           };
-          return v(PitComponent, {
+          return h(PitComponent, {
             key: "pit-".concat(n),
             style: pitStyle
           }, n);
@@ -20112,7 +20642,7 @@
     }]);
 
     return Rheostat;
-  }(_);
+  }(d);
 
   _defineProperty(Rheostat, "defaultProps", {
     className: '',
@@ -20145,14 +20675,14 @@
     var shouldDisplayValue = [0, 50, 100].includes(positionValue);
     var value = children;
     var pitValue = Math.round(parseInt(value, 10) * 100) / 100;
-    return v("div", {
+    return h("div", {
       style: _objectSpread2(_objectSpread2({}, style), {}, {
         marginLeft: positionValue === 100 ? '-2px' : 0
       }),
       className: classnames('rheostat-marker', 'rheostat-marker-horizontal', {
         'rheostat-marker-large': shouldDisplayValue
       })
-    }, shouldDisplayValue && v("div", {
+    }, shouldDisplayValue && h("div", {
       className: 'rheostat-value'
     }, pitValue));
   };
@@ -20192,9 +20722,9 @@
             'rheostat-handle-lower': props['data-handle-key'] === 0,
             'rheostat-handle-upper': props['data-handle-key'] === 1
           });
-          return v("div", _extends({}, props, {
+          return h("div", _extends({}, props, {
             className: className
-          }), tooltips && v("div", {
+          }), tooltips && h("div", {
             className: "rheostat-tooltip"
           }, value));
         };
@@ -20264,9 +20794,9 @@
           min: min,
           max: max
         });
-        return v("div", {
+        return h("div", {
           className: classnames(cssClasses.root, _defineProperty({}, cssClasses.disabledRoot, this.isDisabled))
-        }, v(Rheostat, {
+        }, h(Rheostat, {
           handle: this.createHandleComponent(tooltips),
           onChange: this.handleChange,
           min: min,
@@ -20282,7 +20812,7 @@
     }]);
 
     return Slider;
-  }(_);
+  }(d);
 
   var withUsage$M = createDocumentationMessageGenerator({
     name: 'range-slider'
@@ -20318,7 +20848,7 @@
       // backward compatible so we still need to pass [-Infinity, Infinity]
 
       var values = [minFinite > maxRange ? maxRange : minFinite, maxFinite < minRange ? minRange : maxFinite];
-      S(v(Slider, {
+      P(h(Slider, {
         cssClasses: cssClasses,
         refine: refine,
         min: minRange,
@@ -20377,7 +20907,7 @@
       cssClasses: cssClasses
     });
     var makeWidget = connectRange(specializedRenderer, function () {
-      return S(null, containerNode);
+      return P(null, containerNode);
     });
     return _objectSpread2(_objectSpread2({}, makeWidget({
       attribute: attribute,
@@ -20390,8 +20920,56 @@
     });
   };
 
+  function ItemWrapper(_ref) {
+    var children = _ref.children,
+        count = _ref.count,
+        value = _ref.value,
+        url = _ref.url,
+        cssClasses = _ref.cssClasses;
+
+    if (count) {
+      return h("a", {
+        className: cx(cssClasses.link),
+        "aria-label": "".concat(value, " & up"),
+        href: url
+      }, children);
+    }
+
+    return h("div", {
+      className: cx(cssClasses.link),
+      "aria-label": "".concat(value, " & up"),
+      disabled: true
+    }, children);
+  }
+
   var defaultTemplates$d = {
-    item: "{{#count}}<a class=\"{{cssClasses.link}}\" aria-label=\"{{value}} & up\" href=\"{{url}}\">{{/count}}{{^count}}<div class=\"{{cssClasses.link}}\" aria-label=\"{{value}} & up\" disabled>{{/count}}\n  {{#stars}}<svg class=\"{{cssClasses.starIcon}} {{#.}}{{cssClasses.fullStarIcon}}{{/.}}{{^.}}{{cssClasses.emptyStarIcon}}{{/.}}\" aria-hidden=\"true\" width=\"24\" height=\"24\">\n    {{#.}}<use xlink:href=\"#ais-RatingMenu-starSymbol\"></use>{{/.}}{{^.}}<use xlink:href=\"#ais-RatingMenu-starEmptySymbol\"></use>{{/.}}\n  </svg>{{/stars}}\n  <span class=\"{{cssClasses.label}}\">& Up</span>\n  {{#count}}<span class=\"{{cssClasses.count}}\">{{#helpers.formatNumber}}{{count}}{{/helpers.formatNumber}}</span>{{/count}}\n{{#count}}</a>{{/count}}{{^count}}</div>{{/count}}"
+    item: function item(_ref2) {
+      var count = _ref2.count,
+          value = _ref2.value,
+          url = _ref2.url,
+          stars = _ref2.stars,
+          cssClasses = _ref2.cssClasses;
+      return h(ItemWrapper, {
+        count: count,
+        value: value,
+        url: url,
+        cssClasses: cssClasses
+      }, stars.map(function (isFull, index) {
+        return h("svg", {
+          key: index,
+          className: cx([cx(cssClasses.starIcon), cx(isFull ? cssClasses.fullStarIcon : cssClasses.emptyStarIcon)]),
+          "aria-hidden": "true",
+          width: "24",
+          height: "24"
+        }, h("use", {
+          xlinkHref: isFull ? '#ais-RatingMenu-starSymbol' : '#ais-RatingMenu-starEmptySymbol'
+        }));
+      }), h("span", {
+        className: cx(cssClasses.label)
+      }, "& Up"), count && h("span", {
+        className: cx(cssClasses.count)
+      }, formatNumber(count)));
+    }
   };
 
   var withUsage$N = createDocumentationMessageGenerator({
@@ -20399,11 +20977,11 @@
   });
   var suit$n = component('RatingMenu');
 
-  var _ref3$1 = v("path", {
+  var _ref3$1 = h("path", {
     d: "M12 .288l2.833 8.718h9.167l-7.417 5.389 2.833 8.718-7.416-5.388-7.417 5.388 2.833-8.718-7.416-5.389h9.167z"
   });
 
-  var _ref4 = v("path", {
+  var _ref4 = h("path", {
     d: "M12 6.76l1.379 4.246h4.465l-3.612 2.625 1.379 4.246-3.611-2.625-3.612 2.625 1.379-4.246-3.612-2.625h4.465l1.38-4.246zm0-6.472l-2.833 8.718h-9.167l7.416 5.389-2.833 8.718 7.417-5.388 7.416 5.388-2.833-8.718 7.417-5.389h-9.167l-2.833-8.718z"
   });
 
@@ -20427,20 +21005,20 @@
         return;
       }
 
-      S(v(RefinementList$1, {
+      P(h(RefinementList$1, {
         createURL: createURL,
         cssClasses: cssClasses,
         facetValues: items,
         templateProps: renderState.templateProps,
         toggleRefinement: refine
-      }, v("svg", {
+      }, h("svg", {
         style: "display:none;"
-      }, v("symbol", {
+      }, h("symbol", {
         id: suit$n({
           descendantName: 'starSymbol'
         }),
         viewBox: "0 0 24 24"
-      }, _ref3$1), v("symbol", {
+      }, _ref3$1), h("symbol", {
         id: suit$n({
           descendantName: 'starEmptySymbol'
         }),
@@ -20539,7 +21117,7 @@
       templates: templates
     });
     var makeWidget = connectRatingMenu(specializedRenderer, function () {
-      return S(null, containerNode);
+      return P(null, containerNode);
     });
     return _objectSpread2(_objectSpread2({}, makeWidget({
       attribute: attribute,
@@ -20549,16 +21127,98 @@
     });
   };
 
+  var _ref2$1 = h("path", {
+    d: "M8.114 10L.944 2.83 0 1.885 1.886 0l.943.943L10 8.113l7.17-7.17.944-.943L20 1.886l-.943.943-7.17 7.17 7.17 7.17.943.944L18.114 20l-.943-.943-7.17-7.17-7.17 7.17-.944.943L0 18.114l.943-.943L8.113 10z"
+  });
+
+  var _ref4$1 = h("path", {
+    d: "M26.804 29.01c-2.832 2.34-6.465 3.746-10.426 3.746C7.333 32.756 0 25.424 0 16.378 0 7.333 7.333 0 16.378 0c9.046 0 16.378 7.333 16.378 16.378 0 3.96-1.406 7.594-3.746 10.426l10.534 10.534c.607.607.61 1.59-.004 2.202-.61.61-1.597.61-2.202.004L26.804 29.01zm-10.426.627c7.323 0 13.26-5.936 13.26-13.26 0-7.32-5.937-13.257-13.26-13.257C9.056 3.12 3.12 9.056 3.12 16.378c0 7.323 5.936 13.26 13.258 13.26z"
+  });
+
+  var _ref6$1 = h("g", {
+    fill: "none",
+    fillRule: "evenodd"
+  }, h("g", {
+    transform: "translate(1 1)",
+    strokeWidth: "2"
+  }, h("circle", {
+    strokeOpacity: ".5",
+    cx: "18",
+    cy: "18",
+    r: "18"
+  }), h("path", {
+    d: "M36 18c0-9.94-8.06-18-18-18"
+  }, h("animateTransform", {
+    attributeName: "transform",
+    type: "rotate",
+    from: "0 18 18",
+    to: "360 18 18",
+    dur: "1s",
+    repeatCount: "indefinite"
+  }))));
+
   var defaultTemplate = {
-    reset: "\n<svg class=\"{{cssClasses.resetIcon}}\" viewBox=\"0 0 20 20\" width=\"10\" height=\"10\">\n  <path d=\"M8.114 10L.944 2.83 0 1.885 1.886 0l.943.943L10 8.113l7.17-7.17.944-.943L20 1.886l-.943.943-7.17 7.17 7.17 7.17.943.944L18.114 20l-.943-.943-7.17-7.17-7.17 7.17-.944.943L0 18.114l.943-.943L8.113 10z\"></path>\n</svg>\n  ",
-    submit: "\n<svg class=\"{{cssClasses.submitIcon}}\" width=\"10\" height=\"10\" viewBox=\"0 0 40 40\">\n  <path d=\"M26.804 29.01c-2.832 2.34-6.465 3.746-10.426 3.746C7.333 32.756 0 25.424 0 16.378 0 7.333 7.333 0 16.378 0c9.046 0 16.378 7.333 16.378 16.378 0 3.96-1.406 7.594-3.746 10.426l10.534 10.534c.607.607.61 1.59-.004 2.202-.61.61-1.597.61-2.202.004L26.804 29.01zm-10.426.627c7.323 0 13.26-5.936 13.26-13.26 0-7.32-5.937-13.257-13.26-13.257C9.056 3.12 3.12 9.056 3.12 16.378c0 7.323 5.936 13.26 13.258 13.26z\"></path>\n</svg>\n  ",
-    loadingIndicator: "\n<svg class=\"{{cssClasses.loadingIcon}}\" width=\"16\" height=\"16\" viewBox=\"0 0 38 38\" stroke=\"#444\">\n  <g fill=\"none\" fillRule=\"evenodd\">\n    <g transform=\"translate(1 1)\" strokeWidth=\"2\">\n      <circle strokeOpacity=\".5\" cx=\"18\" cy=\"18\" r=\"18\" />\n      <path d=\"M36 18c0-9.94-8.06-18-18-18\">\n        <animateTransform\n          attributeName=\"transform\"\n          type=\"rotate\"\n          from=\"0 18 18\"\n          to=\"360 18 18\"\n          dur=\"1s\"\n          repeatCount=\"indefinite\"\n        />\n      </path>\n    </g>\n  </g>\n</svg>\n  "
+    reset: function reset(_ref) {
+      var cssClasses = _ref.cssClasses;
+      return h("svg", {
+        className: cssClasses.resetIcon,
+        viewBox: "0 0 20 20",
+        width: "10",
+        height: "10"
+      }, _ref2$1);
+    },
+    submit: function submit(_ref3) {
+      var cssClasses = _ref3.cssClasses;
+      return h("svg", {
+        className: cssClasses.submitIcon,
+        width: "10",
+        height: "10",
+        viewBox: "0 0 40 40"
+      }, _ref4$1);
+    },
+    loadingIndicator: function loadingIndicator(_ref5) {
+      var cssClasses = _ref5.cssClasses;
+      return h("svg", {
+        className: cssClasses.loadingIcon,
+        width: "16",
+        height: "16",
+        viewBox: "0 0 38 38",
+        stroke: "#444"
+      }, _ref6$1);
+    }
   };
 
   var defaultTemplates$e = {
-    item: "<label class=\"{{cssClasses.label}}\">\n  <input type=\"checkbox\"\n         class=\"{{cssClasses.checkbox}}\"\n         value=\"{{value}}\"\n         {{#isRefined}}checked{{/isRefined}} />\n  <span class=\"{{cssClasses.labelText}}\">{{#isFromSearch}}{{{highlighted}}}{{/isFromSearch}}{{^isFromSearch}}{{highlighted}}{{/isFromSearch}}</span>\n  <span class=\"{{cssClasses.count}}\">{{#helpers.formatNumber}}{{count}}{{/helpers.formatNumber}}</span>\n</label>",
-    showMoreText: "\n    {{#isShowingMore}}\n      Show less\n    {{/isShowingMore}}\n    {{^isShowingMore}}\n      Show more\n    {{/isShowingMore}}\n    ",
-    searchableNoResults: 'No results'
+    item: function item(_ref) {
+      var cssClasses = _ref.cssClasses,
+          count = _ref.count,
+          value = _ref.value,
+          highlighted = _ref.highlighted,
+          isRefined = _ref.isRefined,
+          isFromSearch = _ref.isFromSearch;
+      return h("label", {
+        className: cx(cssClasses.label)
+      }, h("input", {
+        type: "checkbox",
+        className: cx(cssClasses.checkbox),
+        value: value,
+        defaultChecked: isRefined
+      }), h("span", {
+        className: cx(cssClasses.labelText),
+        dangerouslySetInnerHTML: isFromSearch ? {
+          __html: highlighted
+        } : undefined
+      }, !isFromSearch && highlighted), h("span", {
+        className: cx(cssClasses.count)
+      }, formatNumber(count)));
+    },
+    showMoreText: function showMoreText(_ref2) {
+      var isShowingMore = _ref2.isShowingMore;
+      return isShowingMore ? 'Show less' : 'Show more';
+    },
+    searchableNoResults: function searchableNoResults() {
+      return 'No results';
+    }
   };
 
   var withUsage$O = createDocumentationMessageGenerator({
@@ -20603,7 +21263,7 @@
         return;
       }
 
-      S(v(RefinementList$1, {
+      P(h(RefinementList$1, {
         createURL: createURL,
         cssClasses: cssClasses,
         facetValues: items,
@@ -20755,7 +21415,7 @@
       showMore: showMore
     });
     var makeWidget = connectRefinementList(specializedRenderer, function () {
-      return S(null, containerNode);
+      return P(null, containerNode);
     });
     return _objectSpread2(_objectSpread2({}, makeWidget({
       attribute: attribute,
@@ -20771,17 +21431,15 @@
     });
   };
 
-  /** @jsx h */
-
   var RelevantSort = function RelevantSort(_ref) {
     var cssClasses = _ref.cssClasses,
         templates = _ref.templates,
         isRelevantSorted = _ref.isRelevantSorted,
         isVirtualReplica = _ref.isVirtualReplica,
         refine = _ref.refine;
-    return isVirtualReplica ? v("div", {
+    return isVirtualReplica ? h("div", {
       className: cssClasses.root
-    }, v(Template, {
+    }, h(Template, {
       templateKey: "text",
       templates: templates,
       rootProps: {
@@ -20790,7 +21448,7 @@
       data: {
         isRelevantSorted: isRelevantSorted
       }
-    }), v("button", {
+    }), h("button", {
       type: "button",
       className: cssClasses.button,
       onClick: function onClick() {
@@ -20800,7 +21458,7 @@
           refine(undefined);
         }
       }
-    }, v(Template, {
+    }, h(Template, {
       rootTagName: "span",
       templateKey: "button",
       templates: templates,
@@ -20811,7 +21469,9 @@
   };
 
   var defaultTemplates$f = {
-    text: '',
+    text: function text() {
+      return '';
+    },
     button: function button(_ref) {
       var isRelevantSorted = _ref.isRelevantSorted;
       return isRelevantSorted ? 'See all results' : 'See relevant results';
@@ -20831,7 +21491,7 @@
       var isRelevantSorted = _ref2.isRelevantSorted,
           isVirtualReplica = _ref2.isVirtualReplica,
           refine = _ref2.refine;
-      S(v(RelevantSort, {
+      P(h(RelevantSort, {
         cssClasses: cssClasses,
         templates: templates,
         isRelevantSorted: isRelevantSorted,
@@ -20872,7 +21532,7 @@
       templates: templates
     });
     var makeWidget = connectRelevantSort(specializedRenderer, function () {
-      S(null, containerNode);
+      P(null, containerNode);
     });
     return _objectSpread2(_objectSpread2({}, makeWidget({})), {}, {
       $$widgetType: 'ais.relevantSort'
@@ -20898,7 +21558,7 @@
       var refine = _ref2.refine,
           query = _ref2.query,
           isSearchStalled = _ref2.isSearchStalled;
-      S(v(SearchBox, {
+      P(h(SearchBox, {
         query: query,
         placeholder: placeholder,
         autofocus: autofocus,
@@ -20991,7 +21651,7 @@
       showLoadingIndicator: showLoadingIndicator
     });
     var makeWidget = connectSearchBox(specializedRenderer, function () {
-      return S(null, containerNode);
+      return P(null, containerNode);
     });
     return _objectSpread2(_objectSpread2({}, makeWidget({
       queryHook: queryHook
@@ -21017,9 +21677,9 @@
         return;
       }
 
-      S(v("div", {
+      P(h("div", {
         className: cssClasses.root
-      }, v(Selector, {
+      }, h(Selector, {
         cssClasses: cssClasses,
         currentValue: currentRefinement,
         options: options,
@@ -21060,7 +21720,7 @@
       cssClasses: cssClasses
     });
     var makeWidget = connectSortBy(specializedRenderer, function () {
-      return S(null, containerNode);
+      return P(null, containerNode);
     });
     return _objectSpread2(_objectSpread2({}, makeWidget({
       container: containerNode,
@@ -21078,9 +21738,9 @@
         templateProps = _ref.templateProps,
         rest = _objectWithoutProperties(_ref, ["nbHits", "nbSortedHits", "cssClasses", "templateProps"]);
 
-    return v("div", {
+    return h("div", {
       className: classnames(cssClasses.root)
-    }, v(Template, _extends({}, templateProps, {
+    }, h(Template, _extends({}, templateProps, {
       templateKey: "text",
       rootTagName: "span",
       rootProps: {
@@ -21105,24 +21765,70 @@
   });
   var suit$s = component('Stats');
   var defaultTemplates$g = {
-    text: "\n    {{#areHitsSorted}}\n      {{#hasNoSortedResults}}No relevant results{{/hasNoSortedResults}}\n      {{#hasOneSortedResults}}1 relevant result{{/hasOneSortedResults}}\n      {{#hasManySortedResults}}{{#helpers.formatNumber}}{{nbSortedHits}}{{/helpers.formatNumber}} relevant results{{/hasManySortedResults}}\n      sorted out of {{#helpers.formatNumber}}{{nbHits}}{{/helpers.formatNumber}}\n    {{/areHitsSorted}}\n    {{^areHitsSorted}}\n      {{#hasNoResults}}No results{{/hasNoResults}}\n      {{#hasOneResult}}1 result{{/hasOneResult}}\n      {{#hasManyResults}}{{#helpers.formatNumber}}{{nbHits}}{{/helpers.formatNumber}} results{{/hasManyResults}}\n    {{/areHitsSorted}}\n    found in {{processingTimeMS}}ms"
+    text: function text(props) {
+      return "".concat(props.areHitsSorted ? getSortedResultsSentence(props) : getResultsSentence(props), " found in ").concat(props.processingTimeMS, "ms");
+    }
   };
 
-  var renderer$n = function renderer(_ref) {
-    var renderState = _ref.renderState,
-        cssClasses = _ref.cssClasses,
-        containerNode = _ref.containerNode,
-        templates = _ref.templates;
-    return function (_ref2, isFirstRendering) {
-      var hitsPerPage = _ref2.hitsPerPage,
-          nbHits = _ref2.nbHits,
-          nbSortedHits = _ref2.nbSortedHits,
-          areHitsSorted = _ref2.areHitsSorted,
-          nbPages = _ref2.nbPages,
-          page = _ref2.page,
-          processingTimeMS = _ref2.processingTimeMS,
-          query = _ref2.query,
-          instantSearchInstance = _ref2.instantSearchInstance;
+  function getSortedResultsSentence(_ref) {
+    var nbHits = _ref.nbHits,
+        hasNoSortedResults = _ref.hasNoSortedResults,
+        hasOneSortedResults = _ref.hasOneSortedResults,
+        hasManySortedResults = _ref.hasManySortedResults,
+        nbSortedHits = _ref.nbSortedHits;
+    var suffix = "sorted out of ".concat(formatNumber(nbHits));
+
+    if (hasNoSortedResults) {
+      return "No relevant results ".concat(suffix);
+    }
+
+    if (hasOneSortedResults) {
+      return "1 relevant result ".concat(suffix);
+    }
+
+    if (hasManySortedResults) {
+      return "".concat(formatNumber(nbSortedHits || 0), " relevant results ").concat(suffix);
+    }
+
+    return '';
+  }
+
+  function getResultsSentence(_ref2) {
+    var nbHits = _ref2.nbHits,
+        hasNoResults = _ref2.hasNoResults,
+        hasOneResult = _ref2.hasOneResult,
+        hasManyResults = _ref2.hasManyResults;
+
+    if (hasNoResults) {
+      return 'No results';
+    }
+
+    if (hasOneResult) {
+      return '1 result';
+    }
+
+    if (hasManyResults) {
+      return "".concat(formatNumber(nbHits), " results");
+    }
+
+    return '';
+  }
+
+  var renderer$n = function renderer(_ref3) {
+    var renderState = _ref3.renderState,
+        cssClasses = _ref3.cssClasses,
+        containerNode = _ref3.containerNode,
+        templates = _ref3.templates;
+    return function (_ref4, isFirstRendering) {
+      var hitsPerPage = _ref4.hitsPerPage,
+          nbHits = _ref4.nbHits,
+          nbSortedHits = _ref4.nbSortedHits,
+          areHitsSorted = _ref4.areHitsSorted,
+          nbPages = _ref4.nbPages,
+          page = _ref4.page,
+          processingTimeMS = _ref4.processingTimeMS,
+          query = _ref4.query,
+          instantSearchInstance = _ref4.instantSearchInstance;
 
       if (isFirstRendering) {
         renderState.templateProps = prepareTemplateProps({
@@ -21133,7 +21839,7 @@
         return;
       }
 
-      S(v(Stats, {
+      P(h(Stats, {
         cssClasses: cssClasses,
         hitsPerPage: hitsPerPage,
         nbHits: nbHits,
@@ -21156,12 +21862,12 @@
 
 
   var stats = function stats(widgetParams) {
-    var _ref3 = widgetParams || {},
-        container = _ref3.container,
-        _ref3$cssClasses = _ref3.cssClasses,
-        userCssClasses = _ref3$cssClasses === void 0 ? {} : _ref3$cssClasses,
-        _ref3$templates = _ref3.templates,
-        templates = _ref3$templates === void 0 ? {} : _ref3$templates;
+    var _ref5 = widgetParams || {},
+        container = _ref5.container,
+        _ref5$cssClasses = _ref5.cssClasses,
+        userCssClasses = _ref5$cssClasses === void 0 ? {} : _ref5$cssClasses,
+        _ref5$templates = _ref5.templates,
+        templates = _ref5$templates === void 0 ? {} : _ref5$templates;
 
     if (!container) {
       throw new Error(withUsage$S('The `container` option is required.'));
@@ -21181,7 +21887,7 @@
       renderState: {}
     });
     var makeWidget = connectStats(specializedRenderer, function () {
-      return S(null, containerNode);
+      return P(null, containerNode);
     });
     return _objectSpread2(_objectSpread2({}, makeWidget({})), {}, {
       $$widgetType: 'ais.stats'
@@ -21193,11 +21899,11 @@
         refine = _ref.refine,
         cssClasses = _ref.cssClasses,
         templateProps = _ref.templateProps;
-    return v("div", {
+    return h("div", {
       className: cssClasses.root
-    }, v("label", {
+    }, h("label", {
       className: cssClasses.label
-    }, v("input", {
+    }, h("input", {
       className: cssClasses.checkbox,
       type: "checkbox",
       checked: currentRefinement.isRefined,
@@ -21206,7 +21912,7 @@
           isRefined: !event.target.checked
         });
       }
-    }), v(Template, _extends({}, templateProps, {
+    }), h(Template, _extends({}, templateProps, {
       rootTagName: "span",
       rootProps: {
         className: cssClasses.labelText
@@ -21217,7 +21923,10 @@
   };
 
   var defaultTemplates$h = {
-    labelText: '{{name}}'
+    labelText: function labelText(_ref) {
+      var name = _ref.name;
+      return name;
+    }
   };
 
   var withUsage$T = createDocumentationMessageGenerator({
@@ -21244,7 +21953,7 @@
         return;
       }
 
-      S(v(ToggleRefinement, {
+      P(h(ToggleRefinement, {
         cssClasses: cssClasses,
         currentRefinement: value,
         templateProps: renderState.templateProps,
@@ -21301,7 +22010,7 @@
       templates: templates
     });
     var makeWidget = connectToggleRefinement(specializedRenderer, function () {
-      return S(null, containerNode);
+      return P(null, containerNode);
     });
     return _objectSpread2(_objectSpread2({}, makeWidget({
       attribute: attribute,
@@ -21311,8 +22020,6 @@
       $$widgetType: 'ais.toggleRefinement'
     });
   };
-
-  /** @jsx h */
 
   var VoiceSearch = function VoiceSearch(_ref) {
     var cssClasses = _ref.cssClasses,
@@ -21334,9 +22041,9 @@
         transcript = voiceListeningState.transcript,
         isSpeechFinal = voiceListeningState.isSpeechFinal,
         errorCode = voiceListeningState.errorCode;
-    return v("div", {
+    return h("div", {
       className: cssClasses.root
-    }, v(Template, {
+    }, h(Template, {
       templateKey: "buttonText",
       rootTagName: "button",
       rootProps: {
@@ -21355,7 +22062,7 @@
         isBrowserSupported: isBrowserSupported
       },
       templates: templates
-    }), v(Template, {
+    }), h(Template, {
       templateKey: "status",
       rootProps: {
         className: cssClasses.status
@@ -21372,22 +22079,91 @@
     }));
   };
 
-  var getButtonInnerElement = function getButtonInnerElement(status, errorCode, isListening) {
+  var _ref2$2 = h(p, null, h("line", {
+    x1: "1",
+    y1: "1",
+    x2: "23",
+    y2: "23"
+  }), h("path", {
+    d: "M9 9v3a3 3 0 0 0 5.12 2.12M15 9.34V4a3 3 0 0 0-5.94-.6"
+  }), h("path", {
+    d: "M17 16.95A7 7 0 0 1 5 12v-2m14 0v2a7 7 0 0 1-.11 1.23"
+  }), h("line", {
+    x1: "12",
+    y1: "19",
+    x2: "12",
+    y2: "23"
+  }), h("line", {
+    x1: "8",
+    y1: "23",
+    x2: "16",
+    y2: "23"
+  }));
+
+  var _ref3$2 = h("path", {
+    d: "M19 10v2a7 7 0 0 1-14 0v-2"
+  });
+
+  var _ref4$2 = h("line", {
+    x1: "12",
+    y1: "19",
+    x2: "12",
+    y2: "23"
+  });
+
+  var _ref5 = h("line", {
+    x1: "8",
+    y1: "23",
+    x2: "16",
+    y2: "23"
+  });
+
+  var ButtonInnerElement = function ButtonInnerElement(_ref) {
+    var status = _ref.status,
+        errorCode = _ref.errorCode,
+        isListening = _ref.isListening;
+
     if (status === 'error' && errorCode === 'not-allowed') {
-      return "<line x1=\"1\" y1=\"1\" x2=\"23\" y2=\"23\"></line>\n            <path d=\"M9 9v3a3 3 0 0 0 5.12 2.12M15 9.34V4a3 3 0 0 0-5.94-.6\"></path>\n            <path d=\"M17 16.95A7 7 0 0 1 5 12v-2m14 0v2a7 7 0 0 1-.11 1.23\"></path>\n            <line x1=\"12\" y1=\"19\" x2=\"12\" y2=\"23\"></line>\n            <line x1=\"8\" y1=\"23\" x2=\"16\" y2=\"23\"></line>";
+      return _ref2$2;
     }
 
-    return "<path\n            d=\"M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z\"\n            fill=\"".concat(isListening ? 'currentColor' : 'none', "\">\n          </path>\n          <path d=\"M19 10v2a7 7 0 0 1-14 0v-2\"></path>\n          <line x1=\"12\" y1=\"19\" x2=\"12\" y2=\"23\"></line>\n          <line x1=\"8\" y1=\"23\" x2=\"16\" y2=\"23\"></line>");
+    return h(p, null, h("path", {
+      d: "M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z",
+      fill: isListening ? 'currentColor' : 'none'
+    }), _ref3$2, _ref4$2, _ref5);
   };
 
   var defaultTemplates$i = {
-    buttonText: function buttonText(_ref) {
-      var status = _ref.status,
-          errorCode = _ref.errorCode,
-          isListening = _ref.isListening;
-      return "<svg\n       width=\"16\"\n       height=\"16\"\n       viewBox=\"0 0 24 24\"\n       fill=\"none\"\n       stroke=\"currentColor\"\n       stroke-width=\"2\"\n       stroke-linecap=\"round\"\n       stroke-linejoin=\"round\"\n     >\n       ".concat(getButtonInnerElement(status, errorCode, isListening), "\n     </svg>");
+    buttonText: function buttonText(_ref6) {
+      var status = _ref6.status,
+          errorCode = _ref6.errorCode,
+          isListening = _ref6.isListening;
+      return h("svg", {
+        width: "16",
+        height: "16",
+        viewBox: "0 0 24 24",
+        fill: "none",
+        stroke: "currentColor"
+        /* eslint-disable react/no-unknown-property */
+        // Preact supports kebab case attributes, and using camel case would
+        // require using `preact/compat`.
+        // @TODO: reconsider using the `react` ESLint preset
+        ,
+        "stroke-width": "2",
+        "stroke-linecap": "round",
+        "stroke-linejoin": "round"
+        /* eslint-enable react/no-unknown-property */
+
+      }, h(ButtonInnerElement, {
+        status: status,
+        errorCode: errorCode,
+        isListening: isListening
+      }));
     },
-    status: "<p>{{transcript}}</p>"
+    status: function status(_ref7) {
+      var transcript = _ref7.transcript;
+      return h("p", null, transcript);
+    }
   };
 
   var withUsage$U = createDocumentationMessageGenerator({
@@ -21404,7 +22180,7 @@
           isListening = _ref2.isListening,
           toggleListening = _ref2.toggleListening,
           voiceListeningState = _ref2.voiceListeningState;
-      S(v(VoiceSearch, {
+      P(h(VoiceSearch, {
         cssClasses: cssClasses,
         templates: templates,
         isBrowserSupported: isBrowserSupported,
@@ -21451,7 +22227,7 @@
       templates: templates
     });
     var makeWidget = connectVoiceSearch(specializedRenderer, function () {
-      return S(null, containerNode);
+      return P(null, containerNode);
     });
     return _objectSpread2(_objectSpread2({}, makeWidget({
       container: containerNode,
@@ -21573,31 +22349,28 @@
         appId: appId,
         apiKey: apiKey
       }, insightsInitParams));
-      var createWidget = connectConfigure(noop);
-      var configureClickAnalytics;
-      var configureUserToken;
+      var initialParameters;
+      var helper;
       return {
         onStateChange: function onStateChange() {},
-        subscribe: function subscribe() {
+        subscribe: function subscribe() {},
+        started: function started() {
           insightsClient('addAlgoliaAgent', 'insights-middleware');
-          configureClickAnalytics = createWidget({
-            searchParameters: {
-              clickAnalytics: true
-            }
-          });
-          instantSearchInstance.addWidgets([configureClickAnalytics]);
+          helper = instantSearchInstance.helper;
+          initialParameters = {
+            userToken: helper.state.userToken,
+            clickAnalytics: helper.state.clickAnalytics
+          };
+          helper.overrideStateWithoutTriggeringChangeEvent(_objectSpread2(_objectSpread2({}, helper.state), {}, {
+            clickAnalytics: true
+          }));
+          instantSearchInstance.scheduleSearch();
 
           var setUserTokenToSearch = function setUserTokenToSearch(userToken) {
-            if (configureUserToken) {
-              instantSearchInstance.removeWidgets([configureUserToken]);
-            }
-
-            configureUserToken = createWidget({
-              searchParameters: {
-                userToken: userToken
-              }
-            });
-            instantSearchInstance.addWidgets([configureUserToken]);
+            helper.overrideStateWithoutTriggeringChangeEvent(_objectSpread2(_objectSpread2({}, helper.state), {}, {
+              userToken: userToken
+            }));
+            instantSearchInstance.scheduleSearch();
           };
 
           var anonymousUserToken = getInsightsAnonymousUserTokenInternal();
@@ -21625,9 +22398,7 @@
             if (onEvent) {
               onEvent(event, _insightsClient);
             } else if (event.insightsMethod) {
-              // At this point, instantSearchInstance must be started and
-              // it means there is a configure widget (added above).
-              var hasUserToken = Boolean(instantSearchInstance.renderState[instantSearchInstance.indexName].configure.widgetParams.searchParameters.userToken);
+              var hasUserToken = Boolean(helper.state.userToken);
 
               if (hasUserToken) {
                 insightsClient(event.insightsMethod, event.payload);
@@ -21641,10 +22412,12 @@
         },
         unsubscribe: function unsubscribe() {
           insightsClient('onUserTokenChange', undefined);
-          instantSearchInstance.removeWidgets([configureClickAnalytics, configureUserToken]);
-          configureClickAnalytics = undefined;
-          configureUserToken = undefined;
           instantSearchInstance.sendEventToInsights = noop;
+
+          if (helper && initialParameters) {
+            helper.setState(_objectSpread2(_objectSpread2({}, helper.state), initialParameters));
+            instantSearchInstance.scheduleSearch();
+          }
         }
       };
     };

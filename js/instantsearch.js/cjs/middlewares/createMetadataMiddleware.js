@@ -94,6 +94,7 @@ function createMetadataMiddleware() {
           refNode.appendChild(payloadContainer);
         }, 0);
       },
+      started: function started() {},
       unsubscribe: function unsubscribe() {
         payloadContainer.remove();
       }

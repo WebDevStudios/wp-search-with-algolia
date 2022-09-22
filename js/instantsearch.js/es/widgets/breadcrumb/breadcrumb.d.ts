@@ -1,4 +1,4 @@
-/** @jsx h */
+
 import type { BreadcrumbWidgetDescription, BreadcrumbConnectorParams } from '../../connectors/breadcrumb/connectBreadcrumb';
 import type { WidgetFactory, Template } from '../../types';
 export declare type BreadcrumbCSSClasses = Partial<{

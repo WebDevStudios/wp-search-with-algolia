@@ -3,5 +3,5 @@ declare type Defer = Callback & {
     wait(): Promise<void>;
     cancel(): void;
 };
-declare const defer: (callback: Callback) => Defer;
-export default defer;
+export declare function defer(callback: Callback): Defer;
+export {};

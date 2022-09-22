@@ -3,11 +3,9 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.default = void 0;
+exports.getContainerNode = getContainerNode;
 
-var _isDomElement = _interopRequireDefault(require("./isDomElement.js"));
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+var _isDomElement = require("./isDomElement.js");
 
 /**
  * Return the container. If it's a string, it is considered a
@@ -22,7 +20,7 @@ function getContainerNode(selectorOrHTMLElement) {
   var isSelectorString = typeof selectorOrHTMLElement === 'string';
   var domElement = isSelectorString ? document.querySelector(selectorOrHTMLElement) : selectorOrHTMLElement;
 
-  if (!(0, _isDomElement.default)(domElement)) {
+  if (!(0, _isDomElement.isDomElement)(domElement)) {
     var errorMessage = 'Container must be `string` or `HTMLElement`.';
 
     if (isSelectorString) {
@@ -34,6 +32,3 @@ function getContainerNode(selectorOrHTMLElement) {
 
   return domElement;
 }
-
-var _default = getContainerNode;
-exports.default = _default;

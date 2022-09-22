@@ -15,6 +15,8 @@ var _connectRefinementList = _interopRequireDefault(require("../../connectors/re
 
 var _index = require("../../lib/utils/index.js");
 
+var _index2 = require("../../lib/templating/index.js");
+
 var _suit = require("../../lib/suit.js");
 
 var _defaultTemplates = _interopRequireDefault(require("../search-box/defaultTemplates.js"));
@@ -58,12 +60,12 @@ var renderer = function renderer(_ref) {
         canToggleShowMore = _ref2.canToggleShowMore;
 
     if (isFirstRendering) {
-      renderState.templateProps = (0, _index.prepareTemplateProps)({
+      renderState.templateProps = (0, _index2.prepareTemplateProps)({
         defaultTemplates: _defaultTemplates2.default,
         templatesConfig: instantSearchInstance.templatesConfig,
         templates: templates
       });
-      renderState.searchBoxTemplateProps = (0, _index.prepareTemplateProps)({
+      renderState.searchBoxTemplateProps = (0, _index2.prepareTemplateProps)({
         defaultTemplates: _defaultTemplates.default,
         templatesConfig: instantSearchInstance.templatesConfig,
         templates: searchBoxTemplates

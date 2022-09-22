@@ -21,19 +21,16 @@ function _objectWithoutProperties(source, excluded) { if (source == null) return
 function _objectWithoutPropertiesLoose(source, excluded) { if (source == null) return {}; var target = {}; var sourceKeys = Object.keys(source); var key, i; for (i = 0; i < sourceKeys.length; i++) { key = sourceKeys[i]; if (excluded.indexOf(key) >= 0) continue; target[key] = source[key]; } return target; }
 
 import algoliasearchHelper from 'algoliasearch-helper';
-import { checkIndexUiState, createDocumentationMessageGenerator, resolveSearchParameters, mergeSearchParameters, warning } from "../../lib/utils/index.js";
+import { checkIndexUiState, createDocumentationMessageGenerator, resolveSearchParameters, mergeSearchParameters, warning, isIndexWidget } from "../../lib/utils/index.js";
 var withUsage = createDocumentationMessageGenerator({
   name: 'index-widget'
 });
-export function isIndexWidget(widget) {
-  return widget.$$type === 'ais.index';
-}
+
 /**
  * This is the same content as helper._change / setState, but allowing for extra
  * UiState to be synchronized.
  * see: https://github.com/algolia/algoliasearch-helper-js/blob/6b835ffd07742f2d6b314022cce6848f5cfecd4a/src/algoliasearch.helper.js#L1311-L1324
  */
-
 function privateHelperSetState(helper, _ref) {
   var state = _ref.state,
       isPageReset = _ref.isPageReset,
@@ -312,7 +309,9 @@ var index = function index(widgetParams) {
         if (instantSearchInstance.onStateChange) {
           instantSearchInstance.onStateChange({
             uiState: instantSearchInstance.mainIndex.getWidgetUiState({}),
-            setUiState: instantSearchInstance.setUiState.bind(instantSearchInstance)
+            setUiState: function setUiState(nextState) {
+              return instantSearchInstance.setUiState(nextState, false);
+            }
           }); // We don't trigger a search when controlled because it becomes the
           // responsibility of `setUiState`.
 

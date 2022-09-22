@@ -11,7 +11,6 @@ var _index = require("../utils/index.js");
 
 var _insights = require("../../helpers/insights.js");
 
-/** @jsx h */
 var findInsightsTarget = function findInsightsTarget(startElement, endElement, validator) {
   var element = startElement;
 

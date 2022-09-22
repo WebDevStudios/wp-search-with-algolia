@@ -1,4 +1,4 @@
-/** @jsx h */
+
 import { h } from 'preact';
 import type { RelevantSortCSSClasses, RelevantSortTemplates } from '../../widgets/relevant-sort/relevant-sort';
 import type { ComponentCSSClasses } from '../../types';

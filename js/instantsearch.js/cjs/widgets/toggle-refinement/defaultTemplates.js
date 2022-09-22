@@ -5,7 +5,10 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = void 0;
 var defaultTemplates = {
-  labelText: '{{name}}'
+  labelText: function labelText(_ref) {
+    var name = _ref.name;
+    return name;
+  }
 };
 var _default = defaultTemplates;
 exports.default = _default;

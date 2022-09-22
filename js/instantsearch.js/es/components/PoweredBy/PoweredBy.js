@@ -1,4 +1,3 @@
-/** @jsx h */
 import { h } from 'preact';
 
 var _ref2 = h("path", {

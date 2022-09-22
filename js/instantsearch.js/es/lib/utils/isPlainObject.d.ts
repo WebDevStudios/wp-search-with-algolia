@@ -8,5 +8,4 @@
  * A plain object is an object created by the `Object`
  * constructor or with a `[[Prototype]]` of `null`.
  */
-declare function isPlainObject(value: any): boolean;
-export default isPlainObject;
+export declare function isPlainObject(value: any): boolean;

@@ -1,2 +1,1 @@
-declare function noop(..._args: any[]): void;
-export default noop;
+export declare function noop(..._args: any[]): void;

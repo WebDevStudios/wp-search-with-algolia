@@ -1,4 +1,4 @@
-/** @jsx h */
+
 import type { WidgetFactory, Template } from '../../types';
 import type { QueryRulesConnectorParams, QueryRulesWidgetDescription } from '../../connectors/query-rules/connectQueryRules';
 import type { QueryRuleCustomDataComponentTemplates } from '../../components/QueryRuleCustomData/QueryRuleCustomData';

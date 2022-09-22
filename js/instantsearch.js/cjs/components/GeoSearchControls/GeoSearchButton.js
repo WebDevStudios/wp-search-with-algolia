@@ -7,7 +7,6 @@ exports.default = void 0;
 
 var _preact = require("preact");
 
-/** @jsx h */
 var GeoSearchButton = function GeoSearchButton(_ref) {
   var className = _ref.className,
       _ref$disabled = _ref.disabled,

@@ -1,4 +1,3 @@
-/** @jsx h */
 import { h } from 'preact';
 import { deserializePayload } from "../utils/index.js";
 import { readDataAttributes, hasDataAttributes } from "../../helpers/insights.js";

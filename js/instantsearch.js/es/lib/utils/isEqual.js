@@ -2,7 +2,7 @@ function isPrimitive(obj) {
   return obj !== Object(obj);
 }
 
-function isEqual(first, second) {
+export function isEqual(first, second) {
   if (first === second) {
     return true;
   }
@@ -29,5 +29,3 @@ function isEqual(first, second) {
 
   return true;
 }
-
-export default isEqual;

@@ -1,9 +1,9 @@
-import type { Connector, Hits, FindAnswersOptions, WidgetRenderState } from '../../types';
+import type { Connector, Hit, FindAnswersOptions, WidgetRenderState } from '../../types';
 export declare type AnswersRenderState = {
     /**
      * The matched hits from Algolia API.
      */
-    hits: Hits;
+    hits: Hit[];
     /**
      * Whether it's still loading the results from the Answers API.
      */

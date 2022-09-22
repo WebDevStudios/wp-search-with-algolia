@@ -10,3 +10,7 @@ export declare type Expand<T> = T extends infer O ? {
 } : never;
 export declare type RequiredKeys<TObject, TKeys extends keyof TObject> = Expand<Required<Pick<TObject, TKeys>> & Omit<TObject, TKeys>>;
 export declare type Awaited<T> = T extends PromiseLike<infer U> ? Awaited<U> : T;
+/**
+ * Make certain keys of an object optional.
+ */
+export declare type PartialKeys<TObj, TKeys extends keyof TObj> = Omit<TObj, TKeys> & Partial<Pick<TObj, TKeys>>;

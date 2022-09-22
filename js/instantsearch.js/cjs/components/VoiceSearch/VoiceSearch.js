@@ -11,7 +11,6 @@ var _Template = _interopRequireDefault(require("../Template/Template.js"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-/** @jsx h */
 var VoiceSearch = function VoiceSearch(_ref) {
   var cssClasses = _ref.cssClasses,
       isBrowserSupported = _ref.isBrowserSupported,

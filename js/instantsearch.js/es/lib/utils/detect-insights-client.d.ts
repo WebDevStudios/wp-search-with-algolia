@@ -1,1 +1,1 @@
-export default function hasDetectedInsightsClient(): boolean;
+export declare function hasDetectedInsightsClient(): boolean;

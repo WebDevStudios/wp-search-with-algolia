@@ -8,8 +8,8 @@ function _objectWithoutProperties(source, excluded) { if (source == null) return
 
 function _objectWithoutPropertiesLoose(source, excluded) { if (source == null) return {}; var target = {}; var sourceKeys = Object.keys(source); var key, i; for (i = 0; i < sourceKeys.length; i++) { key = sourceKeys[i]; if (excluded.indexOf(key) >= 0) continue; target[key] = source[key]; } return target; }
 
-import findIndex from "./findIndex.js";
-import uniq from "./uniq.js";
+import { findIndex } from "./findIndex.js";
+import { uniq } from "./uniq.js";
 
 var mergeWithRest = function mergeWithRest(left, right) {
   var facets = right.facets,
@@ -107,7 +107,7 @@ var mergeRuleContexts = function mergeRuleContexts(left, right) {
   return left;
 };
 
-var merge = function merge() {
+export var mergeSearchParameters = function mergeSearchParameters() {
   for (var _len = arguments.length, parameters = new Array(_len), _key = 0; _key < _len; _key++) {
     parameters[_key] = arguments[_key];
   }
@@ -126,5 +126,3 @@ var merge = function merge() {
     return mergeWithRest(facetsMerged, right);
   });
 };
-
-export default merge;

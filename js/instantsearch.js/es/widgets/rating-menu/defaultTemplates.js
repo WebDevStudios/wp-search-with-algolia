@@ -1,4 +1,56 @@
+import { h } from 'preact';
+import { formatNumber } from "../../lib/formatNumber.js";
+import { cx } from "../../lib/utils/index.js";
+
+function ItemWrapper(_ref) {
+  var children = _ref.children,
+      count = _ref.count,
+      value = _ref.value,
+      url = _ref.url,
+      cssClasses = _ref.cssClasses;
+
+  if (count) {
+    return h("a", {
+      className: cx(cssClasses.link),
+      "aria-label": "".concat(value, " & up"),
+      href: url
+    }, children);
+  }
+
+  return h("div", {
+    className: cx(cssClasses.link),
+    "aria-label": "".concat(value, " & up"),
+    disabled: true
+  }, children);
+}
+
 var defaultTemplates = {
-  item: "{{#count}}<a class=\"{{cssClasses.link}}\" aria-label=\"{{value}} & up\" href=\"{{url}}\">{{/count}}{{^count}}<div class=\"{{cssClasses.link}}\" aria-label=\"{{value}} & up\" disabled>{{/count}}\n  {{#stars}}<svg class=\"{{cssClasses.starIcon}} {{#.}}{{cssClasses.fullStarIcon}}{{/.}}{{^.}}{{cssClasses.emptyStarIcon}}{{/.}}\" aria-hidden=\"true\" width=\"24\" height=\"24\">\n    {{#.}}<use xlink:href=\"#ais-RatingMenu-starSymbol\"></use>{{/.}}{{^.}}<use xlink:href=\"#ais-RatingMenu-starEmptySymbol\"></use>{{/.}}\n  </svg>{{/stars}}\n  <span class=\"{{cssClasses.label}}\">& Up</span>\n  {{#count}}<span class=\"{{cssClasses.count}}\">{{#helpers.formatNumber}}{{count}}{{/helpers.formatNumber}}</span>{{/count}}\n{{#count}}</a>{{/count}}{{^count}}</div>{{/count}}"
+  item: function item(_ref2) {
+    var count = _ref2.count,
+        value = _ref2.value,
+        url = _ref2.url,
+        stars = _ref2.stars,
+        cssClasses = _ref2.cssClasses;
+    return h(ItemWrapper, {
+      count: count,
+      value: value,
+      url: url,
+      cssClasses: cssClasses
+    }, stars.map(function (isFull, index) {
+      return h("svg", {
+        key: index,
+        className: cx([cx(cssClasses.starIcon), cx(isFull ? cssClasses.fullStarIcon : cssClasses.emptyStarIcon)]),
+        "aria-hidden": "true",
+        width: "24",
+        height: "24"
+      }, h("use", {
+        xlinkHref: isFull ? '#ais-RatingMenu-starSymbol' : '#ais-RatingMenu-starEmptySymbol'
+      }));
+    }), h("span", {
+      className: cx(cssClasses.label)
+    }, "& Up"), count && h("span", {
+      className: cx(cssClasses.count)
+    }, formatNumber(count)));
+  }
 };
 export default defaultTemplates;
