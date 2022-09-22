@@ -207,7 +207,7 @@ function encode(format, ...args) {
     return format.replace(/%s/g, () => encodeURIComponent(args[i++]));
 }
 
-const version = '4.13.0';
+const version = '4.14.2';
 
 const AuthMode = {
     /**
