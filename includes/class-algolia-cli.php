@@ -51,6 +51,9 @@ class Algolia_CLI extends \WP_CLI_Command {
 	 * [--all]
 	 * : Re-indexes all the enabled indices.
 	 *
+	 * [--from_batch=<from_batch>]
+	 * : Re-index starting from the provided batch (instead of the first page).
+	 *
 	 * ## EXAMPLES
 	 *
 	 *     wp algolia re-index
@@ -68,9 +71,10 @@ class Algolia_CLI extends \WP_CLI_Command {
 			WP_CLI::error( 'The configuration for this website does not allow to contact the Algolia API.' );
 		}
 
-		$index_id = isset( $args[0] ) ? $args[0] : null;
-		$clear    = WP_CLI\Utils\get_flag_value( $assoc_args, 'clear' );
-		$all      = WP_CLI\Utils\get_flag_value( $assoc_args, 'all' );
+		$index_id  = isset( $args[0] ) ? $args[0] : null;
+		$clear     = WP_CLI\Utils\get_flag_value( $assoc_args, 'clear' );
+		$all       = WP_CLI\Utils\get_flag_value( $assoc_args, 'all' );
+		$from_batch = intval( WP_CLI\Utils\get_flag_value( $assoc_args, 'from_batch', 1 ) );
 
 		if ( ! $index_id && ! $all ) {
 			WP_CLI::error( 'You need to either provide an index name or specify the --all argument to re-index all enabled indices.' );
@@ -95,7 +99,7 @@ class Algolia_CLI extends \WP_CLI_Command {
 		}
 
 		foreach ( $indices as $index ) {
-			$this->do_reindex( $index, $clear );
+			$this->do_reindex( $index, $clear, $from_batch );
 		}
 	}
 
@@ -107,10 +111,11 @@ class Algolia_CLI extends \WP_CLI_Command {
 	 *
 	 * @param Algolia_Index $index Algolia_Index instance.
 	 * @param bool          $clear Clear all existing records prior to pushing the records.
+	 * @param int           $from_batch The batch to start indexing from.
 	 *
 	 * @return void
 	 */
-	private function do_reindex( Algolia_Index $index, $clear ) {
+	private function do_reindex( Algolia_Index $index, $clear, $from_batch ) {
 
 		if ( $clear ) {
 			/* translators: the placeholder will contain the name of the index. */
@@ -120,7 +125,7 @@ class Algolia_CLI extends \WP_CLI_Command {
 			WP_CLI::success( sprintf( __( 'Correctly cleared index "%s".', 'wp-search-with-algolia' ), $index->get_name() ) );
 		}
 
-		$total_pages = $index->get_re_index_max_num_pages();
+		$total_pages = $index->get_re_index_max_num_pages() - ( $from_batch - 1 );
 
 		if ( 0 === $total_pages ) {
 			$index->re_index( 1 );
@@ -129,16 +134,18 @@ class Algolia_CLI extends \WP_CLI_Command {
 			return;
 		}
 
-		$progress = WP_CLI\Utils\make_progress_bar( sprintf( 'Processing %s pages of results.', $total_pages ), $total_pages );
+		$progress = WP_CLI\Utils\make_progress_bar( sprintf( 'Processing %s batches of results.', $total_pages ), $total_pages );
 
-		$page = 1;
+		$page = $from_batch;
 		do {
+			WP_CLI::log( sprintf( 'Indexing batch %s.', $page ) );
 			$index->re_index( $page++ );
+			WP_CLI::log( sprintf( 'Indexed batch %s.', ( $page - 1 ) ) );
 			$progress->tick();
 		} while ( $page <= $total_pages );
 
 		$progress->finish();
 
-		WP_CLI::success( sprintf( 'Indexed "%s" pages of results inside index "%s"', $total_pages, $index->get_name() ) );
+		WP_CLI::success( sprintf( 'Indexed "%s" batches of results inside index "%s"', $total_pages, $index->get_name() ) );
 	}
 }
