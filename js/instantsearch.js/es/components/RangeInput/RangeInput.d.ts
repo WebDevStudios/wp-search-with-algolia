@@ -1,4 +1,4 @@
-/** @jsx h */
+
 import { h, Component } from 'preact';
 import type { RangeInputCSSClasses, RangeInputTemplates } from '../../widgets/range-input/range-input';
 import type { Range, RangeBoundaries } from '../../connectors/range/connectRange';

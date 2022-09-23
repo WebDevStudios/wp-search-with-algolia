@@ -11,7 +11,7 @@ var _algoliasearchHelper = _interopRequireDefault(require("algoliasearch-helper"
 
 var _events = _interopRequireDefault(require("@algolia/events"));
 
-var _index = _interopRequireWildcard(require("../widgets/index/index.js"));
+var _index = _interopRequireDefault(require("../widgets/index/index.js"));
 
 var _version = _interopRequireDefault(require("./version.js"));
 
@@ -22,10 +22,6 @@ var _index2 = require("./utils/index.js");
 var _createRouterMiddleware = require("../middlewares/createRouterMiddleware.js");
 
 var _createMetadataMiddleware = require("../middlewares/createMetadataMiddleware.js");
-
-function _getRequireWildcardCache() { if (typeof WeakMap !== "function") return null; var cache = new WeakMap(); _getRequireWildcardCache = function _getRequireWildcardCache() { return cache; }; return cache; }
-
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } if (obj === null || _typeof(obj) !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -61,10 +57,9 @@ var withUsage = (0, _index2.createDocumentationMessageGenerator)({
 
 function defaultCreateURL() {
   return '#';
-}
-/**
- * Global options for an InstantSearch instance.
- */
+} // this purposely breaks typescript's type inference to ensure it's not used
+// as it's used for a default parameter for example
+// source: https://github.com/Microsoft/TypeScript/issues/14829#issuecomment-504042546
 
 
 /**
@@ -255,6 +250,7 @@ var InstantSearch = /*#__PURE__*/function (_EventEmitter) {
       var newMiddlewareList = middleware.map(function (fn) {
         var newMiddleware = _objectSpread({
           subscribe: _index2.noop,
+          started: _index2.noop,
           unsubscribe: _index2.noop,
           onStateChange: _index2.noop
         }, fn({
@@ -273,6 +269,7 @@ var InstantSearch = /*#__PURE__*/function (_EventEmitter) {
       if (this.started) {
         newMiddlewareList.forEach(function (m) {
           m.subscribe();
+          m.started();
         });
       }
 
@@ -446,12 +443,22 @@ var InstantSearch = /*#__PURE__*/function (_EventEmitter) {
 
       mainHelper.on('error', function (_ref4) {
         var error = _ref4.error;
-        // If an error is emitted, it is re-thrown by events. In previous versions
+
+        if (!(error instanceof Error)) {
+          // typescript lies here, error is in some cases { name: string, message: string }
+          var err = error;
+          error = Object.keys(err).reduce(function (acc, key) {
+            acc[key] = err[key];
+            return acc;
+          }, new Error(err.message));
+        } // If an error is emitted, it is re-thrown by events. In previous versions
         // we emitted {error}, which is thrown as:
         // "Uncaught, unspecified \"error\" event. ([object Object])"
         // To avoid breaking changes, we make the error available in both
         // `error` and `error.error`
         // @MAJOR emit only error
+
+
         error.error = error;
 
         _this3.emit('error', error);
@@ -481,9 +488,17 @@ var InstantSearch = /*#__PURE__*/function (_EventEmitter) {
         (0, _index2.defer)(function () {
           _this3.scheduleSearch = originalScheduleSearch;
         })();
-      } else {
-        this.scheduleSearch();
-      } // Keep the previous reference for legacy purpose, some pattern use
+      } // We only schedule a search when widgets have been added before `start()`
+      // because there are listeners that can use these results.
+      // This is especially useful in framework-based flavors that wait for
+      // dynamically-added widgets to trigger a network request. It avoids
+      // having to batch this initial network request with the one coming from
+      // `addWidgets()`.
+      // Later, we could also skip `index()` widgets and widgets that don't read
+      // the results, but this is an optimization that has a very low impact for now.
+      else if (this.mainIndex.getWidgets().length > 0) {
+          this.scheduleSearch();
+        } // Keep the previous reference for legacy purpose, some pattern use
       // the direct Helper access `search.helper` (e.g multi-index).
 
 
@@ -491,6 +506,10 @@ var InstantSearch = /*#__PURE__*/function (_EventEmitter) {
       // to init them directly after add
 
       this.started = true;
+      this.middleware.forEach(function (_ref6) {
+        var instance = _ref6.instance;
+        instance.started();
+      });
     }
     /**
      * Removes all widgets without triggering a search afterwards. This is an **EXPERIMENTAL** feature,
@@ -517,8 +536,8 @@ var InstantSearch = /*#__PURE__*/function (_EventEmitter) {
       this.mainHelper.removeAllListeners();
       this.mainHelper = null;
       this.helper = null;
-      this.middleware.forEach(function (_ref6) {
-        var instance = _ref6.instance;
+      this.middleware.forEach(function (_ref7) {
+        var instance = _ref7.instance;
         instance.unsubscribe();
       });
     }
@@ -535,9 +554,19 @@ var InstantSearch = /*#__PURE__*/function (_EventEmitter) {
         }, this._stalledSearchDelay);
       }
     }
+    /**
+     * Set the UI state and trigger a search.
+     * @param uiState The next UI state or a function computing it from the current state
+     * @param callOnStateChange private parameter used to know if the method is called from a state change
+     */
+
   }, {
     key: "setUiState",
     value: function setUiState(uiState) {
+      var _this5 = this;
+
+      var callOnStateChange = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
+
       if (!this.mainHelper) {
         throw new Error(withUsage('The `start` method needs to be called before `setUiState`.'));
       } // We refresh the index UI state to update the local UI state that the
@@ -547,25 +576,22 @@ var InstantSearch = /*#__PURE__*/function (_EventEmitter) {
       this.mainIndex.refreshUiState();
       var nextUiState = typeof uiState === 'function' ? uiState(this.mainIndex.getWidgetUiState({})) : uiState;
 
-      var setIndexHelperState = function setIndexHelperState(indexWidget) {
-        var nextIndexUiState = nextUiState[indexWidget.getIndexId()] || {};
+      if (this.onStateChange && callOnStateChange) {
+        this.onStateChange({
+          uiState: nextUiState,
+          setUiState: function setUiState(finalUiState) {
+            (0, _index2.setIndexHelperState)(typeof finalUiState === 'function' ? finalUiState(nextUiState) : finalUiState, _this5.mainIndex);
 
-        if (process.env.NODE_ENV === 'development') {
-          (0, _index2.checkIndexUiState)({
-            index: indexWidget,
-            indexUiState: nextIndexUiState
-          });
-        }
+            _this5.scheduleSearch();
 
-        indexWidget.getHelper().setState(indexWidget.getWidgetSearchParameters(indexWidget.getHelper().state, {
-          uiState: nextIndexUiState
-        }));
-        indexWidget.getWidgets().filter(_index.isIndexWidget).forEach(setIndexHelperState);
-      };
-
-      setIndexHelperState(this.mainIndex);
-      this.scheduleSearch();
-      this.onInternalStateChange();
+            _this5.onInternalStateChange();
+          }
+        });
+      } else {
+        (0, _index2.setIndexHelperState)(nextUiState, this.mainIndex);
+        this.scheduleSearch();
+        this.onInternalStateChange();
+      }
     }
   }, {
     key: "getUiState",

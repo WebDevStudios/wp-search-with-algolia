@@ -1,8 +1,8 @@
-/** @jsx h */
+
 import { h } from 'preact';
 import type { GeoSearchCSSClasses, GeoSearchTemplates } from '../../widgets/geo-search/geo-search';
 import type { ComponentCSSClasses } from '../../types';
-import type { PreparedTemplateProps } from '../../lib/utils/prepareTemplateProps';
+import type { PreparedTemplateProps } from '../../lib/templating';
 declare type Props = {
     cssClasses: ComponentCSSClasses<GeoSearchCSSClasses>;
     enableRefine: boolean;

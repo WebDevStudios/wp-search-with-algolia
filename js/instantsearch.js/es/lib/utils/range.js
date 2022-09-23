@@ -10,7 +10,7 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) return _arrayLikeToAr
 
 function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
 
-function range(_ref) {
+export function range(_ref) {
   var _ref$start = _ref.start,
       start = _ref$start === void 0 ? 0 : _ref$start,
       end = _ref.end,
@@ -28,5 +28,3 @@ function range(_ref) {
     return start + current * limitStep;
   });
 }
-
-export default range;

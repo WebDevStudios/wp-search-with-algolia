@@ -1,5 +1,9 @@
 var defaultTemplates = {
-  home: 'Home',
-  separator: '>'
+  home: function home() {
+    return 'Home';
+  },
+  separator: function separator() {
+    return '>';
+  }
 };
 export default defaultTemplates;

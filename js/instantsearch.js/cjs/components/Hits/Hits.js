@@ -25,6 +25,7 @@ var Hits = function Hits(_ref) {
   var results = _ref.results,
       hits = _ref.hits,
       bindEvent = _ref.bindEvent,
+      sendEvent = _ref.sendEvent,
       cssClasses = _ref.cssClasses,
       templateProps = _ref.templateProps;
 
@@ -53,7 +54,8 @@ var Hits = function Hits(_ref) {
       data: _objectSpread(_objectSpread({}, hit), {}, {
         __hitIndex: index
       }),
-      bindEvent: bindEvent
+      bindEvent: bindEvent,
+      sendEvent: sendEvent
     }));
   })));
 };

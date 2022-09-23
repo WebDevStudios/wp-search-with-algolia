@@ -1,6 +1,5 @@
 var nextMicroTask = Promise.resolve();
-
-var defer = function defer(callback) {
+export function defer(callback) {
   var progress = null;
   var cancelled = false;
 
@@ -42,6 +41,4 @@ var defer = function defer(callback) {
   };
 
   return fn;
-};
-
-export default defer;
+}

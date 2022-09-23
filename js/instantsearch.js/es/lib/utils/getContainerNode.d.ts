@@ -7,5 +7,4 @@
  * @return {HTMLElement} Container node
  * @throws Error when the type is not correct
  */
-declare function getContainerNode(selectorOrHTMLElement: string | HTMLElement): HTMLElement;
-export default getContainerNode;
+export declare function getContainerNode(selectorOrHTMLElement: string | HTMLElement): HTMLElement;

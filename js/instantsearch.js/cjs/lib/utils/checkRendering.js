@@ -3,17 +3,12 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.default = void 0;
+exports.checkRendering = checkRendering;
 
-var _getObjectType = _interopRequireDefault(require("./getObjectType.js"));
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+var _getObjectType = require("./getObjectType.js");
 
 function checkRendering(rendering, usage) {
   if (rendering === undefined || typeof rendering !== 'function') {
-    throw new Error("The render function is not valid (received type ".concat((0, _getObjectType.default)(rendering), ").\n\n").concat(usage));
+    throw new Error("The render function is not valid (received type ".concat((0, _getObjectType.getObjectType)(rendering), ").\n\n").concat(usage));
   }
 }
-
-var _default = checkRendering;
-exports.default = _default;

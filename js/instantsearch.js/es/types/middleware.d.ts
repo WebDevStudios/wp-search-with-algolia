@@ -6,6 +6,7 @@ export declare type MiddlewareDefinition<TUiState extends UiState = UiState> = {
         uiState: TUiState;
     }): void;
     subscribe(): void;
+    started(): void;
     unsubscribe(): void;
 };
 export declare type MiddlewareOptions = {

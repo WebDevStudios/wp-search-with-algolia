@@ -1,4 +1,4 @@
-/** @jsx h */
+
 import type { RatingMenuWidgetDescription, RatingMenuConnectorParams } from '../../connectors/rating-menu/connectRatingMenu';
 import type { ComponentCSSClasses, Template, WidgetFactory } from '../../types';
 export declare type RatingMenuTemplates = Partial<{
@@ -7,9 +7,15 @@ export declare type RatingMenuTemplates = Partial<{
      */
     item: Template<{
         name: string;
+        label: string;
+        value: string;
         count: number;
         isRefined: boolean;
         url: string;
+        stars: [boolean, boolean, boolean, boolean, boolean];
+        cssClasses: RatingMenuCSSClasses;
+        attribute?: string;
+        isFromSearch?: boolean;
     }>;
 }>;
 export declare type RatingMenuCSSClasses = Partial<{

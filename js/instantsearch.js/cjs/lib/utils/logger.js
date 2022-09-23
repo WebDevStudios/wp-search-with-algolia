@@ -5,9 +5,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.warning = exports.deprecate = exports.warn = void 0;
 
-var _noop = _interopRequireDefault(require("./noop.js"));
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+var _noop = require("./noop.js");
 
 /**
  * Logs a warning when this function is called, in development environment only.
@@ -22,14 +20,14 @@ var deprecate = function deprecate(fn, message) {
 
 
 exports.deprecate = deprecate;
-var warn = _noop.default;
+var warn = _noop.noop;
 /**
  * Logs a warning if the condition is not met.
  * This is used to log issues in development environment only.
  */
 
 exports.warn = warn;
-var _warning = _noop.default;
+var _warning = _noop.noop;
 exports.warning = _warning;
 
 if (process.env.NODE_ENV === 'development') {

@@ -29,8 +29,6 @@ function _extends() { _extends = Object.assign || function (target) { for (var i
  *
  * @see https://github.com/airbnb/rheostat
  */
-
-/** @jsx h */
 import { h, Component, createRef } from 'preact';
 var KEYS = {
   DOWN: 40,

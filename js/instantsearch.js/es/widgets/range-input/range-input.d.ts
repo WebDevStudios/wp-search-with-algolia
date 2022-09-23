@@ -1,4 +1,4 @@
-/** @jsx h */
+
 import type { RangeConnectorParams, RangeWidgetDescription } from '../../connectors/range/connectRange';
 import type { Template, WidgetFactory } from '../../types';
 export declare type RangeInputTemplates = Partial<{

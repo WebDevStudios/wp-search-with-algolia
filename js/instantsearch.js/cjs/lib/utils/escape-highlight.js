@@ -7,11 +7,9 @@ exports.escapeHits = escapeHits;
 exports.escapeFacets = escapeFacets;
 exports.TAG_REPLACEMENT = exports.TAG_PLACEHOLDER = void 0;
 
-var _escape = _interopRequireDefault(require("./escape.js"));
+var _escapeHtml = require("./escape-html.js");
 
-var _isPlainObject = _interopRequireDefault(require("./isPlainObject.js"));
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+var _isPlainObject = require("./isPlainObject.js");
 
 function _extends() { _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; return _extends.apply(this, arguments); }
 
@@ -33,11 +31,11 @@ var TAG_REPLACEMENT = {
 exports.TAG_REPLACEMENT = TAG_REPLACEMENT;
 
 function replaceTagsAndEscape(value) {
-  return (0, _escape.default)(value).replace(new RegExp(TAG_PLACEHOLDER.highlightPreTag, 'g'), TAG_REPLACEMENT.highlightPreTag).replace(new RegExp(TAG_PLACEHOLDER.highlightPostTag, 'g'), TAG_REPLACEMENT.highlightPostTag);
+  return (0, _escapeHtml.escape)(value).replace(new RegExp(TAG_PLACEHOLDER.highlightPreTag, 'g'), TAG_REPLACEMENT.highlightPreTag).replace(new RegExp(TAG_PLACEHOLDER.highlightPostTag, 'g'), TAG_REPLACEMENT.highlightPostTag);
 }
 
 function recursiveEscape(input) {
-  if ((0, _isPlainObject.default)(input) && typeof input.value !== 'string') {
+  if ((0, _isPlainObject.isPlainObject)(input) && typeof input.value !== 'string') {
     return Object.keys(input).reduce(function (acc, key) {
       return _objectSpread(_objectSpread({}, acc), {}, _defineProperty({}, key, recursiveEscape(input[key])));
     }, {});

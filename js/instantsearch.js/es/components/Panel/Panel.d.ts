@@ -1,4 +1,4 @@
-/** @jsx h */
+
 import { h } from 'preact';
 import type { PanelCSSClasses, PanelSharedOptions, PanelTemplates } from '../../widgets/panel/panel';
 import type { ComponentCSSClasses, UnknownWidgetFactory } from '../../types';

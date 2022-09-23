@@ -1,4 +1,4 @@
-/** @jsx h */
+
 import { h } from 'preact';
 import type { StatsCSSClasses, StatsTemplates } from '../../widgets/stats/stats';
 import type { ComponentCSSClasses } from '../../types';

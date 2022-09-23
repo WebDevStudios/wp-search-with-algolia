@@ -25,6 +25,7 @@ var InfiniteHits = function InfiniteHits(_ref) {
   var results = _ref.results,
       hits = _ref.hits,
       bindEvent = _ref.bindEvent,
+      sendEvent = _ref.sendEvent,
       hasShowPrevious = _ref.hasShowPrevious,
       showPrevious = _ref.showPrevious,
       showMore = _ref.showMore,
@@ -66,7 +67,8 @@ var InfiniteHits = function InfiniteHits(_ref) {
       data: _objectSpread(_objectSpread({}, hit), {}, {
         __hitIndex: position
       }),
-      bindEvent: bindEvent
+      bindEvent: bindEvent,
+      sendEvent: sendEvent
     }));
   })), (0, _preact.h)(_Template.default, _extends({}, templateProps, {
     templateKey: "showMoreText",

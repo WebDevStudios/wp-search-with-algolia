@@ -1,2 +1,1 @@
-declare function isEqual(first: any, second: any): boolean;
-export default isEqual;
+export declare function isEqual(first: any, second: any): boolean;

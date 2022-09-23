@@ -6,7 +6,7 @@ import { createInfiniteHitsSessionStorageCache } from './lib/infiniteHitsCache';
 declare type InstantSearchModule = {
     <TUiState = Record<string, unknown>, TRouteState = TUiState>(options: InstantSearchOptions<Expand<UiState & TUiState>, TRouteState>): InstantSearch<Expand<UiState & TUiState>, TRouteState>;
     version: string;
-    /** @deprecated import { createInfiniteHitsSessionStorageCache } from 'instantsearch.js/es/helpers' */
+    /** @deprecated import { createInfiniteHitsSessionStorageCache } from 'instantsearch.js/es/lib/infiniteHitsCache' */
     createInfiniteHitsSessionStorageCache: typeof createInfiniteHitsSessionStorageCache;
     /** @deprecated import { highlight } from 'instantsearch.js/es/helpers' */
     highlight: typeof highlight;

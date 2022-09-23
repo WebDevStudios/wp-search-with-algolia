@@ -11,7 +11,6 @@ var _classnames = _interopRequireDefault(require("classnames"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-/** @jsx h */
 function Selector(_ref) {
   var currentValue = _ref.currentValue,
       options = _ref.options,

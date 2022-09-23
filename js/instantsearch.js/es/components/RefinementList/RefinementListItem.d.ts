@@ -1,4 +1,4 @@
-/** @jsx h */
+
 import type { JSX } from 'preact';
 export declare type RefinementListItemProps = {
     facetValueToRefine: string;

@@ -2,7 +2,6 @@ function _extends() { _extends = Object.assign || function (target) { for (var i
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
-/** @jsx h */
 import { h, Fragment } from 'preact';
 import cx from 'classnames';
 import Template from "../Template/Template.js";

@@ -3,5 +3,5 @@ declare type RangeOptions = {
     end: number;
     step?: number;
 };
-declare function range({ start, end, step }: RangeOptions): number[];
-export default range;
+export declare function range({ start, end, step }: RangeOptions): number[];
+export {};

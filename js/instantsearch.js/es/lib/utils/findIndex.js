@@ -4,7 +4,7 @@
 // was decided as too risky.
 // @MAJOR Replace with the native `Array.prototype.findIndex` method
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/findIndex
-function findIndex(array, comparator) {
+export function findIndex(array, comparator) {
   if (!Array.isArray(array)) {
     return -1;
   }
@@ -17,5 +17,3 @@ function findIndex(array, comparator) {
 
   return -1;
 }
-
-export default findIndex;

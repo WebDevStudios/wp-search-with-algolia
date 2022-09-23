@@ -1,4 +1,4 @@
-import noop from "./noop.js";
+import { noop } from "./noop.js";
 
 /**
  * Logs a warning when this function is called, in development environment only.

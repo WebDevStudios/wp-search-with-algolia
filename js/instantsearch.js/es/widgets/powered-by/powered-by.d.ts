@@ -1,4 +1,4 @@
-/** @jsx h */
+
 import type { PoweredByConnectorParams, PoweredByWidgetDescription } from '../../connectors/powered-by/connectPoweredBy';
 import type { WidgetFactory } from '../../types';
 export declare type PoweredByCSSClasses = Partial<{

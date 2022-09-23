@@ -3,461 +3,89 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-var _exportNames = {
-  capitalize: true,
-  defer: true,
-  isDomElement: true,
-  getContainerNode: true,
-  isSpecialClick: true,
-  prepareTemplateProps: true,
-  renderTemplate: true,
-  getRefinements: true,
-  clearRefinements: true,
-  escapeFacetValue: true,
-  unescapeFacetValue: true,
-  checkRendering: true,
-  checkIndexUiState: true,
-  getPropertyByPath: true,
-  getObjectType: true,
-  noop: true,
-  isFiniteNumber: true,
-  isPlainObject: true,
-  uniq: true,
-  range: true,
-  isEqual: true,
-  escape: true,
-  unescape: true,
-  concatHighlightedParts: true,
-  getHighlightedParts: true,
-  getHighlightFromSiblings: true,
-  reverseHighlightedParts: true,
-  find: true,
-  findIndex: true,
-  mergeSearchParameters: true,
-  resolveSearchParameters: true,
-  toArray: true,
-  warning: true,
-  deprecate: true,
-  escapeHits: true,
-  TAG_PLACEHOLDER: true,
-  TAG_REPLACEMENT: true,
-  escapeFacets: true,
-  createDocumentationLink: true,
-  createDocumentationMessageGenerator: true,
-  aroundLatLngToPosition: true,
-  insideBoundingBoxToBoundingBox: true,
-  addAbsolutePosition: true,
-  addQueryID: true,
-  isFacetRefined: true,
-  getAppIdAndApiKey: true,
-  convertNumericRefinementsToFilters: true,
-  createConcurrentSafePromise: true,
-  debounce: true,
-  serializePayload: true,
-  deserializePayload: true,
-  getWidgetAttribute: true,
-  safelyRunOnBrowser: true
-};
-Object.defineProperty(exports, "capitalize", {
-  enumerable: true,
-  get: function get() {
-    return _capitalize.default;
-  }
-});
-Object.defineProperty(exports, "defer", {
-  enumerable: true,
-  get: function get() {
-    return _defer.default;
-  }
-});
-Object.defineProperty(exports, "isDomElement", {
-  enumerable: true,
-  get: function get() {
-    return _isDomElement.default;
-  }
-});
-Object.defineProperty(exports, "getContainerNode", {
-  enumerable: true,
-  get: function get() {
-    return _getContainerNode.default;
-  }
-});
-Object.defineProperty(exports, "isSpecialClick", {
-  enumerable: true,
-  get: function get() {
-    return _isSpecialClick.default;
-  }
-});
-Object.defineProperty(exports, "prepareTemplateProps", {
-  enumerable: true,
-  get: function get() {
-    return _prepareTemplateProps.default;
-  }
-});
-Object.defineProperty(exports, "renderTemplate", {
-  enumerable: true,
-  get: function get() {
-    return _renderTemplate.default;
-  }
-});
-Object.defineProperty(exports, "getRefinements", {
-  enumerable: true,
-  get: function get() {
-    return _getRefinements.default;
-  }
-});
-Object.defineProperty(exports, "clearRefinements", {
-  enumerable: true,
-  get: function get() {
-    return _clearRefinements.default;
-  }
-});
-Object.defineProperty(exports, "escapeFacetValue", {
-  enumerable: true,
-  get: function get() {
-    return _escapeFacetValue.escapeFacetValue;
-  }
-});
-Object.defineProperty(exports, "unescapeFacetValue", {
-  enumerable: true,
-  get: function get() {
-    return _escapeFacetValue.unescapeFacetValue;
-  }
-});
-Object.defineProperty(exports, "checkRendering", {
-  enumerable: true,
-  get: function get() {
-    return _checkRendering.default;
-  }
-});
-Object.defineProperty(exports, "checkIndexUiState", {
-  enumerable: true,
-  get: function get() {
-    return _checkIndexUiState.checkIndexUiState;
-  }
-});
-Object.defineProperty(exports, "getPropertyByPath", {
-  enumerable: true,
-  get: function get() {
-    return _getPropertyByPath.default;
-  }
-});
-Object.defineProperty(exports, "getObjectType", {
-  enumerable: true,
-  get: function get() {
-    return _getObjectType.default;
-  }
-});
-Object.defineProperty(exports, "noop", {
-  enumerable: true,
-  get: function get() {
-    return _noop.default;
-  }
-});
-Object.defineProperty(exports, "isFiniteNumber", {
-  enumerable: true,
-  get: function get() {
-    return _isFiniteNumber.default;
-  }
-});
-Object.defineProperty(exports, "isPlainObject", {
-  enumerable: true,
-  get: function get() {
-    return _isPlainObject.default;
-  }
-});
-Object.defineProperty(exports, "uniq", {
-  enumerable: true,
-  get: function get() {
-    return _uniq.default;
-  }
-});
-Object.defineProperty(exports, "range", {
-  enumerable: true,
-  get: function get() {
-    return _range.default;
-  }
-});
-Object.defineProperty(exports, "isEqual", {
-  enumerable: true,
-  get: function get() {
-    return _isEqual.default;
-  }
-});
-Object.defineProperty(exports, "escape", {
-  enumerable: true,
-  get: function get() {
-    return _escape.default;
-  }
-});
-Object.defineProperty(exports, "unescape", {
-  enumerable: true,
-  get: function get() {
-    return _unescape.default;
-  }
-});
-Object.defineProperty(exports, "concatHighlightedParts", {
-  enumerable: true,
-  get: function get() {
-    return _concatHighlightedParts.default;
-  }
-});
-Object.defineProperty(exports, "getHighlightedParts", {
-  enumerable: true,
-  get: function get() {
-    return _getHighlightedParts.default;
-  }
-});
-Object.defineProperty(exports, "getHighlightFromSiblings", {
-  enumerable: true,
-  get: function get() {
-    return _getHighlightFromSiblings.default;
-  }
-});
-Object.defineProperty(exports, "reverseHighlightedParts", {
-  enumerable: true,
-  get: function get() {
-    return _reverseHighlightedParts.default;
-  }
-});
-Object.defineProperty(exports, "find", {
-  enumerable: true,
-  get: function get() {
-    return _find.default;
-  }
-});
-Object.defineProperty(exports, "findIndex", {
-  enumerable: true,
-  get: function get() {
-    return _findIndex.default;
-  }
-});
-Object.defineProperty(exports, "mergeSearchParameters", {
-  enumerable: true,
-  get: function get() {
-    return _mergeSearchParameters.default;
-  }
-});
-Object.defineProperty(exports, "resolveSearchParameters", {
-  enumerable: true,
-  get: function get() {
-    return _resolveSearchParameters.default;
-  }
-});
-Object.defineProperty(exports, "toArray", {
-  enumerable: true,
-  get: function get() {
-    return _toArray.default;
-  }
-});
-Object.defineProperty(exports, "warning", {
-  enumerable: true,
-  get: function get() {
-    return _logger.warning;
-  }
-});
-Object.defineProperty(exports, "deprecate", {
-  enumerable: true,
-  get: function get() {
-    return _logger.deprecate;
-  }
-});
-Object.defineProperty(exports, "escapeHits", {
-  enumerable: true,
-  get: function get() {
-    return _escapeHighlight.escapeHits;
-  }
-});
-Object.defineProperty(exports, "TAG_PLACEHOLDER", {
-  enumerable: true,
-  get: function get() {
-    return _escapeHighlight.TAG_PLACEHOLDER;
-  }
-});
-Object.defineProperty(exports, "TAG_REPLACEMENT", {
-  enumerable: true,
-  get: function get() {
-    return _escapeHighlight.TAG_REPLACEMENT;
-  }
-});
-Object.defineProperty(exports, "escapeFacets", {
-  enumerable: true,
-  get: function get() {
-    return _escapeHighlight.escapeFacets;
-  }
-});
-Object.defineProperty(exports, "createDocumentationLink", {
-  enumerable: true,
-  get: function get() {
-    return _documentation.createDocumentationLink;
-  }
-});
-Object.defineProperty(exports, "createDocumentationMessageGenerator", {
-  enumerable: true,
-  get: function get() {
-    return _documentation.createDocumentationMessageGenerator;
-  }
-});
-Object.defineProperty(exports, "aroundLatLngToPosition", {
-  enumerable: true,
-  get: function get() {
-    return _geoSearch.aroundLatLngToPosition;
-  }
-});
-Object.defineProperty(exports, "insideBoundingBoxToBoundingBox", {
-  enumerable: true,
-  get: function get() {
-    return _geoSearch.insideBoundingBoxToBoundingBox;
-  }
-});
-Object.defineProperty(exports, "addAbsolutePosition", {
-  enumerable: true,
-  get: function get() {
-    return _hitsAbsolutePosition.addAbsolutePosition;
-  }
-});
-Object.defineProperty(exports, "addQueryID", {
-  enumerable: true,
-  get: function get() {
-    return _hitsQueryId.addQueryID;
-  }
-});
-Object.defineProperty(exports, "isFacetRefined", {
-  enumerable: true,
-  get: function get() {
-    return _isFacetRefined.default;
-  }
-});
-Object.defineProperty(exports, "getAppIdAndApiKey", {
-  enumerable: true,
-  get: function get() {
-    return _getAppIdAndApiKey.getAppIdAndApiKey;
-  }
-});
-Object.defineProperty(exports, "convertNumericRefinementsToFilters", {
-  enumerable: true,
-  get: function get() {
-    return _convertNumericRefinementsToFilters.convertNumericRefinementsToFilters;
-  }
-});
-Object.defineProperty(exports, "createConcurrentSafePromise", {
-  enumerable: true,
-  get: function get() {
-    return _createConcurrentSafePromise.createConcurrentSafePromise;
-  }
-});
-Object.defineProperty(exports, "debounce", {
-  enumerable: true,
-  get: function get() {
-    return _debounce.debounce;
-  }
-});
-Object.defineProperty(exports, "serializePayload", {
-  enumerable: true,
-  get: function get() {
-    return _serializer.serializePayload;
-  }
-});
-Object.defineProperty(exports, "deserializePayload", {
-  enumerable: true,
-  get: function get() {
-    return _serializer.deserializePayload;
-  }
-});
-Object.defineProperty(exports, "getWidgetAttribute", {
-  enumerable: true,
-  get: function get() {
-    return _getWidgetAttribute.getWidgetAttribute;
-  }
-});
-Object.defineProperty(exports, "safelyRunOnBrowser", {
-  enumerable: true,
-  get: function get() {
-    return _safelyRunOnBrowser.safelyRunOnBrowser;
-  }
-});
 
-var _capitalize = _interopRequireDefault(require("./capitalize.js"));
+var _capitalize = require("./capitalize.js");
 
-var _defer = _interopRequireDefault(require("./defer.js"));
-
-var _isDomElement = _interopRequireDefault(require("./isDomElement.js"));
-
-var _getContainerNode = _interopRequireDefault(require("./getContainerNode.js"));
-
-var _isSpecialClick = _interopRequireDefault(require("./isSpecialClick.js"));
-
-var _prepareTemplateProps = _interopRequireDefault(require("./prepareTemplateProps.js"));
-
-var _renderTemplate = _interopRequireDefault(require("./renderTemplate.js"));
-
-var _getRefinements = _interopRequireDefault(require("./getRefinements.js"));
-
-var _clearRefinements = _interopRequireDefault(require("./clearRefinements.js"));
-
-var _escapeFacetValue = require("./escapeFacetValue.js");
-
-var _checkRendering = _interopRequireDefault(require("./checkRendering.js"));
+Object.keys(_capitalize).forEach(function (key) {
+  if (key === "default" || key === "__esModule") return;
+  if (key in exports && exports[key] === _capitalize[key]) return;
+  Object.defineProperty(exports, key, {
+    enumerable: true,
+    get: function get() {
+      return _capitalize[key];
+    }
+  });
+});
 
 var _checkIndexUiState = require("./checkIndexUiState.js");
 
-var _getPropertyByPath = _interopRequireDefault(require("./getPropertyByPath.js"));
+Object.keys(_checkIndexUiState).forEach(function (key) {
+  if (key === "default" || key === "__esModule") return;
+  if (key in exports && exports[key] === _checkIndexUiState[key]) return;
+  Object.defineProperty(exports, key, {
+    enumerable: true,
+    get: function get() {
+      return _checkIndexUiState[key];
+    }
+  });
+});
 
-var _getObjectType = _interopRequireDefault(require("./getObjectType.js"));
+var _checkRendering = require("./checkRendering.js");
 
-var _noop = _interopRequireDefault(require("./noop.js"));
+Object.keys(_checkRendering).forEach(function (key) {
+  if (key === "default" || key === "__esModule") return;
+  if (key in exports && exports[key] === _checkRendering[key]) return;
+  Object.defineProperty(exports, key, {
+    enumerable: true,
+    get: function get() {
+      return _checkRendering[key];
+    }
+  });
+});
 
-var _isFiniteNumber = _interopRequireDefault(require("./isFiniteNumber.js"));
+var _clearRefinements = require("./clearRefinements.js");
 
-var _isPlainObject = _interopRequireDefault(require("./isPlainObject.js"));
+Object.keys(_clearRefinements).forEach(function (key) {
+  if (key === "default" || key === "__esModule") return;
+  if (key in exports && exports[key] === _clearRefinements[key]) return;
+  Object.defineProperty(exports, key, {
+    enumerable: true,
+    get: function get() {
+      return _clearRefinements[key];
+    }
+  });
+});
 
-var _uniq = _interopRequireDefault(require("./uniq.js"));
+var _concatHighlightedParts = require("./concatHighlightedParts.js");
 
-var _range = _interopRequireDefault(require("./range.js"));
+Object.keys(_concatHighlightedParts).forEach(function (key) {
+  if (key === "default" || key === "__esModule") return;
+  if (key in exports && exports[key] === _concatHighlightedParts[key]) return;
+  Object.defineProperty(exports, key, {
+    enumerable: true,
+    get: function get() {
+      return _concatHighlightedParts[key];
+    }
+  });
+});
 
-var _isEqual = _interopRequireDefault(require("./isEqual.js"));
+var _createConcurrentSafePromise = require("./createConcurrentSafePromise.js");
 
-var _escape = _interopRequireDefault(require("./escape.js"));
-
-var _unescape = _interopRequireDefault(require("./unescape.js"));
-
-var _concatHighlightedParts = _interopRequireDefault(require("./concatHighlightedParts.js"));
-
-var _getHighlightedParts = _interopRequireDefault(require("./getHighlightedParts.js"));
-
-var _getHighlightFromSiblings = _interopRequireDefault(require("./getHighlightFromSiblings.js"));
-
-var _reverseHighlightedParts = _interopRequireDefault(require("./reverseHighlightedParts.js"));
-
-var _find = _interopRequireDefault(require("./find.js"));
-
-var _findIndex = _interopRequireDefault(require("./findIndex.js"));
-
-var _mergeSearchParameters = _interopRequireDefault(require("./mergeSearchParameters.js"));
-
-var _resolveSearchParameters = _interopRequireDefault(require("./resolveSearchParameters.js"));
-
-var _toArray = _interopRequireDefault(require("./toArray.js"));
-
-var _logger = require("./logger.js");
-
-var _escapeHighlight = require("./escape-highlight.js");
-
-var _documentation = require("./documentation.js");
-
-var _geoSearch = require("./geo-search.js");
-
-var _hitsAbsolutePosition = require("./hits-absolute-position.js");
-
-var _hitsQueryId = require("./hits-query-id.js");
-
-var _isFacetRefined = _interopRequireDefault(require("./isFacetRefined.js"));
+Object.keys(_createConcurrentSafePromise).forEach(function (key) {
+  if (key === "default" || key === "__esModule") return;
+  if (key in exports && exports[key] === _createConcurrentSafePromise[key]) return;
+  Object.defineProperty(exports, key, {
+    enumerable: true,
+    get: function get() {
+      return _createConcurrentSafePromise[key];
+    }
+  });
+});
 
 var _createSendEventForFacet = require("./createSendEventForFacet.js");
 
 Object.keys(_createSendEventForFacet).forEach(function (key) {
   if (key === "default" || key === "__esModule") return;
-  if (Object.prototype.hasOwnProperty.call(_exportNames, key)) return;
   if (key in exports && exports[key] === _createSendEventForFacet[key]) return;
   Object.defineProperty(exports, key, {
     enumerable: true,
@@ -471,7 +99,6 @@ var _createSendEventForHits = require("./createSendEventForHits.js");
 
 Object.keys(_createSendEventForHits).forEach(function (key) {
   if (key === "default" || key === "__esModule") return;
-  if (Object.prototype.hasOwnProperty.call(_exportNames, key)) return;
   if (key in exports && exports[key] === _createSendEventForHits[key]) return;
   Object.defineProperty(exports, key, {
     enumerable: true,
@@ -481,18 +108,496 @@ Object.keys(_createSendEventForHits).forEach(function (key) {
   });
 });
 
-var _getAppIdAndApiKey = require("./getAppIdAndApiKey.js");
+var _setIndexHelperState = require("./setIndexHelperState.js");
 
-var _convertNumericRefinementsToFilters = require("./convertNumericRefinementsToFilters.js");
+Object.keys(_setIndexHelperState).forEach(function (key) {
+  if (key === "default" || key === "__esModule") return;
+  if (key in exports && exports[key] === _setIndexHelperState[key]) return;
+  Object.defineProperty(exports, key, {
+    enumerable: true,
+    get: function get() {
+      return _setIndexHelperState[key];
+    }
+  });
+});
 
-var _createConcurrentSafePromise = require("./createConcurrentSafePromise.js");
+var _isIndexWidget = require("./isIndexWidget.js");
+
+Object.keys(_isIndexWidget).forEach(function (key) {
+  if (key === "default" || key === "__esModule") return;
+  if (key in exports && exports[key] === _isIndexWidget[key]) return;
+  Object.defineProperty(exports, key, {
+    enumerable: true,
+    get: function get() {
+      return _isIndexWidget[key];
+    }
+  });
+});
+
+var _cx = require("./cx.js");
+
+Object.keys(_cx).forEach(function (key) {
+  if (key === "default" || key === "__esModule") return;
+  if (key in exports && exports[key] === _cx[key]) return;
+  Object.defineProperty(exports, key, {
+    enumerable: true,
+    get: function get() {
+      return _cx[key];
+    }
+  });
+});
 
 var _debounce = require("./debounce.js");
 
-var _serializer = require("./serializer.js");
+Object.keys(_debounce).forEach(function (key) {
+  if (key === "default" || key === "__esModule") return;
+  if (key in exports && exports[key] === _debounce[key]) return;
+  Object.defineProperty(exports, key, {
+    enumerable: true,
+    get: function get() {
+      return _debounce[key];
+    }
+  });
+});
+
+var _defer = require("./defer.js");
+
+Object.keys(_defer).forEach(function (key) {
+  if (key === "default" || key === "__esModule") return;
+  if (key in exports && exports[key] === _defer[key]) return;
+  Object.defineProperty(exports, key, {
+    enumerable: true,
+    get: function get() {
+      return _defer[key];
+    }
+  });
+});
+
+var _documentation = require("./documentation.js");
+
+Object.keys(_documentation).forEach(function (key) {
+  if (key === "default" || key === "__esModule") return;
+  if (key in exports && exports[key] === _documentation[key]) return;
+  Object.defineProperty(exports, key, {
+    enumerable: true,
+    get: function get() {
+      return _documentation[key];
+    }
+  });
+});
+
+var _escapeHighlight = require("./escape-highlight.js");
+
+Object.keys(_escapeHighlight).forEach(function (key) {
+  if (key === "default" || key === "__esModule") return;
+  if (key in exports && exports[key] === _escapeHighlight[key]) return;
+  Object.defineProperty(exports, key, {
+    enumerable: true,
+    get: function get() {
+      return _escapeHighlight[key];
+    }
+  });
+});
+
+var _escapeHtml = require("./escape-html.js");
+
+Object.keys(_escapeHtml).forEach(function (key) {
+  if (key === "default" || key === "__esModule") return;
+  if (key in exports && exports[key] === _escapeHtml[key]) return;
+  Object.defineProperty(exports, key, {
+    enumerable: true,
+    get: function get() {
+      return _escapeHtml[key];
+    }
+  });
+});
+
+var _escapeFacetValue = require("./escapeFacetValue.js");
+
+Object.keys(_escapeFacetValue).forEach(function (key) {
+  if (key === "default" || key === "__esModule") return;
+  if (key in exports && exports[key] === _escapeFacetValue[key]) return;
+  Object.defineProperty(exports, key, {
+    enumerable: true,
+    get: function get() {
+      return _escapeFacetValue[key];
+    }
+  });
+});
+
+var _find = require("./find.js");
+
+Object.keys(_find).forEach(function (key) {
+  if (key === "default" || key === "__esModule") return;
+  if (key in exports && exports[key] === _find[key]) return;
+  Object.defineProperty(exports, key, {
+    enumerable: true,
+    get: function get() {
+      return _find[key];
+    }
+  });
+});
+
+var _findIndex = require("./findIndex.js");
+
+Object.keys(_findIndex).forEach(function (key) {
+  if (key === "default" || key === "__esModule") return;
+  if (key in exports && exports[key] === _findIndex[key]) return;
+  Object.defineProperty(exports, key, {
+    enumerable: true,
+    get: function get() {
+      return _findIndex[key];
+    }
+  });
+});
+
+var _geoSearch = require("./geo-search.js");
+
+Object.keys(_geoSearch).forEach(function (key) {
+  if (key === "default" || key === "__esModule") return;
+  if (key in exports && exports[key] === _geoSearch[key]) return;
+  Object.defineProperty(exports, key, {
+    enumerable: true,
+    get: function get() {
+      return _geoSearch[key];
+    }
+  });
+});
+
+var _getAppIdAndApiKey = require("./getAppIdAndApiKey.js");
+
+Object.keys(_getAppIdAndApiKey).forEach(function (key) {
+  if (key === "default" || key === "__esModule") return;
+  if (key in exports && exports[key] === _getAppIdAndApiKey[key]) return;
+  Object.defineProperty(exports, key, {
+    enumerable: true,
+    get: function get() {
+      return _getAppIdAndApiKey[key];
+    }
+  });
+});
+
+var _getContainerNode = require("./getContainerNode.js");
+
+Object.keys(_getContainerNode).forEach(function (key) {
+  if (key === "default" || key === "__esModule") return;
+  if (key in exports && exports[key] === _getContainerNode[key]) return;
+  Object.defineProperty(exports, key, {
+    enumerable: true,
+    get: function get() {
+      return _getContainerNode[key];
+    }
+  });
+});
+
+var _getHighlightedParts = require("./getHighlightedParts.js");
+
+Object.keys(_getHighlightedParts).forEach(function (key) {
+  if (key === "default" || key === "__esModule") return;
+  if (key in exports && exports[key] === _getHighlightedParts[key]) return;
+  Object.defineProperty(exports, key, {
+    enumerable: true,
+    get: function get() {
+      return _getHighlightedParts[key];
+    }
+  });
+});
+
+var _getHighlightFromSiblings = require("./getHighlightFromSiblings.js");
+
+Object.keys(_getHighlightFromSiblings).forEach(function (key) {
+  if (key === "default" || key === "__esModule") return;
+  if (key in exports && exports[key] === _getHighlightFromSiblings[key]) return;
+  Object.defineProperty(exports, key, {
+    enumerable: true,
+    get: function get() {
+      return _getHighlightFromSiblings[key];
+    }
+  });
+});
+
+var _getObjectType = require("./getObjectType.js");
+
+Object.keys(_getObjectType).forEach(function (key) {
+  if (key === "default" || key === "__esModule") return;
+  if (key in exports && exports[key] === _getObjectType[key]) return;
+  Object.defineProperty(exports, key, {
+    enumerable: true,
+    get: function get() {
+      return _getObjectType[key];
+    }
+  });
+});
+
+var _getPropertyByPath = require("./getPropertyByPath.js");
+
+Object.keys(_getPropertyByPath).forEach(function (key) {
+  if (key === "default" || key === "__esModule") return;
+  if (key in exports && exports[key] === _getPropertyByPath[key]) return;
+  Object.defineProperty(exports, key, {
+    enumerable: true,
+    get: function get() {
+      return _getPropertyByPath[key];
+    }
+  });
+});
+
+var _getRefinements = require("./getRefinements.js");
+
+Object.keys(_getRefinements).forEach(function (key) {
+  if (key === "default" || key === "__esModule") return;
+  if (key in exports && exports[key] === _getRefinements[key]) return;
+  Object.defineProperty(exports, key, {
+    enumerable: true,
+    get: function get() {
+      return _getRefinements[key];
+    }
+  });
+});
 
 var _getWidgetAttribute = require("./getWidgetAttribute.js");
 
+Object.keys(_getWidgetAttribute).forEach(function (key) {
+  if (key === "default" || key === "__esModule") return;
+  if (key in exports && exports[key] === _getWidgetAttribute[key]) return;
+  Object.defineProperty(exports, key, {
+    enumerable: true,
+    get: function get() {
+      return _getWidgetAttribute[key];
+    }
+  });
+});
+
+var _hitsAbsolutePosition = require("./hits-absolute-position.js");
+
+Object.keys(_hitsAbsolutePosition).forEach(function (key) {
+  if (key === "default" || key === "__esModule") return;
+  if (key in exports && exports[key] === _hitsAbsolutePosition[key]) return;
+  Object.defineProperty(exports, key, {
+    enumerable: true,
+    get: function get() {
+      return _hitsAbsolutePosition[key];
+    }
+  });
+});
+
+var _hitsQueryId = require("./hits-query-id.js");
+
+Object.keys(_hitsQueryId).forEach(function (key) {
+  if (key === "default" || key === "__esModule") return;
+  if (key in exports && exports[key] === _hitsQueryId[key]) return;
+  Object.defineProperty(exports, key, {
+    enumerable: true,
+    get: function get() {
+      return _hitsQueryId[key];
+    }
+  });
+});
+
+var _isDomElement = require("./isDomElement.js");
+
+Object.keys(_isDomElement).forEach(function (key) {
+  if (key === "default" || key === "__esModule") return;
+  if (key in exports && exports[key] === _isDomElement[key]) return;
+  Object.defineProperty(exports, key, {
+    enumerable: true,
+    get: function get() {
+      return _isDomElement[key];
+    }
+  });
+});
+
+var _isEqual = require("./isEqual.js");
+
+Object.keys(_isEqual).forEach(function (key) {
+  if (key === "default" || key === "__esModule") return;
+  if (key in exports && exports[key] === _isEqual[key]) return;
+  Object.defineProperty(exports, key, {
+    enumerable: true,
+    get: function get() {
+      return _isEqual[key];
+    }
+  });
+});
+
+var _isFacetRefined = require("./isFacetRefined.js");
+
+Object.keys(_isFacetRefined).forEach(function (key) {
+  if (key === "default" || key === "__esModule") return;
+  if (key in exports && exports[key] === _isFacetRefined[key]) return;
+  Object.defineProperty(exports, key, {
+    enumerable: true,
+    get: function get() {
+      return _isFacetRefined[key];
+    }
+  });
+});
+
+var _isFiniteNumber = require("./isFiniteNumber.js");
+
+Object.keys(_isFiniteNumber).forEach(function (key) {
+  if (key === "default" || key === "__esModule") return;
+  if (key in exports && exports[key] === _isFiniteNumber[key]) return;
+  Object.defineProperty(exports, key, {
+    enumerable: true,
+    get: function get() {
+      return _isFiniteNumber[key];
+    }
+  });
+});
+
+var _isPlainObject = require("./isPlainObject.js");
+
+Object.keys(_isPlainObject).forEach(function (key) {
+  if (key === "default" || key === "__esModule") return;
+  if (key in exports && exports[key] === _isPlainObject[key]) return;
+  Object.defineProperty(exports, key, {
+    enumerable: true,
+    get: function get() {
+      return _isPlainObject[key];
+    }
+  });
+});
+
+var _isSpecialClick = require("./isSpecialClick.js");
+
+Object.keys(_isSpecialClick).forEach(function (key) {
+  if (key === "default" || key === "__esModule") return;
+  if (key in exports && exports[key] === _isSpecialClick[key]) return;
+  Object.defineProperty(exports, key, {
+    enumerable: true,
+    get: function get() {
+      return _isSpecialClick[key];
+    }
+  });
+});
+
+var _logger = require("./logger.js");
+
+Object.keys(_logger).forEach(function (key) {
+  if (key === "default" || key === "__esModule") return;
+  if (key in exports && exports[key] === _logger[key]) return;
+  Object.defineProperty(exports, key, {
+    enumerable: true,
+    get: function get() {
+      return _logger[key];
+    }
+  });
+});
+
+var _mergeSearchParameters = require("./mergeSearchParameters.js");
+
+Object.keys(_mergeSearchParameters).forEach(function (key) {
+  if (key === "default" || key === "__esModule") return;
+  if (key in exports && exports[key] === _mergeSearchParameters[key]) return;
+  Object.defineProperty(exports, key, {
+    enumerable: true,
+    get: function get() {
+      return _mergeSearchParameters[key];
+    }
+  });
+});
+
+var _noop = require("./noop.js");
+
+Object.keys(_noop).forEach(function (key) {
+  if (key === "default" || key === "__esModule") return;
+  if (key in exports && exports[key] === _noop[key]) return;
+  Object.defineProperty(exports, key, {
+    enumerable: true,
+    get: function get() {
+      return _noop[key];
+    }
+  });
+});
+
+var _range = require("./range.js");
+
+Object.keys(_range).forEach(function (key) {
+  if (key === "default" || key === "__esModule") return;
+  if (key in exports && exports[key] === _range[key]) return;
+  Object.defineProperty(exports, key, {
+    enumerable: true,
+    get: function get() {
+      return _range[key];
+    }
+  });
+});
+
+var _resolveSearchParameters = require("./resolveSearchParameters.js");
+
+Object.keys(_resolveSearchParameters).forEach(function (key) {
+  if (key === "default" || key === "__esModule") return;
+  if (key in exports && exports[key] === _resolveSearchParameters[key]) return;
+  Object.defineProperty(exports, key, {
+    enumerable: true,
+    get: function get() {
+      return _resolveSearchParameters[key];
+    }
+  });
+});
+
+var _reverseHighlightedParts = require("./reverseHighlightedParts.js");
+
+Object.keys(_reverseHighlightedParts).forEach(function (key) {
+  if (key === "default" || key === "__esModule") return;
+  if (key in exports && exports[key] === _reverseHighlightedParts[key]) return;
+  Object.defineProperty(exports, key, {
+    enumerable: true,
+    get: function get() {
+      return _reverseHighlightedParts[key];
+    }
+  });
+});
+
 var _safelyRunOnBrowser = require("./safelyRunOnBrowser.js");
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+Object.keys(_safelyRunOnBrowser).forEach(function (key) {
+  if (key === "default" || key === "__esModule") return;
+  if (key in exports && exports[key] === _safelyRunOnBrowser[key]) return;
+  Object.defineProperty(exports, key, {
+    enumerable: true,
+    get: function get() {
+      return _safelyRunOnBrowser[key];
+    }
+  });
+});
+
+var _serializer = require("./serializer.js");
+
+Object.keys(_serializer).forEach(function (key) {
+  if (key === "default" || key === "__esModule") return;
+  if (key in exports && exports[key] === _serializer[key]) return;
+  Object.defineProperty(exports, key, {
+    enumerable: true,
+    get: function get() {
+      return _serializer[key];
+    }
+  });
+});
+
+var _toArray = require("./toArray.js");
+
+Object.keys(_toArray).forEach(function (key) {
+  if (key === "default" || key === "__esModule") return;
+  if (key in exports && exports[key] === _toArray[key]) return;
+  Object.defineProperty(exports, key, {
+    enumerable: true,
+    get: function get() {
+      return _toArray[key];
+    }
+  });
+});
+
+var _uniq = require("./uniq.js");
+
+Object.keys(_uniq).forEach(function (key) {
+  if (key === "default" || key === "__esModule") return;
+  if (key in exports && exports[key] === _uniq[key]) return;
+  Object.defineProperty(exports, key, {
+    enumerable: true,
+    get: function get() {
+      return _uniq[key];
+    }
+  });
+});

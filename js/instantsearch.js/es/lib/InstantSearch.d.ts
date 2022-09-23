@@ -4,6 +4,7 @@ import type { IndexWidget } from '../widgets/index/index';
 import type { InsightsClient as AlgoliaInsightsClient, SearchClient, Widget, UiState, CreateURL, Middleware, MiddlewareDefinition, RenderState, InitialResults } from '../types';
 import type { RouterProps } from '../middlewares/createRouterMiddleware';
 import type { InsightsEvent } from '../middlewares/createInsightsMiddleware';
+declare type NoInfer<T> = [T][T extends any ? 0 : never];
 /**
  * Global options for an InstantSearch instance.
  */
@@ -58,8 +59,8 @@ export declare type InstantSearchOptions<TUiState extends UiState = UiState, TRo
      * become in charge of updating the UI state with the `setUiState` function.
      */
     onStateChange?: (params: {
-        uiState: UiState;
-        setUiState(uiState: UiState | ((previousUiState: UiState) => UiState)): void;
+        uiState: TUiState;
+        setUiState(uiState: TUiState | ((previousUiState: TUiState) => TUiState)): void;
     }) => void;
     /**
      * Injects a `uiState` to the `instantsearch` instance. You can use this option
@@ -67,7 +68,7 @@ export declare type InstantSearchOptions<TUiState extends UiState = UiState, TRo
      * for the first search. To unconditionally pass additional parameters to the
      * Algolia API, take a look at the `configure` widget.
      */
-    initialUiState?: TUiState;
+    initialUiState?: NoInfer<TUiState>;
     /**
      * Time before a search is considered stalled. The default is 200ms
      */
@@ -94,7 +95,7 @@ declare class InstantSearch<TUiState extends UiState = UiState, TRouteState = TU
     client: InstantSearchOptions['searchClient'];
     indexName: string;
     insightsClient: AlgoliaInsightsClient | null;
-    onStateChange: InstantSearchOptions['onStateChange'] | null;
+    onStateChange: InstantSearchOptions<TUiState>['onStateChange'] | null;
     helper: AlgoliaSearchHelper | null;
     mainHelper: AlgoliaSearchHelper | null;
     mainIndex: IndexWidget;
@@ -104,9 +105,9 @@ declare class InstantSearch<TUiState extends UiState = UiState, TRouteState = TU
     _stalledSearchDelay: number;
     _searchStalledTimer: any;
     _isSearchStalled: boolean;
-    _initialUiState: UiState;
+    _initialUiState: TUiState;
     _initialResults: InitialResults | null;
-    _createURL: CreateURL<UiState>;
+    _createURL: CreateURL<TUiState>;
     _searchFunction?: InstantSearchOptions['searchFunction'];
     _mainHelperSearch?: AlgoliaSearchHelper['search'];
     middleware: Array<{
@@ -176,13 +177,18 @@ declare class InstantSearch<TUiState extends UiState = UiState, TRouteState = TU
         cancel(): void;
     };
     scheduleStalledRender(): void;
-    setUiState(uiState: UiState | ((previousUiState: UiState) => UiState)): void;
-    getUiState(): UiState;
+    /**
+     * Set the UI state and trigger a search.
+     * @param uiState The next UI state or a function computing it from the current state
+     * @param callOnStateChange private parameter used to know if the method is called from a state change
+     */
+    setUiState(uiState: TUiState | ((previousUiState: TUiState) => TUiState), callOnStateChange?: boolean): void;
+    getUiState(): TUiState;
     onInternalStateChange: ((...args: any[]) => void) & {
         wait(): Promise<void>;
         cancel(): void;
     };
-    createURL(nextState?: UiState): string;
+    createURL(nextState?: TUiState): string;
     refresh(): void;
 }
 export default InstantSearch;

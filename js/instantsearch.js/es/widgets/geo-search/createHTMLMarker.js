@@ -23,6 +23,8 @@ function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.g
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 /* global google EventListener */
+import { render } from 'preact';
+
 var createHTMLMarker = function createHTMLMarker(googleReference) {
   var HTMLMarker = /*#__PURE__*/function (_googleReference$maps) {
     _inherits(HTMLMarker, _googleReference$maps);
@@ -66,7 +68,12 @@ var createHTMLMarker = function createHTMLMarker(googleReference) {
       _this.element = document.createElement('div');
       _this.element.className = className;
       _this.element.style.position = 'absolute';
-      _this.element.innerHTML = template;
+
+      if (_typeof(template) === 'object') {
+        render(template, _this.element);
+      } else {
+        _this.element.innerHTML = template;
+      }
 
       _this.setMap(map);
 

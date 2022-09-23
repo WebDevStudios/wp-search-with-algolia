@@ -7,7 +7,6 @@ exports.default = void 0;
 
 var _preact = require("preact");
 
-/** @jsx h */
 var _ref2 = (0, _preact.h)("path", {
   fill: "#5468FF",
   d: "M78.99.94h16.6a2.97 2.97 0 012.96 2.96v16.6a2.97 2.97 0 01-2.97 2.96h-16.6a2.97 2.97 0 01-2.96-2.96V3.9A2.96 2.96 0 0179 .94"

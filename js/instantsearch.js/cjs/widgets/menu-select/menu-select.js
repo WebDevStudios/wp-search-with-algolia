@@ -17,6 +17,8 @@ var _defaultTemplates = _interopRequireDefault(require("./defaultTemplates.js"))
 
 var _index = require("../../lib/utils/index.js");
 
+var _index2 = require("../../lib/templating/index.js");
+
 var _suit = require("../../lib/suit.js");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
@@ -43,7 +45,7 @@ var renderer = function renderer(_ref) {
         instantSearchInstance = _ref2.instantSearchInstance;
 
     if (isFirstRendering) {
-      renderState.templateProps = (0, _index.prepareTemplateProps)({
+      renderState.templateProps = (0, _index2.prepareTemplateProps)({
         defaultTemplates: _defaultTemplates.default,
         templatesConfig: instantSearchInstance.templatesConfig,
         templates: templates

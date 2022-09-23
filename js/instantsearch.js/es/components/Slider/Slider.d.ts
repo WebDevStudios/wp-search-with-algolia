@@ -1,4 +1,4 @@
-/** @jsx h */
+
 import { h, Component } from 'preact';
 import type { RangeBoundaries } from '../../connectors/range/connectRange';
 import type { RangeSliderCssClasses, RangeSliderWidgetParams } from '../../widgets/range-slider/range-slider';

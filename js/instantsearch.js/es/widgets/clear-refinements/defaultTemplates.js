@@ -1,4 +1,6 @@
 var defaultTemplates = {
-  resetLabel: 'Clear refinements'
+  resetLabel: function resetLabel() {
+    return 'Clear refinements';
+  }
 };
 export default defaultTemplates;

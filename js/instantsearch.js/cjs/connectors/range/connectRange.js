@@ -156,50 +156,12 @@ var connectRange = function connectRange(renderFn) {
       return null;
     };
 
-    var sendEventWithRefinedState = function sendEventWithRefinedState(refinedState, instantSearchInstance, helper) {
-      var eventName = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 'Filter Applied';
-      var filters = (0, _index.convertNumericRefinementsToFilters)(refinedState, attribute);
-
-      if (filters && filters.length > 0) {
-        instantSearchInstance.sendEventToInsights({
-          insightsMethod: 'clickedFilters',
-          widgetType: $$type,
-          eventType: 'click',
-          payload: {
-            eventName: eventName,
-            index: helper.getIndex(),
-            filters: filters
-          },
-          attribute: attribute
-        });
-      }
-    };
-
-    var createSendEvent = function createSendEvent(instantSearchInstance, helper, currentRange) {
+    var createSendEvent = function createSendEvent(instantSearchInstance) {
       return function () {
-        for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
-          args[_key] = arguments[_key];
-        }
-
-        if (args.length === 1) {
-          instantSearchInstance.sendEventToInsights(args[0]);
+        if (arguments.length === 1) {
+          instantSearchInstance.sendEventToInsights(arguments.length <= 0 ? undefined : arguments[0]);
           return;
         }
-
-        var eventType = args[0],
-            facetValue = args[1],
-            eventName = args[2];
-
-        if (eventType !== 'click') {
-          return;
-        }
-
-        var _facetValue = _slicedToArray(facetValue, 2),
-            nextMin = _facetValue[0],
-            nextMax = _facetValue[1];
-
-        var refinedState = getRefinedState(helper, currentRange, nextMin, nextMax);
-        sendEventWithRefinedState(refinedState, instantSearchInstance, helper, eventName);
       };
     };
 
@@ -245,7 +207,7 @@ var connectRange = function connectRange(renderFn) {
       return [min, max];
     }
 
-    function _refine(instantSearchInstance, helper, currentRange) {
+    function _refine(helper, currentRange) {
       return function () {
         var _ref11 = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [undefined, undefined],
             _ref12 = _slicedToArray(_ref11, 2),
@@ -255,7 +217,6 @@ var connectRange = function connectRange(renderFn) {
         var refinedState = getRefinedState(helper, currentRange, nextMin, nextMax);
 
         if (refinedState) {
-          sendEventWithRefinedState(refinedState, instantSearchInstance, helper);
           helper.setState(refinedState).search();
         }
       };
@@ -301,12 +262,12 @@ var connectRange = function connectRange(renderFn) {
           // On first render pass an empty range
           // to be able to bypass the validation
           // related to it
-          refine = _refine(instantSearchInstance, helper, {
+          refine = _refine(helper, {
             min: undefined,
             max: undefined
           });
         } else {
-          refine = _refine(instantSearchInstance, helper, currentRange);
+          refine = _refine(helper, currentRange);
         }
 
         return {
@@ -314,7 +275,7 @@ var connectRange = function connectRange(renderFn) {
           canRefine: currentRange.min !== currentRange.max,
           format: rangeFormatter,
           range: currentRange,
-          sendEvent: createSendEvent(instantSearchInstance, helper, currentRange),
+          sendEvent: createSendEvent(instantSearchInstance),
           widgetParams: _objectSpread(_objectSpread({}, widgetParams), {}, {
             precision: precision
           }),

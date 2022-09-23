@@ -17,6 +17,8 @@ var _defaultTemplates = _interopRequireDefault(require("./defaultTemplates.js"))
 
 var _index = require("../../lib/utils/index.js");
 
+var _index2 = require("../../lib/templating/index.js");
+
 var _suit = require("../../lib/suit.js");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
@@ -39,11 +41,11 @@ var renderer = function renderer(_ref) {
       templates = _ref.templates;
   return function (_ref2, isFirstRendering) {
     var refine = _ref2.refine,
-        hasRefinements = _ref2.hasRefinements,
+        canRefine = _ref2.canRefine,
         instantSearchInstance = _ref2.instantSearchInstance;
 
     if (isFirstRendering) {
-      renderState.templateProps = (0, _index.prepareTemplateProps)({
+      renderState.templateProps = (0, _index2.prepareTemplateProps)({
         defaultTemplates: _defaultTemplates.default,
         templatesConfig: instantSearchInstance.templatesConfig,
         templates: templates
@@ -54,7 +56,7 @@ var renderer = function renderer(_ref) {
     (0, _preact.render)((0, _preact.h)(_ClearRefinements.default, {
       refine: refine,
       cssClasses: cssClasses,
-      hasRefinements: hasRefinements,
+      hasRefinements: canRefine,
       templateProps: renderState.templateProps
     }), containerNode);
   };

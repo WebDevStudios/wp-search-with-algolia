@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.default = void 0;
+exports.isEqual = isEqual;
 
 function isPrimitive(obj) {
   return obj !== Object(obj);
@@ -36,6 +36,3 @@ function isEqual(first, second) {
 
   return true;
 }
-
-var _default = isEqual;
-exports.default = _default;

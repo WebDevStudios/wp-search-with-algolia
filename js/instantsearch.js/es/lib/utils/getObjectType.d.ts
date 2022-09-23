@@ -1,2 +1,1 @@
-declare function getObjectType(object: unknown): string;
-export default getObjectType;
+export declare function getObjectType(object: unknown): string;

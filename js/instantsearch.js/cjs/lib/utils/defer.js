@@ -3,10 +3,10 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.default = void 0;
+exports.defer = defer;
 var nextMicroTask = Promise.resolve();
 
-var defer = function defer(callback) {
+function defer(callback) {
   var progress = null;
   var cancelled = false;
 
@@ -48,7 +48,4 @@ var defer = function defer(callback) {
   };
 
   return fn;
-};
-
-var _default = defer;
-exports.default = _default;
+}

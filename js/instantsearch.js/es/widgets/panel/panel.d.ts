@@ -1,4 +1,4 @@
-/** @jsx h */
+
 import type { Template, RenderOptions, WidgetFactory, InitOptions, Widget } from '../../types';
 export declare type PanelCSSClasses = Partial<{
     /**

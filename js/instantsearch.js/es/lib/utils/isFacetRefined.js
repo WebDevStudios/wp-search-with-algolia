@@ -1,4 +1,4 @@
-export default function isFacetRefined(helper, facet, value) {
+export function isFacetRefined(helper, facet, value) {
   if (helper.state.isHierarchicalFacet(facet)) {
     return helper.state.isHierarchicalFacetRefined(facet, value);
   } else if (helper.state.isConjunctiveFacet(facet)) {

@@ -1,4 +1,4 @@
-var resolveSearchParameters = function resolveSearchParameters(current) {
+export function resolveSearchParameters(current) {
   var parent = current.getParent();
   var states = [current.getHelper().state];
 
@@ -8,6 +8,4 @@ var resolveSearchParameters = function resolveSearchParameters(current) {
   }
 
   return states;
-};
-
-export default resolveSearchParameters;
+}

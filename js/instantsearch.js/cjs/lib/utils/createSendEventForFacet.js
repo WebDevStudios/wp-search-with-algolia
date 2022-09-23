@@ -5,9 +5,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.createSendEventForFacet = createSendEventForFacet;
 
-var _isFacetRefined = _interopRequireDefault(require("./isFacetRefined.js"));
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+var _isFacetRefined = require("./isFacetRefined.js");
 
 function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
@@ -30,7 +28,7 @@ function createSendEventForFacet(_ref) {
     if (args.length === 1 && _typeof(args[0]) === 'object') {
       instantSearchInstance.sendEventToInsights(args[0]);
     } else if (eventType === 'click' && (args.length === 2 || args.length === 3)) {
-      if (!(0, _isFacetRefined.default)(helper, attribute, facetValue)) {
+      if (!(0, _isFacetRefined.isFacetRefined)(helper, attribute, facetValue)) {
         // send event only when the facet is being checked "ON"
         instantSearchInstance.sendEventToInsights({
           insightsMethod: 'clickedFilters',

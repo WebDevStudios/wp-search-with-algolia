@@ -11,6 +11,8 @@ var _preact = require("preact");
 
 var _index = require("../../lib/utils/index.js");
 
+var _index2 = require("../../lib/templating/index.js");
+
 var _suit = require("../../lib/suit.js");
 
 var _connectGeoSearch = _interopRequireDefault(require("../../connectors/geo-search/connectGeoSearch.js"));
@@ -164,7 +166,7 @@ var geoSearch = function geoSearch(widgetParams) {
       className: (0, _classnames.default)(suit({
         descendantName: 'marker'
       })),
-      template: (0, _index.renderTemplate)({
+      template: (0, _index2.renderTemplate)({
         templateKey: 'HTMLMarker',
         templates: templates,
         data: item

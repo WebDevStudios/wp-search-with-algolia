@@ -1,2 +1,1 @@
-declare function isSpecialClick(event: MouseEvent): boolean;
-export default isSpecialClick;
+export declare function isSpecialClick(event: MouseEvent): boolean;

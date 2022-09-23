@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.default = hasDetectedInsightsClient;
+exports.hasDetectedInsightsClient = hasDetectedInsightsClient;
 
 var _safelyRunOnBrowser = require("./safelyRunOnBrowser.js");
 

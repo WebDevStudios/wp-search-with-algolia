@@ -4,11 +4,11 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
-/** @jsx h */
 import { h, render } from 'preact';
 import cx from 'classnames';
 import defaultTemplates from "./defaultTemplates.js";
-import { createDocumentationMessageGenerator, getContainerNode, prepareTemplateProps } from "../../lib/utils/index.js";
+import { createDocumentationMessageGenerator, getContainerNode } from "../../lib/utils/index.js";
+import { prepareTemplateProps } from "../../lib/templating/index.js";
 import { component } from "../../lib/suit.js";
 import Answers from "../../components/Answers/Answers.js";
 import connectAnswers from "../../connectors/answers/connectAnswers.js";

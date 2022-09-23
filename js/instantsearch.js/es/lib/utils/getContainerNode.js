@@ -1,4 +1,4 @@
-import isDomElement from "./isDomElement.js";
+import { isDomElement } from "./isDomElement.js";
 /**
  * Return the container. If it's a string, it is considered a
  * css selector and retrieves the first matching element. Otherwise
@@ -9,7 +9,7 @@ import isDomElement from "./isDomElement.js";
  * @throws Error when the type is not correct
  */
 
-function getContainerNode(selectorOrHTMLElement) {
+export function getContainerNode(selectorOrHTMLElement) {
   var isSelectorString = typeof selectorOrHTMLElement === 'string';
   var domElement = isSelectorString ? document.querySelector(selectorOrHTMLElement) : selectorOrHTMLElement;
 
@@ -25,5 +25,3 @@ function getContainerNode(selectorOrHTMLElement) {
 
   return domElement;
 }
-
-export default getContainerNode;

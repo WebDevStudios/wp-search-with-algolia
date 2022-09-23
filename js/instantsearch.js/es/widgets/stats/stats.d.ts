@@ -1,7 +1,15 @@
-/** @jsx h */
+
 import type { StatsComponentTemplates } from '../../components/Stats/Stats';
 import type { StatsConnectorParams, StatsRenderState, StatsWidgetDescription } from '../../connectors/stats/connectStats';
 import type { Template, WidgetFactory } from '../../types';
+declare type TextTemplateProps = {
+    hasManyResults: boolean;
+    hasNoResults: boolean;
+    hasOneResult: boolean;
+    hasNoSortedResults: boolean;
+    hasOneSortedResults: boolean;
+    hasManySortedResults: boolean;
+};
 export declare type StatsCSSClasses = Partial<{
     /**
      * CSS class to add to the root element.
@@ -14,13 +22,9 @@ export declare type StatsCSSClasses = Partial<{
 }>;
 export declare type StatsTemplates = Partial<{
     /**
-     * Text template, provided with `hasManyResults`, `hasNoResults`, `hasOneResult`, `hitsPerPage`, `nbHits`, `nbSortedHits`, `nbPages`, `areHitsSorted`, `page`, `processingTimeMS`, `query`.
+     * Text template, provided with `hasManyResults`, `hasNoResults`, `hasOneResult`, `hasNoSortedResults`, `hasOneSortedResults`, `hasManySortedResults`, `hitsPerPage`, `nbHits`, `nbSortedHits`, `nbPages`, `areHitsSorted`, `page`, `processingTimeMS`, `query`.
      */
-    text: Template<{
-        hasManyResults: boolean;
-        hasNoResults: boolean;
-        hasOneResult: boolean;
-    } & StatsRenderState>;
+    text: Template<TextTemplateProps & StatsRenderState>;
 }>;
 export declare type StatsWidgetParams = {
     /**

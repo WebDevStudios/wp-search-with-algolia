@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.default = void 0;
+exports.find = find;
 
 // We aren't using the native `Array.prototype.find` because the refactor away from Lodash is not
 // published as a major version.
@@ -24,6 +24,3 @@ function find(items, predicate) {
 
   return undefined;
 }
-
-var _default = find;
-exports.default = _default;

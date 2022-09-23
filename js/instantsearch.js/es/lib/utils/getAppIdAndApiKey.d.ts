@@ -1,1 +1,1 @@
-export declare function getAppIdAndApiKey(searchClient: any): any[];
+export declare function getAppIdAndApiKey(searchClient: any): [string, string];

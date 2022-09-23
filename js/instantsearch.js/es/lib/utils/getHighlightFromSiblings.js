@@ -1,6 +1,6 @@
-import unescape from "./unescape.js";
+import { unescape } from "./escape-html.js";
 var hasAlphanumeric = new RegExp(/\w/i);
-export default function getHighlightFromSiblings(parts, i) {
+export function getHighlightFromSiblings(parts, i) {
   var _parts, _parts2;
 
   var current = parts[i];

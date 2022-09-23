@@ -1,4 +1,4 @@
-/** @jsx h */
+
 import type { ClearRefinementsConnectorParams, ClearRefinementsWidgetDescription } from '../../connectors/clear-refinements/connectClearRefinements';
 import type { WidgetFactory, Template } from '../../types';
 export declare type ClearRefinementsCSSClasses = Partial<{
@@ -19,7 +19,9 @@ export declare type ClearRefinementsTemplates = Partial<{
     /**
      * Template for the content of the button
      */
-    resetLabel: Template;
+    resetLabel: Template<{
+        hasRefinements: boolean;
+    }>;
 }>;
 export declare type ClearRefinementsWidgetParams = {
     /**

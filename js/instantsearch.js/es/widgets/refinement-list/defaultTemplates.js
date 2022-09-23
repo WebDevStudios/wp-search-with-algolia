@@ -1,6 +1,36 @@
+import { h } from 'preact';
+import { formatNumber } from "../../lib/formatNumber.js";
+import { cx } from "../../lib/utils/index.js";
 var defaultTemplates = {
-  item: "<label class=\"{{cssClasses.label}}\">\n  <input type=\"checkbox\"\n         class=\"{{cssClasses.checkbox}}\"\n         value=\"{{value}}\"\n         {{#isRefined}}checked{{/isRefined}} />\n  <span class=\"{{cssClasses.labelText}}\">{{#isFromSearch}}{{{highlighted}}}{{/isFromSearch}}{{^isFromSearch}}{{highlighted}}{{/isFromSearch}}</span>\n  <span class=\"{{cssClasses.count}}\">{{#helpers.formatNumber}}{{count}}{{/helpers.formatNumber}}</span>\n</label>",
-  showMoreText: "\n    {{#isShowingMore}}\n      Show less\n    {{/isShowingMore}}\n    {{^isShowingMore}}\n      Show more\n    {{/isShowingMore}}\n    ",
-  searchableNoResults: 'No results'
+  item: function item(_ref) {
+    var cssClasses = _ref.cssClasses,
+        count = _ref.count,
+        value = _ref.value,
+        highlighted = _ref.highlighted,
+        isRefined = _ref.isRefined,
+        isFromSearch = _ref.isFromSearch;
+    return h("label", {
+      className: cx(cssClasses.label)
+    }, h("input", {
+      type: "checkbox",
+      className: cx(cssClasses.checkbox),
+      value: value,
+      defaultChecked: isRefined
+    }), h("span", {
+      className: cx(cssClasses.labelText),
+      dangerouslySetInnerHTML: isFromSearch ? {
+        __html: highlighted
+      } : undefined
+    }, !isFromSearch && highlighted), h("span", {
+      className: cx(cssClasses.count)
+    }, formatNumber(count)));
+  },
+  showMoreText: function showMoreText(_ref2) {
+    var isShowingMore = _ref2.isShowingMore;
+    return isShowingMore ? 'Show less' : 'Show more';
+  },
+  searchableNoResults: function searchableNoResults() {
+    return 'No results';
+  }
 };
 export default defaultTemplates;
