@@ -70,10 +70,9 @@ get_header();
 
 
 	<script type="text/javascript">
-		jQuery(function() {
-			if(jQuery('#algolia-search-box').length > 0) {
-
-				if (algolia.indices.searchable_posts === undefined && jQuery('.admin-bar').length > 0) {
+		window.onload = function() {
+			if ( document.getElementById("algolia-search-box") ) {
+				if ( algolia.indices.searchable_posts === undefined && document.getElementsByClassName("admin-bar").length > 0) {
 					alert('It looks like you haven\'t indexed the searchable posts index. Please head to the Indexing page of the Algolia Search plugin and index it.');
 				}
 
@@ -196,9 +195,10 @@ get_header();
 				/* Start */
 				search.start();
 
-				jQuery( '#algolia-search-box input' ).attr( 'type', 'search' ).trigger( 'select' );
+				// This needs work
+				document.querySelector("#algolia-search-box input[type='search']").dispatchEvent(new Event('select'));
 			}
-		});
+		};
 	</script>
 
 <?php
