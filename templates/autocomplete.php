@@ -94,7 +94,7 @@
 </script>
 
 <script type="text/javascript">
-	jQuery( function () {
+	window.onload = function () {
 		/* Initialize Algolia client */
 		var client = algoliasearch( algolia.application_id, algolia.search_api_key );
 
@@ -121,7 +121,7 @@
 
 		/* Setup autocomplete.js sources */
 		var sources = [];
-		jQuery.each( algolia.autocomplete.sources, function ( i, config ) {
+		algolia.autocomplete.sources.forEach(function( i, config ) {
 			var suggestion_template = wp.template( config[ 'tmpl_suggestion' ] );
 			sources.push( {
 				source: algoliaHitsSource( client.initIndex( config[ 'index_name' ] ), {
@@ -171,8 +171,8 @@
 		} );
 
 		/* Setup dropdown menus */
-		jQuery( algolia.autocomplete.input_selector ).each( function ( i ) {
-			var $searchInput = jQuery( this );
+		document.querySelectorAll( algolia.autocomplete.input_selector ).forEach( function ( i, el, that ) {
+			var searchInput = that;
 
 			var config = {
 				debug: algolia.debug,
@@ -189,7 +189,7 @@
 			}
 
 			/* Instantiate autocomplete.js */
-			var autocomplete = algoliaAutocomplete( $searchInput[ 0 ], config, sources )
+			var autocomplete = algoliaAutocomplete( searchInput[ 0 ], config, sources )
 				.on( 'autocomplete:selected', function ( e, suggestion ) {
 					/* Redirect the user when we detect a suggestion selection. */
 					window.location.href = suggestion.permalink;
@@ -208,5 +208,5 @@
 			e.preventDefault();
 			window.location = "https://www.algolia.com/?utm_source=WordPress&utm_medium=extension&utm_content=" + window.location.hostname + "&utm_campaign=poweredby";
 		} );
-	} );
+	};
 </script>
