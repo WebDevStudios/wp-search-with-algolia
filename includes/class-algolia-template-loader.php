@@ -83,7 +83,7 @@ class Algolia_Template_Loader {
 			'query'              => get_search_query(),
 			'autocomplete'       => array(
 				'sources'        => $autocomplete_config->get_config(),
-				'input_selector' => (string) apply_filters( 'algolia_autocomplete_input_selector', "input[name='s']:not('.no-autocomplete')" ),
+				'input_selector' => (string) apply_filters( 'algolia_autocomplete_input_selector', "input[name='s']:not(.no-autocomplete):not(#adminbar-search)" ),
 			),
 			'indices'            => array(),
 		);
