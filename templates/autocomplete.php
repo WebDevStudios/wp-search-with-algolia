@@ -196,15 +196,14 @@
 				} );
 
 			/* Force the dropdown to be re-drawn on scroll to handle fixed containers. */
-			jQuery( window ).on( 'scroll', function() {
-				if ( autocomplete.autocomplete.getWrapper().style.display === "block" ) {
+			window.addEventListener('scroll', function() {
+				if (autocomplete.autocomplete.getWrapper().style.display === "block") {
 					autocomplete.autocomplete.close();
 					autocomplete.autocomplete.open();
 				}
 			} );
 		} );
-
-		jQuery( document ).on( "click", ".algolia-powered-by-link", function ( e ) {
+		document.querySelector('.algolia-powered-by-link').addEventListener('click', function( e ) {
 			e.preventDefault();
 			window.location = "https://www.algolia.com/?utm_source=WordPress&utm_medium=extension&utm_content=" + window.location.hostname + "&utm_campaign=poweredby";
 		} );
