@@ -121,7 +121,7 @@
 
 		/* Setup autocomplete.js sources */
 		var sources = [];
-		algolia.autocomplete.sources.forEach(function( i, config ) {
+		algolia.autocomplete.sources.forEach(function( config, i ) {
 			var suggestion_template = wp.template( config[ 'tmpl_suggestion' ] );
 			sources.push( {
 				source: algoliaHitsSource( client.initIndex( config[ 'index_name' ] ), {
@@ -171,7 +171,7 @@
 		} );
 
 		/* Setup dropdown menus */
-		document.querySelectorAll( algolia.autocomplete.input_selector ).forEach( function ( i, el, that ) {
+		document.querySelectorAll( algolia.autocomplete.input_selector ).forEach( function ( el, i, that ) {
 			var searchInput = that;
 
 			var config = {
