@@ -196,7 +196,7 @@ get_header();
 				search.start();
 
 				// This needs work
-				document.querySelector("#algolia-search-box input[type='search']").dispatchEvent(new Event('select'));
+				document.querySelector("#algolia-search-box input[type='search']").select()
 			}
 		};
 	</script>
