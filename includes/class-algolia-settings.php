@@ -259,7 +259,16 @@ class Algolia_Settings {
 	 * @return string Can be 'yes' or 'no'.
 	 */
 	public function get_autocomplete_enabled() {
-		return get_option( 'algolia_autocomplete_enabled', 'no' );
+		$enabled = get_option( 'algolia_autocomplete_enabled', 'no' );
+
+		/**
+		 * Filters the autocomplete enabled option for algolia search.
+		 *
+		 * @since 2.3.0
+		 *
+		 * @param string $enabled Can be 'yes' or 'no'.
+		 */
+		return apply_filters( 'algolia_should_override_autocomplete', $enabled );
 	}
 
 	/**
