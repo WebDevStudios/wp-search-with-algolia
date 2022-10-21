@@ -70,7 +70,7 @@ get_header();
 
 
 	<script type="text/javascript">
-		window.onload = function() {
+		window.addEventListener('load', function() {
 			if ( document.getElementById("algolia-search-box") ) {
 				if ( algolia.indices.searchable_posts === undefined && document.getElementsByClassName("admin-bar").length > 0) {
 					alert('It looks like you haven\'t indexed the searchable posts index. Please head to the Indexing page of the Algolia Search plugin and index it.');
@@ -198,7 +198,7 @@ get_header();
 				// This needs work
 				document.querySelector("#algolia-search-box input[type='search']").select()
 			}
-		};
+		});
 	</script>
 
 <?php
