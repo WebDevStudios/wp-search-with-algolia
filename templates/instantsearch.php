@@ -77,7 +77,7 @@ get_header();
 				}
 
 				/* Instantiate instantsearch.js */
-				let search = instantsearch({
+				var search = instantsearch({
 					indexName: algolia.indices.searchable_posts.name,
 					searchClient: algoliasearch( algolia.application_id, algolia.search_api_key ),
 					routing: {
@@ -133,7 +133,7 @@ get_header();
 										item.value = _.escape(item.value);
 										item.value = item.value.replace(/__ais-highlight__/g, '<em>').replace(/__\/ais-highlight__/g, '</em>');
 									} else {
-										for (let key in item) {
+										for (var key in item) {
 											item[key] = replace_highlights_recursive(item[key]);
 										}
 									}
