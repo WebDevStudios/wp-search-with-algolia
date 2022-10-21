@@ -45,7 +45,6 @@ class Algolia_Scripts {
 			'algolia-search',
 			ALGOLIA_PLUGIN_URL . 'js/algoliasearch/dist/algoliasearch-lite.umd.js',
 			[
-				'jquery',
 				'underscore',
 				'wp-util',
 			],
@@ -57,7 +56,6 @@ class Algolia_Scripts {
 			'algolia-autocomplete',
 			ALGOLIA_PLUGIN_URL . 'js/autocomplete.js/dist/autocomplete' . $suffix . '.js',
 			[
-				'jquery',
 				'underscore',
 				'wp-util',
 				'algolia-search',
@@ -80,7 +78,6 @@ class Algolia_Scripts {
 			'algolia-instantsearch',
 			ALGOLIA_PLUGIN_URL . 'js/instantsearch.js/dist/instantsearch' . $ais_suffix . $suffix . '.js',
 			[
-				'jquery',
 				'underscore',
 				'wp-util',
 				'algolia-search',
