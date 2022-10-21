@@ -204,8 +204,9 @@
 			} );
 		} );
 
-		if ( document.querySelector( '.algolia-powered-by-link' ) ) {
-			document.querySelector( '.algolia-powered-by-link' ).addEventListener( 'click', function( e ) {
+		var algoliaPoweredLink = document.querySelector( '.algolia-powered-by-link' );
+		if ( algoliaPoweredLink ) {
+			algoliaPoweredLink.addEventListener( 'click', function( e ) {
 				e.preventDefault();
 				window.location = "https://www.algolia.com/?utm_source=WordPress&utm_medium=extension&utm_content=" + window.location.hostname + "&utm_campaign=poweredby";
 			} );
