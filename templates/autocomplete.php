@@ -95,6 +95,7 @@
 
 <script type="text/javascript">
 	window.onload = function () {
+
 		/* Initialize Algolia client */
 		var client = algoliasearch( algolia.application_id, algolia.search_api_key );
 
@@ -121,7 +122,7 @@
 
 		/* Setup autocomplete.js sources */
 		var sources = [];
-		algolia.autocomplete.sources.forEach(function( config, i ) {
+		algolia.autocomplete.sources.forEach( function( config, i ) {
 			var suggestion_template = wp.template( config[ 'tmpl_suggestion' ] );
 			sources.push( {
 				source: algoliaHitsSource( client.initIndex( config[ 'index_name' ] ), {
@@ -171,8 +172,7 @@
 		} );
 
 		/* Setup dropdown menus */
-		document.querySelectorAll( algolia.autocomplete.input_selector ).forEach( function ( el, i, that ) {
-			var searchInput = that;
+		document.querySelectorAll( algolia.autocomplete.input_selector ).forEach( function( element ) {
 
 			var config = {
 				debug: algolia.debug,
@@ -189,20 +189,21 @@
 			}
 
 			/* Instantiate autocomplete.js */
-			var autocomplete = algoliaAutocomplete( searchInput[ 0 ], config, sources )
+			var autocomplete = algoliaAutocomplete( element, config, sources )
 				.on( 'autocomplete:selected', function ( e, suggestion ) {
 					/* Redirect the user when we detect a suggestion selection. */
 					window.location.href = suggestion.permalink;
 				} );
 
 			/* Force the dropdown to be re-drawn on scroll to handle fixed containers. */
-			window.addEventListener('scroll', function() {
-				if (autocomplete.autocomplete.getWrapper().style.display === "block") {
+			window.addEventListener( 'scroll', function() {
+				if ( autocomplete.autocomplete.getWrapper().style.display === "block" ) {
 					autocomplete.autocomplete.close();
 					autocomplete.autocomplete.open();
 				}
 			} );
 		} );
+
 		document.querySelector('.algolia-powered-by-link').addEventListener('click', function( e ) {
 			e.preventDefault();
 			window.location = "https://www.algolia.com/?utm_source=WordPress&utm_medium=extension&utm_content=" + window.location.hostname + "&utm_campaign=poweredby";
