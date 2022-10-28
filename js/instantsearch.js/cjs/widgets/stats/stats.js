@@ -7,7 +7,7 @@ exports.default = exports.defaultTemplates = void 0;
 
 var _preact = require("preact");
 
-var _classnames = _interopRequireDefault(require("classnames"));
+var _uiComponentsShared = require("@algolia/ui-components-shared");
 
 var _Stats = _interopRequireDefault(require("../../components/Stats/Stats.js"));
 
@@ -145,8 +145,8 @@ var stats = function stats(widgetParams) {
 
   var containerNode = (0, _index.getContainerNode)(container);
   var cssClasses = {
-    root: (0, _classnames.default)(suit(), userCssClasses.root),
-    text: (0, _classnames.default)(suit({
+    root: (0, _uiComponentsShared.cx)(suit(), userCssClasses.root),
+    text: (0, _uiComponentsShared.cx)(suit({
       descendantName: 'text'
     }), userCssClasses.text)
   };

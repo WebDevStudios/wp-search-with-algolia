@@ -1,5 +1,3 @@
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
 function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest(); }
 
 function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
@@ -14,12 +12,10 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 
 import { h } from 'preact';
 import { useState, useEffect, useRef } from 'preact/hooks';
-import cx from 'classnames';
+import { cx } from '@algolia/ui-components-shared';
 import Template from "../Template/Template.js";
 
 function Panel(props) {
-  var _cx;
-
   var _useState = useState(props.isCollapsed),
       _useState2 = _slicedToArray(_useState, 2),
       isCollapsed = _useState2[0],
@@ -49,7 +45,7 @@ function Panel(props) {
   }
 
   return h("div", {
-    className: cx(props.cssClasses.root, (_cx = {}, _defineProperty(_cx, props.cssClasses.noRefinementRoot, props.hidden), _defineProperty(_cx, props.cssClasses.collapsibleRoot, props.collapsible), _defineProperty(_cx, props.cssClasses.collapsedRoot, isCollapsed), _cx)),
+    className: cx(props.cssClasses.root, props.hidden && props.cssClasses.noRefinementRoot, props.collapsible && props.cssClasses.collapsibleRoot, isCollapsed && props.cssClasses.collapsedRoot),
     hidden: props.hidden
   }, props.templates.header && h("div", {
     className: props.cssClasses.header

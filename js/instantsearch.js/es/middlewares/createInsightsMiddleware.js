@@ -18,7 +18,7 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 
 import { getInsightsAnonymousUserTokenInternal } from "../helpers/index.js";
 import { warning, noop, getAppIdAndApiKey, find } from "../lib/utils/index.js";
-export var createInsightsMiddleware = function createInsightsMiddleware(props) {
+export function createInsightsMiddleware(props) {
   var _ref = props || {},
       _insightsClient = _ref.insightsClient,
       insightsInitParams = _ref.insightsInitParams,
@@ -157,4 +157,4 @@ export var createInsightsMiddleware = function createInsightsMiddleware(props) {
       }
     };
   };
-};
+}

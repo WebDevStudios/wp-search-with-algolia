@@ -7,7 +7,7 @@ exports.default = void 0;
 
 var _preact = require("preact");
 
-var _classnames = _interopRequireDefault(require("classnames"));
+var _uiComponentsShared = require("@algolia/ui-components-shared");
 
 var _index = require("../../lib/utils/index.js");
 
@@ -71,11 +71,11 @@ var voiceSearch = function voiceSearch(widgetParams) {
 
   var containerNode = (0, _index.getContainerNode)(container);
   var cssClasses = {
-    root: (0, _classnames.default)(suit(), userCssClasses.root),
-    button: (0, _classnames.default)(suit({
+    root: (0, _uiComponentsShared.cx)(suit(), userCssClasses.root),
+    button: (0, _uiComponentsShared.cx)(suit({
       descendantName: 'button'
     }), userCssClasses.button),
-    status: (0, _classnames.default)(suit({
+    status: (0, _uiComponentsShared.cx)(suit({
       descendantName: 'status'
     }), userCssClasses.status)
   };

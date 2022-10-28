@@ -9,7 +9,7 @@ exports.default = void 0;
 
 var _preact = require("preact");
 
-var _classnames = _interopRequireDefault(require("classnames"));
+var _uiComponentsShared = require("@algolia/ui-components-shared");
 
 var _index = require("../../lib/utils/index.js");
 
@@ -94,8 +94,6 @@ var RefinementList = /*#__PURE__*/function (_Component) {
   }, {
     key: "_generateFacetItem",
     value: function _generateFacetItem(facetValue) {
-      var _cx;
-
       var subItems;
 
       if (isHierarchicalMenuItem(facetValue) && Array.isArray(facetValue.data) && facetValue.data.length > 0) {
@@ -133,7 +131,7 @@ var RefinementList = /*#__PURE__*/function (_Component) {
         key += "/".concat(facetValue.count);
       }
 
-      var refinementListItemClassName = (0, _classnames.default)(this.props.cssClasses.item, (_cx = {}, _defineProperty(_cx, this.props.cssClasses.selectedItem, facetValue.isRefined), _defineProperty(_cx, this.props.cssClasses.disabledItem, !facetValue.count), _defineProperty(_cx, this.props.cssClasses.parentItem, isHierarchicalMenuItem(facetValue) && Array.isArray(facetValue.data) && facetValue.data.length > 0), _cx));
+      var refinementListItemClassName = (0, _uiComponentsShared.cx)(this.props.cssClasses.item, facetValue.isRefined && this.props.cssClasses.selectedItem, !facetValue.count && this.props.cssClasses.disabledItem, Boolean(isHierarchicalMenuItem(facetValue) && Array.isArray(facetValue.data) && facetValue.data.length > 0) && this.props.cssClasses.parentItem);
       return (0, _preact.h)(_RefinementListItem.default, {
         templateKey: "item",
         key: key,
@@ -227,7 +225,7 @@ var RefinementList = /*#__PURE__*/function (_Component) {
     value: function render() {
       var _this2 = this;
 
-      var showMoreButtonClassName = (0, _classnames.default)(this.props.cssClasses.showMore, _defineProperty({}, this.props.cssClasses.disabledShowMore, !(this.props.showMore === true && this.props.canToggleShowMore)));
+      var showMoreButtonClassName = (0, _uiComponentsShared.cx)(this.props.cssClasses.showMore, !(this.props.showMore === true && this.props.canToggleShowMore) && this.props.cssClasses.disabledShowMore);
       var showMoreButton = this.props.showMore === true && (0, _preact.h)(_Template.default, _extends({}, this.props.templateProps, {
         templateKey: "showMoreText",
         rootTagName: "button",
@@ -271,7 +269,7 @@ var RefinementList = /*#__PURE__*/function (_Component) {
           className: this.props.cssClasses.noResults
         }
       }));
-      var rootClassName = (0, _classnames.default)(this.props.cssClasses.root, _defineProperty({}, this.props.cssClasses.noRefinementRoot, !this.props.facetValues || this.props.facetValues.length === 0), this.props.className);
+      var rootClassName = (0, _uiComponentsShared.cx)(this.props.cssClasses.root, (!this.props.facetValues || this.props.facetValues.length === 0) && this.props.cssClasses.noRefinementRoot, this.props.className);
       return (0, _preact.h)("div", {
         className: rootClassName
       }, this.props.children, searchBox, facetValues, noResults, showMoreButton);

@@ -7,7 +7,7 @@ exports.default = void 0;
 
 var _preact = require("preact");
 
-var _classnames = _interopRequireDefault(require("classnames"));
+var _uiComponentsShared = require("@algolia/ui-components-shared");
 
 var _Template = _interopRequireDefault(require("../Template/Template.js"));
 
@@ -38,7 +38,7 @@ var InfiniteHits = function InfiniteHits(_ref) {
     return (0, _preact.h)(_Template.default, _extends({}, templateProps, {
       templateKey: "empty",
       rootProps: {
-        className: (0, _classnames.default)(cssClasses.root, cssClasses.emptyRoot)
+        className: (0, _uiComponentsShared.cx)(cssClasses.root, cssClasses.emptyRoot)
       },
       data: results
     }));
@@ -50,7 +50,7 @@ var InfiniteHits = function InfiniteHits(_ref) {
     templateKey: "showPreviousText",
     rootTagName: "button",
     rootProps: {
-      className: (0, _classnames.default)(cssClasses.loadPrevious, _defineProperty({}, cssClasses.disabledLoadPrevious, isFirstPage)),
+      className: (0, _uiComponentsShared.cx)(cssClasses.loadPrevious, isFirstPage && cssClasses.disabledLoadPrevious),
       disabled: isFirstPage,
       onClick: showPrevious
     }
@@ -74,7 +74,7 @@ var InfiniteHits = function InfiniteHits(_ref) {
     templateKey: "showMoreText",
     rootTagName: "button",
     rootProps: {
-      className: (0, _classnames.default)(cssClasses.loadMore, _defineProperty({}, cssClasses.disabledLoadMore, isLastPage)),
+      className: (0, _uiComponentsShared.cx)(cssClasses.loadMore, isLastPage && cssClasses.disabledLoadMore),
       disabled: isLastPage,
       onClick: showMore
     }

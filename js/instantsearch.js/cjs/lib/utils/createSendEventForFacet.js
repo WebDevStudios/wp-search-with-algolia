@@ -12,7 +12,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
 function createSendEventForFacet(_ref) {
   var instantSearchInstance = _ref.instantSearchInstance,
       helper = _ref.helper,
-      attribute = _ref.attribute,
+      attr = _ref.attribute,
       widgetType = _ref.widgetType;
 
   var sendEventForFacet = function sendEventForFacet() {
@@ -24,6 +24,7 @@ function createSendEventForFacet(_ref) {
         facetValue = args[1],
         _args$ = args[2],
         eventName = _args$ === void 0 ? 'Filter Applied' : _args$;
+    var attribute = typeof attr === 'string' ? attr : attr(facetValue);
 
     if (args.length === 1 && _typeof(args[0]) === 'object') {
       instantSearchInstance.sendEventToInsights(args[0]);

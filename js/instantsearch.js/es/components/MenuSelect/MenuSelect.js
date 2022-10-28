@@ -1,9 +1,7 @@
 function _extends() { _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; return _extends.apply(this, arguments); }
 
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
 import { h } from 'preact';
-import cx from 'classnames';
+import { cx } from '@algolia/ui-components-shared';
 import { find } from "../../lib/utils/index.js";
 import Template from "../Template/Template.js";
 
@@ -21,7 +19,7 @@ function MenuSelect(_ref) {
       selectedValue = _ref2.value;
 
   return h("div", {
-    className: cx(cssClasses.root, _defineProperty({}, cssClasses.noRefinementRoot, items.length === 0))
+    className: cx(cssClasses.root, items.length === 0 && cssClasses.noRefinementRoot)
   }, h("select", {
     className: cssClasses.select,
     value: selectedValue,

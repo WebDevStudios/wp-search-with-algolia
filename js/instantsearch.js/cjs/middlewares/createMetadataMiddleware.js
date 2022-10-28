@@ -9,21 +9,7 @@ exports.createMetadataMiddleware = createMetadataMiddleware;
 var _index = require("../lib/utils/index.js");
 
 function extractPayload(widgets, instantSearchInstance, payload) {
-  var parent = instantSearchInstance.mainIndex;
-  var initOptions = {
-    instantSearchInstance: instantSearchInstance,
-    parent: parent,
-    scopedResults: [],
-    state: parent.getHelper().state,
-    helper: parent.getHelper(),
-    createURL: parent.createURL,
-    uiState: instantSearchInstance._initialUiState,
-    renderState: instantSearchInstance.renderState,
-    templatesConfig: instantSearchInstance.templatesConfig,
-    searchMetadata: {
-      isSearchStalled: instantSearchInstance._isSearchStalled
-    }
-  };
+  var initOptions = (0, _index.createInitArgs)(instantSearchInstance, instantSearchInstance.mainIndex, instantSearchInstance._initialUiState);
   widgets.forEach(function (widget) {
     var widgetParams = {};
 

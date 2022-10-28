@@ -11,7 +11,7 @@ function _objectWithoutPropertiesLoose(source, excluded) { if (source == null) r
 // global for TypeScript alone
 
 /* global google */
-import cx from 'classnames';
+import { cx } from '@algolia/ui-components-shared';
 import { render } from 'preact';
 import { getContainerNode, createDocumentationMessageGenerator } from "../../lib/utils/index.js";
 import { renderTemplate } from "../../lib/templating/index.js";

@@ -9,7 +9,7 @@ var _preact = require("preact");
 
 var _ClearRefinements = _interopRequireDefault(require("../../components/ClearRefinements/ClearRefinements.js"));
 
-var _classnames = _interopRequireDefault(require("classnames"));
+var _uiComponentsShared = require("@algolia/ui-components-shared");
 
 var _connectClearRefinements = _interopRequireDefault(require("../../connectors/clear-refinements/connectClearRefinements.js"));
 
@@ -79,11 +79,11 @@ var clearRefinements = function clearRefinements(widgetParams) {
 
   var containerNode = (0, _index.getContainerNode)(container);
   var cssClasses = {
-    root: (0, _classnames.default)(suit(), userCssClasses.root),
-    button: (0, _classnames.default)(suit({
+    root: (0, _uiComponentsShared.cx)(suit(), userCssClasses.root),
+    button: (0, _uiComponentsShared.cx)(suit({
       descendantName: 'button'
     }), userCssClasses.button),
-    disabledButton: (0, _classnames.default)(suit({
+    disabledButton: (0, _uiComponentsShared.cx)(suit({
       descendantName: 'button',
       modifierName: 'disabled'
     }), userCssClasses.disabledButton)

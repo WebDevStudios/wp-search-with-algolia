@@ -1,5 +1,5 @@
 import { h } from 'preact';
-import cx from 'classnames';
+import { cx } from '@algolia/ui-components-shared';
 
 function Selector(_ref) {
   var currentValue = _ref.currentValue,

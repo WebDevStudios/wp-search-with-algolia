@@ -60,7 +60,7 @@ var InstantSearch = /*#__PURE__*/function (_EventEmitter) {
 
     _classCallCheck(this, InstantSearch);
 
-    _this = _super.call(this);
+    _this = _super.call(this); // prevent `render` event listening from causing a warning
 
     _defineProperty(_assertThisInitialized(_this), "client", void 0);
 
@@ -86,8 +86,6 @@ var InstantSearch = /*#__PURE__*/function (_EventEmitter) {
 
     _defineProperty(_assertThisInitialized(_this), "_searchStalledTimer", void 0);
 
-    _defineProperty(_assertThisInitialized(_this), "_isSearchStalled", void 0);
-
     _defineProperty(_assertThisInitialized(_this), "_initialUiState", void 0);
 
     _defineProperty(_assertThisInitialized(_this), "_initialResults", void 0);
@@ -102,6 +100,10 @@ var InstantSearch = /*#__PURE__*/function (_EventEmitter) {
 
     _defineProperty(_assertThisInitialized(_this), "sendEventToInsights", void 0);
 
+    _defineProperty(_assertThisInitialized(_this), "status", 'idle');
+
+    _defineProperty(_assertThisInitialized(_this), "error", undefined);
+
     _defineProperty(_assertThisInitialized(_this), "scheduleSearch", defer(function () {
       if (_this.started) {
         _this.mainHelper.search();
@@ -109,10 +111,16 @@ var InstantSearch = /*#__PURE__*/function (_EventEmitter) {
     }));
 
     _defineProperty(_assertThisInitialized(_this), "scheduleRender", defer(function () {
+      var shouldResetStatus = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : true;
+
       if (!_this.mainHelper.hasPendingRequests()) {
         clearTimeout(_this._searchStalledTimer);
         _this._searchStalledTimer = null;
-        _this._isSearchStalled = false;
+
+        if (shouldResetStatus) {
+          _this.status = 'idle';
+          _this.error = undefined;
+        }
       }
 
       _this.mainIndex.render({
@@ -132,6 +140,8 @@ var InstantSearch = /*#__PURE__*/function (_EventEmitter) {
         });
       });
     }));
+
+    _this.setMaxListeners(100);
 
     var _options$indexName = options.indexName,
         indexName = _options$indexName === void 0 ? null : _options$indexName,
@@ -193,7 +203,6 @@ var InstantSearch = /*#__PURE__*/function (_EventEmitter) {
     };
     _this._stalledSearchDelay = stalledSearchDelay;
     _this._searchStalledTimer = null;
-    _this._isSearchStalled = false;
     _this._createURL = defaultCreateURL;
     _this._initialUiState = initialUiState;
     _this._initialResults = null;
@@ -222,6 +231,25 @@ var InstantSearch = /*#__PURE__*/function (_EventEmitter) {
 
 
   _createClass(InstantSearch, [{
+    key: "_isSearchStalled",
+    get:
+    /**
+     * The status of the search. Can be "idle", "loading", "stalled", or "error".
+     */
+
+    /**
+     * The last returned error from the Search API.
+     * The error gets cleared when the next valid search response is rendered.
+     */
+
+    /**
+     * @deprecated use `status === 'stalled'` instead
+     */
+    function get() {
+      process.env.NODE_ENV === 'development' ? warning(false, "`InstantSearch._isSearchStalled` is deprecated and will be removed in InstantSearch.js 5.0.\n\nUse `InstantSearch.status === \"stalled\"` instead.") : void 0;
+      return this.status === 'stalled';
+    }
+  }, {
     key: "use",
     value: function use() {
       var _this2 = this;
@@ -383,10 +411,18 @@ var InstantSearch = /*#__PURE__*/function (_EventEmitter) {
       var mainHelper = this.mainHelper || algoliasearchHelper(this.client, this.indexName);
 
       mainHelper.search = function () {
-        // This solution allows us to keep the exact same API for the users but
+        _this3.status = 'loading'; // @MAJOR: use scheduleRender here
+        // For now, widgets don't expect to be rendered at the start of `loading`,
+        // so it would be a breaking change to add an extra render. We don't have
+        // these guarantees about the render event, thus emitting it once more
+        // isn't a breaking change.
+
+        _this3.emit('render'); // This solution allows us to keep the exact same API for the users but
         // under the hood, we have a different implementation. It should be
         // completely transparent for the rest of the codebase. Only this module
         // is impacted.
+
+
         return mainHelper.searchOnlyWithDerivedHelpers();
       };
 
@@ -443,6 +479,11 @@ var InstantSearch = /*#__PURE__*/function (_EventEmitter) {
 
 
         error.error = error;
+        _this3.error = error;
+        _this3.status = 'error';
+
+        _this3.scheduleRender(false); // This needs to execute last because it throws the error.
+
 
         _this3.emit('error', error);
       });
@@ -531,7 +572,7 @@ var InstantSearch = /*#__PURE__*/function (_EventEmitter) {
 
       if (!this._searchStalledTimer) {
         this._searchStalledTimer = setTimeout(function () {
-          _this4._isSearchStalled = true;
+          _this4.status = 'stalled';
 
           _this4.scheduleRender();
         }, this._stalledSearchDelay);

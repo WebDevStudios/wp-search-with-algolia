@@ -9,13 +9,11 @@ var _preact = require("preact");
 
 var _hooks = require("preact/hooks");
 
-var _classnames = _interopRequireDefault(require("classnames"));
+var _uiComponentsShared = require("@algolia/ui-components-shared");
 
 var _Template = _interopRequireDefault(require("../Template/Template.js"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest(); }
 
@@ -30,8 +28,6 @@ function _iterableToArrayLimit(arr, i) { if (typeof Symbol === "undefined" || !(
 function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 
 function Panel(props) {
-  var _cx;
-
   var _useState = (0, _hooks.useState)(props.isCollapsed),
       _useState2 = _slicedToArray(_useState, 2),
       isCollapsed = _useState2[0],
@@ -61,7 +57,7 @@ function Panel(props) {
   }
 
   return (0, _preact.h)("div", {
-    className: (0, _classnames.default)(props.cssClasses.root, (_cx = {}, _defineProperty(_cx, props.cssClasses.noRefinementRoot, props.hidden), _defineProperty(_cx, props.cssClasses.collapsibleRoot, props.collapsible), _defineProperty(_cx, props.cssClasses.collapsedRoot, isCollapsed), _cx)),
+    className: (0, _uiComponentsShared.cx)(props.cssClasses.root, props.hidden && props.cssClasses.noRefinementRoot, props.collapsible && props.cssClasses.collapsibleRoot, isCollapsed && props.cssClasses.collapsedRoot),
     hidden: props.hidden
   }, props.templates.header && (0, _preact.h)("div", {
     className: props.cssClasses.header

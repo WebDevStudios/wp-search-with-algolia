@@ -7,6 +7,8 @@ exports.default = void 0;
 
 var _preact = require("preact");
 
+var _uiComponentsShared = require("@algolia/ui-components-shared");
+
 var _index = require("../../lib/utils/index.js");
 
 var createItemKey = function createItemKey(_ref) {
@@ -32,9 +34,10 @@ var handleClick = function handleClick(callback) {
 
 var CurrentRefinements = function CurrentRefinements(_ref2) {
   var items = _ref2.items,
-      cssClasses = _ref2.cssClasses;
+      cssClasses = _ref2.cssClasses,
+      canRefine = _ref2.canRefine;
   return (0, _preact.h)("div", {
-    className: cssClasses.root
+    className: (0, _uiComponentsShared.cx)(cssClasses.root, !canRefine && cssClasses.noRefinementRoot)
   }, (0, _preact.h)("ul", {
     className: cssClasses.list
   }, items.map(function (item, index) {

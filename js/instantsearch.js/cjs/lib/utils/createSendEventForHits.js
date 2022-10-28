@@ -148,7 +148,7 @@ function createSendEventForHits(_ref2) {
       index: index,
       methodName: 'sendEvent',
       args: args,
-      isSearchStalled: instantSearchInstance._isSearchStalled
+      isSearchStalled: instantSearchInstance.status === 'stalled'
     });
     payloads.forEach(function (payload) {
       return instantSearchInstance.sendEventToInsights(payload);

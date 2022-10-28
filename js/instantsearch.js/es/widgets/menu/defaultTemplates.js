@@ -1,6 +1,6 @@
 import { h } from 'preact';
 import { formatNumber } from "../../lib/formatNumber.js";
-import { cx } from "../../lib/utils/index.js";
+import { cx } from '@algolia/ui-components-shared';
 var defaultTemplates = {
   item: function item(_ref) {
     var cssClasses = _ref.cssClasses,

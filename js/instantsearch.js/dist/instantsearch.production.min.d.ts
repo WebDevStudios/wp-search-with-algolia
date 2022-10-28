@@ -895,9 +895,9 @@ declare const connectVoiceSearch: VoiceSearchConnector;
 
 declare function createInfiniteHitsSessionStorageCache(): InfiniteHitsCache;
 
-declare type CreateInsightsMiddleware = (props: InsightsProps) => InternalMiddleware;
+declare type CreateInsightsMiddleware = typeof createInsightsMiddleware;
 
-declare const createInsightsMiddleware: CreateInsightsMiddleware;
+declare function createInsightsMiddleware<TInsightsClient extends null | InsightsClient>(props: InsightsProps<TInsightsClient>): InternalMiddleware;
 
 /**
  * Exposes the metadata of mounted widgets in a custom
@@ -1007,6 +1007,10 @@ declare type CurrentRefinementsCSSClasses = Partial<{
      * CSS class to add to the root element.
      */
     root: string | string[];
+    /**
+     * CSS class to add to the root element when no refinements.
+     */
+    noRefinementRoot: string | string[];
     /**
      * CSS class to add to the list element.
      */
@@ -1512,6 +1516,10 @@ declare type HierarchicalMenuCSSClasses = Partial<{
      * CSS class to add to each link (when using the default template).
      */
     link: string | string[];
+    /**
+     * CSS class to add to the link of each selected item element (when using the default template).
+     */
+    selectedItemLink: string | string[];
     /**
      * CSS class to add to each label (when using the default template).
      */
@@ -2057,7 +2065,7 @@ declare type IndexWidget = Omit<Widget<IndexWidgetDescription & {
      * @deprecated
      */
     getWidgetState(uiState: UiState): UiState;
-    getWidgetUiState<TUiState = UiState>(uiState: TUiState): TUiState;
+    getWidgetUiState<TUiState extends UiState = UiState>(uiState: TUiState): TUiState;
     getWidgetSearchParameters(searchParameters: SearchParameters, searchParametersOptions: {
         uiState: IndexUiState;
     }): SearchParameters;
@@ -2284,15 +2292,15 @@ declare type InsightsEvent = {
     attribute?: string;
 };
 
-declare type InsightsProps = {
-    insightsClient: null | InsightsClient;
+declare type InsightsProps<TInsightsClient extends null | InsightsClient = InsightsClient | null> = {
+    insightsClient: TInsightsClient;
     insightsInitParams?: {
         userHasOptedOut?: boolean;
         useCookie?: boolean;
         cookieDuration?: number;
         region?: 'de' | 'us';
     };
-    onEvent?: (event: InsightsEvent, insightsClient: null | InsightsClient) => void;
+    onEvent?: (event: InsightsEvent, insightsClient: TInsightsClient) => void;
 };
 
 /**
@@ -2313,7 +2321,6 @@ declare class InstantSearch<TUiState extends UiState = UiState, TRouteState = TU
     renderState: RenderState;
     _stalledSearchDelay: number;
     _searchStalledTimer: any;
-    _isSearchStalled: boolean;
     _initialUiState: TUiState;
     _initialResults: InitialResults | null;
     _createURL: CreateURL<TUiState>;
@@ -2324,6 +2331,19 @@ declare class InstantSearch<TUiState extends UiState = UiState, TRouteState = TU
         instance: MiddlewareDefinition;
     }>;
     sendEventToInsights: (event: InsightsEvent) => void;
+    /**
+     * The status of the search. Can be "idle", "loading", "stalled", or "error".
+     */
+    status: InstantSearchStatus;
+    /**
+     * The last returned error from the Search API.
+     * The error gets cleared when the next valid search response is rendered.
+     */
+    error: Error | undefined;
+    /**
+     * @deprecated use `status === 'stalled'` instead
+     */
+    get _isSearchStalled(): boolean;
     constructor(options: InstantSearchOptions<TUiState, TRouteState>);
     /**
      * Hooks a middleware into the InstantSearch lifecycle.
@@ -2377,11 +2397,11 @@ declare class InstantSearch<TUiState extends UiState = UiState, TRouteState = TU
      * @return {undefined} This method does not return anything
      */
     dispose(): void;
-    scheduleSearch: ((...args: any[]) => void) & {
+    scheduleSearch: (() => void) & {
         wait(): Promise<void>;
         cancel(): void;
     };
-    scheduleRender: ((...args: any[]) => void) & {
+    scheduleRender: ((shouldResetStatus?: boolean) => void) & {
         wait(): Promise<void>;
         cancel(): void;
     };
@@ -2393,7 +2413,7 @@ declare class InstantSearch<TUiState extends UiState = UiState, TRouteState = TU
      */
     setUiState(uiState: TUiState | ((previousUiState: TUiState) => TUiState), callOnStateChange?: boolean): void;
     getUiState(): TUiState;
-    onInternalStateChange: ((...args: any[]) => void) & {
+    onInternalStateChange: (() => void) & {
         wait(): Promise<void>;
         cancel(): void;
     };
@@ -2520,6 +2540,8 @@ declare type InstantSearchOptions<TUiState extends UiState = UiState, TRouteStat
      */
     insightsClient?: InsightsClient;
 };
+
+declare type InstantSearchStatus = 'idle' | 'loading' | 'stalled' | 'error';
 
 declare type InternalMiddleware<TUiState extends UiState = UiState> = (options: MiddlewareOptions) => MiddlewareDefinition<TUiState>;
 
@@ -2796,10 +2818,10 @@ declare type MiddlewareOptions = {
 
 declare namespace middlewares {
     export {
+        createInsightsMiddleware,
         InsightsEvent,
         InsightsProps,
         CreateInsightsMiddleware,
-        createInsightsMiddleware,
         RouterProps,
         createRouterMiddleware,
         isMetadataEnabled,
@@ -4588,6 +4610,7 @@ declare type SearchBoxRenderState = {
      * `true` if the search results takes more than a certain time to come back
      * from Algolia servers. This can be configured on the InstantSearch constructor with the attribute
      * `stalledSearchDelay` which is 200ms, by default.
+     * @deprecated use `instantSearchInstance.status` instead
      */
     isSearchStalled: boolean;
 };
@@ -4699,9 +4722,13 @@ declare type SharedRenderOptions = {
     state: SearchParameters;
     renderState: IndexRenderState;
     helper: AlgoliaSearchHelper;
+    /** @deprecated use `status` instead */
     searchMetadata: {
+        /** @deprecated use `status === "stalled"` instead */
         isSearchStalled: boolean;
     };
+    status: InstantSearch['status'];
+    error: InstantSearch['error'];
     createURL(state: SearchParameters): string;
 };
 

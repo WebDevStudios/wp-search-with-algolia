@@ -9,7 +9,7 @@ var _preact = require("preact");
 
 var _formatNumber = require("../../lib/formatNumber.js");
 
-var _index = require("../../lib/utils/index.js");
+var _uiComponentsShared = require("@algolia/ui-components-shared");
 
 var defaultTemplates = {
   item: function item(_ref) {
@@ -18,12 +18,12 @@ var defaultTemplates = {
         label = _ref.label,
         count = _ref.count;
     return (0, _preact.h)("a", {
-      className: (0, _index.cx)(cssClasses.link),
+      className: (0, _uiComponentsShared.cx)(cssClasses.link),
       href: url
     }, (0, _preact.h)("span", {
-      className: (0, _index.cx)(cssClasses.label)
+      className: (0, _uiComponentsShared.cx)(cssClasses.label)
     }, label), (0, _preact.h)("span", {
-      className: (0, _index.cx)(cssClasses.count)
+      className: (0, _uiComponentsShared.cx)(cssClasses.count)
     }, (0, _formatNumber.formatNumber)(count)));
   },
   showMoreText: function showMoreText(_ref2) {

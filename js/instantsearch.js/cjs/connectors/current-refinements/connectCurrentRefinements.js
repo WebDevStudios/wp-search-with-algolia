@@ -149,6 +149,8 @@ function getRefinementsItems(_ref3) {
 }
 
 function clearRefinementFromState(state, refinement) {
+  state = state.resetPage();
+
   switch (refinement.type) {
     case 'facet':
       return state.removeFacetRefinement(refinement.attribute, String(refinement.value));

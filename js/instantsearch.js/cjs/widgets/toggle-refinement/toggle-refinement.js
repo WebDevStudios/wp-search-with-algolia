@@ -7,7 +7,7 @@ exports.default = void 0;
 
 var _preact = require("preact");
 
-var _classnames = _interopRequireDefault(require("classnames"));
+var _uiComponentsShared = require("@algolia/ui-components-shared");
 
 var _ToggleRefinement = _interopRequireDefault(require("../../components/ToggleRefinement/ToggleRefinement.js"));
 
@@ -92,14 +92,14 @@ var toggleRefinement = function toggleRefinement(widgetParams) {
 
   var containerNode = (0, _index.getContainerNode)(container);
   var cssClasses = {
-    root: (0, _classnames.default)(suit(), userCssClasses.root),
-    label: (0, _classnames.default)(suit({
+    root: (0, _uiComponentsShared.cx)(suit(), userCssClasses.root),
+    label: (0, _uiComponentsShared.cx)(suit({
       descendantName: 'label'
     }), userCssClasses.label),
-    checkbox: (0, _classnames.default)(suit({
+    checkbox: (0, _uiComponentsShared.cx)(suit({
       descendantName: 'checkbox'
     }), userCssClasses.checkbox),
-    labelText: (0, _classnames.default)(suit({
+    labelText: (0, _uiComponentsShared.cx)(suit({
       descendantName: 'labelText'
     }), userCssClasses.labelText)
   };

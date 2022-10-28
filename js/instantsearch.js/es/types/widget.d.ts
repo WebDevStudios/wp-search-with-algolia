@@ -17,9 +17,13 @@ declare type SharedRenderOptions = {
     state: SearchParameters;
     renderState: IndexRenderState;
     helper: Helper;
+    /** @deprecated use `status` instead */
     searchMetadata: {
+        /** @deprecated use `status === "stalled"` instead */
         isSearchStalled: boolean;
     };
+    status: InstantSearch['status'];
+    error: InstantSearch['error'];
     createURL(state: SearchParameters): string;
 };
 export declare type InitOptions = SharedRenderOptions & {

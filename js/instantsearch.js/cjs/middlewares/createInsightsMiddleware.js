@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.createInsightsMiddleware = void 0;
+exports.createInsightsMiddleware = createInsightsMiddleware;
 
 var _index = require("../helpers/index.js");
 
@@ -27,7 +27,7 @@ function _iterableToArrayLimit(arr, i) { if (typeof Symbol === "undefined" || !(
 
 function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 
-var createInsightsMiddleware = function createInsightsMiddleware(props) {
+function createInsightsMiddleware(props) {
   var _ref = props || {},
       _insightsClient = _ref.insightsClient,
       insightsInitParams = _ref.insightsInitParams,
@@ -166,6 +166,4 @@ var createInsightsMiddleware = function createInsightsMiddleware(props) {
       }
     };
   };
-};
-
-exports.createInsightsMiddleware = createInsightsMiddleware;
+}

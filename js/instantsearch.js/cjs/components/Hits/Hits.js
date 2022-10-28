@@ -7,7 +7,7 @@ exports.default = void 0;
 
 var _preact = require("preact");
 
-var _classnames = _interopRequireDefault(require("classnames"));
+var _uiComponentsShared = require("@algolia/ui-components-shared");
 
 var _Template = _interopRequireDefault(require("../Template/Template.js"));
 
@@ -33,7 +33,7 @@ var Hits = function Hits(_ref) {
     return (0, _preact.h)(_Template.default, _extends({}, templateProps, {
       templateKey: "empty",
       rootProps: {
-        className: (0, _classnames.default)(cssClasses.root, cssClasses.emptyRoot)
+        className: (0, _uiComponentsShared.cx)(cssClasses.root, cssClasses.emptyRoot)
       },
       data: results
     }));

@@ -134,19 +134,6 @@ Object.keys(_isIndexWidget).forEach(function (key) {
   });
 });
 
-var _cx = require("./cx.js");
-
-Object.keys(_cx).forEach(function (key) {
-  if (key === "default" || key === "__esModule") return;
-  if (key in exports && exports[key] === _cx[key]) return;
-  Object.defineProperty(exports, key, {
-    enumerable: true,
-    get: function get() {
-      return _cx[key];
-    }
-  });
-});
-
 var _debounce = require("./debounce.js");
 
 Object.keys(_debounce).forEach(function (key) {
@@ -520,6 +507,19 @@ Object.keys(_range).forEach(function (key) {
     enumerable: true,
     get: function get() {
       return _range[key];
+    }
+  });
+});
+
+var _renderArgs = require("./render-args.js");
+
+Object.keys(_renderArgs).forEach(function (key) {
+  if (key === "default" || key === "__esModule") return;
+  if (key in exports && exports[key] === _renderArgs[key]) return;
+  Object.defineProperty(exports, key, {
+    enumerable: true,
+    get: function get() {
+      return _renderArgs[key];
     }
   });
 });

@@ -38,7 +38,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 import { h, Component } from 'preact';
 import Rheostat from "./Rheostat.js";
-import cx from 'classnames';
+import { cx } from '@algolia/ui-components-shared';
 import { range } from "../../lib/utils/index.js";
 import Pit from "./Pit.js";
 
@@ -73,10 +73,7 @@ var Slider = /*#__PURE__*/function (_Component) {
         var roundedValue = Math.round( // have to cast as a string, as the value given to the prop is a number, but becomes a string when read
         parseFloat(props['aria-valuenow']) * 100) / 100;
         var value = _typeof(tooltips) === 'object' && tooltips.format ? tooltips.format(roundedValue) : roundedValue;
-        var className = cx(props.className, {
-          'rheostat-handle-lower': props['data-handle-key'] === 0,
-          'rheostat-handle-upper': props['data-handle-key'] === 1
-        });
+        var className = cx(props.className, props['data-handle-key'] === 0 && 'rheostat-handle-lower', props['data-handle-key'] === 1 && 'rheostat-handle-upper');
         return h("div", _extends({}, props, {
           className: className
         }), tooltips && h("div", {
@@ -150,7 +147,7 @@ var Slider = /*#__PURE__*/function (_Component) {
         max: max
       });
       return h("div", {
-        className: cx(cssClasses.root, _defineProperty({}, cssClasses.disabledRoot, this.isDisabled))
+        className: cx(cssClasses.root, this.isDisabled && cssClasses.disabledRoot)
       }, h(Rheostat, {
         handle: this.createHandleComponent(tooltips),
         onChange: this.handleChange,

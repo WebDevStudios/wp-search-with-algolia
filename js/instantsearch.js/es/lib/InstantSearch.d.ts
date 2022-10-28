@@ -86,6 +86,7 @@ export declare type InstantSearchOptions<TUiState extends UiState = UiState, TRo
      */
     insightsClient?: AlgoliaInsightsClient;
 };
+export declare type InstantSearchStatus = 'idle' | 'loading' | 'stalled' | 'error';
 /**
  * The actual implementation of the InstantSearch. This is
  * created using the `instantsearch` factory function.
@@ -104,7 +105,6 @@ declare class InstantSearch<TUiState extends UiState = UiState, TRouteState = TU
     renderState: RenderState;
     _stalledSearchDelay: number;
     _searchStalledTimer: any;
-    _isSearchStalled: boolean;
     _initialUiState: TUiState;
     _initialResults: InitialResults | null;
     _createURL: CreateURL<TUiState>;
@@ -115,6 +115,19 @@ declare class InstantSearch<TUiState extends UiState = UiState, TRouteState = TU
         instance: MiddlewareDefinition;
     }>;
     sendEventToInsights: (event: InsightsEvent) => void;
+    /**
+     * The status of the search. Can be "idle", "loading", "stalled", or "error".
+     */
+    status: InstantSearchStatus;
+    /**
+     * The last returned error from the Search API.
+     * The error gets cleared when the next valid search response is rendered.
+     */
+    error: Error | undefined;
+    /**
+     * @deprecated use `status === 'stalled'` instead
+     */
+    get _isSearchStalled(): boolean;
     constructor(options: InstantSearchOptions<TUiState, TRouteState>);
     /**
      * Hooks a middleware into the InstantSearch lifecycle.
@@ -168,11 +181,11 @@ declare class InstantSearch<TUiState extends UiState = UiState, TRouteState = TU
      * @return {undefined} This method does not return anything
      */
     dispose(): void;
-    scheduleSearch: ((...args: any[]) => void) & {
+    scheduleSearch: (() => void) & {
         wait(): Promise<void>;
         cancel(): void;
     };
-    scheduleRender: ((...args: any[]) => void) & {
+    scheduleRender: ((shouldResetStatus?: boolean) => void) & {
         wait(): Promise<void>;
         cancel(): void;
     };
@@ -184,7 +197,7 @@ declare class InstantSearch<TUiState extends UiState = UiState, TRouteState = TU
      */
     setUiState(uiState: TUiState | ((previousUiState: TUiState) => TUiState), callOnStateChange?: boolean): void;
     getUiState(): TUiState;
-    onInternalStateChange: ((...args: any[]) => void) & {
+    onInternalStateChange: (() => void) & {
         wait(): Promise<void>;
         cancel(): void;
     };
