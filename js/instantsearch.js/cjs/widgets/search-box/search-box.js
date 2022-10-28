@@ -7,7 +7,7 @@ exports.default = void 0;
 
 var _preact = require("preact");
 
-var _classnames = _interopRequireDefault(require("classnames"));
+var _uiComponentsShared = require("@algolia/ui-components-shared");
 
 var _index = require("../../lib/utils/index.js");
 
@@ -98,29 +98,29 @@ var searchBox = function searchBox(widgetParams) {
 
   var containerNode = (0, _index.getContainerNode)(container);
   var cssClasses = {
-    root: (0, _classnames.default)(suit(), userCssClasses.root),
-    form: (0, _classnames.default)(suit({
+    root: (0, _uiComponentsShared.cx)(suit(), userCssClasses.root),
+    form: (0, _uiComponentsShared.cx)(suit({
       descendantName: 'form'
     }), userCssClasses.form),
-    input: (0, _classnames.default)(suit({
+    input: (0, _uiComponentsShared.cx)(suit({
       descendantName: 'input'
     }), userCssClasses.input),
-    submit: (0, _classnames.default)(suit({
+    submit: (0, _uiComponentsShared.cx)(suit({
       descendantName: 'submit'
     }), userCssClasses.submit),
-    submitIcon: (0, _classnames.default)(suit({
+    submitIcon: (0, _uiComponentsShared.cx)(suit({
       descendantName: 'submitIcon'
     }), userCssClasses.submitIcon),
-    reset: (0, _classnames.default)(suit({
+    reset: (0, _uiComponentsShared.cx)(suit({
       descendantName: 'reset'
     }), userCssClasses.reset),
-    resetIcon: (0, _classnames.default)(suit({
+    resetIcon: (0, _uiComponentsShared.cx)(suit({
       descendantName: 'resetIcon'
     }), userCssClasses.resetIcon),
-    loadingIndicator: (0, _classnames.default)(suit({
+    loadingIndicator: (0, _uiComponentsShared.cx)(suit({
       descendantName: 'loadingIndicator'
     }), userCssClasses.loadingIndicator),
-    loadingIcon: (0, _classnames.default)(suit({
+    loadingIcon: (0, _uiComponentsShared.cx)(suit({
       descendantName: 'loadingIcon'
     }), userCssClasses.loadingIcon)
   };

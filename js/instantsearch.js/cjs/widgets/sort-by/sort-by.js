@@ -7,7 +7,7 @@ exports.default = void 0;
 
 var _preact = require("preact");
 
-var _classnames = _interopRequireDefault(require("classnames"));
+var _uiComponentsShared = require("@algolia/ui-components-shared");
 
 var _Selector = _interopRequireDefault(require("../../components/Selector/Selector.js"));
 
@@ -72,11 +72,11 @@ var sortBy = function sortBy(widgetParams) {
 
   var containerNode = (0, _index.getContainerNode)(container);
   var cssClasses = {
-    root: (0, _classnames.default)(suit(), userCssClasses.root),
-    select: (0, _classnames.default)(suit({
+    root: (0, _uiComponentsShared.cx)(suit(), userCssClasses.root),
+    select: (0, _uiComponentsShared.cx)(suit({
       descendantName: 'select'
     }), userCssClasses.select),
-    option: (0, _classnames.default)(suit({
+    option: (0, _uiComponentsShared.cx)(suit({
       descendantName: 'option'
     }), userCssClasses.option)
   };

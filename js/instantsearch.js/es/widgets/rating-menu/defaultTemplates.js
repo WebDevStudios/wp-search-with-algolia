@@ -1,6 +1,6 @@
 import { h } from 'preact';
 import { formatNumber } from "../../lib/formatNumber.js";
-import { cx } from "../../lib/utils/index.js";
+import { cx } from '@algolia/ui-components-shared';
 
 function ItemWrapper(_ref) {
   var children = _ref.children,
@@ -39,7 +39,7 @@ var defaultTemplates = {
     }, stars.map(function (isFull, index) {
       return h("svg", {
         key: index,
-        className: cx([cx(cssClasses.starIcon), cx(isFull ? cssClasses.fullStarIcon : cssClasses.emptyStarIcon)]),
+        className: cx(cssClasses.starIcon, isFull ? cssClasses.fullStarIcon : cssClasses.emptyStarIcon),
         "aria-hidden": "true",
         width: "24",
         height: "24"

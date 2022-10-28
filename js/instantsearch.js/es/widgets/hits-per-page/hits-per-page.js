@@ -5,7 +5,7 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 import { h, render } from 'preact';
-import cx from 'classnames';
+import { cx } from '@algolia/ui-components-shared';
 import Selector from "../../components/Selector/Selector.js";
 import connectHitsPerPage from "../../connectors/hits-per-page/connectHitsPerPage.js";
 import { getContainerNode, createDocumentationMessageGenerator, find } from "../../lib/utils/index.js";

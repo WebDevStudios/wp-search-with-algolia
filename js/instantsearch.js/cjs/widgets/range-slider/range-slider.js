@@ -7,7 +7,7 @@ exports.default = void 0;
 
 var _preact = require("preact");
 
-var _classnames = _interopRequireDefault(require("classnames"));
+var _uiComponentsShared = require("@algolia/ui-components-shared");
 
 var _Slider = _interopRequireDefault(require("../../components/Slider/Slider.js"));
 
@@ -117,8 +117,8 @@ var rangeSlider = function rangeSlider(widgetParams) {
 
   var containerNode = (0, _index.getContainerNode)(container);
   var cssClasses = {
-    root: (0, _classnames.default)(suit(), userCssClasses.root),
-    disabledRoot: (0, _classnames.default)(suit({
+    root: (0, _uiComponentsShared.cx)(suit(), userCssClasses.root),
+    disabledRoot: (0, _uiComponentsShared.cx)(suit({
       modifierName: 'disabled'
     }), userCssClasses.disabledRoot)
   };

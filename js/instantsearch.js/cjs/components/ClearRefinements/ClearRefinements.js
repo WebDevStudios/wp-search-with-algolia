@@ -7,15 +7,13 @@ exports.default = void 0;
 
 var _preact = require("preact");
 
-var _classnames = _interopRequireDefault(require("classnames"));
+var _uiComponentsShared = require("@algolia/ui-components-shared");
 
 var _Template = _interopRequireDefault(require("../Template/Template.js"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _extends() { _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; return _extends.apply(this, arguments); }
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 var ClearRefinements = function ClearRefinements(_ref) {
   var hasRefinements = _ref.hasRefinements,
@@ -28,7 +26,7 @@ var ClearRefinements = function ClearRefinements(_ref) {
     templateKey: "resetLabel",
     rootTagName: "button",
     rootProps: {
-      className: (0, _classnames.default)(cssClasses.button, _defineProperty({}, cssClasses.disabledButton, !hasRefinements)),
+      className: (0, _uiComponentsShared.cx)(cssClasses.button, !hasRefinements && cssClasses.disabledButton),
       onClick: refine,
       disabled: !hasRefinements
     },

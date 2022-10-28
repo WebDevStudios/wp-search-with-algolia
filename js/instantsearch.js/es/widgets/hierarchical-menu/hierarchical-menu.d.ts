@@ -54,6 +54,10 @@ export declare type HierarchicalMenuCSSClasses = Partial<{
      */
     link: string | string[];
     /**
+     * CSS class to add to the link of each selected item element (when using the default template).
+     */
+    selectedItemLink: string | string[];
+    /**
      * CSS class to add to each label (when using the default template).
      */
     label: string | string[];

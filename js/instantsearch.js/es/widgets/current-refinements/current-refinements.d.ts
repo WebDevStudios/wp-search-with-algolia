@@ -7,6 +7,10 @@ export declare type CurrentRefinementsCSSClasses = Partial<{
      */
     root: string | string[];
     /**
+     * CSS class to add to the root element when no refinements.
+     */
+    noRefinementRoot: string | string[];
+    /**
      * CSS class to add to the list element.
      */
     list: string | string[];

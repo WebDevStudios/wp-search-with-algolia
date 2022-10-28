@@ -7,9 +7,7 @@ exports.default = void 0;
 
 var _preact = require("preact");
 
-var _classnames = _interopRequireDefault(require("classnames"));
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+var _uiComponentsShared = require("@algolia/ui-components-shared");
 
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
@@ -29,9 +27,7 @@ var Pit = function Pit(_ref) {
     style: _objectSpread(_objectSpread({}, style), {}, {
       marginLeft: positionValue === 100 ? '-2px' : 0
     }),
-    className: (0, _classnames.default)('rheostat-marker', 'rheostat-marker-horizontal', {
-      'rheostat-marker-large': shouldDisplayValue
-    })
+    className: (0, _uiComponentsShared.cx)('rheostat-marker', 'rheostat-marker-horizontal', shouldDisplayValue && 'rheostat-marker-large')
   }, shouldDisplayValue && (0, _preact.h)("div", {
     className: 'rheostat-value'
   }, pitValue));

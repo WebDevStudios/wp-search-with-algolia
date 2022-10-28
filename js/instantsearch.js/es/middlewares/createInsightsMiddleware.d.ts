@@ -7,15 +7,15 @@ export declare type InsightsEvent = {
     hits?: Hit[];
     attribute?: string;
 };
-export declare type InsightsProps = {
-    insightsClient: null | InsightsClient;
+export declare type InsightsProps<TInsightsClient extends null | InsightsClient = InsightsClient | null> = {
+    insightsClient: TInsightsClient;
     insightsInitParams?: {
         userHasOptedOut?: boolean;
         useCookie?: boolean;
         cookieDuration?: number;
         region?: 'de' | 'us';
     };
-    onEvent?: (event: InsightsEvent, insightsClient: null | InsightsClient) => void;
+    onEvent?: (event: InsightsEvent, insightsClient: TInsightsClient) => void;
 };
-export declare type CreateInsightsMiddleware = (props: InsightsProps) => InternalMiddleware;
-export declare const createInsightsMiddleware: CreateInsightsMiddleware;
+export declare type CreateInsightsMiddleware = typeof createInsightsMiddleware;
+export declare function createInsightsMiddleware<TInsightsClient extends null | InsightsClient>(props: InsightsProps<TInsightsClient>): InternalMiddleware;

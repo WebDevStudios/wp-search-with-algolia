@@ -7,7 +7,7 @@ exports.default = void 0;
 
 var _preact = require("preact");
 
-var _classnames = _interopRequireDefault(require("classnames"));
+var _uiComponentsShared = require("@algolia/ui-components-shared");
 
 var _InfiniteHits = _interopRequireDefault(require("../../components/InfiniteHits/InfiniteHits.js"));
 
@@ -100,27 +100,27 @@ var infiniteHits = function infiniteHits(widgetParams) {
 
   var containerNode = (0, _index.getContainerNode)(container);
   var cssClasses = {
-    root: (0, _classnames.default)(suit(), userCssClasses.root),
-    emptyRoot: (0, _classnames.default)(suit({
+    root: (0, _uiComponentsShared.cx)(suit(), userCssClasses.root),
+    emptyRoot: (0, _uiComponentsShared.cx)(suit({
       modifierName: 'empty'
     }), userCssClasses.emptyRoot),
-    item: (0, _classnames.default)(suit({
+    item: (0, _uiComponentsShared.cx)(suit({
       descendantName: 'item'
     }), userCssClasses.item),
-    list: (0, _classnames.default)(suit({
+    list: (0, _uiComponentsShared.cx)(suit({
       descendantName: 'list'
     }), userCssClasses.list),
-    loadPrevious: (0, _classnames.default)(suit({
+    loadPrevious: (0, _uiComponentsShared.cx)(suit({
       descendantName: 'loadPrevious'
     }), userCssClasses.loadPrevious),
-    disabledLoadPrevious: (0, _classnames.default)(suit({
+    disabledLoadPrevious: (0, _uiComponentsShared.cx)(suit({
       descendantName: 'loadPrevious',
       modifierName: 'disabled'
     }), userCssClasses.disabledLoadPrevious),
-    loadMore: (0, _classnames.default)(suit({
+    loadMore: (0, _uiComponentsShared.cx)(suit({
       descendantName: 'loadMore'
     }), userCssClasses.loadMore),
-    disabledLoadMore: (0, _classnames.default)(suit({
+    disabledLoadMore: (0, _uiComponentsShared.cx)(suit({
       descendantName: 'loadMore',
       modifierName: 'disabled'
     }), userCssClasses.disabledLoadMore)

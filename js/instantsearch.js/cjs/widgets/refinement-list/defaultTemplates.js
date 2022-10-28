@@ -9,7 +9,7 @@ var _preact = require("preact");
 
 var _formatNumber = require("../../lib/formatNumber.js");
 
-var _index = require("../../lib/utils/index.js");
+var _uiComponentsShared = require("@algolia/ui-components-shared");
 
 var defaultTemplates = {
   item: function item(_ref) {
@@ -20,19 +20,19 @@ var defaultTemplates = {
         isRefined = _ref.isRefined,
         isFromSearch = _ref.isFromSearch;
     return (0, _preact.h)("label", {
-      className: (0, _index.cx)(cssClasses.label)
+      className: (0, _uiComponentsShared.cx)(cssClasses.label)
     }, (0, _preact.h)("input", {
       type: "checkbox",
-      className: (0, _index.cx)(cssClasses.checkbox),
+      className: (0, _uiComponentsShared.cx)(cssClasses.checkbox),
       value: value,
       defaultChecked: isRefined
     }), (0, _preact.h)("span", {
-      className: (0, _index.cx)(cssClasses.labelText),
+      className: (0, _uiComponentsShared.cx)(cssClasses.labelText),
       dangerouslySetInnerHTML: isFromSearch ? {
         __html: highlighted
       } : undefined
     }, !isFromSearch && highlighted), (0, _preact.h)("span", {
-      className: (0, _index.cx)(cssClasses.count)
+      className: (0, _uiComponentsShared.cx)(cssClasses.count)
     }, (0, _formatNumber.formatNumber)(count)));
   },
   showMoreText: function showMoreText(_ref2) {

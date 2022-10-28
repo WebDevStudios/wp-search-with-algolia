@@ -175,7 +175,10 @@ var connectHierarchicalMenu = function connectHierarchicalMenu(renderFn) {
           sendEvent = (0, _index.createSendEventForFacet)({
             instantSearchInstance: instantSearchInstance,
             helper: helper,
-            attribute: hierarchicalFacetName,
+            attribute: function attribute(facetValue) {
+              var index = facetValue.split(separator).length - 1;
+              return attributes[index];
+            },
             widgetType: this.$$type
           });
         }

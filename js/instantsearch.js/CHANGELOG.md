@@ -1,3 +1,60 @@
+# [4.49.0](https://github.com/algolia/instantsearch.js/compare/v4.48.1...v4.49.0) (2022-10-25)
+
+
+### Features
+
+* **poweredBy:** update component logo ([#5145](https://github.com/algolia/instantsearch.js/issues/5145)) ([7df7816](https://github.com/algolia/instantsearch.js/commit/7df7816eac1bb3d2eafee5da7b6f4f59611468b2))
+
+
+
+## [4.48.1](https://github.com/algolia/instantsearch.js/compare/v4.48.0...v4.48.1) (2022-10-18)
+
+
+### Bug Fixes
+
+* **bundlesize:** consolidate usage of "classnames" helper ([#5138](https://github.com/algolia/instantsearch.js/issues/5138)) ([f1ec288](https://github.com/algolia/instantsearch.js/commit/f1ec28889be5c2f906dd398f37d072587e29cf3a))
+* **currentRefinements:** reset page number on refine ([#5136](https://github.com/algolia/instantsearch.js/issues/5136)) ([407b576](https://github.com/algolia/instantsearch.js/commit/407b5767b51c26d5f471071a92f2e32762898f24))
+* **events:** prevent warning on low number of listeners ([#5143](https://github.com/algolia/instantsearch.js/issues/5143)) ([432aa70](https://github.com/algolia/instantsearch.js/commit/432aa7006e7d8eefd1c8c382f59ea2d2974a19da))
+
+
+
+# [4.48.0](https://github.com/algolia/instantsearch.js/compare/v4.47.0...v4.48.0) (2022-10-10)
+
+
+### Bug Fixes
+
+* **insightsMiddleware:** infer type of insightsClient for onEvent ([#5130](https://github.com/algolia/instantsearch.js/issues/5130)) ([dd5fca4](https://github.com/algolia/instantsearch.js/commit/dd5fca4c185c66f1e31ebe9c0568bcad48e062f3)), closes [#5129](https://github.com/algolia/instantsearch.js/issues/5129)
+
+
+### Features
+
+* **routing:** include repeated indexId in URL correctly ([#5134](https://github.com/algolia/instantsearch.js/issues/5134)) ([679f5da](https://github.com/algolia/instantsearch.js/commit/679f5dad839536def6ae9c3a18416296d40ed49a))
+
+
+
+# [4.47.0](https://github.com/algolia/instantsearch.js/compare/v4.46.3...v4.47.0) (2022-10-03)
+
+
+### Bug Fixes
+
+* **hierarchicalMenu:** pass correct attribute name to Insights ([#5124](https://github.com/algolia/instantsearch.js/issues/5124)) ([fe18a16](https://github.com/algolia/instantsearch.js/commit/fe18a168b1b195d067298770b55fd29a7fdb6edb))
+
+
+### Features
+
+* **status:** introduce status in InstantSearch class ([#5115](https://github.com/algolia/instantsearch.js/issues/5115)) ([21f3147](https://github.com/algolia/instantsearch.js/commit/21f31476e75e162b38b002d5439f231f3990e785))
+* **hierarchicalMenu**: introduce `ais-HierarchicalMenu-item--selected` class ([#5125](https://github.com/algolia/instantsearch.js/issues/5125)) ([4ebb828](https://github.com/algolia/instantsearch.js/commit/4ebb828c93afabfd8083246dfe7edfd33932d5fd))
+
+
+## [4.46.3](https://github.com/algolia/instantsearch.js/compare/v4.46.2...v4.46.3) (2022-09-27)
+
+
+### Bug Fixes
+
+* **currentRefinements:** implement noRefinementRoot modifier class ([#5114](https://github.com/algolia/instantsearch.js/issues/5114)) ([cb66830](https://github.com/algolia/instantsearch.js/commit/cb668305af26bf919841c25bd4cc8493fcdf8cf9))
+
+
+
 ## [4.46.2](https://github.com/algolia/instantsearch.js/compare/v4.46.1...v4.46.2) (2022-09-22)
 
 

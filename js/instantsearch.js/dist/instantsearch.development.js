@@ -1,4 +1,4 @@
-/*! InstantSearch.js 4.46.2 | © Algolia, Inc. and contributors; MIT License | https://github.com/algolia/instantsearch.js */
+/*! InstantSearch.js 4.49.0 | © Algolia, Inc. and contributors; MIT License | https://github.com/algolia/instantsearch.js */
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
   typeof define === 'function' && define.amd ? define(factory) :
@@ -6304,7 +6304,7 @@
   function createSendEventForFacet(_ref) {
     var instantSearchInstance = _ref.instantSearchInstance,
         helper = _ref.helper,
-        attribute = _ref.attribute,
+        attr = _ref.attribute,
         widgetType = _ref.widgetType;
 
     var sendEventForFacet = function sendEventForFacet() {
@@ -6316,6 +6316,7 @@
           facetValue = args[1],
           _args$ = args[2],
           eventName = _args$ === void 0 ? 'Filter Applied' : _args$;
+      var attribute = typeof attr === 'string' ? attr : attr(facetValue);
 
       if (args.length === 1 && _typeof(args[0]) === 'object') {
         instantSearchInstance.sendEventToInsights(args[0]);
@@ -6481,7 +6482,7 @@
         index: index,
         methodName: 'sendEvent',
         args: args,
-        isSearchStalled: instantSearchInstance._isSearchStalled
+        isSearchStalled: instantSearchInstance.status === 'stalled'
       });
       payloads.forEach(function (payload) {
         return instantSearchInstance.sendEventToInsights(payload);
@@ -6532,10 +6533,6 @@
     indexWidget.getWidgets().filter(isIndexWidget).forEach(function (widget) {
       return setIndexHelperState(finalUiState, widget);
     });
-  }
-
-  function cx(cssClasses) {
-    return Array.isArray(cssClasses) ? cssClasses.filter(Boolean).join(' ') : cssClasses || '';
   }
 
   // Debounce a function call to the trailing edge.
@@ -7219,6 +7216,45 @@
     });
   }
 
+  function createInitArgs(instantSearchInstance, parent, uiState) {
+    var helper = parent.getHelper();
+    return {
+      uiState: uiState,
+      helper: helper,
+      parent: parent,
+      instantSearchInstance: instantSearchInstance,
+      state: helper.state,
+      renderState: instantSearchInstance.renderState,
+      templatesConfig: instantSearchInstance.templatesConfig,
+      createURL: parent.createURL,
+      scopedResults: [],
+      searchMetadata: {
+        isSearchStalled: instantSearchInstance.status === 'stalled'
+      },
+      status: instantSearchInstance.status,
+      error: instantSearchInstance.error
+    };
+  }
+  function createRenderArgs(instantSearchInstance, parent) {
+    var results = parent.getResults();
+    return {
+      helper: parent.getHelper(),
+      parent: parent,
+      instantSearchInstance: instantSearchInstance,
+      results: results,
+      scopedResults: parent.getScopedResults(),
+      state: results._state,
+      renderState: instantSearchInstance.renderState,
+      templatesConfig: instantSearchInstance.templatesConfig,
+      createURL: parent.createURL,
+      searchMetadata: {
+        isSearchStalled: instantSearchInstance.status === 'stalled'
+      },
+      status: instantSearchInstance.status,
+      error: instantSearchInstance.error
+    };
+  }
+
   function resolveSearchParameters(current) {
     var parent = current.getParent();
     var states = [current.getHelper().state];
@@ -7439,20 +7475,7 @@
 
           widgets.forEach(function (widget) {
             if (widget.getRenderState) {
-              var renderState = widget.getRenderState(localInstantSearchInstance.renderState[_this.getIndexId()] || {}, {
-                uiState: localInstantSearchInstance._initialUiState,
-                helper: _this.getHelper(),
-                parent: _this,
-                instantSearchInstance: localInstantSearchInstance,
-                state: helper.state,
-                renderState: localInstantSearchInstance.renderState,
-                templatesConfig: localInstantSearchInstance.templatesConfig,
-                createURL: _this.createURL,
-                scopedResults: [],
-                searchMetadata: {
-                  isSearchStalled: localInstantSearchInstance._isSearchStalled
-                }
-              });
+              var renderState = widget.getRenderState(localInstantSearchInstance.renderState[_this.getIndexId()] || {}, createInitArgs(localInstantSearchInstance, _this, localInstantSearchInstance._initialUiState));
               storeRenderState({
                 renderState: renderState,
                 instantSearchInstance: localInstantSearchInstance,
@@ -7462,20 +7485,7 @@
           });
           widgets.forEach(function (widget) {
             if (widget.init) {
-              widget.init({
-                helper: helper,
-                parent: _this,
-                uiState: localInstantSearchInstance._initialUiState,
-                instantSearchInstance: localInstantSearchInstance,
-                state: helper.state,
-                renderState: localInstantSearchInstance.renderState,
-                templatesConfig: localInstantSearchInstance.templatesConfig,
-                createURL: _this.createURL,
-                scopedResults: [],
-                searchMetadata: {
-                  isSearchStalled: localInstantSearchInstance._isSearchStalled
-                }
-              });
+              widget.init(createInitArgs(localInstantSearchInstance, _this, localInstantSearchInstance._initialUiState));
             }
           });
           localInstantSearchInstance.scheduleSearch();
@@ -7641,20 +7651,7 @@
 
         localWidgets.forEach(function (widget) {
           if (widget.getRenderState) {
-            var renderState = widget.getRenderState(instantSearchInstance.renderState[_this3.getIndexId()] || {}, {
-              uiState: uiState,
-              helper: helper,
-              parent: _this3,
-              instantSearchInstance: instantSearchInstance,
-              state: helper.state,
-              renderState: instantSearchInstance.renderState,
-              templatesConfig: instantSearchInstance.templatesConfig,
-              createURL: _this3.createURL,
-              scopedResults: [],
-              searchMetadata: {
-                isSearchStalled: instantSearchInstance._isSearchStalled
-              }
-            });
+            var renderState = widget.getRenderState(instantSearchInstance.renderState[_this3.getIndexId()] || {}, createInitArgs(instantSearchInstance, _this3, uiState));
             storeRenderState({
               renderState: renderState,
               instantSearchInstance: instantSearchInstance,
@@ -7668,20 +7665,7 @@
           !widget.getWidgetState || Boolean(widget.getWidgetUiState), 'The `getWidgetState` method is renamed `getWidgetUiState` and will no longer exist under that name in InstantSearch.js 5.x. Please use `getWidgetUiState` instead.') ;
 
           if (widget.init) {
-            widget.init({
-              uiState: uiState,
-              helper: helper,
-              parent: _this3,
-              instantSearchInstance: instantSearchInstance,
-              state: helper.state,
-              renderState: instantSearchInstance.renderState,
-              templatesConfig: instantSearchInstance.templatesConfig,
-              createURL: _this3.createURL,
-              scopedResults: [],
-              searchMetadata: {
-                isSearchStalled: instantSearchInstance._isSearchStalled
-              }
-            });
+            widget.init(createInitArgs(instantSearchInstance, _this3, uiState));
           }
         }); // Subscribe to the Helper state changes for the `uiState` once widgets
         // are initialized. Until the first render, state changes are part of the
@@ -7722,20 +7706,7 @@
 
         localWidgets.forEach(function (widget) {
           if (widget.getRenderState) {
-            var renderState = widget.getRenderState(instantSearchInstance.renderState[_this4.getIndexId()] || {}, {
-              helper: _this4.getHelper(),
-              parent: _this4,
-              instantSearchInstance: instantSearchInstance,
-              results: _this4.getResults(),
-              scopedResults: _this4.getScopedResults(),
-              state: _this4.getResults()._state,
-              renderState: instantSearchInstance.renderState,
-              templatesConfig: instantSearchInstance.templatesConfig,
-              createURL: _this4.createURL,
-              searchMetadata: {
-                isSearchStalled: instantSearchInstance._isSearchStalled
-              }
-            });
+            var renderState = widget.getRenderState(instantSearchInstance.renderState[_this4.getIndexId()] || {}, createRenderArgs(instantSearchInstance, _this4));
             storeRenderState({
               renderState: renderState,
               instantSearchInstance: instantSearchInstance,
@@ -7751,20 +7722,7 @@
           // be delayed. The render is triggered for the complete tree but some parts do
           // not have results yet.
           if (widget.render) {
-            widget.render({
-              helper: helper,
-              parent: _this4,
-              instantSearchInstance: instantSearchInstance,
-              results: _this4.getResults(),
-              scopedResults: _this4.getScopedResults(),
-              state: _this4.getResults()._state,
-              renderState: instantSearchInstance.renderState,
-              templatesConfig: instantSearchInstance.templatesConfig,
-              createURL: _this4.createURL,
-              searchMetadata: {
-                isSearchStalled: instantSearchInstance._isSearchStalled
-              }
-            });
+            widget.render(createRenderArgs(instantSearchInstance, _this4));
           }
         });
       },
@@ -7796,7 +7754,7 @@
       getWidgetUiState: function getWidgetUiState(uiState) {
         return localWidgets.filter(isIndexWidget).reduce(function (previousUiState, innerIndex) {
           return innerIndex.getWidgetUiState(previousUiState);
-        }, _objectSpread2(_objectSpread2({}, uiState), {}, _defineProperty({}, this.getIndexId(), localUiState)));
+        }, _objectSpread2(_objectSpread2({}, uiState), {}, _defineProperty({}, indexId, _objectSpread2(_objectSpread2({}, uiState[indexId]), localUiState))));
       },
       getWidgetState: function getWidgetState(uiState) {
          _warning(false, 'The `getWidgetState` method is renamed `getWidgetUiState` and will no longer exist under that name in InstantSearch.js 5.x. Please use `getWidgetUiState` instead.') ;
@@ -7826,7 +7784,7 @@
     instantSearchInstance.renderState = _objectSpread2(_objectSpread2({}, instantSearchInstance.renderState), {}, _defineProperty({}, parentIndexName, _objectSpread2(_objectSpread2({}, instantSearchInstance.renderState[parentIndexName]), renderState)));
   }
 
-  var version$1 = '4.46.2';
+  var version$1 = '4.49.0';
 
   var NAMESPACE = 'ais';
   var component = function component(componentName) {
@@ -9224,21 +9182,7 @@
   };
 
   function extractPayload(widgets, instantSearchInstance, payload) {
-    var parent = instantSearchInstance.mainIndex;
-    var initOptions = {
-      instantSearchInstance: instantSearchInstance,
-      parent: parent,
-      scopedResults: [],
-      state: parent.getHelper().state,
-      helper: parent.getHelper(),
-      createURL: parent.createURL,
-      uiState: instantSearchInstance._initialUiState,
-      renderState: instantSearchInstance.renderState,
-      templatesConfig: instantSearchInstance.templatesConfig,
-      searchMetadata: {
-        isSearchStalled: instantSearchInstance._isSearchStalled
-      }
-    };
+    var initOptions = createInitArgs(instantSearchInstance, instantSearchInstance.mainIndex, instantSearchInstance._initialUiState);
     widgets.forEach(function (widget) {
       var widgetParams = {};
 
@@ -9342,7 +9286,7 @@
 
       _classCallCheck(this, InstantSearch);
 
-      _this = _super.call(this);
+      _this = _super.call(this); // prevent `render` event listening from causing a warning
 
       _defineProperty(_assertThisInitialized(_this), "client", void 0);
 
@@ -9368,8 +9312,6 @@
 
       _defineProperty(_assertThisInitialized(_this), "_searchStalledTimer", void 0);
 
-      _defineProperty(_assertThisInitialized(_this), "_isSearchStalled", void 0);
-
       _defineProperty(_assertThisInitialized(_this), "_initialUiState", void 0);
 
       _defineProperty(_assertThisInitialized(_this), "_initialResults", void 0);
@@ -9384,6 +9326,10 @@
 
       _defineProperty(_assertThisInitialized(_this), "sendEventToInsights", void 0);
 
+      _defineProperty(_assertThisInitialized(_this), "status", 'idle');
+
+      _defineProperty(_assertThisInitialized(_this), "error", undefined);
+
       _defineProperty(_assertThisInitialized(_this), "scheduleSearch", defer(function () {
         if (_this.started) {
           _this.mainHelper.search();
@@ -9391,10 +9337,16 @@
       }));
 
       _defineProperty(_assertThisInitialized(_this), "scheduleRender", defer(function () {
+        var shouldResetStatus = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : true;
+
         if (!_this.mainHelper.hasPendingRequests()) {
           clearTimeout(_this._searchStalledTimer);
           _this._searchStalledTimer = null;
-          _this._isSearchStalled = false;
+
+          if (shouldResetStatus) {
+            _this.status = 'idle';
+            _this.error = undefined;
+          }
         }
 
         _this.mainIndex.render({
@@ -9414,6 +9366,8 @@
           });
         });
       }));
+
+      _this.setMaxListeners(100);
 
       var _options$indexName = options.indexName,
           indexName = _options$indexName === void 0 ? null : _options$indexName,
@@ -9475,7 +9429,6 @@
       };
       _this._stalledSearchDelay = stalledSearchDelay;
       _this._searchStalledTimer = null;
-      _this._isSearchStalled = false;
       _this._createURL = defaultCreateURL;
       _this._initialUiState = initialUiState;
       _this._initialResults = null;
@@ -9504,6 +9457,25 @@
 
 
     _createClass(InstantSearch, [{
+      key: "_isSearchStalled",
+      get:
+      /**
+       * The status of the search. Can be "idle", "loading", "stalled", or "error".
+       */
+
+      /**
+       * The last returned error from the Search API.
+       * The error gets cleared when the next valid search response is rendered.
+       */
+
+      /**
+       * @deprecated use `status === 'stalled'` instead
+       */
+      function get() {
+         _warning(false, "`InstantSearch._isSearchStalled` is deprecated and will be removed in InstantSearch.js 5.0.\n\nUse `InstantSearch.status === \"stalled\"` instead.") ;
+        return this.status === 'stalled';
+      }
+    }, {
       key: "use",
       value: function use() {
         var _this2 = this;
@@ -9665,10 +9637,18 @@
         var mainHelper = this.mainHelper || algoliasearchHelper_1(this.client, this.indexName);
 
         mainHelper.search = function () {
-          // This solution allows us to keep the exact same API for the users but
+          _this3.status = 'loading'; // @MAJOR: use scheduleRender here
+          // For now, widgets don't expect to be rendered at the start of `loading`,
+          // so it would be a breaking change to add an extra render. We don't have
+          // these guarantees about the render event, thus emitting it once more
+          // isn't a breaking change.
+
+          _this3.emit('render'); // This solution allows us to keep the exact same API for the users but
           // under the hood, we have a different implementation. It should be
           // completely transparent for the rest of the codebase. Only this module
           // is impacted.
+
+
           return mainHelper.searchOnlyWithDerivedHelpers();
         };
 
@@ -9725,6 +9705,11 @@
 
 
           error.error = error;
+          _this3.error = error;
+          _this3.status = 'error';
+
+          _this3.scheduleRender(false); // This needs to execute last because it throws the error.
+
 
           _this3.emit('error', error);
         });
@@ -9813,7 +9798,7 @@
 
         if (!this._searchStalledTimer) {
           this._searchStalledTimer = setTimeout(function () {
-            _this4._isSearchStalled = true;
+            _this4.status = 'stalled';
 
             _this4.scheduleRender();
           }, this._stalledSearchDelay);
@@ -10156,6 +10141,8 @@
   }
 
   function clearRefinementFromState(state, refinement) {
+    state = state.resetPage();
+
     switch (refinement.type) {
       case 'facet':
         return state.removeFacetRefinement(refinement.attribute, String(refinement.value));
@@ -10384,7 +10371,10 @@
             sendEvent = createSendEventForFacet({
               instantSearchInstance: instantSearchInstance,
               helper: helper,
-              attribute: hierarchicalFacetName,
+              attribute: function attribute(facetValue) {
+                var index = facetValue.split(separator).length - 1;
+                return attributes[index];
+              },
               widgetType: this.$$type
             });
           }
@@ -15011,58 +15001,19 @@
     };
   };
 
-  function createCommonjsModule(fn, module) {
-  	return module = { exports: {} }, fn(module, module.exports), module.exports;
+  function cx() {
+    for (var _len = arguments.length, cssClasses = new Array(_len), _key = 0; _key < _len; _key++) {
+      cssClasses[_key] = arguments[_key];
+    }
+
+    return cssClasses.reduce(function (acc, className) {
+      if (Array.isArray(className)) {
+        return acc.concat(className);
+      }
+
+      return acc.concat([className]);
+    }, []).filter(Boolean).join(' ');
   }
-
-  var classnames = createCommonjsModule(function (module) {
-  /*!
-    Copyright (c) 2017 Jed Watson.
-    Licensed under the MIT License (MIT), see
-    http://jedwatson.github.io/classnames
-  */
-  /* global define */
-
-  (function () {
-
-  	var hasOwn = {}.hasOwnProperty;
-
-  	function classNames () {
-  		var classes = [];
-
-  		for (var i = 0; i < arguments.length; i++) {
-  			var arg = arguments[i];
-  			if (!arg) continue;
-
-  			var argType = typeof arg;
-
-  			if (argType === 'string' || argType === 'number') {
-  				classes.push(arg);
-  			} else if (Array.isArray(arg) && arg.length) {
-  				var inner = classNames.apply(null, arg);
-  				if (inner) {
-  					classes.push(inner);
-  				}
-  			} else if (argType === 'object') {
-  				for (var key in arg) {
-  					if (hasOwn.call(arg, key) && arg[key]) {
-  						classes.push(key);
-  					}
-  				}
-  			}
-  		}
-
-  		return classes.join(' ');
-  	}
-
-  	if ( module.exports) {
-  		classNames.default = classNames;
-  		module.exports = classNames;
-  	} else {
-  		window.classNames = classNames;
-  	}
-  }());
-  });
 
   function prepareTemplates( // can not use = {} here, since the template could have different constraints
   defaultTemplates) {
@@ -15096,6 +15047,10 @@
     return _objectSpread2({
       templatesConfig: templatesConfig
     }, preparedTemplates);
+  }
+
+  function createCommonjsModule(fn, module) {
+  	return module = { exports: {} }, fn(module, module.exports), module.exports;
   }
 
   var compiler = createCommonjsModule(function (module, exports) {
@@ -15876,14 +15831,6 @@
 
   var m$1=e$1.bind(h);
 
-  function cx$1() {
-    for (var _len = arguments.length, classNames = new Array(_len), _key = 0; _key < _len; _key++) {
-      classNames[_key] = arguments[_key];
-    }
-
-    return classNames.filter(Boolean).join(' ') || undefined;
-  }
-
   var _extends_1 = createCommonjsModule(function (module) {
   function _extends() {
     module.exports = _extends = Object.assign || function (target) {
@@ -15945,6 +15892,7 @@
   var objectWithoutProperties = _objectWithoutProperties$1;
 
   var _excluded = ["parts", "highlightedTagName", "nonHighlightedTagName", "separator", "className", "classNames"];
+  // This is a minimal subset of the actual types from the `JSX` namespace.
 
   function createHighlightPartComponent(_ref) {
     var createElement = _ref.createElement;
@@ -15982,7 +15930,7 @@
           props = objectWithoutProperties(_ref4, _excluded);
 
       return createElement("span", _extends_1({}, props, {
-        className: cx$1(classNames.root, className)
+        className: cx(classNames.root, className)
       }), parts.map(function (part, partIndex) {
         var isLastPart = partIndex === parts.length - 1;
         return createElement(Fragment, {
@@ -16014,10 +15962,10 @@
 
     return h(InternalHighlight, _extends({
       classNames: {
-        root: cx$1('ais-Highlight', classNames.root),
-        highlighted: cx$1('ais-Highlight-highlighted', classNames.highlighted),
-        nonHighlighted: cx$1('ais-Highlight-nonHighlighted', classNames.nonHighlighted),
-        separator: cx$1('ais-Highlight-separator', classNames.separator)
+        root: cx('ais-Highlight', classNames.root),
+        highlighted: cx('ais-Highlight-highlighted', classNames.highlighted),
+        nonHighlighted: cx('ais-Highlight-nonHighlighted', classNames.nonHighlighted),
+        separator: cx('ais-Highlight-separator', classNames.separator)
       }
     }, props));
   }
@@ -16048,10 +15996,10 @@
 
     return h(InternalHighlight, _extends({
       classNames: {
-        root: cx$1('ais-ReverseHighlight', classNames.root),
-        highlighted: cx$1('ais-ReverseHighlight-highlighted', classNames.highlighted),
-        nonHighlighted: cx$1('ais-ReverseHighlight-nonHighlighted', classNames.nonHighlighted),
-        separator: cx$1('ais-ReverseHighlight-separator', classNames.separator)
+        root: cx('ais-ReverseHighlight', classNames.root),
+        highlighted: cx('ais-ReverseHighlight-highlighted', classNames.highlighted),
+        nonHighlighted: cx('ais-ReverseHighlight-nonHighlighted', classNames.nonHighlighted),
+        separator: cx('ais-ReverseHighlight-separator', classNames.separator)
       }
     }, props));
   }
@@ -16089,10 +16037,10 @@
 
     return h(InternalHighlight, _extends({
       classNames: {
-        root: cx$1('ais-ReverseSnippet', classNames.root),
-        highlighted: cx$1('ais-ReverseSnippet-highlighted', classNames.highlighted),
-        nonHighlighted: cx$1('ais-ReverseSnippet-nonHighlighted', classNames.nonHighlighted),
-        separator: cx$1('ais-ReverseSnippet-separator', classNames.separator)
+        root: cx('ais-ReverseSnippet', classNames.root),
+        highlighted: cx('ais-ReverseSnippet-highlighted', classNames.highlighted),
+        nonHighlighted: cx('ais-ReverseSnippet-nonHighlighted', classNames.nonHighlighted),
+        separator: cx('ais-ReverseSnippet-separator', classNames.separator)
       }
     }, props));
   }
@@ -16130,10 +16078,10 @@
 
     return h(InternalHighlight, _extends({
       classNames: {
-        root: cx$1('ais-Snippet', classNames.root),
-        highlighted: cx$1('ais-Snippet-highlighted', classNames.highlighted),
-        nonHighlighted: cx$1('ais-Snippet-nonHighlighted', classNames.nonHighlighted),
-        separator: cx$1('ais-Snippet-separator', classNames.separator)
+        root: cx('ais-Snippet', classNames.root),
+        highlighted: cx('ais-Snippet-highlighted', classNames.highlighted),
+        nonHighlighted: cx('ais-Snippet-nonHighlighted', classNames.nonHighlighted),
+        separator: cx('ais-Snippet-separator', classNames.separator)
       }
     }, props));
   }
@@ -16292,11 +16240,11 @@
         createURL = _ref.createURL,
         refine = _ref.refine;
     return h("div", {
-      className: classnames(cssClasses.root, _defineProperty({}, cssClasses.noRefinementRoot, items.length === 0))
+      className: cx(cssClasses.root, items.length === 0 && cssClasses.noRefinementRoot)
     }, h("ul", {
       className: cssClasses.list
     }, h("li", {
-      className: classnames(cssClasses.item, _defineProperty({}, cssClasses.selectedItem, items.length === 0))
+      className: cx(cssClasses.item, items.length === 0 && cssClasses.selectedItem)
     }, h(Template, _extends({}, templateProps, {
       templateKey: "home",
       rootTagName: "a",
@@ -16312,7 +16260,7 @@
       var isLast = idx === items.length - 1;
       return h("li", {
         key: item.label + idx,
-        className: classnames(cssClasses.item, _defineProperty({}, cssClasses.selectedItem, isLast))
+        className: cx(cssClasses.item, isLast && cssClasses.selectedItem)
       }, h(Template, _extends({}, templateProps, {
         templateKey: "separator",
         rootTagName: "span",
@@ -16395,24 +16343,24 @@
 
     var containerNode = getContainerNode(container);
     var cssClasses = {
-      root: classnames(suit$4(), userCssClasses.root),
-      noRefinementRoot: classnames(suit$4({
+      root: cx(suit$4(), userCssClasses.root),
+      noRefinementRoot: cx(suit$4({
         modifierName: 'noRefinement'
       }), userCssClasses.noRefinementRoot),
-      list: classnames(suit$4({
+      list: cx(suit$4({
         descendantName: 'list'
       }), userCssClasses.list),
-      item: classnames(suit$4({
+      item: cx(suit$4({
         descendantName: 'item'
       }), userCssClasses.item),
-      selectedItem: classnames(suit$4({
+      selectedItem: cx(suit$4({
         descendantName: 'item',
         modifierName: 'selected'
       }), userCssClasses.selectedItem),
-      separator: classnames(suit$4({
+      separator: cx(suit$4({
         descendantName: 'separator'
       }), userCssClasses.separator),
-      link: classnames(suit$4({
+      link: cx(suit$4({
         descendantName: 'link'
       }), userCssClasses.link)
     };
@@ -16446,7 +16394,7 @@
       templateKey: "resetLabel",
       rootTagName: "button",
       rootProps: {
-        className: classnames(cssClasses.button, _defineProperty({}, cssClasses.disabledButton, !hasRefinements)),
+        className: cx(cssClasses.button, !hasRefinements && cssClasses.disabledButton),
         onClick: refine,
         disabled: !hasRefinements
       },
@@ -16512,11 +16460,11 @@
 
     var containerNode = getContainerNode(container);
     var cssClasses = {
-      root: classnames(suit$5(), userCssClasses.root),
-      button: classnames(suit$5({
+      root: cx(suit$5(), userCssClasses.root),
+      button: cx(suit$5({
         descendantName: 'button'
       }), userCssClasses.button),
-      disabledButton: classnames(suit$5({
+      disabledButton: cx(suit$5({
         descendantName: 'button',
         modifierName: 'disabled'
       }), userCssClasses.disabledButton)
@@ -16578,9 +16526,10 @@
 
   var CurrentRefinements = function CurrentRefinements(_ref2) {
     var items = _ref2.items,
-        cssClasses = _ref2.cssClasses;
+        cssClasses = _ref2.cssClasses,
+        canRefine = _ref2.canRefine;
     return h("div", {
-      className: cssClasses.root
+      className: cx(cssClasses.root, !canRefine && cssClasses.noRefinementRoot)
     }, h("ul", {
       className: cssClasses.list
     }, items.map(function (item, index) {
@@ -16610,7 +16559,8 @@
 
   var renderer$2 = function renderer(_ref, isFirstRender) {
     var items = _ref.items,
-        widgetParams = _ref.widgetParams;
+        widgetParams = _ref.widgetParams,
+        canRefine = _ref.canRefine;
 
     if (isFirstRender) {
       return;
@@ -16621,7 +16571,8 @@
         cssClasses = _ref2.cssClasses;
     P(h(CurrentRefinements, {
       cssClasses: cssClasses,
-      items: items
+      items: items,
+      canRefine: canRefine
     }), container);
   };
 
@@ -16640,23 +16591,26 @@
 
     var containerNode = getContainerNode(container);
     var cssClasses = {
-      root: classnames(suit$6(), userCssClasses.root),
-      list: classnames(suit$6({
+      root: cx(suit$6(), userCssClasses.root),
+      noRefinementRoot: cx(suit$6({
+        modifierName: 'noRefinement'
+      }), userCssClasses.noRefinementRoot),
+      list: cx(suit$6({
         descendantName: 'list'
       }), userCssClasses.list),
-      item: classnames(suit$6({
+      item: cx(suit$6({
         descendantName: 'item'
       }), userCssClasses.item),
-      label: classnames(suit$6({
+      label: cx(suit$6({
         descendantName: 'label'
       }), userCssClasses.label),
-      category: classnames(suit$6({
+      category: cx(suit$6({
         descendantName: 'category'
       }), userCssClasses.category),
-      categoryLabel: classnames(suit$6({
+      categoryLabel: cx(suit$6({
         descendantName: 'categoryLabel'
       }), userCssClasses.categoryLabel),
-      delete: classnames(suit$6({
+      delete: cx(suit$6({
         descendantName: 'delete'
       }), userCssClasses.delete)
     };
@@ -16692,7 +16646,7 @@
         cssClasses = _ref.cssClasses,
         templateProps = _ref.templateProps;
     return h("div", {
-      className: classnames(cssClasses.root, _defineProperty({}, cssClasses.emptyRoot, hits.length === 0))
+      className: cx(cssClasses.root, hits.length === 0 && cssClasses.emptyRoot)
     }, h(Template, _extends({}, templateProps, {
       templateKey: "header",
       rootProps: {
@@ -16778,20 +16732,20 @@
 
     var containerNode = getContainerNode(container);
     var cssClasses = {
-      root: classnames(suit$7(), userCssClasses.root),
-      emptyRoot: classnames(suit$7({
+      root: cx(suit$7(), userCssClasses.root),
+      emptyRoot: cx(suit$7({
         modifierName: 'empty'
       }), userCssClasses.emptyRoot),
-      header: classnames(suit$7({
+      header: cx(suit$7({
         descendantName: 'header'
       }), userCssClasses.header),
-      loader: classnames(suit$7({
+      loader: cx(suit$7({
         descendantName: 'loader'
       }), userCssClasses.loader),
-      list: classnames(suit$7({
+      list: cx(suit$7({
         descendantName: 'list'
       }), userCssClasses.list),
-      item: classnames(suit$7({
+      item: cx(suit$7({
         descendantName: 'item'
       }), userCssClasses.item)
     };
@@ -16949,7 +16903,7 @@
     return h(p, null, enableRefine && h("div", null, enableRefineControl && h("div", {
       className: cssClasses.control
     }, isRefineOnMapMove || !hasMapMoveSinceLastRefine ? h(GeoSearchToggle, {
-      classNameLabel: classnames(cssClasses.label, _defineProperty({}, cssClasses.selectedLabel, isRefineOnMapMove)),
+      classNameLabel: cx(cssClasses.label, isRefineOnMapMove && cssClasses.selectedLabel),
       classNameInput: cssClasses.input,
       checked: isRefineOnMapMove,
       onToggle: onRefineToggle
@@ -16966,7 +16920,7 @@
     })))), !enableRefineControl && !isRefineOnMapMove && h("div", {
       className: cssClasses.control
     }, h(GeoSearchButton, {
-      className: classnames(cssClasses.redo, _defineProperty({}, cssClasses.disabledRedo, !hasMapMoveSinceLastRefine)),
+      className: cx(cssClasses.redo, !hasMapMoveSinceLastRefine && cssClasses.disabledRedo),
       disabled: !hasMapMoveSinceLastRefine,
       onClick: onRefineClick
     }, h(Template, _extends({}, templateProps, {
@@ -17387,35 +17341,35 @@
 
     var containerNode = getContainerNode(container);
     var cssClasses = {
-      root: classnames(suit$9(), userCssClasses.root),
+      root: cx(suit$9(), userCssClasses.root),
       // Required only to mount / unmount the Preact tree
       tree: suit$9({
         descendantName: 'tree'
       }),
-      map: classnames(suit$9({
+      map: cx(suit$9({
         descendantName: 'map'
       }), userCssClasses.map),
-      control: classnames(suit$9({
+      control: cx(suit$9({
         descendantName: 'control'
       }), userCssClasses.control),
-      label: classnames(suit$9({
+      label: cx(suit$9({
         descendantName: 'label'
       }), userCssClasses.label),
-      selectedLabel: classnames(suit$9({
+      selectedLabel: cx(suit$9({
         descendantName: 'label',
         modifierName: 'selected'
       }), userCssClasses.selectedLabel),
-      input: classnames(suit$9({
+      input: cx(suit$9({
         descendantName: 'input'
       }), userCssClasses.input),
-      redo: classnames(suit$9({
+      redo: cx(suit$9({
         descendantName: 'redo'
       }), userCssClasses.redo),
-      disabledRedo: classnames(suit$9({
+      disabledRedo: cx(suit$9({
         descendantName: 'redo',
         modifierName: 'disabled'
       }), userCssClasses.disabledRedo),
-      reset: classnames(suit$9({
+      reset: cx(suit$9({
         descendantName: 'reset'
       }), userCssClasses.reset)
     };
@@ -17448,7 +17402,7 @@
       return new HTMLMarker(_objectSpread2(_objectSpread2(_objectSpread2({}, customHTMLMarker.createOptions(item)), rest), {}, {
         __id: item.objectID,
         position: item._geoloc,
-        className: classnames(suit$9({
+        className: cx(suit$9({
           descendantName: 'marker'
         })),
         template: renderTemplate({
@@ -17770,8 +17724,6 @@
     }, {
       key: "_generateFacetItem",
       value: function _generateFacetItem(facetValue) {
-        var _cx;
-
         var subItems;
 
         if (isHierarchicalMenuItem(facetValue) && Array.isArray(facetValue.data) && facetValue.data.length > 0) {
@@ -17809,7 +17761,7 @@
           key += "/".concat(facetValue.count);
         }
 
-        var refinementListItemClassName = classnames(this.props.cssClasses.item, (_cx = {}, _defineProperty(_cx, this.props.cssClasses.selectedItem, facetValue.isRefined), _defineProperty(_cx, this.props.cssClasses.disabledItem, !facetValue.count), _defineProperty(_cx, this.props.cssClasses.parentItem, isHierarchicalMenuItem(facetValue) && Array.isArray(facetValue.data) && facetValue.data.length > 0), _cx));
+        var refinementListItemClassName = cx(this.props.cssClasses.item, facetValue.isRefined && this.props.cssClasses.selectedItem, !facetValue.count && this.props.cssClasses.disabledItem, Boolean(isHierarchicalMenuItem(facetValue) && Array.isArray(facetValue.data) && facetValue.data.length > 0) && this.props.cssClasses.parentItem);
         return h(RefinementListItem, {
           templateKey: "item",
           key: key,
@@ -17903,7 +17855,7 @@
       value: function render() {
         var _this2 = this;
 
-        var showMoreButtonClassName = classnames(this.props.cssClasses.showMore, _defineProperty({}, this.props.cssClasses.disabledShowMore, !(this.props.showMore === true && this.props.canToggleShowMore)));
+        var showMoreButtonClassName = cx(this.props.cssClasses.showMore, !(this.props.showMore === true && this.props.canToggleShowMore) && this.props.cssClasses.disabledShowMore);
         var showMoreButton = this.props.showMore === true && h(Template, _extends({}, this.props.templateProps, {
           templateKey: "showMoreText",
           rootTagName: "button",
@@ -17947,7 +17899,7 @@
             className: this.props.cssClasses.noResults
           }
         }));
-        var rootClassName = classnames(this.props.cssClasses.root, _defineProperty({}, this.props.cssClasses.noRefinementRoot, !this.props.facetValues || this.props.facetValues.length === 0), this.props.className);
+        var rootClassName = cx(this.props.cssClasses.root, (!this.props.facetValues || this.props.facetValues.length === 0) && this.props.cssClasses.noRefinementRoot, this.props.className);
         return h("div", {
           className: rootClassName
         }, this.props.children, searchBox, facetValues, noResults, showMoreButton);
@@ -17964,9 +17916,10 @@
       var url = _ref.url,
           label = _ref.label,
           count = _ref.count,
-          cssClasses = _ref.cssClasses;
+          cssClasses = _ref.cssClasses,
+          isRefined = _ref.isRefined;
       return h("a", {
-        className: cx(cssClasses.link),
+        className: cx(cx(cssClasses.link), cx(isRefined ? cssClasses.selectedItemLink : undefined)),
         href: url
       }, h("span", {
         className: cx(cssClasses.label)
@@ -18099,41 +18052,45 @@
 
     var containerNode = getContainerNode(container);
     var cssClasses = {
-      root: classnames(suit$a(), userCssClasses.root),
-      noRefinementRoot: classnames(suit$a({
+      root: cx(suit$a(), userCssClasses.root),
+      noRefinementRoot: cx(suit$a({
         modifierName: 'noRefinement'
       }), userCssClasses.noRefinementRoot),
-      list: classnames(suit$a({
+      list: cx(suit$a({
         descendantName: 'list'
       }), userCssClasses.list),
-      childList: classnames(suit$a({
+      childList: cx(suit$a({
         descendantName: 'list',
         modifierName: 'child'
       }), userCssClasses.childList),
-      item: classnames(suit$a({
+      item: cx(suit$a({
         descendantName: 'item'
       }), userCssClasses.item),
-      selectedItem: classnames(suit$a({
+      selectedItem: cx(suit$a({
         descendantName: 'item',
         modifierName: 'selected'
       }), userCssClasses.selectedItem),
-      parentItem: classnames(suit$a({
+      parentItem: cx(suit$a({
         descendantName: 'item',
         modifierName: 'parent'
       }), userCssClasses.parentItem),
-      link: classnames(suit$a({
+      link: cx(suit$a({
         descendantName: 'link'
       }), userCssClasses.link),
-      label: classnames(suit$a({
+      selectedItemLink: cx(suit$a({
+        descendantName: 'link',
+        modifierName: 'selected'
+      }), userCssClasses.selectedItemLink),
+      label: cx(suit$a({
         descendantName: 'label'
       }), userCssClasses.label),
-      count: classnames(suit$a({
+      count: cx(suit$a({
         descendantName: 'count'
       }), userCssClasses.count),
-      showMore: classnames(suit$a({
+      showMore: cx(suit$a({
         descendantName: 'showMore'
       }), userCssClasses.showMore),
-      disabledShowMore: classnames(suit$a({
+      disabledShowMore: cx(suit$a({
         descendantName: 'showMore',
         modifierName: 'disabled'
       }), userCssClasses.disabledShowMore)
@@ -18175,7 +18132,7 @@
       return h(Template, _extends({}, templateProps, {
         templateKey: "empty",
         rootProps: {
-          className: classnames(cssClasses.root, cssClasses.emptyRoot)
+          className: cx(cssClasses.root, cssClasses.emptyRoot)
         },
         data: results
       }));
@@ -18268,14 +18225,14 @@
 
     var containerNode = getContainerNode(container);
     var cssClasses = {
-      root: classnames(suit$b(), userCssClasses.root),
-      emptyRoot: classnames(suit$b({
+      root: cx(suit$b(), userCssClasses.root),
+      emptyRoot: cx(suit$b({
         modifierName: 'empty'
       }), userCssClasses.emptyRoot),
-      list: classnames(suit$b({
+      list: cx(suit$b({
         descendantName: 'list'
       }), userCssClasses.list),
-      item: classnames(suit$b({
+      item: cx(suit$b({
         descendantName: 'item'
       }), userCssClasses.item)
     };
@@ -18302,14 +18259,14 @@
         cssClasses = _ref.cssClasses,
         setValue = _ref.setValue;
     return h("select", {
-      className: classnames(cssClasses.select),
+      className: cx(cssClasses.select),
       onChange: function onChange(event) {
         return setValue(event.target.value);
       },
       value: "".concat(currentValue)
     }, options.map(function (option) {
       return h("option", {
-        className: classnames(cssClasses.option),
+        className: cx(cssClasses.option),
         key: option.label + option.value,
         value: "".concat(option.value)
       }, option.label);
@@ -18360,11 +18317,11 @@
 
     var containerNode = getContainerNode(container);
     var cssClasses = {
-      root: classnames(suit$c(), userCssClasses.root),
-      select: classnames(suit$c({
+      root: cx(suit$c(), userCssClasses.root),
+      select: cx(suit$c({
         descendantName: 'select'
       }), userCssClasses.select),
-      option: classnames(suit$c({
+      option: cx(suit$c({
         descendantName: 'option'
       }), userCssClasses.option)
     };
@@ -18400,7 +18357,7 @@
       return h(Template, _extends({}, templateProps, {
         templateKey: "empty",
         rootProps: {
-          className: classnames(cssClasses.root, cssClasses.emptyRoot)
+          className: cx(cssClasses.root, cssClasses.emptyRoot)
         },
         data: results
       }));
@@ -18412,7 +18369,7 @@
       templateKey: "showPreviousText",
       rootTagName: "button",
       rootProps: {
-        className: classnames(cssClasses.loadPrevious, _defineProperty({}, cssClasses.disabledLoadPrevious, isFirstPage)),
+        className: cx(cssClasses.loadPrevious, isFirstPage && cssClasses.disabledLoadPrevious),
         disabled: isFirstPage,
         onClick: showPrevious
       }
@@ -18436,7 +18393,7 @@
       templateKey: "showMoreText",
       rootTagName: "button",
       rootProps: {
-        className: classnames(cssClasses.loadMore, _defineProperty({}, cssClasses.disabledLoadMore, isLastPage)),
+        className: cx(cssClasses.loadMore, isLastPage && cssClasses.disabledLoadMore),
         disabled: isLastPage,
         onClick: showMore
       }
@@ -18527,27 +18484,27 @@
 
     var containerNode = getContainerNode(container);
     var cssClasses = {
-      root: classnames(suit$d(), userCssClasses.root),
-      emptyRoot: classnames(suit$d({
+      root: cx(suit$d(), userCssClasses.root),
+      emptyRoot: cx(suit$d({
         modifierName: 'empty'
       }), userCssClasses.emptyRoot),
-      item: classnames(suit$d({
+      item: cx(suit$d({
         descendantName: 'item'
       }), userCssClasses.item),
-      list: classnames(suit$d({
+      list: cx(suit$d({
         descendantName: 'list'
       }), userCssClasses.list),
-      loadPrevious: classnames(suit$d({
+      loadPrevious: cx(suit$d({
         descendantName: 'loadPrevious'
       }), userCssClasses.loadPrevious),
-      disabledLoadPrevious: classnames(suit$d({
+      disabledLoadPrevious: cx(suit$d({
         descendantName: 'loadPrevious',
         modifierName: 'disabled'
       }), userCssClasses.disabledLoadPrevious),
-      loadMore: classnames(suit$d({
+      loadMore: cx(suit$d({
         descendantName: 'loadMore'
       }), userCssClasses.loadMore),
-      disabledLoadMore: classnames(suit$d({
+      disabledLoadMore: cx(suit$d({
         descendantName: 'loadMore',
         modifierName: 'disabled'
       }), userCssClasses.disabledLoadMore)
@@ -18661,33 +18618,33 @@
 
     var containerNode = getContainerNode(container);
     var cssClasses = {
-      root: classnames(suit$e(), userCssClasses.root),
-      noRefinementRoot: classnames(suit$e({
+      root: cx(suit$e(), userCssClasses.root),
+      noRefinementRoot: cx(suit$e({
         modifierName: 'noRefinement'
       }), userCssClasses.noRefinementRoot),
-      list: classnames(suit$e({
+      list: cx(suit$e({
         descendantName: 'list'
       }), userCssClasses.list),
-      item: classnames(suit$e({
+      item: cx(suit$e({
         descendantName: 'item'
       }), userCssClasses.item),
-      selectedItem: classnames(suit$e({
+      selectedItem: cx(suit$e({
         descendantName: 'item',
         modifierName: 'selected'
       }), userCssClasses.selectedItem),
-      link: classnames(suit$e({
+      link: cx(suit$e({
         descendantName: 'link'
       }), userCssClasses.link),
-      label: classnames(suit$e({
+      label: cx(suit$e({
         descendantName: 'label'
       }), userCssClasses.label),
-      count: classnames(suit$e({
+      count: cx(suit$e({
         descendantName: 'count'
       }), userCssClasses.count),
-      showMore: classnames(suit$e({
+      showMore: cx(suit$e({
         descendantName: 'showMore'
       }), userCssClasses.showMore),
-      disabledShowMore: classnames(suit$e({
+      disabledShowMore: cx(suit$e({
         descendantName: 'showMore',
         modifierName: 'disabled'
       }), userCssClasses.disabledShowMore)
@@ -18728,7 +18685,7 @@
         selectedValue = _ref2.value;
 
     return h("div", {
-      className: classnames(cssClasses.root, _defineProperty({}, cssClasses.noRefinementRoot, items.length === 0))
+      className: cx(cssClasses.root, items.length === 0 && cssClasses.noRefinementRoot)
     }, h("select", {
       className: cssClasses.select,
       value: selectedValue,
@@ -18820,14 +18777,14 @@
 
     var containerNode = getContainerNode(container);
     var cssClasses = {
-      root: classnames(suit$f(), userCssClasses.root),
-      noRefinementRoot: classnames(suit$f({
+      root: cx(suit$f(), userCssClasses.root),
+      noRefinementRoot: cx(suit$f({
         modifierName: 'noRefinement'
       }), userCssClasses.noRefinementRoot),
-      select: classnames(suit$f({
+      select: cx(suit$f({
         descendantName: 'select'
       }), userCssClasses.select),
-      option: classnames(suit$f({
+      option: cx(suit$f({
         descendantName: 'option'
       }), userCssClasses.option)
     };
@@ -18923,27 +18880,27 @@
 
     var containerNode = getContainerNode(container);
     var cssClasses = {
-      root: classnames(suit$g(), userCssClasses.root),
-      noRefinementRoot: classnames(suit$g({
+      root: cx(suit$g(), userCssClasses.root),
+      noRefinementRoot: cx(suit$g({
         modifierName: 'noRefinement'
       }), userCssClasses.noRefinementRoot),
-      list: classnames(suit$g({
+      list: cx(suit$g({
         descendantName: 'list'
       }), userCssClasses.list),
-      item: classnames(suit$g({
+      item: cx(suit$g({
         descendantName: 'item'
       }), userCssClasses.item),
-      selectedItem: classnames(suit$g({
+      selectedItem: cx(suit$g({
         descendantName: 'item',
         modifierName: 'selected'
       }), userCssClasses.selectedItem),
-      label: classnames(suit$g({
+      label: cx(suit$g({
         descendantName: 'label'
       }), userCssClasses.label),
-      radio: classnames(suit$g({
+      radio: cx(suit$g({
         descendantName: 'radio'
       }), userCssClasses.radio),
-      labelText: classnames(suit$g({
+      labelText: cx(suit$g({
         descendantName: 'labelText'
       }), userCssClasses.labelText)
     };
@@ -18981,7 +18938,7 @@
     }
 
     return h("div", {
-      className: classnames(props.cssClasses.root, _defineProperty({}, props.cssClasses.noRefinementRoot, props.nbPages <= 1))
+      className: cx(props.cssClasses.root, props.nbPages <= 1 && props.cssClasses.noRefinementRoot)
     }, h("ul", {
       className: props.cssClasses.list
     }, props.showFirst && h(PaginationLink, {
@@ -19048,7 +19005,7 @@
         createURL = _ref.createURL,
         createClickHandler = _ref.createClickHandler;
     return h("li", {
-      className: classnames(cssClasses.item, className, isDisabled && cssClasses.disabledItem, isSelected && cssClasses.selectedItem)
+      className: cx(cssClasses.item, className, isDisabled && cssClasses.disabledItem, isSelected && cssClasses.selectedItem)
     }, isDisabled ? h("span", {
       className: cssClasses.link,
       dangerouslySetInnerHTML: {
@@ -19149,45 +19106,45 @@
     var scrollTo = userScrollTo === true ? 'body' : userScrollTo;
     var scrollToNode = scrollTo !== false ? getContainerNode(scrollTo) : false;
     var cssClasses = {
-      root: classnames(suit$h(), userCssClasses.root),
-      noRefinementRoot: classnames(suit$h({
+      root: cx(suit$h(), userCssClasses.root),
+      noRefinementRoot: cx(suit$h({
         modifierName: 'noRefinement'
       }), userCssClasses.noRefinementRoot),
-      list: classnames(suit$h({
+      list: cx(suit$h({
         descendantName: 'list'
       }), userCssClasses.list),
-      item: classnames(suit$h({
+      item: cx(suit$h({
         descendantName: 'item'
       }), userCssClasses.item),
-      firstPageItem: classnames(suit$h({
+      firstPageItem: cx(suit$h({
         descendantName: 'item',
         modifierName: 'firstPage'
       }), userCssClasses.firstPageItem),
-      lastPageItem: classnames(suit$h({
+      lastPageItem: cx(suit$h({
         descendantName: 'item',
         modifierName: 'lastPage'
       }), userCssClasses.lastPageItem),
-      previousPageItem: classnames(suit$h({
+      previousPageItem: cx(suit$h({
         descendantName: 'item',
         modifierName: 'previousPage'
       }), userCssClasses.previousPageItem),
-      nextPageItem: classnames(suit$h({
+      nextPageItem: cx(suit$h({
         descendantName: 'item',
         modifierName: 'nextPage'
       }), userCssClasses.nextPageItem),
-      pageItem: classnames(suit$h({
+      pageItem: cx(suit$h({
         descendantName: 'item',
         modifierName: 'page'
       }), userCssClasses.pageItem),
-      selectedItem: classnames(suit$h({
+      selectedItem: cx(suit$h({
         descendantName: 'item',
         modifierName: 'selected'
       }), userCssClasses.selectedItem),
-      disabledItem: classnames(suit$h({
+      disabledItem: cx(suit$h({
         descendantName: 'item',
         modifierName: 'disabled'
       }), userCssClasses.disabledItem),
-      link: classnames(suit$h({
+      link: cx(suit$h({
         descendantName: 'link'
       }), userCssClasses.link)
     };
@@ -19218,8 +19175,6 @@
   var t$2,r$1,u$1,i,o$1=0,c$1=[],f$1=[],e$2=l.__b,a$1=l.__r,v$1=l.diffed,l$1=l.__c,m$2=l.unmount;function d$1(t,u){l.__h&&l.__h(r$1,t,o$1||u),o$1=0;var i=r$1.__H||(r$1.__H={__:[],__h:[]});return t>=i.__.length&&i.__.push({__V:f$1}),i.__[t]}function p$1(n){return o$1=1,y$1(z$1,n)}function y$1(n,u,i){var o=d$1(t$2++,2);if(o.t=n,!o.__c&&(o.__=[i?i(u):z$1(void 0,u),function(n){var t=o.__N?o.__N[0]:o.__[0],r=o.t(t,n);t!==r&&(o.__N=[r,o.__[1]],o.__c.setState({}));}],o.__c=r$1,!r$1.u)){r$1.u=!0;var c=r$1.shouldComponentUpdate;r$1.shouldComponentUpdate=function(n,t,r){if(!o.__c.__H)return !0;var u=o.__c.__H.__.filter(function(n){return n.__c});return u.every(function(n){return !n.__N})?!c||c.call(this,n,t,r):!u.every(function(n){if(!n.__N)return !0;var t=n.__[0];return n.__=n.__N,n.__N=void 0,t===n.__[0]})&&(!c||c.call(this,n,t,r))};}return o.__N||o.__}function h$1(u,i){var o=d$1(t$2++,3);!l.__s&&w$1(o.__H,i)&&(o.__=u,o.i=i,r$1.__H.__h.push(o));}function _$1(n){return o$1=5,F(function(){return {current:n}},[])}function F(n,r){var u=d$1(t$2++,7);return w$1(u.__H,r)?(u.__V=n(),u.i=r,u.__h=n,u.__V):u.__}function b$1(){for(var t;t=c$1.shift();)if(t.__P&&t.__H)try{t.__H.__h.forEach(j$1),t.__H.__h.forEach(k$1),t.__H.__h=[];}catch(r){t.__H.__h=[],l.__e(r,t.__v);}}l.__b=function(n){r$1=null,e$2&&e$2(n);},l.__r=function(n){a$1&&a$1(n),t$2=0;var i=(r$1=n.__c).__H;i&&(u$1===r$1?(i.__h=[],r$1.__h=[],i.__.forEach(function(n){n.__N&&(n.__=n.__N),n.__V=f$1,n.__N=n.i=void 0;})):(i.__h.forEach(j$1),i.__h.forEach(k$1),i.__h=[])),u$1=r$1;},l.diffed=function(t){v$1&&v$1(t);var o=t.__c;o&&o.__H&&(o.__H.__h.length&&(1!==c$1.push(o)&&i===l.requestAnimationFrame||((i=l.requestAnimationFrame)||function(n){var t,r=function(){clearTimeout(u),g$1&&cancelAnimationFrame(t),setTimeout(n);},u=setTimeout(r,100);g$1&&(t=requestAnimationFrame(r));})(b$1)),o.__H.__.forEach(function(n){n.i&&(n.__H=n.i),n.__V!==f$1&&(n.__=n.__V),n.i=void 0,n.__V=f$1;})),u$1=r$1=null;},l.__c=function(t,r){r.some(function(t){try{t.__h.forEach(j$1),t.__h=t.__h.filter(function(n){return !n.__||k$1(n)});}catch(u){r.some(function(n){n.__h&&(n.__h=[]);}),r=[],l.__e(u,t.__v);}}),l$1&&l$1(t,r);},l.unmount=function(t){m$2&&m$2(t);var r,u=t.__c;u&&u.__H&&(u.__H.__.forEach(function(n){try{j$1(n);}catch(n){r=n;}}),r&&l.__e(r,u.__v));};var g$1="function"==typeof requestAnimationFrame;function j$1(n){var t=r$1,u=n.__c;"function"==typeof u&&(n.__c=void 0,u()),r$1=t;}function k$1(n){var t=r$1;n.__c=n.__(),r$1=t;}function w$1(n,t){return !n||n.length!==t.length||t.some(function(t,r){return t!==n[r]})}function z$1(n,t){return "function"==typeof t?t(n):t}
 
   function Panel(props) {
-    var _cx;
-
     var _useState = p$1(props.isCollapsed),
         _useState2 = _slicedToArray(_useState, 2),
         isCollapsed = _useState2[0],
@@ -19249,7 +19204,7 @@
     }
 
     return h("div", {
-      className: classnames(props.cssClasses.root, (_cx = {}, _defineProperty(_cx, props.cssClasses.noRefinementRoot, props.hidden), _defineProperty(_cx, props.cssClasses.collapsibleRoot, props.collapsible), _defineProperty(_cx, props.cssClasses.collapsedRoot, isCollapsed), _cx)),
+      className: cx(props.cssClasses.root, props.hidden && props.cssClasses.noRefinementRoot, props.collapsible && props.cssClasses.collapsibleRoot, isCollapsed && props.cssClasses.collapsedRoot),
       hidden: props.hidden
     }, props.templates.header && h("div", {
       className: props.cssClasses.header
@@ -19339,29 +19294,29 @@
       return false;
     };
     var cssClasses = {
-      root: classnames(suit$i(), userCssClasses.root),
-      noRefinementRoot: classnames(suit$i({
+      root: cx(suit$i(), userCssClasses.root),
+      noRefinementRoot: cx(suit$i({
         modifierName: 'noRefinement'
       }), userCssClasses.noRefinementRoot),
-      collapsibleRoot: classnames(suit$i({
+      collapsibleRoot: cx(suit$i({
         modifierName: 'collapsible'
       }), userCssClasses.collapsibleRoot),
-      collapsedRoot: classnames(suit$i({
+      collapsedRoot: cx(suit$i({
         modifierName: 'collapsed'
       }), userCssClasses.collapsedRoot),
-      collapseButton: classnames(suit$i({
+      collapseButton: cx(suit$i({
         descendantName: 'collapseButton'
       }), userCssClasses.collapseButton),
-      collapseIcon: classnames(suit$i({
+      collapseIcon: cx(suit$i({
         descendantName: 'collapseIcon'
       }), userCssClasses.collapseIcon),
-      body: classnames(suit$i({
+      body: cx(suit$i({
         descendantName: 'body'
       }), userCssClasses.body),
-      header: classnames(suit$i({
+      header: cx(suit$i({
         descendantName: 'header'
       }), userCssClasses.header),
-      footer: classnames(suit$i({
+      footer: cx(suit$i({
         descendantName: 'footer'
       }), userCssClasses.footer)
     };
@@ -19561,16 +19516,6 @@
     };
   };
 
-  var _ref2 = h("path", {
-    fill: "#5468FF",
-    d: "M78.99.94h16.6a2.97 2.97 0 012.96 2.96v16.6a2.97 2.97 0 01-2.97 2.96h-16.6a2.97 2.97 0 01-2.96-2.96V3.9A2.96 2.96 0 0179 .94"
-  });
-
-  var _ref3 = h("path", {
-    fill: "#FFF",
-    d: "M89.63 5.97v-.78a.98.98 0 00-.98-.97h-2.28a.98.98 0 00-.97.97V6c0 .09.08.15.17.13a7.13 7.13 0 013.9-.02c.08.02.16-.04.16-.13m-6.25 1L83 6.6a.98.98 0 00-1.38 0l-.46.46a.97.97 0 000 1.38l.38.39c.06.06.15.04.2-.02a7.49 7.49 0 011.63-1.62c.07-.04.08-.14.02-.2m4.16 2.45v3.34c0 .1.1.17.2.12l2.97-1.54c.06-.03.08-.12.05-.18a3.7 3.7 0 00-3.08-1.87c-.07 0-.14.06-.14.13m0 8.05a4.49 4.49 0 110-8.98 4.49 4.49 0 010 8.98m0-10.85a6.37 6.37 0 100 12.74 6.37 6.37 0 000-12.74"
-  });
-
   var PoweredBy = function PoweredBy(_ref) {
     var url = _ref.url,
         theme = _ref.theme,
@@ -19586,18 +19531,18 @@
     }, h("svg", {
       height: "1.2em",
       className: cssClasses.logo,
-      viewBox: "0 0 168 24" // This style is necessary as long as it's not included in InstantSearch.css.
+      viewBox: "0 0 572 64" // This style is necessary as long as it's not included in InstantSearch.css.
       // For now, InstantSearch.css sets a maximum width of 70px.
       ,
       style: {
         width: 'auto'
       }
     }, h("path", {
-      fill: theme === 'dark' ? '#FFF' : '#5D6494',
-      d: "M6.97 6.68V8.3a4.47 4.47 0 00-2.42-.67 2.2 2.2 0 00-1.38.4c-.34.26-.5.6-.5 1.02 0 .43.16.77.49 1.03.33.25.83.53 1.51.83a7.04 7.04 0 011.9 1.08c.34.24.58.54.73.89.15.34.23.74.23 1.18 0 .95-.33 1.7-1 2.24a4 4 0 01-2.6.81 5.71 5.71 0 01-2.94-.68v-1.71c.84.63 1.81.94 2.92.94.58 0 1.05-.14 1.39-.4.34-.28.5-.65.5-1.13 0-.29-.1-.55-.3-.8a2.2 2.2 0 00-.65-.53 23.03 23.03 0 00-1.64-.78 13.67 13.67 0 01-1.11-.64c-.12-.1-.28-.22-.46-.4a1.72 1.72 0 01-.39-.5 4.46 4.46 0 01-.22-.6c-.07-.23-.1-.48-.1-.75 0-.91.33-1.63 1-2.17a4 4 0 012.57-.8c.97 0 1.8.18 2.47.52zm7.47 5.7v-.3a2.26 2.26 0 00-.5-1.44c-.3-.35-.74-.53-1.32-.53-.53 0-.99.2-1.37.58a2.9 2.9 0 00-.72 1.68h3.91zm1 2.79v1.4c-.6.34-1.38.51-2.36.51a4.02 4.02 0 01-3-1.13 4.04 4.04 0 01-1.11-2.97c0-1.3.34-2.32 1.02-3.06a3.38 3.38 0 012.6-1.1c1.03 0 1.85.32 2.46.96.6.64.9 1.57.9 2.78 0 .33-.03.68-.09 1.04h-5.31c.1.7.4 1.24.89 1.61.49.38 1.1.56 1.85.56.86 0 1.58-.2 2.15-.6zm6.61-1.78h-1.21c-.6 0-1.05.12-1.35.36-.3.23-.46.53-.46.89 0 .37.12.66.36.88.23.2.57.32 1.02.32.5 0 .9-.15 1.2-.43.3-.28.44-.65.44-1.1v-.92zm-4.07-2.55V9.33a4.96 4.96 0 012.5-.55c2.1 0 3.17 1.03 3.17 3.08V17H22.1v-.96c-.42.68-1.15 1.02-2.19 1.02-.76 0-1.38-.22-1.84-.66-.46-.44-.7-1-.7-1.68 0-.78.3-1.38.88-1.81.59-.43 1.4-.65 2.46-.65h1.34v-.46c0-.55-.13-.97-.4-1.25-.26-.29-.7-.43-1.32-.43-.86 0-1.65.24-2.35.72zm9.34-1.93v1.42c.39-1 1.1-1.5 2.12-1.5.15 0 .31.02.5.05v1.53c-.23-.1-.48-.14-.76-.14-.54 0-.99.24-1.34.71a2.8 2.8 0 00-.52 1.71V17h-1.57V8.91h1.57zm5 4.09a3 3 0 00.76 2.01c.47.53 1.14.8 2 .8.64 0 1.24-.18 1.8-.53v1.4c-.53.32-1.2.48-2 .48a3.98 3.98 0 01-4.17-4.18c0-1.16.38-2.15 1.14-2.98a4 4 0 013.1-1.23c.7 0 1.34.15 1.92.44v1.44a3.24 3.24 0 00-1.77-.5A2.65 2.65 0 0032.33 13zm7.92-7.28v4.58c.46-1 1.3-1.5 2.5-1.5.8 0 1.42.24 1.9.73.48.5.72 1.17.72 2.05V17H43.8v-5.1c0-.56-.14-.99-.43-1.29-.28-.3-.65-.45-1.1-.45-.54 0-1 .2-1.42.6-.4.4-.61 1.02-.61 1.85V17h-1.56V5.72h1.56zM55.2 15.74c.6 0 1.1-.25 1.5-.76.4-.5.6-1.16.6-1.95 0-.92-.2-1.62-.6-2.12-.4-.5-.92-.74-1.55-.74-.56 0-1.05.22-1.5.67-.44.45-.66 1.13-.66 2.06 0 .96.22 1.67.64 2.14.43.47.95.7 1.57.7zM53 5.72v4.42a2.74 2.74 0 012.43-1.34c1.03 0 1.86.38 2.51 1.15.65.76.97 1.78.97 3.05 0 1.13-.3 2.1-.92 2.9-.62.81-1.47 1.21-2.54 1.21s-1.9-.45-2.46-1.34V17h-1.58V5.72H53zm9.9 11.1l-3.22-7.9h1.74l1 2.62 1.26 3.42c.1-.32.48-1.46 1.15-3.42l.91-2.63h1.66l-2.92 7.87c-.78 2.07-1.96 3.1-3.56 3.1-.28 0-.53-.02-.73-.07v-1.34c.17.04.35.06.54.06 1.03 0 1.76-.57 2.17-1.7z"
-    }), _ref2, _ref3, h("path", {
-      fill: theme === 'dark' ? '#FFF' : '#5468FF',
-      d: "M120.92 18.8c-4.38.02-4.38-3.54-4.38-4.1V1.36l2.67-.42v13.25c0 .32 0 2.36 1.71 2.37v2.24zm-10.84-2.18c.82 0 1.43-.04 1.85-.12v-2.72a5.48 5.48 0 00-1.57-.2c-.3 0-.6.02-.9.07-.3.04-.57.12-.81.24-.24.11-.44.28-.58.49a.93.93 0 00-.22.65c0 .63.22 1 .61 1.23.4.24.94.36 1.62.36zm-.23-9.7c.88 0 1.62.11 2.23.33.6.22 1.09.53 1.44.92.36.4.61.92.76 1.48.16.56.23 1.17.23 1.85v6.87a21.69 21.69 0 01-4.68.5c-.69 0-1.32-.07-1.9-.2a4 4 0 01-1.46-.63 3.3 3.3 0 01-.96-1.13 4.3 4.3 0 01-.34-1.8 3.13 3.13 0 011.43-2.63c.45-.3.95-.5 1.54-.62a8.8 8.8 0 013.79.05v-.44c0-.3-.04-.6-.11-.87a1.78 1.78 0 00-1.1-1.22 3.2 3.2 0 00-1.15-.2 9.75 9.75 0 00-2.95.46l-.33-2.19a11.43 11.43 0 013.56-.53zm52.84 9.63c.82 0 1.43-.05 1.85-.13V13.7a5.42 5.42 0 00-1.57-.2c-.3 0-.6.02-.9.07-.3.04-.57.12-.81.24-.24.12-.44.28-.58.5a.93.93 0 00-.22.65c0 .63.22.99.61 1.23.4.24.94.36 1.62.36zm-.23-9.7c.88 0 1.63.11 2.23.33.6.22 1.1.53 1.45.92.35.39.6.92.76 1.48.15.56.23 1.18.23 1.85v6.88c-.41.08-1.03.19-1.87.31-.83.12-1.77.18-2.81.18-.7 0-1.33-.06-1.9-.2a4 4 0 01-1.47-.63c-.4-.3-.72-.67-.95-1.13a4.3 4.3 0 01-.34-1.8c0-.66.13-1.08.38-1.53.26-.45.61-.82 1.05-1.1.44-.3.95-.5 1.53-.62a8.8 8.8 0 013.8.05v-.43c0-.31-.04-.6-.12-.88-.07-.28-.2-.52-.38-.73a1.78 1.78 0 00-.73-.5c-.3-.1-.68-.2-1.14-.2a9.85 9.85 0 00-2.95.47l-.32-2.19a11.63 11.63 0 013.55-.53zm-8.03-1.27a1.62 1.62 0 000-3.24 1.62 1.62 0 100 3.24zm1.35 13.22h-2.7V7.27l2.7-.42V18.8zm-4.72 0c-4.38.02-4.38-3.54-4.38-4.1l-.01-13.34 2.67-.42v13.25c0 .32 0 2.36 1.72 2.37v2.24zm-8.7-5.9a4.7 4.7 0 00-.74-2.79 2.4 2.4 0 00-2.07-1 2.4 2.4 0 00-2.06 1 4.7 4.7 0 00-.74 2.8c0 1.16.25 1.94.74 2.62a2.4 2.4 0 002.07 1.02c.88 0 1.57-.34 2.07-1.02a4.2 4.2 0 00.73-2.63zm2.74 0a6.46 6.46 0 01-1.52 4.23c-.49.53-1.07.94-1.76 1.22-.68.29-1.73.45-2.26.45a6.6 6.6 0 01-2.25-.45 5.1 5.1 0 01-2.88-3.13 7.3 7.3 0 01-.01-4.84 5.13 5.13 0 012.9-3.1 5.67 5.67 0 012.22-.42c.81 0 1.56.14 2.24.42.69.29 1.28.69 1.75 1.22.49.52.87 1.15 1.14 1.89a7 7 0 01.43 2.5zm-20.14 0c0 1.11.25 2.36.74 2.88.5.52 1.13.78 1.91.78a4.07 4.07 0 002.12-.6V9.33c-.19-.04-.99-.2-1.76-.23a2.67 2.67 0 00-2.23 1 4.73 4.73 0 00-.78 2.8zm7.44 5.27c0 1.82-.46 3.16-1.4 4-.94.85-2.37 1.27-4.3 1.27-.7 0-2.17-.13-3.34-.4l.43-2.11c.98.2 2.27.26 2.95.26 1.08 0 1.84-.22 2.3-.66.46-.43.68-1.08.68-1.94v-.44a5.2 5.2 0 01-2.54.6 5.6 5.6 0 01-2.01-.36 4.2 4.2 0 01-2.58-2.71 9.88 9.88 0 01.02-5.35 4.92 4.92 0 012.93-2.96 6.6 6.6 0 012.43-.46 19.64 19.64 0 014.43.66v10.6z"
+      fill: theme === 'dark' ? '#FFF' : '#36395A',
+      d: "M16 48.3c-3.4 0-6.3-.6-8.7-1.7A12.4 12.4 0 0 1 1.9 42C.6 40 0 38 0 35.4h6.5a6.7 6.7 0 0 0 3.9 6c1.4.7 3.3 1.1 5.6 1.1 2.2 0 4-.3 5.4-1a7 7 0 0 0 3-2.4 6 6 0 0 0 1-3.4c0-1.5-.6-2.8-1.9-3.7-1.3-1-3.3-1.6-5.9-1.8l-4-.4c-3.7-.3-6.6-1.4-8.8-3.4a10 10 0 0 1-3.3-7.9c0-2.4.6-4.6 1.8-6.4a12 12 0 0 1 5-4.3c2.2-1 4.7-1.6 7.5-1.6s5.5.5 7.6 1.6a12 12 0 0 1 5 4.4c1.2 1.8 1.8 4 1.8 6.7h-6.5a6.4 6.4 0 0 0-3.5-5.9c-1-.6-2.6-1-4.4-1s-3.2.3-4.4 1c-1.1.6-2 1.4-2.6 2.4-.5 1-.8 2-.8 3.1a5 5 0 0 0 1.5 3.6c1 1 2.6 1.7 4.7 1.9l4 .3c2.8.2 5.2.8 7.2 1.8 2.1 1 3.7 2.2 4.9 3.8a9.7 9.7 0 0 1 1.7 5.8c0 2.5-.7 4.7-2 6.6a13 13 0 0 1-5.6 4.4c-2.4 1-5.2 1.6-8.4 1.6Zm35.6 0c-2.6 0-4.8-.4-6.7-1.3a13 13 0 0 1-4.7-3.5 17.1 17.1 0 0 1-3.6-10.4v-1c0-2 .3-3.8 1-5.6a13 13 0 0 1 7.3-8.3 15 15 0 0 1 6.3-1.4A13.2 13.2 0 0 1 64 24.3c1 2.2 1.6 4.6 1.6 7.2V34H39.4v-4.3h21.8l-1.8 2.2c0-2-.3-3.7-.9-5.1a7.3 7.3 0 0 0-2.7-3.4c-1.2-.7-2.7-1.1-4.6-1.1s-3.4.4-4.7 1.3a8 8 0 0 0-2.9 3.6c-.6 1.5-.9 3.3-.9 5.4 0 2 .3 3.7 1 5.3a7.9 7.9 0 0 0 2.8 3.7c1.3.8 3 1.3 5 1.3s3.8-.5 5.1-1.3c1.3-1 2.1-2 2.4-3.2h6a11.8 11.8 0 0 1-7 8.7 16 16 0 0 1-6.4 1.2ZM80 48c-2.2 0-4-.3-5.7-1a8.4 8.4 0 0 1-3.7-3.3 9.7 9.7 0 0 1-1.3-5.2c0-2 .5-3.8 1.5-5.2a9 9 0 0 1 4.3-3.1c1.8-.7 4-1 6.7-1H89v4.1h-7.5c-2 0-3.4.5-4.4 1.4-1 1-1.6 2.1-1.6 3.6s.5 2.7 1.6 3.6c1 1 2.5 1.4 4.4 1.4 1.1 0 2.2-.2 3.2-.7 1-.4 1.9-1 2.6-2 .6-1 1-2.4 1-4.2l1.7 2.1c-.2 2-.7 3.8-1.5 5.2a9 9 0 0 1-3.4 3.3 12 12 0 0 1-5.3 1Zm9.5-.7v-8.8h-1v-10c0-1.8-.5-3.2-1.4-4.1-1-1-2.4-1.4-4.2-1.4a142.9 142.9 0 0 0-10.2.4v-5.6a74.8 74.8 0 0 1 8.6-.4c3 0 5.5.4 7.5 1.2s3.4 2 4.4 3.6c1 1.7 1.4 4 1.4 6.7v18.4h-5Zm12.9 0V17.8h5v12.3h-.2c0-4.2 1-7.4 2.8-9.5a11 11 0 0 1 8.3-3.1h1v5.6h-2a9 9 0 0 0-6.3 2.2c-1.5 1.5-2.2 3.6-2.2 6.4v15.6h-6.4Zm34.4 1a15 15 0 0 1-6.6-1.3c-1.9-.9-3.4-2-4.7-3.5a15.5 15.5 0 0 1-2.7-5c-.6-1.7-1-3.6-1-5.4v-1c0-2 .4-3.8 1-5.6a15 15 0 0 1 2.8-4.9c1.3-1.5 2.8-2.6 4.6-3.5a16.4 16.4 0 0 1 13.3.2c2 1 3.5 2.3 4.8 4a12 12 0 0 1 2 6H144c-.2-1.6-1-3-2.2-4.1a7.5 7.5 0 0 0-5.2-1.7 8 8 0 0 0-4.7 1.3 8 8 0 0 0-2.8 3.6 13.8 13.8 0 0 0 0 10.3c.6 1.5 1.5 2.7 2.8 3.6s2.8 1.3 4.8 1.3c1.5 0 2.7-.2 3.8-.8a7 7 0 0 0 2.6-2c.7-1 1-2 1.2-3.2h6.2a11 11 0 0 1-2 6.2 15.1 15.1 0 0 1-11.8 5.5Zm19.7-1v-40h6.4V31h-1.3c0-3 .4-5.5 1.1-7.6a9.7 9.7 0 0 1 3.5-4.8A9.9 9.9 0 0 1 172 17h.3c3.5 0 6 1.1 7.9 3.5 1.7 2.3 2.6 5.7 2.6 10v16.8h-6.4V29.6c0-2.1-.6-3.8-1.8-5a6.4 6.4 0 0 0-4.8-1.8c-2 0-3.7.7-5 2a7.8 7.8 0 0 0-1.9 5.5v17h-6.4Zm63.8 1a12.2 12.2 0 0 1-10.9-6.2 19 19 0 0 1-1.8-7.3h1.4v12.5h-5.1v-40h6.4v19.8l-2 3.5c.2-3.1.8-5.7 1.9-7.7a11 11 0 0 1 4.4-4.5c1.8-1 3.9-1.5 6.1-1.5a13.4 13.4 0 0 1 12.8 9.1c.7 1.9 1 3.8 1 6v1c0 2.2-.3 4.1-1 6a13.6 13.6 0 0 1-13.2 9.4Zm-1.2-5.5a8.4 8.4 0 0 0 7.9-5c.7-1.5 1.1-3.3 1.1-5.3s-.4-3.8-1.1-5.3a8.7 8.7 0 0 0-3.2-3.6 9.6 9.6 0 0 0-9.2-.2 8.5 8.5 0 0 0-3.3 3.2c-.8 1.4-1.3 3-1.3 5v2.3a9 9 0 0 0 1.3 4.8 9 9 0 0 0 3.4 3c1.4.7 2.8 1 4.4 1Zm27.3 3.9-10-28.9h6.5l9.5 28.9h-6Zm-7.5 12.2v-5.7h4.9c1 0 2-.1 2.9-.4a4 4 0 0 0 2-1.4c.4-.7.9-1.6 1.2-2.7l8.6-30.9h6.2l-9.3 32.4a14 14 0 0 1-2.5 5 8.9 8.9 0 0 1-4 2.8c-1.5.6-3.4.9-5.6.9h-4.4Zm9-12.2v-5.2h6.4v5.2H248Z"
+    }), h("path", {
+      fill: theme === 'dark' ? '#FFF' : '#003DFF',
+      d: "M534.4 9.1H528a.8.8 0 0 1-.7-.7V1.8c0-.4.2-.7.6-.8l6.5-1c.4 0 .8.2.9.6v7.8c0 .4-.4.7-.8.7zM428 35.2V.8c0-.5-.3-.8-.7-.8h-.2l-6.4 1c-.4 0-.7.4-.7.8v35c0 1.6 0 11.8 12.3 12.2.5 0 .8-.4.8-.8V43c0-.4-.3-.7-.6-.8-4.5-.5-4.5-6-4.5-7zm106.5-21.8H528c-.4 0-.7.4-.7.8v34c0 .4.3.8.7.8h6.5c.4 0 .8-.4.8-.8v-34c0-.5-.4-.8-.8-.8zm-17.7 21.8V.8c0-.5-.3-.8-.8-.8l-6.5 1c-.4 0-.7.4-.7.8v35c0 1.6 0 11.8 12.3 12.2.4 0 .8-.4.8-.8V43c0-.4-.3-.7-.7-.8-4.4-.5-4.4-6-4.4-7zm-22.2-20.6a16.5 16.5 0 0 1 8.6 9.3c.8 2.2 1.3 4.8 1.3 7.5a19.4 19.4 0 0 1-4.6 12.6 14.8 14.8 0 0 1-5.2 3.6c-2 .9-5.2 1.4-6.8 1.4a21 21 0 0 1-6.7-1.4 15.4 15.4 0 0 1-8.6-9.3 21.3 21.3 0 0 1 0-14.4 15.2 15.2 0 0 1 8.6-9.3c2-.8 4.3-1.2 6.7-1.2s4.6.4 6.7 1.2zm-6.7 27.6c2.7 0 4.7-1 6.2-3s2.2-4.3 2.2-7.8-.7-6.3-2.2-8.3-3.5-3-6.2-3-4.7 1-6.1 3c-1.5 2-2.2 4.8-2.2 8.3s.7 5.8 2.2 7.8 3.5 3 6.2 3zm-88.8-28.8c-6.2 0-11.7 3.3-14.8 8.2a18.6 18.6 0 0 0 4.8 25.2c1.8 1.2 4 1.8 6.2 1.7s.1 0 .1 0h.9c4.2-.7 8-4 9.1-8.1v7.4c0 .4.3.7.8.7h6.4a.7.7 0 0 0 .7-.7V14.2c0-.5-.3-.8-.7-.8h-13.5zm6.3 26.5a9.8 9.8 0 0 1-5.7 2h-.5a10 10 0 0 1-9.2-14c1.4-3.7 5-6.3 9-6.3h6.4v18.3zm152.3-26.5h13.5c.5 0 .8.3.8.7v33.7c0 .4-.3.7-.8.7h-6.4a.7.7 0 0 1-.8-.7v-7.4c-1.2 4-4.8 7.4-9 8h-.1a4.2 4.2 0 0 1-.5.1h-.9a10.3 10.3 0 0 1-7-2.6c-4-3.3-6.5-8.4-6.5-14.2 0-3.7 1-7.2 3-10 3-5 8.5-8.3 14.7-8.3zm.6 28.4c2.2-.1 4.2-.6 5.7-2V21.7h-6.3a9.8 9.8 0 0 0-9 6.4 10.2 10.2 0 0 0 9.1 13.9h.5zM452.8 13.4c-6.2 0-11.7 3.3-14.8 8.2a18.5 18.5 0 0 0 3.6 24.3 10.4 10.4 0 0 0 13 .6c2.2-1.5 3.8-3.7 4.5-6.1v7.8c0 2.8-.8 5-2.2 6.3-1.5 1.5-4 2.2-7.5 2.2l-6-.3c-.3 0-.7.2-.8.5l-1.6 5.5c-.1.4.1.8.5 1h.1c2.8.4 5.5.6 7 .6 6.3 0 11-1.4 14-4.1 2.7-2.5 4.2-6.3 4.5-11.4V14.2c0-.5-.4-.8-.8-.8h-13.5zm6.3 8.2v18.3a9.6 9.6 0 0 1-5.6 2h-1a10.3 10.3 0 0 1-8.8-14c1.4-3.7 5-6.3 9-6.3h6.4zM291 31.5A32 32 0 0 1 322.8 0h30.8c.6 0 1.2.5 1.2 1.2v61.5c0 1.1-1.3 1.7-2.2 1l-19.2-17a18 18 0 0 1-11 3.4 18.1 18.1 0 1 1 18.2-14.8c-.1.4-.5.7-.9.6-.1 0-.3 0-.4-.2l-3.8-3.4c-.4-.3-.6-.8-.7-1.4a12 12 0 1 0-2.4 8.3c.4-.4 1-.5 1.6-.2l14.7 13.1v-46H323a26 26 0 1 0 10 49.7c.8-.4 1.6-.2 2.3.3l3 2.7c.3.2.3.7 0 1l-.2.2a32 32 0 0 1-47.2-28.6z"
     }))));
   };
 
@@ -19640,13 +19585,13 @@
 
     var containerNode = getContainerNode(container);
     var cssClasses = {
-      root: classnames(suit$j(), suit$j({
+      root: cx(suit$j(), suit$j({
         modifierName: theme === 'dark' ? 'dark' : 'light'
       }), userCssClasses.root),
-      link: classnames(suit$j({
+      link: cx(suit$j({
         descendantName: 'link'
       }), userCssClasses.link),
-      logo: classnames(suit$j({
+      logo: cx(suit$j({
         descendantName: 'logo'
       }), userCssClasses.logo)
     };
@@ -19738,7 +19683,7 @@
     }
 
     var cssClasses = {
-      root: classnames(suit$k(), userCssClasses.root)
+      root: cx(suit$k(), userCssClasses.root)
     };
     var containerNode = getContainerNode(container);
 
@@ -19821,7 +19766,7 @@
             templateProps = _this$props.templateProps;
         var isDisabled = min && max ? min >= max : false;
         var hasRefinements = Boolean(minValue || maxValue);
-        var rootClassNames = classnames(cssClasses.root, _defineProperty({}, cssClasses.noRefinement, !hasRefinements));
+        var rootClassNames = cx(cssClasses.root, !hasRefinements && cssClasses.noRefinement);
         return h("div", {
           className: rootClassNames
         }, h("form", {
@@ -19830,7 +19775,7 @@
         }, h("label", {
           className: cssClasses.label
         }, h("input", {
-          className: classnames(cssClasses.input, cssClasses.inputMin),
+          className: cx(cssClasses.input, cssClasses.inputMin),
           type: "number",
           min: min,
           max: max,
@@ -19848,7 +19793,7 @@
         })), h("label", {
           className: cssClasses.label
         }, h("input", {
-          className: classnames(cssClasses.input, cssClasses.inputMax),
+          className: cx(cssClasses.input, cssClasses.inputMax),
           type: "number",
           min: min,
           max: max,
@@ -19949,31 +19894,31 @@
 
     var containerNode = getContainerNode(container);
     var cssClasses = {
-      root: classnames(suit$l(), userCssClasses.root),
-      noRefinement: classnames(suit$l({
+      root: cx(suit$l(), userCssClasses.root),
+      noRefinement: cx(suit$l({
         modifierName: 'noRefinement'
       })),
-      form: classnames(suit$l({
+      form: cx(suit$l({
         descendantName: 'form'
       }), userCssClasses.form),
-      label: classnames(suit$l({
+      label: cx(suit$l({
         descendantName: 'label'
       }), userCssClasses.label),
-      input: classnames(suit$l({
+      input: cx(suit$l({
         descendantName: 'input'
       }), userCssClasses.input),
-      inputMin: classnames(suit$l({
+      inputMin: cx(suit$l({
         descendantName: 'input',
         modifierName: 'min'
       }), userCssClasses.inputMin),
-      inputMax: classnames(suit$l({
+      inputMax: cx(suit$l({
         descendantName: 'input',
         modifierName: 'max'
       }), userCssClasses.inputMax),
-      separator: classnames(suit$l({
+      separator: cx(suit$l({
         descendantName: 'separator'
       }), userCssClasses.separator),
-      submit: classnames(suit$l({
+      submit: cx(suit$l({
         descendantName: 'submit'
       }), userCssClasses.submit)
     };
@@ -20679,9 +20624,7 @@
       style: _objectSpread2(_objectSpread2({}, style), {}, {
         marginLeft: positionValue === 100 ? '-2px' : 0
       }),
-      className: classnames('rheostat-marker', 'rheostat-marker-horizontal', {
-        'rheostat-marker-large': shouldDisplayValue
-      })
+      className: cx('rheostat-marker', 'rheostat-marker-horizontal', shouldDisplayValue && 'rheostat-marker-large')
     }, shouldDisplayValue && h("div", {
       className: 'rheostat-value'
     }, pitValue));
@@ -20718,10 +20661,7 @@
           var roundedValue = Math.round( // have to cast as a string, as the value given to the prop is a number, but becomes a string when read
           parseFloat(props['aria-valuenow']) * 100) / 100;
           var value = _typeof(tooltips) === 'object' && tooltips.format ? tooltips.format(roundedValue) : roundedValue;
-          var className = classnames(props.className, {
-            'rheostat-handle-lower': props['data-handle-key'] === 0,
-            'rheostat-handle-upper': props['data-handle-key'] === 1
-          });
+          var className = cx(props.className, props['data-handle-key'] === 0 && 'rheostat-handle-lower', props['data-handle-key'] === 1 && 'rheostat-handle-upper');
           return h("div", _extends({}, props, {
             className: className
           }), tooltips && h("div", {
@@ -20795,7 +20735,7 @@
           max: max
         });
         return h("div", {
-          className: classnames(cssClasses.root, _defineProperty({}, cssClasses.disabledRoot, this.isDisabled))
+          className: cx(cssClasses.root, this.isDisabled && cssClasses.disabledRoot)
         }, h(Rheostat, {
           handle: this.createHandleComponent(tooltips),
           onChange: this.handleChange,
@@ -20894,8 +20834,8 @@
 
     var containerNode = getContainerNode(container);
     var cssClasses = {
-      root: classnames(suit$m(), userCssClasses.root),
-      disabledRoot: classnames(suit$m({
+      root: cx(suit$m(), userCssClasses.root),
+      disabledRoot: cx(suit$m({
         modifierName: 'disabled'
       }), userCssClasses.disabledRoot)
     };
@@ -20957,7 +20897,7 @@
       }, stars.map(function (isFull, index) {
         return h("svg", {
           key: index,
-          className: cx([cx(cssClasses.starIcon), cx(isFull ? cssClasses.fullStarIcon : cssClasses.emptyStarIcon)]),
+          className: cx(cssClasses.starIcon, isFull ? cssClasses.fullStarIcon : cssClasses.emptyStarIcon),
           "aria-hidden": "true",
           width: "24",
           height: "24"
@@ -20977,7 +20917,7 @@
   });
   var suit$n = component('RatingMenu');
 
-  var _ref3$1 = h("path", {
+  var _ref3 = h("path", {
     d: "M12 .288l2.833 8.718h9.167l-7.417 5.389 2.833 8.718-7.416-5.388-7.417 5.388 2.833-8.718-7.416-5.389h9.167z"
   });
 
@@ -21018,7 +20958,7 @@
           descendantName: 'starSymbol'
         }),
         viewBox: "0 0 24 24"
-      }, _ref3$1), h("symbol", {
+      }, _ref3), h("symbol", {
         id: suit$n({
           descendantName: 'starEmptySymbol'
         }),
@@ -21071,42 +21011,42 @@
 
     var containerNode = getContainerNode(container);
     var cssClasses = {
-      root: classnames(suit$n(), userCssClasses.root),
-      noRefinementRoot: classnames(suit$n({
+      root: cx(suit$n(), userCssClasses.root),
+      noRefinementRoot: cx(suit$n({
         modifierName: 'noRefinement'
       }), userCssClasses.noRefinementRoot),
-      list: classnames(suit$n({
+      list: cx(suit$n({
         descendantName: 'list'
       }), userCssClasses.list),
-      item: classnames(suit$n({
+      item: cx(suit$n({
         descendantName: 'item'
       }), userCssClasses.item),
-      selectedItem: classnames(suit$n({
+      selectedItem: cx(suit$n({
         descendantName: 'item',
         modifierName: 'selected'
       }), userCssClasses.selectedItem),
-      disabledItem: classnames(suit$n({
+      disabledItem: cx(suit$n({
         descendantName: 'item',
         modifierName: 'disabled'
       }), userCssClasses.disabledItem),
-      link: classnames(suit$n({
+      link: cx(suit$n({
         descendantName: 'link'
       }), userCssClasses.link),
-      starIcon: classnames(suit$n({
+      starIcon: cx(suit$n({
         descendantName: 'starIcon'
       }), userCssClasses.starIcon),
-      fullStarIcon: classnames(suit$n({
+      fullStarIcon: cx(suit$n({
         descendantName: 'starIcon',
         modifierName: 'full'
       }), userCssClasses.fullStarIcon),
-      emptyStarIcon: classnames(suit$n({
+      emptyStarIcon: cx(suit$n({
         descendantName: 'starIcon',
         modifierName: 'empty'
       }), userCssClasses.emptyStarIcon),
-      label: classnames(suit$n({
+      label: cx(suit$n({
         descendantName: 'label'
       }), userCssClasses.label),
-      count: classnames(suit$n({
+      count: cx(suit$n({
         descendantName: 'count'
       }), userCssClasses.count)
     };
@@ -21127,7 +21067,7 @@
     });
   };
 
-  var _ref2$1 = h("path", {
+  var _ref2 = h("path", {
     d: "M8.114 10L.944 2.83 0 1.885 1.886 0l.943.943L10 8.113l7.17-7.17.944-.943L20 1.886l-.943.943-7.17 7.17 7.17 7.17.943.944L18.114 20l-.943-.943-7.17-7.17-7.17 7.17-.944.943L0 18.114l.943-.943L8.113 10z"
   });
 
@@ -21165,7 +21105,7 @@
         viewBox: "0 0 20 20",
         width: "10",
         height: "10"
-      }, _ref2$1);
+      }, _ref2);
     },
     submit: function submit(_ref3) {
       var cssClasses = _ref3.cssClasses;
@@ -21332,69 +21272,69 @@
     var escapeFacetValues = searchable ? Boolean(searchableEscapeFacetValues) : false;
     var containerNode = getContainerNode(container);
     var cssClasses = {
-      root: classnames(suit$o(), userCssClasses.root),
-      noRefinementRoot: classnames(suit$o({
+      root: cx(suit$o(), userCssClasses.root),
+      noRefinementRoot: cx(suit$o({
         modifierName: 'noRefinement'
       }), userCssClasses.noRefinementRoot),
-      list: classnames(suit$o({
+      list: cx(suit$o({
         descendantName: 'list'
       }), userCssClasses.list),
-      item: classnames(suit$o({
+      item: cx(suit$o({
         descendantName: 'item'
       }), userCssClasses.item),
-      selectedItem: classnames(suit$o({
+      selectedItem: cx(suit$o({
         descendantName: 'item',
         modifierName: 'selected'
       }), userCssClasses.selectedItem),
-      searchBox: classnames(suit$o({
+      searchBox: cx(suit$o({
         descendantName: 'searchBox'
       }), userCssClasses.searchBox),
-      label: classnames(suit$o({
+      label: cx(suit$o({
         descendantName: 'label'
       }), userCssClasses.label),
-      checkbox: classnames(suit$o({
+      checkbox: cx(suit$o({
         descendantName: 'checkbox'
       }), userCssClasses.checkbox),
-      labelText: classnames(suit$o({
+      labelText: cx(suit$o({
         descendantName: 'labelText'
       }), userCssClasses.labelText),
-      count: classnames(suit$o({
+      count: cx(suit$o({
         descendantName: 'count'
       }), userCssClasses.count),
-      noResults: classnames(suit$o({
+      noResults: cx(suit$o({
         descendantName: 'noResults'
       }), userCssClasses.noResults),
-      showMore: classnames(suit$o({
+      showMore: cx(suit$o({
         descendantName: 'showMore'
       }), userCssClasses.showMore),
-      disabledShowMore: classnames(suit$o({
+      disabledShowMore: cx(suit$o({
         descendantName: 'showMore',
         modifierName: 'disabled'
       }), userCssClasses.disabledShowMore),
       searchable: {
-        root: classnames(searchBoxSuit(), userCssClasses.searchableRoot),
-        form: classnames(searchBoxSuit({
+        root: cx(searchBoxSuit(), userCssClasses.searchableRoot),
+        form: cx(searchBoxSuit({
           descendantName: 'form'
         }), userCssClasses.searchableForm),
-        input: classnames(searchBoxSuit({
+        input: cx(searchBoxSuit({
           descendantName: 'input'
         }), userCssClasses.searchableInput),
-        submit: classnames(searchBoxSuit({
+        submit: cx(searchBoxSuit({
           descendantName: 'submit'
         }), userCssClasses.searchableSubmit),
-        submitIcon: classnames(searchBoxSuit({
+        submitIcon: cx(searchBoxSuit({
           descendantName: 'submitIcon'
         }), userCssClasses.searchableSubmitIcon),
-        reset: classnames(searchBoxSuit({
+        reset: cx(searchBoxSuit({
           descendantName: 'reset'
         }), userCssClasses.searchableReset),
-        resetIcon: classnames(searchBoxSuit({
+        resetIcon: cx(searchBoxSuit({
           descendantName: 'resetIcon'
         }), userCssClasses.searchableResetIcon),
-        loadingIndicator: classnames(searchBoxSuit({
+        loadingIndicator: cx(searchBoxSuit({
           descendantName: 'loadingIndicator'
         }), userCssClasses.searchableLoadingIndicator),
-        loadingIcon: classnames(searchBoxSuit({
+        loadingIcon: cx(searchBoxSuit({
           descendantName: 'loadingIcon'
         }), userCssClasses.searchableLoadingIcon)
       }
@@ -21514,11 +21454,11 @@
 
     var containerNode = getContainerNode(container);
     var cssClasses = {
-      root: classnames(suit$p(), userCssClasses.root),
-      text: classnames(suit$p({
+      root: cx(suit$p(), userCssClasses.root),
+      text: cx(suit$p({
         descendantName: 'text'
       }), userCssClasses.text),
-      button: classnames(suit$p({
+      button: cx(suit$p({
         descendantName: 'button'
       }), userCssClasses.button)
     };
@@ -21610,29 +21550,29 @@
 
     var containerNode = getContainerNode(container);
     var cssClasses = {
-      root: classnames(suit$q(), userCssClasses.root),
-      form: classnames(suit$q({
+      root: cx(suit$q(), userCssClasses.root),
+      form: cx(suit$q({
         descendantName: 'form'
       }), userCssClasses.form),
-      input: classnames(suit$q({
+      input: cx(suit$q({
         descendantName: 'input'
       }), userCssClasses.input),
-      submit: classnames(suit$q({
+      submit: cx(suit$q({
         descendantName: 'submit'
       }), userCssClasses.submit),
-      submitIcon: classnames(suit$q({
+      submitIcon: cx(suit$q({
         descendantName: 'submitIcon'
       }), userCssClasses.submitIcon),
-      reset: classnames(suit$q({
+      reset: cx(suit$q({
         descendantName: 'reset'
       }), userCssClasses.reset),
-      resetIcon: classnames(suit$q({
+      resetIcon: cx(suit$q({
         descendantName: 'resetIcon'
       }), userCssClasses.resetIcon),
-      loadingIndicator: classnames(suit$q({
+      loadingIndicator: cx(suit$q({
         descendantName: 'loadingIndicator'
       }), userCssClasses.loadingIndicator),
-      loadingIcon: classnames(suit$q({
+      loadingIcon: cx(suit$q({
         descendantName: 'loadingIcon'
       }), userCssClasses.loadingIcon)
     };
@@ -21707,11 +21647,11 @@
 
     var containerNode = getContainerNode(container);
     var cssClasses = {
-      root: classnames(suit$r(), userCssClasses.root),
-      select: classnames(suit$r({
+      root: cx(suit$r(), userCssClasses.root),
+      select: cx(suit$r({
         descendantName: 'select'
       }), userCssClasses.select),
-      option: classnames(suit$r({
+      option: cx(suit$r({
         descendantName: 'option'
       }), userCssClasses.option)
     };
@@ -21739,7 +21679,7 @@
         rest = _objectWithoutProperties(_ref, ["nbHits", "nbSortedHits", "cssClasses", "templateProps"]);
 
     return h("div", {
-      className: classnames(cssClasses.root)
+      className: cx(cssClasses.root)
     }, h(Template, _extends({}, templateProps, {
       templateKey: "text",
       rootTagName: "span",
@@ -21875,8 +21815,8 @@
 
     var containerNode = getContainerNode(container);
     var cssClasses = {
-      root: classnames(suit$s(), userCssClasses.root),
-      text: classnames(suit$s({
+      root: cx(suit$s(), userCssClasses.root),
+      text: cx(suit$s({
         descendantName: 'text'
       }), userCssClasses.text)
     };
@@ -21992,14 +21932,14 @@
 
     var containerNode = getContainerNode(container);
     var cssClasses = {
-      root: classnames(suit$t(), userCssClasses.root),
-      label: classnames(suit$t({
+      root: cx(suit$t(), userCssClasses.root),
+      label: cx(suit$t({
         descendantName: 'label'
       }), userCssClasses.label),
-      checkbox: classnames(suit$t({
+      checkbox: cx(suit$t({
         descendantName: 'checkbox'
       }), userCssClasses.checkbox),
-      labelText: classnames(suit$t({
+      labelText: cx(suit$t({
         descendantName: 'labelText'
       }), userCssClasses.labelText)
     };
@@ -22079,7 +22019,7 @@
     }));
   };
 
-  var _ref2$2 = h(p, null, h("line", {
+  var _ref2$1 = h(p, null, h("line", {
     x1: "1",
     y1: "1",
     x2: "23",
@@ -22100,7 +22040,7 @@
     y2: "23"
   }));
 
-  var _ref3$2 = h("path", {
+  var _ref3$1 = h("path", {
     d: "M19 10v2a7 7 0 0 1-14 0v-2"
   });
 
@@ -22124,13 +22064,13 @@
         isListening = _ref.isListening;
 
     if (status === 'error' && errorCode === 'not-allowed') {
-      return _ref2$2;
+      return _ref2$1;
     }
 
     return h(p, null, h("path", {
       d: "M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z",
       fill: isListening ? 'currentColor' : 'none'
-    }), _ref3$2, _ref4$2, _ref5);
+    }), _ref3$1, _ref4$2, _ref5);
   };
 
   var defaultTemplates$i = {
@@ -22210,11 +22150,11 @@
 
     var containerNode = getContainerNode(container);
     var cssClasses = {
-      root: classnames(suit$u(), userCssClasses.root),
-      button: classnames(suit$u({
+      root: cx(suit$u(), userCssClasses.root),
+      button: cx(suit$u({
         descendantName: 'button'
       }), userCssClasses.button),
-      status: classnames(suit$u({
+      status: cx(suit$u({
         descendantName: 'status'
       }), userCssClasses.status)
     };
@@ -22284,7 +22224,7 @@
     voiceSearch: voiceSearch
   });
 
-  var createInsightsMiddleware = function createInsightsMiddleware(props) {
+  function createInsightsMiddleware(props) {
     var _ref = props || {},
         _insightsClient = _ref.insightsClient,
         insightsInitParams = _ref.insightsInitParams,
@@ -22421,7 +22361,7 @@
         }
       };
     };
-  };
+  }
 
 
 

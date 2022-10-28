@@ -5,7 +5,7 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 import { h } from 'preact';
-import cx from 'classnames';
+import { cx } from '@algolia/ui-components-shared';
 
 var Pit = function Pit(_ref) {
   var style = _ref.style,
@@ -19,9 +19,7 @@ var Pit = function Pit(_ref) {
     style: _objectSpread(_objectSpread({}, style), {}, {
       marginLeft: positionValue === 100 ? '-2px' : 0
     }),
-    className: cx('rheostat-marker', 'rheostat-marker-horizontal', {
-      'rheostat-marker-large': shouldDisplayValue
-    })
+    className: cx('rheostat-marker', 'rheostat-marker-horizontal', shouldDisplayValue && 'rheostat-marker-large')
   }, shouldDisplayValue && h("div", {
     className: 'rheostat-value'
   }, pitValue));

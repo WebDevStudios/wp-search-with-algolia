@@ -36,7 +36,7 @@ export declare type IndexWidget = Omit<Widget<IndexWidgetDescription & {
      * @deprecated
      */
     getWidgetState(uiState: UiState): UiState;
-    getWidgetUiState<TUiState = UiState>(uiState: TUiState): TUiState;
+    getWidgetUiState<TUiState extends UiState = UiState>(uiState: TUiState): TUiState;
     getWidgetSearchParameters(searchParameters: SearchParameters, searchParametersOptions: {
         uiState: IndexUiState;
     }): SearchParameters;

@@ -9,7 +9,7 @@ var _preact = require("preact");
 
 var _formatNumber = require("../../lib/formatNumber.js");
 
-var _index = require("../../lib/utils/index.js");
+var _uiComponentsShared = require("@algolia/ui-components-shared");
 
 function ItemWrapper(_ref) {
   var children = _ref.children,
@@ -20,14 +20,14 @@ function ItemWrapper(_ref) {
 
   if (count) {
     return (0, _preact.h)("a", {
-      className: (0, _index.cx)(cssClasses.link),
+      className: (0, _uiComponentsShared.cx)(cssClasses.link),
       "aria-label": "".concat(value, " & up"),
       href: url
     }, children);
   }
 
   return (0, _preact.h)("div", {
-    className: (0, _index.cx)(cssClasses.link),
+    className: (0, _uiComponentsShared.cx)(cssClasses.link),
     "aria-label": "".concat(value, " & up"),
     disabled: true
   }, children);
@@ -48,7 +48,7 @@ var defaultTemplates = {
     }, stars.map(function (isFull, index) {
       return (0, _preact.h)("svg", {
         key: index,
-        className: (0, _index.cx)([(0, _index.cx)(cssClasses.starIcon), (0, _index.cx)(isFull ? cssClasses.fullStarIcon : cssClasses.emptyStarIcon)]),
+        className: (0, _uiComponentsShared.cx)(cssClasses.starIcon, isFull ? cssClasses.fullStarIcon : cssClasses.emptyStarIcon),
         "aria-hidden": "true",
         width: "24",
         height: "24"
@@ -56,9 +56,9 @@ var defaultTemplates = {
         xlinkHref: isFull ? '#ais-RatingMenu-starSymbol' : '#ais-RatingMenu-starEmptySymbol'
       }));
     }), (0, _preact.h)("span", {
-      className: (0, _index.cx)(cssClasses.label)
+      className: (0, _uiComponentsShared.cx)(cssClasses.label)
     }, "& Up"), count && (0, _preact.h)("span", {
-      className: (0, _index.cx)(cssClasses.count)
+      className: (0, _uiComponentsShared.cx)(cssClasses.count)
     }, (0, _formatNumber.formatNumber)(count)));
   }
 };

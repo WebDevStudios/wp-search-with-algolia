@@ -17,7 +17,7 @@ function _iterableToArrayLimit(arr, i) { if (typeof Symbol === "undefined" || !(
 function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 
 import { h, render } from 'preact';
-import cx from 'classnames';
+import { cx } from '@algolia/ui-components-shared';
 import RangeInput from "../../components/RangeInput/RangeInput.js";
 import connectRange from "../../connectors/range/connectRange.js";
 import { getContainerNode, createDocumentationMessageGenerator } from "../../lib/utils/index.js";

@@ -7,7 +7,7 @@ exports.default = void 0;
 
 var _preact = require("preact");
 
-var _classnames = _interopRequireDefault(require("classnames"));
+var _uiComponentsShared = require("@algolia/ui-components-shared");
 
 var _index = require("../../lib/utils/index.js");
 
@@ -74,29 +74,29 @@ var panel = function panel(panelWidgetParams) {
     return false;
   };
   var cssClasses = {
-    root: (0, _classnames.default)(suit(), userCssClasses.root),
-    noRefinementRoot: (0, _classnames.default)(suit({
+    root: (0, _uiComponentsShared.cx)(suit(), userCssClasses.root),
+    noRefinementRoot: (0, _uiComponentsShared.cx)(suit({
       modifierName: 'noRefinement'
     }), userCssClasses.noRefinementRoot),
-    collapsibleRoot: (0, _classnames.default)(suit({
+    collapsibleRoot: (0, _uiComponentsShared.cx)(suit({
       modifierName: 'collapsible'
     }), userCssClasses.collapsibleRoot),
-    collapsedRoot: (0, _classnames.default)(suit({
+    collapsedRoot: (0, _uiComponentsShared.cx)(suit({
       modifierName: 'collapsed'
     }), userCssClasses.collapsedRoot),
-    collapseButton: (0, _classnames.default)(suit({
+    collapseButton: (0, _uiComponentsShared.cx)(suit({
       descendantName: 'collapseButton'
     }), userCssClasses.collapseButton),
-    collapseIcon: (0, _classnames.default)(suit({
+    collapseIcon: (0, _uiComponentsShared.cx)(suit({
       descendantName: 'collapseIcon'
     }), userCssClasses.collapseIcon),
-    body: (0, _classnames.default)(suit({
+    body: (0, _uiComponentsShared.cx)(suit({
       descendantName: 'body'
     }), userCssClasses.body),
-    header: (0, _classnames.default)(suit({
+    header: (0, _uiComponentsShared.cx)(suit({
       descendantName: 'header'
     }), userCssClasses.header),
-    footer: (0, _classnames.default)(suit({
+    footer: (0, _uiComponentsShared.cx)(suit({
       descendantName: 'footer'
     }), userCssClasses.footer)
   };

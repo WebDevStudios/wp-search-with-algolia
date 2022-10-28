@@ -6,7 +6,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 import { h, render } from 'preact';
 import ClearRefinements from "../../components/ClearRefinements/ClearRefinements.js";
-import cx from 'classnames';
+import { cx } from '@algolia/ui-components-shared';
 import connectClearRefinements from "../../connectors/clear-refinements/connectClearRefinements.js";
 import defaultTemplates from "./defaultTemplates.js";
 import { getContainerNode, createDocumentationMessageGenerator } from "../../lib/utils/index.js";

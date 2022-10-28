@@ -7,6 +7,7 @@ export declare type CurrentRefinementsComponentCSSClasses = ComponentCSSClasses<
 export declare type CurrentRefinementsProps = {
     items: CurrentRefinementsConnectorParamsItem[];
     cssClasses: CurrentRefinementsComponentCSSClasses;
+    canRefine: boolean;
 };
-declare const CurrentRefinements: ({ items, cssClasses }: CurrentRefinementsProps) => h.JSX.Element;
+declare const CurrentRefinements: ({ items, cssClasses, canRefine, }: CurrentRefinementsProps) => h.JSX.Element;
 export default CurrentRefinements;
