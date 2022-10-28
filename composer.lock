@@ -157,16 +157,16 @@
     "packages-dev": [
         {
             "name": "algolia/algoliasearch-client-php",
-            "version": "3.2.0",
+            "version": "3.3.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/algolia/algoliasearch-client-php.git",
-                "reference": "8d78421f831b31868506e429828935c4dd1a0f23"
+                "reference": "cbd07bc0bb7303ff71e238d2d6284ef8469e1d5a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/algolia/algoliasearch-client-php/zipball/8d78421f831b31868506e429828935c4dd1a0f23",
-                "reference": "8d78421f831b31868506e429828935c4dd1a0f23",
+                "url": "https://api.github.com/repos/algolia/algoliasearch-client-php/zipball/cbd07bc0bb7303ff71e238d2d6284ef8469e1d5a",
+                "reference": "cbd07bc0bb7303ff71e238d2d6284ef8469e1d5a",
                 "shasum": ""
             },
             "require": {
@@ -223,7 +223,7 @@
                 "php",
                 "search"
             ],
-            "time": "2022-01-04T15:48:50+00:00"
+            "time": "2022-09-22T08:21:13+00:00"
         },
         {
             "name": "dealerdirect/phpcodesniffer-composer-installer",
