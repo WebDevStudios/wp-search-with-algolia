@@ -160,10 +160,6 @@ class Algolia_Settings {
 		$excluded[] = 'wp_template';
 		$excluded[] = 'wp_template_part';
 
-		// Native to Algolia Search plugin.
-		$excluded[] = 'algolia_task';
-		$excluded[] = 'algolia_log';
-
 		// Native to WordPress VIP platform.
 		$excluded[] = 'kr_request_token';
 		$excluded[] = 'kr_access_token';
