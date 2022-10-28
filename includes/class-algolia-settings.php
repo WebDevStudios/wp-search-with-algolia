@@ -150,10 +150,15 @@ class Algolia_Settings {
 
 		// Native WordPress.
 		$excluded[] = 'revision';
-
-		// Native to Algolia Search plugin.
-		$excluded[] = 'algolia_task';
-		$excluded[] = 'algolia_log';
+		$excluded[] = 'custom_css';
+		$excluded[] = 'customize_changeset';
+		$excluded[] = 'oembed_cache';
+		$excluded[] = 'user_request';
+		$excluded[] = 'wp_block';
+		$excluded[] = 'wp_global_styles';
+		$excluded[] = 'wp_navigation';
+		$excluded[] = 'wp_template';
+		$excluded[] = 'wp_template_part';
 
 		// Native to WordPress VIP platform.
 		$excluded[] = 'kr_request_token';
@@ -228,6 +233,8 @@ class Algolia_Settings {
 			'nav_menu',
 			'link_category',
 			'post_format',
+			'wp_theme',
+			'wp_template_part_area',
 		];
 
 		/**
