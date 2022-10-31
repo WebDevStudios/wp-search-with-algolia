@@ -4,13 +4,13 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
-/** @jsx h */
 import { h, render } from 'preact';
-import cx from 'classnames';
+import { cx } from '@algolia/ui-components-shared';
 import RefinementList from "../../components/RefinementList/RefinementList.js";
 import connectHierarchicalMenu from "../../connectors/hierarchical-menu/connectHierarchicalMenu.js";
 import defaultTemplates from "./defaultTemplates.js";
-import { prepareTemplateProps, getContainerNode, createDocumentationMessageGenerator } from "../../lib/utils/index.js";
+import { getContainerNode, createDocumentationMessageGenerator } from "../../lib/utils/index.js";
+import { prepareTemplateProps } from "../../lib/templating/index.js";
 import { component } from "../../lib/suit.js";
 var withUsage = createDocumentationMessageGenerator({
   name: 'hierarchical-menu'
@@ -156,6 +156,10 @@ var hierarchicalMenu = function hierarchicalMenu(widgetParams) {
     link: cx(suit({
       descendantName: 'link'
     }), userCssClasses.link),
+    selectedItemLink: cx(suit({
+      descendantName: 'link',
+      modifierName: 'selected'
+    }), userCssClasses.selectedItemLink),
     label: cx(suit({
       descendantName: 'label'
     }), userCssClasses.label),

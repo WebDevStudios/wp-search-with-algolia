@@ -1,16 +1,22 @@
 /// <reference types="google.maps" />
 
-import type algoliasearch from 'algoliasearch/lite';
 import type { AlgoliaSearchHelper } from 'algoliasearch-helper';
-import type * as ClientSearch from '@algolia/client-search';
 import EventEmitter from '@algolia/events';
+import { FindAnswersOptions } from 'algoliasearch-helper/types/algoliasearch.js';
+import { h } from 'preact';
+import type { HighlightClassNames as HighlightClassNames_2 } from '@algolia/ui-components-highlight-vdom';
+import type { HighlightProps as HighlightProps_3 } from '@algolia/ui-components-highlight-vdom';
+import type { HoganOptions } from 'hogan.js';
+import type { html } from 'htm/preact';
 import type { InsightsClient as InsightsClient_2 } from 'search-insights';
 import type { InsightsMethodMap } from 'search-insights';
 import type * as Places from 'places.js';
 import type { PlainSearchParameters } from 'algoliasearch-helper';
 import { default as qs_2 } from 'qs';
+import { SearchClient } from 'algoliasearch-helper/types/algoliasearch.js';
 import type { SearchParameters } from 'algoliasearch-helper';
 import type { SearchResults } from 'algoliasearch-helper';
+import { VNode } from 'preact';
 
 declare type AlgoliaHit<THit extends BaseHit = Record<string, any>> = {
     objectID: string;
@@ -34,7 +40,7 @@ declare type AlgoliaHit<THit extends BaseHit = Record<string, any>> = {
         };
     };
     _distinctSeqID?: number;
-    _geoLoc?: GeoLoc;
+    _geoloc?: GeoLoc;
 } & THit;
 
 declare const analytics: AnalyticsWidget;
@@ -173,7 +179,7 @@ declare type AnswersRenderState = {
     /**
      * The matched hits from Algolia API.
      */
-    hits: Hits;
+    hits: Hit[];
     /**
      * Whether it's still loading the results from the Answers API.
      */
@@ -264,7 +270,7 @@ declare type AutocompleteRenderState = {
         /**
          * The resolved hits from the index matching the query.
          */
-        hits: Hits;
+        hits: Hit[];
         /**
          * The full results object from the Algolia API.
          */
@@ -518,11 +524,11 @@ declare type BrowserHistoryArgs<TRouteState> = {
     getLocation(): Location;
 };
 
-declare type BuiltInBindEventForHits = (eventType: string, hits: Hit | Hits, eventName?: string) => string;
+declare type BuiltInBindEventForHits = (eventType: string, hits: Hit | Hit[], eventName?: string) => string;
 
 declare type BuiltInSendEventForFacet = (eventType: string, facetValue: string, eventName?: string) => void;
 
-declare type BuiltInSendEventForHits = (eventType: string, hits: Hit | Hits, eventName?: string) => void;
+declare type BuiltInSendEventForHits = (eventType: string, hits: Hit | Hit[], eventName?: string) => void;
 
 declare type BuiltInSendEventForToggle = (eventType: string, isRefined: boolean, eventName?: string) => void;
 
@@ -584,7 +590,9 @@ declare type ClearRefinementsTemplates = Partial<{
     /**
      * Template for the content of the button
      */
-    resetLabel: Template;
+    resetLabel: Template<{
+        hasRefinements: boolean;
+    }>;
 }>;
 
 declare type ClearRefinementsWidget = WidgetFactory<ClearRefinementsWidgetDescription & {
@@ -887,9 +895,9 @@ declare const connectVoiceSearch: VoiceSearchConnector;
 
 declare function createInfiniteHitsSessionStorageCache(): InfiniteHitsCache;
 
-declare type CreateInsightsMiddleware = (props: InsightsProps) => InternalMiddleware;
+declare type CreateInsightsMiddleware = typeof createInsightsMiddleware;
 
-declare const createInsightsMiddleware: CreateInsightsMiddleware;
+declare function createInsightsMiddleware<TInsightsClient extends null | InsightsClient>(props: InsightsProps<TInsightsClient>): InternalMiddleware;
 
 /**
  * Exposes the metadata of mounted widgets in a custom
@@ -1000,6 +1008,10 @@ declare type CurrentRefinementsCSSClasses = Partial<{
      */
     root: string | string[];
     /**
+     * CSS class to add to the root element when no refinements.
+     */
+    noRefinementRoot: string | string[];
+    /**
      * CSS class to add to the list element.
      */
     list: string | string[];
@@ -1075,16 +1087,10 @@ declare type CustomSendEventForHits = (customPayload: any) => void;
 
 declare type CustomSendEventForToggle = (customPayload: any) => void;
 
-declare type DefaultSearchClient = ReturnType<typeof algoliasearch>;
-
 declare type DisposeOptions = {
     helper: AlgoliaSearchHelper;
     state: SearchParameters;
     parent: IndexWidget;
-};
-
-declare type DummySearchClientV4 = {
-    readonly transporter: any;
 };
 
 declare const dynamicWidgets: DynamicWidgetsWidget;
@@ -1175,9 +1181,9 @@ declare const EXPERIMENTAL_connectDynamicWidgets: DynamicWidgetsConnector;
 /** @deprecated use dynamicWidgets */
 declare const EXPERIMENTAL_dynamicWidgets: DynamicWidgetsWidget;
 
-declare type FindAnswersOptions = DefaultSearchClient extends DummySearchClientV4 ? ClientSearch.FindAnswersOptions : any;
+declare type FacetValue = string | boolean | number;
 
-declare type GeoHit = Hit & Required<Pick<Hit, '_geoLoc'>>;
+declare type GeoHit<THit extends BaseHit = Record<string, any>> = Hit<THit> & Required<Pick<Hit, '_geoloc'>>;
 
 declare type GeoLoc = {
     lat: number;
@@ -1199,9 +1205,9 @@ declare type GeoLoc = {
  */
 declare const geoSearch: GeoSearchWidget;
 
-declare type GeoSearchConnector = Connector<GeoSearchWidgetDescription, GeoSearchConnectorParams>;
+declare type GeoSearchConnector<THit extends BaseHit = Record<string, any>> = Connector<GeoSearchWidgetDescription<THit>, GeoSearchConnectorParams<THit>>;
 
-declare type GeoSearchConnectorParams = {
+declare type GeoSearchConnectorParams<THit extends BaseHit = Record<string, any>> = {
     /**
      * If true, refine will be triggered as you move the map.
      * @default true
@@ -1211,7 +1217,7 @@ declare type GeoSearchConnectorParams = {
      * Function to transform the items passed to the templates.
      * @default items => items
      */
-    transformItems?: TransformItems<GeoHit>;
+    transformItems?: TransformItems<GeoHit<THit>>;
 };
 
 declare type GeoSearchCSSClasses = Partial<{
@@ -1257,7 +1263,7 @@ declare type GeoSearchMarker<TOptions> = {
     };
 };
 
-declare type GeoSearchRenderState = {
+declare type GeoSearchRenderState<THit extends BaseHit = Record<string, any>> = {
     /**
      * Reset the current bounding box refinement.
      */
@@ -1281,7 +1287,7 @@ declare type GeoSearchRenderState = {
     /**
      * The matched hits from Algolia API.
      */
-    items: GeoHit[];
+    items: Array<GeoHit<THit>>;
     /**
      * The current position of the search.
      */
@@ -1321,11 +1327,11 @@ declare type GeoSearchWidget = WidgetFactory<GeoSearchWidgetDescription & {
     $$widgetType: 'ais.geoSearch';
 }, GeoSearchConnectorParams, GeoSearchWidgetParams>;
 
-declare type GeoSearchWidgetDescription = {
+declare type GeoSearchWidgetDescription<THit extends BaseHit = Record<string, any>> = {
     $$type: 'ais.geoSearch';
-    renderState: GeoSearchRenderState;
+    renderState: GeoSearchRenderState<THit>;
     indexRenderState: {
-        geoSearch: WidgetRenderState<GeoSearchRenderState, GeoSearchConnectorParams>;
+        geoSearch: WidgetRenderState<GeoSearchRenderState<THit>, GeoSearchConnectorParams<THit>>;
     };
     indexUiState: {
         geoSearch: {
@@ -1511,6 +1517,10 @@ declare type HierarchicalMenuCSSClasses = Partial<{
      */
     link: string | string[];
     /**
+     * CSS class to add to the link of each selected item element (when using the default template).
+     */
+    selectedItemLink: string | string[];
+    /**
      * CSS class to add to each label (when using the default template).
      */
     label: string | string[];
@@ -1596,6 +1606,8 @@ declare type HierarchicalMenuTemplates = Partial<{
         count: number;
         isRefined: boolean;
         url: string;
+        label: string;
+        cssClasses: HierarchicalMenuCSSClasses;
     }>;
     /**
      * Template used for the show more text, provided with `isShowingMore` data property.
@@ -1746,7 +1758,11 @@ declare type HierarchicalMenuWidgetParams = {
     cssClasses?: HierarchicalMenuCSSClasses;
 };
 
+declare function Highlight<THit extends Hit<BaseHit>>({ hit, attribute, cssClasses, ...props }: HighlightProps<THit>): h.JSX.Element;
+
 declare function highlight({ attribute, highlightedTagName, hit, cssClasses, }: HighlightOptions): string;
+
+declare type HighlightClassNames = HighlightClassNames_2;
 
 declare type HighlightOptions = {
     attribute: string | string[];
@@ -1755,6 +1771,16 @@ declare type HighlightOptions = {
     cssClasses?: Partial<{
         highlighted: string;
     }>;
+};
+
+declare type HighlightProps<THit extends Hit<BaseHit>> = {
+    hit: THit;
+    attribute: keyof THit | string[];
+    cssClasses?: HighlightProps_2['classNames'];
+} & PartialKeys<Omit<HighlightProps_2, 'parts' | 'classNames'>, 'highlightedTagName' | 'nonHighlightedTagName' | 'separator'>;
+
+declare type HighlightProps_2 = Omit<HighlightProps_3, 'classNames'> & {
+    classNames?: Partial<HighlightClassNames>;
 };
 
 declare function historyRouter<TRouteState = UiState>({ createURL, parseURL, writeDelay, windowTitle, getLocation, }?: Partial<BrowserHistoryArgs<TRouteState>>): BrowserHistory<TRouteState>;
@@ -1776,11 +1802,6 @@ declare type HitAttributeSnippetResult = Pick<HitAttributeHighlightResult, 'valu
 declare type HitHighlightResult = {
     [attribute: string]: HitAttributeHighlightResult | HitAttributeHighlightResult[] | HitHighlightResult[] | HitHighlightResult;
 };
-
-/**
- * @deprecated use Hit[] directly instead
- */
-declare type Hits = Hit[];
 
 declare const hits: HitsWidget;
 
@@ -1880,8 +1901,13 @@ declare type HitsPerPageRenderState = {
     refine: (value: number) => void;
     /**
      * Indicates whether or not the search has results.
+     * @deprecated Use `canRefine` instead.
      */
     hasNoResults: boolean;
+    /**
+     * Indicates if search state can be refined.
+     */
+    canRefine: boolean;
 };
 
 declare type HitsPerPageRenderStateItem = {
@@ -1950,7 +1976,7 @@ declare type HitsTemplates = Partial<{
      *
      * @default 'No Results'
      */
-    empty: Template;
+    empty: Template<SearchResults>;
     /**
      * Template to use for each result. This template will receive an object containing a single record.
      *
@@ -1988,11 +2014,13 @@ declare type HitsWidgetParams = {
     cssClasses?: HitsCSSClasses;
 };
 
+declare type HoganHelpers<TKeys extends string = string> = Record<TKeys, (text: string, render: (value: string) => string) => string>;
+
 declare type HTMLMarkerArguments = {
     __id: string;
     position: google.maps.LatLngLiteral;
     map: google.maps.Map;
-    template: string;
+    template: ReturnType<typeof renderTemplate>;
     title?: string;
     className: string;
     anchor?: {
@@ -2003,9 +2031,15 @@ declare type HTMLMarkerArguments = {
 
 declare const index: (widgetParams: IndexWidgetParams) => IndexWidget;
 
-declare type IndexInitOptions = Pick<InitOptions, 'instantSearchInstance' | 'parent' | 'uiState'>;
+declare type IndexInitOptions = {
+    instantSearchInstance: InstantSearch;
+    parent: IndexWidget | null;
+    uiState: UiState;
+};
 
-declare type IndexRenderOptions = Pick<RenderOptions, 'instantSearchInstance'>;
+declare type IndexRenderOptions = {
+    instantSearchInstance: InstantSearch;
+};
 
 declare type IndexRenderState = Partial<ConnectorRenderStates & WidgetRenderStates>;
 
@@ -2031,7 +2065,7 @@ declare type IndexWidget = Omit<Widget<IndexWidgetDescription & {
      * @deprecated
      */
     getWidgetState(uiState: UiState): UiState;
-    getWidgetUiState<TUiState = UiState>(uiState: TUiState): TUiState;
+    getWidgetUiState<TUiState extends UiState = UiState>(uiState: TUiState): TUiState;
     getWidgetSearchParameters(searchParameters: SearchParameters, searchParametersOptions: {
         uiState: IndexUiState;
     }): SearchParameters;
@@ -2165,9 +2199,7 @@ declare type InfiniteHitsTemplates = Partial<{
     /**
      * The template to use when there are no results.
      */
-    empty: Template<{
-        results: SearchResults;
-    }>;
+    empty: Template<SearchResults>;
     /**
      * The template to use for the “Show previous” label.
      */
@@ -2260,15 +2292,15 @@ declare type InsightsEvent = {
     attribute?: string;
 };
 
-declare type InsightsProps = {
-    insightsClient: null | InsightsClient;
+declare type InsightsProps<TInsightsClient extends null | InsightsClient = InsightsClient | null> = {
+    insightsClient: TInsightsClient;
     insightsInitParams?: {
         userHasOptedOut?: boolean;
         useCookie?: boolean;
         cookieDuration?: number;
         region?: 'de' | 'us';
     };
-    onEvent?: (event: InsightsEvent, insightsClient: null | InsightsClient) => void;
+    onEvent?: (event: InsightsEvent, insightsClient: TInsightsClient) => void;
 };
 
 /**
@@ -2280,7 +2312,7 @@ declare class InstantSearch<TUiState extends UiState = UiState, TRouteState = TU
     client: InstantSearchOptions['searchClient'];
     indexName: string;
     insightsClient: InsightsClient | null;
-    onStateChange: InstantSearchOptions['onStateChange'] | null;
+    onStateChange: InstantSearchOptions<TUiState>['onStateChange'] | null;
     helper: AlgoliaSearchHelper | null;
     mainHelper: AlgoliaSearchHelper | null;
     mainIndex: IndexWidget;
@@ -2289,10 +2321,9 @@ declare class InstantSearch<TUiState extends UiState = UiState, TRouteState = TU
     renderState: RenderState;
     _stalledSearchDelay: number;
     _searchStalledTimer: any;
-    _isSearchStalled: boolean;
-    _initialUiState: UiState;
+    _initialUiState: TUiState;
     _initialResults: InitialResults | null;
-    _createURL: CreateURL<UiState>;
+    _createURL: CreateURL<TUiState>;
     _searchFunction?: InstantSearchOptions['searchFunction'];
     _mainHelperSearch?: AlgoliaSearchHelper['search'];
     middleware: Array<{
@@ -2300,6 +2331,19 @@ declare class InstantSearch<TUiState extends UiState = UiState, TRouteState = TU
         instance: MiddlewareDefinition;
     }>;
     sendEventToInsights: (event: InsightsEvent) => void;
+    /**
+     * The status of the search. Can be "idle", "loading", "stalled", or "error".
+     */
+    status: InstantSearchStatus;
+    /**
+     * The last returned error from the Search API.
+     * The error gets cleared when the next valid search response is rendered.
+     */
+    error: Error | undefined;
+    /**
+     * @deprecated use `status === 'stalled'` instead
+     */
+    get _isSearchStalled(): boolean;
     constructor(options: InstantSearchOptions<TUiState, TRouteState>);
     /**
      * Hooks a middleware into the InstantSearch lifecycle.
@@ -2353,22 +2397,27 @@ declare class InstantSearch<TUiState extends UiState = UiState, TRouteState = TU
      * @return {undefined} This method does not return anything
      */
     dispose(): void;
-    scheduleSearch: ((...args: any[]) => void) & {
+    scheduleSearch: (() => void) & {
         wait(): Promise<void>;
         cancel(): void;
     };
-    scheduleRender: ((...args: any[]) => void) & {
+    scheduleRender: ((shouldResetStatus?: boolean) => void) & {
         wait(): Promise<void>;
         cancel(): void;
     };
     scheduleStalledRender(): void;
-    setUiState(uiState: UiState | ((previousUiState: UiState) => UiState)): void;
-    getUiState(): UiState;
-    onInternalStateChange: ((...args: any[]) => void) & {
+    /**
+     * Set the UI state and trigger a search.
+     * @param uiState The next UI state or a function computing it from the current state
+     * @param callOnStateChange private parameter used to know if the method is called from a state change
+     */
+    setUiState(uiState: TUiState | ((previousUiState: TUiState) => TUiState), callOnStateChange?: boolean): void;
+    getUiState(): TUiState;
+    onInternalStateChange: (() => void) & {
         wait(): Promise<void>;
         cancel(): void;
     };
-    createURL(nextState?: UiState): string;
+    createURL(nextState?: TUiState): string;
     refresh(): void;
 }
 
@@ -2403,6 +2452,10 @@ declare type InstantSearchModule = {
     reverseHighlight: typeof helpers.reverseHighlight;
     snippet: typeof helpers.snippet;
     reverseSnippet: typeof helpers.reverseSnippet;
+    /**
+     * @deprecated use createInsightsMiddleware
+     * @link https://www.algolia.com/doc/api-reference/widgets/insights/js/
+     */
     insights: typeof helpers.insights;
 };
 
@@ -2460,8 +2513,8 @@ declare type InstantSearchOptions<TUiState extends UiState = UiState, TRouteStat
      * become in charge of updating the UI state with the `setUiState` function.
      */
     onStateChange?: (params: {
-        uiState: UiState;
-        setUiState(uiState: UiState | ((previousUiState: UiState) => UiState)): void;
+        uiState: TUiState;
+        setUiState(uiState: TUiState | ((previousUiState: TUiState) => TUiState)): void;
     }) => void;
     /**
      * Injects a `uiState` to the `instantsearch` instance. You can use this option
@@ -2469,7 +2522,7 @@ declare type InstantSearchOptions<TUiState extends UiState = UiState, TRouteStat
      * for the first search. To unconditionally pass additional parameters to the
      * Algolia API, take a look at the `configure` widget.
      */
-    initialUiState?: TUiState;
+    initialUiState?: NoInfer<TUiState>;
     /**
      * Time before a search is considered stalled. The default is 200ms
      */
@@ -2487,6 +2540,8 @@ declare type InstantSearchOptions<TUiState extends UiState = UiState, TRouteStat
      */
     insightsClient?: InsightsClient;
 };
+
+declare type InstantSearchStatus = 'idle' | 'loading' | 'stalled' | 'error';
 
 declare type InternalMiddleware<TUiState extends UiState = UiState> = (options: MiddlewareOptions) => MiddlewareDefinition<TUiState>;
 
@@ -2753,6 +2808,7 @@ declare type MiddlewareDefinition<TUiState extends UiState = UiState> = {
         uiState: TUiState;
     }): void;
     subscribe(): void;
+    started(): void;
     unsubscribe(): void;
 };
 
@@ -2762,16 +2818,18 @@ declare type MiddlewareOptions = {
 
 declare namespace middlewares {
     export {
+        createInsightsMiddleware,
         InsightsEvent,
         InsightsProps,
         CreateInsightsMiddleware,
-        createInsightsMiddleware,
         RouterProps,
         createRouterMiddleware,
         isMetadataEnabled,
         createMetadataMiddleware
     }
 }
+
+declare type NoInfer<T> = [T][T extends any ? 0 : never];
 
 declare const numericMenu: NumericMenuWidget;
 
@@ -2855,8 +2913,16 @@ declare type NumericMenuRenderState = {
     createURL: CreateURL<NumericMenuRenderStateItem['value']>;
     /**
      * `true` if the last search contains no result
+     * @deprecated Use `canRefine` instead.
      */
     hasNoResults: boolean;
+    /**
+     * Indicates if search state can be refined.
+     *
+     * This is `true` if the last search contains no result and
+     * "All" range is selected
+     */
+    canRefine: boolean;
     /**
      * Sets the selected value and trigger a new search
      */
@@ -3222,6 +3288,11 @@ declare type ParseURL<TRouteState> = (args: {
     qsModule: typeof qs_2;
     location: Location;
 }) => TRouteState;
+
+/**
+ * Make certain keys of an object optional.
+ */
+declare type PartialKeys<TObj, TKeys extends keyof TObj> = Omit<TObj, TKeys> & Partial<Pick<TObj, TKeys>>;
 
 declare type PlacesInstance = Places.PlacesInstance;
 
@@ -3721,6 +3792,8 @@ declare type RatingMenuRenderState = {
     refine: (value: string) => void;
     /**
      * `true` if the last search contains no result.
+     *
+     * @deprecated Use `canRefine` instead.
      */
     hasNoResults: boolean;
     /**
@@ -3735,9 +3808,15 @@ declare type RatingMenuTemplates = Partial<{
      */
     item: Template<{
         name: string;
+        label: string;
+        value: string;
         count: number;
         isRefined: boolean;
         url: string;
+        stars: [boolean, boolean, boolean, boolean, boolean];
+        cssClasses: RatingMenuCSSClasses;
+        attribute?: string;
+        isFromSearch?: boolean;
     }>;
 }>;
 
@@ -3940,6 +4019,10 @@ declare type RefinementListItemData = {
      * Object containing all the classes computed for the item.
      */
     cssClasses: RefinementListCSSClasses;
+    /**
+     * Whether the `items` prop contains facet values from the global search or from the search inside the items.
+     */
+    isFromSearch: boolean;
 };
 
 declare type RefinementListOwnCSSClasses = Partial<{
@@ -4005,7 +4088,9 @@ declare type RefinementListOwnTemplates = Partial<{
     /**
      * Template used for the show more text, provided with `isShowingMore` data property.
      */
-    showMoreText: Template;
+    showMoreText: Template<{
+        isShowingMore: boolean;
+    }>;
     /**
      * Templates to use for search for facet values when there are no results.
      */
@@ -4240,7 +4325,7 @@ declare type RendererOptions<TWidgetParams> = {
      * The mutable list of hits. The may change depending
      * of the given transform items function.
      */
-    hits?: Hits;
+    hits?: Hit[];
     /**
      * The current insights client, if any.
      */
@@ -4256,6 +4341,16 @@ declare type RenderState = {
 };
 
 declare type RenderStateLifeCycle<TWidgetDescription extends WidgetDescription & WidgetParams> = TWidgetDescription extends RequiredKeys<WidgetDescription, 'renderState' | 'indexRenderState'> & WidgetParams ? RequiredRenderStateLifeCycle<TWidgetDescription> : Partial<RequiredRenderStateLifeCycle<TWidgetDescription>>;
+
+declare function renderTemplate({ templates, templateKey, compileOptions, helpers, data, bindEvent, sendEvent, }: {
+    templates: Templates;
+    templateKey: string;
+    compileOptions?: HoganOptions;
+    helpers?: HoganHelpers;
+    data?: Record<string, any>;
+    bindEvent?: BindEventForHits;
+    sendEvent?: SendEventForHits;
+}): string | VNode<    {}> | VNode<    {}>[];
 
 declare type RequiredKeys<TObject, TKeys extends keyof TObject> = Expand<Required<Pick<TObject, TKeys>> & Omit<TObject, TKeys>>;
 
@@ -4334,7 +4429,11 @@ declare type RequiredWidgetType<TWidgetDescription extends WidgetDescription> = 
     $$widgetType: TWidgetDescription['$$widgetType'];
 };
 
+declare function ReverseHighlight<THit extends Hit<BaseHit>>({ hit, attribute, cssClasses, ...props }: ReverseHighlightProps<THit>): h.JSX.Element;
+
 declare function reverseHighlight({ attribute, highlightedTagName, hit, cssClasses, }: ReverseHighlightOptions): string;
+
+declare type ReverseHighlightClassNames = HighlightClassNames_2;
 
 declare type ReverseHighlightOptions = {
     attribute: string | string[];
@@ -4345,7 +4444,21 @@ declare type ReverseHighlightOptions = {
     }>;
 };
 
+declare type ReverseHighlightProps<THit extends Hit<BaseHit>> = {
+    hit: THit;
+    attribute: keyof THit | string[];
+    cssClasses?: ReverseHighlightProps_2['classNames'];
+} & PartialKeys<Omit<ReverseHighlightProps_2, 'parts' | 'classNames'>, 'highlightedTagName' | 'nonHighlightedTagName' | 'separator'>;
+
+declare type ReverseHighlightProps_2 = Omit<HighlightProps_3, 'classNames'> & {
+    classNames?: Partial<ReverseHighlightClassNames>;
+};
+
+declare function ReverseSnippet<THit extends Hit<BaseHit>>({ hit, attribute, cssClasses, ...props }: ReverseSnippetProps<THit>): h.JSX.Element;
+
 declare function reverseSnippet({ attribute, highlightedTagName, hit, cssClasses, }: ReverseSnippetOptions): string;
+
+declare type ReverseSnippetClassNames = HighlightClassNames_2;
 
 declare type ReverseSnippetOptions = {
     attribute: string | string[];
@@ -4354,6 +4467,16 @@ declare type ReverseSnippetOptions = {
     cssClasses?: Partial<{
         highlighted: string;
     }>;
+};
+
+declare type ReverseSnippetProps<THit extends Hit<BaseHit>> = {
+    hit: THit;
+    attribute: keyof THit | string[];
+    cssClasses?: ReverseSnippetProps_2['classNames'];
+} & PartialKeys<Omit<ReverseSnippetProps_2, 'parts' | 'classNames'>, 'highlightedTagName' | 'nonHighlightedTagName' | 'separator'>;
+
+declare type ReverseSnippetProps_2 = Omit<HighlightProps_3, 'classNames'> & {
+    classNames?: Partial<ReverseSnippetClassNames>;
 };
 
 /**
@@ -4407,6 +4530,8 @@ declare type ScopedResult = {
 };
 
 declare const searchBox: SearchBoxWidget;
+
+declare type SearchBoxComponentCSSClasses = ComponentCSSClasses<SearchBoxCSSClasses>;
 
 declare type SearchBoxConnector = Connector<SearchBoxWidgetDescription, SearchBoxConnectorParams>;
 
@@ -4485,6 +4610,7 @@ declare type SearchBoxRenderState = {
      * `true` if the search results takes more than a certain time to come back
      * from Algolia servers. This can be configured on the InstantSearch constructor with the attribute
      * `stalledSearchDelay` which is 200ms, by default.
+     * @deprecated use `instantSearchInstance.status` instead
      */
     isSearchStalled: boolean;
 };
@@ -4493,15 +4619,21 @@ declare type SearchBoxTemplates = Partial<{
     /**
      * Template used for displaying the submit button. Can accept a function or a Hogan string.
      */
-    submit: Template;
+    submit: Template<{
+        cssClasses: SearchBoxComponentCSSClasses;
+    }>;
     /**
      * Template used for displaying the reset button. Can accept a function or a Hogan string.
      */
-    reset: Template;
+    reset: Template<{
+        cssClasses: SearchBoxComponentCSSClasses;
+    }>;
     /**
      * Template used for displaying the loading indicator. Can accept a function or a Hogan string.
      */
-    loadingIndicator: Template;
+    loadingIndicator: Template<{
+        cssClasses: SearchBoxComponentCSSClasses;
+    }>;
 }>;
 
 /**
@@ -4574,17 +4706,6 @@ declare type SearchBoxWidgetParams = {
     queryHook?: (query: string, hook: (value: string) => void) => void;
 };
 
-declare type SearchClient = {
-    search: DefaultSearchClient['search'];
-    searchForFacetValues: DefaultSearchClient['searchForFacetValues'];
-    addAlgoliaAgent?: DefaultSearchClient['addAlgoliaAgent'];
-    initIndex?: (indexName: string) => SearchIndex extends {
-        findAnswers: any;
-    } ? Partial<Pick<SearchIndex, 'findAnswers'>> : SearchIndex;
-};
-
-declare type SearchIndex = ReturnType<DefaultSearchClient['initIndex']>;
-
 declare type SendEvent = (...args: [InsightsEvent] | [string, string, string?]) => void;
 
 declare type SendEventForFacet = BuiltInSendEventForFacet & CustomSendEventForFacet;
@@ -4595,15 +4716,19 @@ declare type SendEventForToggle = BuiltInSendEventForToggle & CustomSendEventFor
 
 declare type SharedRenderOptions = {
     instantSearchInstance: InstantSearch;
-    parent: IndexWidget | null;
+    parent: IndexWidget;
     templatesConfig: Record<string, unknown>;
     scopedResults: ScopedResult[];
     state: SearchParameters;
     renderState: IndexRenderState;
     helper: AlgoliaSearchHelper;
+    /** @deprecated use `status` instead */
     searchMetadata: {
+        /** @deprecated use `status === "stalled"` instead */
         isSearchStalled: boolean;
     };
+    status: InstantSearch['status'];
+    error: InstantSearch['error'];
     createURL(state: SearchParameters): string;
 };
 
@@ -4611,7 +4736,11 @@ declare function simpleStateMapping<TUiState extends UiState = UiState>(): State
 
 declare function singleIndexStateMapping<TUiState extends UiState = UiState>(indexName: keyof TUiState): StateMapping<TUiState, TUiState[typeof indexName]>;
 
+declare function Snippet<THit extends Hit<BaseHit>>({ hit, attribute, cssClasses, ...props }: SnippetProps<THit>): h.JSX.Element;
+
 declare function snippet({ attribute, highlightedTagName, hit, cssClasses, }: SnippetOptions): string;
+
+declare type SnippetClassNames = HighlightClassNames_2;
 
 declare type SnippetOptions = {
     attribute: string | string[];
@@ -4620,6 +4749,16 @@ declare type SnippetOptions = {
     cssClasses?: {
         highlighted?: string;
     };
+};
+
+declare type SnippetProps<THit extends Hit<BaseHit>> = {
+    hit: THit;
+    attribute: keyof THit | string[];
+    cssClasses?: SnippetProps_2['classNames'];
+} & PartialKeys<Omit<SnippetProps_2, 'parts' | 'classNames'>, 'highlightedTagName' | 'nonHighlightedTagName' | 'separator'>;
+
+declare type SnippetProps_2 = Omit<HighlightProps_3, 'classNames'> & {
+    classNames?: Partial<SnippetClassNames>;
 };
 
 /**
@@ -4694,8 +4833,13 @@ declare type SortByRenderState = {
     refine: (value: string) => void;
     /**
      * `true` if the last search contains no result.
+     * @deprecated Use `canRefine` instead.
      */
     hasNoResults: boolean;
+    /**
+     * `true` if we can refine.
+     */
+    canRefine: boolean;
 };
 
 declare type SortByWidget = WidgetFactory<SortByWidgetDescription & {
@@ -4869,13 +5013,9 @@ declare type StatsRenderState = {
 
 declare type StatsTemplates = Partial<{
     /**
-     * Text template, provided with `hasManyResults`, `hasNoResults`, `hasOneResult`, `hitsPerPage`, `nbHits`, `nbSortedHits`, `nbPages`, `areHitsSorted`, `page`, `processingTimeMS`, `query`.
+     * Text template, provided with `hasManyResults`, `hasNoResults`, `hasOneResult`, `hasNoSortedResults`, `hasOneSortedResults`, `hasManySortedResults`, `hitsPerPage`, `nbHits`, `nbSortedHits`, `nbPages`, `areHitsSorted`, `page`, `processingTimeMS`, `query`.
      */
-    text: Template<{
-        hasManyResults: boolean;
-        hasNoResults: boolean;
-        hasOneResult: boolean;
-    } & StatsRenderState>;
+    text: Template<TextTemplateProps & StatsRenderState>;
 }>;
 
 declare type StatsWidget = WidgetFactory<StatsWidgetDescription & {
@@ -4907,9 +5047,33 @@ declare type StatsWidgetParams = {
 
 declare type Status = 'initial' | 'askingPermission' | 'waiting' | 'recognizing' | 'finished' | 'error';
 
-declare type Template<TTemplateData = void> = string | ((data: TTemplateData) => string);
+declare type Template<TTemplateData = void> = string | ((data: TTemplateData, params: TemplateParams) => VNode | VNode[] | string);
 
-declare type TemplateWithBindEvent<TTemplateData = void> = string | ((data: TTemplateData, bindEvent: BindEventForHits) => string);
+declare type TemplateParams = BindEventForHits & {
+    html: typeof html;
+    components: {
+        Highlight: typeof Highlight;
+        ReverseHighlight: typeof ReverseHighlight;
+        Snippet: typeof Snippet;
+        ReverseSnippet: typeof ReverseSnippet;
+    };
+    sendEvent?: SendEventForHits;
+};
+
+declare type Templates = {
+    [key: string]: Template<any> | TemplateWithBindEvent<any> | undefined;
+};
+
+declare type TemplateWithBindEvent<TTemplateData = void> = string | ((data: TTemplateData, params: TemplateParams) => VNode | VNode[] | string);
+
+declare type TextTemplateProps = {
+    hasManyResults: boolean;
+    hasNoResults: boolean;
+    hasOneResult: boolean;
+    hasNoSortedResults: boolean;
+    hasOneSortedResults: boolean;
+    hasManySortedResults: boolean;
+};
 
 /**
  * The toggleRefinement widget lets the user either:
@@ -4936,11 +5100,11 @@ declare type ToggleRefinementConnectorParams = {
      * Value to filter on when toggled.
      * @default "true"
      */
-    on?: string | string[] | boolean | boolean[] | number | number[];
+    on?: FacetValue | FacetValue[];
     /**
      * Value to filter on when not toggled.
      */
-    off?: string | string[] | boolean | boolean[] | number | number[];
+    off?: FacetValue | FacetValue[];
 };
 
 declare type ToggleRefinementCSSClasses = Partial<{
@@ -5010,7 +5174,9 @@ declare type ToggleRefinementTemplates = Partial<{
     /**
      * the text that describes the toggle action
      */
-    labelText: Template<ToggleRefinementValue>;
+    labelText: Template<ToggleRefinementValue & {
+        name: string;
+    }>;
 }>;
 
 declare type ToggleRefinementValue = {

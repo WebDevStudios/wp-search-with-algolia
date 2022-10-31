@@ -1,4 +1,4 @@
-/** @jsx h */
+
 import { h } from 'preact';
 export declare type SelectorOption = {
     value?: string | number;

@@ -1,4 +1,4 @@
-/** @jsx h */
+
 import { h } from 'preact';
 import type { PaginationCSSClasses, PaginationTemplates } from '../../widgets/pagination/pagination';
 import type { ComponentCSSClasses } from '../../types';

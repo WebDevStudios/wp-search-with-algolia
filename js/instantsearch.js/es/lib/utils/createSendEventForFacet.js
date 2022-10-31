@@ -1,10 +1,10 @@
 function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
-import isFacetRefined from "./isFacetRefined.js";
+import { isFacetRefined } from "./isFacetRefined.js";
 export function createSendEventForFacet(_ref) {
   var instantSearchInstance = _ref.instantSearchInstance,
       helper = _ref.helper,
-      attribute = _ref.attribute,
+      attr = _ref.attribute,
       widgetType = _ref.widgetType;
 
   var sendEventForFacet = function sendEventForFacet() {
@@ -16,6 +16,7 @@ export function createSendEventForFacet(_ref) {
         facetValue = args[1],
         _args$ = args[2],
         eventName = _args$ === void 0 ? 'Filter Applied' : _args$;
+    var attribute = typeof attr === 'string' ? attr : attr(facetValue);
 
     if (args.length === 1 && _typeof(args[0]) === 'object') {
       instantSearchInstance.sendEventToInsights(args[0]);

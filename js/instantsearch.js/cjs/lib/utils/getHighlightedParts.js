@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.default = getHighlightedParts;
+exports.getHighlightedParts = getHighlightedParts;
 
 var _escapeHighlight = require("./escape-highlight.js");
 

@@ -4,8 +4,26 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
+
+var _preact = require("preact");
+
 var defaultTemplates = {
-  item: "<label class=\"{{cssClasses.label}}\">\n  <input type=\"radio\" class=\"{{cssClasses.radio}}\" name=\"{{attribute}}\"{{#isRefined}} checked{{/isRefined}} />\n  <span class=\"{{cssClasses.labelText}}\">{{label}}</span>\n</label>"
+  item: function item(_ref) {
+    var cssClasses = _ref.cssClasses,
+        attribute = _ref.attribute,
+        label = _ref.label,
+        isRefined = _ref.isRefined;
+    return (0, _preact.h)("label", {
+      className: cssClasses.label
+    }, (0, _preact.h)("input", {
+      type: "radio",
+      className: cssClasses.radio,
+      name: attribute,
+      defaultChecked: isRefined
+    }), (0, _preact.h)("span", {
+      className: cssClasses.labelText
+    }, label));
+  }
 };
 var _default = defaultTemplates;
 exports.default = _default;

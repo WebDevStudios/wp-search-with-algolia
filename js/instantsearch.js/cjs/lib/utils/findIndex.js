@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.default = void 0;
+exports.findIndex = findIndex;
 
 // We aren't using the native `Array.prototype.findIndex` because the refactor away from Lodash is not
 // published as a major version.
@@ -24,6 +24,3 @@ function findIndex(array, comparator) {
 
   return -1;
 }
-
-var _default = findIndex;
-exports.default = _default;

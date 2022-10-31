@@ -7,7 +7,7 @@ exports.default = void 0;
 
 var _preact = require("preact");
 
-var _classnames = _interopRequireDefault(require("classnames"));
+var _uiComponentsShared = require("@algolia/ui-components-shared");
 
 var _InfiniteHits = _interopRequireDefault(require("../../components/InfiniteHits/InfiniteHits.js"));
 
@@ -15,9 +15,11 @@ var _connectInfiniteHits = _interopRequireDefault(require("../../connectors/infi
 
 var _index = require("../../lib/utils/index.js");
 
+var _index2 = require("../../lib/templating/index.js");
+
 var _suit = require("../../lib/suit.js");
 
-var _index2 = require("../../lib/insights/index.js");
+var _index3 = require("../../lib/insights/index.js");
 
 var _defaultTemplates = _interopRequireDefault(require("./defaultTemplates.js"));
 
@@ -33,7 +35,7 @@ var withUsage = (0, _index.createDocumentationMessageGenerator)({
   name: 'infinite-hits'
 });
 var suit = (0, _suit.component)('InfiniteHits');
-var InfiniteHitsWithInsightsListener = (0, _index2.withInsightsListener)(_InfiniteHits.default);
+var InfiniteHitsWithInsightsListener = (0, _index3.withInsightsListener)(_InfiniteHits.default);
 
 var renderer = function renderer(_ref) {
   var containerNode = _ref.containerNode,
@@ -53,7 +55,7 @@ var renderer = function renderer(_ref) {
         bindEvent = _ref2.bindEvent;
 
     if (isFirstRendering) {
-      renderState.templateProps = (0, _index.prepareTemplateProps)({
+      renderState.templateProps = (0, _index2.prepareTemplateProps)({
         defaultTemplates: _defaultTemplates.default,
         templatesConfig: instantSearchInstance.templatesConfig,
         templates: templates
@@ -98,27 +100,27 @@ var infiniteHits = function infiniteHits(widgetParams) {
 
   var containerNode = (0, _index.getContainerNode)(container);
   var cssClasses = {
-    root: (0, _classnames.default)(suit(), userCssClasses.root),
-    emptyRoot: (0, _classnames.default)(suit({
+    root: (0, _uiComponentsShared.cx)(suit(), userCssClasses.root),
+    emptyRoot: (0, _uiComponentsShared.cx)(suit({
       modifierName: 'empty'
     }), userCssClasses.emptyRoot),
-    item: (0, _classnames.default)(suit({
+    item: (0, _uiComponentsShared.cx)(suit({
       descendantName: 'item'
     }), userCssClasses.item),
-    list: (0, _classnames.default)(suit({
+    list: (0, _uiComponentsShared.cx)(suit({
       descendantName: 'list'
     }), userCssClasses.list),
-    loadPrevious: (0, _classnames.default)(suit({
+    loadPrevious: (0, _uiComponentsShared.cx)(suit({
       descendantName: 'loadPrevious'
     }), userCssClasses.loadPrevious),
-    disabledLoadPrevious: (0, _classnames.default)(suit({
+    disabledLoadPrevious: (0, _uiComponentsShared.cx)(suit({
       descendantName: 'loadPrevious',
       modifierName: 'disabled'
     }), userCssClasses.disabledLoadPrevious),
-    loadMore: (0, _classnames.default)(suit({
+    loadMore: (0, _uiComponentsShared.cx)(suit({
       descendantName: 'loadMore'
     }), userCssClasses.loadMore),
-    disabledLoadMore: (0, _classnames.default)(suit({
+    disabledLoadMore: (0, _uiComponentsShared.cx)(suit({
       descendantName: 'loadMore',
       modifierName: 'disabled'
     }), userCssClasses.disabledLoadMore)
@@ -130,7 +132,7 @@ var infiniteHits = function infiniteHits(widgetParams) {
     showPrevious: showPrevious,
     renderState: {}
   });
-  var makeWidget = (0, _index2.withInsights)(_connectInfiniteHits.default)(specializedRenderer, function () {
+  var makeWidget = (0, _index3.withInsights)(_connectInfiniteHits.default)(specializedRenderer, function () {
     return (0, _preact.render)(null, containerNode);
   });
   return _objectSpread(_objectSpread({}, makeWidget({

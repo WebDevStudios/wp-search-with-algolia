@@ -5,9 +5,15 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = void 0;
 var defaultTemplates = {
-  empty: 'No results',
-  showPreviousText: 'Show previous results',
-  showMoreText: 'Show more results',
+  empty: function empty() {
+    return 'No results';
+  },
+  showPreviousText: function showPreviousText() {
+    return 'Show previous results';
+  },
+  showMoreText: function showMoreText() {
+    return 'Show more results';
+  },
   item: function item(data) {
     return JSON.stringify(data, null, 2);
   }

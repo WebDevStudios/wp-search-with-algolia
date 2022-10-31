@@ -7,11 +7,13 @@ exports.default = void 0;
 
 var _preact = require("preact");
 
-var _classnames = _interopRequireDefault(require("classnames"));
+var _uiComponentsShared = require("@algolia/ui-components-shared");
 
 var _defaultTemplates = _interopRequireDefault(require("./defaultTemplates.js"));
 
 var _index = require("../../lib/utils/index.js");
+
+var _index2 = require("../../lib/templating/index.js");
 
 var _suit = require("../../lib/suit.js");
 
@@ -43,7 +45,7 @@ var renderer = function renderer(_ref) {
         instantSearchInstance = _ref2.instantSearchInstance;
 
     if (isFirstRendering) {
-      renderState.templateProps = (0, _index.prepareTemplateProps)({
+      renderState.templateProps = (0, _index2.prepareTemplateProps)({
         defaultTemplates: _defaultTemplates.default,
         templatesConfig: instantSearchInstance.templatesConfig,
         templates: templates
@@ -81,20 +83,20 @@ var answersWidget = function answersWidget(widgetParams) {
 
   var containerNode = (0, _index.getContainerNode)(container);
   var cssClasses = {
-    root: (0, _classnames.default)(suit(), userCssClasses.root),
-    emptyRoot: (0, _classnames.default)(suit({
+    root: (0, _uiComponentsShared.cx)(suit(), userCssClasses.root),
+    emptyRoot: (0, _uiComponentsShared.cx)(suit({
       modifierName: 'empty'
     }), userCssClasses.emptyRoot),
-    header: (0, _classnames.default)(suit({
+    header: (0, _uiComponentsShared.cx)(suit({
       descendantName: 'header'
     }), userCssClasses.header),
-    loader: (0, _classnames.default)(suit({
+    loader: (0, _uiComponentsShared.cx)(suit({
       descendantName: 'loader'
     }), userCssClasses.loader),
-    list: (0, _classnames.default)(suit({
+    list: (0, _uiComponentsShared.cx)(suit({
       descendantName: 'list'
     }), userCssClasses.list),
-    item: (0, _classnames.default)(suit({
+    item: (0, _uiComponentsShared.cx)(suit({
       descendantName: 'item'
     }), userCssClasses.item)
   };

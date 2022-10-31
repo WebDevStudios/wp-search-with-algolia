@@ -1,9 +1,9 @@
 import type { SearchResults } from 'algoliasearch-helper';
-import type { Hits, InsightsClientMethod, InsightsClientPayload, Connector } from '../../types';
+import type { Hit, InsightsClientMethod, InsightsClientPayload, Connector } from '../../types';
 export declare const inferPayload: ({ method, results, hits, objectIDs, }: {
     method: InsightsClientMethod;
     results: SearchResults;
-    hits: Hits;
+    hits: Hit[];
     objectIDs: string[];
 }) => Omit<InsightsClientPayload, 'eventName'>;
 /**

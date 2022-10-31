@@ -1,4 +1,4 @@
-/** @jsx h */
+
 import type { NumericMenuConnectorParams, NumericMenuWidgetDescription } from '../../connectors/numeric-menu/connectNumericMenu';
 import type { ComponentCSSClasses, Template, WidgetFactory } from '../../types';
 export declare type NumericMenuCSSClasses = Partial<{

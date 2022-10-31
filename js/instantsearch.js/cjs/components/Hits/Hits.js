@@ -7,7 +7,7 @@ exports.default = void 0;
 
 var _preact = require("preact");
 
-var _classnames = _interopRequireDefault(require("classnames"));
+var _uiComponentsShared = require("@algolia/ui-components-shared");
 
 var _Template = _interopRequireDefault(require("../Template/Template.js"));
 
@@ -25,6 +25,7 @@ var Hits = function Hits(_ref) {
   var results = _ref.results,
       hits = _ref.hits,
       bindEvent = _ref.bindEvent,
+      sendEvent = _ref.sendEvent,
       cssClasses = _ref.cssClasses,
       templateProps = _ref.templateProps;
 
@@ -32,7 +33,7 @@ var Hits = function Hits(_ref) {
     return (0, _preact.h)(_Template.default, _extends({}, templateProps, {
       templateKey: "empty",
       rootProps: {
-        className: (0, _classnames.default)(cssClasses.root, cssClasses.emptyRoot)
+        className: (0, _uiComponentsShared.cx)(cssClasses.root, cssClasses.emptyRoot)
       },
       data: results
     }));
@@ -53,7 +54,8 @@ var Hits = function Hits(_ref) {
       data: _objectSpread(_objectSpread({}, hit), {}, {
         __hitIndex: index
       }),
-      bindEvent: bindEvent
+      bindEvent: bindEvent,
+      sendEvent: sendEvent
     }));
   })));
 };

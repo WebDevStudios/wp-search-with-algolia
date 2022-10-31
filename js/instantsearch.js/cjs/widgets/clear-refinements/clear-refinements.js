@@ -9,13 +9,15 @@ var _preact = require("preact");
 
 var _ClearRefinements = _interopRequireDefault(require("../../components/ClearRefinements/ClearRefinements.js"));
 
-var _classnames = _interopRequireDefault(require("classnames"));
+var _uiComponentsShared = require("@algolia/ui-components-shared");
 
 var _connectClearRefinements = _interopRequireDefault(require("../../connectors/clear-refinements/connectClearRefinements.js"));
 
 var _defaultTemplates = _interopRequireDefault(require("./defaultTemplates.js"));
 
 var _index = require("../../lib/utils/index.js");
+
+var _index2 = require("../../lib/templating/index.js");
 
 var _suit = require("../../lib/suit.js");
 
@@ -39,11 +41,11 @@ var renderer = function renderer(_ref) {
       templates = _ref.templates;
   return function (_ref2, isFirstRendering) {
     var refine = _ref2.refine,
-        hasRefinements = _ref2.hasRefinements,
+        canRefine = _ref2.canRefine,
         instantSearchInstance = _ref2.instantSearchInstance;
 
     if (isFirstRendering) {
-      renderState.templateProps = (0, _index.prepareTemplateProps)({
+      renderState.templateProps = (0, _index2.prepareTemplateProps)({
         defaultTemplates: _defaultTemplates.default,
         templatesConfig: instantSearchInstance.templatesConfig,
         templates: templates
@@ -54,7 +56,7 @@ var renderer = function renderer(_ref) {
     (0, _preact.render)((0, _preact.h)(_ClearRefinements.default, {
       refine: refine,
       cssClasses: cssClasses,
-      hasRefinements: hasRefinements,
+      hasRefinements: canRefine,
       templateProps: renderState.templateProps
     }), containerNode);
   };
@@ -77,11 +79,11 @@ var clearRefinements = function clearRefinements(widgetParams) {
 
   var containerNode = (0, _index.getContainerNode)(container);
   var cssClasses = {
-    root: (0, _classnames.default)(suit(), userCssClasses.root),
-    button: (0, _classnames.default)(suit({
+    root: (0, _uiComponentsShared.cx)(suit(), userCssClasses.root),
+    button: (0, _uiComponentsShared.cx)(suit({
       descendantName: 'button'
     }), userCssClasses.button),
-    disabledButton: (0, _classnames.default)(suit({
+    disabledButton: (0, _uiComponentsShared.cx)(suit({
       descendantName: 'button',
       modifierName: 'disabled'
     }), userCssClasses.disabledButton)

@@ -1,7 +1,7 @@
 // eslint-disable-next-line no-restricted-globals
 
 /**
- * Runs code on browser enviromnents safely.
+ * Runs code on browser environments safely.
  */
 export function safelyRunOnBrowser(callback) {
   var _ref = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {

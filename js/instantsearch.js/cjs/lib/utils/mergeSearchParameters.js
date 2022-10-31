@@ -3,13 +3,11 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.default = void 0;
+exports.mergeSearchParameters = void 0;
 
-var _findIndex = _interopRequireDefault(require("./findIndex.js"));
+var _findIndex = require("./findIndex.js");
 
-var _uniq = _interopRequireDefault(require("./uniq.js"));
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+var _uniq = require("./uniq.js");
 
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
@@ -53,7 +51,7 @@ var mergeDisjunctiveFacets = function mergeDisjunctiveFacets(left, right) {
 var mergeHierarchicalFacets = function mergeHierarchicalFacets(left, right) {
   return left.setQueryParameters({
     hierarchicalFacets: right.hierarchicalFacets.reduce(function (facets, facet) {
-      var index = (0, _findIndex.default)(facets, function (_) {
+      var index = (0, _findIndex.findIndex)(facets, function (_) {
         return _.name === facet.name;
       });
 
@@ -106,7 +104,7 @@ var mergeHierarchicalFacetsRefinements = function mergeHierarchicalFacetsRefinem
 };
 
 var mergeRuleContexts = function mergeRuleContexts(left, right) {
-  var ruleContexts = (0, _uniq.default)([].concat(left.ruleContexts).concat(right.ruleContexts).filter(Boolean));
+  var ruleContexts = (0, _uniq.uniq)([].concat(left.ruleContexts).concat(right.ruleContexts).filter(Boolean));
 
   if (ruleContexts.length > 0) {
     return left.setQueryParameters({
@@ -117,7 +115,7 @@ var mergeRuleContexts = function mergeRuleContexts(left, right) {
   return left;
 };
 
-var merge = function merge() {
+var mergeSearchParameters = function mergeSearchParameters() {
   for (var _len = arguments.length, parameters = new Array(_len), _key = 0; _key < _len; _key++) {
     parameters[_key] = arguments[_key];
   }
@@ -137,5 +135,4 @@ var merge = function merge() {
   });
 };
 
-var _default = merge;
-exports.default = _default;
+exports.mergeSearchParameters = mergeSearchParameters;

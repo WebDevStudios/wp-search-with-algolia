@@ -1,5 +1,5 @@
-/** @jsx h */
 import { h } from 'preact';
+import { cx } from '@algolia/ui-components-shared';
 import { isSpecialClick, capitalize } from "../../lib/utils/index.js";
 
 var createItemKey = function createItemKey(_ref) {
@@ -25,9 +25,10 @@ var handleClick = function handleClick(callback) {
 
 var CurrentRefinements = function CurrentRefinements(_ref2) {
   var items = _ref2.items,
-      cssClasses = _ref2.cssClasses;
+      cssClasses = _ref2.cssClasses,
+      canRefine = _ref2.canRefine;
   return h("div", {
-    className: cssClasses.root
+    className: cx(cssClasses.root, !canRefine && cssClasses.noRefinementRoot)
   }, h("ul", {
     className: cssClasses.list
   }, items.map(function (item, index) {

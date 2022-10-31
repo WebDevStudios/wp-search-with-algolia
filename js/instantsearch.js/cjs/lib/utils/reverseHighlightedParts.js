@@ -3,11 +3,9 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.default = reverseHighlightedParts;
+exports.reverseHighlightedParts = reverseHighlightedParts;
 
-var _getHighlightFromSiblings = _interopRequireDefault(require("./getHighlightFromSiblings.js"));
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+var _getHighlightFromSiblings = require("./getHighlightFromSiblings.js");
 
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
@@ -28,7 +26,7 @@ function reverseHighlightedParts(parts) {
 
   return parts.map(function (part, i) {
     return _objectSpread(_objectSpread({}, part), {}, {
-      isHighlighted: !(0, _getHighlightFromSiblings.default)(parts, i)
+      isHighlighted: !(0, _getHighlightFromSiblings.getHighlightFromSiblings)(parts, i)
     });
   });
 }

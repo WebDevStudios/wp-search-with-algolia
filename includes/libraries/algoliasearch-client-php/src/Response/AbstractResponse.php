@@ -21,6 +21,8 @@ abstract class AbstractResponse implements \ArrayAccess
 
     /**
      * {@inheritdoc}
+     *
+     * @return bool
      */
     #[\ReturnTypeWillChange]
     public function offsetExists($offset)
@@ -30,6 +32,8 @@ abstract class AbstractResponse implements \ArrayAccess
 
     /**
      * {@inheritdoc}
+     *
+     * @return mixed
      */
     #[\ReturnTypeWillChange]
     public function offsetGet($offset)
@@ -39,6 +43,8 @@ abstract class AbstractResponse implements \ArrayAccess
 
     /**
      * {@inheritdoc}
+     *
+     * @return void
      */
     #[\ReturnTypeWillChange]
     public function offsetSet($offset, $value)
@@ -48,6 +54,8 @@ abstract class AbstractResponse implements \ArrayAccess
 
     /**
      * {@inheritdoc}
+     *
+     * @return void
      */
     #[\ReturnTypeWillChange]
     public function offsetUnset($offset)

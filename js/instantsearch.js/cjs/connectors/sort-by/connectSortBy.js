@@ -85,13 +85,15 @@ var connectSortBy = function connectSortBy(renderFn) {
           };
         }
 
+        var hasNoResults = results ? results.nbHits === 0 : true;
         return {
           currentRefinement: state.index,
           options: transformItems(items, {
             results: results
           }),
           refine: connectorState.setIndex,
-          hasNoResults: results ? results.nbHits === 0 : true,
+          hasNoResults: hasNoResults,
+          canRefine: !hasNoResults && items.length > 0,
           widgetParams: widgetParams
         };
       },

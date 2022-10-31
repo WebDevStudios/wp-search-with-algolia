@@ -1,6 +1,6 @@
 import type { SendEventForHits } from '../../lib/utils';
-import type { Connector, GeoLoc, Hit, TransformItems, WidgetRenderState } from '../../types';
-export declare type GeoHit = Hit & Required<Pick<Hit, '_geoLoc'>>;
+import type { BaseHit, Connector, GeoLoc, Hit, TransformItems, WidgetRenderState } from '../../types';
+export declare type GeoHit<THit extends BaseHit = Record<string, any>> = Hit<THit> & Required<Pick<Hit, '_geoloc'>>;
 declare type Bounds = {
     /**
      * The top right corner of the map view.
@@ -11,7 +11,7 @@ declare type Bounds = {
      */
     southWest: GeoLoc;
 };
-export declare type GeoSearchRenderState = {
+export declare type GeoSearchRenderState<THit extends BaseHit = Record<string, any>> = {
     /**
      * Reset the current bounding box refinement.
      */
@@ -35,7 +35,7 @@ export declare type GeoSearchRenderState = {
     /**
      * The matched hits from Algolia API.
      */
-    items: GeoHit[];
+    items: Array<GeoHit<THit>>;
     /**
      * The current position of the search.
      */
@@ -59,7 +59,7 @@ export declare type GeoSearchRenderState = {
      */
     toggleRefineOnMapMove(): void;
 };
-export declare type GeoSearchConnectorParams = {
+export declare type GeoSearchConnectorParams<THit extends BaseHit = Record<string, any>> = {
     /**
      * If true, refine will be triggered as you move the map.
      * @default true
@@ -69,13 +69,13 @@ export declare type GeoSearchConnectorParams = {
      * Function to transform the items passed to the templates.
      * @default items => items
      */
-    transformItems?: TransformItems<GeoHit>;
+    transformItems?: TransformItems<GeoHit<THit>>;
 };
-export declare type GeoSearchWidgetDescription = {
+export declare type GeoSearchWidgetDescription<THit extends BaseHit = Record<string, any>> = {
     $$type: 'ais.geoSearch';
-    renderState: GeoSearchRenderState;
+    renderState: GeoSearchRenderState<THit>;
     indexRenderState: {
-        geoSearch: WidgetRenderState<GeoSearchRenderState, GeoSearchConnectorParams>;
+        geoSearch: WidgetRenderState<GeoSearchRenderState<THit>, GeoSearchConnectorParams<THit>>;
     };
     indexUiState: {
         geoSearch: {
@@ -90,7 +90,7 @@ export declare type GeoSearchWidgetDescription = {
         };
     };
 };
-export declare type GeoSearchConnector = Connector<GeoSearchWidgetDescription, GeoSearchConnectorParams>;
+export declare type GeoSearchConnector<THit extends BaseHit = Record<string, any>> = Connector<GeoSearchWidgetDescription<THit>, GeoSearchConnectorParams<THit>>;
 /**
  * The **GeoSearch** connector provides the logic to build a widget that will display the results on a map. It also provides a way to search for results based on their position. The connector provides functions to manage the search experience (search on map interaction or control the interaction for example).
  *

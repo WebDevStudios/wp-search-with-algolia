@@ -7,7 +7,7 @@ exports.default = exports.defaultTemplates = void 0;
 
 var _preact = require("preact");
 
-var _classnames = _interopRequireDefault(require("classnames"));
+var _uiComponentsShared = require("@algolia/ui-components-shared");
 
 var _index = require("../../lib/utils/index.js");
 
@@ -68,7 +68,7 @@ var queryRuleCustomData = function queryRuleCustomData(widgetParams) {
   }
 
   var cssClasses = {
-    root: (0, _classnames.default)(suit(), userCssClasses.root)
+    root: (0, _uiComponentsShared.cx)(suit(), userCssClasses.root)
   };
   var containerNode = (0, _index.getContainerNode)(container);
 

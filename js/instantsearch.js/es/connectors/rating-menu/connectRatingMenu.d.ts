@@ -56,6 +56,8 @@ export declare type RatingMenuRenderState = {
     refine: (value: string) => void;
     /**
      * `true` if the last search contains no result.
+     *
+     * @deprecated Use `canRefine` instead.
      */
     hasNoResults: boolean;
     /**

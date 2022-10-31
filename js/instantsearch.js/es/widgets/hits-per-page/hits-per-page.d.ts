@@ -1,4 +1,4 @@
-/** @jsx h */
+
 import type { HitsPerPageConnectorParams, HitsPerPageWidgetDescription } from '../../connectors/hits-per-page/connectHitsPerPage';
 import type { WidgetFactory } from '../../types';
 export declare type HitsPerPageCSSClasses = Partial<{

@@ -5,11 +5,13 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = void 0;
 
-var _classnames = _interopRequireDefault(require("classnames"));
+var _uiComponentsShared = require("@algolia/ui-components-shared");
 
 var _preact = require("preact");
 
 var _index = require("../../lib/utils/index.js");
+
+var _index2 = require("../../lib/templating/index.js");
 
 var _suit = require("../../lib/suit.js");
 
@@ -100,35 +102,35 @@ var geoSearch = function geoSearch(widgetParams) {
 
   var containerNode = (0, _index.getContainerNode)(container);
   var cssClasses = {
-    root: (0, _classnames.default)(suit(), userCssClasses.root),
+    root: (0, _uiComponentsShared.cx)(suit(), userCssClasses.root),
     // Required only to mount / unmount the Preact tree
     tree: suit({
       descendantName: 'tree'
     }),
-    map: (0, _classnames.default)(suit({
+    map: (0, _uiComponentsShared.cx)(suit({
       descendantName: 'map'
     }), userCssClasses.map),
-    control: (0, _classnames.default)(suit({
+    control: (0, _uiComponentsShared.cx)(suit({
       descendantName: 'control'
     }), userCssClasses.control),
-    label: (0, _classnames.default)(suit({
+    label: (0, _uiComponentsShared.cx)(suit({
       descendantName: 'label'
     }), userCssClasses.label),
-    selectedLabel: (0, _classnames.default)(suit({
+    selectedLabel: (0, _uiComponentsShared.cx)(suit({
       descendantName: 'label',
       modifierName: 'selected'
     }), userCssClasses.selectedLabel),
-    input: (0, _classnames.default)(suit({
+    input: (0, _uiComponentsShared.cx)(suit({
       descendantName: 'input'
     }), userCssClasses.input),
-    redo: (0, _classnames.default)(suit({
+    redo: (0, _uiComponentsShared.cx)(suit({
       descendantName: 'redo'
     }), userCssClasses.redo),
-    disabledRedo: (0, _classnames.default)(suit({
+    disabledRedo: (0, _uiComponentsShared.cx)(suit({
       descendantName: 'redo',
       modifierName: 'disabled'
     }), userCssClasses.disabledRedo),
-    reset: (0, _classnames.default)(suit({
+    reset: (0, _uiComponentsShared.cx)(suit({
       descendantName: 'reset'
     }), userCssClasses.reset)
   };
@@ -161,10 +163,10 @@ var geoSearch = function geoSearch(widgetParams) {
     return new HTMLMarker(_objectSpread(_objectSpread(_objectSpread({}, customHTMLMarker.createOptions(item)), rest), {}, {
       __id: item.objectID,
       position: item._geoloc,
-      className: (0, _classnames.default)(suit({
+      className: (0, _uiComponentsShared.cx)(suit({
         descendantName: 'marker'
       })),
-      template: (0, _index.renderTemplate)({
+      template: (0, _index2.renderTemplate)({
         templateKey: 'HTMLMarker',
         templates: templates,
         data: item

@@ -7,7 +7,7 @@ exports.default = void 0;
 
 var _preact = require("preact");
 
-var _index = require("../../lib/utils/index.js");
+var _index = require("../../lib/templating/index.js");
 
 var _GeoSearchControls = _interopRequireDefault(require("../../components/GeoSearchControls/GeoSearchControls.js"));
 

@@ -6,15 +6,15 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 function _extends() { _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; return _extends.apply(this, arguments); }
 
-/** @jsx h */
 import { h } from 'preact';
-import cx from 'classnames';
+import { cx } from '@algolia/ui-components-shared';
 import Template from "../Template/Template.js";
 
 var InfiniteHits = function InfiniteHits(_ref) {
   var results = _ref.results,
       hits = _ref.hits,
       bindEvent = _ref.bindEvent,
+      sendEvent = _ref.sendEvent,
       hasShowPrevious = _ref.hasShowPrevious,
       showPrevious = _ref.showPrevious,
       showMore = _ref.showMore,
@@ -39,7 +39,7 @@ var InfiniteHits = function InfiniteHits(_ref) {
     templateKey: "showPreviousText",
     rootTagName: "button",
     rootProps: {
-      className: cx(cssClasses.loadPrevious, _defineProperty({}, cssClasses.disabledLoadPrevious, isFirstPage)),
+      className: cx(cssClasses.loadPrevious, isFirstPage && cssClasses.disabledLoadPrevious),
       disabled: isFirstPage,
       onClick: showPrevious
     }
@@ -56,13 +56,14 @@ var InfiniteHits = function InfiniteHits(_ref) {
       data: _objectSpread(_objectSpread({}, hit), {}, {
         __hitIndex: position
       }),
-      bindEvent: bindEvent
+      bindEvent: bindEvent,
+      sendEvent: sendEvent
     }));
   })), h(Template, _extends({}, templateProps, {
     templateKey: "showMoreText",
     rootTagName: "button",
     rootProps: {
-      className: cx(cssClasses.loadMore, _defineProperty({}, cssClasses.disabledLoadMore, isLastPage)),
+      className: cx(cssClasses.loadMore, isLastPage && cssClasses.disabledLoadMore),
       disabled: isLastPage,
       onClick: showMore
     }

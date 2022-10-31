@@ -1,4 +1,4 @@
-/** @jsx h */
+
 import type { PaginationConnectorParams, PaginationWidgetDescription } from '../../connectors/pagination/connectPagination';
 import type { WidgetFactory } from '../../types';
 export declare type PaginationCSSClasses = Partial<{

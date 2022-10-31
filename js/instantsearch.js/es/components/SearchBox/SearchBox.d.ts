@@ -1,4 +1,4 @@
-/** @jsx h */
+
 import { h, Component } from 'preact';
 import { noop } from '../../lib/utils';
 import type { SearchBoxCSSClasses, SearchBoxTemplates } from '../../widgets/search-box/search-box';

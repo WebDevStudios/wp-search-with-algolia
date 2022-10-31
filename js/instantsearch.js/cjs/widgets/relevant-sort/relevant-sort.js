@@ -7,7 +7,7 @@ exports.default = void 0;
 
 var _preact = require("preact");
 
-var _classnames = _interopRequireDefault(require("classnames"));
+var _uiComponentsShared = require("@algolia/ui-components-shared");
 
 var _index = require("../../lib/utils/index.js");
 
@@ -63,11 +63,11 @@ var relevantSort = function relevantSort(widgetParams) {
 
   var containerNode = (0, _index.getContainerNode)(container);
   var cssClasses = {
-    root: (0, _classnames.default)(suit(), userCssClasses.root),
-    text: (0, _classnames.default)(suit({
+    root: (0, _uiComponentsShared.cx)(suit(), userCssClasses.root),
+    text: (0, _uiComponentsShared.cx)(suit({
       descendantName: 'text'
     }), userCssClasses.text),
-    button: (0, _classnames.default)(suit({
+    button: (0, _uiComponentsShared.cx)(suit({
       descendantName: 'button'
     }), userCssClasses.button)
   };

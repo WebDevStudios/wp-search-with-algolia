@@ -23,7 +23,7 @@ function isObjectLike(value) {
  */
 
 
-function isPlainObject(value) {
+export function isPlainObject(value) {
   if (!isObjectLike(value) || getTag(value) !== '[object Object]') {
     return false;
   }
@@ -40,5 +40,3 @@ function isPlainObject(value) {
 
   return Object.getPrototypeOf(value) === proto;
 }
-
-export default isPlainObject;

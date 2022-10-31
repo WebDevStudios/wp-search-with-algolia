@@ -1,4 +1,4 @@
-/** @jsx h */
+
 import type { ComponentChildren } from 'preact';
 import { h } from 'preact';
 declare type Props = {

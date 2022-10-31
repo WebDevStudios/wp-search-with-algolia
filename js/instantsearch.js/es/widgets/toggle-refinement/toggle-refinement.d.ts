@@ -1,4 +1,4 @@
-/** @jsx h */
+
 import type { ToggleRefinementConnectorParams, ToggleRefinementWidgetDescription, ToggleRefinementValue } from '../../connectors/toggle-refinement/connectToggleRefinement';
 import type { Template, WidgetFactory } from '../../types';
 export declare type ToggleRefinementCSSClasses = Partial<{
@@ -23,7 +23,9 @@ export declare type ToggleRefinementTemplates = Partial<{
     /**
      * the text that describes the toggle action
      */
-    labelText: Template<ToggleRefinementValue>;
+    labelText: Template<ToggleRefinementValue & {
+        name: string;
+    }>;
 }>;
 export declare type ToggleRefinementWidgetParams = {
     /**

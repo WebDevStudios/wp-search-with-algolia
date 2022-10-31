@@ -1,21 +1,7 @@
-import { safelyRunOnBrowser } from "../lib/utils/index.js";
+import { createInitArgs, safelyRunOnBrowser } from "../lib/utils/index.js";
 
 function extractPayload(widgets, instantSearchInstance, payload) {
-  var parent = instantSearchInstance.mainIndex;
-  var initOptions = {
-    instantSearchInstance: instantSearchInstance,
-    parent: parent,
-    scopedResults: [],
-    state: parent.getHelper().state,
-    helper: parent.getHelper(),
-    createURL: parent.createURL,
-    uiState: instantSearchInstance._initialUiState,
-    renderState: instantSearchInstance.renderState,
-    templatesConfig: instantSearchInstance.templatesConfig,
-    searchMetadata: {
-      isSearchStalled: instantSearchInstance._isSearchStalled
-    }
-  };
+  var initOptions = createInitArgs(instantSearchInstance, instantSearchInstance.mainIndex, instantSearchInstance._initialUiState);
   widgets.forEach(function (widget) {
     var widgetParams = {};
 
@@ -85,6 +71,7 @@ export function createMetadataMiddleware() {
           refNode.appendChild(payloadContainer);
         }, 0);
       },
+      started: function started() {},
       unsubscribe: function unsubscribe() {
         payloadContainer.remove();
       }

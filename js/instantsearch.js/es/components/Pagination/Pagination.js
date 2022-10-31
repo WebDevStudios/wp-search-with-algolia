@@ -1,8 +1,5 @@
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-/** @jsx h */
 import { h } from 'preact';
-import cx from 'classnames';
+import { cx } from '@algolia/ui-components-shared';
 import { isSpecialClick } from "../../lib/utils/index.js";
 
 function Pagination(props) {
@@ -20,7 +17,7 @@ function Pagination(props) {
   }
 
   return h("div", {
-    className: cx(props.cssClasses.root, _defineProperty({}, props.cssClasses.noRefinementRoot, props.nbPages <= 1))
+    className: cx(props.cssClasses.root, props.nbPages <= 1 && props.cssClasses.noRefinementRoot)
   }, h("ul", {
     className: props.cssClasses.list
   }, props.showFirst && h(PaginationLink, {

@@ -1,4 +1,4 @@
-import find from "./find.js";
+import { find } from "./find.js";
 import { unescapeFacetValue, escapeFacetValue } from "./escapeFacetValue.js";
 
 function getRefinement(state, type, attribute, name) {
@@ -52,7 +52,7 @@ function getRefinement(state, type, attribute, name) {
   return res;
 }
 
-export default function getRefinements(results, state) {
+export function getRefinements(results, state) {
   var includesQuery = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
   var refinements = [];
   var _state$facetsRefineme = state.facetsRefinements,

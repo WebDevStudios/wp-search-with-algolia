@@ -7,7 +7,7 @@ exports.default = void 0;
 
 var _preact = require("preact");
 
-var _classnames = _interopRequireDefault(require("classnames"));
+var _uiComponentsShared = require("@algolia/ui-components-shared");
 
 var _PoweredBy = _interopRequireDefault(require("../../components/PoweredBy/PoweredBy.js"));
 
@@ -64,13 +64,13 @@ var poweredBy = function poweredBy(widgetParams) {
 
   var containerNode = (0, _index.getContainerNode)(container);
   var cssClasses = {
-    root: (0, _classnames.default)(suit(), suit({
+    root: (0, _uiComponentsShared.cx)(suit(), suit({
       modifierName: theme === 'dark' ? 'dark' : 'light'
     }), userCssClasses.root),
-    link: (0, _classnames.default)(suit({
+    link: (0, _uiComponentsShared.cx)(suit({
       descendantName: 'link'
     }), userCssClasses.link),
-    logo: (0, _classnames.default)(suit({
+    logo: (0, _uiComponentsShared.cx)(suit({
       descendantName: 'logo'
     }), userCssClasses.logo)
   };

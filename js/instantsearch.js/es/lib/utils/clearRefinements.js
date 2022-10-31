@@ -2,12 +2,9 @@
  * Clears the refinements of a SearchParameters object based on rules provided.
  * The included attributes list is applied before the excluded attributes list. If the list
  * is not provided, this list of all the currently refined attributes is used as included attributes.
- * @param {object} $0 parameters
- * @param {Helper} $0.helper instance of the Helper
- * @param {string[]} [$0.attributesToClear = []] list of parameters to clear
- * @returns {SearchParameters} search parameters with refinements cleared
+ * @returns search parameters with refinements cleared
  */
-function clearRefinements(_ref) {
+export function clearRefinements(_ref) {
   var helper = _ref.helper,
       _ref$attributesToClea = _ref.attributesToClear,
       attributesToClear = _ref$attributesToClea === void 0 ? [] : _ref$attributesToClea;
@@ -38,5 +35,3 @@ function clearRefinements(_ref) {
 
   return finalState;
 }
-
-export default clearRefinements;

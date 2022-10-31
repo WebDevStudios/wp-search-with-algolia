@@ -1,4 +1,4 @@
-/** @jsx h */
+
 import type { SearchResults } from 'algoliasearch-helper';
 import type { InfiniteHitsConnectorParams, InfiniteHitsCache, InfiniteHitsWidgetDescription } from '../../connectors/infinite-hits/connectInfiniteHits';
 import type { WidgetFactory, Template, TemplateWithBindEvent, Hit } from '../../types';
@@ -40,9 +40,7 @@ export declare type InfiniteHitsTemplates = Partial<{
     /**
      * The template to use when there are no results.
      */
-    empty: Template<{
-        results: SearchResults;
-    }>;
+    empty: Template<SearchResults>;
     /**
      * The template to use for the “Show previous” label.
      */

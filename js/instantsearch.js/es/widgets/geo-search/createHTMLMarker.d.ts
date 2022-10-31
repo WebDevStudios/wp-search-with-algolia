@@ -1,9 +1,10 @@
 /// <reference types="google.maps" />
+import type { renderTemplate } from '../../lib/templating';
 export declare type HTMLMarkerArguments = {
     __id: string;
     position: google.maps.LatLngLiteral;
     map: google.maps.Map;
-    template: string;
+    template: ReturnType<typeof renderTemplate>;
     title?: string;
     className: string;
     anchor?: {

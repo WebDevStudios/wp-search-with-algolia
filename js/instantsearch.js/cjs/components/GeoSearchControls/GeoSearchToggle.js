@@ -7,7 +7,6 @@ exports.default = void 0;
 
 var _preact = require("preact");
 
-/** @jsx h */
 var GeoSearchToggle = function GeoSearchToggle(_ref) {
   var classNameLabel = _ref.classNameLabel,
       classNameInput = _ref.classNameInput,

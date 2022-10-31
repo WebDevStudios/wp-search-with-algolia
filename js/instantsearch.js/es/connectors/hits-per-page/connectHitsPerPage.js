@@ -119,6 +119,7 @@ var connectHitsPerPage = function connectHitsPerPage(renderFn) {
             results = _ref5.results,
             createURL = _ref5.createURL,
             helper = _ref5.helper;
+        var canRefine = results ? results.nbHits > 0 : false;
         return {
           items: transformItems(normalizeItems(state), {
             results: results
@@ -128,7 +129,8 @@ var connectHitsPerPage = function connectHitsPerPage(renderFn) {
             state: state,
             createURL: createURL
           }),
-          hasNoResults: results ? results.nbHits === 0 : true,
+          hasNoResults: !canRefine,
+          canRefine: canRefine,
           widgetParams: widgetParams
         };
       },

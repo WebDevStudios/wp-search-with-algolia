@@ -1,4 +1,4 @@
-/** @jsx h */
+
 import type { WidgetFactory, Template } from '../../types';
 import type { RelevantSortConnectorParams, RelevantSortWidgetDescription } from '../../connectors/relevant-sort/connectRelevantSort';
 export declare type RelevantSortCSSClasses = Partial<{

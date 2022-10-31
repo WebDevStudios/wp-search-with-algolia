@@ -1,8 +1,5 @@
 function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
-/**
- * @jest-environment jsdom
- */
 import { serializePayload } from "./serializer.js";
 
 function chunk(arr) {
@@ -20,7 +17,8 @@ var buildPayloads = function buildPayloads(_ref) {
   var index = _ref.index,
       widgetType = _ref.widgetType,
       methodName = _ref.methodName,
-      args = _ref.args;
+      args = _ref.args,
+      isSearchStalled = _ref.isSearchStalled;
 
   // when there's only one argument, that means it's custom
   if (args.length === 1 && _typeof(args[0]) === 'object') {
@@ -67,6 +65,10 @@ var buildPayloads = function buildPayloads(_ref) {
   });
 
   if (eventType === 'view') {
+    if (isSearchStalled) {
+      return [];
+    }
+
     return hitsChunks.map(function (batch, i) {
       return {
         insightsMethod: 'viewedObjectIDs',
@@ -137,7 +139,8 @@ export function createSendEventForHits(_ref2) {
       widgetType: widgetType,
       index: index,
       methodName: 'sendEvent',
-      args: args
+      args: args,
+      isSearchStalled: instantSearchInstance.status === 'stalled'
     });
     payloads.forEach(function (payload) {
       return instantSearchInstance.sendEventToInsights(payload);
@@ -159,7 +162,8 @@ export function createBindEventForHits(_ref3) {
       widgetType: widgetType,
       index: index,
       methodName: 'bindEvent',
-      args: args
+      args: args,
+      isSearchStalled: false
     });
     return payloads.length ? "data-insights-event=".concat(serializePayload(payloads)) : '';
   };

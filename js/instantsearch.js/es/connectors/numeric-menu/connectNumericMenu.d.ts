@@ -56,8 +56,16 @@ export declare type NumericMenuRenderState = {
     createURL: CreateURL<NumericMenuRenderStateItem['value']>;
     /**
      * `true` if the last search contains no result
+     * @deprecated Use `canRefine` instead.
      */
     hasNoResults: boolean;
+    /**
+     * Indicates if search state can be refined.
+     *
+     * This is `true` if the last search contains no result and
+     * "All" range is selected
+     */
+    canRefine: boolean;
     /**
      * Sets the selected value and trigger a new search
      */

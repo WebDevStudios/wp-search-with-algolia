@@ -7,13 +7,15 @@ exports.default = void 0;
 
 var _preact = require("preact");
 
-var _classnames = _interopRequireDefault(require("classnames"));
+var _uiComponentsShared = require("@algolia/ui-components-shared");
 
 var _RefinementList = _interopRequireDefault(require("../../components/RefinementList/RefinementList.js"));
 
 var _connectRefinementList = _interopRequireDefault(require("../../connectors/refinement-list/connectRefinementList.js"));
 
 var _index = require("../../lib/utils/index.js");
+
+var _index2 = require("../../lib/templating/index.js");
 
 var _suit = require("../../lib/suit.js");
 
@@ -58,12 +60,12 @@ var renderer = function renderer(_ref) {
         canToggleShowMore = _ref2.canToggleShowMore;
 
     if (isFirstRendering) {
-      renderState.templateProps = (0, _index.prepareTemplateProps)({
+      renderState.templateProps = (0, _index2.prepareTemplateProps)({
         defaultTemplates: _defaultTemplates2.default,
         templatesConfig: instantSearchInstance.templatesConfig,
         templates: templates
       });
-      renderState.searchBoxTemplateProps = (0, _index.prepareTemplateProps)({
+      renderState.searchBoxTemplateProps = (0, _index2.prepareTemplateProps)({
         defaultTemplates: _defaultTemplates.default,
         templatesConfig: instantSearchInstance.templatesConfig,
         templates: searchBoxTemplates
@@ -140,69 +142,69 @@ var refinementList = function refinementList(widgetParams) {
   var escapeFacetValues = searchable ? Boolean(searchableEscapeFacetValues) : false;
   var containerNode = (0, _index.getContainerNode)(container);
   var cssClasses = {
-    root: (0, _classnames.default)(suit(), userCssClasses.root),
-    noRefinementRoot: (0, _classnames.default)(suit({
+    root: (0, _uiComponentsShared.cx)(suit(), userCssClasses.root),
+    noRefinementRoot: (0, _uiComponentsShared.cx)(suit({
       modifierName: 'noRefinement'
     }), userCssClasses.noRefinementRoot),
-    list: (0, _classnames.default)(suit({
+    list: (0, _uiComponentsShared.cx)(suit({
       descendantName: 'list'
     }), userCssClasses.list),
-    item: (0, _classnames.default)(suit({
+    item: (0, _uiComponentsShared.cx)(suit({
       descendantName: 'item'
     }), userCssClasses.item),
-    selectedItem: (0, _classnames.default)(suit({
+    selectedItem: (0, _uiComponentsShared.cx)(suit({
       descendantName: 'item',
       modifierName: 'selected'
     }), userCssClasses.selectedItem),
-    searchBox: (0, _classnames.default)(suit({
+    searchBox: (0, _uiComponentsShared.cx)(suit({
       descendantName: 'searchBox'
     }), userCssClasses.searchBox),
-    label: (0, _classnames.default)(suit({
+    label: (0, _uiComponentsShared.cx)(suit({
       descendantName: 'label'
     }), userCssClasses.label),
-    checkbox: (0, _classnames.default)(suit({
+    checkbox: (0, _uiComponentsShared.cx)(suit({
       descendantName: 'checkbox'
     }), userCssClasses.checkbox),
-    labelText: (0, _classnames.default)(suit({
+    labelText: (0, _uiComponentsShared.cx)(suit({
       descendantName: 'labelText'
     }), userCssClasses.labelText),
-    count: (0, _classnames.default)(suit({
+    count: (0, _uiComponentsShared.cx)(suit({
       descendantName: 'count'
     }), userCssClasses.count),
-    noResults: (0, _classnames.default)(suit({
+    noResults: (0, _uiComponentsShared.cx)(suit({
       descendantName: 'noResults'
     }), userCssClasses.noResults),
-    showMore: (0, _classnames.default)(suit({
+    showMore: (0, _uiComponentsShared.cx)(suit({
       descendantName: 'showMore'
     }), userCssClasses.showMore),
-    disabledShowMore: (0, _classnames.default)(suit({
+    disabledShowMore: (0, _uiComponentsShared.cx)(suit({
       descendantName: 'showMore',
       modifierName: 'disabled'
     }), userCssClasses.disabledShowMore),
     searchable: {
-      root: (0, _classnames.default)(searchBoxSuit(), userCssClasses.searchableRoot),
-      form: (0, _classnames.default)(searchBoxSuit({
+      root: (0, _uiComponentsShared.cx)(searchBoxSuit(), userCssClasses.searchableRoot),
+      form: (0, _uiComponentsShared.cx)(searchBoxSuit({
         descendantName: 'form'
       }), userCssClasses.searchableForm),
-      input: (0, _classnames.default)(searchBoxSuit({
+      input: (0, _uiComponentsShared.cx)(searchBoxSuit({
         descendantName: 'input'
       }), userCssClasses.searchableInput),
-      submit: (0, _classnames.default)(searchBoxSuit({
+      submit: (0, _uiComponentsShared.cx)(searchBoxSuit({
         descendantName: 'submit'
       }), userCssClasses.searchableSubmit),
-      submitIcon: (0, _classnames.default)(searchBoxSuit({
+      submitIcon: (0, _uiComponentsShared.cx)(searchBoxSuit({
         descendantName: 'submitIcon'
       }), userCssClasses.searchableSubmitIcon),
-      reset: (0, _classnames.default)(searchBoxSuit({
+      reset: (0, _uiComponentsShared.cx)(searchBoxSuit({
         descendantName: 'reset'
       }), userCssClasses.searchableReset),
-      resetIcon: (0, _classnames.default)(searchBoxSuit({
+      resetIcon: (0, _uiComponentsShared.cx)(searchBoxSuit({
         descendantName: 'resetIcon'
       }), userCssClasses.searchableResetIcon),
-      loadingIndicator: (0, _classnames.default)(searchBoxSuit({
+      loadingIndicator: (0, _uiComponentsShared.cx)(searchBoxSuit({
         descendantName: 'loadingIndicator'
       }), userCssClasses.searchableLoadingIndicator),
-      loadingIcon: (0, _classnames.default)(searchBoxSuit({
+      loadingIcon: (0, _uiComponentsShared.cx)(searchBoxSuit({
         descendantName: 'loadingIcon'
       }), userCssClasses.searchableLoadingIcon)
     }

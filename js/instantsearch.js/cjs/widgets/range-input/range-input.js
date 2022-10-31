@@ -7,13 +7,15 @@ exports.default = void 0;
 
 var _preact = require("preact");
 
-var _classnames = _interopRequireDefault(require("classnames"));
+var _uiComponentsShared = require("@algolia/ui-components-shared");
 
 var _RangeInput = _interopRequireDefault(require("../../components/RangeInput/RangeInput.js"));
 
 var _connectRange = _interopRequireDefault(require("../../connectors/range/connectRange.js"));
 
 var _index = require("../../lib/utils/index.js");
+
+var _index2 = require("../../lib/templating/index.js");
 
 var _suit = require("../../lib/suit.js");
 
@@ -42,8 +44,12 @@ var withUsage = (0, _index.createDocumentationMessageGenerator)({
 });
 var suit = (0, _suit.component)('RangeInput');
 var defaultTemplates = {
-  separatorText: 'to',
-  submitText: 'Go'
+  separatorText: function separatorText() {
+    return 'to';
+  },
+  submitText: function submitText() {
+    return 'Go';
+  }
 };
 
 var renderer = function renderer(_ref) {
@@ -59,7 +65,7 @@ var renderer = function renderer(_ref) {
         instantSearchInstance = _ref2.instantSearchInstance;
 
     if (isFirstRendering) {
-      renderState.templateProps = (0, _index.prepareTemplateProps)({
+      renderState.templateProps = (0, _index2.prepareTemplateProps)({
         defaultTemplates: defaultTemplates,
         templatesConfig: instantSearchInstance.templatesConfig,
         templates: templates
@@ -110,31 +116,31 @@ var rangeInput = function rangeInput(widgetParams) {
 
   var containerNode = (0, _index.getContainerNode)(container);
   var cssClasses = {
-    root: (0, _classnames.default)(suit(), userCssClasses.root),
-    noRefinement: (0, _classnames.default)(suit({
+    root: (0, _uiComponentsShared.cx)(suit(), userCssClasses.root),
+    noRefinement: (0, _uiComponentsShared.cx)(suit({
       modifierName: 'noRefinement'
     })),
-    form: (0, _classnames.default)(suit({
+    form: (0, _uiComponentsShared.cx)(suit({
       descendantName: 'form'
     }), userCssClasses.form),
-    label: (0, _classnames.default)(suit({
+    label: (0, _uiComponentsShared.cx)(suit({
       descendantName: 'label'
     }), userCssClasses.label),
-    input: (0, _classnames.default)(suit({
+    input: (0, _uiComponentsShared.cx)(suit({
       descendantName: 'input'
     }), userCssClasses.input),
-    inputMin: (0, _classnames.default)(suit({
+    inputMin: (0, _uiComponentsShared.cx)(suit({
       descendantName: 'input',
       modifierName: 'min'
     }), userCssClasses.inputMin),
-    inputMax: (0, _classnames.default)(suit({
+    inputMax: (0, _uiComponentsShared.cx)(suit({
       descendantName: 'input',
       modifierName: 'max'
     }), userCssClasses.inputMax),
-    separator: (0, _classnames.default)(suit({
+    separator: (0, _uiComponentsShared.cx)(suit({
       descendantName: 'separator'
     }), userCssClasses.separator),
-    submit: (0, _classnames.default)(suit({
+    submit: (0, _uiComponentsShared.cx)(suit({
       descendantName: 'submit'
     }), userCssClasses.submit)
   };

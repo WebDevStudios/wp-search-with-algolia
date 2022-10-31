@@ -9,7 +9,7 @@ var _preact = require("preact");
 
 var _Rheostat = _interopRequireDefault(require("./Rheostat.js"));
 
-var _classnames = _interopRequireDefault(require("classnames"));
+var _uiComponentsShared = require("@algolia/ui-components-shared");
 
 var _index = require("../../lib/utils/index.js");
 
@@ -86,10 +86,7 @@ var Slider = /*#__PURE__*/function (_Component) {
         var roundedValue = Math.round( // have to cast as a string, as the value given to the prop is a number, but becomes a string when read
         parseFloat(props['aria-valuenow']) * 100) / 100;
         var value = _typeof(tooltips) === 'object' && tooltips.format ? tooltips.format(roundedValue) : roundedValue;
-        var className = (0, _classnames.default)(props.className, {
-          'rheostat-handle-lower': props['data-handle-key'] === 0,
-          'rheostat-handle-upper': props['data-handle-key'] === 1
-        });
+        var className = (0, _uiComponentsShared.cx)(props.className, props['data-handle-key'] === 0 && 'rheostat-handle-lower', props['data-handle-key'] === 1 && 'rheostat-handle-upper');
         return (0, _preact.h)("div", _extends({}, props, {
           className: className
         }), tooltips && (0, _preact.h)("div", {
@@ -163,7 +160,7 @@ var Slider = /*#__PURE__*/function (_Component) {
         max: max
       });
       return (0, _preact.h)("div", {
-        className: (0, _classnames.default)(cssClasses.root, _defineProperty({}, cssClasses.disabledRoot, this.isDisabled))
+        className: (0, _uiComponentsShared.cx)(cssClasses.root, this.isDisabled && cssClasses.disabledRoot)
       }, (0, _preact.h)(_Rheostat.default, {
         handle: this.createHandleComponent(tooltips),
         onChange: this.handleChange,

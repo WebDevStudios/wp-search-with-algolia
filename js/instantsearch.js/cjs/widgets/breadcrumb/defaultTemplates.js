@@ -5,8 +5,12 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = void 0;
 var defaultTemplates = {
-  home: 'Home',
-  separator: '>'
+  home: function home() {
+    return 'Home';
+  },
+  separator: function separator() {
+    return '>';
+  }
 };
 var _default = defaultTemplates;
 exports.default = _default;

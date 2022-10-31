@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.default = isFacetRefined;
+exports.isFacetRefined = isFacetRefined;
 
 function isFacetRefined(helper, facet, value) {
   if (helper.state.isHierarchicalFacet(facet)) {

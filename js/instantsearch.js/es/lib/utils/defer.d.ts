@@ -1,7 +1,7 @@
 declare type Callback = (...args: any[]) => void;
-declare type Defer = Callback & {
+declare type Defer = {
     wait(): Promise<void>;
     cancel(): void;
 };
-declare const defer: (callback: Callback) => Defer;
-export default defer;
+export declare function defer<TCallback extends Callback>(callback: TCallback): TCallback & Defer;
+export {};

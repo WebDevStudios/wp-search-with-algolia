@@ -1,4 +1,4 @@
-/** @jsx h */
+
 import type { RefinementListConnectorParams, RefinementListWidgetDescription } from '../../connectors/refinement-list/connectRefinementList';
 import type { Template, WidgetFactory } from '../../types';
 import type { SearchBoxTemplates } from '../search-box/search-box';
@@ -97,6 +97,10 @@ export declare type RefinementListItemData = {
      * Object containing all the classes computed for the item.
      */
     cssClasses: RefinementListCSSClasses;
+    /**
+     * Whether the `items` prop contains facet values from the global search or from the search inside the items.
+     */
+    isFromSearch: boolean;
 };
 export declare type RefinementListOwnTemplates = Partial<{
     /**
@@ -106,7 +110,9 @@ export declare type RefinementListOwnTemplates = Partial<{
     /**
      * Template used for the show more text, provided with `isShowingMore` data property.
      */
-    showMoreText: Template;
+    showMoreText: Template<{
+        isShowingMore: boolean;
+    }>;
     /**
      * Templates to use for search for facet values when there are no results.
      */

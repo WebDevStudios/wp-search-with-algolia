@@ -21,19 +21,16 @@ function _objectWithoutProperties(source, excluded) { if (source == null) return
 function _objectWithoutPropertiesLoose(source, excluded) { if (source == null) return {}; var target = {}; var sourceKeys = Object.keys(source); var key, i; for (i = 0; i < sourceKeys.length; i++) { key = sourceKeys[i]; if (excluded.indexOf(key) >= 0) continue; target[key] = source[key]; } return target; }
 
 import algoliasearchHelper from 'algoliasearch-helper';
-import { checkIndexUiState, createDocumentationMessageGenerator, resolveSearchParameters, mergeSearchParameters, warning } from "../../lib/utils/index.js";
+import { checkIndexUiState, createDocumentationMessageGenerator, resolveSearchParameters, mergeSearchParameters, warning, isIndexWidget, createInitArgs, createRenderArgs } from "../../lib/utils/index.js";
 var withUsage = createDocumentationMessageGenerator({
   name: 'index-widget'
 });
-export function isIndexWidget(widget) {
-  return widget.$$type === 'ais.index';
-}
+
 /**
  * This is the same content as helper._change / setState, but allowing for extra
  * UiState to be synchronized.
  * see: https://github.com/algolia/algoliasearch-helper-js/blob/6b835ffd07742f2d6b314022cce6848f5cfecd4a/src/algoliasearch.helper.js#L1311-L1324
  */
-
 function privateHelperSetState(helper, _ref) {
   var state = _ref.state,
       isPageReset = _ref.isPageReset,
@@ -187,20 +184,7 @@ var index = function index(widgetParams) {
 
         widgets.forEach(function (widget) {
           if (widget.getRenderState) {
-            var renderState = widget.getRenderState(localInstantSearchInstance.renderState[_this.getIndexId()] || {}, {
-              uiState: localInstantSearchInstance._initialUiState,
-              helper: _this.getHelper(),
-              parent: _this,
-              instantSearchInstance: localInstantSearchInstance,
-              state: helper.state,
-              renderState: localInstantSearchInstance.renderState,
-              templatesConfig: localInstantSearchInstance.templatesConfig,
-              createURL: _this.createURL,
-              scopedResults: [],
-              searchMetadata: {
-                isSearchStalled: localInstantSearchInstance._isSearchStalled
-              }
-            });
+            var renderState = widget.getRenderState(localInstantSearchInstance.renderState[_this.getIndexId()] || {}, createInitArgs(localInstantSearchInstance, _this, localInstantSearchInstance._initialUiState));
             storeRenderState({
               renderState: renderState,
               instantSearchInstance: localInstantSearchInstance,
@@ -210,20 +194,7 @@ var index = function index(widgetParams) {
         });
         widgets.forEach(function (widget) {
           if (widget.init) {
-            widget.init({
-              helper: helper,
-              parent: _this,
-              uiState: localInstantSearchInstance._initialUiState,
-              instantSearchInstance: localInstantSearchInstance,
-              state: helper.state,
-              renderState: localInstantSearchInstance.renderState,
-              templatesConfig: localInstantSearchInstance.templatesConfig,
-              createURL: _this.createURL,
-              scopedResults: [],
-              searchMetadata: {
-                isSearchStalled: localInstantSearchInstance._isSearchStalled
-              }
-            });
+            widget.init(createInitArgs(localInstantSearchInstance, _this, localInstantSearchInstance._initialUiState));
           }
         });
         localInstantSearchInstance.scheduleSearch();
@@ -312,7 +283,9 @@ var index = function index(widgetParams) {
         if (instantSearchInstance.onStateChange) {
           instantSearchInstance.onStateChange({
             uiState: instantSearchInstance.mainIndex.getWidgetUiState({}),
-            setUiState: instantSearchInstance.setUiState.bind(instantSearchInstance)
+            setUiState: function setUiState(nextState) {
+              return instantSearchInstance.setUiState(nextState, false);
+            }
           }); // We don't trigger a search when controlled because it becomes the
           // responsibility of `setUiState`.
 
@@ -387,20 +360,7 @@ var index = function index(widgetParams) {
 
       localWidgets.forEach(function (widget) {
         if (widget.getRenderState) {
-          var renderState = widget.getRenderState(instantSearchInstance.renderState[_this3.getIndexId()] || {}, {
-            uiState: uiState,
-            helper: helper,
-            parent: _this3,
-            instantSearchInstance: instantSearchInstance,
-            state: helper.state,
-            renderState: instantSearchInstance.renderState,
-            templatesConfig: instantSearchInstance.templatesConfig,
-            createURL: _this3.createURL,
-            scopedResults: [],
-            searchMetadata: {
-              isSearchStalled: instantSearchInstance._isSearchStalled
-            }
-          });
+          var renderState = widget.getRenderState(instantSearchInstance.renderState[_this3.getIndexId()] || {}, createInitArgs(instantSearchInstance, _this3, uiState));
           storeRenderState({
             renderState: renderState,
             instantSearchInstance: instantSearchInstance,
@@ -414,20 +374,7 @@ var index = function index(widgetParams) {
         !widget.getWidgetState || Boolean(widget.getWidgetUiState), 'The `getWidgetState` method is renamed `getWidgetUiState` and will no longer exist under that name in InstantSearch.js 5.x. Please use `getWidgetUiState` instead.') : void 0;
 
         if (widget.init) {
-          widget.init({
-            uiState: uiState,
-            helper: helper,
-            parent: _this3,
-            instantSearchInstance: instantSearchInstance,
-            state: helper.state,
-            renderState: instantSearchInstance.renderState,
-            templatesConfig: instantSearchInstance.templatesConfig,
-            createURL: _this3.createURL,
-            scopedResults: [],
-            searchMetadata: {
-              isSearchStalled: instantSearchInstance._isSearchStalled
-            }
-          });
+          widget.init(createInitArgs(instantSearchInstance, _this3, uiState));
         }
       }); // Subscribe to the Helper state changes for the `uiState` once widgets
       // are initialized. Until the first render, state changes are part of the
@@ -468,20 +415,7 @@ var index = function index(widgetParams) {
 
       localWidgets.forEach(function (widget) {
         if (widget.getRenderState) {
-          var renderState = widget.getRenderState(instantSearchInstance.renderState[_this4.getIndexId()] || {}, {
-            helper: _this4.getHelper(),
-            parent: _this4,
-            instantSearchInstance: instantSearchInstance,
-            results: _this4.getResults(),
-            scopedResults: _this4.getScopedResults(),
-            state: _this4.getResults()._state,
-            renderState: instantSearchInstance.renderState,
-            templatesConfig: instantSearchInstance.templatesConfig,
-            createURL: _this4.createURL,
-            searchMetadata: {
-              isSearchStalled: instantSearchInstance._isSearchStalled
-            }
-          });
+          var renderState = widget.getRenderState(instantSearchInstance.renderState[_this4.getIndexId()] || {}, createRenderArgs(instantSearchInstance, _this4));
           storeRenderState({
             renderState: renderState,
             instantSearchInstance: instantSearchInstance,
@@ -497,20 +431,7 @@ var index = function index(widgetParams) {
         // be delayed. The render is triggered for the complete tree but some parts do
         // not have results yet.
         if (widget.render) {
-          widget.render({
-            helper: helper,
-            parent: _this4,
-            instantSearchInstance: instantSearchInstance,
-            results: _this4.getResults(),
-            scopedResults: _this4.getScopedResults(),
-            state: _this4.getResults()._state,
-            renderState: instantSearchInstance.renderState,
-            templatesConfig: instantSearchInstance.templatesConfig,
-            createURL: _this4.createURL,
-            searchMetadata: {
-              isSearchStalled: instantSearchInstance._isSearchStalled
-            }
-          });
+          widget.render(createRenderArgs(instantSearchInstance, _this4));
         }
       });
     },
@@ -542,7 +463,7 @@ var index = function index(widgetParams) {
     getWidgetUiState: function getWidgetUiState(uiState) {
       return localWidgets.filter(isIndexWidget).reduce(function (previousUiState, innerIndex) {
         return innerIndex.getWidgetUiState(previousUiState);
-      }, _objectSpread(_objectSpread({}, uiState), {}, _defineProperty({}, this.getIndexId(), localUiState)));
+      }, _objectSpread(_objectSpread({}, uiState), {}, _defineProperty({}, indexId, _objectSpread(_objectSpread({}, uiState[indexId]), localUiState))));
     },
     getWidgetState: function getWidgetState(uiState) {
       process.env.NODE_ENV === 'development' ? warning(false, 'The `getWidgetState` method is renamed `getWidgetUiState` and will no longer exist under that name in InstantSearch.js 5.x. Please use `getWidgetUiState` instead.') : void 0;

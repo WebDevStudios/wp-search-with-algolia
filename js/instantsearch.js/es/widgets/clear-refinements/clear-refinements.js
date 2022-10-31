@@ -4,13 +4,13 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
-/** @jsx h */
 import { h, render } from 'preact';
 import ClearRefinements from "../../components/ClearRefinements/ClearRefinements.js";
-import cx from 'classnames';
+import { cx } from '@algolia/ui-components-shared';
 import connectClearRefinements from "../../connectors/clear-refinements/connectClearRefinements.js";
 import defaultTemplates from "./defaultTemplates.js";
-import { getContainerNode, prepareTemplateProps, createDocumentationMessageGenerator } from "../../lib/utils/index.js";
+import { getContainerNode, createDocumentationMessageGenerator } from "../../lib/utils/index.js";
+import { prepareTemplateProps } from "../../lib/templating/index.js";
 import { component } from "../../lib/suit.js";
 var withUsage = createDocumentationMessageGenerator({
   name: 'clear-refinements'
@@ -24,7 +24,7 @@ var renderer = function renderer(_ref) {
       templates = _ref.templates;
   return function (_ref2, isFirstRendering) {
     var refine = _ref2.refine,
-        hasRefinements = _ref2.hasRefinements,
+        canRefine = _ref2.canRefine,
         instantSearchInstance = _ref2.instantSearchInstance;
 
     if (isFirstRendering) {
@@ -39,7 +39,7 @@ var renderer = function renderer(_ref) {
     render(h(ClearRefinements, {
       refine: refine,
       cssClasses: cssClasses,
-      hasRefinements: hasRefinements,
+      hasRefinements: canRefine,
       templateProps: renderState.templateProps
     }), containerNode);
   };

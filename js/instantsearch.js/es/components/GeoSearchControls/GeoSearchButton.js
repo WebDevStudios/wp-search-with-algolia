@@ -1,4 +1,3 @@
-/** @jsx h */
 import { h } from 'preact';
 
 var GeoSearchButton = function GeoSearchButton(_ref) {

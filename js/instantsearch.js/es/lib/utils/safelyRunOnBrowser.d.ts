@@ -8,7 +8,7 @@ declare type SafelyRunOnBrowserOptions<TReturn> = {
     fallback: () => TReturn;
 };
 /**
- * Runs code on browser enviromnents safely.
+ * Runs code on browser environments safely.
  */
 export declare function safelyRunOnBrowser<TReturn>(callback: BrowserCallback<TReturn>, { fallback }?: SafelyRunOnBrowserOptions<TReturn>): TReturn;
 export {};

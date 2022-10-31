@@ -3,9 +3,9 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.default = void 0;
+exports.resolveSearchParameters = resolveSearchParameters;
 
-var resolveSearchParameters = function resolveSearchParameters(current) {
+function resolveSearchParameters(current) {
   var parent = current.getParent();
   var states = [current.getHelper().state];
 
@@ -15,7 +15,4 @@ var resolveSearchParameters = function resolveSearchParameters(current) {
   }
 
   return states;
-};
-
-var _default = resolveSearchParameters;
-exports.default = _default;
+}

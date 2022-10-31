@@ -11,15 +11,19 @@ export declare type ScopedResult = {
 };
 declare type SharedRenderOptions = {
     instantSearchInstance: InstantSearch;
-    parent: IndexWidget | null;
+    parent: IndexWidget;
     templatesConfig: Record<string, unknown>;
     scopedResults: ScopedResult[];
     state: SearchParameters;
     renderState: IndexRenderState;
     helper: Helper;
+    /** @deprecated use `status` instead */
     searchMetadata: {
+        /** @deprecated use `status === "stalled"` instead */
         isSearchStalled: boolean;
     };
+    status: InstantSearch['status'];
+    error: InstantSearch['error'];
     createURL(state: SearchParameters): string;
 };
 export declare type InitOptions = SharedRenderOptions & {

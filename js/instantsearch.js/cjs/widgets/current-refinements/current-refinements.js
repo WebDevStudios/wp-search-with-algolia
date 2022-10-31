@@ -7,7 +7,7 @@ exports.default = void 0;
 
 var _preact = require("preact");
 
-var _classnames = _interopRequireDefault(require("classnames"));
+var _uiComponentsShared = require("@algolia/ui-components-shared");
 
 var _CurrentRefinements = _interopRequireDefault(require("../../components/CurrentRefinements/CurrentRefinements.js"));
 
@@ -32,7 +32,8 @@ var suit = (0, _suit.component)('CurrentRefinements');
 
 var renderer = function renderer(_ref, isFirstRender) {
   var items = _ref.items,
-      widgetParams = _ref.widgetParams;
+      widgetParams = _ref.widgetParams,
+      canRefine = _ref.canRefine;
 
   if (isFirstRender) {
     return;
@@ -43,7 +44,8 @@ var renderer = function renderer(_ref, isFirstRender) {
       cssClasses = _ref2.cssClasses;
   (0, _preact.render)((0, _preact.h)(_CurrentRefinements.default, {
     cssClasses: cssClasses,
-    items: items
+    items: items,
+    canRefine: canRefine
   }), container);
 };
 
@@ -62,23 +64,26 @@ var currentRefinements = function currentRefinements(widgetParams) {
 
   var containerNode = (0, _index.getContainerNode)(container);
   var cssClasses = {
-    root: (0, _classnames.default)(suit(), userCssClasses.root),
-    list: (0, _classnames.default)(suit({
+    root: (0, _uiComponentsShared.cx)(suit(), userCssClasses.root),
+    noRefinementRoot: (0, _uiComponentsShared.cx)(suit({
+      modifierName: 'noRefinement'
+    }), userCssClasses.noRefinementRoot),
+    list: (0, _uiComponentsShared.cx)(suit({
       descendantName: 'list'
     }), userCssClasses.list),
-    item: (0, _classnames.default)(suit({
+    item: (0, _uiComponentsShared.cx)(suit({
       descendantName: 'item'
     }), userCssClasses.item),
-    label: (0, _classnames.default)(suit({
+    label: (0, _uiComponentsShared.cx)(suit({
       descendantName: 'label'
     }), userCssClasses.label),
-    category: (0, _classnames.default)(suit({
+    category: (0, _uiComponentsShared.cx)(suit({
       descendantName: 'category'
     }), userCssClasses.category),
-    categoryLabel: (0, _classnames.default)(suit({
+    categoryLabel: (0, _uiComponentsShared.cx)(suit({
       descendantName: 'categoryLabel'
     }), userCssClasses.categoryLabel),
-    delete: (0, _classnames.default)(suit({
+    delete: (0, _uiComponentsShared.cx)(suit({
       descendantName: 'delete'
     }), userCssClasses.delete)
   };

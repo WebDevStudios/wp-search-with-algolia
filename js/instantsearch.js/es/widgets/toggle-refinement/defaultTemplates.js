@@ -1,4 +1,7 @@
 var defaultTemplates = {
-  labelText: '{{name}}'
+  labelText: function labelText(_ref) {
+    var name = _ref.name;
+    return name;
+  }
 };
 export default defaultTemplates;

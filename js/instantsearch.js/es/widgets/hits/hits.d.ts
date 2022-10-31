@@ -1,6 +1,7 @@
-/** @jsx h */
+
 import type { HitsConnectorParams, HitsWidgetDescription } from '../../connectors/hits/connectHits';
 import type { Template, TemplateWithBindEvent, Hit, WidgetFactory } from '../../types';
+import type { SearchResults } from 'algoliasearch-helper';
 export declare type HitsCSSClasses = Partial<{
     /**
      * CSS class to add to the wrapping element.
@@ -25,7 +26,7 @@ export declare type HitsTemplates = Partial<{
      *
      * @default 'No Results'
      */
-    empty: Template;
+    empty: Template<SearchResults>;
     /**
      * Template to use for each result. This template will receive an object containing a single record.
      *

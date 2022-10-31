@@ -4,9 +4,8 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
-/** @jsx h */
 import { h, render } from 'preact';
-import cx from 'classnames';
+import { cx } from '@algolia/ui-components-shared';
 import CurrentRefinements from "../../components/CurrentRefinements/CurrentRefinements.js";
 import connectCurrentRefinements from "../../connectors/current-refinements/connectCurrentRefinements.js";
 import { getContainerNode, createDocumentationMessageGenerator } from "../../lib/utils/index.js";
@@ -18,7 +17,8 @@ var suit = component('CurrentRefinements');
 
 var renderer = function renderer(_ref, isFirstRender) {
   var items = _ref.items,
-      widgetParams = _ref.widgetParams;
+      widgetParams = _ref.widgetParams,
+      canRefine = _ref.canRefine;
 
   if (isFirstRender) {
     return;
@@ -29,7 +29,8 @@ var renderer = function renderer(_ref, isFirstRender) {
       cssClasses = _ref2.cssClasses;
   render(h(CurrentRefinements, {
     cssClasses: cssClasses,
-    items: items
+    items: items,
+    canRefine: canRefine
   }), container);
 };
 
@@ -49,6 +50,9 @@ var currentRefinements = function currentRefinements(widgetParams) {
   var containerNode = getContainerNode(container);
   var cssClasses = {
     root: cx(suit(), userCssClasses.root),
+    noRefinementRoot: cx(suit({
+      modifierName: 'noRefinement'
+    }), userCssClasses.noRefinementRoot),
     list: cx(suit({
       descendantName: 'list'
     }), userCssClasses.list),

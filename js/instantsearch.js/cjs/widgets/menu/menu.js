@@ -7,7 +7,7 @@ exports.default = void 0;
 
 var _preact = require("preact");
 
-var _classnames = _interopRequireDefault(require("classnames"));
+var _uiComponentsShared = require("@algolia/ui-components-shared");
 
 var _RefinementList = _interopRequireDefault(require("../../components/RefinementList/RefinementList.js"));
 
@@ -16,6 +16,8 @@ var _connectMenu = _interopRequireDefault(require("../../connectors/menu/connect
 var _defaultTemplates = _interopRequireDefault(require("./defaultTemplates.js"));
 
 var _index = require("../../lib/utils/index.js");
+
+var _index2 = require("../../lib/templating/index.js");
 
 var _suit = require("../../lib/suit.js");
 
@@ -48,7 +50,7 @@ var renderer = function renderer(_ref) {
         canToggleShowMore = _ref2.canToggleShowMore;
 
     if (isFirstRendering) {
-      renderState.templateProps = (0, _index.prepareTemplateProps)({
+      renderState.templateProps = (0, _index2.prepareTemplateProps)({
         defaultTemplates: _defaultTemplates.default,
         templatesConfig: instantSearchInstance.templatesConfig,
         templates: templates
@@ -95,33 +97,33 @@ var menu = function menu(widgetParams) {
 
   var containerNode = (0, _index.getContainerNode)(container);
   var cssClasses = {
-    root: (0, _classnames.default)(suit(), userCssClasses.root),
-    noRefinementRoot: (0, _classnames.default)(suit({
+    root: (0, _uiComponentsShared.cx)(suit(), userCssClasses.root),
+    noRefinementRoot: (0, _uiComponentsShared.cx)(suit({
       modifierName: 'noRefinement'
     }), userCssClasses.noRefinementRoot),
-    list: (0, _classnames.default)(suit({
+    list: (0, _uiComponentsShared.cx)(suit({
       descendantName: 'list'
     }), userCssClasses.list),
-    item: (0, _classnames.default)(suit({
+    item: (0, _uiComponentsShared.cx)(suit({
       descendantName: 'item'
     }), userCssClasses.item),
-    selectedItem: (0, _classnames.default)(suit({
+    selectedItem: (0, _uiComponentsShared.cx)(suit({
       descendantName: 'item',
       modifierName: 'selected'
     }), userCssClasses.selectedItem),
-    link: (0, _classnames.default)(suit({
+    link: (0, _uiComponentsShared.cx)(suit({
       descendantName: 'link'
     }), userCssClasses.link),
-    label: (0, _classnames.default)(suit({
+    label: (0, _uiComponentsShared.cx)(suit({
       descendantName: 'label'
     }), userCssClasses.label),
-    count: (0, _classnames.default)(suit({
+    count: (0, _uiComponentsShared.cx)(suit({
       descendantName: 'count'
     }), userCssClasses.count),
-    showMore: (0, _classnames.default)(suit({
+    showMore: (0, _uiComponentsShared.cx)(suit({
       descendantName: 'showMore'
     }), userCssClasses.showMore),
-    disabledShowMore: (0, _classnames.default)(suit({
+    disabledShowMore: (0, _uiComponentsShared.cx)(suit({
       descendantName: 'showMore',
       modifierName: 'disabled'
     }), userCssClasses.disabledShowMore)

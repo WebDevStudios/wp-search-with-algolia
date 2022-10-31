@@ -24,9 +24,8 @@ function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.g
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
-/** @jsx h */
 import { h, Component } from 'preact';
-import cx from 'classnames';
+import { cx } from '@algolia/ui-components-shared';
 import Template from "../Template/Template.js";
 
 var RangeInput = /*#__PURE__*/function (_Component) {
@@ -90,7 +89,7 @@ var RangeInput = /*#__PURE__*/function (_Component) {
           templateProps = _this$props.templateProps;
       var isDisabled = min && max ? min >= max : false;
       var hasRefinements = Boolean(minValue || maxValue);
-      var rootClassNames = cx(cssClasses.root, _defineProperty({}, cssClasses.noRefinement, !hasRefinements));
+      var rootClassNames = cx(cssClasses.root, !hasRefinements && cssClasses.noRefinement);
       return h("div", {
         className: rootClassNames
       }, h("form", {

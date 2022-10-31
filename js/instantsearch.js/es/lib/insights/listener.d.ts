@@ -1,4 +1,4 @@
-/** @jsx h */
+
 import { h } from 'preact';
 import type { InsightsClient } from '../../types';
 import type { InsightsEvent } from '../../middlewares/createInsightsMiddleware';

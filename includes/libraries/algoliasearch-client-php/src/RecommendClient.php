@@ -6,6 +6,7 @@ use Algolia\AlgoliaSearch\Config\RecommendConfig;
 use Algolia\AlgoliaSearch\Exceptions\AlgoliaException;
 use Algolia\AlgoliaSearch\RequestOptions\RequestOptions;
 use Algolia\AlgoliaSearch\RetryStrategy\ApiWrapper;
+use Algolia\AlgoliaSearch\RetryStrategy\ApiWrapperInterface;
 use Algolia\AlgoliaSearch\RetryStrategy\ClusterHosts;
 
 final class RecommendClient
@@ -14,7 +15,7 @@ final class RecommendClient
     const BOUGHT_TOGETHER = 'bought-together';
 
     /**
-     * @var ApiWrapper
+     * @var ApiWrapperInterface
      */
     private $api;
 
@@ -23,7 +24,7 @@ final class RecommendClient
      */
     private $config;
 
-    public function __construct(ApiWrapper $api, RecommendConfig $config)
+    public function __construct(ApiWrapperInterface $api, RecommendConfig $config)
     {
         $this->api = $api;
         $this->config = $config;

@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.default = concatHighlightedParts;
+exports.concatHighlightedParts = concatHighlightedParts;
 
 var _escapeHighlight = require("./escape-highlight.js");
 

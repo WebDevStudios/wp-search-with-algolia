@@ -7,13 +7,9 @@ exports.default = void 0;
 
 var _preact = require("preact");
 
-var _classnames = _interopRequireDefault(require("classnames"));
+var _uiComponentsShared = require("@algolia/ui-components-shared");
 
 var _index = require("../../lib/utils/index.js");
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 function Pagination(props) {
   function createClickHandler(pageNumber) {
@@ -30,7 +26,7 @@ function Pagination(props) {
   }
 
   return (0, _preact.h)("div", {
-    className: (0, _classnames.default)(props.cssClasses.root, _defineProperty({}, props.cssClasses.noRefinementRoot, props.nbPages <= 1))
+    className: (0, _uiComponentsShared.cx)(props.cssClasses.root, props.nbPages <= 1 && props.cssClasses.noRefinementRoot)
   }, (0, _preact.h)("ul", {
     className: props.cssClasses.list
   }, props.showFirst && (0, _preact.h)(PaginationLink, {
@@ -97,7 +93,7 @@ function PaginationLink(_ref) {
       createURL = _ref.createURL,
       createClickHandler = _ref.createClickHandler;
   return (0, _preact.h)("li", {
-    className: (0, _classnames.default)(cssClasses.item, className, isDisabled && cssClasses.disabledItem, isSelected && cssClasses.selectedItem)
+    className: (0, _uiComponentsShared.cx)(cssClasses.item, className, isDisabled && cssClasses.disabledItem, isSelected && cssClasses.selectedItem)
   }, isDisabled ? (0, _preact.h)("span", {
     className: cssClasses.link,
     dangerouslySetInnerHTML: {

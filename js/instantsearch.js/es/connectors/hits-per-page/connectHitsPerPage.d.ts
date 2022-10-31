@@ -50,8 +50,13 @@ export declare type HitsPerPageRenderState = {
     refine: (value: number) => void;
     /**
      * Indicates whether or not the search has results.
+     * @deprecated Use `canRefine` instead.
      */
     hasNoResults: boolean;
+    /**
+     * Indicates if search state can be refined.
+     */
+    canRefine: boolean;
 };
 export declare type HitsPerPageWidgetDescription = {
     $$type: 'ais.hitsPerPage';

@@ -1,4 +1,4 @@
-/** @jsx h */
+
 import { h } from 'preact';
 import type { CurrentRefinementsConnectorParamsItem } from '../../connectors/current-refinements/connectCurrentRefinements';
 import type { CurrentRefinementsCSSClasses } from '../../widgets/current-refinements/current-refinements';
@@ -7,6 +7,7 @@ export declare type CurrentRefinementsComponentCSSClasses = ComponentCSSClasses<
 export declare type CurrentRefinementsProps = {
     items: CurrentRefinementsConnectorParamsItem[];
     cssClasses: CurrentRefinementsComponentCSSClasses;
+    canRefine: boolean;
 };
-declare const CurrentRefinements: ({ items, cssClasses }: CurrentRefinementsProps) => h.JSX.Element;
+declare const CurrentRefinements: ({ items, cssClasses, canRefine, }: CurrentRefinementsProps) => h.JSX.Element;
 export default CurrentRefinements;

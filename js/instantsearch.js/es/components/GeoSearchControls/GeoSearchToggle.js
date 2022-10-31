@@ -1,4 +1,3 @@
-/** @jsx h */
 import { h } from 'preact';
 
 var GeoSearchToggle = function GeoSearchToggle(_ref) {

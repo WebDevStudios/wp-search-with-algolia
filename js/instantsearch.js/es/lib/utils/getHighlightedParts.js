@@ -1,5 +1,5 @@
 import { TAG_REPLACEMENT } from "./escape-highlight.js";
-export default function getHighlightedParts(highlightedValue) {
+export function getHighlightedParts(highlightedValue) {
   var highlightPostTag = TAG_REPLACEMENT.highlightPostTag,
       highlightPreTag = TAG_REPLACEMENT.highlightPreTag;
   var splitByPreTag = highlightedValue.split(highlightPreTag);

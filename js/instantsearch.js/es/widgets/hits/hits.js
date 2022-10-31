@@ -4,13 +4,13 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
-/** @jsx h */
 import { h, render } from 'preact';
-import cx from 'classnames';
+import { cx } from '@algolia/ui-components-shared';
 import connectHits from "../../connectors/hits/connectHits.js";
 import Hits from "../../components/Hits/Hits.js";
 import defaultTemplates from "./defaultTemplates.js";
-import { prepareTemplateProps, getContainerNode, createDocumentationMessageGenerator } from "../../lib/utils/index.js";
+import { getContainerNode, createDocumentationMessageGenerator } from "../../lib/utils/index.js";
+import { prepareTemplateProps } from "../../lib/templating/index.js";
 import { component } from "../../lib/suit.js";
 import { withInsights, withInsightsListener } from "../../lib/insights/index.js";
 var withUsage = createDocumentationMessageGenerator({

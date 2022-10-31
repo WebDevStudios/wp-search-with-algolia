@@ -3,15 +3,11 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.createInsightsMiddleware = void 0;
+exports.createInsightsMiddleware = createInsightsMiddleware;
 
 var _index = require("../helpers/index.js");
 
 var _index2 = require("../lib/utils/index.js");
-
-var _connectConfigure = _interopRequireDefault(require("../connectors/configure/connectConfigure.js"));
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
@@ -31,7 +27,7 @@ function _iterableToArrayLimit(arr, i) { if (typeof Symbol === "undefined" || !(
 
 function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 
-var createInsightsMiddleware = function createInsightsMiddleware(props) {
+function createInsightsMiddleware(props) {
   var _ref = props || {},
       _insightsClient = _ref.insightsClient,
       insightsInitParams = _ref.insightsInitParams,
@@ -98,31 +94,28 @@ var createInsightsMiddleware = function createInsightsMiddleware(props) {
       appId: appId,
       apiKey: apiKey
     }, insightsInitParams));
-    var createWidget = (0, _connectConfigure.default)(_index2.noop);
-    var configureClickAnalytics;
-    var configureUserToken;
+    var initialParameters;
+    var helper;
     return {
       onStateChange: function onStateChange() {},
-      subscribe: function subscribe() {
+      subscribe: function subscribe() {},
+      started: function started() {
         insightsClient('addAlgoliaAgent', 'insights-middleware');
-        configureClickAnalytics = createWidget({
-          searchParameters: {
-            clickAnalytics: true
-          }
-        });
-        instantSearchInstance.addWidgets([configureClickAnalytics]);
+        helper = instantSearchInstance.helper;
+        initialParameters = {
+          userToken: helper.state.userToken,
+          clickAnalytics: helper.state.clickAnalytics
+        };
+        helper.overrideStateWithoutTriggeringChangeEvent(_objectSpread(_objectSpread({}, helper.state), {}, {
+          clickAnalytics: true
+        }));
+        instantSearchInstance.scheduleSearch();
 
         var setUserTokenToSearch = function setUserTokenToSearch(userToken) {
-          if (configureUserToken) {
-            instantSearchInstance.removeWidgets([configureUserToken]);
-          }
-
-          configureUserToken = createWidget({
-            searchParameters: {
-              userToken: userToken
-            }
-          });
-          instantSearchInstance.addWidgets([configureUserToken]);
+          helper.overrideStateWithoutTriggeringChangeEvent(_objectSpread(_objectSpread({}, helper.state), {}, {
+            userToken: userToken
+          }));
+          instantSearchInstance.scheduleSearch();
         };
 
         var anonymousUserToken = (0, _index.getInsightsAnonymousUserTokenInternal)();
@@ -150,9 +143,7 @@ var createInsightsMiddleware = function createInsightsMiddleware(props) {
           if (onEvent) {
             onEvent(event, _insightsClient);
           } else if (event.insightsMethod) {
-            // At this point, instantSearchInstance must be started and
-            // it means there is a configure widget (added above).
-            var hasUserToken = Boolean(instantSearchInstance.renderState[instantSearchInstance.indexName].configure.widgetParams.searchParameters.userToken);
+            var hasUserToken = Boolean(helper.state.userToken);
 
             if (hasUserToken) {
               insightsClient(event.insightsMethod, event.payload);
@@ -166,13 +157,13 @@ var createInsightsMiddleware = function createInsightsMiddleware(props) {
       },
       unsubscribe: function unsubscribe() {
         insightsClient('onUserTokenChange', undefined);
-        instantSearchInstance.removeWidgets([configureClickAnalytics, configureUserToken]);
-        configureClickAnalytics = undefined;
-        configureUserToken = undefined;
         instantSearchInstance.sendEventToInsights = _index2.noop;
+
+        if (helper && initialParameters) {
+          helper.setState(_objectSpread(_objectSpread({}, helper.state), initialParameters));
+          instantSearchInstance.scheduleSearch();
+        }
       }
     };
   };
-};
-
-exports.createInsightsMiddleware = createInsightsMiddleware;
+}

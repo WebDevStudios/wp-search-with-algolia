@@ -5,13 +5,11 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.checkIndexUiState = checkIndexUiState;
 
-var _capitalize = _interopRequireDefault(require("./capitalize.js"));
+var _capitalize = require("./capitalize.js");
 
 var _logger = require("./logger.js");
 
 var _typedObject = require("./typedObject.js");
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread(); }
 
@@ -160,7 +158,7 @@ function checkIndexUiState(_ref) {
         connectors = _ref8$.connectors,
         widgets = _ref8$.widgets;
 
-    var capitalizedWidget = (0, _capitalize.default)(widgets[0]);
+    var capitalizedWidget = (0, _capitalize.capitalize)(widgets[0]);
     var connectorName = connectors[0];
     return "const virtual".concat(capitalizedWidget, " = ").concat(connectorName, "(() => null);");
   }).join('\n'), "\n\nsearch.addWidgets([\n  ").concat(missingWidgets.filter(function (_ref9) {
@@ -174,7 +172,7 @@ function checkIndexUiState(_ref) {
         _stateParameter = _ref12[0],
         widgets = _ref12[1].widgets;
 
-    var capitalizedWidget = (0, _capitalize.default)(widgets[0]);
+    var capitalizedWidget = (0, _capitalize.capitalize)(widgets[0]);
     return "virtual".concat(capitalizedWidget, "({ /* ... */ })");
   }).join(',\n  '), "\n]);\n```\n\nIf you're using custom widgets that do set these query parameters, we recommend using connectors instead.\n\nSee https://www.algolia.com/doc/guides/building-search-ui/widgets/customize-an-existing-widget/js/#customize-the-complete-ui-of-the-widgets")) : void 0;
 }

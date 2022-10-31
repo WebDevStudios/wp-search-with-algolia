@@ -1,4 +1,4 @@
-/** @jsx h */
+
 import type { HierarchicalMenuItem, HierarchicalMenuConnectorParams, HierarchicalMenuWidgetDescription } from '../../connectors/hierarchical-menu/connectHierarchicalMenu';
 import type { TransformItems, Template, WidgetFactory, SortBy, ComponentCSSClasses } from '../../types';
 declare type HierarchicalMenuTemplates = Partial<{
@@ -10,6 +10,8 @@ declare type HierarchicalMenuTemplates = Partial<{
         count: number;
         isRefined: boolean;
         url: string;
+        label: string;
+        cssClasses: HierarchicalMenuCSSClasses;
     }>;
     /**
      * Template used for the show more text, provided with `isShowingMore` data property.
@@ -51,6 +53,10 @@ export declare type HierarchicalMenuCSSClasses = Partial<{
      * CSS class to add to each link (when using the default template).
      */
     link: string | string[];
+    /**
+     * CSS class to add to the link of each selected item element (when using the default template).
+     */
+    selectedItemLink: string | string[];
     /**
      * CSS class to add to each label (when using the default template).
      */

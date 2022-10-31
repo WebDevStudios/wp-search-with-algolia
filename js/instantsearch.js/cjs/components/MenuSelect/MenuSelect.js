@@ -7,7 +7,7 @@ exports.default = void 0;
 
 var _preact = require("preact");
 
-var _classnames = _interopRequireDefault(require("classnames"));
+var _uiComponentsShared = require("@algolia/ui-components-shared");
 
 var _index = require("../../lib/utils/index.js");
 
@@ -16,8 +16,6 @@ var _Template = _interopRequireDefault(require("../Template/Template.js"));
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _extends() { _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; return _extends.apply(this, arguments); }
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 function MenuSelect(_ref) {
   var cssClasses = _ref.cssClasses,
@@ -33,7 +31,7 @@ function MenuSelect(_ref) {
       selectedValue = _ref2.value;
 
   return (0, _preact.h)("div", {
-    className: (0, _classnames.default)(cssClasses.root, _defineProperty({}, cssClasses.noRefinementRoot, items.length === 0))
+    className: (0, _uiComponentsShared.cx)(cssClasses.root, items.length === 0 && cssClasses.noRefinementRoot)
   }, (0, _preact.h)("select", {
     className: cssClasses.select,
     value: selectedValue,

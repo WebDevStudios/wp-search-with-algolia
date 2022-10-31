@@ -2,7 +2,7 @@
 Contributors: WebDevStudios, williamsba1, gregrickaby, tw2113, richaber, mrasharirfan
 Tags: Search, Algolia, Autocomplete, instant-search, relevant search, search highlight, faceted search, find-as-you-type search, suggest, search by category, ajax search, better search, custom search
 Requires at least: 5.0
-Tested up to: 6.0
+Tested up to: 6.1
 Requires PHP: 7.2
 Stable tag: 2.2.0
 License: GNU General Public License v2.0, MIT License
@@ -106,6 +106,16 @@ WebDevStudios provides end-to-end WordPress opportunities from strategy and plan
 
 Follow along with the changelog on [Github](https://github.com/WebDevStudios/wp-search-with-algolia/releases).
 
+= 2.3.0 =
+* Add algolia_should_override_autocomplete filter to override enable/disable status of Autocomplete
+* Add from_batch argument to the re-index WP-CLI command
+* Update excluded custom post types and taxonomies to include Core WordPress' internal CPTs and taxonomies
+* Update Algolia logos to match the latest version
+* Remove jQuery usage and dependency from templates
+* Update Algolia JavaScript API Client to 4.14.2
+* Update Algolia InstantSearch.js to 4.49.0
+* Update Algolia PHP API Client to 3.3.2
+
 = 2.2.0 =
 * Add alert to Push Settings button on the Search Page.
 * Replace attributesToIndex index setting with searchableAttributes.
@@ -113,7 +123,7 @@ Follow along with the changelog on [Github](https://github.com/WebDevStudios/wp-
 * Improve drag and drop column description text on the Autocomplete page.
 * Remove inline CSS for Max. Suggestions input.
 * Update Algolia JavaScript API Client to 4.13.0
-* Update Algolia InstantSearch.js to 4.50.5
+* Update Algolia InstantSearch.js to 4.40.5
 * Update Algolia Autocomplete.js to 0.38.1
 * Update Algolia PHP API Client to 3.2.0
 

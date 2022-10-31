@@ -210,12 +210,15 @@ var connectRatingMenu = function connectRatingMenu(renderFn) {
           });
         }
 
-        if (results) {
-          var facetResults = results.getFacetValues(attribute, {});
+        var refinementIsApplied = false;
+        var totalCount = 0;
+        var facetResults = results === null || results === void 0 ? void 0 : results.getFacetValues(attribute, {});
+
+        if (results && facetResults) {
           var maxValuesPerFacet = facetResults.length;
           var maxDecimalPlaces = getFacetsMaxDecimalPlaces(facetResults);
           var maxFacets = Math.pow(10, maxDecimalPlaces) * max;
-          process.env.NODE_ENV === 'development' ? warning(maxFacets <= maxValuesPerFacet, getFacetValuesWarningMessage({
+          process.env.NODE_ENV === 'development' ? warning(maxFacets <= maxValuesPerFacet || Boolean(results.__isArtificial), getFacetValuesWarningMessage({
             maxDecimalPlaces: maxDecimalPlaces,
             maxFacets: maxFacets,
             maxValuesPerFacet: maxValuesPerFacet
@@ -225,6 +228,7 @@ var connectRatingMenu = function connectRatingMenu(renderFn) {
 
           var _loop = function _loop(star) {
             var isRefined = refinedStar === star;
+            refinementIsApplied = refinementIsApplied || isRefined;
             var count = facetResults.filter(function (f) {
               return Number(f.name) >= star && Number(f.name) <= max;
             }).map(function (f) {
@@ -232,6 +236,7 @@ var connectRatingMenu = function connectRatingMenu(renderFn) {
             }).reduce(function (sum, current) {
               return sum + current;
             }, 0);
+            totalCount += count;
 
             if (refinedStar && !isRefined && count === 0) {
               // skip count==0 when at least 1 refinement is enabled
@@ -261,10 +266,11 @@ var connectRatingMenu = function connectRatingMenu(renderFn) {
         }
 
         facetValues = facetValues.reverse();
+        var hasNoResults = results ? results.nbHits === 0 : true;
         return {
           items: facetValues,
-          hasNoResults: results ? results.nbHits === 0 : true,
-          canRefine: facetValues.length > 0,
+          hasNoResults: hasNoResults,
+          canRefine: (!hasNoResults || refinementIsApplied) && totalCount > 0,
           refine: connectorState.toggleRefinementFactory(helper),
           sendEvent: sendEvent,
           createURL: connectorState.createURLFactory({

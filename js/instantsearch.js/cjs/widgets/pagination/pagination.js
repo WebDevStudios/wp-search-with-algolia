@@ -7,7 +7,7 @@ exports.default = void 0;
 
 var _preact = require("preact");
 
-var _classnames = _interopRequireDefault(require("classnames"));
+var _uiComponentsShared = require("@algolia/ui-components-shared");
 
 var _Pagination = _interopRequireDefault(require("../../components/Pagination/Pagination.js"));
 
@@ -109,45 +109,45 @@ var pagination = function pagination(widgetParams) {
   var scrollTo = userScrollTo === true ? 'body' : userScrollTo;
   var scrollToNode = scrollTo !== false ? (0, _index.getContainerNode)(scrollTo) : false;
   var cssClasses = {
-    root: (0, _classnames.default)(suit(), userCssClasses.root),
-    noRefinementRoot: (0, _classnames.default)(suit({
+    root: (0, _uiComponentsShared.cx)(suit(), userCssClasses.root),
+    noRefinementRoot: (0, _uiComponentsShared.cx)(suit({
       modifierName: 'noRefinement'
     }), userCssClasses.noRefinementRoot),
-    list: (0, _classnames.default)(suit({
+    list: (0, _uiComponentsShared.cx)(suit({
       descendantName: 'list'
     }), userCssClasses.list),
-    item: (0, _classnames.default)(suit({
+    item: (0, _uiComponentsShared.cx)(suit({
       descendantName: 'item'
     }), userCssClasses.item),
-    firstPageItem: (0, _classnames.default)(suit({
+    firstPageItem: (0, _uiComponentsShared.cx)(suit({
       descendantName: 'item',
       modifierName: 'firstPage'
     }), userCssClasses.firstPageItem),
-    lastPageItem: (0, _classnames.default)(suit({
+    lastPageItem: (0, _uiComponentsShared.cx)(suit({
       descendantName: 'item',
       modifierName: 'lastPage'
     }), userCssClasses.lastPageItem),
-    previousPageItem: (0, _classnames.default)(suit({
+    previousPageItem: (0, _uiComponentsShared.cx)(suit({
       descendantName: 'item',
       modifierName: 'previousPage'
     }), userCssClasses.previousPageItem),
-    nextPageItem: (0, _classnames.default)(suit({
+    nextPageItem: (0, _uiComponentsShared.cx)(suit({
       descendantName: 'item',
       modifierName: 'nextPage'
     }), userCssClasses.nextPageItem),
-    pageItem: (0, _classnames.default)(suit({
+    pageItem: (0, _uiComponentsShared.cx)(suit({
       descendantName: 'item',
       modifierName: 'page'
     }), userCssClasses.pageItem),
-    selectedItem: (0, _classnames.default)(suit({
+    selectedItem: (0, _uiComponentsShared.cx)(suit({
       descendantName: 'item',
       modifierName: 'selected'
     }), userCssClasses.selectedItem),
-    disabledItem: (0, _classnames.default)(suit({
+    disabledItem: (0, _uiComponentsShared.cx)(suit({
       descendantName: 'item',
       modifierName: 'disabled'
     }), userCssClasses.disabledItem),
-    link: (0, _classnames.default)(suit({
+    link: (0, _uiComponentsShared.cx)(suit({
       descendantName: 'link'
     }), userCssClasses.link)
   };

@@ -1,6 +1,6 @@
 import type { SearchResults } from 'algoliasearch-helper';
 import type { SendEventForHits } from '../../lib/utils';
-import type { Hits, Connector, WidgetRenderState } from '../../types';
+import type { Hit, Connector, WidgetRenderState } from '../../types';
 export declare type AutocompleteConnectorParams = {
     /**
      * Escapes HTML entities from hits string values.
@@ -25,7 +25,7 @@ export declare type AutocompleteRenderState = {
         /**
          * The resolved hits from the index matching the query.
          */
-        hits: Hits;
+        hits: Hit[];
         /**
          * The full results object from the Algolia API.
          */

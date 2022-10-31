@@ -7,7 +7,7 @@ exports.default = void 0;
 
 var _preact = require("preact");
 
-var _classnames = _interopRequireDefault(require("classnames"));
+var _uiComponentsShared = require("@algolia/ui-components-shared");
 
 var _connectMenu = _interopRequireDefault(require("../../connectors/menu/connectMenu.js"));
 
@@ -16,6 +16,8 @@ var _MenuSelect = _interopRequireDefault(require("../../components/MenuSelect/Me
 var _defaultTemplates = _interopRequireDefault(require("./defaultTemplates.js"));
 
 var _index = require("../../lib/utils/index.js");
+
+var _index2 = require("../../lib/templating/index.js");
 
 var _suit = require("../../lib/suit.js");
 
@@ -43,7 +45,7 @@ var renderer = function renderer(_ref) {
         instantSearchInstance = _ref2.instantSearchInstance;
 
     if (isFirstRendering) {
-      renderState.templateProps = (0, _index.prepareTemplateProps)({
+      renderState.templateProps = (0, _index2.prepareTemplateProps)({
         defaultTemplates: _defaultTemplates.default,
         templatesConfig: instantSearchInstance.templatesConfig,
         templates: templates
@@ -80,14 +82,14 @@ var menuSelect = function menuSelect(widgetParams) {
 
   var containerNode = (0, _index.getContainerNode)(container);
   var cssClasses = {
-    root: (0, _classnames.default)(suit(), userCssClasses.root),
-    noRefinementRoot: (0, _classnames.default)(suit({
+    root: (0, _uiComponentsShared.cx)(suit(), userCssClasses.root),
+    noRefinementRoot: (0, _uiComponentsShared.cx)(suit({
       modifierName: 'noRefinement'
     }), userCssClasses.noRefinementRoot),
-    select: (0, _classnames.default)(suit({
+    select: (0, _uiComponentsShared.cx)(suit({
       descendantName: 'select'
     }), userCssClasses.select),
-    option: (0, _classnames.default)(suit({
+    option: (0, _uiComponentsShared.cx)(suit({
       descendantName: 'option'
     }), userCssClasses.option)
   };

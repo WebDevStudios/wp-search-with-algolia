@@ -1,4 +1,4 @@
-/** @jsx h */
+
 import type { CurrentRefinementsConnectorParams, CurrentRefinementsWidgetDescription } from '../../connectors/current-refinements/connectCurrentRefinements';
 import type { WidgetFactory } from '../../types';
 export declare type CurrentRefinementsCSSClasses = Partial<{
@@ -6,6 +6,10 @@ export declare type CurrentRefinementsCSSClasses = Partial<{
      * CSS class to add to the root element.
      */
     root: string | string[];
+    /**
+     * CSS class to add to the root element when no refinements.
+     */
+    noRefinementRoot: string | string[];
     /**
      * CSS class to add to the list element.
      */

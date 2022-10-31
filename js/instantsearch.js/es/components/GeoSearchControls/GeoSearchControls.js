@@ -1,10 +1,7 @@
 function _extends() { _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; return _extends.apply(this, arguments); }
 
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-/** @jsx h */
 import { h, Fragment } from 'preact';
-import cx from 'classnames';
+import { cx } from '@algolia/ui-components-shared';
 import Template from "../Template/Template.js";
 import GeoSearchButton from "./GeoSearchButton.js";
 import GeoSearchToggle from "./GeoSearchToggle.js";
@@ -24,7 +21,7 @@ var GeoSearchControls = function GeoSearchControls(_ref) {
   return h(Fragment, null, enableRefine && h("div", null, enableRefineControl && h("div", {
     className: cssClasses.control
   }, isRefineOnMapMove || !hasMapMoveSinceLastRefine ? h(GeoSearchToggle, {
-    classNameLabel: cx(cssClasses.label, _defineProperty({}, cssClasses.selectedLabel, isRefineOnMapMove)),
+    classNameLabel: cx(cssClasses.label, isRefineOnMapMove && cssClasses.selectedLabel),
     classNameInput: cssClasses.input,
     checked: isRefineOnMapMove,
     onToggle: onRefineToggle
@@ -41,7 +38,7 @@ var GeoSearchControls = function GeoSearchControls(_ref) {
   })))), !enableRefineControl && !isRefineOnMapMove && h("div", {
     className: cssClasses.control
   }, h(GeoSearchButton, {
-    className: cx(cssClasses.redo, _defineProperty({}, cssClasses.disabledRedo, !hasMapMoveSinceLastRefine)),
+    className: cx(cssClasses.redo, !hasMapMoveSinceLastRefine && cssClasses.disabledRedo),
     disabled: !hasMapMoveSinceLastRefine,
     onClick: onRefineClick
   }, h(Template, _extends({}, templateProps, {
