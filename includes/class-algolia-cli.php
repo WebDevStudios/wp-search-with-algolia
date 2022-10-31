@@ -127,6 +127,11 @@ class Algolia_CLI extends \WP_CLI_Command {
 
 		$total_pages = $index->get_re_index_max_num_pages() - ( $from_batch - 1 );
 
+		if ( 0 > $total_pages ) {
+			WP_CLI::error( 'from_batch value for re-indexing is out of bounds.' );
+			return;
+		}
+
 		if ( 0 === $total_pages ) {
 			$index->re_index( 1 );
 			WP_CLI::success( sprintf( 'Index %s was created but no entries were sent.', $index->get_name() ) );
