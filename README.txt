@@ -108,9 +108,10 @@ Follow along with the changelog on [Github](https://github.com/WebDevStudios/wp-
 
 = 2.3.0 =
 * Add algolia_should_override_autocomplete filter to override enable/disable status of Autocomplete
+* Add from_batch argument to the re-index WP-CLI command
 * Update excluded custom post types and taxonomies to include Core WordPress' internal CPTs and taxonomies
 * Update Algolia logos to match the latest version
-* Remove jQuery usage from templates
+* Remove jQuery usage and dependency from templates
 * Update Algolia JavaScript API Client to 4.14.2
 * Update Algolia InstantSearch.js to 4.49.0
 * Update Algolia PHP API Client to 3.3.2
