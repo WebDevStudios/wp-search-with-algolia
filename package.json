@@ -13,8 +13,8 @@
     "npm": "^6.0.0"
   },
   "dependencies": {
+    "@algolia/autocomplete-js": "^1.7.3",
     "algoliasearch": "^4.14.2",
-    "autocomplete.js": "^0.38.0",
     "instantsearch.js": "^4.46.2"
   },
   "devDependencies": {
@@ -24,7 +24,11 @@
     "target": "js/",
     "packages": {
       "algoliasearch": "^4.14.2",
-      "autocomplete.js": "^0.38.0",
+      "@algolia/autocomplete-js": {
+        "version": "^1.7.3",
+        "src": "dist",
+        "target": "js/autocomplete.js"
+      },
       "instantsearch.js": "^4.46.2"
     }
   },

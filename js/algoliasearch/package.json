@@ -1,29 +1,35 @@
 {
-  "name": "algoliasearch",
-  "version": "4.14.2",
-  "private": false,
-  "description": "A fully-featured and blazing-fast JavaScript API client to interact with Algolia API.",
-  "repository": {
-    "type": "git",
-    "url": "git://github.com/algolia/algoliasearch-client-javascript.git"
+  "_from": "algoliasearch@^4.14.2",
+  "_id": "algoliasearch@4.14.2",
+  "_inBundle": false,
+  "_integrity": "sha512-ngbEQonGEmf8dyEh5f+uOIihv4176dgbuOZspiuhmTTBRBuzWu3KCGHre6uHj5YyuC7pNvQGzB6ZNJyZi0z+Sg==",
+  "_location": "/algoliasearch",
+  "_phantomChildren": {},
+  "_requested": {
+    "type": "range",
+    "registry": true,
+    "raw": "algoliasearch@^4.14.2",
+    "name": "algoliasearch",
+    "escapedName": "algoliasearch",
+    "rawSpec": "^4.14.2",
+    "saveSpec": null,
+    "fetchSpec": "^4.14.2"
   },
-  "license": "MIT",
-  "sideEffects": false,
-  "main": "index.js",
-  "jsdelivr": "./dist/algoliasearch.umd.js",
-  "unpkg": "./dist/algoliasearch.umd.js",
+  "_requiredBy": [
+    "#USER"
+  ],
+  "_resolved": "https://registry.npmjs.org/algoliasearch/-/algoliasearch-4.14.2.tgz",
+  "_shasum": "63f142583bfc3a9bd3cd4a1b098bf6fe58e56f6c",
+  "_spec": "algoliasearch@^4.14.2",
+  "_where": "/Users/tw2113/Local Sites/algolia/app/public/wp-content/plugins/wp-search-with-algolia",
   "browser": {
     "./index.js": "./dist/algoliasearch.umd.js",
     "./lite.js": "./dist/algoliasearch-lite.umd.js"
   },
-  "types": "index.d.ts",
-  "files": [
-    "dist",
-    "index.js",
-    "index.d.ts",
-    "lite.js",
-    "lite.d.ts"
-  ],
+  "bugs": {
+    "url": "https://github.com/algolia/algoliasearch-client-javascript/issues"
+  },
+  "bundleDependencies": false,
   "dependencies": {
     "@algolia/cache-browser-local-storage": "4.14.2",
     "@algolia/cache-common": "4.14.2",
@@ -39,5 +45,28 @@
     "@algolia/requester-common": "4.14.2",
     "@algolia/requester-node-http": "4.14.2",
     "@algolia/transporter": "4.14.2"
-  }
+  },
+  "deprecated": false,
+  "description": "A fully-featured and blazing-fast JavaScript API client to interact with Algolia API.",
+  "files": [
+    "dist",
+    "index.js",
+    "index.d.ts",
+    "lite.js",
+    "lite.d.ts"
+  ],
+  "homepage": "https://github.com/algolia/algoliasearch-client-javascript#readme",
+  "jsdelivr": "./dist/algoliasearch.umd.js",
+  "license": "MIT",
+  "main": "index.js",
+  "name": "algoliasearch",
+  "private": false,
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/algolia/algoliasearch-client-javascript.git"
+  },
+  "sideEffects": false,
+  "types": "index.d.ts",
+  "unpkg": "./dist/algoliasearch.umd.js",
+  "version": "4.14.2"
 }
