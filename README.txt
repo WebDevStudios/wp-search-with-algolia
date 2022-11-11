@@ -106,6 +106,10 @@ WebDevStudios provides end-to-end WordPress opportunities from strategy and plan
 
 Follow along with the changelog on [Github](https://github.com/WebDevStudios/wp-search-with-algolia/releases).
 
+= 2.3.1 =
+* Update autocomplete template to use addEventListener instead of onload function
+* Update Algolia InstantSearch.js to 4.49.1
+
 = 2.3.0 =
 * Add algolia_should_override_autocomplete filter to override enable/disable status of Autocomplete
 * Add from_batch argument to the re-index WP-CLI command
