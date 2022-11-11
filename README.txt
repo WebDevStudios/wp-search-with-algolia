@@ -4,7 +4,7 @@ Tags: Search, Algolia, Autocomplete, instant-search, relevant search, search hig
 Requires at least: 5.0
 Tested up to: 6.1
 Requires PHP: 7.2
-Stable tag: 2.3.0
+Stable tag: 2.3.1
 License: GNU General Public License v2.0, MIT License
 
 Improve search on your site. Autocomplete is included, along with full control over look, feel and relevance.
@@ -105,6 +105,10 @@ WebDevStudios provides end-to-end WordPress opportunities from strategy and plan
 == Changelog ==
 
 Follow along with the changelog on [Github](https://github.com/WebDevStudios/wp-search-with-algolia/releases).
+
+= 2.3.1 =
+* Update autocomplete template to use addEventListener instead of onload function
+* Update Algolia InstantSearch.js to 4.49.1
 
 = 2.3.0 =
 * Add algolia_should_override_autocomplete filter to override enable/disable status of Autocomplete
