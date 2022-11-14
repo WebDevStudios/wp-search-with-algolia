@@ -72,7 +72,7 @@
 </script>
 
 <script type="text/javascript">
-	window.onload = function () {
+	window.addEventListener('load', function () {
 
 		/* Initialize Algolia client */
 		var client = algoliasearch( algolia.application_id, algolia.search_api_key );
@@ -189,5 +189,5 @@
 				window.location = "https://www.algolia.com/?utm_source=WordPress&utm_medium=extension&utm_content=" + window.location.hostname + "&utm_campaign=poweredby";
 			} );
 		}
-	};
+	});
 </script>

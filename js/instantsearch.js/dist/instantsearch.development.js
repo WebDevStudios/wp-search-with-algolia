@@ -1,4 +1,4 @@
-/*! InstantSearch.js 4.49.0 | © Algolia, Inc. and contributors; MIT License | https://github.com/algolia/instantsearch.js */
+/*! InstantSearch.js 4.49.1 | © Algolia, Inc. and contributors; MIT License | https://github.com/algolia/instantsearch.js */
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
   typeof define === 'function' && define.amd ? define(factory) :
@@ -7784,7 +7784,7 @@
     instantSearchInstance.renderState = _objectSpread2(_objectSpread2({}, instantSearchInstance.renderState), {}, _defineProperty({}, parentIndexName, _objectSpread2(_objectSpread2({}, instantSearchInstance.renderState[parentIndexName]), renderState)));
   }
 
-  var version$1 = '4.49.0';
+  var version$1 = '4.49.1';
 
   var NAMESPACE = 'ais';
   var component = function component(componentName) {
@@ -7947,6 +7947,10 @@
   var ANONYMOUS_TOKEN_COOKIE_KEY = '_ALGOLIA';
 
   function getCookie(name) {
+    if ((typeof document === "undefined" ? "undefined" : _typeof(document)) !== 'object' || typeof document.cookie !== 'string') {
+      return undefined;
+    }
+
     var prefix = "".concat(name, "=");
     var cookies = document.cookie.split(';');
 

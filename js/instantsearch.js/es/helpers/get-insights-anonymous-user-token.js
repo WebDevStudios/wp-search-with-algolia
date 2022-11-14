@@ -1,7 +1,13 @@
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
 import { warning } from "../lib/utils/index.js";
 export var ANONYMOUS_TOKEN_COOKIE_KEY = '_ALGOLIA';
 
 function getCookie(name) {
+  if ((typeof document === "undefined" ? "undefined" : _typeof(document)) !== 'object' || typeof document.cookie !== 'string') {
+    return undefined;
+  }
+
   var prefix = "".concat(name, "=");
   var cookies = document.cookie.split(';');
 
