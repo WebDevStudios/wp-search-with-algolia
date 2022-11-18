@@ -84,16 +84,19 @@
 										query,
 										params   : {
 											hitsPerPage: config['max_suggestions'],
+											attributesToHighlight: ['post_title','content'],
+											highlightPreTag: '<em>',
+											highlightPostTag: '</em>',
 										},
 									},
 								],
 							});
 						},
 						templates: {
-							header: function ( { state, source, items, html } ) {
+							header: function ({state, source, items, html}) {
 								return html`
 									<div class="autocomplete-header">
-										<div class="autocomplete-header-title"></div>
+										<div class="autocomplete-header-title">${config['label']}</div>
 										<div class="clear"></div>
 									</div>`;
 							},
