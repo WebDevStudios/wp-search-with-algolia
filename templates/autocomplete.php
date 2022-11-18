@@ -11,13 +11,6 @@
 
 ?>
 
-<script type="text/html" id="tmpl-autocomplete-header">
-	<div class="autocomplete-header">
-		<div class="autocomplete-header-title">{{{ data.label }}}</div>
-		<div class="clear"></div>
-	</div>
-</script>
-
 <script type="text/html" id="tmpl-autocomplete-post-suggestion">
 	<a class="suggestion-link" href="{{ data.permalink }}" title="{{ data.post_title }}">
 		<# if ( data.images.thumbnail ) { #>
@@ -123,12 +116,15 @@
 
 		function get_template(template, item, html, components) {
 			let value = '';
+
 			switch (template) {
 				case 'autocomplete-post-suggestion':
 					value = html`
 						<div><a class="suggestion-link" href="${item.permalink}" title="${item.post_title}">
 							<div class="suggestion-post-attributes">
-								<span class="suggestion-post-title">${item._highlightResult.post_title.value}</span>
+								<span class="suggestion-post-title">
+									${item._highlightResult.post_title.value}
+								</span>
 							</div>
 						</a></div>`;
 					break;
