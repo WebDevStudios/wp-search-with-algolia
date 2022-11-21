@@ -181,7 +181,7 @@ class Algolia_Search {
 
 		$post_types = 'any';
 
-		$maybe_post_type = filter_input( INPUT_GET, 'post_type', FILTER_SANITIZE_STRING );
+		$maybe_post_type = filter_input( INPUT_GET, 'post_type', FILTER_SANITIZE_FULL_SPECIAL_CHARS );
 
 		if ( ! empty( $maybe_post_type ) ) {
 			$post_type = get_post_type_object( $maybe_post_type );
