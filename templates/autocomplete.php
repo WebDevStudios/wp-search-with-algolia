@@ -79,13 +79,6 @@
 									</div>`;
 							},
 							item( { item, components, html } ) {
-								for (let key in item._highlightResult) {
-									/* We do not deal with arrays. */
-									if (typeof item._highlightResult[key].value !== 'string') {
-										continue;
-									}
-									item._highlightResult[key].value = item._highlightResult[key].value.replace(/__aa-highlight__/g, '<em>').replace(/__\/aa-highlight__/g, '</em>');
-								}
 								return get_template( config['tmpl_suggestion'], item, html, components);
 							}
 						}
@@ -97,11 +90,9 @@
 
 		function get_template(template, item, html, components) {
 			let value = '';
-
 			switch (template) {
 				case 'autocomplete-post-suggestion':
-					value = html`
-						<div><a class="suggestion-link" href="${item.permalink}" title="${item.post_title}">
+					value = html`<div><a class="suggestion-link" href="${item.permalink}" title="${item.post_title}">
 							<div class="suggestion-post-attributes">
 								<span class="suggestion-post-title">
 									${item._highlightResult.post_title.value}
@@ -143,17 +134,12 @@
 			templates(){
 				return {
 					header() {
-						console.log('h');
-						let g = 'g';
 						return '';
 					},
 					item() {
-						console.log('i');
-						let g = 'g';
 						return '';
 					},
 					footer({state, source, items, html}) {
-						console.log('f');
 						let g = '';
 						return html`
 									<div class="autocomplete-footer">
