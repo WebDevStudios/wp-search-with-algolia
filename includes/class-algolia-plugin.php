@@ -328,7 +328,7 @@ class Algolia_Plugin {
 			}
 		}
 
-		$this->changes_watchers = (array) apply_filters( 'algolia_changes_watchers', $this->changes_watchers );
+		$this->changes_watchers = (array) apply_filters( 'algolia_changes_watchers', $this->changes_watchers, $this->indices );
 
 		foreach ( $this->changes_watchers as $watcher ) {
 			$watcher->watch();
