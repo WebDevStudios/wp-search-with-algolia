@@ -90,6 +90,13 @@
 										tagName: 'em',
 									})}
 								</span>
+								<span class="suggestion-post-content">
+								${components.Snippet({
+									hit      : item,
+									attribute: ['content'],
+									tagName  : 'em',
+								})}
+								</span>
 							</div>
 						</a></div>`;
 					break;
