@@ -86,7 +86,8 @@
 								<span class="suggestion-post-title">
 									${components.Highlight({
 										hit: item,
-										attribute: ['post_title']
+										attribute: ['post_title'],
+										tagName: 'em',
 									})}
 								</span>
 							</div>
