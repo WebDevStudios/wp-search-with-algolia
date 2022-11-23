@@ -11,20 +11,6 @@
 
 ?>
 
-<script type="text/html" id="tmpl-autocomplete-post-suggestion">
-	<a class="suggestion-link" href="{{ data.permalink }}" title="{{ data.post_title }}">
-		<# if ( data.images.thumbnail ) { #>
-			<img class="suggestion-post-thumbnail" src="{{ data.images.thumbnail.url }}" alt="{{ data.post_title }}">
-		<# } #>
-		<div class="suggestion-post-attributes">
-			<span class="suggestion-post-title">{{{ data._highlightResult.post_title.value }}}</span>
-			<# if ( data._snippetResult['content'] ) { #>
-				<span class="suggestion-post-content">{{{ data._snippetResult['content'].value }}}</span>
-			<# } #>
-		</div>
-	</a>
-</script>
-
 <script type="text/html" id="tmpl-autocomplete-footer">
 	<div class="autocomplete-footer">
 		<div class="autocomplete-footer-branding">
@@ -91,7 +77,13 @@
 			let value = '';
 			switch (template) {
 				case 'autocomplete-post-suggestion':
+					let img = '';
+					if ( typeof item.images === 'object' && !Array.isArray( item.images ) ) {
+						img = html`
+							<img class="suggestion-post-thumbnail" src="${item.images.thumbnail.url}" alt="${item.post_title}" />`
+					}
 					value = html`<div><a class="suggestion-link" href="${item.permalink}" title="${item.post_title}">
+							${img}
 							<div class="suggestion-post-attributes">
 								<span class="suggestion-post-title">
 									${item._highlightResult.post_title.value}
@@ -143,7 +135,6 @@
 							<div class="autocomplete-footer">
 								<div class="autocomplete-footer-branding">
 									<a href="#" class="algolia-powered-by-link" title="Algolia">
-
 									</a>
 								</div>
 							</div>`;
