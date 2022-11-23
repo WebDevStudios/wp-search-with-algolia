@@ -42,8 +42,6 @@
 										params   : {
 											hitsPerPage: config['max_suggestions'],
 											attributesToHighlight: ['post_title','content'],
-											highlightPreTag: '<em>',
-											highlightPostTag: '</em>',
 										},
 									},
 								],
@@ -86,7 +84,10 @@
 							${img}
 							<div class="suggestion-post-attributes">
 								<span class="suggestion-post-title">
-									${item._highlightResult.post_title.value}
+									${components.Highlight({
+										hit: item,
+										attribute: ['post_title']
+									})}
 								</span>
 							</div>
 						</a></div>`;
