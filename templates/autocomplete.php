@@ -131,23 +131,17 @@
 				}
 				return get_sources(query);
 			},
-			templates(){
-				return {
-					header() {
-						return '';
-					},
-					item() {
-						return '';
-					},
-					footer({state, source, items, html}) {
-						return html`
+			templates: {
+				footer({state, source, items, html}) {
+					console.log('reached');
+					return html`
 							<div class="autocomplete-footer">
 								<div class="autocomplete-footer-branding">
 									<a href="#" class="algolia-powered-by-link" title="Algolia">
+									...
 									</a>
 								</div>
 							</div>`;
-					}
 				}
 			}
 		}
