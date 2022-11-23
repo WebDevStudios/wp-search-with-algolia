@@ -139,15 +139,14 @@
 						return '';
 					},
 					footer({state, source, items, html}) {
-						let g = '';
 						return html`
-									<div class="autocomplete-footer">
-										<div class="autocomplete-footer-branding">
-											<a href="#" class="algolia-powered-by-link" title="Algolia">
+							<div class="autocomplete-footer">
+								<div class="autocomplete-footer-branding">
+									<a href="#" class="algolia-powered-by-link" title="Algolia">
 
-											</a>
-										</div>
-									</div>`;
+									</a>
+								</div>
+							</div>`;
 					}
 				}
 			}
