@@ -129,7 +129,6 @@ if ( algolia_php_version_check() && algolia_wp_version_check() ) {
 	$algolia = Algolia_Plugin_Factory::create();
 
 	if ( defined( 'WP_CLI' ) && WP_CLI ) {
-		include ALGOLIA_PATH . 'includes/class-algolia-cli.php';
 		WP_CLI::add_command( 'algolia', new Algolia_CLI() );
 	}
 } else {
