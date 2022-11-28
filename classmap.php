@@ -28,6 +28,9 @@ apply_filters_deprecated(
 	esc_html__( 'The "algolia_should_require_search_client" filter is deprecated and no longer has any effect.', 'wp-search-with-algolia' )
 );
 
+// Autoload vendor dependencies, that have been prefixed to prevent namespace collision.
+require_once ALGOLIA_PATH . 'vendor_prefixed/autoload.php';
+
 require_once ALGOLIA_PATH . 'includes/factories/class-algolia-http-client-interface-factory.php';
 require_once ALGOLIA_PATH . 'includes/factories/class-algolia-search-client-factory.php';
 require_once ALGOLIA_PATH . 'includes/factories/class-algolia-plugin-factory.php';
