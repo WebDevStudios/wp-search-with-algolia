@@ -22,32 +22,68 @@
   },
   "require-dev": {
     "algolia/algoliasearch-client-php": "^3.3",
-    "psr/http-message": "~1.0.1",
-    "psr/log": "~1.0.2",
-    "psr/simple-cache": "~1.0.1",
     "dealerdirect/phpcodesniffer-composer-installer": "^0.7.1",
     "phpcompatibility/phpcompatibility-wp": "^2.1.2",
     "wp-coding-standards/wpcs": "^2.3.0",
-    "slowprog/composer-copy-file": "^0.3.3"
+    "psr/http-message": "^1.0",
+    "psr/log": "^1.1",
+    "psr/simple-cache": "^1.0",
+    "brianhenryie/strauss": "^0.11.1"
   },
   "extra": {
     "installer-name": "wp-search-with-algolia",
+    "strauss": {
+      "target_directory": "vendor_prefixed",
+      "namespace_prefix": "WebDevStudios\\WPSWA\\",
+      "classmap_prefix": "WDS_WPSWA_",
+      "constant_prefix": "WDS_WPSWA_",
+      "packages": [
+        "algolia/algoliasearch-client-php",
+        "psr/http-message",
+        "psr/log",
+        "psr/simple-cache"
+      ],
+      "override_autoload": {
+      },
+      "exclude_from_copy": {
+        "packages": [
+        ],
+        "namespaces": [
+        ],
+        "file_patterns": [
+        ]
+      },
+      "exclude_from_prefix": {
+        "packages": [
+        ],
+        "namespaces": [
+        ],
+        "file_patterns": [
+        ]
+      },
+      "namespace_replacement_patterns" : {
+      },
+      "delete_vendor_files": false
+    },
     "copy-file": {
-      "vendor/algolia": "includes/libraries"
     },
     "copy-file-dev": {
-      "vendor/algolia": "includes/libraries",
-      "vendor/psr": "includes/libraries/algoliasearch-client-php/vendor/psr"
     }
   },
   "scripts": {
     "lint": "@php ./vendor/squizlabs/php_codesniffer/bin/phpcs --standard=phpcs.xml --extensions=php .",
     "lint:fix": "@php ./vendor/squizlabs/php_codesniffer/bin/phpcbf --standard=phpcs.xml --extensions=php .",
     "post-install-cmd": [
-      "SlowProg\\CopyFile\\ScriptHandler::copy"
+      "@php ./vendor/bin/strauss"
     ],
     "post-update-cmd": [
-      "SlowProg\\CopyFile\\ScriptHandler::copy"
+      "@php ./vendor/bin/strauss"
     ]
+  },
+  "config": {
+    "allow-plugins": {
+      "composer/installers": true,
+      "dealerdirect/phpcodesniffer-composer-installer": true
+    }
   }
 }
