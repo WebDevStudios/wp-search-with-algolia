@@ -393,7 +393,7 @@ final class Algolia_Searchable_Posts_Index extends Algolia_Index {
 	 * @return string
 	 */
 	public function get_id() {
-		return 'searchable_posts';
+		return apply_filters( 'algolia_searchable_posts_index_id', 'searchable_posts' );
 	}
 
 	/**
