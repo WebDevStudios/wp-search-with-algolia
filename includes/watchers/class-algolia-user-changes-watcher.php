@@ -52,6 +52,11 @@ class Algolia_User_Changes_Watcher implements Algolia_Changes_Watcher {
 		// Fires immediately after a new user is registered.
 		add_action( 'user_register', array( $this, 'sync_item' ) );
 
+		// Handle meta changes after the change occurred.
+		add_action( 'added_user_meta', [ $this, 'on_meta_change' ], 10, 4 );
+		add_action( 'updated_user_meta', [ $this, 'on_meta_change' ], 10, 4 );
+		add_action( 'deleted_user_meta', [ $this, 'on_meta_change' ], 10, 4 );
+
 		// Fires immediately before a user is deleted.
 		add_action( 'delete_user', array( $this, 'delete_item' ) );
 
@@ -158,5 +163,30 @@ class Algolia_User_Changes_Watcher implements Algolia_Changes_Watcher {
 				$watcher->sync_item( $author_id );
 			}
 		);
+	}
+
+	/**
+	 * Watch meta changes for item.
+	 *
+	 * @param string|array $meta_id    The meta ID.
+	 * @param int          $object_id  The post ID.
+	 * @param string       $meta_key   The meta key.
+	 * @param mixed        $meta_value The meta value.
+	 *
+	 * @return void
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 * @since  NEXT
+	 */
+	public function on_meta_change( $meta_id, $object_id, $meta_key, $meta_value ) {
+
+		// We will not listen for any specific key by default.
+		$keys = [];
+		$keys = (array) apply_filters( 'algolia_watch_user_meta_keys', $keys, $object_id );
+
+		if ( empty( $keys ) || ! in_array( $meta_key, $keys, true ) ) {
+			return;
+		}
+
+		$this->sync_item( $object_id );
 	}
 }
