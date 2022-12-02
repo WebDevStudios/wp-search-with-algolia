@@ -18,7 +18,7 @@
 
 		function get_sources(query) {
 			let sources = [];
-			algolia.autocomplete.sources.forEach(function (config, i) {
+			algolia.autocomplete.sources.forEach(function (config) {
 				sources.push(
 					{
 						sourceId: config.index_id,
@@ -38,7 +38,7 @@
 							});
 						},
 						templates: {
-							header: function ({state, source, items, html}) {
+							header: function ({html}) {
 								return html`
 									<div class="autocomplete-header">
 										<div class="autocomplete-header-title">${config['label']}</div>
@@ -46,7 +46,7 @@
 									</div>`;
 							},
 							item({item, components, html}) {
-								return get_template(config['tmpl_suggestion'], item, html, components);
+								return get_template({item, html, components, template: config['tmpl_suggestion']});
 							},
 							noResults({state, html}) {
 								return html`<div class="autocomplete-empty">
@@ -56,7 +56,7 @@
 							}
 						}
 					}
-				)
+				);
 			});
 			let last = sources.length - 1;
 			sources[last].templates.footer = function ({html}) {
@@ -65,7 +65,8 @@
 			return sources;
 		}
 
-		function get_template(template, item, html, components) {
+		function get_template({item,template,html,components}) {
+
 			let value = '';
 			switch (template) {
 				case 'autocomplete-post-suggestion':
