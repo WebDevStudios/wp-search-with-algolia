@@ -140,6 +140,7 @@
 		let config = {
 			container  : '#autocomplete',
 			openOnFocus: true,
+			debug: algolia.debug,
 			getSources( { query } ) {
 				if ( ! query ) {
 					return [];
