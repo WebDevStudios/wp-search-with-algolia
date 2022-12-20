@@ -275,7 +275,7 @@ class Algolia_Admin_Page_Settings {
 			$checked = ' checked';
 		}
 		echo "<input type='checkbox' name='algolia_powered_by_enabled' value='no' " . esc_html( $checked ) . ' />' .
-			'<p class="description" id="home-description">' . esc_html( __( 'This will remove the Algolia logo from the autocomplete and the search page. We require that you keep the Algolia logo if you are using a free plan.', 'wp-search-with-algolia' ) ) . '</p>';
+			'<p class="description" id="home-description">' . esc_html( __( 'This will remove the Algolia logo from the autocomplete and the search page. Algolia requires that you keep the logo if you are using a free plan.', 'wp-search-with-algolia' ) ) . '</p>';
 	}
 
 	/**
