@@ -209,7 +209,10 @@ class Algolia_Admin_Page_Settings {
 		$disabled_html = $settings->is_application_id_in_config() ? ' disabled' : '';
 		?>
 		<input type="text" name="algolia_application_id" class="regular-text" value="<?php echo esc_attr( $setting ); ?>" <?php echo esc_html( $disabled_html ); ?>/>
-		<p class="description" id="home-description"><?php esc_html_e( 'Your Algolia Application ID.', 'wp-search-with-algolia' ); ?></p>
+		<p class="description" id="home-description">
+			<?php esc_html_e( 'Your Algolia Application ID.', 'wp-search-with-algolia' ); ?>
+			<a href="https://www.algolia.com/account/api-keys/all" target="_blank">Manage your Algolia API Keys</a>	
+		</p>
 		<?php
 	}
 
@@ -226,7 +229,10 @@ class Algolia_Admin_Page_Settings {
 
 		?>
 		<input type="text" name="algolia_search_api_key" class="regular-text" value="<?php echo esc_attr( $setting ); ?>" <?php echo esc_html( $disabled_html ); ?>/>
-		<p class="description" id="home-description"><?php esc_html_e( 'Your Algolia Search-only API key (public).', 'wp-search-with-algolia' ); ?></p>
+		<p class="description" id="home-description">
+			<?php esc_html_e( 'Your Algolia Search-only API key (public).', 'wp-search-with-algolia' ); ?>
+			<a href="https://www.algolia.com/account/api-keys/all" target="_blank">Manage your Algolia API Keys</a>
+		</p>
 		<?php
 	}
 
@@ -242,7 +248,10 @@ class Algolia_Admin_Page_Settings {
 		$disabled_html = $settings->is_api_key_in_config() ? ' disabled' : '';
 		?>
 		<input type="password" name="algolia_api_key" class="regular-text" value="<?php echo esc_attr( $setting ); ?>" <?php echo esc_html( $disabled_html ); ?>/>
-		<p class="description" id="home-description"><?php esc_html_e( 'Your Algolia ADMIN API key (kept private).', 'wp-search-with-algolia' ); ?></p>
+		<p class="description" id="home-description">
+			<?php esc_html_e( 'Your Algolia ADMIN API key (kept private).', 'wp-search-with-algolia' ); ?>
+			<a href="https://www.algolia.com/account/api-keys/all" target="_blank">Manage your Algolia API Keys</a>
+		</p>
 		<?php
 	}
 
