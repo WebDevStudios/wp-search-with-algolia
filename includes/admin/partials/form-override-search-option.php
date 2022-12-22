@@ -20,7 +20,7 @@
 		<?php
 		echo wp_kses(
 			__(
-				'Do not use Algolia for searching at all. This option disables the plugin comlpetely',
+				'Do not use Algolia for searching at all. This option disables the plugin completely',
 				'wp-search-with-algolia'
 			),
 			[
@@ -33,13 +33,13 @@
 	<label>
 		<input type="radio" value="backend"
 			name="algolia_override_native_search" <?php checked( $value, 'backend' ); ?>>
-		<?php esc_html_e( 'Use Algolia in the backend', 'wp-search-with-algolia' ); ?>
+		<?php esc_html_e( 'Use Algolia with the native WordPress search template', 'wp-search-with-algolia' ); ?>
 	</label>
 	<div class="radio-info">
 		<?php
 		echo wp_kses(
 			__(
-				'With this option WordPress search will be powered by Algolia behind the scenes.<br/>This will allow your search results to be typo tolerant.<br/><b>This option does not support filtering and displaying instant search results but has the advantage to play nicely with any theme.</b>',
+				'Search results will be powered by Algolia and will use the standard WordPress search template for displaying the results.<br/>This option has the advantage to play nicely with any theme but does not support filtering and displaying instant search results.',
 				'wp-search-with-algolia'
 			),
 			[
