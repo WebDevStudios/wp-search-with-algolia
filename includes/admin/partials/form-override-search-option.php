@@ -20,7 +20,7 @@
 		<?php
 		echo wp_kses(
 			__(
-				'Do not use Algolia for searching at all.<br/>This is only a valid option if you wish to search on your content from another website.',
+				'Do not use Algolia for searching at all. This option disables the plugin comlpetely',
 				'wp-search-with-algolia'
 			),
 			[
@@ -59,7 +59,7 @@
 		<?php
 		echo wp_kses(
 			__(
-				'This will replace the search page with an instant search experience powered by Algolia.<br/>By default you will be able to filter by post type, categories, tags and authors.<br/>Please note that the plugin is shipped with some sensible default styling rules<br/>but it could require some CSS adjustments to provide an optimal search experience.',
+				'This will replace the WordPress search page with an instant search experience powered by Algolia.<br/>By default you will be able to filter by post type, categories, tags and authors.',
 				'wp-search-with-algolia'
 			),
 			[
