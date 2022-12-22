@@ -131,7 +131,8 @@ class Algolia_Admin_Page_Settings {
 			esc_html__( 'Settings', 'wp-search-with-algolia' ),
 			$this->capability,
 			$this->slug,
-			array( $this, 'display_page' )
+			array( $this, 'display_page' ), 
+			0
 		);
 	}
 

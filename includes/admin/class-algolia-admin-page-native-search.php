@@ -94,7 +94,8 @@ class Algolia_Admin_Page_Native_Search {
 			esc_html__( 'Search Page', 'wp-search-with-algolia' ),
 			$this->capability,
 			$this->slug,
-			array( $this, 'display_page' )
+			array( $this, 'display_page' ),
+			0
 		);
 	}
 
