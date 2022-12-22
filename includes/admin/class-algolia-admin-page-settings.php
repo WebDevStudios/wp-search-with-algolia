@@ -127,7 +127,7 @@ class Algolia_Admin_Page_Settings {
 
 		add_submenu_page(
 			'algolia',
-			esc_html__( 'Settings', 'wp-search-with-algolia' ),
+			esc_html__( 'WP Search with Algolia Settings', 'wp-search-with-algolia' ),
 			esc_html__( 'Settings', 'wp-search-with-algolia' ),
 			$this->capability,
 			$this->slug,
@@ -413,7 +413,7 @@ class Algolia_Admin_Page_Settings {
 				add_settings_error(
 					$this->option_group,
 					'connection_success',
-					esc_html__( 'We succesfully managed to connect to the Algolia servers with the provided information. Your search API key has also been checked and is OK.', 'wp-search-with-algolia' ),
+					esc_html__( 'Connection to the Algolia servers was succesful! Configure your Search Page to start using Algolia!', 'wp-search-with-algolia' ),
 					'updated'
 				);
 				$settings->set_api_is_reachable( true );
@@ -510,7 +510,7 @@ class Algolia_Admin_Page_Settings {
 	 * @since  1.0.0
 	 */
 	public function print_section_settings() {
-		echo '<p>' . esc_html__( 'Configure your Algolia account credentials. You can find them in the "API Keys" section of your Algolia dashboard.', 'wp-search-with-algolia' ) . '</p>';
+		echo '<p>' . wp_kses_post( sprintf( __( 'Configure your Algolia account credentials. You can find them in the <a href="%s" target="_blank">API Keys</a> section of your Algolia dashboard.', 'wp-search-with-algolia' ), 'https://www.algolia.com/account/api-keys/all' ) ) . '</p>';
 		echo '<p>' . esc_html__( 'Once you provide your Algolia Application ID and API key, this plugin will be able to securely communicate with Algolia servers.', 'wp-search-with-algolia' ) . ' ' . esc_html__( 'We ensure your information is correct by testing them against the Algolia servers upon save.', 'wp-search-with-algolia' ) . '</p>';
 		/* translators: the placeholder contains the URL to Algolia's website. */
 		echo '<p>' . wp_kses_post( sprintf( __( 'No Algolia account yet? <a href="%s">Follow this link</a> to create one for free in a couple of minutes!', 'wp-search-with-algolia' ), 'https://www.algolia.com/users/sign_up' ) ) . '</p>';

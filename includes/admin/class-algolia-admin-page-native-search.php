@@ -227,6 +227,10 @@ class Algolia_Admin_Page_Native_Search {
 	public function print_section_settings() {
 		echo '<p>' . esc_html__( 'By enabling this plugin to override the native WordPress search, your search results will be powered by Algolia\'s typo-tolerant & relevant search algorithms.', 'wp-search-with-algolia' ) . '</p>';
 
+		echo '<p>' . _e( '<b>Re-index All Content</b> - Resubmit all of your content to the Algolia search API. Search results will be updated once the re-index has completed.', 'wp-search-with-algolia' ) . '</p>';
+
+		echo '<p>' . _e( '<b>Push Settings</b> - Resync your Algolia search settings to the plugin defaults. <b>WARNING this will reset configuration changes made in your Algolia dashboard.</b>', 'wp-search-with-algolia' ) . '</p>';
+
 		// @Todo: replace this with a check on the searchable_posts_index.
 		$indices = $this->plugin->get_indices(
 			array(
