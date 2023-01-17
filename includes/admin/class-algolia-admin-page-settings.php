@@ -131,7 +131,7 @@ class Algolia_Admin_Page_Settings {
 			esc_html__( 'Settings', 'wp-search-with-algolia' ),
 			$this->capability,
 			$this->slug,
-			array( $this, 'display_page' ), 
+			array( $this, 'display_page' ),
 			0
 		);
 	}
@@ -212,7 +212,7 @@ class Algolia_Admin_Page_Settings {
 		<input type="text" name="algolia_application_id" class="regular-text" value="<?php echo esc_attr( $setting ); ?>" <?php echo esc_html( $disabled_html ); ?>/>
 		<p class="description" id="home-description">
 			<?php esc_html_e( 'Your Algolia Application ID.', 'wp-search-with-algolia' ); ?>
-			<a href="https://www.algolia.com/account/api-keys/all" target="_blank">Manage your Algolia API Keys</a>	
+			<a href="https://www.algolia.com/account/api-keys/all" target="_blank"><?php esc_html_e( 'Manage your Algolia API Keys', 'wp-search-with-algolia' ); ?></a>
 		</p>
 		<?php
 	}
@@ -232,7 +232,7 @@ class Algolia_Admin_Page_Settings {
 		<input type="text" name="algolia_search_api_key" class="regular-text" value="<?php echo esc_attr( $setting ); ?>" <?php echo esc_html( $disabled_html ); ?>/>
 		<p class="description" id="home-description">
 			<?php esc_html_e( 'Your Algolia Search-only API key (public).', 'wp-search-with-algolia' ); ?>
-			<a href="https://www.algolia.com/account/api-keys/all" target="_blank">Manage your Algolia API Keys</a>
+			<a href="https://www.algolia.com/account/api-keys/all" target="_blank"><?php esc_html_e( 'Manage your Algolia API Keys', 'wp-search-with-algolia' ); ?></a>
 		</p>
 		<?php
 	}
@@ -251,7 +251,7 @@ class Algolia_Admin_Page_Settings {
 		<input type="password" name="algolia_api_key" class="regular-text" value="<?php echo esc_attr( $setting ); ?>" <?php echo esc_html( $disabled_html ); ?>/>
 		<p class="description" id="home-description">
 			<?php esc_html_e( 'Your Algolia ADMIN API key (kept private).', 'wp-search-with-algolia' ); ?>
-			<a href="https://www.algolia.com/account/api-keys/all" target="_blank">Manage your Algolia API Keys</a>
+			<a href="https://www.algolia.com/account/api-keys/all" target="_blank"><?php esc_html_e( 'Manage your Algolia API Keys', 'wp-search-with-algolia' ); ?></a>
 		</p>
 		<?php
 	}
