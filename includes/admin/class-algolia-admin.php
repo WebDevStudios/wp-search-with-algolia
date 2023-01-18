@@ -59,7 +59,7 @@ class Algolia_Admin {
 
 		add_action( 'admin_notices', array( $this, 'display_unmet_requirements_notices' ) );
 
-		add_filter( 'admin_footer_text',  array( $this, 'algolia_footer' ) );
+		add_filter( 'admin_footer_text', array( $this, 'algolia_footer' ) );
 	}
 
 	/**
@@ -324,7 +324,6 @@ class Algolia_Admin {
 			return $original;
 		}
 
-
 		return sprintf(
 			// translators: Placeholder will hold the name of the plugin, version of the plugin and a link to WebdevStudios.
 			esc_attr__( '%1$s version %2$s by %3$s', 'wp-search-with-algolia' ),
@@ -357,8 +356,6 @@ class Algolia_Admin {
 			' %s',
 			'<a href="https://twitter.com/webdevstudios" target="_blank" rel="noopener">WebDevStudios</a>'
 		);
-
-		return 'Powered by WebDevStudios';
 	}
 
 }
