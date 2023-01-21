@@ -3,7 +3,7 @@
  * Algolia_Admin_Page_SEO class file.
  *
  * @author  WebDevStudios <contact@webdevstudios.com>
- * @since   2.4.0
+ * @since   2.5.0
  *
  * @package WebDevStudios\WPSWA
  */
@@ -11,7 +11,7 @@
 /**
  * Class Algolia_Admin_Page_SEO
  *
- * @since 2.4.0
+ * @since 2.5.0
  */
 class Algolia_Admin_Page_SEO {
 
@@ -19,7 +19,7 @@ class Algolia_Admin_Page_SEO {
 	 * Admin page slug.
 	 *
 	 * @author WebDevStudios <contact@webdevstudios.com>
-	 * @since  2.4.0
+	 * @since  2.5.0
 	 *
 	 * @var string
 	 */
@@ -29,7 +29,7 @@ class Algolia_Admin_Page_SEO {
 	 * Admin page capabilities.
 	 *
 	 * @author WebDevStudios <contact@webdevstudios.com>
-	 * @since  2.4.0
+	 * @since  2.5.0
 	 *
 	 * @var string
 	 */
@@ -39,7 +39,7 @@ class Algolia_Admin_Page_SEO {
 	 * Admin page section.
 	 *
 	 * @author WebDevStudios <contact@webdevstudios.com>
-	 * @since  2.4.0
+	 * @since  2.5.0
 	 *
 	 * @var string
 	 */
@@ -49,7 +49,7 @@ class Algolia_Admin_Page_SEO {
 	 * Admin page option group.
 	 *
 	 * @author WebDevStudios <contact@webdevstudios.com>
-	 * @since  2.4.0
+	 * @since  2.5.0
 	 *
 	 * @var string
 	 */
@@ -59,7 +59,7 @@ class Algolia_Admin_Page_SEO {
 	 * The Algolia_Plugin instance.
 	 *
 	 * @author WebDevStudios <contact@webdevstudios.com>
-	 * @since  2.4.0
+	 * @since  2.5.0
 	 *
 	 * @var Algolia_Plugin
 	 */
@@ -69,7 +69,7 @@ class Algolia_Admin_Page_SEO {
 	 * Algolia_Admin_Page_SEO constructor.
 	 *
 	 * @author WebDevStudios <contact@webdevstudios.com>
-	 * @since  2.4.0
+	 * @since  2.5.0
 	 *
 	 * @param Algolia_Plugin $plugin The Algolia_Plugin instance.
 	 */
@@ -84,7 +84,7 @@ class Algolia_Admin_Page_SEO {
 	 * Add admin menu page.
 	 *
 	 * @author WebDevStudios <contact@webdevstudios.com>
-	 * @since  2.4.0
+	 * @since  2.5.0
 	 *
 	 * @return string|void The resulting page's hook_suffix.
 	 */
@@ -116,7 +116,7 @@ class Algolia_Admin_Page_SEO {
 	 * Add settings.
 	 *
 	 * @author WebDevStudios <contact@webdevstudios.com>
-	 * @since  2.4.0
+	 * @since  2.5.0
 	 */
 	public function add_settings() {
 		add_settings_section(
@@ -131,7 +131,7 @@ class Algolia_Admin_Page_SEO {
 	 * Display the page.
 	 *
 	 * @author WebDevStudios <contact@webdevstudios.com>
-	 * @since  2.4.0
+	 * @since  2.5.0
 	 */
 	public function display_page() {
 		require_once dirname( __FILE__ ) . '/partials/form-options-seo.php';
@@ -141,7 +141,7 @@ class Algolia_Admin_Page_SEO {
 	 * Print the settings section.
 	 *
 	 * @author WebDevStudios <contact@webdevstudios.com>
-	 * @since  2.4.0
+	 * @since  2.5.0
 	 */
 	public function print_section_settings() {
 
