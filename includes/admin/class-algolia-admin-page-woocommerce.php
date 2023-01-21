@@ -1,17 +1,17 @@
 <?php
 /**
- * Algolia_Admin_Page_Settings class file.
+ * Algolia_Admin_Page_WooCommerce class file.
  *
  * @author  WebDevStudios <contact@webdevstudios.com>
- * @since   1.0.0
+ * @since   2.4.0
  *
  * @package WebDevStudios\WPSWA
  */
 
 /**
- * Class Algolia_Admin_Page_Settings
+ * Class Algolia_Admin_Page_WooCommerce
  *
- * @since 1.0.0
+ * @since 2.4.0
  */
 class Algolia_Admin_Page_WooCommerce {
 
@@ -19,7 +19,7 @@ class Algolia_Admin_Page_WooCommerce {
 	 * Admin page slug.
 	 *
 	 * @author WebDevStudios <contact@webdevstudios.com>
-	 * @since  1.0.0
+	 * @since  2.4.0
 	 *
 	 * @var string
 	 */
@@ -29,7 +29,7 @@ class Algolia_Admin_Page_WooCommerce {
 	 * Admin page capabilities.
 	 *
 	 * @author WebDevStudios <contact@webdevstudios.com>
-	 * @since  1.0.0
+	 * @since  2.4.0
 	 *
 	 * @var string
 	 */
@@ -39,7 +39,7 @@ class Algolia_Admin_Page_WooCommerce {
 	 * Admin page section.
 	 *
 	 * @author WebDevStudios <contact@webdevstudios.com>
-	 * @since  1.0.0
+	 * @since  2.4.0
 	 *
 	 * @var string
 	 */
@@ -49,7 +49,7 @@ class Algolia_Admin_Page_WooCommerce {
 	 * Admin page option group.
 	 *
 	 * @author WebDevStudios <contact@webdevstudios.com>
-	 * @since  1.0.0
+	 * @since  2.4.0
 	 *
 	 * @var string
 	 */
@@ -59,17 +59,17 @@ class Algolia_Admin_Page_WooCommerce {
 	 * The Algolia_Plugin instance.
 	 *
 	 * @author WebDevStudios <contact@webdevstudios.com>
-	 * @since  1.0.0
+	 * @since  2.4.0
 	 *
 	 * @var Algolia_Plugin
 	 */
 	private $plugin;
 
 	/**
-	 * Algolia_Admin_Page_Settings constructor.
+	 * Algolia_Admin_Page_WooCommerce constructor.
 	 *
 	 * @author WebDevStudios <contact@webdevstudios.com>
-	 * @since  1.0.0
+	 * @since  2.4.0
 	 *
 	 * @param Algolia_Plugin $plugin The Algolia_Plugin instance.
 	 */
@@ -84,7 +84,7 @@ class Algolia_Admin_Page_WooCommerce {
 	 * Add admin menu page.
 	 *
 	 * @author WebDevStudios <contact@webdevstudios.com>
-	 * @since  1.0.0
+	 * @since  2.4.0
 	 *
 	 * @return string|void The resulting page's hook_suffix.
 	 */
@@ -116,7 +116,7 @@ class Algolia_Admin_Page_WooCommerce {
 	 * Add settings.
 	 *
 	 * @author WebDevStudios <contact@webdevstudios.com>
-	 * @since  1.0.0
+	 * @since  2.4.0
 	 */
 	public function add_settings() {
 		add_settings_section(
@@ -131,7 +131,7 @@ class Algolia_Admin_Page_WooCommerce {
 	 * Display the page.
 	 *
 	 * @author WebDevStudios <contact@webdevstudios.com>
-	 * @since  1.0.0
+	 * @since  2.4.0
 	 */
 	public function display_page() {
 		require_once dirname( __FILE__ ) . '/partials/form-options-woocommerce.php';
@@ -141,7 +141,7 @@ class Algolia_Admin_Page_WooCommerce {
 	 * Print the settings section.
 	 *
 	 * @author WebDevStudios <contact@webdevstudios.com>
-	 * @since  1.0.0
+	 * @since  2.4.0
 	 */
 	public function print_section_settings() {
 
