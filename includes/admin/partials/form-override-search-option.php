@@ -20,7 +20,7 @@
 		<?php
 		echo wp_kses(
 			__(
-				'Do not use Algolia for searching at all.<br/>This is only a valid option if you wish to search on your content from another website.',
+				'Do not use Algolia for searching at all. This option disables the plugin completely',
 				'wp-search-with-algolia'
 			),
 			[
@@ -33,13 +33,13 @@
 	<label>
 		<input type="radio" value="backend"
 			name="algolia_override_native_search" <?php checked( $value, 'backend' ); ?>>
-		<?php esc_html_e( 'Use Algolia in the backend', 'wp-search-with-algolia' ); ?>
+		<?php esc_html_e( 'Use Algolia with the native WordPress search template', 'wp-search-with-algolia' ); ?>
 	</label>
 	<div class="radio-info">
 		<?php
 		echo wp_kses(
 			__(
-				'With this option WordPress search will be powered by Algolia behind the scenes.<br/>This will allow your search results to be typo tolerant.<br/><b>This option does not support filtering and displaying instant search results but has the advantage to play nicely with any theme.</b>',
+				'Search results will be powered by Algolia and will use the standard WordPress search template for displaying the results.<br/>This option has the advantage to play nicely with any theme but does not support filtering and displaying instant search results.',
 				'wp-search-with-algolia'
 			),
 			[
@@ -59,7 +59,7 @@
 		<?php
 		echo wp_kses(
 			__(
-				'This will replace the search page with an instant search experience powered by Algolia.<br/>By default you will be able to filter by post type, categories, tags and authors.<br/>Please note that the plugin is shipped with some sensible default styling rules<br/>but it could require some CSS adjustments to provide an optimal search experience.',
+				'This will replace the WordPress search page with an instant search experience powered by Algolia.<br/>By default you will be able to filter by post type, categories, tags and authors.',
 				'wp-search-with-algolia'
 			),
 			[
