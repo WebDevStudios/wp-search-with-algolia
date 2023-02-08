@@ -127,11 +127,12 @@ class Algolia_Admin_Page_Settings {
 
 		add_submenu_page(
 			'algolia',
-			esc_html__( 'Settings', 'wp-search-with-algolia' ),
+			esc_html__( 'WP Search with Algolia Settings', 'wp-search-with-algolia' ),
 			esc_html__( 'Settings', 'wp-search-with-algolia' ),
 			$this->capability,
 			$this->slug,
-			array( $this, 'display_page' )
+			array( $this, 'display_page' ),
+			0
 		);
 	}
 
@@ -209,7 +210,10 @@ class Algolia_Admin_Page_Settings {
 		$disabled_html = $settings->is_application_id_in_config() ? ' disabled' : '';
 		?>
 		<input type="text" name="algolia_application_id" class="regular-text" value="<?php echo esc_attr( $setting ); ?>" <?php echo esc_html( $disabled_html ); ?>/>
-		<p class="description" id="home-description"><?php esc_html_e( 'Your Algolia Application ID.', 'wp-search-with-algolia' ); ?></p>
+		<p class="description" id="home-description">
+			<?php esc_html_e( 'Your Algolia Application ID.', 'wp-search-with-algolia' ); ?>
+			<a href="https://www.algolia.com/account/api-keys/all" target="_blank"><?php esc_html_e( 'Manage your Algolia API Keys', 'wp-search-with-algolia' ); ?></a>
+		</p>
 		<?php
 	}
 
@@ -226,7 +230,10 @@ class Algolia_Admin_Page_Settings {
 
 		?>
 		<input type="text" name="algolia_search_api_key" class="regular-text" value="<?php echo esc_attr( $setting ); ?>" <?php echo esc_html( $disabled_html ); ?>/>
-		<p class="description" id="home-description"><?php esc_html_e( 'Your Algolia Search-only API key (public).', 'wp-search-with-algolia' ); ?></p>
+		<p class="description" id="home-description">
+			<?php esc_html_e( 'Your Algolia Search-only API key (public).', 'wp-search-with-algolia' ); ?>
+			<a href="https://www.algolia.com/account/api-keys/all" target="_blank"><?php esc_html_e( 'Manage your Algolia API Keys', 'wp-search-with-algolia' ); ?></a>
+		</p>
 		<?php
 	}
 
@@ -242,7 +249,10 @@ class Algolia_Admin_Page_Settings {
 		$disabled_html = $settings->is_api_key_in_config() ? ' disabled' : '';
 		?>
 		<input type="password" name="algolia_api_key" class="regular-text" value="<?php echo esc_attr( $setting ); ?>" <?php echo esc_html( $disabled_html ); ?>/>
-		<p class="description" id="home-description"><?php esc_html_e( 'Your Algolia ADMIN API key (kept private).', 'wp-search-with-algolia' ); ?></p>
+		<p class="description" id="home-description">
+			<?php esc_html_e( 'Your Algolia ADMIN API key (kept private).', 'wp-search-with-algolia' ); ?>
+			<a href="https://www.algolia.com/account/api-keys/all" target="_blank"><?php esc_html_e( 'Manage your Algolia API Keys', 'wp-search-with-algolia' ); ?></a>
+		</p>
 		<?php
 	}
 
@@ -275,7 +285,7 @@ class Algolia_Admin_Page_Settings {
 			$checked = ' checked';
 		}
 		echo "<input type='checkbox' name='algolia_powered_by_enabled' value='no' " . esc_html( $checked ) . ' />' .
-			'<p class="description" id="home-description">' . esc_html( __( 'This will remove the Algolia logo from the autocomplete and the search page. We require that you keep the Algolia logo if you are using a free plan.', 'wp-search-with-algolia' ) ) . '</p>';
+			'<p class="description" id="home-description">' . esc_html( __( 'This will remove the Algolia logo from the autocomplete and the search page. Algolia requires that you keep the logo if you are using a free plan.', 'wp-search-with-algolia' ) ) . '</p>';
 	}
 
 	/**
@@ -403,7 +413,7 @@ class Algolia_Admin_Page_Settings {
 				add_settings_error(
 					$this->option_group,
 					'connection_success',
-					esc_html__( 'We succesfully managed to connect to the Algolia servers with the provided information. Your search API key has also been checked and is OK.', 'wp-search-with-algolia' ),
+					esc_html__( 'Connection to the Algolia servers was succesful! Configure your Search Page to start using Algolia!', 'wp-search-with-algolia' ),
 					'updated'
 				);
 				$settings->set_api_is_reachable( true );
@@ -500,7 +510,20 @@ class Algolia_Admin_Page_Settings {
 	 * @since  1.0.0
 	 */
 	public function print_section_settings() {
-		echo '<p>' . esc_html__( 'Configure your Algolia account credentials. You can find them in the "API Keys" section of your Algolia dashboard.', 'wp-search-with-algolia' ) . '</p>';
+		echo '<p>' .
+			wp_kses(
+				sprintf(
+					// Translators: URL to API keys section in Algolia dashboard.
+					__( 'Configure your Algolia account credentials. You can find them in the <a href="%s" target="_blank">API Keys</a> section of your Algolia dashboard.', 'wp-search-with-algolia' ),
+					'https://www.algolia.com/account/api-keys/all'
+				),
+				[
+					'a' => [
+						'href'   => [],
+						'target' => [],
+					],
+				]
+			) . '</p>';
 		echo '<p>' . esc_html__( 'Once you provide your Algolia Application ID and API key, this plugin will be able to securely communicate with Algolia servers.', 'wp-search-with-algolia' ) . ' ' . esc_html__( 'We ensure your information is correct by testing them against the Algolia servers upon save.', 'wp-search-with-algolia' ) . '</p>';
 		/* translators: the placeholder contains the URL to Algolia's website. */
 		echo '<p>' . wp_kses_post( sprintf( __( 'No Algolia account yet? <a href="%s">Follow this link</a> to create one for free in a couple of minutes!', 'wp-search-with-algolia' ), 'https://www.algolia.com/users/sign_up' ) ) . '</p>';

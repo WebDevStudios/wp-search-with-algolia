@@ -135,7 +135,7 @@ class Algolia_Admin_Page_Autocomplete {
 
 		add_settings_field(
 			'algolia_autocomplete_enabled',
-			esc_html__( 'Enable autocomplete', 'wp-search-with-algolia' ),
+			esc_html__( 'Enable Autocomplete', 'wp-search-with-algolia' ),
 			array( $this, 'autocomplete_enabled_callback' ),
 			$this->slug,
 			$this->section
@@ -143,7 +143,7 @@ class Algolia_Admin_Page_Autocomplete {
 
 		add_settings_field(
 			'algolia_autocomplete_config',
-			esc_html__( 'Configuration', 'wp-search-with-algolia' ),
+			esc_html__( 'Autocomplete Config', 'wp-search-with-algolia' ),
 			array( $this, 'autocomplete_config_callback' ),
 			$this->slug,
 			$this->section
