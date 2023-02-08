@@ -2,8 +2,8 @@
 Contributors: WebDevStudios, williamsba1, gregrickaby, tw2113, richaber, mrasharirfan
 Tags: Search, Algolia, Autocomplete, instant-search, relevant search, search highlight, faceted search, find-as-you-type search, suggest, search by category, ajax search, better search, custom search
 Requires at least: 5.0
-Tested up to: 6.1
-Requires PHP: 7.2
+Tested up to: 6.1.1
+Requires PHP: 7.4
 Stable tag: 2.3.1
 License: GNU General Public License v2.0, MIT License
 
