@@ -7,11 +7,11 @@ Requires PHP: 7.2
 Stable tag: 2.3.1
 License: GNU General Public License v2.0, MIT License
 
-Improve search on your site. Autocomplete is included, along with full control over look, feel and relevance.
+Improve your site's search capabilities. Enable Autocomplete, Instantsearch, along with full control over look, feel and relevance.
 
 == Description ==
 
-Improve search on your site. Autocomplete is included, along with full control over look, feel and relevance.
+Improve your site's search capabilities by integrating it with Algolia Search's powerful features. Enable Autocomplete, Instantsearch and work with full control over your search's look, feel and relevance.
 
 = Features =
 * Relevant search results in milliseconds
