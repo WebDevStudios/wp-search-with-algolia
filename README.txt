@@ -7,7 +7,7 @@ Requires PHP: 7.2
 Stable tag: 2.3.1
 License: GNU General Public License v2.0, MIT License
 
-Improve your site's search capabilities. Enable Autocomplete, Instantsearch, along with full control over look, feel and relevance.
+Use the power of Algolia to fall in love with your website's search. Enable Autocomplete and Instantsearch. Control the look, feel, and relevance.
 
 == Description ==
 
