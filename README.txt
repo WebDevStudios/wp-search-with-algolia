@@ -14,11 +14,9 @@ Improve your site's search capabilities. Enable Autocomplete, Instantsearch, alo
 Improve your site's search capabilities by integrating it with Algolia Search's powerful features. Enable Autocomplete, Instantsearch and work with full control over your search's look, feel and relevance.
 
 = Features =
-* Relevant search results in milliseconds
-* Native typo-tolerance
-* Is language-agnostic
-* Offers hooks and filters for easy customization
-* Built by developers, for developers
+* Relevant search results in milliseconds and native typo-tolerance from Algolia Search
+* Language-agnostic
+* WordPress hooks and filters available for easy customization of indexed content.
 
 This plugin requires API keys from [Algolia](https://www.algolia.com/). API keys are free for small personal projects and non-commercial use. Learn more about [commercial use pricing](https://www.algolia.com/pricing/).
 
