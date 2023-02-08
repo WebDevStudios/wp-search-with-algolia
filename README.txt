@@ -49,7 +49,7 @@ Yes. The Algolia Team **[no longer supports their original plugin](https://commu
 
 = Should I switch to this plugin? =
 
-Yes. Because Algolia no longer supports their plugin, you will no longer receive updates. WebDevStudios uses Algolia on many of it's projects, and is committed to maintaining this plugin for years to come.
+Yes. Because Algolia no longer supports their plugin, you will no longer receive updates. WebDevStudios uses Algolia on many of its projects, and is committed to maintaining this plugin.
 
 = How do I switch from the "Search by Algolia – Instant & Relevant results" plugin? =
 
