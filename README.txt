@@ -11,7 +11,9 @@ Use the power of Algolia to fall in love with your website's search. Enable Auto
 
 == Description ==
 
-Improve your site's search capabilities by integrating it with Algolia Search's powerful features. Enable Autocomplete, Instantsearch and work with full control over your search's look, feel and relevance.
+"I hate my website's search!" We hear it all the time. Look no further than WP Search with Algolia to fall in love with your website's search capabilities.
+Forked, built, and supported by WebDevStudios, the website agency behind Custom Post Type UI, WP Search with Algolia immediately improves search on your site. Your users will be impressed.
+Autocomplete and Instantsearch are included and enabled. Plus, you receive full control over the look, feel, and relevance of your users' search experience.
 
 = Features =
 * Relevant search results in milliseconds and native typo-tolerance from Algolia Search
