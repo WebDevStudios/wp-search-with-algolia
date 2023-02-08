@@ -24,7 +24,8 @@ This plugin requires API keys from [Algolia](https://www.algolia.com/). API keys
 * [WebDevStudios](https://webdevstudios.com)
 * [Algolia](https://algolia.com)
 * [Documentation](https://github.com/WebDevStudios/wp-search-with-algolia/wiki)
-* [Support](https://github.com/WebDevStudios/wp-search-with-algolia/issues)
+* [Support](https://wordpress.org/support/plugin/wp-search-with-algolia/)
+* [Feature requests and bugs](https://github.com/WebDevStudios/wp-search-with-algolia/issues)
 
 *This plugin is a derivative work of the code from the [Search by Algolia – Instant & Relevant results](https://wordpress.org/plugins/search-by-algolia-instant-relevant-results/) plugin for WordPress, which is licensed under the GPLv2.*
 
