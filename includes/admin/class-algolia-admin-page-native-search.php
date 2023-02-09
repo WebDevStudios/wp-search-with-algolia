@@ -206,7 +206,7 @@ class Algolia_Admin_Page_Native_Search {
 			return;
 		}
 
-		$maybe_get_page = filter_input( INPUT_GET, 'page', FILTER_SANITIZE_STRING );
+		$maybe_get_page = filter_input( INPUT_GET, 'page', FILTER_SANITIZE_SPECIAL_CHARS );
 
 		$searchable_posts_index = $this->plugin->get_index( 'searchable_posts' );
 		if ( false === $searchable_posts_index->is_enabled() && ( ! empty( $maybe_get_page ) ) && $maybe_get_page === $this->slug ) {

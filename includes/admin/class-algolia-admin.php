@@ -47,7 +47,7 @@ class Algolia_Admin {
 			add_action( 'wp_ajax_algolia_re_index', array( $this, 're_index' ) );
 			add_action( 'wp_ajax_algolia_push_settings', array( $this, 'push_settings' ) );
 
-			$maybe_get_page = filter_input( INPUT_GET, 'page', FILTER_SANITIZE_STRING );
+			$maybe_get_page = filter_input( INPUT_GET, 'page', FILTER_SANITIZE_SPECIAL_CHARS );
 			if ( ! empty( $maybe_get_page ) && 'algolia' === substr( $maybe_get_page, 0, 7 ) ) {
 				add_action( 'admin_notices', array( $this, 'display_reindexing_notices' ) );
 			}
@@ -233,8 +233,8 @@ class Algolia_Admin {
 	 */
 	public function re_index() {
 
-		$index_id = filter_input( INPUT_POST, 'index_id', FILTER_SANITIZE_STRING );
-		$page     = filter_input( INPUT_POST, 'p', FILTER_SANITIZE_STRING );
+		$index_id = filter_input( INPUT_POST, 'index_id', FILTER_SANITIZE_SPECIAL_CHARS );
+		$page     = filter_input( INPUT_POST, 'p', FILTER_SANITIZE_SPECIAL_CHARS );
 
 		try {
 			if ( empty( $index_id ) ) {
@@ -282,7 +282,7 @@ class Algolia_Admin {
 	 */
 	public function push_settings() {
 
-		$index_id = filter_input( INPUT_POST, 'index_id', FILTER_SANITIZE_STRING );
+		$index_id = filter_input( INPUT_POST, 'index_id', FILTER_SANITIZE_SPECIAL_CHARS );
 
 		try {
 			if ( empty( $index_id ) ) {
