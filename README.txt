@@ -4,7 +4,7 @@ Tags: Search, Algolia, Autocomplete, instant-search, relevant search, search hig
 Requires at least: 5.0
 Tested up to: 6.1.1
 Requires PHP: 7.4
-Stable tag: 2.3.1
+Stable tag: 2.4.0
 License: GNU General Public License v2.0, MIT License
 
 Improve search on your site. Autocomplete is included, along with full control over look, feel and relevance.
@@ -105,6 +105,10 @@ WebDevStudios provides end-to-end WordPress opportunities from strategy and plan
 == Changelog ==
 
 Follow along with the changelog on [Github](https://github.com/WebDevStudios/wp-search-with-algolia/releases).
+
+= 2.3.2 =
+* Prefix the Algolia PHP Client's namespace to avoid namespace collisions
+* Deprecate the `algolia_should_require_search_client` filter in favor of prefixed Algolia PHP Client namespace
 
 = 2.3.1 =
 * Update autocomplete template to use addEventListener instead of onload function

@@ -6,9 +6,9 @@
  * @package WebDevStudios\WPSWA
  */
 
-use Algolia\AlgoliaSearch\Algolia;
-use Algolia\AlgoliaSearch\SearchClient;
-use Algolia\AlgoliaSearch\Support\UserAgent;
+use WebDevStudios\WPSWA\Algolia\AlgoliaSearch\Algolia;
+use WebDevStudios\WPSWA\Algolia\AlgoliaSearch\SearchClient;
+use WebDevStudios\WPSWA\Algolia\AlgoliaSearch\Support\UserAgent;
 
 /**
  * Class Algolia_Search_Client_Factory

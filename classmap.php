@@ -12,10 +12,24 @@ if ( ! defined( 'ALGOLIA_PATH' ) ) {
 	exit();
 }
 
-// The Algolia Search PHP API SearchClient.
-if ( apply_filters( 'algolia_should_require_search_client', true ) ) {
-	require_once ALGOLIA_PATH . 'includes/libraries/algoliasearch-client-php/autoload.php';
-}
+/**
+ * Filters whether to include the Algolia PHP API Client library.
+ *
+ * @since      1.0.0
+ * @deprecated 2.3.2 No longer necessary as the Algolia PHP API Client library is now prefixed.
+ *
+ * @param bool $true Include the Algolia PHP API Client library.
+ */
+apply_filters_deprecated(
+	'algolia_should_require_search_client',
+	[ true ],
+	'2.3.2',
+	'',
+	esc_html__( 'The "algolia_should_require_search_client" filter is deprecated and no longer has any effect.', 'wp-search-with-algolia' )
+);
+
+// Autoload vendor dependencies, that have been prefixed to prevent namespace collision.
+require_once ALGOLIA_PATH . 'vendor_prefixed/autoload.php';
 
 require_once ALGOLIA_PATH . 'includes/factories/class-algolia-http-client-interface-factory.php';
 require_once ALGOLIA_PATH . 'includes/factories/class-algolia-search-client-factory.php';
@@ -23,6 +37,7 @@ require_once ALGOLIA_PATH . 'includes/factories/class-algolia-plugin-factory.php
 
 require_once ALGOLIA_PATH . 'includes/class-algolia-api.php';
 require_once ALGOLIA_PATH . 'includes/class-algolia-autocomplete-config.php';
+require_once ALGOLIA_PATH . 'includes/class-algolia-cli.php';
 require_once ALGOLIA_PATH . 'includes/class-algolia-compatibility.php';
 require_once ALGOLIA_PATH . 'includes/class-algolia-plugin.php';
 require_once ALGOLIA_PATH . 'includes/class-algolia-search.php';
