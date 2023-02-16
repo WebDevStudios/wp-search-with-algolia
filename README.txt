@@ -1,6 +1,6 @@
 === WP Search with Algolia ===
 Contributors: WebDevStudios, williamsba1, gregrickaby, tw2113, richaber, mrasharirfan
-Tags: Search, Algolia, Autocomplete, instantsearch, relevant search, search highlight, faceted search, find-as-you-type search, search by category, ajax search, better search, custom search, ecommerce, woocommerce, search engine optimization
+Tags: search, algolia, autocomplete, instantsearch, relevance search, faceted search, find-as-you-type search, ecommerce, seo
 Requires at least: 5.0
 Tested up to: 6.1
 Requires PHP: 7.2
