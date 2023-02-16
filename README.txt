@@ -16,7 +16,7 @@ Forked, built, and supported by WebDevStudios, the website agency behind Custom 
 Autocomplete and Instantsearch are included and enabled. Plus, you receive full control over the look, feel, and relevance of your users' search experience.
 
 = Features =
-* Relevant search results in milliseconds and native typo-tolerance from Algolia Search
+* Relevant, faceted ready search results in milliseconds with native typo-tolerance from Algolia Search
 * Language-agnostic
 * WordPress hooks and filters available for easy customization of indexed content.
 
