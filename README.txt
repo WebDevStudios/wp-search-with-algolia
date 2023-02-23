@@ -112,9 +112,6 @@ Follow along with the changelog on [Github](https://github.com/WebDevStudios/wp-
 * Fixed PHP8 compatibility issues
 * Prefixed Algolia library to avoid potential conflicts with other code using the same libraries.
 * Revised copy and wording around the plugin for better clarity.
-
-= 2.3.2 =
-* Prefix the Algolia PHP Client's namespace to avoid namespace collisions
 * Deprecate the `algolia_should_require_search_client` filter in favor of prefixed Algolia PHP Client namespace
 
 = 2.3.1 =
