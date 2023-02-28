@@ -1,24 +1,24 @@
 === WP Search with Algolia ===
 Contributors: WebDevStudios, williamsba1, gregrickaby, tw2113, richaber, mrasharirfan
-Tags: Search, Algolia, Autocomplete, instant-search, relevant search, search highlight, faceted search, find-as-you-type search, suggest, search by category, ajax search, better search, custom search
+Tags: search, algolia, autocomplete, instantsearch, relevance search, faceted search, find-as-you-type search, ecommerce, seo
 Requires at least: 5.0
-Tested up to: 6.1
-Requires PHP: 7.2
-Stable tag: 2.3.1
+Tested up to: 6.1.1
+Requires PHP: 7.4
+Stable tag: 2.4.0
 License: GNU General Public License v2.0, MIT License
 
-Improve search on your site. Autocomplete is included, along with full control over look, feel and relevance.
+Use the power of Algolia to fall in love with your website's search. Enable Autocomplete and Instantsearch. Control the look, feel, and relevance.
 
 == Description ==
 
-Improve search on your site. Autocomplete is included, along with full control over look, feel and relevance.
+"I hate my website's search!" We hear it all the time. Look no further than WP Search with Algolia to fall in love with your website's search capabilities.
+Forked, built, and supported by WebDevStudios, the website agency behind Custom Post Type UI, WP Search with Algolia immediately improves search on your site. Your users will be impressed.
+Autocomplete and Instantsearch are included and enabled. Plus, you receive full control over the look, feel, and relevance of your users' search experience.
 
 = Features =
-* Relevant search results in milliseconds
-* Native typo-tolerance
-* Is language-agnostic
-* Offers hooks and filters for easy customization
-* Built by developers, for developers
+* Relevant, faceted ready search results in milliseconds with native typo-tolerance from Algolia Search
+* Language-agnostic
+* WordPress hooks and filters available for easy customization of indexed content.
 
 This plugin requires API keys from [Algolia](https://www.algolia.com/). API keys are free for small personal projects and non-commercial use. Learn more about [commercial use pricing](https://www.algolia.com/pricing/).
 
@@ -26,7 +26,8 @@ This plugin requires API keys from [Algolia](https://www.algolia.com/). API keys
 * [WebDevStudios](https://webdevstudios.com)
 * [Algolia](https://algolia.com)
 * [Documentation](https://github.com/WebDevStudios/wp-search-with-algolia/wiki)
-* [Support](https://github.com/WebDevStudios/wp-search-with-algolia/issues)
+* [Support](https://wordpress.org/support/plugin/wp-search-with-algolia/)
+* [Feature requests and bugs](https://github.com/WebDevStudios/wp-search-with-algolia/issues)
 
 *This plugin is a derivative work of the code from the [Search by Algolia – Instant & Relevant results](https://wordpress.org/plugins/search-by-algolia-instant-relevant-results/) plugin for WordPress, which is licensed under the GPLv2.*
 
@@ -50,7 +51,7 @@ Yes. The Algolia Team **[no longer supports their original plugin](https://commu
 
 = Should I switch to this plugin? =
 
-Yes. Because Algolia no longer supports their plugin, you will no longer receive updates. WebDevStudios uses Algolia on many of it's projects, and is committed to maintaining this plugin for years to come.
+Yes. Because Algolia no longer supports their plugin, you will no longer receive updates. WebDevStudios uses Algolia on many of its projects, and is committed to maintaining this plugin.
 
 = How do I switch from the "Search by Algolia – Instant & Relevant results" plugin? =
 
@@ -63,7 +64,7 @@ Yes. Because Algolia no longer supports their plugin, you will no longer receive
 = What are the minimum requirements? =
 
 * Requires WordPress 5.0+
-* PHP version 7.2 or greater (PHP 7.3 is recommended)
+* PHP version 7.4 or greater
 * MySQL version 5.0 or greater (MySQL 5.6 or greater is recommended)
 * cURL PHP extension
 * mbstring PHP extension
@@ -105,6 +106,13 @@ WebDevStudios provides end-to-end WordPress opportunities from strategy and plan
 == Changelog ==
 
 Follow along with the changelog on [Github](https://github.com/WebDevStudios/wp-search-with-algolia/releases).
+
+= 2.4.0 =
+* Increase minimum PHP version to PHP 7.4
+* Fixed PHP8 compatibility issues
+* Prefixed Algolia library to avoid potential conflicts with other code using the same libraries.
+* Revised copy and wording around the plugin for better clarity.
+* Deprecate the `algolia_should_require_search_client` filter in favor of prefixed Algolia PHP Client namespace
 
 = 2.3.1 =
 * Update autocomplete template to use addEventListener instead of onload function

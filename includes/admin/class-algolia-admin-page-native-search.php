@@ -94,7 +94,8 @@ class Algolia_Admin_Page_Native_Search {
 			esc_html__( 'Search Page', 'wp-search-with-algolia' ),
 			$this->capability,
 			$this->slug,
-			array( $this, 'display_page' )
+			array( $this, 'display_page' ),
+			0
 		);
 	}
 
@@ -205,7 +206,7 @@ class Algolia_Admin_Page_Native_Search {
 			return;
 		}
 
-		$maybe_get_page = filter_input( INPUT_GET, 'page', FILTER_SANITIZE_STRING );
+		$maybe_get_page = filter_input( INPUT_GET, 'page', FILTER_SANITIZE_SPECIAL_CHARS );
 
 		$searchable_posts_index = $this->plugin->get_index( 'searchable_posts' );
 		if ( false === $searchable_posts_index->is_enabled() && ( ! empty( $maybe_get_page ) ) && $maybe_get_page === $this->slug ) {
@@ -225,6 +226,19 @@ class Algolia_Admin_Page_Native_Search {
 	 */
 	public function print_section_settings() {
 		echo '<p>' . esc_html__( 'By enabling this plugin to override the native WordPress search, your search results will be powered by Algolia\'s typo-tolerant & relevant search algorithms.', 'wp-search-with-algolia' ) . '</p>';
+
+		echo '<p>' . sprintf(
+			'<b>%1$s</b> - %2$s',
+			esc_html__( 'Re-index All Content', 'wp-search-with-algolia' ),
+			esc_html__( 'Resubmit all of your content to the Algolia search API. Search results will be updated once the re-index has completed.', 'wp-search-with-algolia' )
+		) . '</p>';
+
+		echo sprintf(
+			'<b>%1$s</b> - %2$s <b>%3$s</b>',
+			esc_html__( 'Push Settings', 'wp-search-with-algolia' ),
+			esc_html__( 'Resync your Algolia search settings to the plugin defaults.', 'wp-search-with-algolia' ),
+			esc_html__( 'WARNING this will reset configuration changes made in your Algolia dashboard.', 'wp-search-with-algolia' )
+		);
 
 		// @Todo: replace this with a check on the searchable_posts_index.
 		$indices = $this->plugin->get_indices(

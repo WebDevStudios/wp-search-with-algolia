@@ -1,0 +1,2 @@
+# Do not commit prefixed vendor libs to git.
+!.gitignore

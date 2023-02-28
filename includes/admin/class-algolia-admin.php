@@ -47,7 +47,7 @@ class Algolia_Admin {
 			add_action( 'wp_ajax_algolia_re_index', array( $this, 're_index' ) );
 			add_action( 'wp_ajax_algolia_push_settings', array( $this, 'push_settings' ) );
 
-			$maybe_get_page = filter_input( INPUT_GET, 'page', FILTER_SANITIZE_STRING );
+			$maybe_get_page = filter_input( INPUT_GET, 'page', FILTER_SANITIZE_SPECIAL_CHARS );
 			if ( ! empty( $maybe_get_page ) && 'algolia' === substr( $maybe_get_page, 0, 7 ) ) {
 				add_action( 'admin_notices', array( $this, 'display_reindexing_notices' ) );
 			}
@@ -58,6 +58,8 @@ class Algolia_Admin {
 		new Algolia_Admin_Page_Settings( $plugin );
 
 		add_action( 'admin_notices', array( $this, 'display_unmet_requirements_notices' ) );
+
+		add_filter( 'admin_footer_text', array( $this, 'algolia_footer' ) );
 	}
 
 	/**
@@ -231,8 +233,8 @@ class Algolia_Admin {
 	 */
 	public function re_index() {
 
-		$index_id = filter_input( INPUT_POST, 'index_id', FILTER_SANITIZE_STRING );
-		$page     = filter_input( INPUT_POST, 'p', FILTER_SANITIZE_STRING );
+		$index_id = filter_input( INPUT_POST, 'index_id', FILTER_SANITIZE_SPECIAL_CHARS );
+		$page     = filter_input( INPUT_POST, 'p', FILTER_SANITIZE_SPECIAL_CHARS );
 
 		try {
 			if ( empty( $index_id ) ) {
@@ -280,7 +282,7 @@ class Algolia_Admin {
 	 */
 	public function push_settings() {
 
-		$index_id = filter_input( INPUT_POST, 'index_id', FILTER_SANITIZE_STRING );
+		$index_id = filter_input( INPUT_POST, 'index_id', FILTER_SANITIZE_SPECIAL_CHARS );
 
 		try {
 			if ( empty( $index_id ) ) {
@@ -303,4 +305,57 @@ class Algolia_Admin {
 			throw $exception;
 		}
 	}
+
+	/**
+	 * Display footer links and plugin credits.
+	 *
+	 * @since 0.3.0
+	 *
+	 * @internal
+	 *
+	 * @param string $original Original footer content. Optional. Default empty string.
+	 * @return string $value HTML for footer.
+	 */
+	public function algolia_footer( $original = '' ) {
+
+		$screen = get_current_screen();
+
+		if ( ! is_object( $screen ) || 'algolia' !== $screen->parent_base ) {
+			return $original;
+		}
+
+		return sprintf(
+			// translators: Placeholder will hold the name of the plugin, version of the plugin and a link to WebdevStudios.
+			esc_attr__( '%1$s version %2$s by %3$s', 'wp-search-with-algolia' ),
+			esc_attr__( 'WP Search with Algolia', 'wp-search-with-algolia' ),
+			ALGOLIA_VERSION,
+			'<a href="https://webdevstudios.com" target="_blank" rel="noopener">WebDevStudios</a>'
+		) . ' - ' .
+		sprintf(
+			// translators: Placeholders are just for HTML markup that doesn't need translated.
+			'<a href="https://wordpress.org/support/plugin/wp-search-with-algolia/" target="_blank" rel="noopener">%s</a>',
+			esc_attr__( 'Support forums', 'wp-search-with-algolia' )
+		) . ' - ' .
+		sprintf(
+			// translators: Placeholders are just for HTML markup that doesn't need translated.
+			'<a href="https://wordpress.org/plugins/wp-search-with-algolia/#reviews" target="_blank" rel="noopener">%s</a>',
+			sprintf(
+				// translators: Placeholder will hold `<abbr>` tag for CPTUI.
+				esc_attr__( 'Review %s', 'wp-search-with-algolia' ),
+				sprintf(
+					// translators: Placeholders are just for HTML markup that doesn't need translated.
+					'<abbr title="%s">%s</abbr>',
+					esc_attr__( 'WP Search with Algolia', 'wp-search-with-algolia' ),
+					'WP Search with Algolia'
+				)
+			)
+		) . ' - ' .
+		esc_attr__( 'Follow on Twitter:', 'wp-search-with-algolia' ) .
+		sprintf(
+			// translators: Placeholders are just for HTML markup that doesn't need translated.
+			' %s',
+			'<a href="https://twitter.com/webdevstudios" target="_blank" rel="noopener">WebDevStudios</a>'
+		);
+	}
+
 }
