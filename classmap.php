@@ -68,5 +68,8 @@ if ( is_admin() ) {
 	require_once ALGOLIA_PATH . 'includes/admin/class-algolia-admin-page-settings.php';
 	require_once ALGOLIA_PATH . 'includes/admin/class-algolia-admin-page-autocomplete.php';
 	require_once ALGOLIA_PATH . 'includes/admin/class-algolia-admin-page-native-search.php';
+	require_once ALGOLIA_PATH . 'includes/admin/class-algolia-admin-page-woocommerce.php';
+	require_once ALGOLIA_PATH . 'includes/admin/class-algolia-admin-page-seo.php';
 	require_once ALGOLIA_PATH . 'includes/admin/class-algolia-admin-template-notices.php';
+
 }
