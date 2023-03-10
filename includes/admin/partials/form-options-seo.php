@@ -12,5 +12,5 @@
 	<h1>
 		<?php esc_html_e( 'WP Search with Algolia and Search Engine Optimization', 'wp-search-with-algolia' ); ?>
 	</h1>
-	<img style="max-width: 100%;" src="<?php echo esc_url( ALGOLIA_PLUGIN_URL . 'includes/admin/img/algolia-premium-seo.png' ); ?>" alt="<?php esc_attr_e( 'Blurry representiation of features available with WP Search with Algolia Premium.', 'wp-search-with-algolia' ); ?>" />
+	<img style="max-width: 100%;" src="<?php echo esc_url( ALGOLIA_PLUGIN_URL . 'includes/admin/img/algolia-pro-seo.png' ); ?>" alt="<?php esc_attr_e( 'Blurry representiation of features available with WP Search with Algolia Pro.', 'wp-search-with-algolia' ); ?>" />
 </div>
