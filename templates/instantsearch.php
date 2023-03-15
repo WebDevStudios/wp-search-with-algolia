@@ -64,7 +64,7 @@ get_header();
 					</p>
 				</div>
 				<?php
-				do_action( 'wp-search-with-algolia-ais-after-content' );
+				do_action( 'wp-search-with-algolia-instantsearch-after-content' );
 				?>
 			</div>
 			<div class="ais-clearfix"></div>
