@@ -29,6 +29,9 @@
 				<span class="suggestion-post-content">{{{ data._snippetResult['content'].value }}}</span>
 			<# } #>
 		</div>
+		<?php
+		do_action( 'wp-search-with-algolia-autocomplete-after-content' );
+		?>
 	</a>
 </script>
 
