@@ -102,6 +102,8 @@ WebDevStudios provides end-to-end WordPress opportunities from strategy and plan
 3. Autocomplete Settings
 4. InstantSearch Dropdown
 5. Search Results
+6. Pro: WooCommerce preview
+7. Pro: SEO preview
 
 == Changelog ==
 
