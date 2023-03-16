@@ -109,6 +109,16 @@ WebDevStudios provides end-to-end WordPress opportunities from strategy and plan
 
 Follow along with the changelog on [Github](https://github.com/WebDevStudios/wp-search-with-algolia/releases).
 
+= 2.5.0 =
+* Introduction of WP Search with Algolia Pro availability.
+* Added `algolia_custom_template_location` filter to allow specifying custom template locations besides just your active theme.
+* Templates: added action hooks at the end of Autocomplete and Instantsearch hit template blocks.
+* Updated `algolia_changes_watchers` filter to also receive the current indices.
+* Added watcher support for term and user meta updates.
+* Updated bundled CSS to better match selectors for default used widgets in the templates.
+* Clarified some details around Autocomplete settings and what can be done in each setting state.
+* Updated admin menu icon to use Algolia logo when no settings configured.
+
 = 2.4.0 =
 * Increase minimum PHP version to PHP 7.4
 * Fixed PHP8 compatibility issues
