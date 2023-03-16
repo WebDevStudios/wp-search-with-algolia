@@ -30,7 +30,7 @@
 			<# } #>
 		</div>
 		<?php
-		do_action( 'wp-search-with-algolia-autocomplete-after-content' );
+		do_action( 'algolia_autocomplete_after_hit' );
 		?>
 	</a>
 </script>
