@@ -2,9 +2,9 @@
 Contributors: WebDevStudios, williamsba1, gregrickaby, tw2113, richaber, mrasharirfan
 Tags: search, algolia, autocomplete, instantsearch, relevance search, faceted search, find-as-you-type search, ecommerce, seo
 Requires at least: 5.0
-Tested up to: 6.1.1
+Tested up to: 6.2
 Requires PHP: 7.4
-Stable tag: 2.4.0
+Stable tag: 2.5.0
 License: GNU General Public License v2.0, MIT License
 
 Use the power of Algolia to fall in love with your website's search. Enable Autocomplete and Instantsearch. Control the look, feel, and relevance.
