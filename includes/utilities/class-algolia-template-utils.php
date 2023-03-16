@@ -167,6 +167,16 @@ class Algolia_Template_Utils {
 	 */
 	public static function locate_template( $file ) {
 
+		$custom_location = apply_filters(
+			'algolia_custom_template_location',
+			null,
+			$file
+		);
+
+		if ( ! empty( $custom_location ) ) {
+			return $custom_location;
+		}
+
 		$locations = [
 			$file,
 		];
