@@ -137,13 +137,14 @@ class Algolia_Post_Changes_Watcher implements Algolia_Changes_Watcher {
 	 * @author WebDevStudios <contact@webdevstudios.com>
 	 * @since  1.0.0
 	 *
-	 * @param string|array $meta_id   The meta ID.
-	 * @param int          $object_id The post ID.
-	 * @param string       $meta_key  The meta key.
+	 * @param string|array $meta_id    The meta ID.
+	 * @param int          $object_id  The post ID.
+	 * @param string       $meta_key   The meta key.
+	 * @param mixed        $meta_value The meta value.
 	 *
 	 * @return void
 	 */
-	public function on_meta_change( $meta_id, $object_id, $meta_key ) {
+	public function on_meta_change( $meta_id, $object_id, $meta_key, $meta_value ) {
 		$keys = array( '_thumbnail_id' );
 		$keys = (array) apply_filters( 'algolia_watch_post_meta_keys', $keys, $object_id );
 
