@@ -200,16 +200,16 @@ Follow along with the changelog on [Github](https://github.com/WebDevStudios/wp-
 
 = 1.5.0 =
 * Fix an issue where Pinterest follows a link to the Algolia domain to source text and/or images
- * Move Algolia scripts to footer by default
-  * Changes algolia_load_scripts_in_footer filter default argument to "true"
- * Move autocomplete.php template output to footer by default
+* Move Algolia scripts to footer by default
+* Changes algolia_load_scripts_in_footer filter default argument to "true"
+* Move autocomplete.php template output to footer by default
 
 = 1.4.0 =
 * Update Algolia PHP Search Client version 2.7.0.
 * Update Algolia JS libraries to most recent compatible (non-breaking) versions
- * Updates autocomplete.js to 0.37.1 (current release as of 2020-01-27)
- * Updates algoliasearch to 3.35.1 (last of the 3.x series)
- * Updates instantsearch.js to 1.12.1 (last of the 1.x series)
+* Updates autocomplete.js to 0.37.1 (current release as of 2020-01-27)
+* Updates algoliasearch to 3.35.1 (last of the 3.x series)
+* Updates instantsearch.js to 1.12.1 (last of the 1.x series)
 
 = 1.3.0 =
 * Fix an issue where, under some circumstances, when a post with a featured image was deleted, the post might be accidentally re-indexed
