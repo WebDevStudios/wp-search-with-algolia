@@ -1,6 +1,7 @@
 <?php
 /**
  * Form options admin template partial.
+ *
  * @author  WebDevStudios <contact@webdevstudios.com>
  * @since   2.5.0
  * @package WebDevStudios\WPSWA
