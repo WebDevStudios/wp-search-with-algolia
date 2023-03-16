@@ -175,7 +175,7 @@ class Algolia_User_Changes_Watcher implements Algolia_Changes_Watcher {
 	 *
 	 * @return void
 	 * @author WebDevStudios <contact@webdevstudios.com>
-	 * @since  NEXT
+	 * @since  2.5.0
 	 */
 	public function on_meta_change( $meta_id, $object_id, $meta_key, $meta_value ) {
 
