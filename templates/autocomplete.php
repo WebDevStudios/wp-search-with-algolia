@@ -5,7 +5,7 @@
  * @author  WebDevStudios <contact@webdevstudios.com>
  * @since   1.0.0
  *
- * @version 2.0.0
+ * @version 2.5.0
  * @package WebDevStudios\WPSWA
  */
 
@@ -29,6 +29,9 @@
 				<span class="suggestion-post-content">{{{ data._snippetResult['content'].value }}}</span>
 			<# } #>
 		</div>
+		<?php
+		do_action( 'algolia_autocomplete_after_hit' );
+		?>
 	</a>
 </script>
 
