@@ -63,6 +63,8 @@ class Algolia_Admin {
 		add_action( 'admin_notices', array( $this, 'display_unmet_requirements_notices' ) );
 
 		add_filter( 'admin_footer_text', array( $this, 'algolia_footer' ) );
+		add_action( 'admin_menu', [ $this, 'add_pro_menu_item' ], 1000 );
+		add_action( 'admin_init', [ $this, 'handle_pro_redirect' ] );
 	}
 
 	/**
@@ -357,4 +359,41 @@ class Algolia_Admin {
 		);
 	}
 
+	/**
+	 * Add an "Upgrade to Pro" submenu link.
+	 *
+	 * @internal
+	 *
+	 * @since 2.5.0
+	 */
+	public function add_pro_menu_item() {
+		global $submenu;
+
+		$submenu['algolia'][] = [
+			'<span class="algolia-menu-highlight">' . esc_html__( 'Upgrade to Pro', 'wp-search-with-algolia' ) . '</span>',
+			'manage_options',
+			esc_url(
+				add_query_arg(
+					[
+						'page' => 'algolia-account-settings',
+						'algolia-pro-upgrade' => '1',
+					],
+					admin_url(
+						'admin.php'
+					)
+				)
+			)
+		];
+	}
+
+	/**
+	 * Handle redirect to purchase WP Search with Algolia Pro link click.
+	 *
+	 * @since 2.5.0
+	 */
+	public function handle_pro_redirect() {
+		if ( isset( $_GET[ 'algolia-pro-upgrade' ] ) && '1' === $_GET['algolia-pro-upgrade'] ) {
+			wp_redirect( 'https://pluginize.com/plugins/wp-search-with-algolia-pro/' );
+		}
+	}
 }
