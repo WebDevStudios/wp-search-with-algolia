@@ -342,12 +342,12 @@ class Algolia_Admin {
 		sprintf(
 			// translators: Placeholders are just for HTML markup that doesn't need translated.
 			'<a href="https://wordpress.org/plugins/wp-search-with-algolia/#reviews" target="_blank" rel="noopener">%s</a>',
-			esc_attr__( 'Review' )
+			esc_attr__( 'Review', 'wp-search-with-algolia' )
 		) . ' - ' .
 	   sprintf(
 	   // translators: Placeholders are just for HTML markup that doesn't need translated.
 		   '<a href="https://pluginize.com/plugins/wp-search-with-algolia-pro/" target="_blank" rel="noopener">%s</a>',
-		   esc_attr__( 'Go Pro' )
+		   esc_attr__( 'Go Pro', 'wp-search-with-algolia' )
 	   ) . ' - ' .
 		esc_attr__( 'Follow on Twitter:', 'wp-search-with-algolia' ) .
 		sprintf(
