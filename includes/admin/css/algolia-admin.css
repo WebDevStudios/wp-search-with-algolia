@@ -41,3 +41,9 @@ form .radio-info {
 #delete-pending-tasks {
 	display: none;
 }
+
+#toplevel_page_algolia .algolia-pro-indicator {
+	color: #f5f5fa;
+	vertical-align: super;
+	font-size: 9px;
+}
