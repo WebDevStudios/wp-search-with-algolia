@@ -337,22 +337,18 @@ class Algolia_Admin {
 		sprintf(
 			// translators: Placeholders are just for HTML markup that doesn't need translated.
 			'<a href="https://wordpress.org/support/plugin/wp-search-with-algolia/" target="_blank" rel="noopener">%s</a>',
-			esc_attr__( 'Support forums', 'wp-search-with-algolia' )
+			esc_attr__( 'Support', 'wp-search-with-algolia' )
 		) . ' - ' .
 		sprintf(
 			// translators: Placeholders are just for HTML markup that doesn't need translated.
 			'<a href="https://wordpress.org/plugins/wp-search-with-algolia/#reviews" target="_blank" rel="noopener">%s</a>',
-			sprintf(
-				// translators: Placeholder will hold `<abbr>` tag for CPTUI.
-				esc_attr__( 'Review %s', 'wp-search-with-algolia' ),
-				sprintf(
-					// translators: Placeholders are just for HTML markup that doesn't need translated.
-					'<abbr title="%s">%s</abbr>',
-					esc_attr__( 'WP Search with Algolia', 'wp-search-with-algolia' ),
-					'WP Search with Algolia'
-				)
-			)
+			esc_attr__( 'Review' )
 		) . ' - ' .
+	   sprintf(
+	   // translators: Placeholders are just for HTML markup that doesn't need translated.
+		   '<a href="https://pluginize.com/plugins/wp-search-with-algolia-pro/" target="_blank" rel="noopener">%s</a>',
+		   esc_attr__( 'Go Pro' )
+	   ) . ' - ' .
 		esc_attr__( 'Follow on Twitter:', 'wp-search-with-algolia' ) .
 		sprintf(
 			// translators: Placeholders are just for HTML markup that doesn't need translated.
