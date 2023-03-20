@@ -346,7 +346,7 @@ class Algolia_Admin {
 		) . ' - ' .
 	   sprintf(
 	   // translators: Placeholders are just for HTML markup that doesn't need translated.
-		   '<a href="https://pluginize.com/plugins/wp-search-with-algolia-pro/" target="_blank" rel="noopener">%s</a>',
+		   '<a href="https://pluginize.com/plugins/wp-search-with-algolia-pro/" target="_blank" rel="noopener"><strong>%s</strong></a>',
 		   esc_attr__( 'Go Pro', 'wp-search-with-algolia' )
 	   ) . ' - ' .
 		esc_attr__( 'Follow on Twitter:', 'wp-search-with-algolia' ) .
