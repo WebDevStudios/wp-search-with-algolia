@@ -98,7 +98,13 @@ class Algolia_Admin_Page_WooCommerce {
 		add_submenu_page(
 			'algolia',
 			esc_html__( 'WooCommerce', 'wp-search-with-algolia' ),
-			esc_html__( 'WooCommerce (Pro)', 'wp-search-with-algolia' ),
+			sprintf(
+				esc_html__( 'WooCommerce %s', 'wp-search-with-algolia' ),
+				sprintf(
+					'<span class="algolia-pro-indicator">%s</span>',
+					esc_html__( 'Pro', 'wp-search-with-algolia' )
+				)
+			),
 			$this->capability,
 			$this->slug,
 			array( $this, 'display_page' )
