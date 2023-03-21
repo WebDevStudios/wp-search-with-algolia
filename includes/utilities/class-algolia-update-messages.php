@@ -88,7 +88,7 @@ class Algolia_Update_Messages {
 		}
 
 		$update_title = sprintf(
-			/* translators: placeholder 1 is current plugin version, placeholder 2 is the available update version. */
+			// translators: placeholder 1 is current plugin version, placeholder 2 is the available update version.
 			esc_html__( 'This is a major version update, from %1$s to %2$s, which may contain backwards incompatible changes.', 'wp-search-with-algolia' ),
 			$plugin_data['Version'],
 			$response->new_version

@@ -99,6 +99,7 @@ class Algolia_Admin_Page_SEO {
 			'algolia',
 			esc_html__( 'SEO', 'wp-search-with-algolia' ),
 			sprintf(
+				// translators: Placeholders are just for HTML markup that doesn't need translated.
 				esc_html__( 'SEO %s', 'wp-search-with-algolia' ),
 				sprintf(
 					'<span class="algolia-pro-indicator">%s</span>',

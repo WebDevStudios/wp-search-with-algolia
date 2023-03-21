@@ -246,7 +246,7 @@ class Algolia_Admin_Page_Autocomplete {
 		$indices    = $this->autocomplete_config->get_config();
 
 		if ( true === $is_enabled && empty( $indices ) ) {
-			/* translators: placeholder contains the URL to the autocomplete configuration page. */
+			// translators: placeholder contains the URL to the autocomplete configuration page.
 			$message = sprintf( __( 'Please select one or multiple indices on the <a href="%s">Algolia: Autocomplete configuration page</a>.', 'wp-search-with-algolia' ), esc_url( admin_url( 'admin.php?page=' . $this->slug ) ) );
 			echo '<div class="error notice">
 					  <p>' . esc_html__( 'You have enabled the Algolia Autocomplete feature but did not choose any index to search in.', 'wp-search-with-algolia' ) . '</p>

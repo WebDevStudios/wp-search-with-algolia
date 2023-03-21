@@ -513,7 +513,7 @@ class Algolia_Admin_Page_Settings {
 		echo '<p>' .
 			wp_kses(
 				sprintf(
-					// Translators: URL to API keys section in Algolia dashboard.
+					// translators: URL to API keys section in Algolia dashboard.
 					__( 'Configure your Algolia account credentials. You can find them in the <a href="%s" target="_blank">API Keys</a> section of your Algolia dashboard.', 'wp-search-with-algolia' ),
 					'https://www.algolia.com/account/api-keys/all'
 				),
@@ -525,7 +525,7 @@ class Algolia_Admin_Page_Settings {
 				]
 			) . '</p>';
 		echo '<p>' . esc_html__( 'Once you provide your Algolia Application ID and API key, this plugin will be able to securely communicate with Algolia servers.', 'wp-search-with-algolia' ) . ' ' . esc_html__( 'We ensure your information is correct by testing them against the Algolia servers upon save.', 'wp-search-with-algolia' ) . '</p>';
-		/* translators: the placeholder contains the URL to Algolia's website. */
+		// translators: the placeholder contains the URL to Algolia's website.
 		echo '<p>' . wp_kses_post( sprintf( __( 'No Algolia account yet? <a href="%s">Follow this link</a> to create one for free in a couple of minutes!', 'wp-search-with-algolia' ), 'https://www.algolia.com/users/sign_up' ) ) . '</p>';
 	}
 }

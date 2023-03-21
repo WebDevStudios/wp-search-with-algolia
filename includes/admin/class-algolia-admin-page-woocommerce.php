@@ -99,6 +99,7 @@ class Algolia_Admin_Page_WooCommerce {
 			'algolia',
 			esc_html__( 'WooCommerce', 'wp-search-with-algolia' ),
 			sprintf(
+				// translators: Placeholders are just for HTML markup that doesn't need translated.
 				esc_html__( 'WooCommerce %s', 'wp-search-with-algolia' ),
 				sprintf(
 					'<span class="algolia-pro-indicator">%s</span>',

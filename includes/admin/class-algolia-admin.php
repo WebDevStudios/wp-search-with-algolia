@@ -172,7 +172,7 @@ class Algolia_Admin {
 		$settings = array_map( 'trim', $config->get_array( 'dbcache.reject.sql' ) );
 
 		if ( $enabled && ! in_array( 'algolia_', $settings, true ) ) {
-			/* translators: placeholder contains the URL to the caching plugin's config page. */
+			// translators: placeholder contains the URL to the caching plugin's config page.
 			$message = sprintf( __( 'In order for <strong>database caching</strong> to work with Algolia you must add <code>algolia_</code> to the "Ignored Query Stems" option in W3 Total Cache settings <a href="%s">here</a>.', 'wp-search-with-algolia' ), esc_url( admin_url( 'admin.php?page=w3tc_dbcache' ) ) );
 			?>
 			<div class="error">
@@ -209,7 +209,7 @@ class Algolia_Admin {
 					<?php
 					echo wp_kses(
 						sprintf(
-							/* Translators: placeholder is an Algolia index name. */
+							// translators: placeholder is an Algolia index name.
 							__( 'For Algolia search to work properly, you need to index: <strong>%1$s</strong>', 'wp-search-with-algolia' ),
 							esc_html( $index->get_admin_name() )
 						),
@@ -346,11 +346,11 @@ class Algolia_Admin {
 			'<a href="https://wordpress.org/plugins/wp-search-with-algolia/#reviews" target="_blank" rel="noopener">%s</a>',
 			esc_attr__( 'Review', 'wp-search-with-algolia' )
 		) . ' - ' .
-	   sprintf(
-	   // translators: Placeholders are just for HTML markup that doesn't need translated.
-		   '<a href="https://pluginize.com/plugins/wp-search-with-algolia-pro/" target="_blank" rel="noopener"><strong>%s</strong></a>',
-		   esc_attr__( 'Go Pro', 'wp-search-with-algolia' )
-	   ) . ' - ' .
+		sprintf(
+			// translators: Placeholders are just for HTML markup that doesn't need translated.
+			'<a href="https://pluginize.com/plugins/wp-search-with-algolia-pro/" target="_blank" rel="noopener"><strong>%s</strong></a>',
+			esc_attr__( 'Go Pro', 'wp-search-with-algolia' )
+		) . ' - ' .
 		esc_attr__( 'Follow on Twitter:', 'wp-search-with-algolia' ) .
 		sprintf(
 			// translators: Placeholders are just for HTML markup that doesn't need translated.
@@ -372,17 +372,17 @@ class Algolia_Admin {
 		$submenu['algolia'][] = [
 			'<span class="algolia-menu-highlight">' . esc_html__( 'Upgrade to Pro', 'wp-search-with-algolia' ) . '</span>',
 			'manage_options',
-			esc_url(
+			wp_nonce_url(
 				add_query_arg(
 					[
-						'page' => 'algolia-account-settings',
-						'algolia-pro-upgrade' => '1',
+						'page'        => 'algolia-account-settings',
+						'algolia-pro' => wp_create_nonce( 'algolia-pro-nonce' ),
 					],
 					admin_url(
 						'admin.php'
 					)
 				)
-			)
+			),
 		];
 	}
 
@@ -392,8 +392,9 @@ class Algolia_Admin {
 	 * @since 2.5.0
 	 */
 	public function handle_pro_redirect() {
-		if ( isset( $_GET[ 'algolia-pro-upgrade' ] ) && '1' === $_GET['algolia-pro-upgrade'] ) {
+		if ( wp_verify_nonce( $_GET['algolia-pro'], 'algolia-pro-nonce' ) ) {
 			wp_redirect( 'https://pluginize.com/plugins/wp-search-with-algolia-pro/' );
+			exit();
 		}
 	}
 }
