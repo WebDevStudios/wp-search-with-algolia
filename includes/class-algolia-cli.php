@@ -118,10 +118,10 @@ class Algolia_CLI {
 	private function do_reindex( Algolia_Index $index, $clear, $from_batch ) {
 
 		if ( $clear ) {
-			/* translators: the placeholder will contain the name of the index. */
+			// translators: the placeholder will contain the name of the index.
 			WP_CLI::log( sprintf( __( 'About to clear index %s...', 'wp-search-with-algolia' ), $index->get_name() ) );
 			$index->clear();
-			/* translators: the placeholder will contain the name of the index. */
+			// translators: the placeholder will contain the name of the index.
 			WP_CLI::success( sprintf( __( 'Correctly cleared index "%s".', 'wp-search-with-algolia' ), $index->get_name() ) );
 		}
 

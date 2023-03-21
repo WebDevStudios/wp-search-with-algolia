@@ -98,7 +98,14 @@ class Algolia_Admin_Page_SEO {
 		add_submenu_page(
 			'algolia',
 			esc_html__( 'SEO', 'wp-search-with-algolia' ),
-			esc_html__( 'SEO (Pro)', 'wp-search-with-algolia' ),
+			sprintf(
+				// translators: Placeholders are just for HTML markup that doesn't need translated.
+				esc_html__( 'SEO %s', 'wp-search-with-algolia' ),
+				sprintf(
+					'<span class="algolia-pro-indicator">%s</span>',
+					esc_html__( 'Pro', 'wp-search-with-algolia' )
+				)
+			),
 			$this->capability,
 			$this->slug,
 			array( $this, 'display_page' )
