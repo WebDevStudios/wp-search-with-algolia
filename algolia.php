@@ -73,6 +73,21 @@ function algolia_wp_version_check() {
 }
 
 /**
+ * Check if WP Search with Algolia Pro is active.
+ *
+ * @author Webdevstudios <contact@webdevstudios.com>
+ * @since 2.5.0
+ *
+ * @return bool
+ */
+function algolia_is_pro_active() {
+	if ( ! defined( 'WPSWA_PRO_VERSION' ) ) {
+		return false;
+	}
+	return true;
+}
+
+/**
  * Admin notices if requirements aren't met.
  *
  * @author  WebDevStudios <contact@webdevstudios.com>
