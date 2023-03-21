@@ -375,8 +375,8 @@ class Algolia_Admin {
 			wp_nonce_url(
 				add_query_arg(
 					[
-						'page'        => 'algolia-account-settings',
-						'algolia-pro' => wp_create_nonce( 'algolia-pro-nonce' ),
+						'page'                => 'algolia-account-settings',
+						'algolia-pro-upgrade' => wp_create_nonce( 'algolia-pro-nonce' ),
 					],
 					admin_url(
 						'admin.php'
