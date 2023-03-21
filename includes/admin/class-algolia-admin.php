@@ -369,7 +369,7 @@ class Algolia_Admin {
 	public function add_pro_menu_item() {
 		global $submenu;
 
-		$submenu['algolia'][] = [
+		$submenu['algolia'][] = [ // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited -- Only real way to modify in this way.
 			'<span class="algolia-menu-highlight">' . esc_html__( 'Upgrade to Pro', 'wp-search-with-algolia' ) . '</span>',
 			'manage_options',
 			wp_nonce_url(
@@ -393,7 +393,7 @@ class Algolia_Admin {
 	 */
 	public function handle_pro_redirect() {
 		if ( wp_verify_nonce( $_GET['algolia-pro'], 'algolia-pro-nonce' ) ) {
-			wp_redirect( 'https://pluginize.com/plugins/wp-search-with-algolia-pro/' );
+			wp_redirect( 'https://pluginize.com/plugins/wp-search-with-algolia-pro/' ); // phpcs:ignore WordPress.Security.SafeRedirect.wp_redirec_wp_redirect
 			exit();
 		}
 	}
