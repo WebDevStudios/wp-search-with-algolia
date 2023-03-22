@@ -97,14 +97,6 @@ Yes. This plugin should work with most themes that do not override the default W
 
 All development is handled on [GitHub](https://github.com/WebDevStudios/wp-search-with-algolia/issues).
 
-= About Algolia =
-
-Algolia offers its Search as a Service provider on a incremental payment program, including a free Community Plan which includes 10,000 records & 50,000 operations per month. Beyond that, [plans](https://www.algolia.com/pricing/) start at $29/month.
-
-= About WebDevStudios =
-
-WebDevStudios provides end-to-end WordPress opportunities from strategy and planning to website design and development, as well as full data migration, extensive API integrations, scalability, performance and long-term guidance and maintenance. We have service options and solutions for start-ups, small to mid-size businesses, enterprise organizations and marketing agencies.
-
 == Screenshots ==
 
 1. Algolia Settings
