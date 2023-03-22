@@ -1,5 +1,5 @@
 === WP Search with Algolia ===
-Contributors: WebDevStudios, williamsba1, gregrickaby, tw2113, richaber, mrasharirfan
+Contributors: WebDevStudios, williamsba1, gregrickaby, tw2113, richaber, mrasharirfan, scottbasgaard
 Tags: search, algolia, autocomplete, instantsearch, relevance search, faceted search, find-as-you-type search, ecommerce, seo
 Requires at least: 5.0
 Tested up to: 6.2
