@@ -45,6 +45,16 @@ From your WordPress dashboard:
 
 == Frequently Asked Questions ==
 
+= I see you now have a Pro addon, what features are available with it? =
+
+When you purchase a copy of [WP Search with Algolia Pro](https://pluginize.com/plugins/wp-search-with-algolia-pro/) you are getting access to the start of WooCommerce integration as well as Search Engine Optimization mirroring.
+
+With WooCommerce, you'll be able to manage settings to start including product information as part of indexed products, including out of box display with both Autocomplete and Instantsearch hit templates. You can also include details like product SKU values, total sales, and ratings to help with index ranking and relevance.
+
+With SEO settings, you can configure your content to manage itself in your Algolia indexes based on your "noindex" settings from your dedicated SEO plugins.
+
+We intend to continue adding and evolving all the extra features in WP Search with Algolia Pro
+
 = Is this plugin a fork? =
 
 Yes. The Algolia Team **[no longer supports their original plugin](https://community.algolia.com/wordpress/)**. The engineering team at WebDevStudios has forked the original plugin, and is now maintaining it.
