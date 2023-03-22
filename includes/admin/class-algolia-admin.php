@@ -375,8 +375,8 @@ class Algolia_Admin {
 			wp_nonce_url(
 				add_query_arg(
 					[
-						'page'        => 'algolia-account-settings',
-						'algolia-pro' => wp_create_nonce( 'algolia-pro-nonce' ),
+						'page'                => 'algolia-account-settings',
+						'algolia-pro-upgrade' => wp_create_nonce( 'algolia-pro-nonce' ),
 					],
 					admin_url(
 						'admin.php'
@@ -393,7 +393,7 @@ class Algolia_Admin {
 	 */
 	public function handle_pro_redirect() {
 		if ( wp_verify_nonce( $_GET['algolia-pro'], 'algolia-pro-nonce' ) ) {
-			wp_redirect( 'https://pluginize.com/plugins/wp-search-with-algolia-pro/' ); // phpcs:ignore WordPress.Security.SafeRedirect.wp_redirec_wp_redirect
+			wp_redirect( 'https://pluginize.com/plugins/wp-search-with-algolia-pro/' ); // phpcs:ignore WordPress.Security.SafeRedirect.wp_redirect_wp_redirect
 			exit();
 		}
 	}
