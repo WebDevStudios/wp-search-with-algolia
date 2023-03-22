@@ -12,7 +12,9 @@ Use the power of Algolia to fall in love with your website's search. Enable Auto
 == Description ==
 
 "I hate my website's search!" We hear it all the time. Look no further than WP Search with Algolia to fall in love with your website's search capabilities.
+
 Forked, built, and supported by WebDevStudios, the website agency behind Custom Post Type UI, WP Search with Algolia immediately improves search on your site. Your users will be impressed.
+
 Autocomplete and Instantsearch are included and enabled. Plus, you receive full control over the look, feel, and relevance of your users' search experience.
 
 = Features =
@@ -21,6 +23,8 @@ Autocomplete and Instantsearch are included and enabled. Plus, you receive full 
 * WordPress hooks and filters available for easy customization of indexed content.
 
 This plugin requires API keys from [Algolia](https://www.algolia.com/). API keys are free for small personal projects and non-commercial use. Learn more about [commercial use pricing](https://www.algolia.com/pricing/).
+
+Are you ready to go pro? WebDevStudios is pleased to announce the release of **WP Search with Algolia Pro**, the premium version of WP Search with Algolia, which will be available for purchase at [Pluginize.com](https://pluginize.com/plugins/wp-search-with-algolia-pro/) soon.
 
 = Links =
 * [WebDevStudios](https://webdevstudios.com)
