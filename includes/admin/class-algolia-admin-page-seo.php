@@ -84,15 +84,7 @@ class Algolia_Admin_Page_SEO {
 	public function add_page() {
 		$api = $this->plugin->get_api();
 		if ( ! $api->is_reachable() ) {
-			// Means this is the only reachable admin page, so make it the default one!
-			return add_menu_page(
-				'WP Search with Algolia',
-				esc_html__( 'Algolia Search', 'wp-search-with-algolia' ),
-				'manage_options',
-				$this->slug,
-				array( $this, 'display_page' ),
-				''
-			);
+			return;
 		}
 
 		add_submenu_page(
