@@ -392,7 +392,7 @@ class Algolia_Admin {
 	 * @since 2.5.0
 	 */
 	public function handle_pro_redirect() {
-		if ( wp_verify_nonce( $_GET['algolia-pro'], 'algolia-pro-nonce' ) ) {
+		if ( isset( $_GET['algolia-pro-upgrade'] ) && wp_verify_nonce( $_GET['algolia-pro-upgrade'], 'algolia-pro-nonce' ) ) {
 			wp_redirect( 'https://pluginize.com/plugins/wp-search-with-algolia-pro/' ); // phpcs:ignore WordPress.Security.SafeRedirect.wp_redirect_wp_redirect
 			exit();
 		}
