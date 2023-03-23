@@ -1,5 +1,5 @@
 === WP Search with Algolia ===
-Contributors: WebDevStudios, williamsba1, gregrickaby, tw2113, richaber, mrasharirfan
+Contributors: WebDevStudios, williamsba1, gregrickaby, tw2113, richaber, mrasharirfan, scottbasgaard
 Tags: search, algolia, autocomplete, instantsearch, relevance search, faceted search, find-as-you-type search, ecommerce, seo
 Requires at least: 5.0
 Tested up to: 6.2
@@ -12,7 +12,9 @@ Use the power of Algolia to fall in love with your website's search. Enable Auto
 == Description ==
 
 "I hate my website's search!" We hear it all the time. Look no further than WP Search with Algolia to fall in love with your website's search capabilities.
+
 Forked, built, and supported by WebDevStudios, the website agency behind Custom Post Type UI, WP Search with Algolia immediately improves search on your site. Your users will be impressed.
+
 Autocomplete and Instantsearch are included and enabled. Plus, you receive full control over the look, feel, and relevance of your users' search experience.
 
 = Features =
@@ -21,6 +23,8 @@ Autocomplete and Instantsearch are included and enabled. Plus, you receive full 
 * WordPress hooks and filters available for easy customization of indexed content.
 
 This plugin requires API keys from [Algolia](https://www.algolia.com/). API keys are free for small personal projects and non-commercial use. Learn more about [commercial use pricing](https://www.algolia.com/pricing/).
+
+Are you ready to go pro? WebDevStudios is pleased to announce the release of **WP Search with Algolia Pro**, the premium version of WP Search with Algolia, which will be available for purchase at [Pluginize.com](https://pluginize.com/plugins/wp-search-with-algolia-pro/) soon.
 
 = Links =
 * [WebDevStudios](https://webdevstudios.com)
@@ -44,6 +48,16 @@ From your WordPress dashboard:
 5. **Read** the step by step [configuration guide](https://github.com/WebDevStudios/wp-search-with-algolia/wiki/Getting-Started)
 
 == Frequently Asked Questions ==
+
+= I see you now have a Pro addon, what features are available with it? =
+
+When you purchase a copy of [WP Search with Algolia Pro](https://pluginize.com/plugins/wp-search-with-algolia-pro/) you are getting access to the start of WooCommerce integration as well as Search Engine Optimization mirroring.
+
+With WooCommerce, you'll be able to manage settings to start including product information as part of indexed products, including out of box display with both Autocomplete and Instantsearch hit templates. You can also include details like product SKU values, total sales, and ratings to help with index ranking and relevance.
+
+With SEO settings, you can configure your content to manage itself in your Algolia indexes based on your "noindex" settings from your dedicated SEO plugins.
+
+We intend to continue adding and evolving all the extra features in WP Search with Algolia Pro
 
 = Is this plugin a fork? =
 
@@ -86,14 +100,6 @@ Yes. This plugin should work with most themes that do not override the default W
 = Where can I report bugs, request features, or contribute to the project? =
 
 All development is handled on [GitHub](https://github.com/WebDevStudios/wp-search-with-algolia/issues).
-
-= About Algolia =
-
-Algolia offers its Search as a Service provider on a incremental payment program, including a free Community Plan which includes 10,000 records & 50,000 operations per month. Beyond that, [plans](https://www.algolia.com/pricing/) start at $29/month.
-
-= About WebDevStudios =
-
-WebDevStudios provides end-to-end WordPress opportunities from strategy and planning to website design and development, as well as full data migration, extensive API integrations, scalability, performance and long-term guidance and maintenance. We have service options and solutions for start-ups, small to mid-size businesses, enterprise organizations and marketing agencies.
 
 == Screenshots ==
 
