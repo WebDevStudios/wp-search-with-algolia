@@ -108,8 +108,6 @@ All development is handled on [GitHub](https://github.com/WebDevStudios/wp-searc
 3. Autocomplete Settings
 4. InstantSearch Dropdown
 5. Search Results
-6. Pro: WooCommerce preview
-7. Pro: SEO preview
 
 == Changelog ==
 
