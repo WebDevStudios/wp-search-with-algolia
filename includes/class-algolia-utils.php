@@ -267,9 +267,15 @@ class Algolia_Utils {
 		);
 	}
 
+	/**
+	 * Return markup for WP Search with Algolia Pro Call To Action.
+	 *
+	 * @since 2.5.0
+	 * @return false|string
+	 */
 	public static function pro_cta_content() {
 		ob_start();
-	?>
+		?>
 		<div class="algolia-pro-cta">
 			<h2 class="algolia-pro-title"><?php esc_html_e( 'WP Search with Algolia Pro', 'wp-search-with-algolia' ); ?></h2>
 			<h3 class="algolia-pro-desc">
@@ -306,7 +312,7 @@ class Algolia_Utils {
 			</span>
 			</div>
 		</div>
-	<?php
+		<?php
 		return ob_get_clean();
 	}
 }
