@@ -70,8 +70,8 @@ class Algolia_Admin_Page_WooCommerce {
 	public function __construct( Algolia_Plugin $plugin ) {
 		$this->plugin = $plugin;
 
-		add_action( 'admin_menu', array( $this, 'add_page' ) );
-		add_action( 'admin_init', array( $this, 'add_settings' ) );
+		add_action( 'admin_menu', [ $this, 'add_page' ] );
+		add_action( 'admin_init', [ $this, 'add_settings' ] );
 	}
 
 	/**
@@ -84,15 +84,7 @@ class Algolia_Admin_Page_WooCommerce {
 	public function add_page() {
 		$api = $this->plugin->get_api();
 		if ( ! $api->is_reachable() ) {
-			// Means this is the only reachable admin page, so make it the default one!
-			return add_menu_page(
-				'WP Search with Algolia',
-				esc_html__( 'Algolia Search', 'wp-search-with-algolia' ),
-				'manage_options',
-				$this->slug,
-				array( $this, 'display_page' ),
-				''
-			);
+			return;
 		}
 
 		add_submenu_page(
@@ -108,7 +100,7 @@ class Algolia_Admin_Page_WooCommerce {
 			),
 			$this->capability,
 			$this->slug,
-			array( $this, 'display_page' )
+			[ $this, 'display_page' ]
 		);
 	}
 
@@ -122,7 +114,7 @@ class Algolia_Admin_Page_WooCommerce {
 		add_settings_section(
 			$this->section,
 			null,
-			array( $this, 'print_section_settings' ),
+			[ $this, 'print_section_settings' ],
 			$this->slug
 		);
 	}
