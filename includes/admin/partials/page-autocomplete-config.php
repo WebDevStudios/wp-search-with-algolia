@@ -36,7 +36,7 @@
 				<small style="color: #999">
 					<?php
 					printf(
-						/* translators: placeholder is the name of an Algolia search index. */
+						// translators: placeholder is the name of an Algolia search index.
 						esc_html__( 'Index name: %s', 'wp-search-with-algolia' ),
 						esc_html( $index['index_id'] )
 					);

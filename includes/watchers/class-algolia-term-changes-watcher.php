@@ -52,6 +52,11 @@ class Algolia_Term_Changes_Watcher implements Algolia_Changes_Watcher {
 		// Fires after an object's terms have been set.
 		add_action( 'set_object_terms', array( $this, 'handle_changes' ), 10, 6 );
 
+		// Handle meta changes after the change occurred.
+		add_action( 'added_term_meta', [ $this, 'on_meta_change' ], 10, 4 );
+		add_action( 'updated_term_meta', [ $this, 'on_meta_change' ], 10, 4 );
+		add_action( 'deleted_term_meta', [ $this, 'on_meta_change' ], 10, 4 );
+
 		// Fires after a term is deleted from the database and the cache is cleaned.
 		add_action( 'delete_term', array( $this, 'on_delete_term' ), 10, 4 );
 	}
@@ -129,5 +134,30 @@ class Algolia_Term_Changes_Watcher implements Algolia_Changes_Watcher {
 		} catch ( AlgoliaException $exception ) {
 			error_log( $exception->getMessage() ); // phpcs:ignore -- Legacy.
 		}
+	}
+
+	/**
+	 * Watch meta changes for item.
+	 *
+	 * @param string|array $meta_id    The meta ID.
+	 * @param int          $object_id  The post ID.
+	 * @param string       $meta_key   The meta key.
+	 * @param mixed        $meta_value The meta value.
+	 *
+	 * @return void
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 * @since  2.5.0
+	 */
+	public function on_meta_change( $meta_id, $object_id, $meta_key, $meta_value ) {
+
+		// We will not listen for any specific key by default.
+		$keys = [];
+		$keys = (array) apply_filters( 'algolia_watch_term_meta_keys', $keys, $object_id );
+
+		if ( empty( $keys ) || ! in_array( $meta_key, $keys, true ) ) {
+			return;
+		}
+
+		$this->sync_item( $object_id );
 	}
 }

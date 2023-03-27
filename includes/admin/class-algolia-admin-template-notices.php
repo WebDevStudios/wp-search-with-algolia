@@ -60,7 +60,7 @@ class Algolia_Admin_Template_Notices {
 			// Error if versions do not match, or custom template version unknown.
 			if ( version_compare( $file_version, $core_template_versions[ $filename ], '!=' ) ) {
 				$error_notices[] = sprintf(
-					/* translators: placeholder 1 is template filename, placeholder 2 is custom template version, placeholder 3 is core template version. */
+					// translators: placeholder 1 is template filename, placeholder 2 is custom template version, placeholder 3 is core template version.
 					esc_html__(
 						'Your custom WP Search With Algolia template file, %1$s, version %2$s is out of date. The core version is %3$s',
 						'wp-search-with-algolia'

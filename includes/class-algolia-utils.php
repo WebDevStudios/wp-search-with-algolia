@@ -266,4 +266,53 @@ class Algolia_Utils {
 			true
 		);
 	}
+
+	/**
+	 * Return markup for WP Search with Algolia Pro Call To Action.
+	 *
+	 * @since 2.5.0
+	 * @return false|string
+	 */
+	public static function pro_cta_content() {
+		ob_start();
+		?>
+		<div class="algolia-pro-cta">
+			<h2 class="algolia-pro-title"><?php esc_html_e( 'WP Search with Algolia Pro', 'wp-search-with-algolia' ); ?></h2>
+			<h3 class="algolia-pro-desc">
+				<?php esc_html_e( 'A premium Algolia search plugin specifically designed for enterprise-grade WordPress websites, including eCommerce', 'wp-search-with-algolia' ); ?>
+			</h3>
+			<div class="algolia-pro-features">
+				<div>
+					<h4><?php esc_html_e( 'WooCommerce Support', 'wp-search-with-algolia' ); ?></h4>
+					<span class="algolia-pro-feature">
+						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#0077ff" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+						<span><?php esc_html_e( 'Index product SKUs, prices and short descriptions for display', 'wp-search-with-algolia' ); ?></span>
+					</span>
+					<span class="algolia-pro-feature">
+						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#0077ff" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+						<span><?php esc_html_e( 'Index product total sales ratings for relevance', 'wp-search-with-algolia' ); ?></span>
+					</span>
+				</div>
+				<div>
+					<h4><?php esc_html_e( 'Additional Features', 'wp-search-with-algolia' ); ?></h4>
+					<span class="algolia-pro-feature">
+					<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#0077ff" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+					<span><?php esc_html_e( 'Fine tune indexing on selected pieces of content', 'wp-search-with-algolia' ); ?></span>
+				</span>
+					<span class="algolia-pro-feature">
+					<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#0077ff" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+					<span><?php esc_html_e( 'Yoast SEO and All in One SEO Support', 'wp-search-with-algolia' ); ?></span>
+				</span>
+				</div>
+			</div>
+			<div>
+				<a href="https://pluginize.com/plugins/wp-search-with-algolia-pro/" class="algolia-pro-button" target="_blank" rel="noopener"><?php esc_html_e( 'Upgrade Now and Go Pro', 'wp-search-with-algolia' ); ?></a>
+				<span class="algolia-pro-more">
+				<a href="https://pluginize.com/plugins/wp-search-with-algolia-pro/" target="_blank" rel="noopener"><?php esc_html_e( 'Learn more and see all the features', 'wp-search-with-algolia' ); ?></a>
+			</span>
+			</div>
+		</div>
+		<?php
+		return ob_get_clean();
+	}
 }
