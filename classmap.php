@@ -47,6 +47,8 @@ require_once ALGOLIA_PATH . 'includes/class-algolia-utils.php';
 require_once ALGOLIA_PATH . 'includes/class-algolia-styles.php';
 require_once ALGOLIA_PATH . 'includes/class-algolia-scripts.php';
 
+require_once ALGOLIA_PATH . 'includes/indices/settings/interface-algolia-index-settings.php';
+require_once ALGOLIA_PATH . 'includes/indices/settings/class-algolia-primary-index-settings.php';
 require_once ALGOLIA_PATH . 'includes/indices/class-algolia-index.php';
 require_once ALGOLIA_PATH . 'includes/indices/class-algolia-index-replica.php';
 require_once ALGOLIA_PATH . 'includes/indices/class-algolia-searchable-posts-index.php';

@@ -129,7 +129,7 @@ final class Algolia_Terms_Index extends Algolia_Index {
 	 *
 	 * @return array
 	 */
-	protected function get_settings() {
+	public function get_settings() {
 		$settings = array(
 			'searchableAttributes' => array(
 				'unordered(name)',
