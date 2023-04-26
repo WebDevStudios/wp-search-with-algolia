@@ -55,10 +55,12 @@ class Algolia_Primary_Index_Settings implements Algolia_Index_Settings {
             return false;
         }
 
-        $synced_settings = (array) $this->get_algolia_index()->setSettings($settings_needs_sync);
+        try {
+            $this->get_algolia_index()->setSettings($settings_needs_sync);
+        }catch(Exception $e) {
+            return false;
+        }
 
-        // TODO: maybe return a detailed response, evaluate if that's needed.
-
-        return count( $synced_settings ) > 0;
+        return true;
     }
 }

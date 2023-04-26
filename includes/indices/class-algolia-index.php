@@ -579,8 +579,7 @@ abstract class Algolia_Index {
 		$index = $this->get_index();
 
 		// This will create the index if it does not exist.
-		$settings = $this->get_settings();
-		$index->setSettings( $settings );
+		( new Algolia_Primary_Index_Settings( $this ) )->push();
 
 		// Push synonyms.
 		$synonyms = $this->get_synonyms();
