@@ -392,7 +392,6 @@ abstract class Algolia_Index {
 	 * @return SearchIndex
 	 */
 	public function get_index() {
-		ray( $this->get_name() );
 		return $this->client->initIndex( (string) $this->get_name() );
 	}
 
