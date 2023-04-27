@@ -18,6 +18,7 @@ use WebDevStudios\WPSWA\Algolia\AlgoliaSearch\SearchIndex;
  * @since 1.0.0
  */
 abstract class Algolia_Index {
+	protected $settings = [];
 
 	/**
 	 * The SearchClient instance.
@@ -685,7 +686,29 @@ abstract class Algolia_Index {
 	 *
 	 * @return array
 	 */
-	abstract public function get_settings();
+	public function get_settings() {
+		$settings = (array) apply_filters( 'algolia_' . $this->get_id() . '_index_settings', $this->settings );
+
+		/**
+		 * Replacing `attributesToIndex` with `searchableAttributes` as
+		 * it has been replaced by Algolia.
+		 *
+		 * @link  https://www.algolia.com/doc/api-reference/api-parameters/searchableAttributes/
+		 * @since 2.2.0
+		 */
+		if (
+			array_key_exists( 'attributesToIndex', $settings )
+			&& is_array( $settings['attributesToIndex'] )
+		) {
+			$settings['searchableAttributes'] = array_merge(
+				$settings['searchableAttributes'],
+				$settings['attributesToIndex']
+			);
+			unset( $settings['attributesToIndex'] );
+		}
+
+		return $settings;
+	}
 
 	/**
 	 * Get synonyms.

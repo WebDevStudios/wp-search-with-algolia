@@ -14,6 +14,14 @@
  * @since 1.0.0
  */
 final class Algolia_Users_Index extends Algolia_Index {
+	protected $settings = [
+		'searchableAttributes' => array(
+			'unordered(display_name)',
+		),
+		'customRanking'        => array(
+			'desc(posts_count)',
+		),
+	];
 
 	/**
 	 * What this index contains.
@@ -111,47 +119,6 @@ final class Algolia_Users_Index extends Algolia_Index {
 		$users_count = count_users();
 
 		return (int) $users_count['total_users'];
-	}
-
-	/**
-	 * Get settings.
-	 *
-	 * @author WebDevStudios <contact@webdevstudios.com>
-	 * @since  1.0.0
-	 *
-	 * @return array
-	 */
-	public function get_settings() {
-		$settings = array(
-			'searchableAttributes' => array(
-				'unordered(display_name)',
-			),
-			'customRanking'        => array(
-				'desc(posts_count)',
-			),
-		);
-
-		$settings = (array) apply_filters( 'algolia_users_index_settings', $settings );
-
-		/**
-		 * Replacing `attributesToIndex` with `searchableAttributes` as
-		 * it has been replaced by Algolia.
-		 *
-		 * @link  https://www.algolia.com/doc/api-reference/api-parameters/searchableAttributes/
-		 * @since 2.2.0
-		 */
-		if (
-			array_key_exists( 'attributesToIndex', $settings )
-			&& is_array( $settings['attributesToIndex'] )
-		) {
-			$settings['searchableAttributes'] = array_merge(
-				$settings['searchableAttributes'],
-				$settings['attributesToIndex']
-			);
-			unset( $settings['attributesToIndex'] );
-		}
-
-		return $settings;
 	}
 
 	/**

@@ -255,7 +255,8 @@ final class Algolia_Searchable_Posts_Index extends Algolia_Index {
 	 * @return array
 	 */
 	public function get_settings() {
-		$settings = array(
+		// override settings prop to inject the WP Filter Hook.
+		$this->settings = [
 			'searchableAttributes'  => array(
 				'unordered(post_title)',
 				'unordered(taxonomies)',
@@ -279,29 +280,9 @@ final class Algolia_Searchable_Posts_Index extends Algolia_Index {
 				'content:' . intval( apply_filters( 'excerpt_length', 55 ) ), // phpcs:ignore -- Legitimate use of Core hook.
 			),
 			'snippetEllipsisText'   => '…',
-		);
+		];
 
-		$settings = (array) apply_filters( 'algolia_searchable_posts_index_settings', $settings );
-
-		/**
-		 * Replacing `attributesToIndex` with `searchableAttributes` as
-		 * it has been replaced by Algolia.
-		 *
-		 * @link  https://www.algolia.com/doc/api-reference/api-parameters/searchableAttributes/
-		 * @since 2.2.0
-		 */
-		if (
-			array_key_exists( 'attributesToIndex', $settings )
-			&& is_array( $settings['attributesToIndex'] )
-		) {
-			$settings['searchableAttributes'] = array_merge(
-				$settings['searchableAttributes'],
-				$settings['attributesToIndex']
-			);
-			unset( $settings['attributesToIndex'] );
-		}
-
-		return $settings;
+		return parent::get_settings();
 	}
 
 	/**
