@@ -4,9 +4,11 @@ use WebDevStudios\WPSWA\Algolia\AlgoliaSearch\SearchIndex;
 
 class Algolia_Primary_Index_Settings implements Algolia_Index_Settings {
 	protected Algolia_Index $index;
+	protected SearchIndex $algolia_index;
 
 	public function __construct( Algolia_Index $index ) {
 		$this->index = $index;
+		$this->set_algolia_index();
 	}
 
 	public function get_index(): Algolia_Index {
@@ -14,7 +16,11 @@ class Algolia_Primary_Index_Settings implements Algolia_Index_Settings {
 	}
 
 	public function get_algolia_index(): SearchIndex {
-		return $this->get_index()->get_index();
+		return $this->algolia_index;
+	}
+
+	public function set_algolia_index(): void {
+		$this->algolia_index = $this->get_index()->get_index();
 	}
 
 	public function get_local_settings(): array {

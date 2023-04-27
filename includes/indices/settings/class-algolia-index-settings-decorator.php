@@ -2,7 +2,7 @@
 
 use WebDevStudios\WPSWA\Algolia\AlgoliaSearch\SearchIndex;
 
-class Algolia_Index_Settings_Decorator implements Algolia_Index_Settings {
+abstract class Algolia_Index_Settings_Decorator implements Algolia_Index_Settings {
 	protected Algolia_Index_Settings $index_settings;
 
 	public function __construct( Algolia_Index_Settings $index_settings ) {
@@ -25,11 +25,15 @@ class Algolia_Index_Settings_Decorator implements Algolia_Index_Settings {
 		return $this->index_settings->get_remote_settings();
 	}
 
+	public function set_algolia_index(): void {
+		$this->index_settings->set_algolia_index();
+	}
+
 	public function get_settings_needs_sync(): array {
 		return $this->index_settings->get_settings_needs_sync();
 	}
 
 	public function push(): bool {
-		return $this->index_settings->get_push();
+		return $this->index_settings->push();
 	}
 }

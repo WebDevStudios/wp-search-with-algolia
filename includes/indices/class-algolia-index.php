@@ -152,7 +152,7 @@ abstract class Algolia_Index {
 	 *
 	 * @throws LogicException If the SearchClient has not been set.
 	 */
-	final protected function get_client() {
+	public function get_client() {
 		if ( null === $this->client ) {
 			throw new LogicException( 'SearchClient has not been set.' );
 		}
