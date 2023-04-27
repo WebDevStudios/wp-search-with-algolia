@@ -139,7 +139,9 @@ final class Algolia_Terms_Index extends Algolia_Index {
 	 * @return array
 	 */
 	public function get_settings() {
-		return apply_filters( 'algolia_terms_index_settings', parent::get_settings(), $this->taxonomy );
+		// override settings prop to have a custom WP filter hook for terms only
+		$this->settings = apply_filters( 'algolia_terms_index_settings', $this->settings, $this->taxonomy );
+		return parent::get_settings();
 	}
 
 	/**

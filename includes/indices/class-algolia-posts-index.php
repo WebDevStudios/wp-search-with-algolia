@@ -295,7 +295,8 @@ final class Algolia_Posts_Index extends Algolia_Index {
 	 * @return array
 	 */
 	public function get_settings() {
-		return (array) apply_filters( 'algolia_posts_index_settings', parent::get_settings(), $this->post_type );
+		$this->settings = (array) apply_filters( 'algolia_posts_index_settings', $this->settings, $this->post_type );
+		return parent::get_settings();
 	}
 
 	/**
