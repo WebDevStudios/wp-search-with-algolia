@@ -823,10 +823,7 @@ abstract class Algolia_Index {
 			)
 		);
 
-		$client = $this->get_client();
-
-		// Ensure we re-push the master index settings each time.
-		$settings = $this->get_settings();
+		$settings = new Algolia_Primary_Index_Settings( $this ); // TODO: maybe move a common place.
 
 		/**
 		 * Loop over the replicas.
@@ -837,10 +834,7 @@ abstract class Algolia_Index {
 		 * @var Algolia_Index_Replica $replica
 		 */
 		foreach ( $replicas as $replica ) {
-			$settings['ranking'] = $replica->get_ranking();
-			$replica_index_name  = $replica->get_replica_index_name( $this );
-			$index               = $client->initIndex( $replica_index_name );
-			$index->setSettings( $settings );
+			( new Algolia_Replica_Index_Settings( $settings, $replica ) );
 		}
 	}
 
