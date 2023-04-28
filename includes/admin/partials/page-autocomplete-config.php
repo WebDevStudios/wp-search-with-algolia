@@ -10,8 +10,15 @@
 
 ?>
 
+<p class="description" id="home-description">
+	<?php esc_html_e( 'Configure the indices you want to display in the autocomplete search dropdown menu.', 'wp-search-with-algolia' ); ?>
+	<br />
+	<?php esc_html_e( 'Use the `Max. Suggestions` column to configure the number of results displayed by section.', 'wp-search-with-algolia' ); ?>
+	<br />
+	<?php esc_html_e( 'Use drag and drop to control the order of the sections in the autocomplete search dropdown menu.', 'wp-search-with-algolia' ); ?>
+</p>
 <table class="widefat table-autocomplete">
-	<thead>	
+	<thead>
 		<tr>
 			<th style="width: 20px;"></th>
 			<th style="width: 75px;"><?php esc_html_e( 'Enable', 'wp-search-with-algolia' ); ?></th>
