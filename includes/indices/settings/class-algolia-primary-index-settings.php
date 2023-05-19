@@ -24,7 +24,7 @@ class Algolia_Primary_Index_Settings implements Algolia_Index_Settings {
 	}
 
 	public function get_local_settings(): array {
-		return $this->get_index()->get_settings();
+		return $this->get_index()->get_default_settings();
 	}
 
 	public function get_remote_settings(): array {

@@ -14,7 +14,7 @@
  * @since 1.0.0
  */
 final class Algolia_Terms_Index extends Algolia_Index {
-	protected $settings = [
+	protected array $default_settings = [
 		'searchableAttributes' => array(
 			'unordered(name)',
 			'unordered(description)',
@@ -138,10 +138,10 @@ final class Algolia_Terms_Index extends Algolia_Index {
 	 *
 	 * @return array
 	 */
-	public function get_settings() {
+	public function get_default_settings() {
 		// override settings prop to have a custom WP filter hook for terms only
-		$this->settings = apply_filters( 'algolia_terms_index_settings', $this->settings, $this->taxonomy );
-		return parent::get_settings();
+		$this->default_settings = apply_filters( 'algolia_terms_index_settings', $this->default_settings, $this->taxonomy );
+		return parent::get_default_settings();
 	}
 
 	/**

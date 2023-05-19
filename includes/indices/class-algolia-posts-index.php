@@ -14,7 +14,7 @@
  * @since 1.0.0
  */
 final class Algolia_Posts_Index extends Algolia_Index {
-	protected $settings = [
+	protected array $default_settings = [
 		'searchableAttributes'  => array(
 			'unordered(post_title)',
 			'unordered(taxonomies)',
@@ -288,15 +288,16 @@ final class Algolia_Posts_Index extends Algolia_Index {
 
 	/**
 	 * Get settings.
+	 * Overridden to able to have "algolia_posts_index_settings" filter.
 	 *
 	 * @author WebDevStudios <contact@webdevstudios.com>
 	 * @since  1.0.0
 	 *
 	 * @return array
 	 */
-	public function get_settings() {
-		$this->settings = (array) apply_filters( 'algolia_posts_index_settings', $this->settings, $this->post_type );
-		return parent::get_settings();
+	public function get_default_settings() {
+		$this->default_settings = (array) apply_filters( 'algolia_posts_index_settings', $this->default_settings, $this->post_type );
+		return parent::get_default_settings();
 	}
 
 	/**

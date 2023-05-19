@@ -18,7 +18,12 @@ use WebDevStudios\WPSWA\Algolia\AlgoliaSearch\SearchIndex;
  * @since 1.0.0
  */
 abstract class Algolia_Index {
-	protected $settings = [];
+	/**
+	 * Default index settings
+	 *
+	 * @var array
+	 */
+	protected array $default_settings = [];
 
 	/**
 	 * The SearchClient instance.
@@ -686,8 +691,8 @@ abstract class Algolia_Index {
 	 *
 	 * @return array
 	 */
-	public function get_settings() {
-		$settings = (array) apply_filters( 'algolia_' . $this->get_id() . '_index_settings', $this->settings );
+	public function get_default_settings() {
+		$settings = (array) apply_filters( 'algolia_' . $this->get_id() . '_index_settings', $this->default_settings );
 
 		/**
 		 * Replacing `attributesToIndex` with `searchableAttributes` as

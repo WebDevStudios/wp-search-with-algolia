@@ -249,14 +249,15 @@ final class Algolia_Searchable_Posts_Index extends Algolia_Index {
 	/**
 	 * Get settings.
 	 *
+	 * Overridden to able to have "excerpt_length" WP filter hook for the attributesToSnippet.content
+	 *
 	 * @author WebDevStudios <contact@webdevstudios.com>
 	 * @since  1.0.0
 	 *
 	 * @return array
 	 */
-	public function get_settings() {
-		// override settings prop to inject the WP Filter Hook.
-		$this->settings = [
+	public function get_default_settings() {
+		$this->default_settings = [
 			'searchableAttributes'  => array(
 				'unordered(post_title)',
 				'unordered(taxonomies)',
@@ -282,7 +283,7 @@ final class Algolia_Searchable_Posts_Index extends Algolia_Index {
 			'snippetEllipsisText'   => '…',
 		];
 
-		return parent::get_settings();
+		return parent::get_default_settings();
 	}
 
 	/**

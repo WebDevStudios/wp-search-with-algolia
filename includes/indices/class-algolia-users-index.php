@@ -14,7 +14,7 @@
  * @since 1.0.0
  */
 final class Algolia_Users_Index extends Algolia_Index {
-	protected $settings = [
+	protected array $default_settings = [
 		'searchableAttributes' => array(
 			'unordered(display_name)',
 		),
