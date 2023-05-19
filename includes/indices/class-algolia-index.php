@@ -18,6 +18,8 @@ use WebDevStudios\WPSWA\Algolia\AlgoliaSearch\SearchIndex;
  * @since 1.0.0
  */
 abstract class Algolia_Index {
+	const AC_INDEX_NOT_EXISTS_EXCEPTION_MSG = 'Index does not exist';
+
 	/**
 	 * Default index settings
 	 *

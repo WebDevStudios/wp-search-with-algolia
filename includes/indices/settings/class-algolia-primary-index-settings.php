@@ -1,6 +1,7 @@
 <?php
 
 use WebDevStudios\WPSWA\Algolia\AlgoliaSearch\SearchIndex;
+use WebDevStudios\WPSWA\Algolia\AlgoliaSearch\Exceptions\NotFoundException;
 
 class Algolia_Primary_Index_Settings implements Algolia_Index_Settings {
 	protected Algolia_Index $index;
@@ -27,12 +28,23 @@ class Algolia_Primary_Index_Settings implements Algolia_Index_Settings {
 		return $this->get_index()->get_default_settings();
 	}
 
+	/**
+	 * If the Indice is not found, return empty settings. In that case, a new index is created.
+	 *
+	 * @throws Exception Varius exceptions can be thrown by Algolia Client except for NotFoundException.
+	 * @return array
+	 */
 	public function get_remote_settings(): array {
-		if ( ! $this->get_index()->exists() ) {
-			return [];
-		}
+		try {
+			return $this->get_algolia_index()->getSettings();
+		} catch ( NotFoundException $e ) {
+			// being more strict, catch only index does not exists case.
+			if ( Algolia_Index::AC_INDEX_NOT_EXISTS_EXCEPTION_MSG === $e->getMessage() ) {
+				return [];
+			}
 
-		return $this->get_algolia_index()->getSettings();
+			throw $e;
+		}
 	}
 
 	public function get_settings_needs_sync(): array {
@@ -63,7 +75,7 @@ class Algolia_Primary_Index_Settings implements Algolia_Index_Settings {
 		}
 
 		try {
-			$this->get_algolia_index()->setSettings( $settings );
+			$this->get_algolia_index()->setSettings( $settings ); // Creates new indice if doesn't exist.
 		} catch ( Exception $e ) {
 			return false;
 		}
