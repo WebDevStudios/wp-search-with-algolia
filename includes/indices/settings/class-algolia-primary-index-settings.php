@@ -49,15 +49,21 @@ class Algolia_Primary_Index_Settings implements Algolia_Index_Settings {
 		return $needs_sync;
 	}
 
-	public function push(): bool {
-		$settings_needs_sync = $this->get_settings_needs_sync();
+	/**
+	 * Push settings to the Algolia
+	 *
+	 * @param  array $overrides The settings array that will be forcefully pushed.
+	 * @return bool
+	 */
+	public function push( $overrides = [] ): bool {
+		$settings = wp_parse_args( $overrides, $this->get_settings_needs_sync() );
 
-		if ( count( $settings_needs_sync ) === 0 ) {
+		if ( count( $settings ) === 0 ) {
 			return false;
 		}
 
 		try {
-			$this->get_algolia_index()->setSettings( $settings_needs_sync );
+			$this->get_algolia_index()->setSettings( $settings );
 		} catch ( Exception $e ) {
 			return false;
 		}
