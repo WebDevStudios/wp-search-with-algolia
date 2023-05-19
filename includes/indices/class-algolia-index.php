@@ -11,6 +11,7 @@
 use WebDevStudios\WPSWA\Algolia\AlgoliaSearch\Exceptions\AlgoliaException;
 use WebDevStudios\WPSWA\Algolia\AlgoliaSearch\SearchClient;
 use WebDevStudios\WPSWA\Algolia\AlgoliaSearch\SearchIndex;
+use WebDevStudios\WPSWA\Algolia\AlgoliaSearch\Exceptions\NotFoundException;
 
 /**
  * Class Algolia_Index
@@ -881,27 +882,23 @@ abstract class Algolia_Index {
 	/**
 	 * Check if the index exists in Algolia.
 	 *
-	 * Returns true if the index exists in Algolia.
-	 * false otherwise.
+	 * Returns true if the index exists in Algolia, false otherwise.
 	 *
+	 * @throws \Exception various exceptions can be thrown by Algolia Client.
 	 * @author WebDevStudios <contact@webdevstudios.com>
 	 * @since  1.0.0
 	 *
 	 * @return bool
-	 *
-	 * @throws AlgoliaException If the index does not exist in Algolia.
 	 */
 	public function exists() {
 		try {
 			$this->get_index()->getSettings();
-		} catch ( AlgoliaException $exception ) {
-			if ( $exception->getMessage() === 'Index does not exist' ) {
+		} catch ( NotFoundException $exception ) {
+			if ( self::AC_INDEX_NOT_EXISTS_EXCEPTION_MSG === $exception->getMessage() ) {
 				return false;
 			}
 
-			error_log( $exception->getMessage() ); // phpcs:ignore -- Legacy.
-
-			return false;
+			throw $exception;
 		}
 
 		return true;
