@@ -1,30 +1,42 @@
 === WP Search with Algolia ===
-Contributors: WebDevStudios, williamsba1, gregrickaby, tw2113, richaber, mrasharirfan, scottbasgaard
-Tags: search, algolia, autocomplete, instantsearch, relevance search, faceted search, find-as-you-type search, ecommerce, seo
+Contributors: WebDevStudios, williamsba1, tw2113, mrasharirfan, scottbasgaard, gregrickaby, richaber
+Tags: search, algolia, autocomplete, instantsearch, relevance search, faceted search, find-as-you-type search, ecommerce, seo, woocommerce, advanced search
 Requires at least: 5.0
 Tested up to: 6.2
 Requires PHP: 7.4
-Stable tag: 2.5.0
+Stable tag: 2.5.1
 License: GNU General Public License v2.0, MIT License
 
-Use the power of Algolia to fall in love with your website's search. Enable Autocomplete and Instantsearch. Control the look, feel, and relevance.
+Use the power of Algolia to enhance your website's search. Enable Autocomplete and Instantsearch for fast and accurate results. Control the look, feel, and relevance.
 
 == Description ==
 
-"I hate my website's search!" We hear it all the time. Look no further than WP Search with Algolia to fall in love with your website's search capabilities.
+Easily integrate the powerful search tool Algolia directly into your WordPress website. Quickly index all of your website’s content and provide lightning fast and accurate search results within minutes!
 
-Forked, built, and supported by WebDevStudios, the website agency behind Custom Post Type UI, WP Search with Algolia immediately improves search on your site. Your users will be impressed.
+Built and supported by WebDevStudios, the website agency behind Custom Post Type UI, WP Search with Algolia immediately improves search on your website. Your users will be impressed!
 
-Autocomplete and Instantsearch are included and enabled. Plus, you receive full control over the look, feel, and relevance of your users' search experience.
+Enable Autocomplete and Instantsearch to immediately provide a more robust search experience to your visitors. Plus, you receive full control over the look, feel, and relevance of your users' search experience.
 
 = Features =
+* One-click indexing of all content in WordPress
 * Relevant, faceted ready search results in milliseconds with native typo-tolerance from Algolia Search
+* Super granular control on search content relevancy and content positioning
 * Language-agnostic
 * WordPress hooks and filters available for easy customization of indexed content.
 
 This plugin requires API keys from [Algolia](https://www.algolia.com/). API keys are free for small personal projects and non-commercial use. Learn more about [commercial use pricing](https://www.algolia.com/pricing/).
 
-Are you ready to go pro? WebDevStudios is pleased to announce the release of **WP Search with Algolia Pro**, the premium version of WP Search with Algolia, which will be available for purchase at [Pluginize.com](https://pluginize.com/plugins/wp-search-with-algolia-pro/) soon.
+Introducing **WP Search with Algolia Pro**, our new premium version of WP Search with Algolia! Pro features include:
+
+* WooCommerce support
+  * Indexing Product data including SKU, pricing (standard and variable), sales, and short descriptions.
+  * Total sales and total ratings indexed for popularity
+* Advanced SEO support with Yoast SEO and All in One SEO
+  * Content level settings to exclude individual content from the search index
+  * Set Algolia’s indexing to match with existing search engine “noindex” settings
+* Multisite Network-wide support coming soon!
+
+Are you ready to go Pro? Check out [WP Search with Algolia Pro on Pluginize](https://pluginize.com/plugins/wp-search-with-algolia-pro/)!
 
 = Links =
 * [WebDevStudios](https://webdevstudios.com)
@@ -112,6 +124,10 @@ All development is handled on [GitHub](https://github.com/WebDevStudios/wp-searc
 == Changelog ==
 
 Follow along with the changelog on [Github](https://github.com/WebDevStudios/wp-search-with-algolia/releases).
+
+= 2.5.1 =
+* Updated readme.txt with more plugin information.
+* Repositioned help info on settings screens.
 
 = 2.5.0 =
 * Introduction of WP Search with Algolia Pro availability.
