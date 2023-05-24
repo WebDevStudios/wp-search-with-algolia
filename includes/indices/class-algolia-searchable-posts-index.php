@@ -371,7 +371,7 @@ final class Algolia_Searchable_Posts_Index extends Algolia_Index {
 		// If there are no records, parent `update_records` will take care of the deletion.
 		// In case of posts, we ALWAYS need to delete existing records.
 		if ( ! empty( $records ) ) {
-			$this->delete_item( $post );
+			$this->delete_item( $post, true );
 		}
 
 		parent::update_records( $post, $records );
