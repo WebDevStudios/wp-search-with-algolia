@@ -456,8 +456,9 @@ final class Algolia_Searchable_Posts_Index extends Algolia_Index {
 	 * @since  1.0.0
 	 *
 	 * @param mixed $item The item to delete.
+	 * @param bool  $wait Wait the for operation to complete.
 	 */
-	public function delete_item( $item ) {
+	public function delete_item( $item, $wait = false ) {
 		$this->assert_is_supported( $item );
 
 		$records_count = $this->get_post_records_count( $item->ID );
@@ -467,7 +468,7 @@ final class Algolia_Searchable_Posts_Index extends Algolia_Index {
 		}
 
 		if ( ! empty( $object_ids ) ) {
-			$this->get_index()->deleteObjects( $object_ids );
+			$wait ? $this->get_index()->deleteObjects( $object_ids )->wait() : $this->get_index()->deleteObjects( $object_ids );
 		}
 	}
 
