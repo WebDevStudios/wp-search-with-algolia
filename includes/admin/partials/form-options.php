@@ -20,7 +20,7 @@
 			submit_button();
 			?>
 		</form>
-	<?php else: ?>
+	<?php else : ?>
 		<?php do_action( 'wpswa_pro_override_settings_output' ); ?>
 	<?php endif; ?>
 </div>
