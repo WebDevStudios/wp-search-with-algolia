@@ -5,7 +5,7 @@
  * @author  WebDevStudios <contact@webdevstudios.com>
  * @since   1.0.0
  *
- * @version 2.5.0
+ * @version 2.5.3
  * @package WebDevStudios\WPSWA
  */
 
@@ -173,7 +173,7 @@
 			var autocomplete = algoliaAutocomplete( element, config, sources )
 				.on( 'autocomplete:selected', function ( e, suggestion ) {
 					/* Redirect the user when we detect a suggestion selection. */
-					window.location.href = suggestion.permalink;
+					window.location.href = suggestion.permalink ?? suggestion.posts_url; // Users use the `posts_url` property instead of `permalink`.
 				} );
 
 			/* Force the dropdown to be re-drawn on scroll to handle fixed containers. */

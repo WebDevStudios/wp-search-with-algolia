@@ -430,7 +430,7 @@ final class Algolia_Searchable_Posts_Index extends Algolia_Index {
 	 *
 	 * @return array
 	 */
-	protected function get_items( $page, $batch_size ) {
+	public function get_items( $page, $batch_size ) {
 		$query = new WP_Query(
 			array(
 				'post_type'              => $this->post_types,

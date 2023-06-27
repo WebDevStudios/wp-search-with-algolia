@@ -4,7 +4,7 @@ Tags: search, algolia, autocomplete, instantsearch, relevance search, faceted se
 Requires at least: 5.0
 Tested up to: 6.2.2
 Requires PHP: 7.4
-Stable tag: 2.5.2
+Stable tag: 2.5.3
 License: GNU General Public License v2.0, MIT License
 
 Use the power of Algolia to enhance your website's search. Enable Autocomplete and Instantsearch for fast and accurate results. Control the look, feel, and relevance.
@@ -125,6 +125,10 @@ All development is handled on [GitHub](https://github.com/WebDevStudios/wp-searc
 
 Follow along with the changelog on [Github](https://github.com/WebDevStudios/wp-search-with-algolia/releases).
 
+= 2.5.3 =
+* Updated: Autocomplete template file with user link fix when cmd/ctrl clicking.
+* Updated: Class method visibility from protected to public.
+
 = 2.5.2 =
 * Updated: Fixed hits per page configuration for instantsearch
 * Added: Custom hook for settings page override.
@@ -192,66 +196,3 @@ Follow along with the changelog on [Github](https://github.com/WebDevStudios/wp-
 * Update Algolia InstantSearch.js to 4.25.2
 * Update Algolia Autocomplete.js to 0.38.0
 * Update Algolia PHP API Client to 3.0.2
-
-= 1.8.0 =
-* Focus on template versioning and update messaging
-* Add Algolia_Template_Utils class
-* Deprecate Algolia_Template_Loader::locate_template method
-* Deprecate Algolia_Plugin::get_templates_path method
-* Deprecate algolia_templates_path filter
-* Add Algolia_Update_Messages class
-* Add Algolia_Admin_Template_Notices class
-* Add Algolia_Version_Utils class
-
-= 1.7.0 =
-* Remove 'screen' media attribute from enqueued CSS
-* Update Algolia PHP Search Client to version 2.7.3.
-* Add "exclude" methods and filters
-* Deprecate "blacklist" methods and filters
-* Fix replica RequestOptions error
-* Fix PHP 8 usort deprecation warning
-* Fix JQMIGRATE event shorthand is deprecated warnings in instantsearch.php and autocomplete.php templates
-* Add "@version" to template file headers
-
-= 1.6.0 =
-* Fix deletion of post records created before indexing was enabled
-* Update Algolia PHP Search Client to version 2.7.1.
-* Add Algolia_Plugin_Factory to create and return a shared Algolia_Plugin instance
-* Add Algolia_Search_Client_Factory to return a new Algolia\AlgoliaSearch\SearchClient instance
-* Add Algolia_Http_Client_Interface_Factory to create and return a shared Php53HttpClient instance
-* Add algolia_php_53_http_client_options filter to supply cURL options to Php53HttpClient instance
-* Deprecate Algolia_Plugin:get_instance() which will be removed in an upcoming release
-
-= 1.5.0 =
-* Fix an issue where Pinterest follows a link to the Algolia domain to source text and/or images
-* Move Algolia scripts to footer by default
-* Changes algolia_load_scripts_in_footer filter default argument to "true"
-* Move autocomplete.php template output to footer by default
-
-= 1.4.0 =
-* Update Algolia PHP Search Client version 2.7.0.
-* Update Algolia JS libraries to most recent compatible (non-breaking) versions
-* Updates autocomplete.js to 0.37.1 (current release as of 2020-01-27)
-* Updates algoliasearch to 3.35.1 (last of the 3.x series)
-* Updates instantsearch.js to 1.12.1 (last of the 1.x series)
-
-= 1.3.0 =
-* Fix an issue where, under some circumstances, when a post with a featured image was deleted, the post might be accidentally re-indexed
-* Fix bug that prevented reindex display notices
-* Add algolia_load_scripts_in_footer filter to allow enqueueing the scripts in the footer instead of in the head
-* Add new filters for multisite developers
-
-= 1.2.0 =
-* Use filtered value of 'hitsPerPage' as 'posts_per_page' query param
-* Fix broken SVG
-* Add highlighting to backend search results - props @philipnewcomer
-
-= 1.1.0 =
-* Minimum PHP version requirement is now PHP 7.2
-* Minimum WordPress version requirement is now WP 5.0
-* Internationalization/localization improvements, textdomain matches plugin slug
-* Addressed a potential WSOD if minimum PHP and WP version requirements were not met
-* Tested on WP 5.3
-
-= 1.0.0 =
-* Initial release.
