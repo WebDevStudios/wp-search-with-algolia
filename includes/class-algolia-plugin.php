@@ -108,6 +108,16 @@ class Algolia_Plugin {
 	private $template_loader;
 
 	/**
+	 * Instance of Algolia_Admin.
+	 *
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 * @since  NEXT
+	 *
+	 * @var Algolia_Admin
+	 */
+	public $admin;
+
+	/**
 	 * Instance of Algolia_Compatibility.
 	 *
 	 * @author WebDevStudios <contact@webdevstudios.com>
@@ -165,7 +175,7 @@ class Algolia_Plugin {
 
 		// Load admin or public part of the plugin.
 		if ( is_admin() ) {
-			new Algolia_Admin( $this );
+			$this->admin = new Algolia_Admin( $this );
 		}
 	}
 
