@@ -111,7 +111,7 @@ class Algolia_Plugin {
 	 * Instance of Algolia_Admin.
 	 *
 	 * @author WebDevStudios <contact@webdevstudios.com>
-	 * @since  NEXT
+	 * @since  2.5.4
 	 *
 	 * @var Algolia_Admin
 	 */
