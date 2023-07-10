@@ -467,9 +467,16 @@ final class Algolia_Searchable_Posts_Index extends Algolia_Index {
 			$object_ids[] = $this->get_post_object_id( $item->ID, $i );
 		}
 
-		if ( ! empty( $object_ids ) ) {
-			$wait ? $this->get_index()->deleteObjects( $object_ids )->wait() : $this->get_index()->deleteObjects( $object_ids );
+		if ( empty( $object_ids ) ) {
+			return;
 		}
+		
+		if ( $wait ) {
+			$this->get_index()->deleteObjects( $object_ids )->wait();
+			return;
+		}
+		
+		$this->get_index()->deleteObjects( $object_ids );
 	}
 
 	/**
