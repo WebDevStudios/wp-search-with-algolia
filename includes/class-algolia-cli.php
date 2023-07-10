@@ -147,7 +147,7 @@ class Algolia_CLI {
 			$index->re_index( $page++ );
 			WP_CLI::log( sprintf( 'Indexed batch %s.', ( $page - 1 ) ) );
 			$progress->tick();
-		} while ( $page <= $total_pages );
+		} while ( $page <= ( $total_pages + $from_batch - 1 ) );
 
 		$progress->finish();
 
