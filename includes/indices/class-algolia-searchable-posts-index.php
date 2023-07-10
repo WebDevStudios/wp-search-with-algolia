@@ -456,7 +456,7 @@ final class Algolia_Searchable_Posts_Index extends Algolia_Index {
 	 * @since  1.0.0
 	 *
 	 * @param mixed $item The item to delete.
-	 * @param bool  $wait Wait the for operation to complete.
+	 * @param bool  $wait Wait for the operation to complete synchronously.
 	 */
 	public function delete_item( $item, $wait = false ) {
 		$this->assert_is_supported( $item );
