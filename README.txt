@@ -4,7 +4,7 @@ Tags: search, algolia, autocomplete, instantsearch, relevance search, faceted se
 Requires at least: 5.0
 Tested up to: 6.2.2
 Requires PHP: 7.4
-Stable tag: 2.5.3
+Stable tag: 2.5.4
 License: GNU General Public License v2.0, MIT License
 
 Use the power of Algolia to enhance your website's search. Enable Autocomplete and Instantsearch for fast and accurate results. Control the look, feel, and relevance.
@@ -124,6 +124,10 @@ All development is handled on [GitHub](https://github.com/WebDevStudios/wp-searc
 == Changelog ==
 
 Follow along with the changelog on [Github](https://github.com/WebDevStudios/wp-search-with-algolia/releases).
+
+= 2.5.4 =
+* Updated: Ensure reindexing completes when using the from_batch flag with CLI.
+* Updated: Assigned Algolia_Admin instance to a property for access elsewhere.
 
 = 2.5.3 =
 * Updated: Autocomplete template file with user link fix when cmd/ctrl clicking.
