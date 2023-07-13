@@ -72,6 +72,7 @@ class Algolia_Post_Changes_Watcher implements Algolia_Changes_Watcher {
 		add_action( 'add_attachment', array( $this, 'sync_item' ) );
 		add_action( 'attachment_updated', array( $this, 'sync_item' ) );
 		add_action( 'delete_attachment', array( $this, 'delete_item' ) );
+		add_action( 'pre_post_update', array( $this, 'check_slug_update' ),  10, 2  );
 	}
 
 	/**
@@ -99,11 +100,48 @@ class Algolia_Post_Changes_Watcher implements Algolia_Changes_Watcher {
 			return;
 		}
 
+		$child_posts = get_transient( 'wp_algolia_child_posts_' . $post_id );
+
+		if ( false !== $child_posts ) {
+			foreach( $child_posts as $child_post ) {
+				$this->index->sync( $child_post );
+			}
+			delete_transient( 'wp_algolia_child_posts_' . $post_id );
+		}
 		try {
 			$this->index->sync( $post );
 		} catch ( AlgoliaException $exception ) {
 			error_log( $exception->getMessage() ); // phpcs:ignore -- Legacy.
 		}
+	}
+
+	/**
+	 * Check if a slug has been changed and add the childrens into a transient ( if it has children ).
+	 *
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 *
+	 * @since 2.5.3
+	 * @param int   $post_id The parent ID.
+	 * @param array $post_data An array containing the new post data.
+	 * @return void
+	 */
+	public function check_slug_update( $post_id, $post_data ) {
+		$post = get_post( (int) $post_id );
+		if ( isset( $post_data['post_name'] ) && $post_data['post_name'] !== $post->post_name ) {
+
+			$child_posts = get_children( [
+				'post_parent' => $post_id,
+			] );
+
+			$pending_childs = [];
+			foreach ( $child_posts as $child_post ) {
+				if ( 'inherit' !== $child_post->post_status ) {
+					$pending_childs[] = $child_post;
+				}
+			}
+			set_transient( 'wp_algolia_child_posts_' . $post_id, $pending_childs, 60 );
+		}
+
 	}
 
 	/**
