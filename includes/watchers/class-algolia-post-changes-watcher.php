@@ -91,7 +91,7 @@ class Algolia_Post_Changes_Watcher implements Algolia_Changes_Watcher {
 			return;
 		}
 
-		if ( in_array($post_id, $this->posts_deleted, true ) ) {
+		if ( in_array( $post_id, $this->posts_deleted, true ) ) {
 			return;
 		}
 
