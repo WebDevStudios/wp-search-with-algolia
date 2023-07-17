@@ -1,17 +1,36 @@
 {
-  "name": "autocomplete.js",
-  "description": "Fast and fully-featured autocomplete library",
-  "keywords": [
-    "autocomplete",
-    "typeahead"
-  ],
-  "homepage": "https://github.com/algolia/autocomplete.js",
-  "bugs": "https://github.com/algolia/autocomplete.js/issues",
-  "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/algolia/autocomplete.js.git"
+  "_from": "autocomplete.js@^0.38.0",
+  "_id": "autocomplete.js@0.38.1",
+  "_inBundle": false,
+  "_integrity": "sha512-6pSJzuRMY3pqpozt+SXThl2DmJfma8Bi3SVFbZHS0PW/N72bOUv+Db0jAh2cWOhTsA4X+GNmKvIl8wExJTnN9w==",
+  "_location": "/autocomplete.js",
+  "_phantomChildren": {},
+  "_requested": {
+    "type": "range",
+    "registry": true,
+    "raw": "autocomplete.js@^0.38.0",
+    "name": "autocomplete.js",
+    "escapedName": "autocomplete.js",
+    "rawSpec": "^0.38.0",
+    "saveSpec": null,
+    "fetchSpec": "^0.38.0"
   },
+  "_requiredBy": [
+    "#USER"
+  ],
+  "_resolved": "https://registry.npmjs.org/autocomplete.js/-/autocomplete.js-0.38.1.tgz",
+  "_shasum": "9b006c985d996165ebbc62af33f5b4c32d209cc2",
+  "_spec": "autocomplete.js@^0.38.0",
+  "_where": "/Users/asharirfan/code/wp-algolia/app/public/wp-content/plugins/wp-search-with-algolia-dev",
+  "bugs": {
+    "url": "https://github.com/algolia/autocomplete.js/issues"
+  },
+  "bundleDependencies": false,
+  "dependencies": {
+    "immediate": "^3.2.3"
+  },
+  "deprecated": false,
+  "description": "Fast and fully-featured autocomplete library",
   "devDependencies": {
     "angular": "^1.6.4",
     "angular-mocks": "^1.6.4",
@@ -69,20 +88,28 @@
     "webpack-dev-server": "^1.16.1",
     "yiewd": "^0.6.0"
   },
+  "homepage": "https://github.com/algolia/autocomplete.js",
+  "keywords": [
+    "autocomplete",
+    "typeahead"
+  ],
+  "license": "MIT",
+  "main": "index.js",
+  "name": "autocomplete.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/algolia/autocomplete.js.git"
+  },
   "scripts": {
     "build": "grunt",
     "dev": "grunt dev",
+    "docs:netlify": "./scripts/netlify-deploy.js",
     "lint": "grunt lint",
+    "release": "./scripts/release.sh",
     "server": "grunt server",
     "test": "karma start --single-run && grunt lint",
-    "test:watch": "karma start",
     "test:ci": "./test/ci.sh",
-    "release": "./scripts/release.sh",
-    "docs:netlify": "./scripts/netlify-deploy.js"
+    "test:watch": "karma start"
   },
-  "version": "0.38.1",
-  "main": "index.js",
-  "dependencies": {
-    "immediate": "^3.2.3"
-  }
+  "version": "0.38.1"
 }
