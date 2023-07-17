@@ -1,6 +1,7 @@
 /// <reference types="google.maps" />
+/// <reference types="googlemaps" />
 import type { renderTemplate } from '../../lib/templating';
-export declare type HTMLMarkerArguments = {
+export type HTMLMarkerArguments = {
     __id: string;
     position: google.maps.LatLngLiteral;
     map: google.maps.Map;
@@ -27,7 +28,7 @@ interface Marker {
     };
     latLng: google.maps.LatLng;
     element: HTMLDivElement;
-    getPosition(): google.maps.LatLng;
+    getPosition: () => google.maps.LatLng;
 }
 declare const createHTMLMarker: (googleReference: typeof google) => new (args: HTMLMarkerArguments) => google.maps.OverlayView & Marker;
 export default createHTMLMarker;

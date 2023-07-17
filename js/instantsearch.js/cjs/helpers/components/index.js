@@ -3,9 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-
-var _Highlight = require("./Highlight.js");
-
+var _Highlight = require("./Highlight");
 Object.keys(_Highlight).forEach(function (key) {
   if (key === "default" || key === "__esModule") return;
   if (key in exports && exports[key] === _Highlight[key]) return;
@@ -16,9 +14,7 @@ Object.keys(_Highlight).forEach(function (key) {
     }
   });
 });
-
-var _ReverseHighlight = require("./ReverseHighlight.js");
-
+var _ReverseHighlight = require("./ReverseHighlight");
 Object.keys(_ReverseHighlight).forEach(function (key) {
   if (key === "default" || key === "__esModule") return;
   if (key in exports && exports[key] === _ReverseHighlight[key]) return;
@@ -29,9 +25,7 @@ Object.keys(_ReverseHighlight).forEach(function (key) {
     }
   });
 });
-
-var _ReverseSnippet = require("./ReverseSnippet.js");
-
+var _ReverseSnippet = require("./ReverseSnippet");
 Object.keys(_ReverseSnippet).forEach(function (key) {
   if (key === "default" || key === "__esModule") return;
   if (key in exports && exports[key] === _ReverseSnippet[key]) return;
@@ -42,9 +36,7 @@ Object.keys(_ReverseSnippet).forEach(function (key) {
     }
   });
 });
-
-var _Snippet = require("./Snippet.js");
-
+var _Snippet = require("./Snippet");
 Object.keys(_Snippet).forEach(function (key) {
   if (key === "default" || key === "__esModule") return;
   if (key in exports && exports[key] === _Snippet[key]) return;

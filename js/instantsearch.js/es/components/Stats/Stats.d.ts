@@ -1,10 +1,10 @@
 
 import { h } from 'preact';
-import type { StatsCSSClasses, StatsTemplates } from '../../widgets/stats/stats';
 import type { ComponentCSSClasses } from '../../types';
-export declare type StatsComponentCSSClasses = ComponentCSSClasses<StatsCSSClasses>;
-export declare type StatsComponentTemplates = Required<StatsTemplates>;
-declare type StatsProps = {
+import type { StatsCSSClasses, StatsTemplates } from '../../widgets/stats/stats';
+export type StatsComponentCSSClasses = ComponentCSSClasses<StatsCSSClasses>;
+export type StatsComponentTemplates = Required<StatsTemplates>;
+type StatsProps = {
     cssClasses: StatsComponentCSSClasses;
     templateProps: {
         [key: string]: any;

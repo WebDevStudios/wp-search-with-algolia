@@ -1,9 +1,8 @@
-import InstantSearch from "./lib/InstantSearch.js";
-import version from "./lib/version.js";
 import { snippet, reverseSnippet, highlight, reverseHighlight, insights, getInsightsAnonymousUserToken } from "./helpers/index.js";
 import { createInfiniteHitsSessionStorageCache } from "./lib/infiniteHitsCache/index.js";
+import InstantSearch from "./lib/InstantSearch.js";
 import { deprecate } from "./lib/utils/index.js";
-
+import version from "./lib/version.js";
 /**
  * InstantSearch is the main component of InstantSearch.js. This object
  * manages the widget and lets you add new ones.
@@ -22,7 +21,6 @@ import { deprecate } from "./lib/utils/index.js";
 var instantsearch = function instantsearch(options) {
   return new InstantSearch(options);
 };
-
 instantsearch.version = version;
 instantsearch.createInfiniteHitsSessionStorageCache = deprecate(createInfiniteHitsSessionStorageCache, "import { createInfiniteHitsSessionStorageCache } from 'instantsearch.js/es/lib/infiniteHitsCache'");
 instantsearch.highlight = deprecate(highlight, "import { highlight } from 'instantsearch.js/es/helpers'");

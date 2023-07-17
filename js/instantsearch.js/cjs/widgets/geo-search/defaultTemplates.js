@@ -4,11 +4,8 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
-
 var _preact = require("preact");
-
 var _ref = (0, _preact.h)("p", null, "Your custom HTML Marker");
-
 var defaultTemplates = {
   HTMLMarker: function HTMLMarker() {
     return _ref;

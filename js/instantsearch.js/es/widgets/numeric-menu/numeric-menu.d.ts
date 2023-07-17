@@ -1,7 +1,7 @@
 
 import type { NumericMenuConnectorParams, NumericMenuWidgetDescription } from '../../connectors/numeric-menu/connectNumericMenu';
 import type { ComponentCSSClasses, Template, WidgetFactory } from '../../types';
-export declare type NumericMenuCSSClasses = Partial<{
+export type NumericMenuCSSClasses = Partial<{
     /**
      * CSS class to add to the root element.
      */
@@ -35,8 +35,8 @@ export declare type NumericMenuCSSClasses = Partial<{
      */
     radio: string | string[];
 }>;
-export declare type NumericMenuComponentCSSClasses = ComponentCSSClasses<NumericMenuCSSClasses>;
-export declare type NumericMenuTemplates = Partial<{
+export type NumericMenuComponentCSSClasses = ComponentCSSClasses<NumericMenuCSSClasses>;
+export type NumericMenuTemplates = Partial<{
     /**
      * Item template, provided with `label` (the name in the configuration), `isRefined`, `url`, `value` (the setting for the filter) data properties.
      */
@@ -70,8 +70,8 @@ export declare type NumericMenuTemplates = Partial<{
         cssClasses: NumericMenuComponentCSSClasses;
     }>;
 }>;
-export declare type NumericMenuComponentTemplates = Required<NumericMenuTemplates>;
-export declare type NumericMenuWidgetParams = {
+export type NumericMenuComponentTemplates = Required<NumericMenuTemplates>;
+export type NumericMenuWidgetParams = {
     /**
      * CSS Selector or HTMLElement to insert the widget.
      */
@@ -85,7 +85,7 @@ export declare type NumericMenuWidgetParams = {
      */
     cssClasses?: NumericMenuCSSClasses;
 };
-export declare type NumericMenuWidget = WidgetFactory<NumericMenuWidgetDescription & {
+export type NumericMenuWidget = WidgetFactory<NumericMenuWidgetDescription & {
     $$widgetType: 'ais.numericMenu';
 }, NumericMenuConnectorParams, NumericMenuWidgetParams>;
 declare const numericMenu: NumericMenuWidget;

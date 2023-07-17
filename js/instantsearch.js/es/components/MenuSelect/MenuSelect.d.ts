@@ -1,11 +1,11 @@
 
 import { h } from 'preact';
-import type { MenuSelectCSSClasses, MenuSelectTemplates } from '../../widgets/menu-select/menu-select';
 import type { MenuRenderState } from '../../connectors/menu/connectMenu';
 import type { ComponentCSSClasses } from '../../types';
-export declare type MenuSelectComponentCSSClasses = ComponentCSSClasses<MenuSelectCSSClasses>;
-export declare type MenuSelectComponentTemplates = Required<MenuSelectTemplates>;
-declare type MenuItem = {
+import type { MenuSelectCSSClasses, MenuSelectTemplates } from '../../widgets/menu-select/menu-select';
+export type MenuSelectComponentCSSClasses = ComponentCSSClasses<MenuSelectCSSClasses>;
+export type MenuSelectComponentTemplates = Required<MenuSelectTemplates>;
+type MenuItem = {
     /**
      * The value of the menu item.
      **/
@@ -23,7 +23,7 @@ declare type MenuItem = {
      **/
     isRefined: boolean;
 };
-declare type Props = {
+type Props = {
     cssClasses: MenuSelectComponentCSSClasses;
     items: MenuItem[];
     refine: MenuRenderState['refine'];

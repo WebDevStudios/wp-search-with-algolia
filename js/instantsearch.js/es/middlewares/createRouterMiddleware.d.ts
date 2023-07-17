@@ -1,5 +1,5 @@
 import type { Router, StateMapping, UiState, InternalMiddleware } from '../types';
-export declare type RouterProps<TUiState extends UiState = UiState, TRouteState = TUiState> = {
+export type RouterProps<TUiState extends UiState = UiState, TRouteState = TUiState> = {
     router?: Router<TRouteState>;
     stateMapping?: StateMapping<TUiState, TRouteState>;
 };

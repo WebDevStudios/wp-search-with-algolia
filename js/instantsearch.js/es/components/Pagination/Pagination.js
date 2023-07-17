@@ -1,7 +1,7 @@
-import { h } from 'preact';
 import { cx } from '@algolia/ui-components-shared';
+import { h } from 'preact';
 import { isSpecialClick } from "../../lib/utils/index.js";
-
+import Template from "../Template/Template.js";
 function Pagination(props) {
   function createClickHandler(pageNumber) {
     return function (event) {
@@ -10,12 +10,10 @@ function Pagination(props) {
         // if one special key is down
         return;
       }
-
       event.preventDefault();
       props.setCurrentPage(pageNumber);
     };
   }
-
   return h("div", {
     className: cx(props.cssClasses.root, props.nbPages <= 1 && props.cssClasses.noRefinementRoot)
   }, h("ul", {
@@ -24,7 +22,8 @@ function Pagination(props) {
     ariaLabel: "First",
     className: props.cssClasses.firstPageItem,
     isDisabled: props.isFirstPage,
-    label: props.templates.first,
+    templates: props.templates,
+    templateKey: "first",
     pageNumber: 0,
     createURL: props.createURL,
     cssClasses: props.cssClasses,
@@ -33,7 +32,8 @@ function Pagination(props) {
     ariaLabel: "Previous",
     className: props.cssClasses.previousPageItem,
     isDisabled: props.isFirstPage,
-    label: props.templates.previous,
+    templates: props.templates,
+    templateKey: "previous",
     pageNumber: props.currentPage - 1,
     createURL: props.createURL,
     cssClasses: props.cssClasses,
@@ -41,10 +41,11 @@ function Pagination(props) {
   }), props.pages.map(function (pageNumber) {
     return h(PaginationLink, {
       key: pageNumber,
-      ariaLabel: "".concat(pageNumber + 1),
+      ariaLabel: "Page ".concat(pageNumber + 1),
       className: props.cssClasses.pageItem,
       isSelected: pageNumber === props.currentPage,
-      label: "".concat(pageNumber + 1),
+      templates: props.templates,
+      templateKey: "page",
       pageNumber: pageNumber,
       createURL: props.createURL,
       cssClasses: props.cssClasses,
@@ -54,7 +55,8 @@ function Pagination(props) {
     ariaLabel: "Next",
     className: props.cssClasses.nextPageItem,
     isDisabled: props.isLastPage,
-    label: props.templates.next,
+    templates: props.templates,
+    templateKey: "next",
     pageNumber: props.currentPage + 1,
     createURL: props.createURL,
     cssClasses: props.cssClasses,
@@ -63,42 +65,52 @@ function Pagination(props) {
     ariaLabel: "Last",
     className: props.cssClasses.lastPageItem,
     isDisabled: props.isLastPage,
-    label: props.templates.last,
+    templates: props.templates,
+    templateKey: "last",
     pageNumber: props.nbPages - 1,
     createURL: props.createURL,
     cssClasses: props.cssClasses,
     createClickHandler: createClickHandler
   })));
 }
-
 function PaginationLink(_ref) {
-  var label = _ref.label,
-      ariaLabel = _ref.ariaLabel,
-      pageNumber = _ref.pageNumber,
-      className = _ref.className,
-      _ref$isDisabled = _ref.isDisabled,
-      isDisabled = _ref$isDisabled === void 0 ? false : _ref$isDisabled,
-      _ref$isSelected = _ref.isSelected,
-      isSelected = _ref$isSelected === void 0 ? false : _ref$isSelected,
-      cssClasses = _ref.cssClasses,
-      createURL = _ref.createURL,
-      createClickHandler = _ref.createClickHandler;
+  var templates = _ref.templates,
+    templateKey = _ref.templateKey,
+    ariaLabel = _ref.ariaLabel,
+    pageNumber = _ref.pageNumber,
+    className = _ref.className,
+    _ref$isDisabled = _ref.isDisabled,
+    isDisabled = _ref$isDisabled === void 0 ? false : _ref$isDisabled,
+    _ref$isSelected = _ref.isSelected,
+    isSelected = _ref$isSelected === void 0 ? false : _ref$isSelected,
+    cssClasses = _ref.cssClasses,
+    createURL = _ref.createURL,
+    createClickHandler = _ref.createClickHandler;
   return h("li", {
     className: cx(cssClasses.item, className, isDisabled && cssClasses.disabledItem, isSelected && cssClasses.selectedItem)
-  }, isDisabled ? h("span", {
-    className: cssClasses.link,
-    dangerouslySetInnerHTML: {
-      __html: label
+  }, isDisabled ? h(Template, {
+    rootTagName: "span",
+    rootProps: {
+      className: cssClasses.link
+    },
+    templateKey: templateKey,
+    templates: templates,
+    data: {
+      page: pageNumber + 1
     }
-  }) : h("a", {
-    className: cssClasses.link,
-    "aria-label": ariaLabel,
-    href: createURL(pageNumber),
-    onClick: createClickHandler(pageNumber),
-    dangerouslySetInnerHTML: {
-      __html: label
+  }) : h(Template, {
+    rootTagName: "a",
+    rootProps: {
+      className: cssClasses.link,
+      'aria-label': ariaLabel,
+      href: createURL(pageNumber),
+      onClick: createClickHandler(pageNumber)
+    },
+    templateKey: templateKey,
+    templates: templates,
+    data: {
+      page: pageNumber + 1
     }
   }));
 }
-
 export default Pagination;

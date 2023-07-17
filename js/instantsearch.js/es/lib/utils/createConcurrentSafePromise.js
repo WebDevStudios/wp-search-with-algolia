@@ -1,6 +1,5 @@
 // copied from
 // https://github.com/algolia/autocomplete.js/blob/307a7acc4283e10a19cb7d067f04f1bea79dc56f/packages/autocomplete-core/src/utils/createConcurrentSafePromise.ts#L1:L1
-
 /**
  * Creates a runner that executes promises in a concurrent-safe way.
  *
@@ -30,7 +29,6 @@ export function createConcurrentSafePromise() {
       if (latestResolvedValue && currentPromiseId < latestResolvedId) {
         return latestResolvedValue;
       }
-
       latestResolvedId = currentPromiseId;
       latestResolvedValue = x;
       return x;

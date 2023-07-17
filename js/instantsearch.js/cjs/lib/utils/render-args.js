@@ -5,7 +5,6 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.createInitArgs = createInitArgs;
 exports.createRenderArgs = createRenderArgs;
-
 function createInitArgs(instantSearchInstance, parent, uiState) {
   var helper = parent.getHelper();
   return {
@@ -25,16 +24,16 @@ function createInitArgs(instantSearchInstance, parent, uiState) {
     error: instantSearchInstance.error
   };
 }
-
 function createRenderArgs(instantSearchInstance, parent) {
   var results = parent.getResults();
+  var helper = parent.getHelper();
   return {
-    helper: parent.getHelper(),
+    helper: helper,
     parent: parent,
     instantSearchInstance: instantSearchInstance,
     results: results,
     scopedResults: parent.getScopedResults(),
-    state: results._state,
+    state: results ? results._state : helper.state,
     renderState: instantSearchInstance.renderState,
     templatesConfig: instantSearchInstance.templatesConfig,
     createURL: parent.createURL,

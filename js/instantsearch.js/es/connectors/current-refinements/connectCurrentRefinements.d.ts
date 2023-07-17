@@ -1,5 +1,5 @@
 import type { Connector, TransformItems, CreateURL, WidgetRenderState } from '../../types';
-export declare type CurrentRefinementsConnectorParamsRefinement = {
+export type CurrentRefinementsConnectorParamsRefinement = {
     /**
      * The attribute on which the refinement is applied.
      */
@@ -29,11 +29,15 @@ export declare type CurrentRefinementsConnectorParamsRefinement = {
      */
     exhaustive?: boolean;
 };
-export declare type CurrentRefinementsConnectorParamsItem = {
+export type CurrentRefinementsConnectorParamsItem = {
     /**
      * The index name.
      */
     indexName: string;
+    /**
+     * The index id as provided to the index widget.
+     */
+    indexId: string;
     /**
      * The attribute on which the refinement is applied.
      */
@@ -49,9 +53,9 @@ export declare type CurrentRefinementsConnectorParamsItem = {
     /**
      * Removes the given refinement and triggers a new search.
      */
-    refine(refinement: CurrentRefinementsConnectorParamsRefinement): void;
+    refine: (refinement: CurrentRefinementsConnectorParamsRefinement) => void;
 };
-export declare type CurrentRefinementsConnectorParams = {
+export type CurrentRefinementsConnectorParams = {
     /**
      * The attributes to include in the widget (all by default).
      * Cannot be used with `excludedAttributes`.
@@ -71,7 +75,7 @@ export declare type CurrentRefinementsConnectorParams = {
      */
     transformItems?: TransformItems<CurrentRefinementsConnectorParamsItem>;
 };
-export declare type CurrentRefinementsRenderState = {
+export type CurrentRefinementsRenderState = {
     /**
      * All the currently refined items, grouped by attribute.
      */
@@ -83,19 +87,19 @@ export declare type CurrentRefinementsRenderState = {
     /**
      * Removes the given refinement and triggers a new search.
      */
-    refine(refinement: CurrentRefinementsConnectorParamsRefinement): void;
+    refine: (refinement: CurrentRefinementsConnectorParamsRefinement) => void;
     /**
      * Generates a URL for the next state.
      */
     createURL: CreateURL<CurrentRefinementsConnectorParamsRefinement>;
 };
-export declare type CurrentRefinementsWidgetDescription = {
+export type CurrentRefinementsWidgetDescription = {
     $$type: 'ais.currentRefinements';
     renderState: CurrentRefinementsRenderState;
     indexRenderState: {
         currentRefinements: WidgetRenderState<CurrentRefinementsRenderState, CurrentRefinementsConnectorParams>;
     };
 };
-export declare type CurrentRefinementsConnector = Connector<CurrentRefinementsWidgetDescription, CurrentRefinementsConnectorParams>;
+export type CurrentRefinementsConnector = Connector<CurrentRefinementsWidgetDescription, CurrentRefinementsConnectorParams>;
 declare const connectCurrentRefinements: CurrentRefinementsConnector;
 export default connectCurrentRefinements;

@@ -1,5 +1,5 @@
 import type { Connector, TransformItems, CreateURL, WidgetRenderState } from '../../types';
-export declare type BreadcrumbConnectorParamsItem = {
+export type BreadcrumbConnectorParamsItem = {
     /**
      * Label of the category or subcategory.
      */
@@ -9,7 +9,7 @@ export declare type BreadcrumbConnectorParamsItem = {
      */
     value: string | null;
 };
-export declare type BreadcrumbConnectorParams = {
+export type BreadcrumbConnectorParams = {
     /**
      * Attributes to use to generate the hierarchy of the breadcrumb.
      */
@@ -29,7 +29,7 @@ export declare type BreadcrumbConnectorParams = {
      */
     separator?: string;
 };
-export declare type BreadcrumbRenderState = {
+export type BreadcrumbRenderState = {
     /**
      * Creates the URL for a single item name in the list.
      */
@@ -47,7 +47,7 @@ export declare type BreadcrumbRenderState = {
      */
     canRefine: boolean;
 };
-export declare type BreadcrumbWidgetDescription = {
+export type BreadcrumbWidgetDescription = {
     $$type: 'ais.breadcrumb';
     renderState: BreadcrumbRenderState;
     indexRenderState: {
@@ -56,6 +56,6 @@ export declare type BreadcrumbWidgetDescription = {
         };
     };
 };
-export declare type BreadcrumbConnector = Connector<BreadcrumbWidgetDescription, BreadcrumbConnectorParams>;
+export type BreadcrumbConnector = Connector<BreadcrumbWidgetDescription, BreadcrumbConnectorParams>;
 declare const connectBreadcrumb: BreadcrumbConnector;
 export default connectBreadcrumb;

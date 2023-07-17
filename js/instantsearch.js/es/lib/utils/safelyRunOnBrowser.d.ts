@@ -1,7 +1,7 @@
-declare type BrowserCallback<TReturn> = (params: {
+type BrowserCallback<TReturn> = (params: {
     window: typeof window;
 }) => TReturn;
-declare type SafelyRunOnBrowserOptions<TReturn> = {
+type SafelyRunOnBrowserOptions<TReturn> = {
     /**
      * Fallback to run on server environments.
      */

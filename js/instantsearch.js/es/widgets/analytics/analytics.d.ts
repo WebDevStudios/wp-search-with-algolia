@@ -1,6 +1,6 @@
-import type { SearchParameters, SearchResults } from 'algoliasearch-helper';
 import type { WidgetFactory, WidgetRenderState } from '../../types';
-export declare type AnalyticsWidgetParamsPushFunction = (
+import type { SearchParameters, SearchResults } from 'algoliasearch-helper';
+export type AnalyticsWidgetParamsPushFunction = (
 /**
  * Contains the search parameters, serialized as a query string.
  */
@@ -13,7 +13,7 @@ state: SearchParameters,
  * The last received results.
  */
 results: SearchResults) => void;
-export declare type AnalyticsWidgetParams = {
+export type AnalyticsWidgetParams = {
     /**
      * A function that is called every time the query or refinements changes. You
      * need to add the logic to push the data to your analytics platform.
@@ -48,7 +48,7 @@ export declare type AnalyticsWidgetParams = {
      */
     pushPagination?: boolean;
 };
-export declare type AnalyticsWidgetDescription = {
+export type AnalyticsWidgetDescription = {
     $$type: 'ais.analytics';
     $$widgetType: 'ais.analytics';
     renderState: Record<string, unknown>;
@@ -56,6 +56,6 @@ export declare type AnalyticsWidgetDescription = {
         analytics: WidgetRenderState<Record<string, unknown>, AnalyticsWidgetParams>;
     };
 };
-export declare type AnalyticsWidget = WidgetFactory<AnalyticsWidgetDescription, AnalyticsWidgetParams, AnalyticsWidgetParams>;
+export type AnalyticsWidget = WidgetFactory<AnalyticsWidgetDescription, AnalyticsWidgetParams, AnalyticsWidgetParams>;
 declare const analytics: AnalyticsWidget;
 export default analytics;

@@ -1,13 +1,11 @@
-function _extends() { _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; return _extends.apply(this, arguments); }
-
+function _extends() { _extends = Object.assign ? Object.assign.bind() : function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; return _extends.apply(this, arguments); }
 import { h } from 'preact';
 import Template from "../Template/Template.js";
-
 var ToggleRefinement = function ToggleRefinement(_ref) {
   var currentRefinement = _ref.currentRefinement,
-      refine = _ref.refine,
-      cssClasses = _ref.cssClasses,
-      templateProps = _ref.templateProps;
+    refine = _ref.refine,
+    cssClasses = _ref.cssClasses,
+    templateProps = _ref.templateProps;
   return h("div", {
     className: cssClasses.root
   }, h("label", {
@@ -30,5 +28,4 @@ var ToggleRefinement = function ToggleRefinement(_ref) {
     data: currentRefinement
   }))));
 };
-
 export default ToggleRefinement;

@@ -1,22 +1,22 @@
 import type { PlainSearchParameters, SearchForFacetValues, SearchResults } from 'algoliasearch-helper';
-export declare type HitAttributeHighlightResult = {
+export type HitAttributeHighlightResult = {
     value: string;
     matchLevel: 'none' | 'partial' | 'full';
     matchedWords: string[];
     fullyHighlighted?: boolean;
 };
-export declare type HitHighlightResult = {
+export type HitHighlightResult = {
     [attribute: string]: HitAttributeHighlightResult | HitAttributeHighlightResult[] | HitHighlightResult[] | HitHighlightResult;
 };
-export declare type HitAttributeSnippetResult = Pick<HitAttributeHighlightResult, 'value' | 'matchLevel'>;
-export declare type HitSnippetResult = {
+export type HitAttributeSnippetResult = Pick<HitAttributeHighlightResult, 'value' | 'matchLevel'>;
+export type HitSnippetResult = {
     [attribute: string]: HitAttributeSnippetResult[] | HitSnippetResult[] | HitAttributeSnippetResult | HitSnippetResult;
 };
-export declare type GeoLoc = {
+export type GeoLoc = {
     lat: number;
     lng: number;
 };
-export declare type AlgoliaHit<THit extends BaseHit = Record<string, any>> = {
+export type AlgoliaHit<THit extends BaseHit = Record<string, any>> = {
     objectID: string;
     _highlightResult?: HitHighlightResult;
     _snippetResult?: HitSnippetResult;
@@ -40,32 +40,32 @@ export declare type AlgoliaHit<THit extends BaseHit = Record<string, any>> = {
     _distinctSeqID?: number;
     _geoloc?: GeoLoc;
 } & THit;
-export declare type BaseHit = Record<string, unknown>;
-export declare type Hit<THit extends BaseHit = Record<string, any>> = {
+export type BaseHit = Record<string, unknown>;
+export type Hit<THit extends BaseHit = Record<string, any>> = {
     __position: number;
     __queryID?: string;
 } & AlgoliaHit<THit>;
 /**
  * @deprecated use Hit[] directly instead
  */
-export declare type Hits = Hit[];
-export declare type EscapedHits<THit = Hit> = THit[] & {
+export type Hits = Hit[];
+export type EscapedHits<THit = Hit> = THit[] & {
     __escaped: boolean;
 };
-export declare type FacetHit = SearchForFacetValues.Hit;
-export declare type FacetRefinement = {
+export type FacetHit = SearchForFacetValues.Hit;
+export type FacetRefinement = {
     value: string;
     type: 'conjunctive' | 'disjunctive' | 'exclude';
 };
-export declare type NumericRefinement = {
+export type NumericRefinement = {
     value: number[];
     type: 'numeric';
     operator: string;
 };
-export declare type Refinement = FacetRefinement | NumericRefinement;
-declare type InitialResult = {
+export type Refinement = FacetRefinement | NumericRefinement;
+type InitialResult = {
     state: PlainSearchParameters;
     results: SearchResults['_rawResults'];
 };
-export declare type InitialResults = Record<string, InitialResult>;
+export type InitialResults = Record<string, InitialResult>;
 export {};

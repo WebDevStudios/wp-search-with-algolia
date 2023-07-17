@@ -1,11 +1,11 @@
 
 import { h, Component } from 'preact';
 import type { RangeBoundaries } from '../../connectors/range/connectRange';
-import type { RangeSliderCssClasses, RangeSliderWidgetParams } from '../../widgets/range-slider/range-slider';
 import type { ComponentCSSClasses } from '../../types';
-export declare type RangeSliderComponentCSSClasses = ComponentCSSClasses<RangeSliderCssClasses>;
-export declare type SliderProps = {
-    refine(values: RangeBoundaries): void;
+import type { RangeSliderCssClasses, RangeSliderWidgetParams } from '../../widgets/range-slider/range-slider';
+export type RangeSliderComponentCSSClasses = ComponentCSSClasses<RangeSliderCssClasses>;
+export type SliderProps = {
+    refine: (values: RangeBoundaries) => void;
     min?: number;
     max?: number;
     values: RangeBoundaries;

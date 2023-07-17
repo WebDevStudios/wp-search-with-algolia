@@ -1,7 +1,7 @@
 
 import type { PoweredByConnectorParams, PoweredByWidgetDescription } from '../../connectors/powered-by/connectPoweredBy';
 import type { WidgetFactory } from '../../types';
-export declare type PoweredByCSSClasses = Partial<{
+export type PoweredByCSSClasses = Partial<{
     /**
      * CSS class to add to the wrapping element.
      */
@@ -15,7 +15,7 @@ export declare type PoweredByCSSClasses = Partial<{
      */
     logo: string | string[];
 }>;
-export declare type PoweredByWidgetParams = {
+export type PoweredByWidgetParams = {
     /**
      * CSS Selector or HTMLElement to insert the widget.
      */
@@ -30,7 +30,7 @@ export declare type PoweredByWidgetParams = {
      */
     cssClasses?: PoweredByCSSClasses;
 };
-export declare type PoweredByWidget = WidgetFactory<PoweredByWidgetDescription & {
+export type PoweredByWidget = WidgetFactory<PoweredByWidgetDescription & {
     $$widgetType: 'ais.poweredBy';
 }, PoweredByConnectorParams, PoweredByWidgetParams>;
 declare const poweredBy: PoweredByWidget;

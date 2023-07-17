@@ -1,15 +1,15 @@
 import type { IndexWidget } from '../widgets/index/index';
-import type { AlgoliaSearchHelper as Helper, SearchParameters, SearchResults } from 'algoliasearch-helper';
 import type { InstantSearch } from './instantsearch';
-import type { IndexUiState, UiState } from './ui-state';
 import type { IndexRenderState, WidgetRenderState } from './render-state';
+import type { IndexUiState, UiState } from './ui-state';
 import type { Expand, RequiredKeys } from './utils';
-export declare type ScopedResult = {
+import type { AlgoliaSearchHelper as Helper, SearchParameters, SearchResults } from 'algoliasearch-helper';
+export type ScopedResult = {
     indexId: string;
     results: SearchResults;
     helper: Helper;
 };
-declare type SharedRenderOptions = {
+type SharedRenderOptions = {
     instantSearchInstance: InstantSearch;
     parent: IndexWidget;
     templatesConfig: Record<string, unknown>;
@@ -24,34 +24,34 @@ declare type SharedRenderOptions = {
     };
     status: InstantSearch['status'];
     error: InstantSearch['error'];
-    createURL(state: SearchParameters): string;
+    createURL: (nextState: SearchParameters | ((state: IndexUiState) => IndexUiState)) => string;
 };
-export declare type InitOptions = SharedRenderOptions & {
+export type InitOptions = SharedRenderOptions & {
     uiState: UiState;
     results?: undefined;
 };
-export declare type RenderOptions = SharedRenderOptions & {
+export type RenderOptions = SharedRenderOptions & {
     results: SearchResults;
 };
-export declare type DisposeOptions = {
+export type DisposeOptions = {
     helper: Helper;
     state: SearchParameters;
     parent: IndexWidget;
 };
-export declare type BuiltinTypes = 'ais.analytics' | 'ais.answers' | 'ais.autocomplete' | 'ais.breadcrumb' | 'ais.clearRefinements' | 'ais.configure' | 'ais.configureRelatedItems' | 'ais.currentRefinements' | 'ais.dynamicWidgets' | 'ais.geoSearch' | 'ais.hierarchicalMenu' | 'ais.hits' | 'ais.hitsPerPage' | 'ais.index' | 'ais.infiniteHits' | 'ais.menu' | 'ais.numericMenu' | 'ais.pagination' | 'ais.places' | 'ais.poweredBy' | 'ais.queryRules' | 'ais.range' | 'ais.rangeSlider' | 'ais.rangeInput' | 'ais.ratingMenu' | 'ais.refinementList' | 'ais.searchBox' | 'ais.relevantSort' | 'ais.sortBy' | 'ais.stats' | 'ais.toggleRefinement' | 'ais.voiceSearch';
-export declare type BuiltinWidgetTypes = 'ais.analytics' | 'ais.answers' | 'ais.autocomplete' | 'ais.breadcrumb' | 'ais.clearRefinements' | 'ais.configure' | 'ais.configureRelatedItems' | 'ais.currentRefinements' | 'ais.dynamicWidgets' | 'ais.geoSearch' | 'ais.hierarchicalMenu' | 'ais.hits' | 'ais.hitsPerPage' | 'ais.index' | 'ais.infiniteHits' | 'ais.menu' | 'ais.menuSelect' | 'ais.numericMenu' | 'ais.pagination' | 'ais.places' | 'ais.poweredBy' | 'ais.queryRuleCustomData' | 'ais.queryRuleContext' | 'ais.rangeInput' | 'ais.rangeSlider' | 'ais.ratingMenu' | 'ais.refinementList' | 'ais.searchBox' | 'ais.relevantSort' | 'ais.sortBy' | 'ais.stats' | 'ais.toggleRefinement' | 'ais.voiceSearch';
-export declare type UnknownWidgetParams = NonNullable<object>;
-export declare type WidgetParams = {
+export type BuiltinTypes = 'ais.analytics' | 'ais.answers' | 'ais.autocomplete' | 'ais.breadcrumb' | 'ais.clearRefinements' | 'ais.configure' | 'ais.configureRelatedItems' | 'ais.currentRefinements' | 'ais.dynamicWidgets' | 'ais.geoSearch' | 'ais.hierarchicalMenu' | 'ais.hits' | 'ais.hitsPerPage' | 'ais.index' | 'ais.infiniteHits' | 'ais.menu' | 'ais.numericMenu' | 'ais.pagination' | 'ais.places' | 'ais.poweredBy' | 'ais.queryRules' | 'ais.range' | 'ais.rangeSlider' | 'ais.rangeInput' | 'ais.ratingMenu' | 'ais.refinementList' | 'ais.searchBox' | 'ais.relevantSort' | 'ais.sortBy' | 'ais.stats' | 'ais.toggleRefinement' | 'ais.voiceSearch';
+export type BuiltinWidgetTypes = 'ais.analytics' | 'ais.answers' | 'ais.autocomplete' | 'ais.breadcrumb' | 'ais.clearRefinements' | 'ais.configure' | 'ais.configureRelatedItems' | 'ais.currentRefinements' | 'ais.dynamicWidgets' | 'ais.geoSearch' | 'ais.hierarchicalMenu' | 'ais.hits' | 'ais.hitsPerPage' | 'ais.index' | 'ais.infiniteHits' | 'ais.menu' | 'ais.menuSelect' | 'ais.numericMenu' | 'ais.pagination' | 'ais.places' | 'ais.poweredBy' | 'ais.queryRuleCustomData' | 'ais.queryRuleContext' | 'ais.rangeInput' | 'ais.rangeSlider' | 'ais.ratingMenu' | 'ais.refinementList' | 'ais.searchBox' | 'ais.relevantSort' | 'ais.sortBy' | 'ais.stats' | 'ais.toggleRefinement' | 'ais.voiceSearch';
+export type UnknownWidgetParams = NonNullable<object>;
+export type WidgetParams = {
     widgetParams?: UnknownWidgetParams;
 };
-export declare type WidgetDescription = {
+export type WidgetDescription = {
     $$type: string;
     $$widgetType?: string;
     renderState?: Record<string, unknown>;
     indexRenderState?: Record<string, unknown>;
     indexUiState?: Record<string, unknown>;
 };
-declare type RequiredWidgetLifeCycle<TWidgetDescription extends WidgetDescription> = {
+type RequiredWidgetLifeCycle<TWidgetDescription extends WidgetDescription> = {
     /**
      * Identifier for connectors and widgets.
      */
@@ -70,19 +70,19 @@ declare type RequiredWidgetLifeCycle<TWidgetDescription extends WidgetDescriptio
      */
     dispose?: (options: DisposeOptions) => SearchParameters | void;
 };
-declare type RequiredWidgetType<TWidgetDescription extends WidgetDescription> = {
+type RequiredWidgetType<TWidgetDescription extends WidgetDescription> = {
     /**
      * Identifier for widgets.
      */
     $$widgetType: TWidgetDescription['$$widgetType'];
 };
-declare type WidgetType<TWidgetDescription extends WidgetDescription> = TWidgetDescription extends RequiredKeys<WidgetDescription, '$$widgetType'> ? RequiredWidgetType<TWidgetDescription> : {
+type WidgetType<TWidgetDescription extends WidgetDescription> = TWidgetDescription extends RequiredKeys<WidgetDescription, '$$widgetType'> ? RequiredWidgetType<TWidgetDescription> : {
     /**
      * Identifier for widgets.
      */
     $$widgetType?: string;
 };
-declare type RequiredUiStateLifeCycle<TWidgetDescription extends WidgetDescription> = {
+type RequiredUiStateLifeCycle<TWidgetDescription extends WidgetDescription> = {
     /**
      * This function is required for a widget to be taken in account for routing.
      * It will derive a uiState for this widget based on the existing uiState and
@@ -117,8 +117,8 @@ declare type RequiredUiStateLifeCycle<TWidgetDescription extends WidgetDescripti
         uiState: Expand<Partial<TWidgetDescription['indexUiState'] & IndexUiState>>;
     }) => SearchParameters;
 };
-declare type UiStateLifeCycle<TWidgetDescription extends WidgetDescription> = TWidgetDescription extends RequiredKeys<WidgetDescription, 'indexUiState'> ? RequiredUiStateLifeCycle<TWidgetDescription> : Partial<RequiredUiStateLifeCycle<TWidgetDescription>>;
-declare type RequiredRenderStateLifeCycle<TWidgetDescription extends WidgetDescription & WidgetParams> = {
+type UiStateLifeCycle<TWidgetDescription extends WidgetDescription> = TWidgetDescription extends RequiredKeys<WidgetDescription, 'indexUiState'> ? RequiredUiStateLifeCycle<TWidgetDescription> : Partial<RequiredUiStateLifeCycle<TWidgetDescription>>;
+type RequiredRenderStateLifeCycle<TWidgetDescription extends WidgetDescription & WidgetParams> = {
     /**
      * Returns the render state of the current widget to pass to the render function.
      */
@@ -129,24 +129,24 @@ declare type RequiredRenderStateLifeCycle<TWidgetDescription extends WidgetDescr
      */
     getRenderState: (renderState: Expand<IndexRenderState & Partial<TWidgetDescription['indexRenderState']>>, renderOptions: InitOptions | RenderOptions) => IndexRenderState & TWidgetDescription['indexRenderState'];
 };
-declare type RenderStateLifeCycle<TWidgetDescription extends WidgetDescription & WidgetParams> = TWidgetDescription extends RequiredKeys<WidgetDescription, 'renderState' | 'indexRenderState'> & WidgetParams ? RequiredRenderStateLifeCycle<TWidgetDescription> : Partial<RequiredRenderStateLifeCycle<TWidgetDescription>>;
-export declare type Widget<TWidgetDescription extends WidgetDescription & WidgetParams = {
+type RenderStateLifeCycle<TWidgetDescription extends WidgetDescription & WidgetParams> = TWidgetDescription extends RequiredKeys<WidgetDescription, 'renderState' | 'indexRenderState'> & WidgetParams ? RequiredRenderStateLifeCycle<TWidgetDescription> : Partial<RequiredRenderStateLifeCycle<TWidgetDescription>>;
+export type Widget<TWidgetDescription extends WidgetDescription & WidgetParams = {
     $$type: string;
 }> = Expand<RequiredWidgetLifeCycle<TWidgetDescription> & WidgetType<TWidgetDescription> & UiStateLifeCycle<TWidgetDescription> & RenderStateLifeCycle<TWidgetDescription>>;
-export declare type TransformItemsMetadata = {
+export type TransformItemsMetadata = {
     results?: SearchResults;
 };
 /**
  * Transforms the given items.
  */
-export declare type TransformItems<TItem, TMetadata = TransformItemsMetadata> = (items: TItem[], metadata: TMetadata) => TItem[];
-declare type SortByDirection<TCriterion extends string> = TCriterion | `${TCriterion}:asc` | `${TCriterion}:desc`;
+export type TransformItems<TItem, TMetadata = TransformItemsMetadata> = (items: TItem[], metadata: TMetadata) => TItem[];
+type SortByDirection<TCriterion extends string> = TCriterion | `${TCriterion}:asc` | `${TCriterion}:desc`;
 /**
  * Transforms the given items.
  */
-export declare type SortBy<TItem> = ((a: TItem, b: TItem) => number) | Array<SortByDirection<'count' | 'name' | 'isRefined'>>;
+export type SortBy<TItem> = ((a: TItem, b: TItem) => number) | Array<SortByDirection<'count' | 'name' | 'isRefined'>>;
 /**
  * Creates the URL for the given value.
  */
-export declare type CreateURL<TValue> = (value: TValue) => string;
+export type CreateURL<TValue> = (value: TValue) => string;
 export {};

@@ -1,10 +1,10 @@
 
 import { h } from 'preact';
-import type { AnswersCSSClasses, AnswersTemplates } from '../../widgets/answers/answers';
 import type { ComponentCSSClasses, Hit } from '../../types';
-export declare type AnswersComponentCSSClasses = ComponentCSSClasses<AnswersCSSClasses>;
-export declare type AnswersComponentTemplates = Required<AnswersTemplates>;
-export declare type AnswersProps = {
+import type { AnswersCSSClasses, AnswersTemplates } from '../../widgets/answers/answers';
+export type AnswersComponentCSSClasses = ComponentCSSClasses<AnswersCSSClasses>;
+export type AnswersComponentTemplates = Required<AnswersTemplates>;
+export type AnswersProps = {
     hits: Hit[];
     isLoading: boolean;
     cssClasses: AnswersComponentCSSClasses;

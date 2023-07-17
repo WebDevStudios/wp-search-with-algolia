@@ -1,7 +1,7 @@
 
 import type { BreadcrumbWidgetDescription, BreadcrumbConnectorParams } from '../../connectors/breadcrumb/connectBreadcrumb';
 import type { WidgetFactory, Template } from '../../types';
-export declare type BreadcrumbCSSClasses = Partial<{
+export type BreadcrumbCSSClasses = Partial<{
     /**
      * CSS class to add to the root element of the widget.
      */
@@ -31,7 +31,7 @@ export declare type BreadcrumbCSSClasses = Partial<{
      */
     link: string | string[];
 }>;
-export declare type BreadcrumbTemplates = Partial<{
+export type BreadcrumbTemplates = Partial<{
     /**
      * Label of the breadcrumb's first element.
      */
@@ -41,7 +41,7 @@ export declare type BreadcrumbTemplates = Partial<{
      */
     separator: Template;
 }>;
-export declare type BreadcrumbWidgetParams = {
+export type BreadcrumbWidgetParams = {
     /**
      * CSS Selector or HTMLElement to insert the widget.
      */
@@ -55,7 +55,7 @@ export declare type BreadcrumbWidgetParams = {
      */
     cssClasses?: BreadcrumbCSSClasses;
 };
-export declare type BreadcrumbWidget = WidgetFactory<BreadcrumbWidgetDescription & {
+export type BreadcrumbWidget = WidgetFactory<BreadcrumbWidgetDescription & {
     $$widgetType: 'ais.breadcrumb';
 }, BreadcrumbConnectorParams, BreadcrumbWidgetParams>;
 declare const breadcrumb: BreadcrumbWidget;

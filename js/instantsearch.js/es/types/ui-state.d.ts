@@ -16,10 +16,10 @@ import type { SortByWidgetDescription } from '../connectors/sort-by/connectSortB
 import type { ToggleRefinementWidgetDescription } from '../connectors/toggle-refinement/connectToggleRefinement';
 import type { VoiceSearchWidgetDescription } from '../connectors/voice-search/connectVoiceSearch';
 import type { PlacesWidgetDescription } from '../widgets/places/places';
-declare type ConnectorUiStates = AutocompleteWidgetDescription['indexUiState'] & ConfigureWidgetDescription['indexUiState'] & GeoSearchWidgetDescription['indexUiState'] & HierarchicalMenuWidgetDescription['indexUiState'] & HitsPerPageWidgetDescription['indexUiState'] & InfiniteHitsWidgetDescription['indexUiState'] & MenuWidgetDescription['indexUiState'] & NumericMenuWidgetDescription['indexUiState'] & PaginationWidgetDescription['indexUiState'] & RangeWidgetDescription['indexUiState'] & RatingMenuWidgetDescription['indexUiState'] & RefinementListWidgetDescription['indexUiState'] & RelevantSortWidgetDescription['indexUiState'] & SearchBoxWidgetDescription['indexUiState'] & SortByWidgetDescription['indexUiState'] & ToggleRefinementWidgetDescription['indexUiState'] & VoiceSearchWidgetDescription['indexUiState'];
-declare type WidgetUiStates = PlacesWidgetDescription['indexUiState'];
-export declare type IndexUiState = Partial<ConnectorUiStates & WidgetUiStates>;
-export declare type UiState = {
+type ConnectorUiStates = AutocompleteWidgetDescription['indexUiState'] & ConfigureWidgetDescription['indexUiState'] & GeoSearchWidgetDescription['indexUiState'] & HierarchicalMenuWidgetDescription['indexUiState'] & HitsPerPageWidgetDescription['indexUiState'] & InfiniteHitsWidgetDescription['indexUiState'] & MenuWidgetDescription['indexUiState'] & NumericMenuWidgetDescription['indexUiState'] & PaginationWidgetDescription['indexUiState'] & RangeWidgetDescription['indexUiState'] & RatingMenuWidgetDescription['indexUiState'] & RefinementListWidgetDescription['indexUiState'] & RelevantSortWidgetDescription['indexUiState'] & SearchBoxWidgetDescription['indexUiState'] & SortByWidgetDescription['indexUiState'] & ToggleRefinementWidgetDescription['indexUiState'] & VoiceSearchWidgetDescription['indexUiState'];
+type WidgetUiStates = PlacesWidgetDescription['indexUiState'];
+export type IndexUiState = Partial<ConnectorUiStates & WidgetUiStates>;
+export type UiState = {
     [indexId: string]: IndexUiState;
 };
 export {};

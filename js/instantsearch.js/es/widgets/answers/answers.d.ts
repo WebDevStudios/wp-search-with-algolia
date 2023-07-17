@@ -1,7 +1,7 @@
 
-import type { WidgetFactory, Template, Hit } from '../../types';
 import type { AnswersConnectorParams, AnswersWidgetDescription } from '../../connectors/answers/connectAnswers';
-export declare type AnswersTemplates = Partial<{
+import type { WidgetFactory, Template, Hit } from '../../types';
+export type AnswersTemplates = Partial<{
     /**
      * Template to use for the header. This template will receive an object containing `hits` and `isLoading`.
      */
@@ -18,7 +18,7 @@ export declare type AnswersTemplates = Partial<{
      */
     item: Template<Hit>;
 }>;
-export declare type AnswersCSSClasses = Partial<{
+export type AnswersCSSClasses = Partial<{
     /**
      * CSS class to add to the root element of the widget.
      */
@@ -44,7 +44,7 @@ export declare type AnswersCSSClasses = Partial<{
      */
     item: string | string[];
 }>;
-export declare type AnswersWidgetParams = {
+export type AnswersWidgetParams = {
     /**
      * CSS Selector or HTMLElement to insert the widget.
      */
@@ -58,7 +58,7 @@ export declare type AnswersWidgetParams = {
      */
     cssClasses?: AnswersCSSClasses;
 };
-export declare type AnswersWidget = WidgetFactory<AnswersWidgetDescription & {
+export type AnswersWidget = WidgetFactory<AnswersWidgetDescription & {
     $$widgetType: 'ais.answers';
 }, AnswersConnectorParams, AnswersWidgetParams>;
 declare const answersWidget: AnswersWidget;

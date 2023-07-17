@@ -1,7 +1,7 @@
 
 import type { MenuConnectorParams, MenuWidgetDescription } from '../../connectors/menu/connectMenu';
 import type { ComponentCSSClasses, Template, WidgetFactory } from '../../types';
-export declare type MenuCSSClasses = Partial<{
+export type MenuCSSClasses = Partial<{
     /**
      * CSS class to add to the root element.
      */
@@ -43,7 +43,7 @@ export declare type MenuCSSClasses = Partial<{
      */
     disabledShowMore: string | string[];
 }>;
-export declare type MenuTemplates = Partial<{
+export type MenuTemplates = Partial<{
     /**
      * Item template. The string template gets the same values as the function.
      */
@@ -62,9 +62,9 @@ export declare type MenuTemplates = Partial<{
         isShowingMore: boolean;
     }>;
 }>;
-export declare type MenuComponentCSSClasses = ComponentCSSClasses<MenuCSSClasses>;
-export declare type MenuComponentTemplates = Required<MenuTemplates>;
-export declare type MenuWidgetParams = {
+export type MenuComponentCSSClasses = ComponentCSSClasses<MenuCSSClasses>;
+export type MenuComponentTemplates = Required<MenuTemplates>;
+export type MenuWidgetParams = {
     /**
      * CSS Selector or HTMLElement to insert the widget.
      */
@@ -78,7 +78,7 @@ export declare type MenuWidgetParams = {
      */
     cssClasses?: MenuCSSClasses;
 };
-export declare type MenuWidget = WidgetFactory<MenuWidgetDescription & {
+export type MenuWidget = WidgetFactory<MenuWidgetDescription & {
     $$widgetType: 'ais.menu';
 }, MenuConnectorParams, MenuWidgetParams>;
 declare const menu: MenuWidget;

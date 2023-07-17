@@ -1,5 +1,5 @@
-import type { Connector, TransformItems, WidgetRenderState } from '../../types';
-export declare type HitsPerPageRenderStateItem = {
+import type { Connector, TransformItems, CreateURL, WidgetRenderState } from '../../types';
+export type HitsPerPageRenderStateItem = {
     /**
      * Label to display in the option.
      */
@@ -13,7 +13,7 @@ export declare type HitsPerPageRenderStateItem = {
      */
     isRefined: boolean;
 };
-export declare type HitsPerPageConnectorParamsItem = {
+export type HitsPerPageConnectorParamsItem = {
     /**
      * Label to display in the option.
      */
@@ -29,7 +29,7 @@ export declare type HitsPerPageConnectorParamsItem = {
      */
     default?: boolean;
 };
-export declare type HitsPerPageConnectorParams = {
+export type HitsPerPageConnectorParams = {
     /**
      * Array of objects defining the different values and labels.
      */
@@ -39,11 +39,15 @@ export declare type HitsPerPageConnectorParams = {
      */
     transformItems?: TransformItems<HitsPerPageRenderStateItem>;
 };
-export declare type HitsPerPageRenderState = {
+export type HitsPerPageRenderState = {
     /**
      * Array of objects defining the different values and labels.
      */
     items: HitsPerPageRenderStateItem[];
+    /**
+     * Creates the URL for a single item name in the list.
+     */
+    createURL: CreateURL<HitsPerPageConnectorParamsItem['value']>;
     /**
      * Sets the number of hits per page and triggers a search.
      */
@@ -58,7 +62,7 @@ export declare type HitsPerPageRenderState = {
      */
     canRefine: boolean;
 };
-export declare type HitsPerPageWidgetDescription = {
+export type HitsPerPageWidgetDescription = {
     $$type: 'ais.hitsPerPage';
     renderState: HitsPerPageRenderState;
     indexRenderState: {
@@ -68,6 +72,6 @@ export declare type HitsPerPageWidgetDescription = {
         hitsPerPage: number;
     };
 };
-export declare type HitsPerPageConnector = Connector<HitsPerPageWidgetDescription, HitsPerPageConnectorParams>;
+export type HitsPerPageConnector = Connector<HitsPerPageWidgetDescription, HitsPerPageConnectorParams>;
 declare const connectHitsPerPage: HitsPerPageConnector;
 export default connectHitsPerPage;

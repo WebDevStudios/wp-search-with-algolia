@@ -1,7 +1,7 @@
 
 import type { RangeConnectorParams, RangeWidgetDescription } from '../../connectors/range/connectRange';
 import type { Template, WidgetFactory } from '../../types';
-export declare type RangeInputTemplates = Partial<{
+export type RangeInputTemplates = Partial<{
     /**
      * The label of the separator, between min and max.
      * @default "to"
@@ -13,7 +13,7 @@ export declare type RangeInputTemplates = Partial<{
      */
     submitText: Template;
 }>;
-export declare type RangeInputCSSClasses = Partial<{
+export type RangeInputCSSClasses = Partial<{
     /**
      * CSS class to add to the root element.
      */
@@ -51,7 +51,7 @@ export declare type RangeInputCSSClasses = Partial<{
      */
     submit: string | string[];
 }>;
-export declare type RangeInputWidgetParams = {
+export type RangeInputWidgetParams = {
     /**
      * Valid CSS Selector as a string or DOMElement.
      */
@@ -82,7 +82,7 @@ export declare type RangeInputWidgetParams = {
      */
     cssClasses?: RangeInputCSSClasses;
 };
-export declare type RangeInputWidget = WidgetFactory<Omit<RangeWidgetDescription, '$$type'> & {
+export type RangeInputWidget = WidgetFactory<Omit<RangeWidgetDescription, '$$type'> & {
     $$widgetType: 'ais.rangeInput';
     $$type: 'ais.rangeInput';
 }, RangeConnectorParams, RangeInputWidgetParams>;

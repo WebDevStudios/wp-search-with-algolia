@@ -1,11 +1,11 @@
 
 import { h } from 'preact';
-import type { PaginationCSSClasses, PaginationTemplates } from '../../widgets/pagination/pagination';
 import type { ComponentCSSClasses } from '../../types';
-export declare type PaginationComponentCSSClasses = ComponentCSSClasses<PaginationCSSClasses>;
-export declare type PaginationComponentTemplates = Required<PaginationTemplates>;
-export declare type PaginationProps = {
-    createURL(value: number): string;
+import type { PaginationCSSClasses, PaginationTemplates } from '../../widgets/pagination/pagination';
+export type PaginationComponentCSSClasses = ComponentCSSClasses<PaginationCSSClasses>;
+export type PaginationComponentTemplates = Required<PaginationTemplates>;
+export type PaginationProps = {
+    createURL: (value: number) => string;
     cssClasses: PaginationComponentCSSClasses;
     templates: PaginationComponentTemplates;
     currentPage: number;
@@ -13,7 +13,7 @@ export declare type PaginationProps = {
     pages: number[];
     isFirstPage: boolean;
     isLastPage: boolean;
-    setCurrentPage(value: number): void;
+    setCurrentPage: (value: number) => void;
     showFirst?: boolean;
     showLast?: boolean;
     showPrevious?: boolean;

@@ -1,9 +1,10 @@
 import type { InsightsClientMethod, InsightsClientPayload } from '../types';
+/** @deprecated use bindEvent instead */
 export declare function readDataAttributes(domElement: HTMLElement): {
     method: InsightsClientMethod;
     payload: Partial<InsightsClientPayload>;
 };
-export declare function hasDataAttributes(domElement: HTMLElement): boolean;
+/** @deprecated use bindEvent instead */
 export declare function writeDataAttributes({ method, payload, }: {
     method: InsightsClientMethod;
     payload: Partial<InsightsClientPayload>;

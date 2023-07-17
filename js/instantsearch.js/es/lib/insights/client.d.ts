@@ -1,5 +1,5 @@
-import type { SearchResults } from 'algoliasearch-helper';
 import type { Hit, InsightsClientMethod, InsightsClientPayload, Connector } from '../../types';
+import type { SearchResults } from 'algoliasearch-helper';
 export declare const inferPayload: ({ method, results, hits, objectIDs, }: {
     method: InsightsClientMethod;
     results: SearchResults;

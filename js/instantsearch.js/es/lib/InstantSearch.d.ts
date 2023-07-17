@@ -1,18 +1,18 @@
-import type { AlgoliaSearchHelper } from 'algoliasearch-helper';
 import EventEmitter from '@algolia/events';
-import type { IndexWidget } from '../widgets/index/index';
-import type { InsightsClient as AlgoliaInsightsClient, SearchClient, Widget, UiState, CreateURL, Middleware, MiddlewareDefinition, RenderState, InitialResults } from '../types';
+import type { InsightsEvent, InsightsProps } from '../middlewares/createInsightsMiddleware';
 import type { RouterProps } from '../middlewares/createRouterMiddleware';
-import type { InsightsEvent } from '../middlewares/createInsightsMiddleware';
-declare type NoInfer<T> = [T][T extends any ? 0 : never];
+import type { InsightsClient as AlgoliaInsightsClient, SearchClient, Widget, UiState, CreateURL, Middleware, MiddlewareDefinition, RenderState, InitialResults } from '../types';
+import type { IndexWidget } from '../widgets/index/index';
+import type { AlgoliaSearchHelper } from 'algoliasearch-helper';
+type NoInfer<T> = T extends infer S ? S : never;
 /**
  * Global options for an InstantSearch instance.
  */
-export declare type InstantSearchOptions<TUiState extends UiState = UiState, TRouteState = TUiState> = {
+export type InstantSearchOptions<TUiState extends UiState = UiState, TRouteState = TUiState> = {
     /**
-     * The name of the main index
+     * The name of the main index. If no indexName is provided, you have to manually add an index widget.
      */
-    indexName: string;
+    indexName?: string;
     /**
      * The search client to plug to InstantSearch.js
      *
@@ -50,6 +50,7 @@ export declare type InstantSearchOptions<TUiState extends UiState = UiState, TRo
      * A hook that will be called each time a search needs to be done, with the
      * helper as a parameter. It's your responsibility to call `helper.search()`.
      * This option allows you to avoid doing searches at page load for example.
+     * @deprecated use onStateChange instead
      */
     searchFunction?: (helper: AlgoliaSearchHelper) => void;
     /**
@@ -60,7 +61,7 @@ export declare type InstantSearchOptions<TUiState extends UiState = UiState, TRo
      */
     onStateChange?: (params: {
         uiState: TUiState;
-        setUiState(uiState: TUiState | ((previousUiState: TUiState) => TUiState)): void;
+        setUiState: (uiState: TUiState | ((previousUiState: TUiState) => TUiState)) => void;
     }) => void;
     /**
      * Injects a `uiState` to the `instantsearch` instance. You can use this option
@@ -79,6 +80,16 @@ export declare type InstantSearchOptions<TUiState extends UiState = UiState, TRo
      */
     routing?: RouterProps<TUiState, TRouteState> | boolean;
     /**
+     * Enables the Insights middleware and loads the Insights library
+     * if not already loaded.
+     *
+     * The Insights middleware sends view and click events automatically, and lets
+     * you set up your own events.
+     *
+     * @default false
+     */
+    insights?: InsightsProps | boolean;
+    /**
      * the instance of search-insights to use for sending insights events inside
      * widgets like `hits`.
      *
@@ -86,7 +97,7 @@ export declare type InstantSearchOptions<TUiState extends UiState = UiState, TRo
      */
     insightsClient?: AlgoliaInsightsClient;
 };
-export declare type InstantSearchStatus = 'idle' | 'loading' | 'stalled' | 'error';
+export type InstantSearchStatus = 'idle' | 'loading' | 'stalled' | 'error';
 /**
  * The actual implementation of the InstantSearch. This is
  * created using the `instantsearch` factory function.
@@ -111,8 +122,8 @@ declare class InstantSearch<TUiState extends UiState = UiState, TRouteState = TU
     _searchFunction?: InstantSearchOptions['searchFunction'];
     _mainHelperSearch?: AlgoliaSearchHelper['search'];
     middleware: Array<{
-        creator: Middleware;
-        instance: MiddlewareDefinition;
+        creator: Middleware<TUiState>;
+        instance: MiddlewareDefinition<TUiState>;
     }>;
     sendEventToInsights: (event: InsightsEvent) => void;
     /**
@@ -132,11 +143,11 @@ declare class InstantSearch<TUiState extends UiState = UiState, TRouteState = TU
     /**
      * Hooks a middleware into the InstantSearch lifecycle.
      */
-    use(...middleware: Middleware[]): this;
+    use(...middleware: Array<Middleware<TUiState>>): this;
     /**
      * Removes a middleware from the InstantSearch lifecycle.
      */
-    unuse(...middlewareToUnuse: Middleware[]): this;
+    unuse(...middlewareToUnuse: Array<Middleware<TUiState>>): this;
     EXPERIMENTAL_use(...middleware: Middleware[]): this;
     /**
      * Adds a widget to the search instance.
@@ -182,12 +193,12 @@ declare class InstantSearch<TUiState extends UiState = UiState, TRouteState = TU
      */
     dispose(): void;
     scheduleSearch: (() => void) & {
-        wait(): Promise<void>;
-        cancel(): void;
+        wait: () => Promise<void>;
+        cancel: () => void;
     };
     scheduleRender: ((shouldResetStatus?: boolean) => void) & {
-        wait(): Promise<void>;
-        cancel(): void;
+        wait: () => Promise<void>;
+        cancel: () => void;
     };
     scheduleStalledRender(): void;
     /**
@@ -198,8 +209,8 @@ declare class InstantSearch<TUiState extends UiState = UiState, TRouteState = TU
     setUiState(uiState: TUiState | ((previousUiState: TUiState) => TUiState), callOnStateChange?: boolean): void;
     getUiState(): TUiState;
     onInternalStateChange: (() => void) & {
-        wait(): Promise<void>;
-        cancel(): void;
+        wait: () => Promise<void>;
+        cancel: () => void;
     };
     createURL(nextState?: TUiState): string;
     refresh(): void;

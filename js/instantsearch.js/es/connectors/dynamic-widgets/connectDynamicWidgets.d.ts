@@ -1,8 +1,8 @@
 import type { Connector, TransformItems, TransformItemsMetadata, Widget } from '../../types';
-export declare type DynamicWidgetsRenderState = {
+export type DynamicWidgetsRenderState = {
     attributesToRender: string[];
 };
-export declare type DynamicWidgetsConnectorParams = {
+export type DynamicWidgetsConnectorParams = {
     /**
      * An array of widgets, displayed in the order defined by `facetOrdering`.
      */
@@ -11,10 +11,10 @@ export declare type DynamicWidgetsConnectorParams = {
      * Function to return a fallback widget when an attribute isn't found in
      * `widgets`.
      */
-    fallbackWidget?(args: {
+    fallbackWidget?: (args: {
         /** The attribute name to create a widget for. */
         attribute: string;
-    }): Widget;
+    }) => Widget;
     /**
      * Function to transform the items to render.
      * The function also exposes the full search response.
@@ -37,13 +37,13 @@ export declare type DynamicWidgetsConnectorParams = {
      */
     maxValuesPerFacet?: number;
 };
-export declare type DynamicWidgetsWidgetDescription = {
+export type DynamicWidgetsWidgetDescription = {
     $$type: 'ais.dynamicWidgets';
     renderState: DynamicWidgetsRenderState;
     indexRenderState: {
         dynamicWidgets: DynamicWidgetsRenderState;
     };
 };
-export declare type DynamicWidgetsConnector = Connector<DynamicWidgetsWidgetDescription, DynamicWidgetsConnectorParams>;
+export type DynamicWidgetsConnector = Connector<DynamicWidgetsWidgetDescription, DynamicWidgetsConnectorParams>;
 declare const connectDynamicWidgets: DynamicWidgetsConnector;
 export default connectDynamicWidgets;
