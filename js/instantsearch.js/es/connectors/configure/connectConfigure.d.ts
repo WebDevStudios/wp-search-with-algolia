@@ -1,23 +1,23 @@
-import type { PlainSearchParameters } from 'algoliasearch-helper';
 import type { Connector, WidgetRenderState } from '../../types';
+import type { PlainSearchParameters } from 'algoliasearch-helper';
 /**
  * Refine the given search parameters.
  */
-declare type Refine = (searchParameters: PlainSearchParameters) => void;
-export declare type ConfigureConnectorParams = {
+type Refine = (searchParameters: PlainSearchParameters) => void;
+export type ConfigureConnectorParams = {
     /**
      * A list of [search parameters](https://www.algolia.com/doc/api-reference/search-api-parameters/)
      * to enable when the widget mounts.
      */
     searchParameters: PlainSearchParameters;
 };
-export declare type ConfigureRenderState = {
+export type ConfigureRenderState = {
     /**
      * Refine the given search parameters.
      */
     refine: Refine;
 };
-export declare type ConfigureWidgetDescription = {
+export type ConfigureWidgetDescription = {
     $$type: 'ais.configure';
     renderState: ConfigureRenderState;
     indexRenderState: {
@@ -27,6 +27,6 @@ export declare type ConfigureWidgetDescription = {
         configure: PlainSearchParameters;
     };
 };
-export declare type ConfigureConnector = Connector<ConfigureWidgetDescription, ConfigureConnectorParams>;
+export type ConfigureConnector = Connector<ConfigureWidgetDescription, ConfigureConnectorParams>;
 declare const connectConfigure: ConfigureConnector;
 export default connectConfigure;

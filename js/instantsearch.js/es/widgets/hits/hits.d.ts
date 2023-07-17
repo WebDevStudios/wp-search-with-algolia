@@ -2,7 +2,7 @@
 import type { HitsConnectorParams, HitsWidgetDescription } from '../../connectors/hits/connectHits';
 import type { Template, TemplateWithBindEvent, Hit, WidgetFactory } from '../../types';
 import type { SearchResults } from 'algoliasearch-helper';
-export declare type HitsCSSClasses = Partial<{
+export type HitsCSSClasses = Partial<{
     /**
      * CSS class to add to the wrapping element.
      */
@@ -20,7 +20,7 @@ export declare type HitsCSSClasses = Partial<{
      */
     item: string | string[];
 }>;
-export declare type HitsTemplates = Partial<{
+export type HitsTemplates = Partial<{
     /**
      * Template to use when there are no results.
      *
@@ -33,10 +33,11 @@ export declare type HitsTemplates = Partial<{
      * @default ''
      */
     item: TemplateWithBindEvent<Hit & {
+        /** @deprecated the index in the hits array, use __position instead, which is the absolute position */
         __hitIndex: number;
     }>;
 }>;
-export declare type HitsWidgetParams = {
+export type HitsWidgetParams = {
     /**
      * CSS Selector or HTMLElement to insert the widget.
      */
@@ -50,7 +51,7 @@ export declare type HitsWidgetParams = {
      */
     cssClasses?: HitsCSSClasses;
 };
-export declare type HitsWidget = WidgetFactory<HitsWidgetDescription & {
+export type HitsWidget = WidgetFactory<HitsWidgetDescription & {
     $$widgetType: 'ais.hits';
 }, HitsConnectorParams, HitsWidgetParams>;
 declare const hits: HitsWidget;

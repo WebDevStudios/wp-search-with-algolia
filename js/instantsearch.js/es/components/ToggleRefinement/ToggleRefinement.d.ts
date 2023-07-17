@@ -4,9 +4,9 @@ import type { ToggleRefinementRenderState, ToggleRefinementValue } from '../../c
 import type { PreparedTemplateProps } from '../../lib/templating';
 import type { ComponentCSSClasses } from '../../types';
 import type { ToggleRefinementTemplates, ToggleRefinementCSSClasses } from '../../widgets/toggle-refinement/toggle-refinement';
-export declare type ToggleRefinementComponentCSSClasses = ComponentCSSClasses<ToggleRefinementCSSClasses>;
-export declare type ToggleRefinementComponentTemplates = Required<ToggleRefinementTemplates>;
-export declare type ToggleRefinementProps = {
+export type ToggleRefinementComponentCSSClasses = ComponentCSSClasses<ToggleRefinementCSSClasses>;
+export type ToggleRefinementComponentTemplates = Required<ToggleRefinementTemplates>;
+export type ToggleRefinementProps = {
     currentRefinement: ToggleRefinementValue;
     refine: ToggleRefinementRenderState['refine'];
     cssClasses: ToggleRefinementComponentCSSClasses;

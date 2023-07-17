@@ -1,5 +1,5 @@
 import type { Connector, CreateURL, WidgetRenderState } from '../../types';
-export declare type PaginationConnectorParams = {
+export type PaginationConnectorParams = {
     /**
      * The total number of pages to browse.
      */
@@ -10,11 +10,11 @@ export declare type PaginationConnectorParams = {
      */
     padding?: number;
 };
-export declare type PaginationRenderState = {
+export type PaginationRenderState = {
     /** Creates URLs for the next state, the number is the page to generate the URL for. */
     createURL: CreateURL<number>;
     /** Sets the current page and triggers a search. */
-    refine(page: number): void;
+    refine: (page: number) => void;
     /** true if this search returned more than one page */
     canRefine: boolean;
     /** The number of the page currently displayed. */
@@ -30,7 +30,7 @@ export declare type PaginationRenderState = {
     /** true if the current page is also the last page. */
     isLastPage: boolean;
 };
-export declare type PaginationWidgetDescription = {
+export type PaginationWidgetDescription = {
     $$type: 'ais.pagination';
     renderState: PaginationRenderState;
     indexRenderState: {
@@ -40,7 +40,7 @@ export declare type PaginationWidgetDescription = {
         page: number;
     };
 };
-export declare type PaginationConnector = Connector<PaginationWidgetDescription, PaginationConnectorParams>;
+export type PaginationConnector = Connector<PaginationWidgetDescription, PaginationConnectorParams>;
 /**
  * **Pagination** connector provides the logic to build a widget that will let the user
  * choose the current page of the results.

@@ -1,11 +1,10 @@
-import { h } from 'preact';
 import { cx } from '@algolia/ui-components-shared';
-
+import { h } from 'preact';
 function Selector(_ref) {
   var currentValue = _ref.currentValue,
-      options = _ref.options,
-      cssClasses = _ref.cssClasses,
-      setValue = _ref.setValue;
+    options = _ref.options,
+    cssClasses = _ref.cssClasses,
+    setValue = _ref.setValue;
   return h("select", {
     className: cx(cssClasses.select),
     onChange: function onChange(event) {
@@ -20,5 +19,4 @@ function Selector(_ref) {
     }, option.label);
   }));
 }
-
 export default Selector;

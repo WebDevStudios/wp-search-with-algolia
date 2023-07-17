@@ -1,21 +1,21 @@
-import type { InsightsClient, InsightsClientMethod, InternalMiddleware, Hit } from '../types';
-export declare type InsightsEvent = {
-    insightsMethod?: InsightsClientMethod;
-    payload: any;
-    widgetType: string;
-    eventType: string;
-    hits?: Hit[];
-    attribute?: string;
-};
-export declare type InsightsProps<TInsightsClient extends null | InsightsClient = InsightsClient | null> = {
-    insightsClient: TInsightsClient;
+import type { InsightsClient, InsightsEvent as _InsightsEvent, InsightsMethod, InternalMiddleware } from '../types';
+type ProvidedInsightsClient = InsightsClient | null | undefined;
+export type InsightsEvent<TMethod extends InsightsMethod = InsightsMethod> = _InsightsEvent<TMethod>;
+export type InsightsProps<TInsightsClient extends ProvidedInsightsClient = ProvidedInsightsClient> = {
+    insightsClient?: TInsightsClient;
     insightsInitParams?: {
         userHasOptedOut?: boolean;
         useCookie?: boolean;
+        anonymousUserToken?: boolean;
         cookieDuration?: number;
         region?: 'de' | 'us';
     };
     onEvent?: (event: InsightsEvent, insightsClient: TInsightsClient) => void;
 };
-export declare type CreateInsightsMiddleware = typeof createInsightsMiddleware;
-export declare function createInsightsMiddleware<TInsightsClient extends null | InsightsClient>(props: InsightsProps<TInsightsClient>): InternalMiddleware;
+export type InsightsClientWithGlobals = InsightsClient & {
+    shouldAddScript?: boolean;
+    version?: string;
+};
+export type CreateInsightsMiddleware = typeof createInsightsMiddleware;
+export declare function createInsightsMiddleware<TInsightsClient extends ProvidedInsightsClient>(props?: InsightsProps<TInsightsClient>): InternalMiddleware;
+export {};

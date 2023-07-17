@@ -1,7 +1,7 @@
-import type { SearchResults } from 'algoliasearch-helper';
 import type { SendEventForFacet } from '../../lib/utils';
 import type { Connector, TransformItems, SortBy, CreateURL, WidgetRenderState } from '../../types';
-export declare type RefinementListItem = {
+import type { SearchResults } from 'algoliasearch-helper';
+export type RefinementListItem = {
     /**
      * The value of the refinement list item.
      */
@@ -23,7 +23,7 @@ export declare type RefinementListItem = {
      */
     isRefined: boolean;
 };
-export declare type RefinementListConnectorParams = {
+export type RefinementListConnectorParams = {
     /**
      * The name of the attribute in the records.
      */
@@ -63,7 +63,7 @@ export declare type RefinementListConnectorParams = {
      */
     transformItems?: TransformItems<RefinementListItem>;
 };
-export declare type RefinementListRenderState = {
+export type RefinementListRenderState = {
     /**
      * The list of filtering values returned from Algolia API.
      */
@@ -79,7 +79,7 @@ export declare type RefinementListRenderState = {
     /**
      * Action to apply selected refinements.
      */
-    refine(value: string): void;
+    refine: (value: string) => void;
     /**
      * Send event to insights middleware
      */
@@ -87,7 +87,7 @@ export declare type RefinementListRenderState = {
     /**
      * Searches for values inside the list.
      */
-    searchForItems(query: string): void;
+    searchForItems: (query: string) => void;
     /**
      * `true` if the values are from an index search.
      */
@@ -108,9 +108,9 @@ export declare type RefinementListRenderState = {
     /**
      * Toggles the number of values displayed between `limit` and `showMoreLimit`.
      */
-    toggleShowMore(): void;
+    toggleShowMore: () => void;
 };
-export declare type RefinementListWidgetDescription = {
+export type RefinementListWidgetDescription = {
     $$type: 'ais.refinementList';
     renderState: RefinementListRenderState;
     indexRenderState: {
@@ -124,7 +124,7 @@ export declare type RefinementListWidgetDescription = {
         };
     };
 };
-export declare type RefinementListConnector = Connector<RefinementListWidgetDescription, RefinementListConnectorParams>;
+export type RefinementListConnector = Connector<RefinementListWidgetDescription, RefinementListConnectorParams>;
 /**
  * **RefinementList** connector provides the logic to build a custom widget that
  * will let the user filter the results based on the values of a specific facet.

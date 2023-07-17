@@ -13,9 +13,9 @@
     "npm": "^6.0.0"
   },
   "dependencies": {
-    "algoliasearch": "^4.14.2",
+    "algoliasearch": "^4.18.0",
     "autocomplete.js": "^0.38.0",
-    "instantsearch.js": "^4.46.2"
+    "instantsearch.js": "^4.56.5"
   },
   "devDependencies": {
     "frontend-dependencies": "^2.0.0"
@@ -23,9 +23,9 @@
   "frontendDependencies": {
     "target": "js/",
     "packages": {
-      "algoliasearch": "^4.14.2",
+      "algoliasearch": "^4.18.0",
       "autocomplete.js": "^0.38.0",
-      "instantsearch.js": "^4.46.2"
+      "instantsearch.js": "^4.56.5"
     }
   },
   "scripts": {

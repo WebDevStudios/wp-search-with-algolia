@@ -2,8 +2,8 @@
 import { h } from 'preact';
 import type { ComponentCSSClasses } from '../../types';
 import type { PoweredByCSSClasses } from '../../widgets/powered-by/powered-by';
-export declare type PoweredByComponentCSSClasses = ComponentCSSClasses<PoweredByCSSClasses>;
-export declare type PoweredByProps = {
+export type PoweredByComponentCSSClasses = ComponentCSSClasses<PoweredByCSSClasses>;
+export type PoweredByProps = {
     url: string;
     theme: string;
     cssClasses: PoweredByComponentCSSClasses;

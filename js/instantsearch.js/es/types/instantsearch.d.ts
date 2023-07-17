@@ -1,1 +1,1 @@
-export type { default as InstantSearch, InstantSearchOptions, } from '../lib/InstantSearch';
+export type { default as InstantSearch, InstantSearchOptions, InstantSearchStatus, } from '../lib/InstantSearch';

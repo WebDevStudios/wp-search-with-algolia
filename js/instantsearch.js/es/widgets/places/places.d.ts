@@ -1,10 +1,10 @@
+import type { WidgetFactory, WidgetRenderState } from '../../types';
 // @ts-ignore
 import type * as Places from 'places.js';
-import type { WidgetFactory, WidgetRenderState } from '../../types';
-declare type StaticOptions = Places.StaticOptions;
-declare type PlacesInstance = Places.PlacesInstance;
-declare type ReconfigurableOptions = Places.ReconfigurableOptions;
-export declare type PlacesWidgetParams = {
+type StaticOptions = Places.StaticOptions;
+type PlacesInstance = Places.PlacesInstance;
+type ReconfigurableOptions = Places.ReconfigurableOptions;
+export type PlacesWidgetParams = {
     /**
      * The Algolia Places reference to use.
      *
@@ -16,7 +16,7 @@ export declare type PlacesWidgetParams = {
      */
     defaultPosition?: string[];
 } & StaticOptions;
-export declare type PlacesWidgetDescription = {
+export type PlacesWidgetDescription = {
     $$type: 'ais.places';
     $$widgetType: 'ais.places';
     renderState: Record<string, unknown>;
@@ -30,7 +30,7 @@ export declare type PlacesWidgetDescription = {
         };
     };
 };
-export declare type PlacesWidget = WidgetFactory<PlacesWidgetDescription, PlacesWidgetParams, PlacesWidgetParams>;
+export type PlacesWidget = WidgetFactory<PlacesWidgetDescription, PlacesWidgetParams, PlacesWidgetParams>;
 /**
  * This widget sets the geolocation value for the search based on the selected
  * result in the Algolia Places autocomplete.

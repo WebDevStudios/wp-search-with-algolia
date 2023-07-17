@@ -1,6 +1,6 @@
 
 import type { Template, RenderOptions, WidgetFactory, InitOptions, Widget } from '../../types';
-export declare type PanelCSSClasses = Partial<{
+export type PanelCSSClasses = Partial<{
     /**
      * CSS classes to add to the root element of the widget.
      */
@@ -38,10 +38,10 @@ export declare type PanelCSSClasses = Partial<{
      */
     footer: string | string[];
 }>;
-declare type AnyWidgetFactory = WidgetFactory<{
+type AnyWidgetFactory = WidgetFactory<{
     $$type: string;
 }, Record<string, any>, any>;
-export declare type PanelTemplates<TWidget extends AnyWidgetFactory> = Partial<{
+export type PanelTemplates<TWidget extends AnyWidgetFactory> = Partial<{
     /**
      * Template to use for the header.
      */
@@ -57,20 +57,20 @@ export declare type PanelTemplates<TWidget extends AnyWidgetFactory> = Partial<{
         collapsed: boolean;
     }>;
 }>;
-declare type GetWidgetRenderState<TWidgetFactory extends AnyWidgetFactory> = ReturnType<TWidgetFactory>['getWidgetRenderState'] extends (renderOptions: any) => infer TRenderState ? TRenderState extends Record<string, unknown> ? TRenderState : never : Record<string, unknown>;
-export declare type PanelRenderOptions<TWidgetFactory extends AnyWidgetFactory> = RenderOptions & GetWidgetRenderState<TWidgetFactory>;
-export declare type PanelSharedOptions<TWidgetFactory extends AnyWidgetFactory> = (InitOptions | RenderOptions) & GetWidgetRenderState<TWidgetFactory>;
-export declare type PanelWidgetParams<TWidgetFactory extends AnyWidgetFactory> = {
+type GetWidgetRenderState<TWidgetFactory extends AnyWidgetFactory> = ReturnType<TWidgetFactory>['getWidgetRenderState'] extends (renderOptions: any) => infer TRenderState ? TRenderState extends Record<string, unknown> ? TRenderState : never : Record<string, unknown>;
+export type PanelRenderOptions<TWidgetFactory extends AnyWidgetFactory> = RenderOptions & GetWidgetRenderState<TWidgetFactory>;
+export type PanelSharedOptions<TWidgetFactory extends AnyWidgetFactory> = (InitOptions | RenderOptions) & GetWidgetRenderState<TWidgetFactory>;
+export type PanelWidgetParams<TWidgetFactory extends AnyWidgetFactory> = {
     /**
      * A function that is called on each render to determine if the
      * panel should be hidden based on the render options.
      */
-    hidden?(options: PanelRenderOptions<TWidgetFactory>): boolean;
+    hidden?: (options: PanelRenderOptions<TWidgetFactory>) => boolean;
     /**
      * A function that is called on each render to determine if the
      * panel should be collapsed based on the render options.
      */
-    collapsed?(options: PanelRenderOptions<TWidgetFactory>): boolean;
+    collapsed?: (options: PanelRenderOptions<TWidgetFactory>) => boolean;
     /**
      * The templates to use for the widget.
      */
@@ -80,8 +80,8 @@ export declare type PanelWidgetParams<TWidgetFactory extends AnyWidgetFactory> =
      */
     cssClasses?: PanelCSSClasses;
 };
-declare type AugmentedWidget<TWidgetFactory extends AnyWidgetFactory, TOverriddenKeys extends keyof Widget = 'init' | 'render' | 'dispose'> = Omit<ReturnType<TWidgetFactory>, TOverriddenKeys> & Pick<Required<Widget>, TOverriddenKeys>;
-export declare type PanelWidget = <TWidgetFactory extends AnyWidgetFactory>(panelWidgetParams?: PanelWidgetParams<TWidgetFactory>) => (widgetFactory: TWidgetFactory) => (widgetParams: Parameters<TWidgetFactory>[0]) => AugmentedWidget<TWidgetFactory>;
+type AugmentedWidget<TWidgetFactory extends AnyWidgetFactory, TOverriddenKeys extends keyof Widget = 'init' | 'render' | 'dispose'> = Omit<ReturnType<TWidgetFactory>, TOverriddenKeys> & Pick<Required<Widget>, TOverriddenKeys>;
+export type PanelWidget = <TWidgetFactory extends AnyWidgetFactory>(panelWidgetParams?: PanelWidgetParams<TWidgetFactory>) => (widgetFactory: TWidgetFactory) => (widgetParams: Parameters<TWidgetFactory>[0]) => AugmentedWidget<TWidgetFactory>;
 /**
  * The panel widget wraps other widgets in a consistent panel design.
  * It also reacts, indicates and sets CSS classes when widgets are no longer relevant for refining.

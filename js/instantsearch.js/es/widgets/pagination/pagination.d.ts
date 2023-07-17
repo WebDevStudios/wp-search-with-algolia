@@ -1,7 +1,7 @@
 
 import type { PaginationConnectorParams, PaginationWidgetDescription } from '../../connectors/pagination/connectPagination';
-import type { WidgetFactory } from '../../types';
-export declare type PaginationCSSClasses = Partial<{
+import type { Template, WidgetFactory } from '../../types';
+export type PaginationCSSClasses = Partial<{
     /**
      * CSS classes added to the root element of the widget.
      */
@@ -51,25 +51,32 @@ export declare type PaginationCSSClasses = Partial<{
      */
     link: string | string[];
 }>;
-export declare type PaginationTemplates = Partial<{
+export type PaginationTemplates = Partial<{
     /**
      * Label for the Previous link.
      */
-    previous: string;
+    previous: Template;
     /**
      * Label for the Next link.
      */
-    next: string;
+    next: Template;
+    /**
+     * Label for the link of a certain page
+     * Page is one-based, so `page` will be `1` for the first page.
+     */
+    page: Template<{
+        page: number;
+    }>;
     /**
      * Label for the First link.
      */
-    first: string;
+    first: Template;
     /**
      * Label for the Last link.
      */
-    last: string;
+    last: Template;
 }>;
-export declare type PaginationWidgetParams = {
+export type PaginationWidgetParams = {
     /**
      * CSS Selector or HTMLElement to insert the widget.
      */
@@ -117,7 +124,7 @@ export declare type PaginationWidgetParams = {
      */
     cssClasses?: PaginationCSSClasses;
 };
-export declare type PaginationWidget = WidgetFactory<PaginationWidgetDescription & {
+export type PaginationWidget = WidgetFactory<PaginationWidgetDescription & {
     $$widgetType: 'ais.pagination';
 }, PaginationConnectorParams, PaginationWidgetParams>;
 declare const pagination: PaginationWidget;

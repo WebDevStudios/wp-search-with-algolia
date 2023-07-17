@@ -4,33 +4,26 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
-
 var _preact = require("preact");
-
-var _Template = _interopRequireDefault(require("../Template/Template.js"));
-
+var _Template = _interopRequireDefault(require("../Template/Template"));
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
 var VoiceSearch = function VoiceSearch(_ref) {
   var cssClasses = _ref.cssClasses,
-      isBrowserSupported = _ref.isBrowserSupported,
-      isListening = _ref.isListening,
-      toggleListening = _ref.toggleListening,
-      voiceListeningState = _ref.voiceListeningState,
-      templates = _ref.templates;
-
+    isBrowserSupported = _ref.isBrowserSupported,
+    isListening = _ref.isListening,
+    toggleListening = _ref.toggleListening,
+    voiceListeningState = _ref.voiceListeningState,
+    templates = _ref.templates;
   var handleClick = function handleClick(event) {
     if (event.currentTarget instanceof HTMLElement) {
       event.currentTarget.blur();
     }
-
     toggleListening();
   };
-
   var status = voiceListeningState.status,
-      transcript = voiceListeningState.transcript,
-      isSpeechFinal = voiceListeningState.isSpeechFinal,
-      errorCode = voiceListeningState.errorCode;
+    transcript = voiceListeningState.transcript,
+    isSpeechFinal = voiceListeningState.isSpeechFinal,
+    errorCode = voiceListeningState.errorCode;
   return (0, _preact.h)("div", {
     className: cssClasses.root
   }, (0, _preact.h)(_Template.default, {
@@ -68,6 +61,5 @@ var VoiceSearch = function VoiceSearch(_ref) {
     templates: templates
   }));
 };
-
 var _default = VoiceSearch;
 exports.default = _default;

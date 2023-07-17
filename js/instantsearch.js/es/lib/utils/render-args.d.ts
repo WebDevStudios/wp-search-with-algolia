@@ -8,7 +8,117 @@ export declare function createInitArgs(instantSearchInstance: InstantSearch, par
     state: import("algoliasearch-helper").SearchParameters;
     renderState: import("../../types").RenderState;
     templatesConfig: Record<string, unknown>;
-    createURL: (state: import("algoliasearch-helper").SearchParameters) => string;
+    createURL: (nextState: import("algoliasearch-helper").SearchParameters | ((state: Partial<{
+        query: string;
+    } & {
+        configure: import("algoliasearch-helper").PlainSearchParameters;
+    } & {
+        geoSearch: {
+            boundingBox: string;
+        };
+    } & {
+        hierarchicalMenu: {
+            [rootAttribute: string]: string[];
+        };
+    } & {
+        hitsPerPage: number;
+    } & {
+        page: number;
+    } & {
+        menu: {
+            [attribute: string]: string;
+        };
+    } & {
+        numericMenu: {
+            [attribute: string]: string;
+        };
+    } & {
+        page: number;
+    } & {
+        range: {
+            [attribute: string]: string;
+        };
+    } & {
+        ratingMenu: {
+            [attribute: string]: number;
+        };
+    } & {
+        refinementList: {
+            [attribute: string]: string[];
+        };
+    } & {
+        relevantSort: number;
+    } & {
+        query: string;
+    } & {
+        sortBy: string;
+    } & {
+        toggle: {
+            [attribute: string]: boolean;
+        };
+    } & {
+        query: string;
+    } & {
+        places: {
+            query: string;
+            position: string;
+        };
+    }>) => Partial<{
+        query: string;
+    } & {
+        configure: import("algoliasearch-helper").PlainSearchParameters;
+    } & {
+        geoSearch: {
+            boundingBox: string;
+        };
+    } & {
+        hierarchicalMenu: {
+            [rootAttribute: string]: string[];
+        };
+    } & {
+        hitsPerPage: number;
+    } & {
+        page: number;
+    } & {
+        menu: {
+            [attribute: string]: string;
+        };
+    } & {
+        numericMenu: {
+            [attribute: string]: string;
+        };
+    } & {
+        page: number;
+    } & {
+        range: {
+            [attribute: string]: string;
+        };
+    } & {
+        ratingMenu: {
+            [attribute: string]: number;
+        };
+    } & {
+        refinementList: {
+            [attribute: string]: string[];
+        };
+    } & {
+        relevantSort: number;
+    } & {
+        query: string;
+    } & {
+        sortBy: string;
+    } & {
+        toggle: {
+            [attribute: string]: boolean;
+        };
+    } & {
+        query: string;
+    } & {
+        places: {
+            query: string;
+            position: string;
+        };
+    }>)) => string;
     scopedResults: never[];
     searchMetadata: {
         isSearchStalled: boolean;
@@ -25,7 +135,117 @@ export declare function createRenderArgs(instantSearchInstance: InstantSearch, p
     state: import("algoliasearch-helper").SearchParameters;
     renderState: import("../../types").RenderState;
     templatesConfig: Record<string, unknown>;
-    createURL: (state: import("algoliasearch-helper").SearchParameters) => string;
+    createURL: (nextState: import("algoliasearch-helper").SearchParameters | ((state: Partial<{
+        query: string;
+    } & {
+        configure: import("algoliasearch-helper").PlainSearchParameters;
+    } & {
+        geoSearch: {
+            boundingBox: string;
+        };
+    } & {
+        hierarchicalMenu: {
+            [rootAttribute: string]: string[];
+        };
+    } & {
+        hitsPerPage: number;
+    } & {
+        page: number;
+    } & {
+        menu: {
+            [attribute: string]: string;
+        };
+    } & {
+        numericMenu: {
+            [attribute: string]: string;
+        };
+    } & {
+        page: number;
+    } & {
+        range: {
+            [attribute: string]: string;
+        };
+    } & {
+        ratingMenu: {
+            [attribute: string]: number;
+        };
+    } & {
+        refinementList: {
+            [attribute: string]: string[];
+        };
+    } & {
+        relevantSort: number;
+    } & {
+        query: string;
+    } & {
+        sortBy: string;
+    } & {
+        toggle: {
+            [attribute: string]: boolean;
+        };
+    } & {
+        query: string;
+    } & {
+        places: {
+            query: string;
+            position: string;
+        };
+    }>) => Partial<{
+        query: string;
+    } & {
+        configure: import("algoliasearch-helper").PlainSearchParameters;
+    } & {
+        geoSearch: {
+            boundingBox: string;
+        };
+    } & {
+        hierarchicalMenu: {
+            [rootAttribute: string]: string[];
+        };
+    } & {
+        hitsPerPage: number;
+    } & {
+        page: number;
+    } & {
+        menu: {
+            [attribute: string]: string;
+        };
+    } & {
+        numericMenu: {
+            [attribute: string]: string;
+        };
+    } & {
+        page: number;
+    } & {
+        range: {
+            [attribute: string]: string;
+        };
+    } & {
+        ratingMenu: {
+            [attribute: string]: number;
+        };
+    } & {
+        refinementList: {
+            [attribute: string]: string[];
+        };
+    } & {
+        relevantSort: number;
+    } & {
+        query: string;
+    } & {
+        sortBy: string;
+    } & {
+        toggle: {
+            [attribute: string]: boolean;
+        };
+    } & {
+        query: string;
+    } & {
+        places: {
+            query: string;
+            position: string;
+        };
+    }>)) => string;
     searchMetadata: {
         isSearchStalled: boolean;
     };

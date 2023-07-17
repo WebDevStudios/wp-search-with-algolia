@@ -1,5 +1,5 @@
 import type { TransformItems, CreateURL, Connector, WidgetRenderState } from '../../types';
-export declare type ClearRefinementsConnectorParams = {
+export type ClearRefinementsConnectorParams = {
     /**
      * The attributes to include in the refinements to clear (all by default). Cannot be used with `excludedAttributes`.
      */
@@ -13,7 +13,7 @@ export declare type ClearRefinementsConnectorParams = {
      */
     transformItems?: TransformItems<string>;
 };
-export declare type ClearRefinementsRenderState = {
+export type ClearRefinementsRenderState = {
     /**
      * Triggers the clear of all the currently refined values.
      */
@@ -32,13 +32,13 @@ export declare type ClearRefinementsRenderState = {
      */
     createURL: CreateURL<void>;
 };
-export declare type ClearRefinementsWidgetDescription = {
+export type ClearRefinementsWidgetDescription = {
     $$type: 'ais.clearRefinements';
     renderState: ClearRefinementsRenderState;
     indexRenderState: {
         clearRefinements: WidgetRenderState<ClearRefinementsRenderState, ClearRefinementsConnectorParams>;
     };
 };
-export declare type ClearRefinementsConnector = Connector<ClearRefinementsWidgetDescription, ClearRefinementsConnectorParams>;
+export type ClearRefinementsConnector = Connector<ClearRefinementsWidgetDescription, ClearRefinementsConnectorParams>;
 declare const connectClearRefinements: ClearRefinementsConnector;
 export default connectClearRefinements;

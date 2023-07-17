@@ -4,19 +4,15 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
-
 var _preact = require("preact");
-
-var _Template = _interopRequireDefault(require("../Template/Template.js"));
-
+var _Template = _interopRequireDefault(require("../Template/Template"));
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
 var RelevantSort = function RelevantSort(_ref) {
   var cssClasses = _ref.cssClasses,
-      templates = _ref.templates,
-      isRelevantSorted = _ref.isRelevantSorted,
-      isVirtualReplica = _ref.isVirtualReplica,
-      refine = _ref.refine;
+    templates = _ref.templates,
+    isRelevantSorted = _ref.isRelevantSorted,
+    isVirtualReplica = _ref.isVirtualReplica,
+    refine = _ref.refine;
   return isVirtualReplica ? (0, _preact.h)("div", {
     className: cssClasses.root
   }, (0, _preact.h)(_Template.default, {
@@ -47,6 +43,5 @@ var RelevantSort = function RelevantSort(_ref) {
     }
   }))) : null;
 };
-
 var _default = RelevantSort;
 exports.default = _default;

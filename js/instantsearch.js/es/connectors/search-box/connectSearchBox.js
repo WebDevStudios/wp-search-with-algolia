@@ -1,38 +1,33 @@
-function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
-
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
+function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
+function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
+function _defineProperty(obj, key, value) { key = _toPropertyKey(key); if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+function _toPropertyKey(arg) { var key = _toPrimitive(arg, "string"); return _typeof(key) === "symbol" ? key : String(key); }
+function _toPrimitive(input, hint) { if (_typeof(input) !== "object" || input === null) return input; var prim = input[Symbol.toPrimitive]; if (prim !== undefined) { var res = prim.call(input, hint || "default"); if (_typeof(res) !== "object") return res; throw new TypeError("@@toPrimitive must return a primitive value."); } return (hint === "string" ? String : Number)(input); }
 import { checkRendering, createDocumentationMessageGenerator, noop } from "../../lib/utils/index.js";
 var withUsage = createDocumentationMessageGenerator({
   name: 'search-box',
   connector: true
 });
-
 var defaultQueryHook = function defaultQueryHook(query, hook) {
   return hook(query);
 };
+
 /**
  * **SearchBox** connector provides the logic to build a widget that will let the user search for a query.
  *
  * The connector provides to the rendering: `refine()` to set the query. The behaviour of this function
  * may be impacted by the `queryHook` widget parameter.
  */
-
-
 var connectSearchBox = function connectSearchBox(renderFn) {
   var unmountFn = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : noop;
   checkRendering(renderFn, withUsage());
   return function (widgetParams) {
     var _ref = widgetParams || {},
-        _ref$queryHook = _ref.queryHook,
-        queryHook = _ref$queryHook === void 0 ? defaultQueryHook : _ref$queryHook;
-
+      _ref$queryHook = _ref.queryHook,
+      queryHook = _ref$queryHook === void 0 ? defaultQueryHook : _ref$queryHook;
     var _refine;
-
     var _clear;
-
     return {
       $$type: 'ais.searchBox',
       init: function init(initOptions) {
@@ -59,21 +54,18 @@ var connectSearchBox = function connectSearchBox(renderFn) {
       },
       getWidgetRenderState: function getWidgetRenderState(_ref3) {
         var helper = _ref3.helper,
-            searchMetadata = _ref3.searchMetadata,
-            state = _ref3.state;
-
+          searchMetadata = _ref3.searchMetadata,
+          state = _ref3.state;
         if (!_refine) {
           _refine = function _refine(query) {
             queryHook(query, function (q) {
               return helper.setQuery(q).search();
             });
           };
-
           _clear = function _clear() {
             helper.setQuery('').search();
           };
         }
-
         return {
           query: state.query || '',
           refine: _refine,
@@ -85,11 +77,9 @@ var connectSearchBox = function connectSearchBox(renderFn) {
       getWidgetUiState: function getWidgetUiState(uiState, _ref4) {
         var searchParameters = _ref4.searchParameters;
         var query = searchParameters.query || '';
-
         if (query === '' || uiState && uiState.query === query) {
           return uiState;
         }
-
         return _objectSpread(_objectSpread({}, uiState), {}, {
           query: query
         });
@@ -101,5 +91,4 @@ var connectSearchBox = function connectSearchBox(renderFn) {
     };
   };
 };
-
 export default connectSearchBox;

@@ -1,3 +1,9 @@
+import connectDynamicWidgets from './dynamic-widgets/connectDynamicWidgets';
+/** @deprecated answers is no longer supported */
+export declare const EXPERIMENTAL_connectAnswers: import("./answers/connectAnswers").AnswersConnector;
+/** @deprecated use connectDynamicWidgets */
+export declare const EXPERIMENTAL_connectDynamicWidgets: import("./dynamic-widgets/connectDynamicWidgets").DynamicWidgetsConnector;
+export { connectDynamicWidgets };
 export { default as connectClearRefinements } from './clear-refinements/connectClearRefinements';
 export { default as connectCurrentRefinements } from './current-refinements/connectCurrentRefinements';
 export { default as connectHierarchicalMenu } from './hierarchical-menu/connectHierarchicalMenu';
@@ -24,9 +30,4 @@ export { default as EXPERIMENTAL_connectConfigureRelatedItems } from './configur
 export { default as connectAutocomplete } from './autocomplete/connectAutocomplete';
 export { default as connectQueryRules } from './query-rules/connectQueryRules';
 export { default as connectVoiceSearch } from './voice-search/connectVoiceSearch';
-export { default as EXPERIMENTAL_connectAnswers } from './answers/connectAnswers';
 export { default as connectRelevantSort } from './relevant-sort/connectRelevantSort';
-import connectDynamicWidgets from './dynamic-widgets/connectDynamicWidgets';
-export { connectDynamicWidgets };
-/** @deprecated use connectDynamicWidgets */
-export declare const EXPERIMENTAL_connectDynamicWidgets: import("./dynamic-widgets/connectDynamicWidgets").DynamicWidgetsConnector;

@@ -1,5 +1,5 @@
 import type { Hit } from '../types';
-export declare type ReverseSnippetOptions = {
+export type ReverseSnippetOptions = {
     attribute: string | string[];
     highlightedTagName?: string;
     hit: Partial<Hit>;
@@ -7,4 +7,7 @@ export declare type ReverseSnippetOptions = {
         highlighted: string;
     }>;
 };
+/**
+ * @deprecated use html tagged templates and the ReverseSnippet component instead
+ */
 export default function reverseSnippet({ attribute, highlightedTagName, hit, cssClasses, }: ReverseSnippetOptions): string;

@@ -1,12 +1,11 @@
 import { h } from 'preact';
 import Template from "../Template/Template.js";
-
 var RelevantSort = function RelevantSort(_ref) {
   var cssClasses = _ref.cssClasses,
-      templates = _ref.templates,
-      isRelevantSorted = _ref.isRelevantSorted,
-      isVirtualReplica = _ref.isVirtualReplica,
-      refine = _ref.refine;
+    templates = _ref.templates,
+    isRelevantSorted = _ref.isRelevantSorted,
+    isVirtualReplica = _ref.isVirtualReplica,
+    refine = _ref.refine;
   return isVirtualReplica ? h("div", {
     className: cssClasses.root
   }, h(Template, {
@@ -37,5 +36,4 @@ var RelevantSort = function RelevantSort(_ref) {
     }
   }))) : null;
 };
-
 export default RelevantSort;

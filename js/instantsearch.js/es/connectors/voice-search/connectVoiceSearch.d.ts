@@ -1,7 +1,7 @@
-import type { PlainSearchParameters } from 'algoliasearch-helper';
-import type { Connector, WidgetRenderState } from '../../types';
 import type { CreateVoiceSearchHelper, VoiceListeningState } from '../../lib/voiceSearchHelper/types';
-export declare type VoiceSearchConnectorParams = {
+import type { Connector, WidgetRenderState } from '../../types';
+import type { PlainSearchParameters } from 'algoliasearch-helper';
+export type VoiceSearchConnectorParams = {
     searchAsYouSpeak?: boolean;
     language?: string;
     additionalQueryParameters?: (params: {
@@ -9,13 +9,13 @@ export declare type VoiceSearchConnectorParams = {
     }) => PlainSearchParameters | void;
     createVoiceSearchHelper?: CreateVoiceSearchHelper;
 };
-export declare type VoiceSearchRenderState = {
+export type VoiceSearchRenderState = {
     isBrowserSupported: boolean;
     isListening: boolean;
     toggleListening: () => void;
     voiceListeningState: VoiceListeningState;
 };
-export declare type VoiceSearchWidgetDescription = {
+export type VoiceSearchWidgetDescription = {
     $$type: 'ais.voiceSearch';
     renderState: VoiceSearchRenderState;
     indexRenderState: {
@@ -25,6 +25,6 @@ export declare type VoiceSearchWidgetDescription = {
         query: string;
     };
 };
-export declare type VoiceSearchConnector = Connector<VoiceSearchWidgetDescription, VoiceSearchConnectorParams>;
+export type VoiceSearchConnector = Connector<VoiceSearchWidgetDescription, VoiceSearchConnectorParams>;
 declare const connectVoiceSearch: VoiceSearchConnector;
 export default connectVoiceSearch;

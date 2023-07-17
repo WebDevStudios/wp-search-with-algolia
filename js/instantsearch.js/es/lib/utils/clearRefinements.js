@@ -6,32 +6,26 @@
  */
 export function clearRefinements(_ref) {
   var helper = _ref.helper,
-      _ref$attributesToClea = _ref.attributesToClear,
-      attributesToClear = _ref$attributesToClea === void 0 ? [] : _ref$attributesToClea;
+    _ref$attributesToClea = _ref.attributesToClear,
+    attributesToClear = _ref$attributesToClea === void 0 ? [] : _ref$attributesToClea;
   var finalState = helper.state.setPage(0);
   finalState = attributesToClear.reduce(function (state, attribute) {
     if (finalState.isNumericRefined(attribute)) {
       return state.removeNumericRefinement(attribute);
     }
-
     if (finalState.isHierarchicalFacet(attribute)) {
       return state.removeHierarchicalFacetRefinement(attribute);
     }
-
     if (finalState.isDisjunctiveFacet(attribute)) {
       return state.removeDisjunctiveFacetRefinement(attribute);
     }
-
     if (finalState.isConjunctiveFacet(attribute)) {
       return state.removeFacetRefinement(attribute);
     }
-
     return state;
   }, finalState);
-
   if (attributesToClear.indexOf('query') !== -1) {
     finalState = finalState.setQuery('');
   }
-
   return finalState;
 }

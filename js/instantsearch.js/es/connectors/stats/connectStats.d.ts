@@ -3,7 +3,7 @@ import type { Connector, WidgetRenderState } from '../../types';
  * **Stats** connector provides the logic to build a custom widget that will displays
  * search statistics (hits number and processing time).
  */
-export declare type StatsRenderState = {
+export type StatsRenderState = {
     /**
      * The maximum number of hits per page returned by Algolia.
      */
@@ -37,14 +37,14 @@ export declare type StatsRenderState = {
      */
     query: string;
 };
-export declare type StatsConnectorParams = Record<string, unknown>;
-export declare type StatsWidgetDescription = {
+export type StatsConnectorParams = Record<string, unknown>;
+export type StatsWidgetDescription = {
     $$type: 'ais.stats';
     renderState: StatsRenderState;
     indexRenderState: {
         stats: WidgetRenderState<StatsRenderState, StatsConnectorParams>;
     };
 };
-export declare type StatsConnector = Connector<StatsWidgetDescription, StatsConnectorParams>;
+export type StatsConnector = Connector<StatsWidgetDescription, StatsConnectorParams>;
 declare const connectStats: StatsConnector;
 export default connectStats;

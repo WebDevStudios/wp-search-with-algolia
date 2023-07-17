@@ -1,19 +1,19 @@
 
 import { h } from 'preact';
-import type { SearchResults } from 'algoliasearch-helper';
-import type { BindEventForHits, SendEventForHits } from '../../lib/utils';
 import type { PreparedTemplateProps } from '../../lib/templating';
-import type { ComponentCSSClasses, Hit } from '../../types';
+import type { BindEventForHits, SendEventForHits } from '../../lib/utils';
+import type { ComponentCSSClasses, Hit, InsightsClient } from '../../types';
 import type { HitsCSSClasses, HitsTemplates } from '../../widgets/hits/hits';
-export declare type HitsComponentCSSClasses = ComponentCSSClasses<HitsCSSClasses>;
-export declare type HitsComponentTemplates = Required<HitsTemplates>;
-export declare type HitsProps = {
+import type { SearchResults } from 'algoliasearch-helper';
+export type HitsComponentCSSClasses = ComponentCSSClasses<HitsCSSClasses>;
+export type HitsComponentTemplates = Required<HitsTemplates>;
+export type HitsProps = {
     results: SearchResults;
     hits: Hit[];
-    sendEvent?: SendEventForHits;
-    bindEvent?: BindEventForHits;
+    insights?: InsightsClient;
+    sendEvent: SendEventForHits;
+    bindEvent: BindEventForHits;
     cssClasses: HitsComponentCSSClasses;
     templateProps: PreparedTemplateProps<HitsComponentTemplates>;
 };
-declare const Hits: ({ results, hits, bindEvent, sendEvent, cssClasses, templateProps, }: HitsProps) => h.JSX.Element;
-export default Hits;
+export default function Hits({ results, hits, insights, bindEvent, sendEvent, cssClasses, templateProps, }: HitsProps): h.JSX.Element;

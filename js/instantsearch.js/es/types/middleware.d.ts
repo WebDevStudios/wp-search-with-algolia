@@ -1,16 +1,32 @@
 import type InstantSearch from '../lib/InstantSearch';
 import type { UiState } from './ui-state';
 import type { AtLeastOne } from './utils';
-export declare type MiddlewareDefinition<TUiState extends UiState = UiState> = {
-    onStateChange(options: {
+export type MiddlewareDefinition<TUiState extends UiState = UiState> = {
+    /**
+     * string to identify the middleware
+     */
+    $$type: string;
+    /**
+     * Change handler called on every UiState change
+     */
+    onStateChange: (options: {
         uiState: TUiState;
-    }): void;
-    subscribe(): void;
-    started(): void;
-    unsubscribe(): void;
+    }) => void;
+    /**
+     * Called when the middleware is added to InstantSearch
+     */
+    subscribe: () => void;
+    /**
+     * Called when InstantSearch is started
+     */
+    started: () => void;
+    /**
+     * Called when the middleware is removed from InstantSearch
+     */
+    unsubscribe: () => void;
 };
-export declare type MiddlewareOptions = {
+export type MiddlewareOptions = {
     instantSearchInstance: InstantSearch;
 };
-export declare type InternalMiddleware<TUiState extends UiState = UiState> = (options: MiddlewareOptions) => MiddlewareDefinition<TUiState>;
-export declare type Middleware = (options: MiddlewareOptions) => AtLeastOne<MiddlewareDefinition>;
+export type InternalMiddleware<TUiState extends UiState = UiState> = (options: MiddlewareOptions) => MiddlewareDefinition<TUiState>;
+export type Middleware<TUiState extends UiState = UiState> = (options: MiddlewareOptions) => AtLeastOne<MiddlewareDefinition<TUiState>>;
