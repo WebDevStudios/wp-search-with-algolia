@@ -30,11 +30,10 @@ class Algolia_Term_Changes_Watcher implements Algolia_Changes_Watcher {
 	 * Active Algolia Indices
 	 *
 	 * @author WebDevStudios <contact@webdevstudios.com>
-	 * @since  1.0.0
-	 *
+	 * @since  2.5.4
+	 * @var post_indices
 	 */
 	private $post_indices;
-
 
 	/**
 	 * Algolia_Term_Changes_Watcher constructor.
