@@ -1,12 +1,12 @@
 
 import { h } from 'preact';
 import type { ClearRefinementsRenderState } from '../../connectors/clear-refinements/connectClearRefinements';
-import type { ClearRefinementsCSSClasses, ClearRefinementsTemplates } from '../../widgets/clear-refinements/clear-refinements';
-import type { ComponentCSSClasses } from '../../types';
 import type { PreparedTemplateProps } from '../../lib/templating';
-export declare type ClearRefinementsComponentCSSClasses = ComponentCSSClasses<ClearRefinementsCSSClasses>;
-export declare type ClearRefinementsComponentTemplates = Required<ClearRefinementsTemplates>;
-export declare type ClearRefinementsProps = {
+import type { ComponentCSSClasses } from '../../types';
+import type { ClearRefinementsCSSClasses, ClearRefinementsTemplates } from '../../widgets/clear-refinements/clear-refinements';
+export type ClearRefinementsComponentCSSClasses = ComponentCSSClasses<ClearRefinementsCSSClasses>;
+export type ClearRefinementsComponentTemplates = Required<ClearRefinementsTemplates>;
+export type ClearRefinementsProps = {
     refine: ClearRefinementsRenderState['refine'];
     cssClasses: ClearRefinementsComponentCSSClasses;
     hasRefinements: ClearRefinementsRenderState['hasRefinements'];

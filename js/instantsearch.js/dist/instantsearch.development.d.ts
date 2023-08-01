@@ -1,4 +1,5 @@
 /// <reference types="google.maps" />
+/// <reference types="googlemaps" />
 
 import type { AlgoliaSearchHelper } from 'algoliasearch-helper';
 import EventEmitter from '@algolia/events';
@@ -9,7 +10,7 @@ import type { HighlightProps as HighlightProps_3 } from '@algolia/ui-components-
 import type { HoganOptions } from 'hogan.js';
 import type { html } from 'htm/preact';
 import type { InsightsClient as InsightsClient_2 } from 'search-insights';
-import type { InsightsMethodMap } from 'search-insights';
+import type { InsightsMethodMap as InsightsMethodMap_2 } from 'search-insights';
 import type * as Places from 'places.js';
 import type { PlainSearchParameters } from 'algoliasearch-helper';
 import { default as qs_2 } from 'qs';
@@ -207,8 +208,6 @@ declare type AnswersTemplates = Partial<{
 declare type AnswersWidget = WidgetFactory<AnswersWidgetDescription & {
     $$widgetType: 'ais.answers';
 }, AnswersConnectorParams, AnswersWidgetParams>;
-
-declare const answersWidget: AnswersWidget;
 
 declare type AnswersWidgetDescription = {
     $$type: 'ais.answers';
@@ -439,6 +438,7 @@ declare type BreadcrumbWidgetParams = {
 };
 
 declare class BrowserHistory<TRouteState> implements Router<TRouteState> {
+    $$type: string;
     /**
      * Transforms a UI state into a title for the page.
      */
@@ -467,7 +467,7 @@ declare class BrowserHistory<TRouteState> implements Router<TRouteState> {
      */
     private readonly getLocation;
     private writeTimer?;
-    private _onPopState;
+    private _onPopState?;
     /**
      * Indicates if last action was back/forward in the browser.
      */
@@ -483,11 +483,14 @@ declare class BrowserHistory<TRouteState> implements Router<TRouteState> {
      * and thus to prevent the `write` method from calling `pushState`.
      */
     private latestAcknowledgedHistory;
+    private _start?;
+    private _dispose?;
+    private _push?;
     /**
      * Initializes a new storage provider that syncs the search state to the URL
      * using web APIs (`window.location.pushState` and `onpopstate` event).
      */
-    constructor({ windowTitle, writeDelay, createURL, parseURL, getLocation, }: BrowserHistoryArgs<TRouteState>);
+    constructor({ windowTitle, writeDelay, createURL, parseURL, getLocation, start, dispose, push, }: BrowserHistoryArgs<TRouteState>);
     /**
      * Reads the URL and returns a syncable UI search state.
      */
@@ -513,6 +516,7 @@ declare class BrowserHistory<TRouteState> implements Router<TRouteState> {
      * Removes the event listener and cleans up the URL.
      */
     dispose(): void;
+    start(): void;
     private shouldWrite;
 }
 
@@ -521,7 +525,10 @@ declare type BrowserHistoryArgs<TRouteState> = {
     writeDelay: number;
     createURL: CreateURL_2<TRouteState>;
     parseURL: ParseURL<TRouteState>;
-    getLocation(): Location;
+    getLocation: () => Location;
+    start?: (onUpdate: () => void) => void;
+    dispose?: () => void;
+    push?: (url: string) => void;
 };
 
 declare type BuiltInBindEventForHits = (eventType: string, hits: Hit | Hit[], eventName?: string) => string;
@@ -697,8 +704,6 @@ declare type ConfigureWidgetDescription = {
  */
 declare type ConfigureWidgetParams = ConfigureConnectorParams['searchParameters'];
 
-declare const connectAnswers: AnswersConnector;
-
 declare const connectAutocomplete: AutocompleteConnector;
 
 declare const connectBreadcrumb: BreadcrumbConnector;
@@ -782,6 +787,9 @@ declare type ConnectorRenderStates = AnswersWidgetDescription['indexRenderState'
 
 declare namespace connectors {
     export {
+        EXPERIMENTAL_connectAnswers,
+        EXPERIMENTAL_connectDynamicWidgets,
+        connectDynamicWidgets,
         connectClearRefinements,
         connectCurrentRefinements,
         connectHierarchicalMenu,
@@ -808,10 +816,7 @@ declare namespace connectors {
         connectAutocomplete,
         connectQueryRules,
         connectVoiceSearch,
-        connectAnswers as EXPERIMENTAL_connectAnswers,
-        connectRelevantSort,
-        connectDynamicWidgets,
-        EXPERIMENTAL_connectDynamicWidgets
+        connectRelevantSort
     }
 }
 
@@ -897,7 +902,7 @@ declare function createInfiniteHitsSessionStorageCache(): InfiniteHitsCache;
 
 declare type CreateInsightsMiddleware = typeof createInsightsMiddleware;
 
-declare function createInsightsMiddleware<TInsightsClient extends null | InsightsClient>(props: InsightsProps<TInsightsClient>): InternalMiddleware;
+declare function createInsightsMiddleware<TInsightsClient extends ProvidedInsightsClient>(props?: InsightsProps<TInsightsClient>): InternalMiddleware;
 
 /**
  * Exposes the metadata of mounted widgets in a custom
@@ -906,7 +911,9 @@ declare function createInsightsMiddleware<TInsightsClient extends null | Insight
  * - widget name
  * - connector name
  */
-declare function createMetadataMiddleware(): InternalMiddleware;
+declare function createMetadataMiddleware({ $$internal, }?: {
+    $$internal?: boolean;
+}): InternalMiddleware;
 
 declare const createRouterMiddleware: <TUiState extends UiState = UiState, TRouteState = TUiState>(props?: RouterProps<TUiState, TRouteState>) => InternalMiddleware<TUiState>;
 
@@ -954,6 +961,10 @@ declare type CurrentRefinementsConnectorParamsItem = {
      */
     indexName: string;
     /**
+     * The index id as provided to the index widget.
+     */
+    indexId: string;
+    /**
      * The attribute on which the refinement is applied.
      */
     attribute: string;
@@ -968,7 +979,7 @@ declare type CurrentRefinementsConnectorParamsItem = {
     /**
      * Removes the given refinement and triggers a new search.
      */
-    refine(refinement: CurrentRefinementsConnectorParamsRefinement): void;
+    refine: (refinement: CurrentRefinementsConnectorParamsRefinement) => void;
 };
 
 declare type CurrentRefinementsConnectorParamsRefinement = {
@@ -1049,7 +1060,7 @@ declare type CurrentRefinementsRenderState = {
     /**
      * Removes the given refinement and triggers a new search.
      */
-    refine(refinement: CurrentRefinementsConnectorParamsRefinement): void;
+    refine: (refinement: CurrentRefinementsConnectorParamsRefinement) => void;
     /**
      * Generates a URL for the next state.
      */
@@ -1106,10 +1117,10 @@ declare type DynamicWidgetsConnectorParams = {
      * Function to return a fallback widget when an attribute isn't found in
      * `widgets`.
      */
-    fallbackWidget?(args: {
+    fallbackWidget?: (args: {
         /** The attribute name to create a widget for. */
         attribute: string;
-    }): Widget;
+    }) => Widget;
     /**
      * Function to transform the items to render.
      * The function also exposes the full search response.
@@ -1163,17 +1174,23 @@ declare type DynamicWidgetsWidgetParams = {
      * Function to return a fallback widget when an attribute isn't found in
      * `widgets`.
      */
-    fallbackWidget?(args: {
+    fallbackWidget?: (args: {
         /** The attribute name to create a widget for. */
         attribute: string;
         /** CSS Selector or HTMLElement to insert the widget */
         container: HTMLElement;
-    }): Widget;
+    }) => Widget;
 };
 
 declare type Expand<T> = T extends infer O ? {
     [K in keyof O]: O[K];
 } : never;
+
+/** @deprecated answers is no longer supported */
+declare const EXPERIMENTAL_answers: AnswersWidget;
+
+/** @deprecated answers is no longer supported */
+declare const EXPERIMENTAL_connectAnswers: AnswersConnector;
 
 /** @deprecated use connectDynamicWidgets */
 declare const EXPERIMENTAL_connectDynamicWidgets: DynamicWidgetsConnector;
@@ -1247,7 +1264,7 @@ declare type GeoSearchMarker<TOptions> = {
      * See the documentation for more information:
      * https://developers.google.com/maps/documentation/javascript/reference/3/#MarkerOptions
      */
-    createOptions?(item: GeoHit): TOptions;
+    createOptions?: (item: GeoHit) => TOptions;
     /**
      * Object that takes an event type (ex: `click`, `mouseover`) as key and a
      * listener as value. The listener is provided with an object that contains:
@@ -1267,7 +1284,7 @@ declare type GeoSearchRenderState<THit extends BaseHit = Record<string, any>> = 
     /**
      * Reset the current bounding box refinement.
      */
-    clearMapRefinement(): void;
+    clearMapRefinement: () => void;
     /**
      * The current bounding box of the search.
      */
@@ -1275,15 +1292,15 @@ declare type GeoSearchRenderState<THit extends BaseHit = Record<string, any>> = 
     /**
      * Return true if the map has move since the last refinement.
      */
-    hasMapMoveSinceLastRefine(): boolean;
+    hasMapMoveSinceLastRefine: () => boolean;
     /**
      * Return true if the current refinement is set with the map bounds.
      */
-    isRefinedWithMap(): boolean;
+    isRefinedWithMap: () => boolean;
     /**
      * Return true if the user is able to refine on map move.
      */
-    isRefineOnMapMove(): boolean;
+    isRefineOnMapMove: () => boolean;
     /**
      * The matched hits from Algolia API.
      */
@@ -1295,7 +1312,7 @@ declare type GeoSearchRenderState<THit extends BaseHit = Record<string, any>> = 
     /**
      * Sets a bounding box to filter the results from the given map bounds.
      */
-    refine(bounds: Bounds): void;
+    refine: (bounds: Bounds) => void;
     /**
      * Send event to insights middleware
      */
@@ -1305,11 +1322,11 @@ declare type GeoSearchRenderState<THit extends BaseHit = Record<string, any>> = 
      * called on each map move. The call to the function triggers a new rendering
      * only when the value change.
      */
-    setMapMoveSinceLastRefine(): void;
+    setMapMoveSinceLastRefine: () => void;
     /**
      * Toggle the fact that the user is able to refine on map move.
      */
-    toggleRefineOnMapMove(): void;
+    toggleRefineOnMapMove: () => void;
 };
 
 declare type GeoSearchTemplates = Partial<{
@@ -1760,6 +1777,9 @@ declare type HierarchicalMenuWidgetParams = {
 
 declare function Highlight<THit extends Hit<BaseHit>>({ hit, attribute, cssClasses, ...props }: HighlightProps<THit>): h.JSX.Element;
 
+/**
+ * @deprecated use html tagged templates and the Highlight component instead
+ */
 declare function highlight({ attribute, highlightedTagName, hit, cssClasses, }: HighlightOptions): string;
 
 declare type HighlightClassNames = HighlightClassNames_2;
@@ -1783,7 +1803,7 @@ declare type HighlightProps_2 = Omit<HighlightProps_3, 'classNames'> & {
     classNames?: Partial<HighlightClassNames>;
 };
 
-declare function historyRouter<TRouteState = UiState>({ createURL, parseURL, writeDelay, windowTitle, getLocation, }?: Partial<BrowserHistoryArgs<TRouteState>>): BrowserHistory<TRouteState>;
+declare function historyRouter<TRouteState = UiState>({ createURL, parseURL, writeDelay, windowTitle, getLocation, start, dispose, push, }?: Partial<BrowserHistoryArgs<TRouteState>>): BrowserHistory<TRouteState>;
 
 declare type Hit<THit extends BaseHit = Record<string, any>> = {
     __position: number;
@@ -1896,6 +1916,10 @@ declare type HitsPerPageRenderState = {
      */
     items: HitsPerPageRenderStateItem[];
     /**
+     * Creates the URL for a single item name in the list.
+     */
+    createURL: CreateURL<HitsPerPageConnectorParamsItem['value']>;
+    /**
      * Sets the number of hits per page and triggers a search.
      */
     refine: (value: number) => void;
@@ -1983,6 +2007,7 @@ declare type HitsTemplates = Partial<{
      * @default ''
      */
     item: TemplateWithBindEvent<Hit & {
+        /** @deprecated the index in the hits array, use __position instead, which is the absolute position */
         __hitIndex: number;
     }>;
 }>;
@@ -2045,31 +2070,42 @@ declare type IndexRenderState = Partial<ConnectorRenderStates & WidgetRenderStat
 
 declare type IndexUiState = Partial<ConnectorUiStates & WidgetUiStates>;
 
-declare type IndexWidget = Omit<Widget<IndexWidgetDescription & {
+declare type IndexWidget<TUiState extends UiState = UiState> = Omit<Widget<IndexWidgetDescription & {
     widgetParams: IndexWidgetParams;
 }>, 'getWidgetUiState' | 'getWidgetState'> & {
-    getIndexName(): string;
-    getIndexId(): string;
-    getHelper(): AlgoliaSearchHelper | null;
-    getResults(): SearchResults | null;
-    getScopedResults(): ScopedResult[];
-    getParent(): IndexWidget | null;
-    getWidgets(): Array<Widget | IndexWidget>;
-    createURL(state: SearchParameters): string;
-    addWidgets(widgets: Array<Widget | IndexWidget>): IndexWidget;
-    removeWidgets(widgets: Array<Widget | IndexWidget>): IndexWidget;
-    init(options: IndexInitOptions): void;
-    render(options: IndexRenderOptions): void;
-    dispose(): void;
+    getIndexName: () => string;
+    getIndexId: () => string;
+    getHelper: () => AlgoliaSearchHelper | null;
+    getResults: () => SearchResults | null;
+    getPreviousState: () => SearchParameters | null;
+    getScopedResults: () => ScopedResult[];
+    getParent: () => IndexWidget | null;
+    getWidgets: () => Array<Widget | IndexWidget>;
+    createURL: (nextState: SearchParameters | ((state: IndexUiState) => IndexUiState)) => string;
+    addWidgets: (widgets: Array<Widget | IndexWidget>) => IndexWidget;
+    removeWidgets: (widgets: Array<Widget | IndexWidget>) => IndexWidget;
+    init: (options: IndexInitOptions) => void;
+    render: (options: IndexRenderOptions) => void;
+    dispose: () => void;
     /**
      * @deprecated
      */
-    getWidgetState(uiState: UiState): UiState;
-    getWidgetUiState<TUiState extends UiState = UiState>(uiState: TUiState): TUiState;
-    getWidgetSearchParameters(searchParameters: SearchParameters, searchParametersOptions: {
+    getWidgetState: (uiState: UiState) => UiState;
+    getWidgetUiState: <TSpecificUiState extends UiState = TUiState>(uiState: TSpecificUiState) => TSpecificUiState;
+    getWidgetSearchParameters: (searchParameters: SearchParameters, searchParametersOptions: {
         uiState: IndexUiState;
-    }): SearchParameters;
-    refreshUiState(): void;
+    }) => SearchParameters;
+    /**
+     * Set this index' UI state back to the state defined by the widgets.
+     * Can only be called after `init`.
+     */
+    refreshUiState: () => void;
+    /**
+     * Set this index' UI state and search. This is the equivalent of calling
+     * a spread `setUiState` on the InstantSearch instance.
+     * Can only be called after `init`.
+     */
+    setIndexUiState: (indexUiState: TUiState[string] | ((previousIndexUiState: TUiState[string]) => TUiState[string])) => void;
 };
 
 declare type IndexWidgetDescription = {
@@ -2212,6 +2248,7 @@ declare type InfiniteHitsTemplates = Partial<{
      * The template to use for each result.
      */
     item: TemplateWithBindEvent<Hit & {
+        /** @deprecated the index in the hits array, use __position instead, which is the absolute position */
         __hitIndex: number;
     }>;
 }>;
@@ -2283,20 +2320,39 @@ declare type InsightsClientPayload = {
     positions?: number[];
 };
 
-declare type InsightsEvent = {
-    insightsMethod?: InsightsClientMethod;
-    payload: any;
+declare type InsightsClientWithGlobals = InsightsClient & {
+    shouldAddScript?: boolean;
+    version?: string;
+};
+
+declare type InsightsEvent<TMethod extends InsightsMethod = InsightsMethod> = InsightsEvent_2<TMethod>;
+
+/**
+ * The event sent to the insights middleware.
+ */
+declare type InsightsEvent_2<TMethod extends InsightsMethod = InsightsMethod> = {
+    insightsMethod?: TMethod;
+    payload: InsightsMethodMap[TMethod][0];
     widgetType: string;
     eventType: string;
+    eventModifier?: string;
     hits?: Hit[];
     attribute?: string;
 };
 
-declare type InsightsProps<TInsightsClient extends null | InsightsClient = InsightsClient | null> = {
-    insightsClient: TInsightsClient;
+/**
+ * Method allowed by the insights middleware.
+ */
+declare type InsightsMethod = 'clickedObjectIDsAfterSearch' | 'clickedObjectIDs' | 'clickedFilters' | 'convertedObjectIDsAfterSearch' | 'convertedObjectIDs' | 'convertedFilters' | 'viewedObjectIDs' | 'viewedFilters';
+
+declare type InsightsMethodMap = InsightsMethodMap_2;
+
+declare type InsightsProps<TInsightsClient extends ProvidedInsightsClient = ProvidedInsightsClient> = {
+    insightsClient?: TInsightsClient;
     insightsInitParams?: {
         userHasOptedOut?: boolean;
         useCookie?: boolean;
+        anonymousUserToken?: boolean;
         cookieDuration?: number;
         region?: 'de' | 'us';
     };
@@ -2327,8 +2383,8 @@ declare class InstantSearch<TUiState extends UiState = UiState, TRouteState = TU
     _searchFunction?: InstantSearchOptions['searchFunction'];
     _mainHelperSearch?: AlgoliaSearchHelper['search'];
     middleware: Array<{
-        creator: Middleware;
-        instance: MiddlewareDefinition;
+        creator: Middleware<TUiState>;
+        instance: MiddlewareDefinition<TUiState>;
     }>;
     sendEventToInsights: (event: InsightsEvent) => void;
     /**
@@ -2348,11 +2404,11 @@ declare class InstantSearch<TUiState extends UiState = UiState, TRouteState = TU
     /**
      * Hooks a middleware into the InstantSearch lifecycle.
      */
-    use(...middleware: Middleware[]): this;
+    use(...middleware: Array<Middleware<TUiState>>): this;
     /**
      * Removes a middleware from the InstantSearch lifecycle.
      */
-    unuse(...middlewareToUnuse: Middleware[]): this;
+    unuse(...middlewareToUnuse: Array<Middleware<TUiState>>): this;
     EXPERIMENTAL_use(...middleware: Middleware[]): this;
     /**
      * Adds a widget to the search instance.
@@ -2398,12 +2454,12 @@ declare class InstantSearch<TUiState extends UiState = UiState, TRouteState = TU
      */
     dispose(): void;
     scheduleSearch: (() => void) & {
-        wait(): Promise<void>;
-        cancel(): void;
+        wait: () => Promise<void>;
+        cancel: () => void;
     };
     scheduleRender: ((shouldResetStatus?: boolean) => void) & {
-        wait(): Promise<void>;
-        cancel(): void;
+        wait: () => Promise<void>;
+        cancel: () => void;
     };
     scheduleStalledRender(): void;
     /**
@@ -2414,8 +2470,8 @@ declare class InstantSearch<TUiState extends UiState = UiState, TRouteState = TU
     setUiState(uiState: TUiState | ((previousUiState: TUiState) => TUiState), callOnStateChange?: boolean): void;
     getUiState(): TUiState;
     onInternalStateChange: (() => void) & {
-        wait(): Promise<void>;
-        cancel(): void;
+        wait: () => Promise<void>;
+        cancel: () => void;
     };
     createURL(nextState?: TUiState): string;
     refresh(): void;
@@ -2448,9 +2504,13 @@ declare type InstantSearchModule = {
     routers: typeof routers;
     stateMappings: typeof stateMappings;
     createInfiniteHitsSessionStorageCache: typeof createInfiniteHitsSessionStorageCache;
+    /** @deprecated use html tagged templates and the Highlight component instead */
     highlight: typeof helpers.highlight;
+    /** @deprecated use html tagged templates and the ReverseHighlight component instead */
     reverseHighlight: typeof helpers.reverseHighlight;
+    /** @deprecated use html tagged templates and the Snippet component instead */
     snippet: typeof helpers.snippet;
+    /** @deprecated use html tagged templates and the ReverseSnippet component instead */
     reverseSnippet: typeof helpers.reverseSnippet;
     /**
      * @deprecated use createInsightsMiddleware
@@ -2464,9 +2524,9 @@ declare type InstantSearchModule = {
  */
 declare type InstantSearchOptions<TUiState extends UiState = UiState, TRouteState = TUiState> = {
     /**
-     * The name of the main index
+     * The name of the main index. If no indexName is provided, you have to manually add an index widget.
      */
-    indexName: string;
+    indexName?: string;
     /**
      * The search client to plug to InstantSearch.js
      *
@@ -2504,6 +2564,7 @@ declare type InstantSearchOptions<TUiState extends UiState = UiState, TRouteStat
      * A hook that will be called each time a search needs to be done, with the
      * helper as a parameter. It's your responsibility to call `helper.search()`.
      * This option allows you to avoid doing searches at page load for example.
+     * @deprecated use onStateChange instead
      */
     searchFunction?: (helper: AlgoliaSearchHelper) => void;
     /**
@@ -2514,7 +2575,7 @@ declare type InstantSearchOptions<TUiState extends UiState = UiState, TRouteStat
      */
     onStateChange?: (params: {
         uiState: TUiState;
-        setUiState(uiState: TUiState | ((previousUiState: TUiState) => TUiState)): void;
+        setUiState: (uiState: TUiState | ((previousUiState: TUiState) => TUiState)) => void;
     }) => void;
     /**
      * Injects a `uiState` to the `instantsearch` instance. You can use this option
@@ -2532,6 +2593,16 @@ declare type InstantSearchOptions<TUiState extends UiState = UiState, TRouteStat
      * client side persistence. Passing `true` will use the default URL options.
      */
     routing?: RouterProps<TUiState, TRouteState> | boolean;
+    /**
+     * Enables the Insights middleware and loads the Insights library
+     * if not already loaded.
+     *
+     * The Insights middleware sends view and click events automatically, and lets
+     * you set up your own events.
+     *
+     * @default false
+     */
+    insights?: InsightsProps | boolean;
     /**
      * the instance of search-insights to use for sending insights events inside
      * widgets like `hits`.
@@ -2667,7 +2738,7 @@ declare type MenuRenderState = {
     /**
      * Filter the search to item value.
      */
-    refine(value: string): void;
+    refine: (value: string) => void;
     /**
      * True if refinement can be applied.
      */
@@ -2679,7 +2750,7 @@ declare type MenuRenderState = {
     /**
      * Toggles the number of values displayed between `limit` and `showMore.limit`.
      */
-    toggleShowMore(): void;
+    toggleShowMore: () => void;
     /**
      * `true` if the toggleShowMore button can be activated (enough items to display more or
      * already displaying more than `limit` items)
@@ -2801,15 +2872,31 @@ declare type MenuWidgetParams = {
     cssClasses?: MenuCSSClasses;
 };
 
-declare type Middleware = (options: MiddlewareOptions) => AtLeastOne<MiddlewareDefinition>;
+declare type Middleware<TUiState extends UiState = UiState> = (options: MiddlewareOptions) => AtLeastOne<MiddlewareDefinition<TUiState>>;
 
 declare type MiddlewareDefinition<TUiState extends UiState = UiState> = {
-    onStateChange(options: {
+    /**
+     * string to identify the middleware
+     */
+    $$type: string;
+    /**
+     * Change handler called on every UiState change
+     */
+    onStateChange: (options: {
         uiState: TUiState;
-    }): void;
-    subscribe(): void;
-    started(): void;
-    unsubscribe(): void;
+    }) => void;
+    /**
+     * Called when the middleware is added to InstantSearch
+     */
+    subscribe: () => void;
+    /**
+     * Called when InstantSearch is started
+     */
+    started: () => void;
+    /**
+     * Called when the middleware is removed from InstantSearch
+     */
+    unsubscribe: () => void;
 };
 
 declare type MiddlewareOptions = {
@@ -2821,6 +2908,7 @@ declare namespace middlewares {
         createInsightsMiddleware,
         InsightsEvent,
         InsightsProps,
+        InsightsClientWithGlobals,
         CreateInsightsMiddleware,
         RouterProps,
         createRouterMiddleware,
@@ -2829,7 +2917,7 @@ declare namespace middlewares {
     }
 }
 
-declare type NoInfer<T> = [T][T extends any ? 0 : never];
+declare type NoInfer<T> = T extends infer S ? S : never;
 
 declare const numericMenu: NumericMenuWidget;
 
@@ -3091,7 +3179,7 @@ declare type PaginationRenderState = {
     /** Creates URLs for the next state, the number is the page to generate the URL for. */
     createURL: CreateURL<number>;
     /** Sets the current page and triggers a search. */
-    refine(page: number): void;
+    refine: (page: number) => void;
     /** true if this search returned more than one page */
     canRefine: boolean;
     /** The number of the page currently displayed. */
@@ -3112,19 +3200,26 @@ declare type PaginationTemplates = Partial<{
     /**
      * Label for the Previous link.
      */
-    previous: string;
+    previous: Template;
     /**
      * Label for the Next link.
      */
-    next: string;
+    next: Template;
+    /**
+     * Label for the link of a certain page
+     * Page is one-based, so `page` will be `1` for the first page.
+     */
+    page: Template<{
+        page: number;
+    }>;
     /**
      * Label for the First link.
      */
-    first: string;
+    first: Template;
     /**
      * Label for the Last link.
      */
-    last: string;
+    last: Template;
 }>;
 
 declare type PaginationWidget = WidgetFactory<PaginationWidgetDescription & {
@@ -3262,12 +3357,12 @@ declare type PanelWidgetParams<TWidgetFactory extends AnyWidgetFactory> = {
      * A function that is called on each render to determine if the
      * panel should be hidden based on the render options.
      */
-    hidden?(options: PanelRenderOptions<TWidgetFactory>): boolean;
+    hidden?: (options: PanelRenderOptions<TWidgetFactory>) => boolean;
     /**
      * A function that is called on each render to determine if the
      * panel should be collapsed based on the render options.
      */
-    collapsed?(options: PanelRenderOptions<TWidgetFactory>): boolean;
+    collapsed?: (options: PanelRenderOptions<TWidgetFactory>) => boolean;
     /**
      * The templates to use for the widget.
      */
@@ -3388,6 +3483,8 @@ declare type PoweredByWidgetParams = {
      */
     cssClasses?: PoweredByCSSClasses;
 };
+
+declare type ProvidedInsightsClient = InsightsClient | null | undefined;
 
 declare const queryRuleContext: QueryRuleContextWidget;
 
@@ -3581,7 +3678,7 @@ declare type RangeRenderState = {
      * previously set bound or to set an infinite bound.
      * @param rangeValue tuple of [min, max] bounds
      */
-    refine(rangeValue: RangeBoundaries): void;
+    refine: (rangeValue: RangeBoundaries) => void;
     /**
      * Indicates whether this widget can be refined
      */
@@ -3603,8 +3700,8 @@ declare type RangeRenderState = {
      * Both functions take a `number` as input and should output a `string`.
      */
     format: {
-        from(fromValue: number): string;
-        to(toValue: number): string;
+        from: (fromValue: number) => string;
+        to: (toValue: number) => string;
     };
 };
 
@@ -3639,7 +3736,7 @@ declare type RangeSliderTooltipOptions = {
      * @example
      * { format(rawValue) {return '$' + Math.round(rawValue).toLocaleString() } }
      */
-    format(value: number): string;
+    format: (value: number) => string;
 };
 
 declare type RangeSliderWidget = WidgetFactory<Omit<RangeWidgetDescription, '$$type'> & {
@@ -3899,7 +3996,7 @@ declare type ReconfigurableOptions = Places.ReconfigurableOptions;
  */
 declare type Refine = (searchParameters: PlainSearchParameters) => void;
 
-declare type Refine_2 = (relevancyStrictness: number) => void;
+declare type Refine_2 = (relevancyStrictness: number | undefined) => void;
 
 /**
  * The refinement list widget is one of the most common widget that you can find
@@ -4113,7 +4210,7 @@ declare type RefinementListRenderState = {
     /**
      * Action to apply selected refinements.
      */
-    refine(value: string): void;
+    refine: (value: string) => void;
     /**
      * Send event to insights middleware
      */
@@ -4121,7 +4218,7 @@ declare type RefinementListRenderState = {
     /**
      * Searches for values inside the list.
      */
-    searchForItems(query: string): void;
+    searchForItems: (query: string) => void;
     /**
      * `true` if the values are from an index search.
      */
@@ -4142,7 +4239,7 @@ declare type RefinementListRenderState = {
     /**
      * Toggles the number of values displayed between `limit` and `showMoreLimit`.
      */
-    toggleShowMore(): void;
+    toggleShowMore: () => void;
 };
 
 declare type RefinementListSearchableCSSClasses = Partial<{
@@ -4431,6 +4528,9 @@ declare type RequiredWidgetType<TWidgetDescription extends WidgetDescription> = 
 
 declare function ReverseHighlight<THit extends Hit<BaseHit>>({ hit, attribute, cssClasses, ...props }: ReverseHighlightProps<THit>): h.JSX.Element;
 
+/**
+ * @deprecated use html tagged templates and the ReverseHighlight component instead
+ */
 declare function reverseHighlight({ attribute, highlightedTagName, hit, cssClasses, }: ReverseHighlightOptions): string;
 
 declare type ReverseHighlightClassNames = HighlightClassNames_2;
@@ -4456,6 +4556,9 @@ declare type ReverseHighlightProps_2 = Omit<HighlightProps_3, 'classNames'> & {
 
 declare function ReverseSnippet<THit extends Hit<BaseHit>>({ hit, attribute, cssClasses, ...props }: ReverseSnippetProps<THit>): h.JSX.Element;
 
+/**
+ * @deprecated use html tagged templates and the ReverseSnippet component instead
+ */
 declare function reverseSnippet({ attribute, highlightedTagName, hit, cssClasses, }: ReverseSnippetOptions): string;
 
 declare type ReverseSnippetClassNames = HighlightClassNames_2;
@@ -4490,26 +4593,34 @@ declare type Router<TRouteState = UiState> = {
      * In the case of the history / URL in a browser, the callback will be called
      * by `onPopState`.
      */
-    onUpdate(callback: (route: TRouteState) => void): void;
+    onUpdate: (callback: (route: TRouteState) => void) => void;
     /**
      * Reads the storage and gets a route object. It does not take parameters,
      * and should return an object
      */
-    read(): TRouteState;
+    read: () => TRouteState;
     /**
      * Pushes a route object into a storage. Takes the UI state mapped by the state
      * mapping configured in the mapping
      */
-    write(route: TRouteState): void;
+    write: (route: TRouteState) => void;
     /**
      * Transforms a route object into a URL. It receives an object and should
      * return a string. It may return an empty string.
      */
-    createURL(state: TRouteState): string;
+    createURL: (state: TRouteState) => string;
     /**
      * Called when InstantSearch is disposed. Used to remove subscriptions.
      */
-    dispose(): void;
+    dispose: () => void;
+    /**
+     * Called when InstantSearch is started.
+     */
+    start?: () => void;
+    /**
+     * Identifier for this router. Used to differentiate between routers.
+     */
+    $$type?: string;
 };
 
 declare type RouterProps<TUiState extends UiState = UiState, TRouteState = TUiState> = {
@@ -4729,7 +4840,7 @@ declare type SharedRenderOptions = {
     };
     status: InstantSearch['status'];
     error: InstantSearch['error'];
-    createURL(state: SearchParameters): string;
+    createURL: (nextState: SearchParameters | ((state: IndexUiState) => IndexUiState)) => string;
 };
 
 declare function simpleStateMapping<TUiState extends UiState = UiState>(): StateMapping<TUiState, TUiState>;
@@ -4738,6 +4849,9 @@ declare function singleIndexStateMapping<TUiState extends UiState = UiState>(ind
 
 declare function Snippet<THit extends Hit<BaseHit>>({ hit, attribute, cssClasses, ...props }: SnippetProps<THit>): h.JSX.Element;
 
+/**
+ * @deprecated use html tagged templates and the Snippet component instead
+ */
 declare function snippet({ attribute, highlightedTagName, hit, cssClasses, }: SnippetOptions): string;
 
 declare type SnippetClassNames = HighlightClassNames_2;
@@ -4931,13 +5045,17 @@ declare type StateMapping<TUiState = UiState, TRouteState = TUiState> = {
      * It should return an object of any form as long as this form can be read by
      * the `routeToState` function.
      */
-    stateToRoute(uiState: TUiState): TRouteState;
+    stateToRoute: (uiState: TUiState) => TRouteState;
     /**
      * Transforms route object into a UI state representation.
      * It receives an object that contains the UI state stored by the router.
      * The format is the output of `stateToRoute`.
      */
-    routeToState(routeState: TRouteState): TUiState;
+    routeToState: (routeState: TRouteState) => TUiState;
+    /**
+     * Identifier for this stateMapping. Used to differentiate between stateMappings.
+     */
+    $$type?: string;
 };
 
 declare namespace stateMappings {
@@ -5049,7 +5167,7 @@ declare type Status = 'initial' | 'askingPermission' | 'waiting' | 'recognizing'
 
 declare type Template<TTemplateData = void> = string | ((data: TTemplateData, params: TemplateParams) => VNode | VNode[] | string);
 
-declare type TemplateParams = BindEventForHits & {
+declare type TemplateParams = {
     html: typeof html;
     components: {
         Highlight: typeof Highlight;
@@ -5064,7 +5182,15 @@ declare type Templates = {
     [key: string]: Template<any> | TemplateWithBindEvent<any> | undefined;
 };
 
-declare type TemplateWithBindEvent<TTemplateData = void> = string | ((data: TTemplateData, params: TemplateParams) => VNode | VNode[] | string);
+declare type TemplateWithBindEvent<TTemplateData = void> = string | ((data: TTemplateData, params: TemplateWithBindEventParams) => VNode | VNode[] | string);
+
+declare interface TemplateWithBindEventParams extends TemplateParams {
+    /** @deprecated use sendEvent instead */
+    (...args: Parameters<BuiltInBindEventForHits>): ReturnType<BuiltInBindEventForHits>;
+    /** @deprecated use sendEvent instead */
+    (...args: Parameters<CustomBindEventForHits>): ReturnType<CustomBindEventForHits>;
+    sendEvent: SendEventForHits;
+}
 
 declare type TextTemplateProps = {
     hasManyResults: boolean;
@@ -5153,7 +5279,7 @@ declare type ToggleRefinementRenderState = {
     /**
      * Creates an URL for the next state.
      */
-    createURL: CreateURL<string>;
+    createURL: CreateURL<void>;
     /**
      * Send a "Facet Clicked" Insights event.
      */
@@ -5375,15 +5501,15 @@ declare type WidgetRenderStates = AnalyticsWidgetDescription['indexRenderState']
 
 declare namespace widgets {
     export {
+        EXPERIMENTAL_answers,
+        EXPERIMENTAL_dynamicWidgets,
+        dynamicWidgets,
         analytics,
         breadcrumb,
         clearRefinements,
         configure,
         currentRefinements,
-        answersWidget as EXPERIMENTAL_answers,
         configureRelatedItems as EXPERIMENTAL_configureRelatedItems,
-        dynamicWidgets,
-        EXPERIMENTAL_dynamicWidgets,
         geoSearch,
         hierarchicalMenu,
         hits,

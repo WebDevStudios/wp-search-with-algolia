@@ -1,21 +1,21 @@
-import type { PlainSearchParameters, SearchResults } from 'algoliasearch-helper';
-import type { Connector, TransformItems, Hit, WidgetRenderState, BaseHit } from '../../types';
 import type { SendEventForHits, BindEventForHits } from '../../lib/utils';
-export declare type InfiniteHitsCachedHits<THit extends BaseHit> = {
+import type { Connector, TransformItems, Hit, WidgetRenderState, BaseHit } from '../../types';
+import type { PlainSearchParameters, SearchResults } from 'algoliasearch-helper';
+export type InfiniteHitsCachedHits<THit extends BaseHit> = {
     [page: number]: Array<Hit<THit>>;
 };
-declare type Read<THit extends BaseHit> = ({ state, }: {
+type Read<THit extends BaseHit> = ({ state, }: {
     state: PlainSearchParameters;
 }) => InfiniteHitsCachedHits<THit> | null;
-declare type Write<THit extends BaseHit> = ({ state, hits, }: {
+type Write<THit extends BaseHit> = ({ state, hits, }: {
     state: PlainSearchParameters;
     hits: InfiniteHitsCachedHits<THit>;
 }) => void;
-export declare type InfiniteHitsCache<THit extends BaseHit = BaseHit> = {
+export type InfiniteHitsCache<THit extends BaseHit = BaseHit> = {
     read: Read<THit>;
     write: Write<THit>;
 };
-export declare type InfiniteHitsConnectorParams<THit extends BaseHit = BaseHit> = {
+export type InfiniteHitsConnectorParams<THit extends BaseHit = BaseHit> = {
     /**
      * Escapes HTML entities from hits string values.
      *
@@ -40,7 +40,7 @@ export declare type InfiniteHitsConnectorParams<THit extends BaseHit = BaseHit> 
      */
     cache?: InfiniteHitsCache<THit>;
 };
-export declare type InfiniteHitsRenderState<THit extends BaseHit = BaseHit> = {
+export type InfiniteHitsRenderState<THit extends BaseHit = BaseHit> = {
     /**
      * Loads the previous results.
      */
@@ -78,7 +78,7 @@ export declare type InfiniteHitsRenderState<THit extends BaseHit = BaseHit> = {
      */
     results?: SearchResults<Hit<THit>>;
 };
-export declare type InfiniteHitsWidgetDescription<THit extends BaseHit = BaseHit> = {
+export type InfiniteHitsWidgetDescription<THit extends BaseHit = BaseHit> = {
     $$type: 'ais.infiniteHits';
     renderState: InfiniteHitsRenderState<THit>;
     indexRenderState: {
@@ -88,6 +88,6 @@ export declare type InfiniteHitsWidgetDescription<THit extends BaseHit = BaseHit
         page: number;
     };
 };
-export declare type InfiniteHitsConnector<THit extends BaseHit = BaseHit> = Connector<InfiniteHitsWidgetDescription<THit>, InfiniteHitsConnectorParams<THit>>;
+export type InfiniteHitsConnector<THit extends BaseHit = BaseHit> = Connector<InfiniteHitsWidgetDescription<THit>, InfiniteHitsConnectorParams<THit>>;
 declare const connectInfiniteHits: InfiniteHitsConnector;
 export default connectInfiniteHits;

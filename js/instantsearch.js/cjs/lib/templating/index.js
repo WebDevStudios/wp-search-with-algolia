@@ -3,9 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-
-var _prepareTemplateProps = require("./prepareTemplateProps.js");
-
+var _prepareTemplateProps = require("./prepareTemplateProps");
 Object.keys(_prepareTemplateProps).forEach(function (key) {
   if (key === "default" || key === "__esModule") return;
   if (key in exports && exports[key] === _prepareTemplateProps[key]) return;
@@ -16,9 +14,7 @@ Object.keys(_prepareTemplateProps).forEach(function (key) {
     }
   });
 });
-
-var _renderTemplate = require("./renderTemplate.js");
-
+var _renderTemplate = require("./renderTemplate");
 Object.keys(_renderTemplate).forEach(function (key) {
   if (key === "default" || key === "__esModule") return;
   if (key in exports && exports[key] === _renderTemplate[key]) return;

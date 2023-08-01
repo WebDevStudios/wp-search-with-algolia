@@ -1,7 +1,7 @@
 
 import type { HierarchicalMenuItem, HierarchicalMenuConnectorParams, HierarchicalMenuWidgetDescription } from '../../connectors/hierarchical-menu/connectHierarchicalMenu';
 import type { TransformItems, Template, WidgetFactory, SortBy, ComponentCSSClasses } from '../../types';
-declare type HierarchicalMenuTemplates = Partial<{
+type HierarchicalMenuTemplates = Partial<{
     /**
      * Item template, provided with `name`, `count`, `isRefined`, `url` data properties.
      */
@@ -20,7 +20,7 @@ declare type HierarchicalMenuTemplates = Partial<{
         isShowingMore: boolean;
     }>;
 }>;
-export declare type HierarchicalMenuCSSClasses = Partial<{
+export type HierarchicalMenuCSSClasses = Partial<{
     /**
      * CSS class to add to the root element.
      */
@@ -74,9 +74,9 @@ export declare type HierarchicalMenuCSSClasses = Partial<{
      */
     disabledShowMore: string | string[];
 }>;
-export declare type HierarchicalMenuComponentCSSClasses = ComponentCSSClasses<HierarchicalMenuCSSClasses>;
-export declare type HierarchicalMenuComponentTemplates = Required<HierarchicalMenuTemplates>;
-export declare type HierarchicalMenuWidgetParams = {
+export type HierarchicalMenuComponentCSSClasses = ComponentCSSClasses<HierarchicalMenuCSSClasses>;
+export type HierarchicalMenuComponentTemplates = Required<HierarchicalMenuTemplates>;
+export type HierarchicalMenuWidgetParams = {
     /**
      * CSS Selector or HTMLElement to insert the widget.
      */
@@ -197,7 +197,7 @@ export declare type HierarchicalMenuWidgetParams = {
  *   })
  * ]);
  */
-export declare type HierarchicalMenuWidget = WidgetFactory<HierarchicalMenuWidgetDescription & {
+export type HierarchicalMenuWidget = WidgetFactory<HierarchicalMenuWidgetDescription & {
     $$widgetType: 'ais.hierarchicalMenu';
 }, HierarchicalMenuConnectorParams, HierarchicalMenuWidgetParams>;
 declare const hierarchicalMenu: HierarchicalMenuWidget;

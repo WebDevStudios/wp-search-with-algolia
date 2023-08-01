@@ -1,26 +1,22 @@
 import { h } from 'preact';
 import Template from "../Template/Template.js";
-
 var VoiceSearch = function VoiceSearch(_ref) {
   var cssClasses = _ref.cssClasses,
-      isBrowserSupported = _ref.isBrowserSupported,
-      isListening = _ref.isListening,
-      toggleListening = _ref.toggleListening,
-      voiceListeningState = _ref.voiceListeningState,
-      templates = _ref.templates;
-
+    isBrowserSupported = _ref.isBrowserSupported,
+    isListening = _ref.isListening,
+    toggleListening = _ref.toggleListening,
+    voiceListeningState = _ref.voiceListeningState,
+    templates = _ref.templates;
   var handleClick = function handleClick(event) {
     if (event.currentTarget instanceof HTMLElement) {
       event.currentTarget.blur();
     }
-
     toggleListening();
   };
-
   var status = voiceListeningState.status,
-      transcript = voiceListeningState.transcript,
-      isSpeechFinal = voiceListeningState.isSpeechFinal,
-      errorCode = voiceListeningState.errorCode;
+    transcript = voiceListeningState.transcript,
+    isSpeechFinal = voiceListeningState.isSpeechFinal,
+    errorCode = voiceListeningState.errorCode;
   return h("div", {
     className: cssClasses.root
   }, h(Template, {
@@ -58,5 +54,4 @@ var VoiceSearch = function VoiceSearch(_ref) {
     templates: templates
   }));
 };
-
 export default VoiceSearch;

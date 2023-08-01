@@ -4,59 +4,52 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
-
-var _index = require("../../lib/utils/index.js");
-
-function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
-
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-var withUsage = (0, _index.createDocumentationMessageGenerator)({
+var _utils = require("../../lib/utils");
+function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
+function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
+function _defineProperty(obj, key, value) { key = _toPropertyKey(key); if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+function _toPropertyKey(arg) { var key = _toPrimitive(arg, "string"); return _typeof(key) === "symbol" ? key : String(key); }
+function _toPrimitive(input, hint) { if (_typeof(input) !== "object" || input === null) return input; var prim = input[Symbol.toPrimitive]; if (prim !== undefined) { var res = prim.call(input, hint || "default"); if (_typeof(res) !== "object") return res; throw new TypeError("@@toPrimitive must return a primitive value."); } return (hint === "string" ? String : Number)(input); }
+var withUsage = (0, _utils.createDocumentationMessageGenerator)({
   name: 'analytics'
 });
-
 // @major this widget will be removed from the next major version.
 var analytics = function analytics(widgetParams) {
   var _ref = widgetParams || {},
-      pushFunction = _ref.pushFunction,
-      _ref$delay = _ref.delay,
-      delay = _ref$delay === void 0 ? 3000 : _ref$delay,
-      _ref$triggerOnUIInter = _ref.triggerOnUIInteraction,
-      triggerOnUIInteraction = _ref$triggerOnUIInter === void 0 ? false : _ref$triggerOnUIInter,
-      _ref$pushInitialSearc = _ref.pushInitialSearch,
-      pushInitialSearch = _ref$pushInitialSearc === void 0 ? true : _ref$pushInitialSearc,
-      _ref$pushPagination = _ref.pushPagination,
-      pushPagination = _ref$pushPagination === void 0 ? false : _ref$pushPagination;
-
+    pushFunction = _ref.pushFunction,
+    _ref$delay = _ref.delay,
+    delay = _ref$delay === void 0 ? 3000 : _ref$delay,
+    _ref$triggerOnUIInter = _ref.triggerOnUIInteraction,
+    triggerOnUIInteraction = _ref$triggerOnUIInter === void 0 ? false : _ref$triggerOnUIInter,
+    _ref$pushInitialSearc = _ref.pushInitialSearch,
+    pushInitialSearch = _ref$pushInitialSearc === void 0 ? true : _ref$pushInitialSearc,
+    _ref$pushPagination = _ref.pushPagination,
+    pushPagination = _ref$pushPagination === void 0 ? false : _ref$pushPagination;
   if (!pushFunction) {
     throw new Error(withUsage('The `pushFunction` option is required.'));
   }
-
-  process.env.NODE_ENV === 'development' ? (0, _index.warning)(false, "`analytics` widget has been deprecated. It is still supported in 4.x releases, but not further. It is replaced by the `insights` middleware.\n\nFor the migration, visit https://www.algolia.com/doc/guides/building-search-ui/upgrade-guides/js/#analytics-widget") : void 0;
+  process.env.NODE_ENV === 'development' ? (0, _utils.warning)(false, "`analytics` widget has been deprecated. It is still supported in 4.x releases, but not further. It is replaced by the `insights` middleware.\n\nFor the migration, visit https://www.algolia.com/doc/guides/building-search-ui/upgrade-guides/js/#analytics-widget") : void 0;
   var cachedState = null;
-
   var serializeRefinements = function serializeRefinements(parameters) {
     var refinements = [];
 
+    // eslint-disable-next-line no-restricted-syntax
     for (var parameter in parameters) {
       if (parameters.hasOwnProperty(parameter)) {
         var values = parameters[parameter].join('+');
         refinements.push("".concat(encodeURIComponent(parameter), "=").concat(encodeURIComponent(parameter), "_").concat(encodeURIComponent(values)));
       }
     }
-
     return refinements.join('&');
   };
-
   var serializeNumericRefinements = function serializeNumericRefinements(numericRefinements) {
     var refinements = [];
 
+    // eslint-disable-next-line no-restricted-syntax
     for (var attribute in numericRefinements) {
       if (numericRefinements.hasOwnProperty(attribute)) {
         var filter = numericRefinements[attribute];
-
         if (filter.hasOwnProperty('>=') && filter.hasOwnProperty('<=')) {
           if (filter['>='] && filter['>='][0] === filter['<='] && filter['<='][0]) {
             refinements.push("".concat(attribute, "=").concat(attribute, "_").concat(filter['>=']));
@@ -70,6 +63,7 @@ var analytics = function analytics(widgetParams) {
         } else if (filter.hasOwnProperty('=')) {
           var equals = [];
 
+          // eslint-disable-next-line no-restricted-syntax
           for (var equal in filter['=']) {
             // eslint-disable-next-line max-depth
             if (filter['='].hasOwnProperty(equal)) {
@@ -77,62 +71,47 @@ var analytics = function analytics(widgetParams) {
               equals.push(filter['='][equal]);
             }
           }
-
           refinements.push("".concat(attribute, "=").concat(attribute, "_").concat(equals.join('-')));
         }
       }
     }
-
     return refinements.join('&');
   };
-
   var lastSentData = '';
-
   var sendAnalytics = function sendAnalytics(analyticsState) {
     if (analyticsState === null) {
       return;
     }
-
     var serializedParams = [];
     var serializedRefinements = serializeRefinements(_objectSpread(_objectSpread(_objectSpread({}, analyticsState.state.disjunctiveFacetsRefinements), analyticsState.state.facetsRefinements), analyticsState.state.hierarchicalFacetsRefinements));
     var serializedNumericRefinements = serializeNumericRefinements(analyticsState.state.numericRefinements);
-
     if (serializedRefinements !== '') {
       serializedParams.push(serializedRefinements);
     }
-
     if (serializedNumericRefinements !== '') {
       serializedParams.push(serializedNumericRefinements);
     }
-
     var stringifiedParams = serializedParams.join('&');
     var dataToSend = "Query: ".concat(analyticsState.state.query || '', ", ").concat(stringifiedParams);
-
     if (pushPagination === true) {
       dataToSend += ", Page: ".concat(analyticsState.state.page || 0);
     }
-
     if (lastSentData !== dataToSend) {
       pushFunction(stringifiedParams, analyticsState.state, analyticsState.results);
       lastSentData = dataToSend;
     }
   };
-
   var pushTimeout;
   var isInitialSearch = true;
-
   if (pushInitialSearch === true) {
     isInitialSearch = false;
   }
-
   var onClick = function onClick() {
     sendAnalytics(cachedState);
   };
-
   var onUnload = function onUnload() {
     sendAnalytics(cachedState);
   };
-
   return {
     $$type: 'ais.analytics',
     $$widgetType: 'ais.analytics',
@@ -144,22 +123,18 @@ var analytics = function analytics(widgetParams) {
     },
     render: function render(_ref2) {
       var results = _ref2.results,
-          state = _ref2.state;
-
+        state = _ref2.state;
       if (isInitialSearch === true) {
         isInitialSearch = false;
         return;
       }
-
       cachedState = {
         results: results,
         state: state
       };
-
       if (pushTimeout) {
         clearTimeout(pushTimeout);
       }
-
       pushTimeout = window.setTimeout(function () {
         return sendAnalytics(cachedState);
       }, delay);
@@ -182,6 +157,5 @@ var analytics = function analytics(widgetParams) {
     }
   };
 };
-
 var _default = analytics;
 exports.default = _default;

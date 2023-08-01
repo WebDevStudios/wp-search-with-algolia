@@ -1,8 +1,8 @@
 
-import type { SearchResults } from 'algoliasearch-helper';
 import type { InfiniteHitsConnectorParams, InfiniteHitsCache, InfiniteHitsWidgetDescription } from '../../connectors/infinite-hits/connectInfiniteHits';
 import type { WidgetFactory, Template, TemplateWithBindEvent, Hit } from '../../types';
-export declare type InfiniteHitsCSSClasses = Partial<{
+import type { SearchResults } from 'algoliasearch-helper';
+export type InfiniteHitsCSSClasses = Partial<{
     /**
      * The root element of the widget.
      */
@@ -36,7 +36,7 @@ export declare type InfiniteHitsCSSClasses = Partial<{
      */
     disabledLoadMore: string | string[];
 }>;
-export declare type InfiniteHitsTemplates = Partial<{
+export type InfiniteHitsTemplates = Partial<{
     /**
      * The template to use when there are no results.
      */
@@ -53,10 +53,11 @@ export declare type InfiniteHitsTemplates = Partial<{
      * The template to use for each result.
      */
     item: TemplateWithBindEvent<Hit & {
+        /** @deprecated the index in the hits array, use __position instead, which is the absolute position */
         __hitIndex: number;
     }>;
 }>;
-export declare type InfiniteHitsWidgetParams = {
+export type InfiniteHitsWidgetParams = {
     /**
      * The CSS Selector or `HTMLElement` to insert the widget into.
      */
@@ -76,7 +77,7 @@ export declare type InfiniteHitsWidgetParams = {
      */
     cache?: InfiniteHitsCache;
 };
-export declare type InfiniteHitsWidget = WidgetFactory<InfiniteHitsWidgetDescription & {
+export type InfiniteHitsWidget = WidgetFactory<InfiniteHitsWidgetDescription & {
     $$widgetType: 'ais.infiniteHits';
 }, InfiniteHitsConnectorParams, InfiniteHitsWidgetParams>;
 declare const infiniteHits: InfiniteHitsWidget;

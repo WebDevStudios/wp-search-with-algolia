@@ -4,21 +4,17 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
-
-var _preact = require("preact");
-
-var _formatNumber = require("../../lib/formatNumber.js");
-
 var _uiComponentsShared = require("@algolia/ui-components-shared");
-
+var _preact = require("preact");
+var _formatNumber = require("../../lib/formatNumber");
 var defaultTemplates = {
   item: function item(_ref) {
     var cssClasses = _ref.cssClasses,
-        count = _ref.count,
-        value = _ref.value,
-        highlighted = _ref.highlighted,
-        isRefined = _ref.isRefined,
-        isFromSearch = _ref.isFromSearch;
+      count = _ref.count,
+      value = _ref.value,
+      highlighted = _ref.highlighted,
+      isRefined = _ref.isRefined,
+      isFromSearch = _ref.isFromSearch;
     return (0, _preact.h)("label", {
       className: (0, _uiComponentsShared.cx)(cssClasses.label)
     }, (0, _preact.h)("input", {

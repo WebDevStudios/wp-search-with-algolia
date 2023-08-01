@@ -1,9 +1,9 @@
-import type { Expand, UiState } from './types';
-import type { InstantSearchOptions } from './lib/InstantSearch';
-import InstantSearch from './lib/InstantSearch';
 import { snippet, reverseSnippet, highlight, reverseHighlight, insights, getInsightsAnonymousUserToken } from './helpers';
 import { createInfiniteHitsSessionStorageCache } from './lib/infiniteHitsCache';
-declare type InstantSearchModule = {
+import InstantSearch from './lib/InstantSearch';
+import type { InstantSearchOptions } from './lib/InstantSearch';
+import type { Expand, UiState } from './types';
+type InstantSearchModule = {
     <TUiState = Record<string, unknown>, TRouteState = TUiState>(options: InstantSearchOptions<Expand<UiState & TUiState>, TRouteState>): InstantSearch<Expand<UiState & TUiState>, TRouteState>;
     version: string;
     /** @deprecated import { createInfiniteHitsSessionStorageCache } from 'instantsearch.js/es/lib/infiniteHitsCache' */

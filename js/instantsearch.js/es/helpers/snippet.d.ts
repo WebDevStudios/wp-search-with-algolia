@@ -1,5 +1,5 @@
 import type { Hit } from '../types';
-export declare type SnippetOptions = {
+export type SnippetOptions = {
     attribute: string | string[];
     highlightedTagName?: string;
     hit: Partial<Hit>;
@@ -7,4 +7,7 @@ export declare type SnippetOptions = {
         highlighted?: string;
     };
 };
+/**
+ * @deprecated use html tagged templates and the Snippet component instead
+ */
 export default function snippet({ attribute, highlightedTagName, hit, cssClasses, }: SnippetOptions): string;

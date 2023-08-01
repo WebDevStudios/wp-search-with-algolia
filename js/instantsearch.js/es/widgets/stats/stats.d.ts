@@ -2,7 +2,7 @@
 import type { StatsComponentTemplates } from '../../components/Stats/Stats';
 import type { StatsConnectorParams, StatsRenderState, StatsWidgetDescription } from '../../connectors/stats/connectStats';
 import type { Template, WidgetFactory } from '../../types';
-declare type TextTemplateProps = {
+type TextTemplateProps = {
     hasManyResults: boolean;
     hasNoResults: boolean;
     hasOneResult: boolean;
@@ -10,7 +10,7 @@ declare type TextTemplateProps = {
     hasOneSortedResults: boolean;
     hasManySortedResults: boolean;
 };
-export declare type StatsCSSClasses = Partial<{
+export type StatsCSSClasses = Partial<{
     /**
      * CSS class to add to the root element.
      */
@@ -20,13 +20,13 @@ export declare type StatsCSSClasses = Partial<{
      */
     text: string | string[];
 }>;
-export declare type StatsTemplates = Partial<{
+export type StatsTemplates = Partial<{
     /**
      * Text template, provided with `hasManyResults`, `hasNoResults`, `hasOneResult`, `hasNoSortedResults`, `hasOneSortedResults`, `hasManySortedResults`, `hitsPerPage`, `nbHits`, `nbSortedHits`, `nbPages`, `areHitsSorted`, `page`, `processingTimeMS`, `query`.
      */
     text: Template<TextTemplateProps & StatsRenderState>;
 }>;
-export declare type StatsWidgetParams = {
+export type StatsWidgetParams = {
     /**
      * CSS Selector or HTMLElement to insert the widget.
      */
@@ -40,7 +40,7 @@ export declare type StatsWidgetParams = {
      */
     cssClasses?: StatsCSSClasses;
 };
-export declare type StatsWidget = WidgetFactory<StatsWidgetDescription & {
+export type StatsWidget = WidgetFactory<StatsWidgetDescription & {
     $$widgetType: 'ais.stats';
 }, StatsConnectorParams, StatsWidgetParams>;
 export declare const defaultTemplates: StatsComponentTemplates;

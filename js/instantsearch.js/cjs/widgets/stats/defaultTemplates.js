@@ -9,5 +9,4 @@ Object.defineProperty(exports, "default", {
     return _stats.defaultTemplates;
   }
 });
-
-var _stats = require("./stats.js");
+var _stats = require("./stats");

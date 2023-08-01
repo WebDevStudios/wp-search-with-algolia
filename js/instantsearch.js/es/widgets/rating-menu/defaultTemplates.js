@@ -1,14 +1,12 @@
+import { cx } from '@algolia/ui-components-shared';
 import { h } from 'preact';
 import { formatNumber } from "../../lib/formatNumber.js";
-import { cx } from '@algolia/ui-components-shared';
-
 function ItemWrapper(_ref) {
   var children = _ref.children,
-      count = _ref.count,
-      value = _ref.value,
-      url = _ref.url,
-      cssClasses = _ref.cssClasses;
-
+    count = _ref.count,
+    value = _ref.value,
+    url = _ref.url,
+    cssClasses = _ref.cssClasses;
   if (count) {
     return h("a", {
       className: cx(cssClasses.link),
@@ -16,21 +14,19 @@ function ItemWrapper(_ref) {
       href: url
     }, children);
   }
-
   return h("div", {
     className: cx(cssClasses.link),
     "aria-label": "".concat(value, " & up"),
     disabled: true
   }, children);
 }
-
 var defaultTemplates = {
   item: function item(_ref2) {
     var count = _ref2.count,
-        value = _ref2.value,
-        url = _ref2.url,
-        stars = _ref2.stars,
-        cssClasses = _ref2.cssClasses;
+      value = _ref2.value,
+      url = _ref2.url,
+      stars = _ref2.stars,
+      cssClasses = _ref2.cssClasses;
     return h(ItemWrapper, {
       count: count,
       value: value,

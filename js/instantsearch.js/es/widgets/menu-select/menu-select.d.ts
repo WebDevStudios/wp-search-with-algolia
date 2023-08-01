@@ -1,7 +1,7 @@
 
 import type { MenuConnectorParams, MenuWidgetDescription } from '../../connectors/menu/connectMenu';
 import type { Template, WidgetFactory } from '../../types';
-export declare type MenuSelectCSSClasses = Partial<{
+export type MenuSelectCSSClasses = Partial<{
     /**
      * CSS class to add to the root element.
      */
@@ -19,7 +19,7 @@ export declare type MenuSelectCSSClasses = Partial<{
      */
     option: string | string[];
 }>;
-export declare type MenuSelectTemplates = Partial<{
+export type MenuSelectTemplates = Partial<{
     /**
      * Item template, provided with `label`, `count`, `isRefined` and `value` data properties.
      */
@@ -34,7 +34,7 @@ export declare type MenuSelectTemplates = Partial<{
      */
     defaultOption: Template;
 }>;
-export declare type MenuSelectWidgetParams = {
+export type MenuSelectWidgetParams = {
     /**
      * CSS Selector or HTMLElement to insert the widget.
      */
@@ -48,7 +48,7 @@ export declare type MenuSelectWidgetParams = {
      */
     cssClasses?: MenuSelectCSSClasses;
 };
-export declare type MenuSelectWidget = WidgetFactory<MenuWidgetDescription & {
+export type MenuSelectWidget = WidgetFactory<MenuWidgetDescription & {
     $$widgetType: 'ais.menuSelect';
 }, MenuConnectorParams, MenuSelectWidgetParams>;
 declare const menuSelect: MenuSelectWidget;

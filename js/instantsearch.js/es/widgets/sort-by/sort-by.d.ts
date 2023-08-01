@@ -1,7 +1,7 @@
 
 import type { SortByConnectorParams, SortByItem, SortByWidgetDescription } from '../../connectors/sort-by/connectSortBy';
 import type { TransformItems, WidgetFactory } from '../../types';
-export declare type SortByWidgetCssClasses = Partial<{
+export type SortByWidgetCssClasses = Partial<{
     /**
      * CSS classes added to the outer `<div>`.
      */
@@ -15,7 +15,7 @@ export declare type SortByWidgetCssClasses = Partial<{
      */
     option: string | string[];
 }>;
-export declare type SortByIndexDefinition = {
+export type SortByIndexDefinition = {
     /**
      * The name of the index to target.
      */
@@ -25,7 +25,7 @@ export declare type SortByIndexDefinition = {
      */
     label: string;
 };
-export declare type SortByWidgetParams = {
+export type SortByWidgetParams = {
     /**
      * CSS Selector or HTMLElement to insert the widget.
      */
@@ -43,7 +43,7 @@ export declare type SortByWidgetParams = {
      */
     transformItems?: TransformItems<SortByItem>;
 };
-export declare type SortByWidget = WidgetFactory<SortByWidgetDescription & {
+export type SortByWidget = WidgetFactory<SortByWidgetDescription & {
     $$widgetType: 'ais.sortBy';
 }, SortByConnectorParams, SortByWidgetParams>;
 /**

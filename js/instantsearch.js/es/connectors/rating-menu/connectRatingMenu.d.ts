@@ -1,7 +1,7 @@
-import type { Connector, CreateURL, WidgetRenderState } from '../../types';
 import type { InsightsEvent } from '../../middlewares';
-declare type SendEvent = (...args: [InsightsEvent] | [string, string, string?]) => void;
-declare type StarRatingItems = {
+import type { Connector, CreateURL, WidgetRenderState } from '../../types';
+type SendEvent = (...args: [InsightsEvent] | [string, string, string?]) => void;
+type StarRatingItems = {
     /**
      * Name corresponding to the number of stars.
      */
@@ -27,7 +27,7 @@ declare type StarRatingItems = {
      */
     isRefined: boolean;
 };
-export declare type RatingMenuConnectorParams = {
+export type RatingMenuConnectorParams = {
     /**
      * Name of the attribute for faceting (eg. "free_shipping").
      */
@@ -37,7 +37,7 @@ export declare type RatingMenuConnectorParams = {
      */
     max?: number;
 };
-export declare type RatingMenuRenderState = {
+export type RatingMenuRenderState = {
     /**
      * Possible star ratings the user can apply.
      */
@@ -65,7 +65,7 @@ export declare type RatingMenuRenderState = {
      */
     sendEvent: SendEvent;
 };
-export declare type RatingMenuWidgetDescription = {
+export type RatingMenuWidgetDescription = {
     $$type: 'ais.ratingMenu';
     renderState: RatingMenuRenderState;
     indexRenderState: {
@@ -79,7 +79,7 @@ export declare type RatingMenuWidgetDescription = {
         };
     };
 };
-export declare type RatingMenuConnector = Connector<RatingMenuWidgetDescription, RatingMenuConnectorParams>;
+export type RatingMenuConnector = Connector<RatingMenuWidgetDescription, RatingMenuConnectorParams>;
 /**
  * **StarRating** connector provides the logic to build a custom widget that will let
  * the user refine search results based on ratings.

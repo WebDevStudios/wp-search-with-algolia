@@ -1,7 +1,5 @@
 import { h } from 'preact';
-
 var _ref = h("p", null, "Your custom HTML Marker");
-
 var defaultTemplates = {
   HTMLMarker: function HTMLMarker() {
     return _ref;

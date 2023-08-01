@@ -3,9 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-
-var _capitalize = require("./capitalize.js");
-
+var _capitalize = require("./capitalize");
 Object.keys(_capitalize).forEach(function (key) {
   if (key === "default" || key === "__esModule") return;
   if (key in exports && exports[key] === _capitalize[key]) return;
@@ -16,9 +14,7 @@ Object.keys(_capitalize).forEach(function (key) {
     }
   });
 });
-
-var _checkIndexUiState = require("./checkIndexUiState.js");
-
+var _checkIndexUiState = require("./checkIndexUiState");
 Object.keys(_checkIndexUiState).forEach(function (key) {
   if (key === "default" || key === "__esModule") return;
   if (key in exports && exports[key] === _checkIndexUiState[key]) return;
@@ -29,9 +25,7 @@ Object.keys(_checkIndexUiState).forEach(function (key) {
     }
   });
 });
-
-var _checkRendering = require("./checkRendering.js");
-
+var _checkRendering = require("./checkRendering");
 Object.keys(_checkRendering).forEach(function (key) {
   if (key === "default" || key === "__esModule") return;
   if (key in exports && exports[key] === _checkRendering[key]) return;
@@ -42,9 +36,7 @@ Object.keys(_checkRendering).forEach(function (key) {
     }
   });
 });
-
-var _clearRefinements = require("./clearRefinements.js");
-
+var _clearRefinements = require("./clearRefinements");
 Object.keys(_clearRefinements).forEach(function (key) {
   if (key === "default" || key === "__esModule") return;
   if (key in exports && exports[key] === _clearRefinements[key]) return;
@@ -55,9 +47,7 @@ Object.keys(_clearRefinements).forEach(function (key) {
     }
   });
 });
-
-var _concatHighlightedParts = require("./concatHighlightedParts.js");
-
+var _concatHighlightedParts = require("./concatHighlightedParts");
 Object.keys(_concatHighlightedParts).forEach(function (key) {
   if (key === "default" || key === "__esModule") return;
   if (key in exports && exports[key] === _concatHighlightedParts[key]) return;
@@ -68,9 +58,7 @@ Object.keys(_concatHighlightedParts).forEach(function (key) {
     }
   });
 });
-
-var _createConcurrentSafePromise = require("./createConcurrentSafePromise.js");
-
+var _createConcurrentSafePromise = require("./createConcurrentSafePromise");
 Object.keys(_createConcurrentSafePromise).forEach(function (key) {
   if (key === "default" || key === "__esModule") return;
   if (key in exports && exports[key] === _createConcurrentSafePromise[key]) return;
@@ -81,9 +69,7 @@ Object.keys(_createConcurrentSafePromise).forEach(function (key) {
     }
   });
 });
-
-var _createSendEventForFacet = require("./createSendEventForFacet.js");
-
+var _createSendEventForFacet = require("./createSendEventForFacet");
 Object.keys(_createSendEventForFacet).forEach(function (key) {
   if (key === "default" || key === "__esModule") return;
   if (key in exports && exports[key] === _createSendEventForFacet[key]) return;
@@ -94,9 +80,7 @@ Object.keys(_createSendEventForFacet).forEach(function (key) {
     }
   });
 });
-
-var _createSendEventForHits = require("./createSendEventForHits.js");
-
+var _createSendEventForHits = require("./createSendEventForHits");
 Object.keys(_createSendEventForHits).forEach(function (key) {
   if (key === "default" || key === "__esModule") return;
   if (key in exports && exports[key] === _createSendEventForHits[key]) return;
@@ -107,9 +91,7 @@ Object.keys(_createSendEventForHits).forEach(function (key) {
     }
   });
 });
-
-var _setIndexHelperState = require("./setIndexHelperState.js");
-
+var _setIndexHelperState = require("./setIndexHelperState");
 Object.keys(_setIndexHelperState).forEach(function (key) {
   if (key === "default" || key === "__esModule") return;
   if (key in exports && exports[key] === _setIndexHelperState[key]) return;
@@ -120,9 +102,7 @@ Object.keys(_setIndexHelperState).forEach(function (key) {
     }
   });
 });
-
-var _isIndexWidget = require("./isIndexWidget.js");
-
+var _isIndexWidget = require("./isIndexWidget");
 Object.keys(_isIndexWidget).forEach(function (key) {
   if (key === "default" || key === "__esModule") return;
   if (key in exports && exports[key] === _isIndexWidget[key]) return;
@@ -133,9 +113,7 @@ Object.keys(_isIndexWidget).forEach(function (key) {
     }
   });
 });
-
-var _debounce = require("./debounce.js");
-
+var _debounce = require("./debounce");
 Object.keys(_debounce).forEach(function (key) {
   if (key === "default" || key === "__esModule") return;
   if (key in exports && exports[key] === _debounce[key]) return;
@@ -146,9 +124,7 @@ Object.keys(_debounce).forEach(function (key) {
     }
   });
 });
-
-var _defer = require("./defer.js");
-
+var _defer = require("./defer");
 Object.keys(_defer).forEach(function (key) {
   if (key === "default" || key === "__esModule") return;
   if (key in exports && exports[key] === _defer[key]) return;
@@ -159,9 +135,7 @@ Object.keys(_defer).forEach(function (key) {
     }
   });
 });
-
-var _documentation = require("./documentation.js");
-
+var _documentation = require("./documentation");
 Object.keys(_documentation).forEach(function (key) {
   if (key === "default" || key === "__esModule") return;
   if (key in exports && exports[key] === _documentation[key]) return;
@@ -172,9 +146,7 @@ Object.keys(_documentation).forEach(function (key) {
     }
   });
 });
-
-var _escapeHighlight = require("./escape-highlight.js");
-
+var _escapeHighlight = require("./escape-highlight");
 Object.keys(_escapeHighlight).forEach(function (key) {
   if (key === "default" || key === "__esModule") return;
   if (key in exports && exports[key] === _escapeHighlight[key]) return;
@@ -185,9 +157,7 @@ Object.keys(_escapeHighlight).forEach(function (key) {
     }
   });
 });
-
-var _escapeHtml = require("./escape-html.js");
-
+var _escapeHtml = require("./escape-html");
 Object.keys(_escapeHtml).forEach(function (key) {
   if (key === "default" || key === "__esModule") return;
   if (key in exports && exports[key] === _escapeHtml[key]) return;
@@ -198,9 +168,7 @@ Object.keys(_escapeHtml).forEach(function (key) {
     }
   });
 });
-
-var _escapeFacetValue = require("./escapeFacetValue.js");
-
+var _escapeFacetValue = require("./escapeFacetValue");
 Object.keys(_escapeFacetValue).forEach(function (key) {
   if (key === "default" || key === "__esModule") return;
   if (key in exports && exports[key] === _escapeFacetValue[key]) return;
@@ -211,9 +179,7 @@ Object.keys(_escapeFacetValue).forEach(function (key) {
     }
   });
 });
-
-var _find = require("./find.js");
-
+var _find = require("./find");
 Object.keys(_find).forEach(function (key) {
   if (key === "default" || key === "__esModule") return;
   if (key in exports && exports[key] === _find[key]) return;
@@ -224,9 +190,7 @@ Object.keys(_find).forEach(function (key) {
     }
   });
 });
-
-var _findIndex = require("./findIndex.js");
-
+var _findIndex = require("./findIndex");
 Object.keys(_findIndex).forEach(function (key) {
   if (key === "default" || key === "__esModule") return;
   if (key in exports && exports[key] === _findIndex[key]) return;
@@ -237,9 +201,7 @@ Object.keys(_findIndex).forEach(function (key) {
     }
   });
 });
-
-var _geoSearch = require("./geo-search.js");
-
+var _geoSearch = require("./geo-search");
 Object.keys(_geoSearch).forEach(function (key) {
   if (key === "default" || key === "__esModule") return;
   if (key in exports && exports[key] === _geoSearch[key]) return;
@@ -250,9 +212,7 @@ Object.keys(_geoSearch).forEach(function (key) {
     }
   });
 });
-
-var _getAppIdAndApiKey = require("./getAppIdAndApiKey.js");
-
+var _getAppIdAndApiKey = require("./getAppIdAndApiKey");
 Object.keys(_getAppIdAndApiKey).forEach(function (key) {
   if (key === "default" || key === "__esModule") return;
   if (key in exports && exports[key] === _getAppIdAndApiKey[key]) return;
@@ -263,9 +223,7 @@ Object.keys(_getAppIdAndApiKey).forEach(function (key) {
     }
   });
 });
-
-var _getContainerNode = require("./getContainerNode.js");
-
+var _getContainerNode = require("./getContainerNode");
 Object.keys(_getContainerNode).forEach(function (key) {
   if (key === "default" || key === "__esModule") return;
   if (key in exports && exports[key] === _getContainerNode[key]) return;
@@ -276,9 +234,7 @@ Object.keys(_getContainerNode).forEach(function (key) {
     }
   });
 });
-
-var _getHighlightedParts = require("./getHighlightedParts.js");
-
+var _getHighlightedParts = require("./getHighlightedParts");
 Object.keys(_getHighlightedParts).forEach(function (key) {
   if (key === "default" || key === "__esModule") return;
   if (key in exports && exports[key] === _getHighlightedParts[key]) return;
@@ -289,9 +245,7 @@ Object.keys(_getHighlightedParts).forEach(function (key) {
     }
   });
 });
-
-var _getHighlightFromSiblings = require("./getHighlightFromSiblings.js");
-
+var _getHighlightFromSiblings = require("./getHighlightFromSiblings");
 Object.keys(_getHighlightFromSiblings).forEach(function (key) {
   if (key === "default" || key === "__esModule") return;
   if (key in exports && exports[key] === _getHighlightFromSiblings[key]) return;
@@ -302,9 +256,7 @@ Object.keys(_getHighlightFromSiblings).forEach(function (key) {
     }
   });
 });
-
-var _getObjectType = require("./getObjectType.js");
-
+var _getObjectType = require("./getObjectType");
 Object.keys(_getObjectType).forEach(function (key) {
   if (key === "default" || key === "__esModule") return;
   if (key in exports && exports[key] === _getObjectType[key]) return;
@@ -315,9 +267,7 @@ Object.keys(_getObjectType).forEach(function (key) {
     }
   });
 });
-
-var _getPropertyByPath = require("./getPropertyByPath.js");
-
+var _getPropertyByPath = require("./getPropertyByPath");
 Object.keys(_getPropertyByPath).forEach(function (key) {
   if (key === "default" || key === "__esModule") return;
   if (key in exports && exports[key] === _getPropertyByPath[key]) return;
@@ -328,9 +278,7 @@ Object.keys(_getPropertyByPath).forEach(function (key) {
     }
   });
 });
-
-var _getRefinements = require("./getRefinements.js");
-
+var _getRefinements = require("./getRefinements");
 Object.keys(_getRefinements).forEach(function (key) {
   if (key === "default" || key === "__esModule") return;
   if (key in exports && exports[key] === _getRefinements[key]) return;
@@ -341,9 +289,7 @@ Object.keys(_getRefinements).forEach(function (key) {
     }
   });
 });
-
-var _getWidgetAttribute = require("./getWidgetAttribute.js");
-
+var _getWidgetAttribute = require("./getWidgetAttribute");
 Object.keys(_getWidgetAttribute).forEach(function (key) {
   if (key === "default" || key === "__esModule") return;
   if (key in exports && exports[key] === _getWidgetAttribute[key]) return;
@@ -354,9 +300,7 @@ Object.keys(_getWidgetAttribute).forEach(function (key) {
     }
   });
 });
-
-var _hitsAbsolutePosition = require("./hits-absolute-position.js");
-
+var _hitsAbsolutePosition = require("./hits-absolute-position");
 Object.keys(_hitsAbsolutePosition).forEach(function (key) {
   if (key === "default" || key === "__esModule") return;
   if (key in exports && exports[key] === _hitsAbsolutePosition[key]) return;
@@ -367,9 +311,7 @@ Object.keys(_hitsAbsolutePosition).forEach(function (key) {
     }
   });
 });
-
-var _hitsQueryId = require("./hits-query-id.js");
-
+var _hitsQueryId = require("./hits-query-id");
 Object.keys(_hitsQueryId).forEach(function (key) {
   if (key === "default" || key === "__esModule") return;
   if (key in exports && exports[key] === _hitsQueryId[key]) return;
@@ -380,9 +322,7 @@ Object.keys(_hitsQueryId).forEach(function (key) {
     }
   });
 });
-
-var _isDomElement = require("./isDomElement.js");
-
+var _isDomElement = require("./isDomElement");
 Object.keys(_isDomElement).forEach(function (key) {
   if (key === "default" || key === "__esModule") return;
   if (key in exports && exports[key] === _isDomElement[key]) return;
@@ -393,9 +333,7 @@ Object.keys(_isDomElement).forEach(function (key) {
     }
   });
 });
-
-var _isEqual = require("./isEqual.js");
-
+var _isEqual = require("./isEqual");
 Object.keys(_isEqual).forEach(function (key) {
   if (key === "default" || key === "__esModule") return;
   if (key in exports && exports[key] === _isEqual[key]) return;
@@ -406,9 +344,7 @@ Object.keys(_isEqual).forEach(function (key) {
     }
   });
 });
-
-var _isFacetRefined = require("./isFacetRefined.js");
-
+var _isFacetRefined = require("./isFacetRefined");
 Object.keys(_isFacetRefined).forEach(function (key) {
   if (key === "default" || key === "__esModule") return;
   if (key in exports && exports[key] === _isFacetRefined[key]) return;
@@ -419,9 +355,7 @@ Object.keys(_isFacetRefined).forEach(function (key) {
     }
   });
 });
-
-var _isFiniteNumber = require("./isFiniteNumber.js");
-
+var _isFiniteNumber = require("./isFiniteNumber");
 Object.keys(_isFiniteNumber).forEach(function (key) {
   if (key === "default" || key === "__esModule") return;
   if (key in exports && exports[key] === _isFiniteNumber[key]) return;
@@ -432,9 +366,7 @@ Object.keys(_isFiniteNumber).forEach(function (key) {
     }
   });
 });
-
-var _isPlainObject = require("./isPlainObject.js");
-
+var _isPlainObject = require("./isPlainObject");
 Object.keys(_isPlainObject).forEach(function (key) {
   if (key === "default" || key === "__esModule") return;
   if (key in exports && exports[key] === _isPlainObject[key]) return;
@@ -445,9 +377,7 @@ Object.keys(_isPlainObject).forEach(function (key) {
     }
   });
 });
-
-var _isSpecialClick = require("./isSpecialClick.js");
-
+var _isSpecialClick = require("./isSpecialClick");
 Object.keys(_isSpecialClick).forEach(function (key) {
   if (key === "default" || key === "__esModule") return;
   if (key in exports && exports[key] === _isSpecialClick[key]) return;
@@ -458,9 +388,18 @@ Object.keys(_isSpecialClick).forEach(function (key) {
     }
   });
 });
-
-var _logger = require("./logger.js");
-
+var _walkIndex = require("./walkIndex");
+Object.keys(_walkIndex).forEach(function (key) {
+  if (key === "default" || key === "__esModule") return;
+  if (key in exports && exports[key] === _walkIndex[key]) return;
+  Object.defineProperty(exports, key, {
+    enumerable: true,
+    get: function get() {
+      return _walkIndex[key];
+    }
+  });
+});
+var _logger = require("./logger");
 Object.keys(_logger).forEach(function (key) {
   if (key === "default" || key === "__esModule") return;
   if (key in exports && exports[key] === _logger[key]) return;
@@ -471,9 +410,7 @@ Object.keys(_logger).forEach(function (key) {
     }
   });
 });
-
-var _mergeSearchParameters = require("./mergeSearchParameters.js");
-
+var _mergeSearchParameters = require("./mergeSearchParameters");
 Object.keys(_mergeSearchParameters).forEach(function (key) {
   if (key === "default" || key === "__esModule") return;
   if (key in exports && exports[key] === _mergeSearchParameters[key]) return;
@@ -484,9 +421,18 @@ Object.keys(_mergeSearchParameters).forEach(function (key) {
     }
   });
 });
-
-var _noop = require("./noop.js");
-
+var _omit = require("./omit");
+Object.keys(_omit).forEach(function (key) {
+  if (key === "default" || key === "__esModule") return;
+  if (key in exports && exports[key] === _omit[key]) return;
+  Object.defineProperty(exports, key, {
+    enumerable: true,
+    get: function get() {
+      return _omit[key];
+    }
+  });
+});
+var _noop = require("./noop");
 Object.keys(_noop).forEach(function (key) {
   if (key === "default" || key === "__esModule") return;
   if (key in exports && exports[key] === _noop[key]) return;
@@ -497,9 +443,7 @@ Object.keys(_noop).forEach(function (key) {
     }
   });
 });
-
-var _range = require("./range.js");
-
+var _range = require("./range");
 Object.keys(_range).forEach(function (key) {
   if (key === "default" || key === "__esModule") return;
   if (key in exports && exports[key] === _range[key]) return;
@@ -510,9 +454,7 @@ Object.keys(_range).forEach(function (key) {
     }
   });
 });
-
-var _renderArgs = require("./render-args.js");
-
+var _renderArgs = require("./render-args");
 Object.keys(_renderArgs).forEach(function (key) {
   if (key === "default" || key === "__esModule") return;
   if (key in exports && exports[key] === _renderArgs[key]) return;
@@ -523,9 +465,7 @@ Object.keys(_renderArgs).forEach(function (key) {
     }
   });
 });
-
-var _resolveSearchParameters = require("./resolveSearchParameters.js");
-
+var _resolveSearchParameters = require("./resolveSearchParameters");
 Object.keys(_resolveSearchParameters).forEach(function (key) {
   if (key === "default" || key === "__esModule") return;
   if (key in exports && exports[key] === _resolveSearchParameters[key]) return;
@@ -536,9 +476,7 @@ Object.keys(_resolveSearchParameters).forEach(function (key) {
     }
   });
 });
-
-var _reverseHighlightedParts = require("./reverseHighlightedParts.js");
-
+var _reverseHighlightedParts = require("./reverseHighlightedParts");
 Object.keys(_reverseHighlightedParts).forEach(function (key) {
   if (key === "default" || key === "__esModule") return;
   if (key in exports && exports[key] === _reverseHighlightedParts[key]) return;
@@ -549,9 +487,7 @@ Object.keys(_reverseHighlightedParts).forEach(function (key) {
     }
   });
 });
-
-var _safelyRunOnBrowser = require("./safelyRunOnBrowser.js");
-
+var _safelyRunOnBrowser = require("./safelyRunOnBrowser");
 Object.keys(_safelyRunOnBrowser).forEach(function (key) {
   if (key === "default" || key === "__esModule") return;
   if (key in exports && exports[key] === _safelyRunOnBrowser[key]) return;
@@ -562,9 +498,7 @@ Object.keys(_safelyRunOnBrowser).forEach(function (key) {
     }
   });
 });
-
-var _serializer = require("./serializer.js");
-
+var _serializer = require("./serializer");
 Object.keys(_serializer).forEach(function (key) {
   if (key === "default" || key === "__esModule") return;
   if (key in exports && exports[key] === _serializer[key]) return;
@@ -575,9 +509,7 @@ Object.keys(_serializer).forEach(function (key) {
     }
   });
 });
-
-var _toArray = require("./toArray.js");
-
+var _toArray = require("./toArray");
 Object.keys(_toArray).forEach(function (key) {
   if (key === "default" || key === "__esModule") return;
   if (key in exports && exports[key] === _toArray[key]) return;
@@ -588,9 +520,7 @@ Object.keys(_toArray).forEach(function (key) {
     }
   });
 });
-
-var _uniq = require("./uniq.js");
-
+var _uniq = require("./uniq");
 Object.keys(_uniq).forEach(function (key) {
   if (key === "default" || key === "__esModule") return;
   if (key in exports && exports[key] === _uniq[key]) return;

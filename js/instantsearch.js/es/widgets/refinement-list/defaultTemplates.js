@@ -1,14 +1,14 @@
+import { cx } from '@algolia/ui-components-shared';
 import { h } from 'preact';
 import { formatNumber } from "../../lib/formatNumber.js";
-import { cx } from '@algolia/ui-components-shared';
 var defaultTemplates = {
   item: function item(_ref) {
     var cssClasses = _ref.cssClasses,
-        count = _ref.count,
-        value = _ref.value,
-        highlighted = _ref.highlighted,
-        isRefined = _ref.isRefined,
-        isFromSearch = _ref.isFromSearch;
+      count = _ref.count,
+      value = _ref.value,
+      highlighted = _ref.highlighted,
+      isRefined = _ref.isRefined,
+      isFromSearch = _ref.isFromSearch;
     return h("label", {
       className: cx(cssClasses.label)
     }, h("input", {

@@ -1,12 +1,13 @@
 /// <reference types="google.maps" />
+/// <reference types="googlemaps" />
 import type { GeoSearchConnectorParams, GeoSearchWidgetDescription, GeoHit } from '../../connectors/geo-search/connectGeoSearch';
-import type { HTMLMarkerArguments } from './createHTMLMarker';
 import type { GeoLoc, Template, WidgetFactory } from '../../types';
-export declare type CreateMarker = (args: {
+import type { HTMLMarkerArguments } from './createHTMLMarker';
+export type CreateMarker = (args: {
     item: GeoHit;
     map: google.maps.Map;
 }) => google.maps.OverlayView | google.maps.Marker;
-export declare type GeoSearchTemplates = Partial<{
+export type GeoSearchTemplates = Partial<{
     /** Template to use for the marker. */
     HTMLMarker: Template<GeoHit>;
     /** Template for the reset button. */
@@ -16,8 +17,8 @@ export declare type GeoSearchTemplates = Partial<{
     /** Template for the redo button. */
     redo: Template;
 }>;
-export declare type GeoSearchComponentTemplates = Required<GeoSearchTemplates>;
-export declare type GeoSearchCSSClasses = Partial<{
+export type GeoSearchComponentTemplates = Required<GeoSearchTemplates>;
+export type GeoSearchCSSClasses = Partial<{
     /** The root div of the widget. */
     root: string | string[];
     /** The map container of the widget. */
@@ -37,13 +38,13 @@ export declare type GeoSearchCSSClasses = Partial<{
     /** The reset refinement button. */
     reset: string | string[];
 }>;
-export declare type GeoSearchMarker<TOptions> = {
+export type GeoSearchMarker<TOptions> = {
     /**
      * Function used to create the options passed to the Google Maps marker.
      * See the documentation for more information:
      * https://developers.google.com/maps/documentation/javascript/reference/3/#MarkerOptions
      */
-    createOptions?(item: GeoHit): TOptions;
+    createOptions?: (item: GeoHit) => TOptions;
     /**
      * Object that takes an event type (ex: `click`, `mouseover`) as key and a
      * listener as value. The listener is provided with an object that contains:
@@ -58,7 +59,7 @@ export declare type GeoSearchMarker<TOptions> = {
         }) => void;
     };
 };
-export declare type GeoSearchWidgetParams = {
+export type GeoSearchWidgetParams = {
     /**
      * By default the map will set the zoom accordingly to the markers displayed on it.
      * When we refine it may happen that the results are empty. For those situations we
@@ -121,7 +122,7 @@ export declare type GeoSearchWidgetParams = {
      */
     googleReference: typeof window['google'];
 };
-export declare type GeoSearchWidget = WidgetFactory<GeoSearchWidgetDescription & {
+export type GeoSearchWidget = WidgetFactory<GeoSearchWidgetDescription & {
     $$widgetType: 'ais.geoSearch';
 }, GeoSearchConnectorParams, GeoSearchWidgetParams>;
 /**

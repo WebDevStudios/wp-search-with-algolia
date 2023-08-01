@@ -1,5 +1,5 @@
 import type { SearchParameters, SearchResults } from 'algoliasearch-helper';
-export declare type FacetRefinement = {
+export type FacetRefinement = {
     type: 'facet' | 'disjunctive' | 'hierarchical';
     attribute: string;
     name: string;
@@ -7,18 +7,18 @@ export declare type FacetRefinement = {
     count?: number;
     exhaustive?: boolean;
 };
-export declare type TagRefinement = {
+export type TagRefinement = {
     type: 'tag';
     attribute: string;
     name: string;
 };
-export declare type QueryRefinement = {
+export type QueryRefinement = {
     type: 'query';
     attribute: 'query';
     query: string;
     name: string;
 };
-export declare type NumericRefinement = {
+export type NumericRefinement = {
     type: 'numeric';
     numericValue: number;
     operator: '<' | '<=' | '=' | '!=' | '>=' | '>';
@@ -27,7 +27,7 @@ export declare type NumericRefinement = {
     count?: number;
     exhaustive?: boolean;
 };
-export declare type FacetExcludeRefinement = {
+export type FacetExcludeRefinement = {
     type: 'exclude';
     exclude: boolean;
     attribute: string;
@@ -35,5 +35,5 @@ export declare type FacetExcludeRefinement = {
     count?: number;
     exhaustive?: boolean;
 };
-export declare type Refinement = FacetRefinement | QueryRefinement | NumericRefinement | FacetExcludeRefinement | TagRefinement;
+export type Refinement = FacetRefinement | QueryRefinement | NumericRefinement | FacetExcludeRefinement | TagRefinement;
 export declare function getRefinements(results: SearchResults | Record<string, never>, state: SearchParameters, includesQuery?: boolean): Refinement[];

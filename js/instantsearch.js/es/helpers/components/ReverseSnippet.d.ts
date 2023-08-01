@@ -1,8 +1,8 @@
 
 import { h } from 'preact';
-import type { BaseHit, Hit, PartialKeys } from '../../types';
 import type { ReverseSnippetProps as ReverseSnippetUiComponentProps } from '../../components/ReverseSnippet/ReverseSnippet';
-export declare type ReverseSnippetProps<THit extends Hit<BaseHit>> = {
+import type { BaseHit, Hit, PartialKeys } from '../../types';
+export type ReverseSnippetProps<THit extends Hit<BaseHit>> = {
     hit: THit;
     attribute: keyof THit | string[];
     cssClasses?: ReverseSnippetUiComponentProps['classNames'];

@@ -1,9 +1,9 @@
-import type { AlgoliaSearchHelper } from 'algoliasearch-helper';
 import type { InstantSearch } from '../../types';
-declare type BuiltInSendEventForFacet = (eventType: string, facetValue: string, eventName?: string) => void;
-declare type CustomSendEventForFacet = (customPayload: any) => void;
-export declare type SendEventForFacet = BuiltInSendEventForFacet & CustomSendEventForFacet;
-declare type CreateSendEventForFacetOptions = {
+import type { AlgoliaSearchHelper } from 'algoliasearch-helper';
+type BuiltInSendEventForFacet = (eventType: string, facetValue: string, eventName?: string) => void;
+type CustomSendEventForFacet = (customPayload: any) => void;
+export type SendEventForFacet = BuiltInSendEventForFacet & CustomSendEventForFacet;
+type CreateSendEventForFacetOptions = {
     instantSearchInstance: InstantSearch;
     helper: AlgoliaSearchHelper;
     attribute: string | ((facetValue: string) => string);

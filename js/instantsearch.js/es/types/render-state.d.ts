@@ -25,13 +25,13 @@ import type { ToggleRefinementWidgetDescription } from '../connectors/toggle-ref
 import type { VoiceSearchWidgetDescription } from '../connectors/voice-search/connectVoiceSearch';
 import type { AnalyticsWidgetDescription } from '../widgets/analytics/analytics';
 import type { PlacesWidgetDescription } from '../widgets/places/places';
-declare type ConnectorRenderStates = AnswersWidgetDescription['indexRenderState'] & AutocompleteWidgetDescription['indexRenderState'] & BreadcrumbWidgetDescription['indexRenderState'] & ClearRefinementsWidgetDescription['indexRenderState'] & ConfigureWidgetDescription['indexRenderState'] & CurrentRefinementsWidgetDescription['indexRenderState'] & GeoSearchWidgetDescription['indexRenderState'] & HierarchicalMenuWidgetDescription['indexRenderState'] & HitsWidgetDescription['indexRenderState'] & HitsPerPageWidgetDescription['indexRenderState'] & InfiniteHitsWidgetDescription['indexRenderState'] & MenuWidgetDescription['indexRenderState'] & NumericMenuWidgetDescription['indexRenderState'] & PaginationWidgetDescription['indexRenderState'] & PoweredByWidgetDescription['indexRenderState'] & QueryRulesWidgetDescription['indexRenderState'] & RangeWidgetDescription['indexRenderState'] & RatingMenuWidgetDescription['indexRenderState'] & RefinementListWidgetDescription['indexRenderState'] & RelevantSortWidgetDescription['indexRenderState'] & SearchBoxWidgetDescription['indexRenderState'] & SortByWidgetDescription['indexRenderState'] & StatsWidgetDescription['indexRenderState'] & ToggleRefinementWidgetDescription['indexRenderState'] & VoiceSearchWidgetDescription['indexRenderState'];
-declare type WidgetRenderStates = AnalyticsWidgetDescription['indexRenderState'] & PlacesWidgetDescription['indexRenderState'];
-export declare type IndexRenderState = Partial<ConnectorRenderStates & WidgetRenderStates>;
-export declare type RenderState = {
+type ConnectorRenderStates = AnswersWidgetDescription['indexRenderState'] & AutocompleteWidgetDescription['indexRenderState'] & BreadcrumbWidgetDescription['indexRenderState'] & ClearRefinementsWidgetDescription['indexRenderState'] & ConfigureWidgetDescription['indexRenderState'] & CurrentRefinementsWidgetDescription['indexRenderState'] & GeoSearchWidgetDescription['indexRenderState'] & HierarchicalMenuWidgetDescription['indexRenderState'] & HitsWidgetDescription['indexRenderState'] & HitsPerPageWidgetDescription['indexRenderState'] & InfiniteHitsWidgetDescription['indexRenderState'] & MenuWidgetDescription['indexRenderState'] & NumericMenuWidgetDescription['indexRenderState'] & PaginationWidgetDescription['indexRenderState'] & PoweredByWidgetDescription['indexRenderState'] & QueryRulesWidgetDescription['indexRenderState'] & RangeWidgetDescription['indexRenderState'] & RatingMenuWidgetDescription['indexRenderState'] & RefinementListWidgetDescription['indexRenderState'] & RelevantSortWidgetDescription['indexRenderState'] & SearchBoxWidgetDescription['indexRenderState'] & SortByWidgetDescription['indexRenderState'] & StatsWidgetDescription['indexRenderState'] & ToggleRefinementWidgetDescription['indexRenderState'] & VoiceSearchWidgetDescription['indexRenderState'];
+type WidgetRenderStates = AnalyticsWidgetDescription['indexRenderState'] & PlacesWidgetDescription['indexRenderState'];
+export type IndexRenderState = Partial<ConnectorRenderStates & WidgetRenderStates>;
+export type RenderState = {
     [indexId: string]: IndexRenderState;
 };
-export declare type WidgetRenderState<TWidgetRenderState, TWidgetParams> = TWidgetRenderState & {
+export type WidgetRenderState<TWidgetRenderState, TWidgetParams> = TWidgetRenderState & {
     widgetParams: TWidgetParams;
 };
 export {};

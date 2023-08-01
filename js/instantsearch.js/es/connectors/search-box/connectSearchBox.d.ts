@@ -1,5 +1,5 @@
 import type { Connector, WidgetRenderState } from '../../types';
-export declare type SearchBoxConnectorParams = {
+export type SearchBoxConnectorParams = {
     /**
      * A function that will be called every time
      * a new value for the query is set. The first parameter is the query and the second is a
@@ -17,7 +17,7 @@ export declare type SearchBoxConnectorParams = {
  *
  * This queryHook can be used to debounce the number of searches done from the searchBox.
  */
-export declare type SearchBoxRenderState = {
+export type SearchBoxRenderState = {
     /**
      * The query from the last search.
      */
@@ -38,7 +38,7 @@ export declare type SearchBoxRenderState = {
      */
     isSearchStalled: boolean;
 };
-export declare type SearchBoxWidgetDescription = {
+export type SearchBoxWidgetDescription = {
     $$type: 'ais.searchBox';
     renderState: SearchBoxRenderState;
     indexRenderState: {
@@ -48,7 +48,7 @@ export declare type SearchBoxWidgetDescription = {
         query: string;
     };
 };
-export declare type SearchBoxConnector = Connector<SearchBoxWidgetDescription, SearchBoxConnectorParams>;
+export type SearchBoxConnector = Connector<SearchBoxWidgetDescription, SearchBoxConnectorParams>;
 /**
  * **SearchBox** connector provides the logic to build a widget that will let the user search for a query.
  *

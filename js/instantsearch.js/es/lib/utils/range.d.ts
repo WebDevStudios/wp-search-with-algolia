@@ -1,4 +1,4 @@
-declare type RangeOptions = {
+type RangeOptions = {
     start?: number;
     end: number;
     step?: number;

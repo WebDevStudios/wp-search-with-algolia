@@ -1,7 +1,7 @@
 
 import type { RatingMenuWidgetDescription, RatingMenuConnectorParams } from '../../connectors/rating-menu/connectRatingMenu';
 import type { ComponentCSSClasses, Template, WidgetFactory } from '../../types';
-export declare type RatingMenuTemplates = Partial<{
+export type RatingMenuTemplates = Partial<{
     /**
      * Item template, provided with `name`, `count`, `isRefined`, `url` data properties.
      */
@@ -18,7 +18,7 @@ export declare type RatingMenuTemplates = Partial<{
         isFromSearch?: boolean;
     }>;
 }>;
-export declare type RatingMenuCSSClasses = Partial<{
+export type RatingMenuCSSClasses = Partial<{
     /**
      * CSS class to add to the root element.
      */
@@ -68,9 +68,9 @@ export declare type RatingMenuCSSClasses = Partial<{
      */
     count: string | string[];
 }>;
-export declare type RatingMenuComponentCSSClasses = ComponentCSSClasses<RatingMenuCSSClasses>;
-export declare type RatingMenuComponentTemplates = Required<RatingMenuTemplates>;
-export declare type RatingMenuWidgetParams = {
+export type RatingMenuComponentCSSClasses = ComponentCSSClasses<RatingMenuCSSClasses>;
+export type RatingMenuComponentTemplates = Required<RatingMenuTemplates>;
+export type RatingMenuWidgetParams = {
     /**
      * Place where to insert the widget in your webpage.
      */
@@ -118,7 +118,7 @@ export declare type RatingMenuWidgetParams = {
  *   })
  * ]);
  */
-export declare type RatingMenuWidget = WidgetFactory<RatingMenuWidgetDescription & {
+export type RatingMenuWidget = WidgetFactory<RatingMenuWidgetDescription & {
     $$widgetType: 'ais.ratingMenu';
 }, RatingMenuConnectorParams, RatingMenuWidgetParams>;
 declare const ratingMenu: RatingMenuWidget;

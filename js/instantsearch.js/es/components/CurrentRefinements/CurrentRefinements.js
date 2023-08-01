@@ -1,32 +1,28 @@
-import { h } from 'preact';
 import { cx } from '@algolia/ui-components-shared';
+import { h } from 'preact';
 import { isSpecialClick, capitalize } from "../../lib/utils/index.js";
-
 var createItemKey = function createItemKey(_ref) {
   var attribute = _ref.attribute,
-      value = _ref.value,
-      type = _ref.type,
-      operator = _ref.operator;
+    value = _ref.value,
+    type = _ref.type,
+    operator = _ref.operator;
   return [attribute, type, value, operator].map(function (key) {
     return key;
   }).filter(Boolean).join(':');
 };
-
 var handleClick = function handleClick(callback) {
   return function (event) {
     if (isSpecialClick(event)) {
       return;
     }
-
     event.preventDefault();
     callback();
   };
 };
-
 var CurrentRefinements = function CurrentRefinements(_ref2) {
   var items = _ref2.items,
-      cssClasses = _ref2.cssClasses,
-      canRefine = _ref2.canRefine;
+    cssClasses = _ref2.cssClasses,
+    canRefine = _ref2.canRefine;
   return h("div", {
     className: cx(cssClasses.root, !canRefine && cssClasses.noRefinementRoot)
   }, h("ul", {
@@ -50,5 +46,4 @@ var CurrentRefinements = function CurrentRefinements(_ref2) {
     }));
   })));
 };
-
 export default CurrentRefinements;

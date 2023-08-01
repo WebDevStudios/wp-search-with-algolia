@@ -4,7 +4,7 @@ import type { Connector, TransformItems, WidgetRenderState } from '../../types';
  * list of indices. With Algolia, this is most commonly used for changing ranking strategy. This allows
  * a user to change how the hits are being sorted.
  */
-export declare type SortByItem = {
+export type SortByItem = {
     /**
      * The name of the index to target.
      */
@@ -14,7 +14,7 @@ export declare type SortByItem = {
      */
     label: string;
 };
-export declare type SortByConnectorParams = {
+export type SortByConnectorParams = {
     /**
      * Array of objects defining the different indices to choose from.
      */
@@ -24,7 +24,7 @@ export declare type SortByConnectorParams = {
      */
     transformItems?: TransformItems<SortByItem>;
 };
-export declare type SortByRenderState = {
+export type SortByRenderState = {
     /**
      * The initially selected index.
      */
@@ -51,7 +51,7 @@ export declare type SortByRenderState = {
      */
     canRefine: boolean;
 };
-export declare type SortByWidgetDescription = {
+export type SortByWidgetDescription = {
     $$type: 'ais.sortBy';
     renderState: SortByRenderState;
     indexRenderState: {
@@ -61,6 +61,6 @@ export declare type SortByWidgetDescription = {
         sortBy: string;
     };
 };
-export declare type SortByConnector = Connector<SortByWidgetDescription, SortByConnectorParams>;
+export type SortByConnector = Connector<SortByWidgetDescription, SortByConnectorParams>;
 declare const connectSortBy: SortByConnector;
 export default connectSortBy;

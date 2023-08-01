@@ -1,7 +1,7 @@
 
 import type { CurrentRefinementsConnectorParams, CurrentRefinementsWidgetDescription } from '../../connectors/current-refinements/connectCurrentRefinements';
 import type { WidgetFactory } from '../../types';
-export declare type CurrentRefinementsCSSClasses = Partial<{
+export type CurrentRefinementsCSSClasses = Partial<{
     /**
      * CSS class to add to the root element.
      */
@@ -35,7 +35,7 @@ export declare type CurrentRefinementsCSSClasses = Partial<{
      */
     delete: string | string[];
 }>;
-export declare type CurrentRefinementsWidgetParams = {
+export type CurrentRefinementsWidgetParams = {
     /**
      * The CSS Selector or `HTMLElement` to insert the widget into.
      */
@@ -45,7 +45,7 @@ export declare type CurrentRefinementsWidgetParams = {
      */
     cssClasses?: CurrentRefinementsCSSClasses;
 };
-export declare type CurrentRefinementsWidget = WidgetFactory<CurrentRefinementsWidgetDescription & {
+export type CurrentRefinementsWidget = WidgetFactory<CurrentRefinementsWidgetDescription & {
     $$widgetType: 'ais.currentRefinements';
 }, CurrentRefinementsConnectorParams, CurrentRefinementsWidgetParams>;
 declare const currentRefinements: CurrentRefinementsWidget;

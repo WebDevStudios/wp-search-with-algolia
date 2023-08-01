@@ -1,11 +1,11 @@
 
 import { h } from 'preact';
-import type { VoiceSearchCSSClasses, VoiceSearchTemplates } from '../../widgets/voice-search/voice-search';
 import type { VoiceListeningState } from '../../lib/voiceSearchHelper/types';
 import type { ComponentCSSClasses } from '../../types';
-export declare type VoiceSearchComponentCSSClasses = ComponentCSSClasses<VoiceSearchCSSClasses>;
-export declare type VoiceSearchComponentTemplates = Required<VoiceSearchTemplates>;
-export declare type VoiceSearchProps = {
+import type { VoiceSearchCSSClasses, VoiceSearchTemplates } from '../../widgets/voice-search/voice-search';
+export type VoiceSearchComponentCSSClasses = ComponentCSSClasses<VoiceSearchCSSClasses>;
+export type VoiceSearchComponentTemplates = Required<VoiceSearchTemplates>;
+export type VoiceSearchProps = {
     cssClasses: VoiceSearchComponentCSSClasses;
     isBrowserSupported: boolean;
     isListening: boolean;

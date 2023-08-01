@@ -1,8 +1,8 @@
 
-import type { WidgetFactory, Template } from '../../types';
-import type { SearchBoxConnectorParams, SearchBoxWidgetDescription } from '../../connectors/search-box/connectSearchBox';
 import type { SearchBoxComponentCSSClasses } from '../../components/SearchBox/SearchBox';
-export declare type SearchBoxTemplates = Partial<{
+import type { SearchBoxConnectorParams, SearchBoxWidgetDescription } from '../../connectors/search-box/connectSearchBox';
+import type { WidgetFactory, Template } from '../../types';
+export type SearchBoxTemplates = Partial<{
     /**
      * Template used for displaying the submit button. Can accept a function or a Hogan string.
      */
@@ -22,7 +22,7 @@ export declare type SearchBoxTemplates = Partial<{
         cssClasses: SearchBoxComponentCSSClasses;
     }>;
 }>;
-export declare type SearchBoxCSSClasses = Partial<{
+export type SearchBoxCSSClasses = Partial<{
     /**
      * CSS class to add to the wrapping `<div>`
      */
@@ -60,7 +60,7 @@ export declare type SearchBoxCSSClasses = Partial<{
      */
     loadingIcon: string | string[];
 }>;
-export declare type SearchBoxWidgetParams = {
+export type SearchBoxWidgetParams = {
     /**
      * CSS Selector or HTMLElement to insert the widget
      */
@@ -114,7 +114,7 @@ export declare type SearchBoxWidgetParams = {
  * away.
  *
  */
-export declare type SearchBoxWidget = WidgetFactory<SearchBoxWidgetDescription & {
+export type SearchBoxWidget = WidgetFactory<SearchBoxWidgetDescription & {
     $$widgetType: 'ais.searchBox';
 }, SearchBoxConnectorParams, SearchBoxWidgetParams>;
 declare const searchBox: SearchBoxWidget;

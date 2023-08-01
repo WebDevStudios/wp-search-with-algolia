@@ -1,10 +1,10 @@
 import type { HoganHelpers, Templates } from '../../types';
 import type { HoganOptions } from 'hogan.js';
-declare type TemplatesConfig = {
+type TemplatesConfig = {
     helpers?: HoganHelpers;
     compileOptions?: HoganOptions;
 };
-export declare type PreparedTemplateProps<TTemplates extends Templates> = {
+export type PreparedTemplateProps<TTemplates extends Templates> = {
     templatesConfig: TemplatesConfig;
     templates: TTemplates;
     useCustomCompileOptions: {

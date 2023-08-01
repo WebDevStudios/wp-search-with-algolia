@@ -1,8 +1,8 @@
 
 import { h } from 'preact';
-import type { BaseHit, Hit, PartialKeys } from '../../types';
 import type { HighlightProps as HighlightUiComponentProps } from '../../components/Highlight/Highlight';
-export declare type HighlightProps<THit extends Hit<BaseHit>> = {
+import type { BaseHit, Hit, PartialKeys } from '../../types';
+export type HighlightProps<THit extends Hit<BaseHit>> = {
     hit: THit;
     attribute: keyof THit | string[];
     cssClasses?: HighlightUiComponentProps['classNames'];

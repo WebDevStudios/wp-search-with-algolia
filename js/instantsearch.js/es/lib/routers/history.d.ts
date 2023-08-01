@@ -1,22 +1,26 @@
 import qs from 'qs';
 import type { Router, UiState } from '../../types';
-declare type CreateURL<TRouteState> = (args: {
+type CreateURL<TRouteState> = (args: {
     qsModule: typeof qs;
     routeState: TRouteState;
     location: Location;
 }) => string;
-declare type ParseURL<TRouteState> = (args: {
+type ParseURL<TRouteState> = (args: {
     qsModule: typeof qs;
     location: Location;
 }) => TRouteState;
-declare type BrowserHistoryArgs<TRouteState> = {
+export type BrowserHistoryArgs<TRouteState> = {
     windowTitle?: (routeState: TRouteState) => string;
     writeDelay: number;
     createURL: CreateURL<TRouteState>;
     parseURL: ParseURL<TRouteState>;
-    getLocation(): Location;
+    getLocation: () => Location;
+    start?: (onUpdate: () => void) => void;
+    dispose?: () => void;
+    push?: (url: string) => void;
 };
 declare class BrowserHistory<TRouteState> implements Router<TRouteState> {
+    $$type: string;
     /**
      * Transforms a UI state into a title for the page.
      */
@@ -45,7 +49,7 @@ declare class BrowserHistory<TRouteState> implements Router<TRouteState> {
      */
     private readonly getLocation;
     private writeTimer?;
-    private _onPopState;
+    private _onPopState?;
     /**
      * Indicates if last action was back/forward in the browser.
      */
@@ -61,11 +65,14 @@ declare class BrowserHistory<TRouteState> implements Router<TRouteState> {
      * and thus to prevent the `write` method from calling `pushState`.
      */
     private latestAcknowledgedHistory;
+    private _start?;
+    private _dispose?;
+    private _push?;
     /**
      * Initializes a new storage provider that syncs the search state to the URL
      * using web APIs (`window.location.pushState` and `onpopstate` event).
      */
-    constructor({ windowTitle, writeDelay, createURL, parseURL, getLocation, }: BrowserHistoryArgs<TRouteState>);
+    constructor({ windowTitle, writeDelay, createURL, parseURL, getLocation, start, dispose, push, }: BrowserHistoryArgs<TRouteState>);
     /**
      * Reads the URL and returns a syncable UI search state.
      */
@@ -91,7 +98,8 @@ declare class BrowserHistory<TRouteState> implements Router<TRouteState> {
      * Removes the event listener and cleans up the URL.
      */
     dispose(): void;
+    start(): void;
     private shouldWrite;
 }
-export default function historyRouter<TRouteState = UiState>({ createURL, parseURL, writeDelay, windowTitle, getLocation, }?: Partial<BrowserHistoryArgs<TRouteState>>): BrowserHistory<TRouteState>;
+export default function historyRouter<TRouteState = UiState>({ createURL, parseURL, writeDelay, windowTitle, getLocation, start, dispose, push, }?: Partial<BrowserHistoryArgs<TRouteState>>): BrowserHistory<TRouteState>;
 export {};

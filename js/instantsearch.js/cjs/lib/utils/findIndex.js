@@ -4,7 +4,6 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.findIndex = findIndex;
-
 // We aren't using the native `Array.prototype.findIndex` because the refactor away from Lodash is not
 // published as a major version.
 // Relying on the `findIndex` polyfill on user-land, which before was only required for niche use-cases,
@@ -15,12 +14,10 @@ function findIndex(array, comparator) {
   if (!Array.isArray(array)) {
     return -1;
   }
-
   for (var i = 0; i < array.length; i++) {
     if (comparator(array[i])) {
       return i;
     }
   }
-
   return -1;
 }

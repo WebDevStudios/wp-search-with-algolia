@@ -1,14 +1,15 @@
+import dynamicWidgets from './dynamic-widgets/dynamic-widgets';
+/** @deprecated answers is no longer supported */
+export declare const EXPERIMENTAL_answers: import("./answers/answers").AnswersWidget;
+/** @deprecated use dynamicWidgets */
+export declare const EXPERIMENTAL_dynamicWidgets: import("./dynamic-widgets/dynamic-widgets").DynamicWidgetsWidget;
+export { dynamicWidgets };
 export { default as analytics } from './analytics/analytics';
 export { default as breadcrumb } from './breadcrumb/breadcrumb';
 export { default as clearRefinements } from './clear-refinements/clear-refinements';
 export { default as configure } from './configure/configure';
 export { default as currentRefinements } from './current-refinements/current-refinements';
-export { default as EXPERIMENTAL_answers } from './answers/answers';
 export { default as EXPERIMENTAL_configureRelatedItems } from './configure-related-items/configure-related-items';
-import dynamicWidgets from './dynamic-widgets/dynamic-widgets';
-export { dynamicWidgets };
-/** @deprecated use dynamicWidgets */
-export declare const EXPERIMENTAL_dynamicWidgets: import("./dynamic-widgets/dynamic-widgets").DynamicWidgetsWidget;
 export { default as geoSearch } from './geo-search/geo-search';
 export { default as hierarchicalMenu } from './hierarchical-menu/hierarchical-menu';
 export { default as hits } from './hits/hits';

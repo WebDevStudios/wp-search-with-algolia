@@ -1,6 +1,7 @@
 
+import { h } from 'preact';
 import type { JSX } from 'preact';
-export declare type RefinementListItemProps = {
+export type RefinementListItemProps = {
     facetValueToRefine: string;
     handleClick: (args: {
         facetValueToRefine: string;
@@ -14,5 +15,5 @@ export declare type RefinementListItemProps = {
     templateProps?: Record<string, any>;
     className: string;
 };
-declare function RefinementListItem({ className, handleClick, facetValueToRefine, isRefined, templateProps, templateKey, templateData, subItems, }: RefinementListItemProps): JSX.Element;
+declare function RefinementListItem({ className, handleClick, facetValueToRefine, isRefined, templateProps, templateKey, templateData, subItems, }: RefinementListItemProps): h.JSX.Element;
 export default RefinementListItem;
