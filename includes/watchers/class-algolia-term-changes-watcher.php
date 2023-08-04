@@ -56,7 +56,7 @@ class Algolia_Term_Changes_Watcher implements Algolia_Changes_Watcher {
 	public function watch() {
 		// Fires immediately after the given terms are edited.
 		add_action( 'edited_term', array( $this, 'sync_item' ) );
-		add_action( 'edited_term', array( $this, 'sync_term_posts' ), 10, 3 );
+		add_action( 'edited_term', [ $this, 'sync_term_posts' ], 10, 3 );
 
 		// Fires after an object's terms have been set.
 		add_action( 'set_object_terms', array( $this, 'handle_changes' ), 10, 6 );
