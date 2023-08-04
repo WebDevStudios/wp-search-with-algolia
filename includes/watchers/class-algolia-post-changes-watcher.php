@@ -134,7 +134,8 @@ class Algolia_Post_Changes_Watcher implements Algolia_Changes_Watcher {
 	 *
 	 * @author WebDevStudios <contact@webdevstudios.com>
 	 *
-	 * @since 2.5.3
+	 * @since 2.6.0
+	 *
 	 * @param int   $post_id The parent ID.
 	 * @param array $post_data An array containing the new post data.
 	 * @return void
