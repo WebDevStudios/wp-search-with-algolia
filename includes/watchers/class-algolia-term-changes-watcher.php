@@ -30,7 +30,7 @@ class Algolia_Term_Changes_Watcher implements Algolia_Changes_Watcher {
 	 * Active Algolia Indices
 	 *
 	 * @author WebDevStudios <contact@webdevstudios.com>
-	 * @since  2.5.4
+	 * @since  2.6.0
 	 * @var post_indices
 	 */
 	private $post_indices;
@@ -73,6 +73,8 @@ class Algolia_Term_Changes_Watcher implements Algolia_Changes_Watcher {
 	/**
 	 * Check if the current term has post assigned to it, if it does and it supports posts, then sync them.
 	 *
+	 * @since 2.6.0
+	 *
 	 * @param int    $term_id  The current term to be updated.
 	 * @param int    $tt_id    The Term Taxonomy ID.
 	 * @param string $taxonomy The taxonomy slug.
@@ -104,6 +106,8 @@ class Algolia_Term_Changes_Watcher implements Algolia_Changes_Watcher {
 
 	/**
 	 * Returns an array of indexes based on selected post types.
+	 *
+	 * @since 2.6.0
 	 *
 	 * @param array $post_types An array of searchable post_types.
 	 */
@@ -138,6 +142,8 @@ class Algolia_Term_Changes_Watcher implements Algolia_Changes_Watcher {
 
 	/**
 	 * Looks for a valid index base on the post type and triggers an Algolia sync.
+	 *
+	 * @since 2.6.0
 	 *
 	 * @param array $posts The post type to look for an index.
 	 *
