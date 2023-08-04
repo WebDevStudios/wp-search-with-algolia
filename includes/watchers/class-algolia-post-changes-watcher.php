@@ -45,7 +45,7 @@ class Algolia_Post_Changes_Watcher implements Algolia_Changes_Watcher {
 	 *
 	 * @var array
 	 */
-	private $posts_updated = array();
+	private $posts_updated = [];
 
 	/**
 	 * Algolia_Post_Changes_Watcher constructor.
