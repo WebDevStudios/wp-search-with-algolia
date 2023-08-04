@@ -125,6 +125,14 @@ All development is handled on [GitHub](https://github.com/WebDevStudios/wp-searc
 
 Follow along with the changelog on [Github](https://github.com/WebDevStudios/wp-search-with-algolia/releases).
 
+= 2.6.0 =
+* Added: Support for syncing imported items when "fast mode" from WP All Import enabled.
+* Added: Support for updating child posts if parent post's slug has been updated.
+* Added: Support for updating posts when an associated term has been updatd.
+* Added: Wait for delete operations to complete before moving to updates.
+* Updated: Algolia Search library to 4.18.x
+* Updated: InstantSearch library to 4.56.x
+
 = 2.5.4 =
 * Updated: Ensure reindexing completes when using the from_batch flag with CLI.
 * Updated: Assigned Algolia_Admin instance to a property for access elsewhere.
