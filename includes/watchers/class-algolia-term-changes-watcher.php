@@ -121,7 +121,7 @@ class Algolia_Term_Changes_Watcher implements Algolia_Changes_Watcher {
 		$searchable_post_types = get_post_types(
 			[
 				'exclude_from_search' => false,
-			],
+			]
 		);
 		$searchable_index      = new \Algolia_Searchable_Posts_Index( $searchable_post_types );
 		$searchable_index->set_name_prefix( $index_name_prefix );

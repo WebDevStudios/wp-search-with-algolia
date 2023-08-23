@@ -82,7 +82,7 @@ class Algolia_Post_Changes_Watcher implements Algolia_Changes_Watcher {
 		add_action( 'add_attachment', array( $this, 'sync_item' ) );
 		add_action( 'attachment_updated', array( $this, 'sync_item' ) );
 		add_action( 'delete_attachment', array( $this, 'delete_item' ) );
-		add_action( 'pre_post_update', [ $this, 'check_slug_update' ],  10, 2  );
+		add_action( 'pre_post_update', [ $this, 'check_slug_update' ],  10, 2 );
 
 		// Support for WP All Import "fast mode".
 		add_action( 'pmxi_saved_post', [ $this, 'track_updated_posts' ] );
@@ -117,7 +117,7 @@ class Algolia_Post_Changes_Watcher implements Algolia_Changes_Watcher {
 		$child_posts = get_transient( 'wp_algolia_child_posts_' . $post_id );
 
 		if ( false !== $child_posts ) {
-			foreach( $child_posts as $child_post ) {
+			foreach ( $child_posts as $child_post ) {
 				$this->index->sync( $child_post );
 			}
 			delete_transient( 'wp_algolia_child_posts_' . $post_id );
@@ -144,9 +144,11 @@ class Algolia_Post_Changes_Watcher implements Algolia_Changes_Watcher {
 		$post = get_post( (int) $post_id );
 		if ( isset( $post_data['post_name'] ) && $post_data['post_name'] !== $post->post_name ) {
 
-			$child_posts = get_children( [
-				'post_parent' => $post_id,
-			] );
+			$child_posts = get_children(
+				[
+					'post_parent' => $post_id,
+				]
+			);
 
 			$pending_childs = [];
 			foreach ( $child_posts as $child_post ) {

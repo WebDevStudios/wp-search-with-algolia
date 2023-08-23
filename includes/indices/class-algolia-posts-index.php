@@ -483,12 +483,12 @@ final class Algolia_Posts_Index extends Algolia_Index {
 		if ( empty( $object_ids ) ) {
 			return;
 		}
-		
+
 		if ( $wait ) {
 			$this->get_index()->deleteObjects( $object_ids )->wait();
 			return;
 		}
-		
+
 		$this->get_index()->deleteObjects( $object_ids );
 	}
 
