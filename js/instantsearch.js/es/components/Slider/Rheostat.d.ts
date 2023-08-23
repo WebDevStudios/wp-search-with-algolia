@@ -4,27 +4,27 @@
  * @see https://github.com/airbnb/rheostat
  */
 
+import { h, Component } from 'preact';
 import type { ComponentChildren, ComponentType, JSX } from 'preact';
-import { Component } from 'preact';
-declare type BoundingBox = {
+type BoundingBox = {
     height: number;
     left: number;
     top: number;
     width: number;
 };
-declare function Button(props: JSX.IntrinsicElements['button']): JSX.Element;
-declare type Style = {
+declare function Button(props: JSX.IntrinsicElements['button']): h.JSX.Element;
+type Style = {
     position?: 'absolute';
     top?: number | string;
     left?: number | string;
     height?: string;
     width?: string;
 };
-export declare type PitProps = {
+export type PitProps = {
     children: number | string;
     style: Style;
 };
-export declare type HandleProps = {
+export type HandleProps = {
     'aria-valuemax'?: number;
     'aria-valuemin'?: number;
     'aria-valuenow'?: number;
@@ -40,31 +40,37 @@ export declare type HandleProps = {
     style: JSX.HTMLAttributes['style'];
     tabIndex: number;
 };
-declare type Props = {
+type Bounds = [min: number, max: number];
+type PublicState = {
+    max?: number;
+    min?: number;
+    values: Bounds;
+};
+type Props = {
     children?: ComponentChildren;
     className?: string;
     disabled?: boolean;
     handle?: ComponentType<HandleProps>;
     max?: number;
     min?: number;
-    onClick?(...args: unknown[]): unknown;
-    onChange?(...args: unknown[]): unknown;
-    onKeyPress?(...args: unknown[]): unknown;
-    onSliderDragEnd?(...args: unknown[]): unknown;
-    onSliderDragMove?(...args: unknown[]): unknown;
-    onSliderDragStart?(...args: unknown[]): unknown;
-    onValuesUpdated?(...args: unknown[]): unknown;
+    onClick?: () => void;
+    onChange?: (state: PublicState) => void;
+    onKeyPress?: () => void;
+    onSliderDragEnd?: () => void;
+    onSliderDragMove?: () => void;
+    onSliderDragStart?: () => void;
+    onValuesUpdated?: (state: PublicState) => void;
     orientation?: 'horizontal' | 'vertical';
     pitComponent?: ComponentType<PitProps>;
     pitPoints?: number[];
     progressBar?: ComponentType<JSX.HTMLAttributes>;
     snap?: boolean;
     snapPoints?: number[];
-    values?: number[];
+    values?: Bounds;
 };
-declare type State = {
+type State = {
     className: string;
-    handlePos: number[];
+    handlePos: Bounds;
     handleDimensions: number;
     mousePos: {
         x: number;
@@ -72,7 +78,7 @@ declare type State = {
     } | null;
     sliderBox: Partial<BoundingBox>;
     slidingIndex: number | null;
-    values: number[];
+    values: Bounds;
 };
 declare class Rheostat extends Component<Props, State> {
     static defaultProps: {
@@ -97,10 +103,10 @@ declare class Rheostat extends Component<Props, State> {
         snapPoints: never[];
         values: number[];
     };
+    x: number[];
     state: State;
     private rheostat;
-    constructor(props: Props);
-    componentWillReceiveProps(nextProps: Required<Props>): void;
+    componentWillReceiveProps: (nextProps: Required<Props>) => void;
     private getPublicState;
     private getSliderBoundingBox;
     private getProgressStyle;
@@ -123,10 +129,10 @@ declare class Rheostat extends Component<Props, State> {
     private handleKeydown;
     private validatePosition;
     private validateValues;
-    canMove(idx: number, proposedPosition: number): boolean;
-    fireChangeEvent(): void;
-    slideTo(idx: number, proposedPosition: number, onAfterSet?: () => void): void;
-    updateNewValues(nextProps: Required<Props>): void;
-    render(): JSX.Element;
+    canMove: (idx: number, proposedPosition: number) => boolean;
+    fireChangeEvent: () => void;
+    slideTo: (idx: number, proposedPosition: number, onAfterSet?: () => void) => void;
+    updateNewValues: (nextProps: Required<Props>) => void;
+    render: () => h.JSX.Element;
 }
 export default Rheostat;

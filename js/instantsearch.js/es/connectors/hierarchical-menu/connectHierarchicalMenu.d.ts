@@ -1,7 +1,7 @@
 import type { SendEventForFacet } from '../../lib/utils';
-import type { SearchResults } from 'algoliasearch-helper';
 import type { Connector, CreateURL, TransformItems, SortBy, WidgetRenderState } from '../../types';
-export declare type HierarchicalMenuItem = {
+import type { SearchResults } from 'algoliasearch-helper';
+export type HierarchicalMenuItem = {
     /**
      * Value of the menu item.
      */
@@ -23,7 +23,7 @@ export declare type HierarchicalMenuItem = {
      */
     data: HierarchicalMenuItem[] | null;
 };
-export declare type HierarchicalMenuConnectorParams = {
+export type HierarchicalMenuConnectorParams = {
     /**
      *  Attributes to use to generate the hierarchy of the menu.
      */
@@ -65,7 +65,7 @@ export declare type HierarchicalMenuConnectorParams = {
      */
     transformItems?: TransformItems<HierarchicalMenuItem>;
 };
-export declare type HierarchicalMenuRenderState = {
+export type HierarchicalMenuRenderState = {
     /**
      * Creates an url for the next state for a clicked item.
      */
@@ -100,7 +100,7 @@ export declare type HierarchicalMenuRenderState = {
      */
     sendEvent: SendEventForFacet;
 };
-export declare type HierarchicalMenuWidgetDescription = {
+export type HierarchicalMenuWidgetDescription = {
     $$type: 'ais.hierarchicalMenu';
     renderState: HierarchicalMenuRenderState;
     indexRenderState: {
@@ -114,7 +114,7 @@ export declare type HierarchicalMenuWidgetDescription = {
         };
     };
 };
-export declare type HierarchicalMenuConnector = Connector<HierarchicalMenuWidgetDescription, HierarchicalMenuConnectorParams>;
+export type HierarchicalMenuConnector = Connector<HierarchicalMenuWidgetDescription, HierarchicalMenuConnectorParams>;
 /**
  * **HierarchicalMenu** connector provides the logic to build a custom widget
  * that will give the user the ability to explore facets in a tree-like structure.

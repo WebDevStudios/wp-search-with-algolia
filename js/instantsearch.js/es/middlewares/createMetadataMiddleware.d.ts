@@ -7,4 +7,6 @@ export declare function isMetadataEnabled(): boolean;
  * - widget name
  * - connector name
  */
-export declare function createMetadataMiddleware(): InternalMiddleware;
+export declare function createMetadataMiddleware({ $$internal, }?: {
+    $$internal?: boolean;
+}): InternalMiddleware;

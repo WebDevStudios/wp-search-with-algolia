@@ -1,8 +1,8 @@
 
 import { h } from 'preact';
-import type { BaseHit, Hit, PartialKeys } from '../../types';
 import type { SnippetProps as SnippetUiComponentProps } from '../../components/Snippet/Snippet';
-export declare type SnippetProps<THit extends Hit<BaseHit>> = {
+import type { BaseHit, Hit, PartialKeys } from '../../types';
+export type SnippetProps<THit extends Hit<BaseHit>> = {
     hit: THit;
     attribute: keyof THit | string[];
     cssClasses?: SnippetUiComponentProps['classNames'];

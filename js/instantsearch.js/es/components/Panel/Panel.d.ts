@@ -1,10 +1,10 @@
 
 import { h } from 'preact';
-import type { PanelCSSClasses, PanelSharedOptions, PanelTemplates } from '../../widgets/panel/panel';
 import type { ComponentCSSClasses, UnknownWidgetFactory } from '../../types';
-export declare type PanelComponentCSSClasses = ComponentCSSClasses<Omit<PanelCSSClasses, 'collapseIcon'>>;
-export declare type PanelComponentTemplates<TWidget extends UnknownWidgetFactory> = Required<PanelTemplates<TWidget>>;
-export declare type PanelProps<TWidget extends UnknownWidgetFactory> = {
+import type { PanelCSSClasses, PanelSharedOptions, PanelTemplates } from '../../widgets/panel/panel';
+export type PanelComponentCSSClasses = ComponentCSSClasses<Omit<PanelCSSClasses, 'collapseIcon'>>;
+export type PanelComponentTemplates<TWidget extends UnknownWidgetFactory> = PanelTemplates<TWidget>;
+export type PanelProps<TWidget extends UnknownWidgetFactory> = {
     hidden: boolean;
     collapsible: boolean;
     isCollapsed: boolean;

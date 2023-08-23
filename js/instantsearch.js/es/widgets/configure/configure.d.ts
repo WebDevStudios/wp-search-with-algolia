@@ -4,8 +4,8 @@ import type { Widget } from '../../types';
  * A list of [search parameters](https://www.algolia.com/doc/api-reference/search-api-parameters/)
  * to enable when the widget mounts.
  */
-export declare type ConfigureWidgetParams = ConfigureConnectorParams['searchParameters'];
-export declare type ConfigureWidget = (widgetParams: ConfigureWidgetParams) => Widget<ConfigureWidgetDescription & {
+export type ConfigureWidgetParams = ConfigureConnectorParams['searchParameters'];
+export type ConfigureWidget = (widgetParams: ConfigureWidgetParams) => Widget<ConfigureWidgetDescription & {
     $$widgetType: 'ais.configure';
     widgetParams: ConfigureConnectorParams;
 }>;

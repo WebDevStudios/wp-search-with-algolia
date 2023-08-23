@@ -9,7 +9,5 @@ Object.defineProperty(exports, "history", {
     return _history.default;
   }
 });
-
-var _history = _interopRequireDefault(require("./history.js"));
-
+var _history = _interopRequireDefault(require("./history"));
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }

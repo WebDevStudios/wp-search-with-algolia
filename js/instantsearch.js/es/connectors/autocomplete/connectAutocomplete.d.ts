@@ -1,7 +1,7 @@
-import type { SearchResults } from 'algoliasearch-helper';
 import type { SendEventForHits } from '../../lib/utils';
 import type { Hit, Connector, WidgetRenderState } from '../../types';
-export declare type AutocompleteConnectorParams = {
+import type { SearchResults } from 'algoliasearch-helper';
+export type AutocompleteConnectorParams = {
     /**
      * Escapes HTML entities from hits string values.
      *
@@ -9,7 +9,7 @@ export declare type AutocompleteConnectorParams = {
      */
     escapeHTML?: boolean;
 };
-export declare type AutocompleteRenderState = {
+export type AutocompleteRenderState = {
     /**
      * The current value of the query.
      */
@@ -40,7 +40,7 @@ export declare type AutocompleteRenderState = {
      */
     refine: (query: string) => void;
 };
-export declare type AutocompleteWidgetDescription = {
+export type AutocompleteWidgetDescription = {
     $$type: 'ais.autocomplete';
     renderState: AutocompleteRenderState;
     indexRenderState: {
@@ -50,6 +50,6 @@ export declare type AutocompleteWidgetDescription = {
         query: string;
     };
 };
-export declare type AutocompleteConnector = Connector<AutocompleteWidgetDescription, AutocompleteConnectorParams>;
+export type AutocompleteConnector = Connector<AutocompleteWidgetDescription, AutocompleteConnectorParams>;
 declare const connectAutocomplete: AutocompleteConnector;
 export default connectAutocomplete;

@@ -1,7 +1,7 @@
 
 import type { ClearRefinementsConnectorParams, ClearRefinementsWidgetDescription } from '../../connectors/clear-refinements/connectClearRefinements';
 import type { WidgetFactory, Template } from '../../types';
-export declare type ClearRefinementsCSSClasses = Partial<{
+export type ClearRefinementsCSSClasses = Partial<{
     /**
      * CSS class to add to the wrapper element.
      */
@@ -15,7 +15,7 @@ export declare type ClearRefinementsCSSClasses = Partial<{
      */
     disabledButton: string | string[];
 }>;
-export declare type ClearRefinementsTemplates = Partial<{
+export type ClearRefinementsTemplates = Partial<{
     /**
      * Template for the content of the button
      */
@@ -23,7 +23,7 @@ export declare type ClearRefinementsTemplates = Partial<{
         hasRefinements: boolean;
     }>;
 }>;
-export declare type ClearRefinementsWidgetParams = {
+export type ClearRefinementsWidgetParams = {
     /**
      * CSS Selector or HTMLElement to insert the widget.
      */
@@ -37,7 +37,7 @@ export declare type ClearRefinementsWidgetParams = {
      */
     cssClasses?: ClearRefinementsCSSClasses;
 };
-export declare type ClearRefinementsWidget = WidgetFactory<ClearRefinementsWidgetDescription & {
+export type ClearRefinementsWidget = WidgetFactory<ClearRefinementsWidgetDescription & {
     $$widgetType: 'ais.clearRefinements';
 }, ClearRefinementsConnectorParams, ClearRefinementsWidgetParams>;
 declare const clearRefinements: ClearRefinementsWidget;

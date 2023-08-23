@@ -1,7 +1,8 @@
 import { TAG_REPLACEMENT } from "./escape-highlight.js";
 export function getHighlightedParts(highlightedValue) {
+  // @MAJOR: this should use TAG_PLACEHOLDER
   var highlightPostTag = TAG_REPLACEMENT.highlightPostTag,
-      highlightPreTag = TAG_REPLACEMENT.highlightPreTag;
+    highlightPreTag = TAG_REPLACEMENT.highlightPreTag;
   var splitByPreTag = highlightedValue.split(highlightPreTag);
   var firstValue = splitByPreTag.shift();
   var elements = !firstValue ? [] : [{
@@ -14,7 +15,6 @@ export function getHighlightedParts(highlightedValue) {
       value: splitByPostTag[0],
       isHighlighted: true
     });
-
     if (splitByPostTag[1] !== '') {
       elements.push({
         value: splitByPostTag[1],

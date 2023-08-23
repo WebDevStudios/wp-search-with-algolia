@@ -1,12 +1,12 @@
 
-import type { WidgetFactory, Template } from '../../types';
 import type { RelevantSortConnectorParams, RelevantSortWidgetDescription } from '../../connectors/relevant-sort/connectRelevantSort';
-export declare type RelevantSortCSSClasses = Partial<{
+import type { WidgetFactory, Template } from '../../types';
+export type RelevantSortCSSClasses = Partial<{
     root: string;
     text: string;
     button: string;
 }>;
-export declare type RelevantSortTemplates = Partial<{
+export type RelevantSortTemplates = Partial<{
     text: Template<{
         isRelevantSorted: boolean;
     }>;
@@ -14,12 +14,12 @@ export declare type RelevantSortTemplates = Partial<{
         isRelevantSorted: boolean;
     }>;
 }>;
-export declare type RelevantSortWidgetParams = {
+export type RelevantSortWidgetParams = {
     container: string | HTMLElement;
     cssClasses?: RelevantSortCSSClasses;
     templates?: RelevantSortTemplates;
 };
-export declare type RelevantSortWidget = WidgetFactory<RelevantSortWidgetDescription & {
+export type RelevantSortWidget = WidgetFactory<RelevantSortWidgetDescription & {
     $$widgetType: 'ais.relevantSort';
 }, RelevantSortConnectorParams, RelevantSortWidgetParams>;
 declare const relevantSort: RelevantSortWidget;

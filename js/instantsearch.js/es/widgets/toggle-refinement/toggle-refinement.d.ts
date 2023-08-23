@@ -1,7 +1,7 @@
 
 import type { ToggleRefinementConnectorParams, ToggleRefinementWidgetDescription, ToggleRefinementValue } from '../../connectors/toggle-refinement/connectToggleRefinement';
 import type { Template, WidgetFactory } from '../../types';
-export declare type ToggleRefinementCSSClasses = Partial<{
+export type ToggleRefinementCSSClasses = Partial<{
     /**
      * CSS class to add to the root element.
      */
@@ -19,7 +19,7 @@ export declare type ToggleRefinementCSSClasses = Partial<{
      */
     labelText: string | string[];
 }>;
-export declare type ToggleRefinementTemplates = Partial<{
+export type ToggleRefinementTemplates = Partial<{
     /**
      * the text that describes the toggle action
      */
@@ -27,7 +27,7 @@ export declare type ToggleRefinementTemplates = Partial<{
         name: string;
     }>;
 }>;
-export declare type ToggleRefinementWidgetParams = {
+export type ToggleRefinementWidgetParams = {
     /**
      * CSS Selector or HTMLElement to insert the widget.
      */
@@ -41,7 +41,7 @@ export declare type ToggleRefinementWidgetParams = {
      */
     cssClasses?: ToggleRefinementCSSClasses;
 };
-export declare type ToggleRefinementWidget = WidgetFactory<ToggleRefinementWidgetDescription & {
+export type ToggleRefinementWidget = WidgetFactory<ToggleRefinementWidgetDescription & {
     $$widgetType: 'ais.toggleRefinement';
 }, ToggleRefinementConnectorParams, ToggleRefinementWidgetParams>;
 /**

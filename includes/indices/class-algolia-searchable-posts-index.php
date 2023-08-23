@@ -371,7 +371,7 @@ final class Algolia_Searchable_Posts_Index extends Algolia_Index {
 		// If there are no records, parent `update_records` will take care of the deletion.
 		// In case of posts, we ALWAYS need to delete existing records.
 		if ( ! empty( $records ) ) {
-			$this->delete_item( $post );
+			$this->delete_item( $post, true );
 		}
 
 		parent::update_records( $post, $records );
@@ -456,8 +456,9 @@ final class Algolia_Searchable_Posts_Index extends Algolia_Index {
 	 * @since  1.0.0
 	 *
 	 * @param mixed $item The item to delete.
+	 * @param bool  $wait Wait for the operation to complete synchronously.
 	 */
-	public function delete_item( $item ) {
+	public function delete_item( $item, $wait = false ) {
 		$this->assert_is_supported( $item );
 
 		$records_count = $this->get_post_records_count( $item->ID );
@@ -466,9 +467,16 @@ final class Algolia_Searchable_Posts_Index extends Algolia_Index {
 			$object_ids[] = $this->get_post_object_id( $item->ID, $i );
 		}
 
-		if ( ! empty( $object_ids ) ) {
-			$this->get_index()->deleteObjects( $object_ids );
+		if ( empty( $object_ids ) ) {
+			return;
 		}
+
+		if ( $wait ) {
+			$this->get_index()->deleteObjects( $object_ids )->wait();
+			return;
+		}
+
+		$this->get_index()->deleteObjects( $object_ids );
 	}
 
 	/**

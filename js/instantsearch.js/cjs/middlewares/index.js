@@ -3,9 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-
-var _createInsightsMiddleware = require("./createInsightsMiddleware.js");
-
+var _createInsightsMiddleware = require("./createInsightsMiddleware");
 Object.keys(_createInsightsMiddleware).forEach(function (key) {
   if (key === "default" || key === "__esModule") return;
   if (key in exports && exports[key] === _createInsightsMiddleware[key]) return;
@@ -16,9 +14,7 @@ Object.keys(_createInsightsMiddleware).forEach(function (key) {
     }
   });
 });
-
-var _createRouterMiddleware = require("./createRouterMiddleware.js");
-
+var _createRouterMiddleware = require("./createRouterMiddleware");
 Object.keys(_createRouterMiddleware).forEach(function (key) {
   if (key === "default" || key === "__esModule") return;
   if (key in exports && exports[key] === _createRouterMiddleware[key]) return;
@@ -29,9 +25,7 @@ Object.keys(_createRouterMiddleware).forEach(function (key) {
     }
   });
 });
-
-var _createMetadataMiddleware = require("./createMetadataMiddleware.js");
-
+var _createMetadataMiddleware = require("./createMetadataMiddleware");
 Object.keys(_createMetadataMiddleware).forEach(function (key) {
   if (key === "default" || key === "__esModule") return;
   if (key in exports && exports[key] === _createMetadataMiddleware[key]) return;

@@ -1,5 +1,5 @@
 import type { Connector, Hit, FindAnswersOptions, WidgetRenderState } from '../../types';
-export declare type AnswersRenderState = {
+export type AnswersRenderState = {
     /**
      * The matched hits from Algolia API.
      */
@@ -9,7 +9,7 @@ export declare type AnswersRenderState = {
      */
     isLoading: boolean;
 };
-export declare type AnswersConnectorParams = {
+export type AnswersConnectorParams = {
     /**
      * Attributes to use for predictions.
      * If empty, we use all `searchableAttributes` to find answers.
@@ -48,13 +48,13 @@ export declare type AnswersConnectorParams = {
      */
     extraParameters?: FindAnswersOptions;
 };
-export declare type AnswersWidgetDescription = {
+export type AnswersWidgetDescription = {
     $$type: 'ais.answers';
     renderState: AnswersRenderState;
     indexRenderState: {
         answers: WidgetRenderState<AnswersRenderState, AnswersConnectorParams>;
     };
 };
-export declare type AnswersConnector = Connector<AnswersWidgetDescription, AnswersConnectorParams>;
+export type AnswersConnector = Connector<AnswersWidgetDescription, AnswersConnectorParams>;
 declare const connectAnswers: AnswersConnector;
 export default connectAnswers;

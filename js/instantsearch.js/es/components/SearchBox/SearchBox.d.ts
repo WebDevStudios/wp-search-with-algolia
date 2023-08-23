@@ -1,11 +1,11 @@
 
 import { h, Component } from 'preact';
 import { noop } from '../../lib/utils';
-import type { SearchBoxCSSClasses, SearchBoxTemplates } from '../../widgets/search-box/search-box';
 import type { ComponentCSSClasses } from '../../types';
-export declare type SearchBoxComponentCSSClasses = ComponentCSSClasses<SearchBoxCSSClasses>;
-export declare type SearchBoxComponentTemplates = Required<SearchBoxTemplates>;
-declare type SearchBoxProps = {
+import type { SearchBoxCSSClasses, SearchBoxTemplates } from '../../widgets/search-box/search-box';
+export type SearchBoxComponentCSSClasses = ComponentCSSClasses<SearchBoxCSSClasses>;
+export type SearchBoxComponentTemplates = Required<SearchBoxTemplates>;
+type SearchBoxProps = {
     placeholder?: string;
     cssClasses: SearchBoxComponentCSSClasses;
     templates: SearchBoxComponentTemplates;
@@ -36,8 +36,8 @@ declare const defaultProps: {
     onReset: typeof noop;
     refine: typeof noop;
 };
-declare type SearchBoxPropsWithDefaultProps = SearchBoxProps & Readonly<typeof defaultProps>;
-declare type SearchBoxState = {
+type SearchBoxPropsWithDefaultProps = SearchBoxProps & Readonly<typeof defaultProps>;
+type SearchBoxState = {
     query: string;
     focused: boolean;
 };

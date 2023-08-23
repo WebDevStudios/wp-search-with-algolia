@@ -1,7 +1,7 @@
 import type { Connector, WidgetRenderState } from '../../types';
-export declare type RelevantSortConnectorParams = Record<string, unknown>;
-declare type Refine = (relevancyStrictness: number) => void;
-export declare type RelevantSortRenderState = {
+export type RelevantSortConnectorParams = Record<string, unknown>;
+type Refine = (relevancyStrictness: number | undefined) => void;
+export type RelevantSortRenderState = {
     /**
      * Indicates if it has appliedRelevancyStrictness greater than zero
      */
@@ -19,7 +19,7 @@ export declare type RelevantSortRenderState = {
      */
     refine: Refine;
 };
-export declare type RelevantSortWidgetDescription = {
+export type RelevantSortWidgetDescription = {
     $$type: 'ais.relevantSort';
     renderState: RelevantSortRenderState;
     indexRenderState: {
@@ -29,6 +29,6 @@ export declare type RelevantSortWidgetDescription = {
         relevantSort: number;
     };
 };
-export declare type RelevantSortConnector = Connector<RelevantSortWidgetDescription, RelevantSortConnectorParams>;
+export type RelevantSortConnector = Connector<RelevantSortWidgetDescription, RelevantSortConnectorParams>;
 declare const connectRelevantSort: RelevantSortConnector;
 export default connectRelevantSort;

@@ -1,5 +1,5 @@
-declare type Warn = (message: string) => void;
-declare type Warning = {
+type Warn = (message: string) => void;
+type Warning = {
     (condition: boolean, message: string): void;
     cache: {
         [message: string]: boolean;

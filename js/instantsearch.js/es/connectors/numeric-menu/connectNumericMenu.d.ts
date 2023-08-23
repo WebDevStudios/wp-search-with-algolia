@@ -1,6 +1,6 @@
 import type { SendEventForFacet } from '../../lib/utils';
 import type { Connector, CreateURL, TransformItems, WidgetRenderState } from '../../types';
-export declare type NumericMenuConnectorParamsItem = {
+export type NumericMenuConnectorParamsItem = {
     /**
      * Name of the option
      */
@@ -14,7 +14,7 @@ export declare type NumericMenuConnectorParamsItem = {
      */
     end?: number;
 };
-export declare type NumericMenuRenderStateItem = {
+export type NumericMenuRenderStateItem = {
     /**
      *  Name of the option.
      */
@@ -31,7 +31,7 @@ export declare type NumericMenuRenderStateItem = {
      */
     isRefined: boolean;
 };
-export declare type NumericMenuConnectorParams = {
+export type NumericMenuConnectorParams = {
     /**
      * Name of the attribute for filtering
      */
@@ -45,7 +45,7 @@ export declare type NumericMenuConnectorParams = {
      */
     transformItems?: TransformItems<NumericMenuRenderStateItem>;
 };
-export declare type NumericMenuRenderState = {
+export type NumericMenuRenderState = {
     /**
      * The list of available choices
      */
@@ -75,7 +75,7 @@ export declare type NumericMenuRenderState = {
      */
     sendEvent: SendEventForFacet;
 };
-export declare type NumericMenuWidgetDescription = {
+export type NumericMenuWidgetDescription = {
     $$type: 'ais.numericMenu';
     renderState: NumericMenuRenderState;
     indexRenderState: {
@@ -89,6 +89,6 @@ export declare type NumericMenuWidgetDescription = {
         };
     };
 };
-export declare type NumericMenuConnector = Connector<NumericMenuWidgetDescription, NumericMenuConnectorParams>;
+export type NumericMenuConnector = Connector<NumericMenuWidgetDescription, NumericMenuConnectorParams>;
 declare const connectNumericMenu: NumericMenuConnector;
 export default connectNumericMenu;

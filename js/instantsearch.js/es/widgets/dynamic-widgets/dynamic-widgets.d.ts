@@ -1,6 +1,6 @@
 import type { DynamicWidgetsConnectorParams, DynamicWidgetsWidgetDescription } from '../../connectors/dynamic-widgets/connectDynamicWidgets';
 import type { Widget, WidgetFactory } from '../../types';
-export declare type DynamicWidgetsWidgetParams = {
+export type DynamicWidgetsWidgetParams = {
     /**
      * CSS Selector or HTMLElement to insert the widget.
      */
@@ -14,14 +14,14 @@ export declare type DynamicWidgetsWidgetParams = {
      * Function to return a fallback widget when an attribute isn't found in
      * `widgets`.
      */
-    fallbackWidget?(args: {
+    fallbackWidget?: (args: {
         /** The attribute name to create a widget for. */
         attribute: string;
         /** CSS Selector or HTMLElement to insert the widget */
         container: HTMLElement;
-    }): Widget;
+    }) => Widget;
 };
-export declare type DynamicWidgetsWidget = WidgetFactory<DynamicWidgetsWidgetDescription & {
+export type DynamicWidgetsWidget = WidgetFactory<DynamicWidgetsWidgetDescription & {
     $$widgetType: 'ais.dynamicWidgets';
 }, Omit<DynamicWidgetsConnectorParams, 'widgets' | 'fallbackWidget'>, DynamicWidgetsWidgetParams>;
 declare const dynamicWidgets: DynamicWidgetsWidget;

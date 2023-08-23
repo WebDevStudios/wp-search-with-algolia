@@ -1,45 +1,35 @@
-function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
-
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
+function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
+function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
+function _defineProperty(obj, key, value) { key = _toPropertyKey(key); if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+function _toPropertyKey(arg) { var key = _toPrimitive(arg, "string"); return _typeof(key) === "symbol" ? key : String(key); }
+function _toPrimitive(input, hint) { if (_typeof(input) !== "object" || input === null) return input; var prim = input[Symbol.toPrimitive]; if (prim !== undefined) { var res = prim.call(input, hint || "default"); if (_typeof(res) !== "object") return res; throw new TypeError("@@toPrimitive must return a primitive value."); } return (hint === "string" ? String : Number)(input); }
 function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest(); }
-
 function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
-
 function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
-
-function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
-
-function _iterableToArrayLimit(arr, i) { if (typeof Symbol === "undefined" || !(Symbol.iterator in Object(arr))) return; var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"] != null) _i["return"](); } finally { if (_d) throw _e; } } return _arr; }
-
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i]; return arr2; }
+function _iterableToArrayLimit(arr, i) { var _i = null == arr ? null : "undefined" != typeof Symbol && arr[Symbol.iterator] || arr["@@iterator"]; if (null != _i) { var _s, _e, _x, _r, _arr = [], _n = !0, _d = !1; try { if (_x = (_i = _i.call(arr)).next, 0 === i) { if (Object(_i) !== _i) return; _n = !1; } else for (; !(_n = (_s = _x.call(_i)).done) && (_arr.push(_s.value), _arr.length !== i); _n = !0); } catch (err) { _d = !0, _e = err; } finally { try { if (!_n && null != _i.return && (_r = _i.return(), Object(_r) !== _r)) return; } finally { if (_d) throw _e; } } return _arr; } }
 function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
-
 import { h, render } from 'preact';
-import { prepareTemplateProps } from "../../lib/templating/index.js";
 import GeoSearchControls from "../../components/GeoSearchControls/GeoSearchControls.js";
-
+import { prepareTemplateProps } from "../../lib/templating/index.js";
 var refineWithMap = function refineWithMap(_ref) {
   var refine = _ref.refine,
-      mapInstance = _ref.mapInstance;
+    mapInstance = _ref.mapInstance;
   return refine({
     northEast: mapInstance.getBounds().getNorthEast().toJSON(),
     southWest: mapInstance.getBounds().getSouthWest().toJSON()
   });
 };
-
 var collectMarkersForNextRender = function collectMarkersForNextRender(markers, nextIds) {
   return markers.reduce(function (_ref2, marker) {
     var _ref3 = _slicedToArray(_ref2, 2),
-        update = _ref3[0],
-        exit = _ref3[1];
-
+      update = _ref3[0],
+      exit = _ref3[1];
     var persist = nextIds.includes(marker.__id);
     return persist ? [update.concat(marker), exit] : [update, exit.concat(marker)];
   }, [[], []]);
 };
-
 var createBoundingBoxFromMarkers = function createBoundingBoxFromMarkers(google, markers) {
   var latLngBounds = markers.reduce(function (acc, marker) {
     return acc.extend(marker.getPosition());
@@ -49,40 +39,37 @@ var createBoundingBoxFromMarkers = function createBoundingBoxFromMarkers(google,
     southWest: latLngBounds.getSouthWest().toJSON()
   };
 };
-
 var lockUserInteraction = function lockUserInteraction(renderState, functionThatAltersTheMapPosition) {
   renderState.isUserInteraction = false;
   functionThatAltersTheMapPosition();
   renderState.isUserInteraction = true;
 };
-
 var renderer = function renderer(_ref4, isFirstRendering) {
   var items = _ref4.items,
-      position = _ref4.position,
-      currentRefinement = _ref4.currentRefinement,
-      refine = _ref4.refine,
-      clearMapRefinement = _ref4.clearMapRefinement,
-      toggleRefineOnMapMove = _ref4.toggleRefineOnMapMove,
-      isRefineOnMapMove = _ref4.isRefineOnMapMove,
-      setMapMoveSinceLastRefine = _ref4.setMapMoveSinceLastRefine,
-      hasMapMoveSinceLastRefine = _ref4.hasMapMoveSinceLastRefine,
-      isRefinedWithMap = _ref4.isRefinedWithMap,
-      widgetParams = _ref4.widgetParams,
-      instantSearchInstance = _ref4.instantSearchInstance;
+    position = _ref4.position,
+    currentRefinement = _ref4.currentRefinement,
+    refine = _ref4.refine,
+    clearMapRefinement = _ref4.clearMapRefinement,
+    toggleRefineOnMapMove = _ref4.toggleRefineOnMapMove,
+    isRefineOnMapMove = _ref4.isRefineOnMapMove,
+    setMapMoveSinceLastRefine = _ref4.setMapMoveSinceLastRefine,
+    hasMapMoveSinceLastRefine = _ref4.hasMapMoveSinceLastRefine,
+    isRefinedWithMap = _ref4.isRefinedWithMap,
+    widgetParams = _ref4.widgetParams,
+    instantSearchInstance = _ref4.instantSearchInstance;
   var container = widgetParams.container,
-      googleReference = widgetParams.googleReference,
-      cssClasses = widgetParams.cssClasses,
-      templates = widgetParams.templates,
-      initialZoom = widgetParams.initialZoom,
-      initialPosition = widgetParams.initialPosition,
-      enableRefine = widgetParams.enableRefine,
-      enableClearMapRefinement = widgetParams.enableClearMapRefinement,
-      enableRefineControl = widgetParams.enableRefineControl,
-      mapOptions = widgetParams.mapOptions,
-      createMarker = widgetParams.createMarker,
-      markerOptions = widgetParams.markerOptions,
-      renderState = widgetParams.renderState;
-
+    googleReference = widgetParams.googleReference,
+    cssClasses = widgetParams.cssClasses,
+    templates = widgetParams.templates,
+    initialZoom = widgetParams.initialZoom,
+    initialPosition = widgetParams.initialPosition,
+    enableRefine = widgetParams.enableRefine,
+    enableClearMapRefinement = widgetParams.enableClearMapRefinement,
+    enableRefineControl = widgetParams.enableRefineControl,
+    mapOptions = widgetParams.mapOptions,
+    createMarker = widgetParams.createMarker,
+    markerOptions = widgetParams.markerOptions,
+    renderState = widgetParams.renderState;
   if (isFirstRendering) {
     renderState.isUserInteraction = true;
     renderState.isPendingRefine = false;
@@ -105,18 +92,15 @@ var renderer = function renderer(_ref4, isFirstRendering) {
         position: googleReference.maps.ControlPosition.LEFT_TOP
       }
     }, mapOptions));
-
     var setupListenersWhenMapIsReady = function setupListenersWhenMapIsReady() {
       var onChange = function onChange() {
         if (renderState.isUserInteraction && enableRefine) {
           setMapMoveSinceLastRefine();
-
           if (isRefineOnMapMove()) {
             renderState.isPendingRefine = true;
           }
         }
       };
-
       renderState.mapInstance.addListener('center_changed', onChange);
       renderState.mapInstance.addListener('zoom_changed', onChange);
       renderState.mapInstance.addListener('dragstart', onChange);
@@ -130,37 +114,37 @@ var renderer = function renderer(_ref4, isFirstRendering) {
         }
       });
     };
-
     googleReference.maps.event.addListenerOnce(renderState.mapInstance, 'idle', setupListenersWhenMapIsReady);
     renderState.templateProps = prepareTemplateProps({
       templatesConfig: instantSearchInstance.templatesConfig,
       templates: templates
     });
     return;
-  } // Collect markers that need to be updated or removed
+  }
 
-
+  // Collect markers that need to be updated or removed
   var nextItemsIds = items.map(function (_) {
     return _.objectID;
   });
-
   var _collectMarkersForNex = collectMarkersForNextRender(renderState.markers, nextItemsIds),
-      _collectMarkersForNex2 = _slicedToArray(_collectMarkersForNex, 2),
-      updateMarkers = _collectMarkersForNex2[0],
-      exitMarkers = _collectMarkersForNex2[1]; // Collect items that will be added
+    _collectMarkersForNex2 = _slicedToArray(_collectMarkersForNex, 2),
+    updateMarkers = _collectMarkersForNex2[0],
+    exitMarkers = _collectMarkersForNex2[1];
 
-
+  // Collect items that will be added
   var updateMarkerIds = updateMarkers.map(function (_) {
     return _.__id;
   });
   var nextPendingItems = items.filter(function (item) {
     return !updateMarkerIds.includes(item.objectID);
-  }); // Remove all markers that need to be removed
+  });
 
+  // Remove all markers that need to be removed
   exitMarkers.forEach(function (marker) {
     return marker.setMap(null);
-  }); // Create the markers from the items
+  });
 
+  // Create the markers from the items
   renderState.markers = updateMarkers.concat(nextPendingItems.map(function (item) {
     var marker = createMarker({
       map: renderState.mapInstance,
@@ -178,15 +162,15 @@ var renderer = function renderer(_ref4, isFirstRendering) {
     });
     return marker;
   }));
-  var shouldUpdate = !hasMapMoveSinceLastRefine(); // We use this value for differentiate the padding to apply during
+  var shouldUpdate = !hasMapMoveSinceLastRefine();
+
+  // We use this value for differentiate the padding to apply during
   // fitBounds. When we don't have a currenRefinement (boundingBox)
   // we let Google Maps compute the automatic padding. But when we
   // provide the currentRefinement we explicitly set the padding
   // to `0` otherwise the map will decrease the zoom on each refine.
-
   var boundingBoxPadding = currentRefinement ? 0 : null;
   var boundingBox = !currentRefinement && Boolean(renderState.markers.length) ? createBoundingBoxFromMarkers(googleReference, renderState.markers) : currentRefinement;
-
   if (boundingBox && shouldUpdate) {
     lockUserInteraction(renderState, function () {
       renderState.mapInstance.fitBounds(new googleReference.maps.LatLngBounds(boundingBox.southWest, boundingBox.northEast), boundingBoxPadding);
@@ -197,7 +181,6 @@ var renderer = function renderer(_ref4, isFirstRendering) {
       renderState.mapInstance.setZoom(initialZoom);
     });
   }
-
   render(h(GeoSearchControls, {
     cssClasses: cssClasses,
     enableRefine: enableRefine,
@@ -217,5 +200,4 @@ var renderer = function renderer(_ref4, isFirstRendering) {
     templateProps: renderState.templateProps
   }), container.querySelector(".".concat(cssClasses.tree)));
 };
-
 export default renderer;

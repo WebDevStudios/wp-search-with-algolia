@@ -1,7 +1,7 @@
-import type { SearchResults } from 'algoliasearch-helper';
 import type { SendEventForFacet } from '../../lib/utils';
 import type { Connector, CreateURL, SortBy, TransformItems, WidgetRenderState } from '../../types';
-export declare type MenuItem = {
+import type { SearchResults } from 'algoliasearch-helper';
+export type MenuItem = {
     /**
      * The value of the menu item.
      */
@@ -19,7 +19,7 @@ export declare type MenuItem = {
      */
     isRefined: boolean;
 };
-export declare type MenuConnectorParams = {
+export type MenuConnectorParams = {
     /**
      * Name of the attribute for faceting (eg. "free_shipping").
      */
@@ -49,7 +49,7 @@ export declare type MenuConnectorParams = {
      */
     transformItems?: TransformItems<MenuItem>;
 };
-export declare type MenuRenderState = {
+export type MenuRenderState = {
     /**
      * The elements that can be refined for the current search results.
      */
@@ -61,7 +61,7 @@ export declare type MenuRenderState = {
     /**
      * Filter the search to item value.
      */
-    refine(value: string): void;
+    refine: (value: string) => void;
     /**
      * True if refinement can be applied.
      */
@@ -73,7 +73,7 @@ export declare type MenuRenderState = {
     /**
      * Toggles the number of values displayed between `limit` and `showMore.limit`.
      */
-    toggleShowMore(): void;
+    toggleShowMore: () => void;
     /**
      * `true` if the toggleShowMore button can be activated (enough items to display more or
      * already displaying more than `limit` items)
@@ -84,7 +84,7 @@ export declare type MenuRenderState = {
      */
     sendEvent: SendEventForFacet;
 };
-export declare type MenuWidgetDescription = {
+export type MenuWidgetDescription = {
     $$type: 'ais.menu';
     renderState: MenuRenderState;
     indexRenderState: {
@@ -98,7 +98,7 @@ export declare type MenuWidgetDescription = {
         };
     };
 };
-export declare type MenuConnector = Connector<MenuWidgetDescription, MenuConnectorParams>;
+export type MenuConnector = Connector<MenuWidgetDescription, MenuConnectorParams>;
 /**
  * **Menu** connector provides the logic to build a widget that will give the user the ability to choose a single value for a specific facet. The typical usage of menu is for navigation in categories.
  *

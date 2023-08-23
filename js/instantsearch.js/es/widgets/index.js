@@ -1,16 +1,19 @@
+import { deprecate } from "../lib/utils/index.js";
+import answers from "./answers/answers.js";
+import dynamicWidgets from "./dynamic-widgets/dynamic-widgets.js";
+
+/** @deprecated answers is no longer supported */
+export var EXPERIMENTAL_answers = deprecate(answers, 'answers is no longer supported');
+
+/** @deprecated use dynamicWidgets */
+export var EXPERIMENTAL_dynamicWidgets = deprecate(dynamicWidgets, 'use dynamicWidgets');
+export { dynamicWidgets };
 export { default as analytics } from "./analytics/analytics.js";
 export { default as breadcrumb } from "./breadcrumb/breadcrumb.js";
 export { default as clearRefinements } from "./clear-refinements/clear-refinements.js";
 export { default as configure } from "./configure/configure.js";
 export { default as currentRefinements } from "./current-refinements/current-refinements.js";
-export { default as EXPERIMENTAL_answers } from "./answers/answers.js";
 export { default as EXPERIMENTAL_configureRelatedItems } from "./configure-related-items/configure-related-items.js";
-import dynamicWidgets from "./dynamic-widgets/dynamic-widgets.js";
-export { dynamicWidgets };
-import { deprecate } from "../lib/utils/index.js";
-/** @deprecated use dynamicWidgets */
-
-export var EXPERIMENTAL_dynamicWidgets = deprecate(dynamicWidgets, 'use dynamicWidgets');
 export { default as geoSearch } from "./geo-search/geo-search.js";
 export { default as hierarchicalMenu } from "./hierarchical-menu/hierarchical-menu.js";
 export { default as hits } from "./hits/hits.js";

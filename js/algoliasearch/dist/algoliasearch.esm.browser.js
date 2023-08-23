@@ -11,15 +11,37 @@ function createBrowserLocalStorageCache(options) {
     const getNamespace = () => {
         return JSON.parse(getStorage().getItem(namespaceKey) || '{}');
     };
+    const setNamespace = (namespace) => {
+        getStorage().setItem(namespaceKey, JSON.stringify(namespace));
+    };
+    const removeOutdatedCacheItems = () => {
+        const timeToLive = options.timeToLive ? options.timeToLive * 1000 : null;
+        const namespace = getNamespace();
+        const filteredNamespaceWithoutOldFormattedCacheItems = Object.fromEntries(Object.entries(namespace).filter(([, cacheItem]) => {
+            return cacheItem.timestamp !== undefined;
+        }));
+        setNamespace(filteredNamespaceWithoutOldFormattedCacheItems);
+        if (!timeToLive)
+            return;
+        const filteredNamespaceWithoutExpiredItems = Object.fromEntries(Object.entries(filteredNamespaceWithoutOldFormattedCacheItems).filter(([, cacheItem]) => {
+            const currentTimestamp = new Date().getTime();
+            const isExpired = cacheItem.timestamp + timeToLive < currentTimestamp;
+            return !isExpired;
+        }));
+        setNamespace(filteredNamespaceWithoutExpiredItems);
+    };
     return {
         get(key, defaultValue, events = {
             miss: () => Promise.resolve(),
         }) {
             return Promise.resolve()
                 .then(() => {
+                removeOutdatedCacheItems();
                 const keyAsString = JSON.stringify(key);
-                const value = getNamespace()[keyAsString];
-                return Promise.all([value || defaultValue(), value !== undefined]);
+                return getNamespace()[keyAsString];
+            })
+                .then(value => {
+                return Promise.all([value ? value.value : defaultValue(), value !== undefined]);
             })
                 .then(([value, exists]) => {
                 return Promise.all([value, exists || events.miss(value)]);
@@ -30,7 +52,10 @@ function createBrowserLocalStorageCache(options) {
             return Promise.resolve().then(() => {
                 const namespace = getNamespace();
                 // eslint-disable-next-line functional/immutable-data
-                namespace[JSON.stringify(key)] = value;
+                namespace[JSON.stringify(key)] = {
+                    timestamp: new Date().getTime(),
+                    value,
+                };
                 getStorage().setItem(namespaceKey, JSON.stringify(namespace));
                 return value;
             });
@@ -207,7 +232,7 @@ function encode(format, ...args) {
     return format.replace(/%s/g, () => encodeURIComponent(args[i++]));
 }
 
-const version = '4.14.2';
+const version = '4.18.0';
 
 const AuthMode = {
     /**
@@ -1332,11 +1357,21 @@ const updateApiKey = (base) => {
             'maxQueriesPerIPPerHour',
             'maxHitsPerQuery',
         ];
+        // Check that all the fields retrieved through getApiKey are the same as the ones we wanted to update
         const hasChanged = (getApiKeyResponse) => {
             return Object.keys(updatedFields)
                 .filter((updatedField) => apiKeyFields.indexOf(updatedField) !== -1)
                 .every(updatedField => {
-                return getApiKeyResponse[updatedField] === updatedFields[updatedField];
+                // If the field is an array, we need to check that they are the same length and that all the values are the same
+                if (Array.isArray(getApiKeyResponse[updatedField]) &&
+                    Array.isArray(updatedFields[updatedField])) {
+                    const getApiKeyResponseArray = getApiKeyResponse[updatedField];
+                    return (getApiKeyResponseArray.length === updatedFields[updatedField].length &&
+                        getApiKeyResponseArray.every((value, index) => value === updatedFields[updatedField][index]));
+                }
+                else {
+                    return getApiKeyResponse[updatedField] === updatedFields[updatedField];
+                }
             });
         };
         const wait = (_, waitRequestOptions) => createRetryablePromise(retry => {

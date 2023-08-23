@@ -1,11 +1,11 @@
 
 import { h, Component } from 'preact';
-import type { RangeInputCSSClasses, RangeInputTemplates } from '../../widgets/range-input/range-input';
 import type { Range, RangeBoundaries } from '../../connectors/range/connectRange';
 import type { ComponentCSSClasses } from '../../types';
-export declare type RangeInputComponentCSSClasses = ComponentCSSClasses<RangeInputCSSClasses>;
-export declare type RangeInputComponentTemplates = Required<RangeInputTemplates>;
-export declare type RangeInputProps = {
+import type { RangeInputCSSClasses, RangeInputTemplates } from '../../widgets/range-input/range-input';
+export type RangeInputComponentCSSClasses = ComponentCSSClasses<RangeInputCSSClasses>;
+export type RangeInputComponentTemplates = Required<RangeInputTemplates>;
+export type RangeInputProps = {
     min?: number;
     max?: number;
     step: number;
@@ -14,12 +14,15 @@ export declare type RangeInputProps = {
     templateProps: {
         templates: RangeInputComponentTemplates;
     };
-    refine(rangeValue: RangeBoundaries): void;
+    refine: (rangeValue: RangeBoundaries) => void;
 };
-declare class RangeInput extends Component<RangeInputProps, Partial<Range>> {
+declare class RangeInput extends Component<RangeInputProps, {
+    min?: string;
+    max?: string;
+}> {
     state: {
-        min: import("../../connectors/range/connectRange").RangeMin;
-        max: import("../../connectors/range/connectRange").RangeMax;
+        min: string | undefined;
+        max: string | undefined;
     };
     componentWillReceiveProps(nextProps: RangeInputProps): void;
     private onInput;

@@ -2,7 +2,7 @@
 import type { RefinementListConnectorParams, RefinementListWidgetDescription } from '../../connectors/refinement-list/connectRefinementList';
 import type { Template, WidgetFactory } from '../../types';
 import type { SearchBoxTemplates } from '../search-box/search-box';
-export declare type RefinementListOwnCSSClasses = Partial<{
+export type RefinementListOwnCSSClasses = Partial<{
     /**
      * CSS class to add to the root element.
      */
@@ -56,7 +56,7 @@ export declare type RefinementListOwnCSSClasses = Partial<{
      */
     searchBox: string | string[];
 }>;
-declare type RefinementListSearchableCSSClasses = Partial<{
+type RefinementListSearchableCSSClasses = Partial<{
     searchableRoot: string | string[];
     searchableForm: string | string[];
     searchableInput: string | string[];
@@ -67,8 +67,8 @@ declare type RefinementListSearchableCSSClasses = Partial<{
     searchableLoadingIndicator: string | string[];
     searchableLoadingIcon: string | string[];
 }>;
-export declare type RefinementListCSSClasses = RefinementListOwnCSSClasses & RefinementListSearchableCSSClasses;
-export declare type RefinementListItemData = {
+export type RefinementListCSSClasses = RefinementListOwnCSSClasses & RefinementListSearchableCSSClasses;
+export type RefinementListItemData = {
     /**
      * The number of occurrences of the facet in the result set.
      */
@@ -102,7 +102,7 @@ export declare type RefinementListItemData = {
      */
     isFromSearch: boolean;
 };
-export declare type RefinementListOwnTemplates = Partial<{
+export type RefinementListOwnTemplates = Partial<{
     /**
      * Item template, provided with `label`, `highlighted`, `value`, `count`, `isRefined`, `url` data properties.
      */
@@ -118,7 +118,7 @@ export declare type RefinementListOwnTemplates = Partial<{
      */
     searchableNoResults: Template;
 }>;
-declare type RefinementListSearchableTemplates = Partial<{
+type RefinementListSearchableTemplates = Partial<{
     /**
      * Templates to use for search for facet values submit button.
      */
@@ -132,9 +132,9 @@ declare type RefinementListSearchableTemplates = Partial<{
      */
     searchableLoadingIndicator: SearchBoxTemplates['loadingIndicator'];
 }>;
-export declare type RefinementListTemplates = RefinementListOwnTemplates & RefinementListSearchableTemplates;
-export declare type RefinementListComponentTemplates = Required<RefinementListOwnTemplates>;
-export declare type RefinementListWidgetParams = {
+export type RefinementListTemplates = RefinementListOwnTemplates & RefinementListSearchableTemplates;
+export type RefinementListComponentTemplates = Required<RefinementListOwnTemplates>;
+export type RefinementListWidgetParams = {
     /**
      * CSS Selector or HTMLElement to insert the widget.
      */
@@ -169,7 +169,7 @@ export declare type RefinementListWidgetParams = {
      */
     cssClasses?: RefinementListCSSClasses;
 };
-export declare type RefinementListWidget = WidgetFactory<RefinementListWidgetDescription & {
+export type RefinementListWidget = WidgetFactory<RefinementListWidgetDescription & {
     $$widgetType: 'ais.refinementList';
 }, RefinementListConnectorParams, RefinementListWidgetParams>;
 /**

@@ -1,7 +1,7 @@
 import type { SendEventForHits, BindEventForHits } from '../../lib/utils';
 import type { TransformItems, Connector, Hit, WidgetRenderState, BaseHit } from '../../types';
 import type { SearchResults } from 'algoliasearch-helper';
-export declare type HitsRenderState<THit extends BaseHit = BaseHit> = {
+export type HitsRenderState<THit extends BaseHit = BaseHit> = {
     /**
      * The matched hits from Algolia API.
      */
@@ -19,7 +19,7 @@ export declare type HitsRenderState<THit extends BaseHit = BaseHit> = {
      */
     bindEvent: BindEventForHits;
 };
-export declare type HitsConnectorParams<THit extends BaseHit = BaseHit> = {
+export type HitsConnectorParams<THit extends BaseHit = BaseHit> = {
     /**
      * Whether to escape HTML tags from hits string values.
      *
@@ -31,13 +31,13 @@ export declare type HitsConnectorParams<THit extends BaseHit = BaseHit> = {
      */
     transformItems?: TransformItems<Hit<THit>>;
 };
-export declare type HitsWidgetDescription<THit extends BaseHit = BaseHit> = {
+export type HitsWidgetDescription<THit extends BaseHit = BaseHit> = {
     $$type: 'ais.hits';
     renderState: HitsRenderState<THit>;
     indexRenderState: {
         hits: WidgetRenderState<HitsRenderState<THit>, HitsConnectorParams<THit>>;
     };
 };
-export declare type HitsConnector<THit extends BaseHit = BaseHit> = Connector<HitsWidgetDescription<THit>, HitsConnectorParams<THit>>;
+export type HitsConnector<THit extends BaseHit = BaseHit> = Connector<HitsWidgetDescription<THit>, HitsConnectorParams<THit>>;
 declare const connectHits: HitsConnector;
 export default connectHits;

@@ -1,7 +1,7 @@
-import type { SearchParameters, PlainSearchParameters } from 'algoliasearch-helper';
 import type { AlgoliaHit, Connector } from '../../types';
 import type { ConfigureWidgetDescription } from '../configure/connectConfigure';
-export declare type MatchingPatterns = {
+import type { SearchParameters, PlainSearchParameters } from 'algoliasearch-helper';
+export type MatchingPatterns = {
     [attribute: string]: {
         /**
          * The score of the optional filter.
@@ -11,8 +11,8 @@ export declare type MatchingPatterns = {
         score: number;
     };
 };
-export declare type TransformSearchParameters = (searchParameters: SearchParameters) => PlainSearchParameters;
-export declare type ConfigureRelatedItemsConnectorParams = {
+export type TransformSearchParameters = (searchParameters: SearchParameters) => PlainSearchParameters;
+export type ConfigureRelatedItemsConnectorParams = {
     /**
      * The reference hit to extract the filters from.
      */
@@ -27,9 +27,9 @@ export declare type ConfigureRelatedItemsConnectorParams = {
      */
     transformSearchParameters?: TransformSearchParameters;
 };
-export declare type ConfigureRelatedItemsWidgetDescription = {
+export type ConfigureRelatedItemsWidgetDescription = {
     $$type: 'ais.configureRelatedItems';
 } & Omit<ConfigureWidgetDescription, '$$type'>;
-export declare type ConfigureRelatedItemsConnector = Connector<ConfigureRelatedItemsWidgetDescription, ConfigureRelatedItemsConnectorParams>;
+export type ConfigureRelatedItemsConnector = Connector<ConfigureRelatedItemsWidgetDescription, ConfigureRelatedItemsConnectorParams>;
 declare const connectConfigureRelatedItems: ConfigureRelatedItemsConnector;
 export default connectConfigureRelatedItems;

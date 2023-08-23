@@ -1,9 +1,9 @@
 
-import type { ComponentChildren } from 'preact';
 import { h } from 'preact';
-declare type Props = {
+import type { ComponentChildren } from 'preact';
+type Props = {
     className: string;
-    onClick(event: MouseEvent): void;
+    onClick: (event: MouseEvent) => void;
     children: ComponentChildren;
     disabled?: boolean;
 };

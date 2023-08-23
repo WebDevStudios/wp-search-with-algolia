@@ -1,7 +1,7 @@
 
 import type { RangeConnectorParams, RangeWidgetDescription } from '../../connectors/range/connectRange';
 import type { WidgetFactory } from '../../types';
-export declare type RangeSliderCssClasses = Partial<{
+export type RangeSliderCssClasses = Partial<{
     /**
      * CSS class to add to the root element.
      */
@@ -11,16 +11,16 @@ export declare type RangeSliderCssClasses = Partial<{
      */
     disabledRoot: string | string[];
 }>;
-declare type RangeSliderTooltipOptions = {
+type RangeSliderTooltipOptions = {
     /**
      * The function takes the raw value as input, and should return
      * a string for the label that should be used for this value.
      * @example
      * { format(rawValue) {return '$' + Math.round(rawValue).toLocaleString() } }
      */
-    format(value: number): string;
+    format: (value: number) => string;
 };
-export declare type RangeSliderWidgetParams = {
+export type RangeSliderWidgetParams = {
     /**
      * CSS Selector or DOMElement to insert the widget.
      */
@@ -64,7 +64,7 @@ export declare type RangeSliderWidgetParams = {
      */
     max?: number;
 };
-export declare type RangeSliderWidget = WidgetFactory<Omit<RangeWidgetDescription, '$$type'> & {
+export type RangeSliderWidget = WidgetFactory<Omit<RangeWidgetDescription, '$$type'> & {
     $$widgetType: 'ais.rangeSlider';
     $$type: 'ais.rangeSlider';
 }, RangeConnectorParams, RangeSliderWidgetParams>;

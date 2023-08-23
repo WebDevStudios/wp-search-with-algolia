@@ -1,12 +1,12 @@
+import { cx } from '@algolia/ui-components-shared';
 import { h } from 'preact';
 import { formatNumber } from "../../lib/formatNumber.js";
-import { cx } from '@algolia/ui-components-shared';
 var defaultTemplates = {
   item: function item(_ref) {
     var cssClasses = _ref.cssClasses,
-        url = _ref.url,
-        label = _ref.label,
-        count = _ref.count;
+      url = _ref.url,
+      label = _ref.label,
+      count = _ref.count;
     return h("a", {
       className: cx(cssClasses.link),
       href: url

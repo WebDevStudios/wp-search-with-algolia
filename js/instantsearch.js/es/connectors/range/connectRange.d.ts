@@ -1,20 +1,20 @@
 import type { SendEventForFacet } from '../../lib/utils';
 import type { Connector, WidgetRenderState } from '../../types';
-export declare type RangeMin = number | undefined;
-export declare type RangeMax = number | undefined;
-export declare type RangeBoundaries = [RangeMin, RangeMax];
-export declare type Range = {
+export type RangeMin = number | undefined;
+export type RangeMax = number | undefined;
+export type RangeBoundaries = [RangeMin, RangeMax];
+export type Range = {
     min: RangeMin;
     max: RangeMax;
 };
-export declare type RangeRenderState = {
+export type RangeRenderState = {
     /**
      * Sets a range to filter the results on. Both values
      * are optional, and will default to the higher and lower bounds. You can use `undefined` to remove a
      * previously set bound or to set an infinite bound.
      * @param rangeValue tuple of [min, max] bounds
      */
-    refine(rangeValue: RangeBoundaries): void;
+    refine: (rangeValue: RangeBoundaries) => void;
     /**
      * Indicates whether this widget can be refined
      */
@@ -36,11 +36,11 @@ export declare type RangeRenderState = {
      * Both functions take a `number` as input and should output a `string`.
      */
     format: {
-        from(fromValue: number): string;
-        to(toValue: number): string;
+        from: (fromValue: number) => string;
+        to: (toValue: number) => string;
     };
 };
-export declare type RangeConnectorParams = {
+export type RangeConnectorParams = {
     /**
      * Name of the attribute for faceting.
      */
@@ -58,7 +58,7 @@ export declare type RangeConnectorParams = {
      */
     precision?: number;
 };
-export declare type RangeWidgetDescription = {
+export type RangeWidgetDescription = {
     $$type: 'ais.range';
     renderState: RangeRenderState;
     indexRenderState: {
@@ -72,7 +72,7 @@ export declare type RangeWidgetDescription = {
         };
     };
 };
-export declare type RangeConnector = Connector<RangeWidgetDescription, RangeConnectorParams>;
+export type RangeConnector = Connector<RangeWidgetDescription, RangeConnectorParams>;
 /**
  * **Range** connector provides the logic to create custom widget that will let
  * the user refine results using a numeric range.

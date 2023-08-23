@@ -1,7 +1,7 @@
 
 import type { HitsPerPageConnectorParams, HitsPerPageWidgetDescription } from '../../connectors/hits-per-page/connectHitsPerPage';
 import type { WidgetFactory } from '../../types';
-export declare type HitsPerPageCSSClasses = Partial<{
+export type HitsPerPageCSSClasses = Partial<{
     /**
      * CSS classes added to the outer `<div>`.
      */
@@ -15,7 +15,7 @@ export declare type HitsPerPageCSSClasses = Partial<{
      */
     option: string | string[];
 }>;
-export declare type HitsPerPageWidgetParams = {
+export type HitsPerPageWidgetParams = {
     /**
      * CSS Selector or HTMLElement to insert the widget.
      */
@@ -25,7 +25,7 @@ export declare type HitsPerPageWidgetParams = {
      */
     cssClasses?: HitsPerPageCSSClasses;
 };
-export declare type HitsPerPageWidget = WidgetFactory<HitsPerPageWidgetDescription & {
+export type HitsPerPageWidget = WidgetFactory<HitsPerPageWidgetDescription & {
     $$widgetType: 'ais.hitsPerPage';
 }, HitsPerPageConnectorParams, HitsPerPageWidgetParams>;
 declare const hitsPerPage: HitsPerPageWidget;

@@ -9,7 +9,6 @@
  */
 
 use WebDevStudios\WPSWA\Algolia\AlgoliaSearch\Exceptions\AlgoliaException;
-
 /**
  * Class Algolia_Term_Changes_Watcher
  *
@@ -26,6 +25,15 @@ class Algolia_Term_Changes_Watcher implements Algolia_Changes_Watcher {
 	 * @var Algolia_Index
 	 */
 	private $index;
+
+	/**
+	 * Active Algolia Indices
+	 *
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 * @since  2.6.0
+	 * @var post_indices
+	 */
+	private $post_indices;
 
 	/**
 	 * Algolia_Term_Changes_Watcher constructor.
@@ -48,6 +56,7 @@ class Algolia_Term_Changes_Watcher implements Algolia_Changes_Watcher {
 	public function watch() {
 		// Fires immediately after the given terms are edited.
 		add_action( 'edited_term', array( $this, 'sync_item' ) );
+		add_action( 'edited_term', [ $this, 'sync_term_posts' ], 10, 3 );
 
 		// Fires after an object's terms have been set.
 		add_action( 'set_object_terms', array( $this, 'handle_changes' ), 10, 6 );
@@ -59,6 +68,97 @@ class Algolia_Term_Changes_Watcher implements Algolia_Changes_Watcher {
 
 		// Fires after a term is deleted from the database and the cache is cleaned.
 		add_action( 'delete_term', array( $this, 'on_delete_term' ), 10, 4 );
+	}
+
+	/**
+	 * Check if the current term has post assigned to it, if it does and it supports posts, then sync them.
+	 *
+	 * @since 2.6.0
+	 *
+	 * @param int    $term_id  The current term to be updated.
+	 * @param int    $tt_id    The Term Taxonomy ID.
+	 * @param string $taxonomy The taxonomy slug.
+	 *
+	 * @return void
+	 */
+	public function sync_term_posts( $term_id, $tt_id, $taxonomy ) {
+		$term = get_term( (int) $term_id );
+		if ( ! $term || ! $this->index->supports( $term ) ) {
+			return;
+		}
+		$args = [
+			'posts_per_page' => -1,
+			'tax_query'      => [
+				[
+					'taxonomy' => $taxonomy,
+					'field'    => 'term_id',
+					'terms'    => $term_id,
+				],
+			],
+		];
+
+		$posts              = get_posts( $args );
+		$post_types         = wp_list_pluck( $posts, 'post_type' );
+		$post_types         = array_unique( $post_types );
+		$this->post_indices = $this->get_searchable_indexes( $post_types );
+		$this->sync_posts( $posts );
+	}
+
+	/**
+	 * Returns an array of indexes based on selected post types.
+	 *
+	 * @since 2.6.0
+	 *
+	 * @param array $post_types An array of searchable post_types.
+	 */
+	private function get_searchable_indexes( $post_types ) {
+
+		$post_indices          = [];
+		$algolia_plugin        = \Algolia_Plugin_Factory::create();
+		$synced_indices_ids    = $algolia_plugin->get_settings()->get_synced_indices_ids();
+		$index_name_prefix     = $algolia_plugin->get_settings()->get_index_name_prefix();
+		$client                = $algolia_plugin->get_api()->get_client();
+		$searchable_post_types = get_post_types(
+			[
+				'exclude_from_search' => false,
+			]
+		);
+		$searchable_index      = new \Algolia_Searchable_Posts_Index( $searchable_post_types );
+		$searchable_index->set_name_prefix( $index_name_prefix );
+		$searchable_index->set_client( $client );
+		$searchable_index->set_enabled( true );
+		$post_indices[] = $searchable_index;
+
+		foreach ( $post_types as $post_type ) {
+			$post_index = new \Algolia_Posts_Index( $post_type );
+			$post_index->set_name_prefix( $index_name_prefix );
+			$post_index->set_client( $client );
+			$post_index->set_enabled( true );
+			$post_indices[] = $post_index;
+
+		}
+		return $post_indices;
+	}
+
+	/**
+	 * Looks for a valid index base on the post type and triggers an Algolia sync.
+	 *
+	 * @since 2.6.0
+	 *
+	 * @param array $posts The post type to look for an index.
+	 *
+	 * @return void
+	 */
+	public function sync_posts( $posts ) {
+		try {
+			foreach ( $this->post_indices as $index ) {
+				foreach ( $posts as $post ) {
+					$index->sync( $post );
+				}
+			}
+		} catch ( AlgoliaException $exception ) {
+			error_log( $exception->getMessage() ); // phpcs:ignore -- Legacy.
+		}
 	}
 
 	/**

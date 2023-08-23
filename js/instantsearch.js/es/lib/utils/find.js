@@ -6,14 +6,12 @@
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/find
 export function find(items, predicate) {
   var value;
-
   for (var i = 0; i < items.length; i++) {
-    value = items[i]; // inlined for performance: if (Call(predicate, thisArg, [value, i, list])) {
-
+    value = items[i];
+    // inlined for performance: if (Call(predicate, thisArg, [value, i, list])) {
     if (predicate(value, i, items)) {
       return value;
     }
   }
-
   return undefined;
 }

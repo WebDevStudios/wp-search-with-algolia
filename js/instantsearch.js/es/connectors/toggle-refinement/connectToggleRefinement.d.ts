@@ -1,8 +1,8 @@
 import type { Connector, CreateURL, WidgetRenderState } from '../../types';
-declare type BuiltInSendEventForToggle = (eventType: string, isRefined: boolean, eventName?: string) => void;
-declare type CustomSendEventForToggle = (customPayload: any) => void;
-export declare type SendEventForToggle = BuiltInSendEventForToggle & CustomSendEventForToggle;
-export declare type ToggleRefinementValue = {
+type BuiltInSendEventForToggle = (eventType: string, isRefined: boolean, eventName?: string) => void;
+type CustomSendEventForToggle = (customPayload: any) => void;
+export type SendEventForToggle = BuiltInSendEventForToggle & CustomSendEventForToggle;
+export type ToggleRefinementValue = {
     /**
      * Whether this option is enabled.
      */
@@ -12,7 +12,7 @@ export declare type ToggleRefinementValue = {
      */
     count: number | null;
 };
-export declare type ToggleRefinementConnectorParams = {
+export type ToggleRefinementConnectorParams = {
     /**
      * Name of the attribute for faceting (e.g., "free_shipping").
      */
@@ -27,8 +27,8 @@ export declare type ToggleRefinementConnectorParams = {
      */
     off?: FacetValue | FacetValue[];
 };
-declare type FacetValue = string | boolean | number;
-export declare type ToggleRefinementRenderState = {
+type FacetValue = string | boolean | number;
+export type ToggleRefinementRenderState = {
     /** The current toggle value */
     value: {
         /**
@@ -55,7 +55,7 @@ export declare type ToggleRefinementRenderState = {
     /**
      * Creates an URL for the next state.
      */
-    createURL: CreateURL<string>;
+    createURL: CreateURL<void>;
     /**
      * Send a "Facet Clicked" Insights event.
      */
@@ -71,7 +71,7 @@ export declare type ToggleRefinementRenderState = {
         isRefined: boolean;
     }) => void;
 };
-export declare type ToggleRefinementWidgetDescription = {
+export type ToggleRefinementWidgetDescription = {
     $$type: 'ais.toggleRefinement';
     renderState: ToggleRefinementRenderState;
     indexRenderState: {
@@ -85,7 +85,7 @@ export declare type ToggleRefinementWidgetDescription = {
         };
     };
 };
-export declare type ToggleRefinementConnector = Connector<ToggleRefinementWidgetDescription, ToggleRefinementConnectorParams>;
+export type ToggleRefinementConnector = Connector<ToggleRefinementWidgetDescription, ToggleRefinementConnectorParams>;
 /**
  * **Toggle** connector provides the logic to build a custom widget that will provide
  * an on/off filtering feature based on an attribute value or values.

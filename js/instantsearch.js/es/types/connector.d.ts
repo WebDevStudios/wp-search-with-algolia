@@ -1,13 +1,13 @@
-import type { SearchResults } from 'algoliasearch-helper';
-import type { InstantSearch } from './instantsearch';
 import type { InsightsClient } from './insights';
+import type { InstantSearch } from './instantsearch';
 import type { Hit } from './results';
 import type { UnknownWidgetParams, Widget, WidgetDescription } from './widget';
+import type { SearchResults } from 'algoliasearch-helper';
 /**
  * The base renderer options. All render functions receive
  * the options below plus the specific options per connector.
  */
-export declare type RendererOptions<TWidgetParams> = {
+export type RendererOptions<TWidgetParams> = {
     /**
      * The original widget params. Useful as you may
      * need them while using the render function.
@@ -34,7 +34,7 @@ export declare type RendererOptions<TWidgetParams> = {
 /**
  * The render function.
  */
-export declare type Renderer<TRenderState, TWidgetParams> = (
+export type Renderer<TRenderState, TWidgetParams> = (
 /**
  * The base render options plus the specific options of the widget.
  */
@@ -46,12 +46,12 @@ isFirstRender: boolean) => void;
 /**
  * The called function when unmounting a widget.
  */
-export declare type Unmounter = () => void;
+export type Unmounter = () => void;
 /**
  * The connector handles the business logic and exposes
  * a simplified API to the rendering function.
  */
-export declare type Connector<TWidgetDescription extends WidgetDescription, TConnectorParams extends UnknownWidgetParams> = <TWidgetParams extends UnknownWidgetParams>(
+export type Connector<TWidgetDescription extends WidgetDescription, TConnectorParams extends UnknownWidgetParams> = <TWidgetParams extends UnknownWidgetParams>(
 /**
  * The render function.
  */
