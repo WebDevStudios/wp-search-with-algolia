@@ -82,7 +82,7 @@ class Algolia_Post_Changes_Watcher implements Algolia_Changes_Watcher {
 		add_action( 'add_attachment', array( $this, 'sync_item' ) );
 		add_action( 'attachment_updated', array( $this, 'sync_item' ) );
 		add_action( 'delete_attachment', array( $this, 'delete_item' ) );
-		add_action( 'pre_post_update', [ $this, 'check_slug_update' ],  10, 2 );
+		add_action( 'pre_post_update', [ $this, 'check_slug_update' ], 10, 2 );
 
 		// Support for WP All Import "fast mode".
 		add_action( 'pmxi_saved_post', [ $this, 'track_updated_posts' ] );
