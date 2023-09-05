@@ -57,7 +57,6 @@ class Algolia_Search {
 	 */
 	public function __construct( Algolia_Index $index ) {
 		$this->index = $index;
-
 		add_action( 'loop_start', [ $this, 'begin_highlighting' ] );
 		add_action( 'pre_get_posts', array( $this, 'pre_get_posts' ) );
 		add_action( 'wp_head', [ $this, 'output_highlighting_bundled_styles' ] );
@@ -105,6 +104,9 @@ class Algolia_Search {
 		if ( ! $this->should_filter_query( $query ) ) {
 			return;
 		}
+		if ( ! isset( $query->query['s'] ) ) {
+			return;
+		}
 
 		$current_page = 1;
 		if ( get_query_var( 'paged' ) ) {
@@ -113,6 +115,15 @@ class Algolia_Search {
 			$current_page = get_query_var( 'page' );
 		}
 
+		$hits_per_page = (int) get_option( 'posts_per_page' );
+		if ( isset( $query->query_vars['posts_per_page'] ) ) {
+			if ( -1 === $query->query_vars['posts_per_page'] ) {
+				$hits_per_page = 1000; // algolia doesn't understand -1, so we exchange it for a high number instead.
+			} else {
+				$hits_per_page = (int) $query->query_vars['posts_per_page'];
+			}
+		}
+		$hits_per_page = apply_filters( 'algolia_search_hits_per_page', $hits_per_page );
 		/**
 		 * Filters the array of parameters used in the Algolia Index search.
 		 *
@@ -134,7 +145,7 @@ class Algolia_Search {
 			'algolia_search_params',
 			array(
 				'attributesToRetrieve' => 'post_id',
-				'hitsPerPage'          => (int) get_option( 'posts_per_page' ),
+				'hitsPerPage'          => $hits_per_page,
 				'page'                 => $current_page - 1, // Algolia pages are zero indexed.
 				'highlightPreTag'      => '<em class="algolia-search-highlight">',
 				'highlightPostTag'     => '</em>',
@@ -148,7 +159,6 @@ class Algolia_Search {
 			$results = $this->index->search( $query->query['s'], $params, $order_by, $order );
 		} catch ( AlgoliaException $exception ) {
 			error_log( $exception->getMessage() ); // phpcs:ignore -- Legacy.
-
 			return;
 		}
 
@@ -176,7 +186,9 @@ class Algolia_Search {
 			$post_ids = array( 0 );
 		}
 
-		$query->set( 'posts_per_page', $params['hitsPerPage'] );
+		if ( ! isset( $query->query_vars['posts_per_page'] ) ) {
+			$query->set( 'posts_per_page', $params['hitsPerPage'] );
+		}
 		$query->set( 'offset', 0 );
 
 		$post_types = 'any';
@@ -189,13 +201,16 @@ class Algolia_Search {
 				$post_types = $post_type->name;
 			}
 		}
-
-		$query->set( 'post_type', $post_types );
+		if ( ! isset( $query->query_vars['post_type'] ) ) {
+			$query->set( 'post_type', $post_types );
+		}
 		$query->set( 'post__in', $post_ids );
 		$query->set( 'orderby', 'post__in' );
 
 		// @todo: This actually still excludes trash and auto-drafts.
-		$query->set( 'post_status', 'any' );
+		if ( ! isset( $query->query_vars['post_status'] ) ) {
+			$query->set( 'post_status', 'any' );
+		}
 	}
 
 	/**
