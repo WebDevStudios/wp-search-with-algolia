@@ -48,6 +48,16 @@ class Algolia_Post_Changes_Watcher implements Algolia_Changes_Watcher {
 	private $posts_updated = [];
 
 	/**
+	 * Whether or not we have detected fast mode for a given import.
+	 *
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 * @since 2.6.1
+	 *
+	 * @var bool
+	 */
+	public static $pmxi_is_fast_mode;
+
+	/**
 	 * Algolia_Post_Changes_Watcher constructor.
 	 *
 	 * @author WebDevStudios <contact@webdevstudios.com>
@@ -240,10 +250,19 @@ class Algolia_Post_Changes_Watcher implements Algolia_Changes_Watcher {
 	 */
 	public function sync_item_for_pmxi( $import_id ) {
 
-		$import = new PMXI_Import_Record();
-		$import->getById( $import_id );
+		if ( null === self::$pmxi_is_fast_mode ) {
+			try {
+				$import = new PMXI_Import_Record();
+				$import->getBy( 'id', $import_id );
 
-		if ( empty( $import->options['is_fast_mode'] ) ) {
+				self::$pmxi_is_fast_mode = ( ! empty( $import->options['is_fast_mode'] ) );
+			} catch ( Exception $exception ) {
+				error_log( $exception->getMessage() ); // phpcs:ignore -- Legacy.
+				return;
+			}
+		}
+
+		if ( ! self::$pmxi_is_fast_mode ) {
 			return;
 		}
 
