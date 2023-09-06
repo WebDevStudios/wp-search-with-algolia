@@ -47,6 +47,14 @@ class Algolia_Post_Changes_Watcher implements Algolia_Changes_Watcher {
 	 */
 	private $posts_updated = [];
 
+	/**
+	 * Whether or not we have detected fast mode for a given import.
+	 *
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 * @since 2.6.1
+	 *
+	 * @var bool
+	 */
 	public static $pmxi_is_fast_mode;
 
 	/**
