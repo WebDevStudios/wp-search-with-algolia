@@ -371,7 +371,19 @@ final class Algolia_Searchable_Posts_Index extends Algolia_Index {
 		// If there are no records, parent `update_records` will take care of the deletion.
 		// In case of posts, we ALWAYS need to delete existing records.
 		if ( ! empty( $records ) ) {
-			$this->delete_item( $post, true );
+			/**
+			 * Filters whether or not to use synchronous wait on record update operations.
+			 *
+			 * @author WebDevStudios <contact@webdevstudios.com>
+			 * @since 2.6.1
+			 *
+			 * @param bool    $value   Whether or not to use synchronous wait. Default false.
+			 * @param WP_Post $post    Current post object being updated.
+			 * @param array   $records The records.
+			 *
+			 * @return bool
+			 */
+			$this->delete_item( $post, (bool) apply_filters( 'algolia_should_wait_on_delete_item', false, $post, $records ) );
 		}
 
 		parent::update_records( $post, $records );
