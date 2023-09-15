@@ -424,7 +424,26 @@ final class Algolia_Searchable_Posts_Index extends Algolia_Index {
 		$new_records_count = count( $records );
 		$this->set_post_records_count( $post, $new_records_count );
 
+		/**
+		 * Fires after a given post was updated in Algolia.
+		 *
+		 * @since 1.0.0
+		 *
+		 * @param WP_Post $post    The post object being updated.
+		 * @param array   $records The records.
+		 */
 		do_action( 'algolia_searchable_posts_index_post_updated', $post, $records );
+
+		/**
+		 * Fires after a given post was updated in Algolia.
+		 *
+		 * This is a dynamic action hook with the `$post->post_type` portion allowing to hook in for only specific post types.
+		 *
+		 * @since 1.0.0
+		 *
+		 * @param WP_Post $post    The post object being updated.
+		 * @param array   $records The records.
+		 */
 		do_action( 'algolia_searchable_posts_index_post_' . $post->post_type . '_updated', $post, $records );
 	}
 
