@@ -158,7 +158,13 @@ class Algolia_Template_Loader {
 		wp_enqueue_script( 'algolia-autocomplete' );
 		wp_enqueue_script( 'algolia-autocomplete-noconflict' );
 
-		// Allow users to easily enqueue custom styles and scripts.
+		/**
+		 * Fires after Algolia Autocomplete assets have been enqueued.
+		 *
+		 * Allows users to easily enqueue custom styles and scripts that could depend on Autocomplete.
+		 *
+		 * @since 1.0.0
+		 */
 		do_action( 'algolia_autocomplete_scripts' );
 	}
 
@@ -205,7 +211,13 @@ class Algolia_Template_Loader {
 				// Enqueue the instantsearch.js library.
 				wp_enqueue_script( 'algolia-instantsearch' );
 
-				// Allow users to easily enqueue custom styles and scripts.
+				/**
+				 * Fires after Algolia Instantsearch assets have been enqueued.
+				 *
+				 * Allow users to easily enqueue custom styles and scripts that could depend on InstantSearch.
+				 *
+				 * @since 1.0.0
+				 */
 				do_action( 'algolia_instantsearch_scripts' );
 			}
 		);
