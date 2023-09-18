@@ -178,7 +178,7 @@ final class Algolia_Terms_Index extends Algolia_Index {
 		 * @since 1.0.0
 		 *
 		 * @param  array  $settings Array of settings to use for the index.
-		 * @param  string $taxonomy Taxonomy slug for the current term.
+		 * @param  string $taxonomy Taxonomy slug for the current taxonomy index.
 		 * @return array  $value    Filtered index settings.
 		 */
 		$settings = (array) apply_filters( 'algolia_terms_index_settings', $settings, $this->taxonomy );
