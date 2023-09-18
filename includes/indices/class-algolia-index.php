@@ -593,6 +593,15 @@ abstract class Algolia_Index {
 				$index->clearObjects();
 			}
 
+			/**
+			 * Filters whether or not to force through settings for an existing index.
+			 *
+			 * @since 1.0.0
+			 *
+			 * @param bool   $value Whether or not to force through settings. Default false.
+			 * @param string $value The ID of the index being considered.
+			 * @return bool  $value Whether or not to force through settings.
+			 */
 			$force_settings_update = (bool) apply_filters( 'algolia_should_force_settings_update', false, $this->get_id() );
 
 			/*
@@ -721,7 +730,27 @@ abstract class Algolia_Index {
 	 * @return int
 	 */
 	public function get_re_index_batch_size() {
+
+		/**
+		 * Filters the batch size to use for reindexing.
+		 *
+		 * @since 1.0.0
+		 *
+		 * @param  int $value Amount of items per batch. Default 100.
+		 * @return int $value Amount of items per batch.
+		 */
 		$batch_size = (int) apply_filters( 'algolia_indexing_batch_size', 100 );
+
+		/**
+		 * Filters the batch size to use for re-indexing.
+		 *
+		 * This is a dynamic filter with `$this->get_id()` portion allowing to filter batch size for specific indexes.
+		 *
+		 * @since 1.0.0
+		 *
+		 * @param int $value Amount of items per batch. Default 100.
+		 * @param int $value Amount of items per batch.
+		 */
 		$batch_size = (int) apply_filters( 'algolia_' . $this->get_id() . '_indexing_batch_size', $batch_size );
 
 		return $batch_size;
@@ -830,7 +859,29 @@ abstract class Algolia_Index {
 	 * @return array
 	 */
 	public function get_replicas() {
+
+		/**
+		 * Filters the array of index replicas.
+		 *
+		 * @since 1.0.0
+		 *
+		 * @param  array  $value Array of replicas. Default empty array.
+		 * @param  object $value Current class instance.
+		 * @return array  $value Array of replicas to use.
+		 */
 		$replicas = (array) apply_filters( 'algolia_index_replicas', array(), $this );
+
+		/**
+		 * Filters the array of index replicas
+		 *
+		 * This is a dynamic filter with the `$this->get_id()` portion allowing to filter replicas for specific indexes.
+		 *
+		 * @since 1.0.0
+		 *
+		 * @param  array  $value Array of replicas. Default empty array.
+		 * @param  object $value Current class instance.
+		 * @return array  $value Array of replicas to use.
+		 */
 		$replicas = (array) apply_filters( 'algolia_' . $this->get_id() . '_index_replicas', $replicas, $this );
 
 		$filtered = array();
