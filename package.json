@@ -14,6 +14,7 @@
   },
   "dependencies": {
     "@algolia/autocomplete-js": "^1.11.0",
+    "@algolia/autocomplete-theme-classic": "^1.11.0",
     "algoliasearch": "^4.18.0",
     "instantsearch.js": "^4.56.5"
   },
@@ -29,7 +30,12 @@
         "target": "assets/autocomplete.js"
       },
       "algoliasearch": "^4.18.0",
-      "instantsearch.js": "^4.56.5"
+      "instantsearch.js": "^4.56.5",
+      "@algolia/autocomplete-theme-classic": {
+        "version": "^1.11.0",
+        "src": "dist",
+        "target": "assets/autocomplete-theme-classic"
+      }
     }
   },
   "scripts": {
