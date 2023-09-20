@@ -52,27 +52,42 @@ class Algolia_Scripts {
 			$in_footer
 		);
 
-		wp_register_script(
-			'algolia-autocomplete',
-			ALGOLIA_PLUGIN_URL . 'assets/autocomplete.js/dist/umd/index' . $ais_suffix . '.js',
-			[
-				'underscore',
-				'wp-util',
-				'algolia-search',
-			],
-			ALGOLIA_VERSION,
-			$in_footer
-		);
-
-		wp_register_script(
-			'algolia-autocomplete-noconflict',
-			ALGOLIA_PLUGIN_URL . 'js/autocomplete-noconflict.js',
-			[
+		$autocomplete_is_modern = Algolia_Utils::should_use_autocomplete_modern();
+		if ( $autocomplete_is_modern ) {
+			wp_register_script(
 				'algolia-autocomplete',
-			],
-			ALGOLIA_VERSION,
-			$in_footer
-		);
+				ALGOLIA_PLUGIN_URL . 'assets/autocomplete.js/dist/umd/index' . $ais_suffix . '.js',
+				[
+					'algolia-search',
+				],
+				ALGOLIA_VERSION,
+				$in_footer
+			);
+		} else {
+			wp_register_script(
+				'algolia-autocomplete',
+				ALGOLIA_PLUGIN_URL . 'js/autocomplete.js/dist/autocomplete' . $suffix . '.js',
+				[
+					'underscore',
+					'wp-util',
+					'algolia-search',
+				],
+				ALGOLIA_VERSION,
+				$in_footer
+			);
+
+			wp_register_script(
+				'algolia-autocomplete-noconflict',
+				ALGOLIA_PLUGIN_URL . 'js/autocomplete-noconflict.js',
+				[
+					'algolia-autocomplete',
+				],
+				ALGOLIA_VERSION,
+				$in_footer
+			);
+		}
+
+
 
 		wp_register_script(
 			'algolia-instantsearch',
