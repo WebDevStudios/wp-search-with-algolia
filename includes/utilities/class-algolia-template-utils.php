@@ -40,6 +40,7 @@ class Algolia_Template_Utils {
 	 */
 	const TEMPLATE_FILE_NAMES = [
 		'autocomplete.php',
+		'autocomplete-modern.php',
 		'instantsearch.php',
 	];
 
