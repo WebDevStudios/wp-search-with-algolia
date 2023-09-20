@@ -1,1 +1,0 @@
-export declare const createAlgoliaRequester: (requesterParams: import("@algolia/autocomplete-preset-algolia").RequesterParams<any>) => <TTHit>(requestParams: import("@algolia/autocomplete-preset-algolia").RequestParams<TTHit>) => import("@algolia/autocomplete-preset-algolia").RequesterDescription<TTHit>;
