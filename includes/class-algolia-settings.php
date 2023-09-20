@@ -28,6 +28,7 @@ class Algolia_Settings {
 		add_option( 'algolia_synced_indices_ids', array() );
 		add_option( 'algolia_autocomplete_enabled', 'no' );
 		add_option( 'algolia_autocomplete_config', array() );
+		add_option( 'algolia_autocomplete_version', 'legacy' );
 		add_option( 'algolia_override_native_search', 'native' );
 		add_option( 'algolia_index_name_prefix', 'wp_' );
 		add_option( 'algolia_api_is_reachable', 'no' );
