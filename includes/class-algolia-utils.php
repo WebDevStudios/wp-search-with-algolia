@@ -315,4 +315,16 @@ class Algolia_Utils {
 		<?php
 		return ob_get_clean();
 	}
+
+	public static function get_autocomplete_version() {
+		$chosen = get_option( 'wpswa_autocomplete_version', 'legacy' );
+
+		return apply_filters( 'wpswa_autocomplete_version', $chosen );
+	}
+
+	public static function should_use_autocomplete_modern() {
+		$version = self::get_autocomplete_version();
+
+		return $version === 'modern';
+	}
 }
