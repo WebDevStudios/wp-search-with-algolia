@@ -317,9 +317,9 @@ class Algolia_Utils {
 	}
 
 	public static function get_autocomplete_version() {
-		$chosen = get_option( 'wpswa_autocomplete_version', 'legacy' );
+		$chosen = get_option( 'algolia_autocomplete_version', 'legacy' );
 
-		return apply_filters( 'wpswa_autocomplete_version', $chosen );
+		return apply_filters( 'algolia_autocomplete_version', $chosen );
 	}
 
 	public static function should_use_autocomplete_modern() {
