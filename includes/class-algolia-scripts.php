@@ -54,7 +54,7 @@ class Algolia_Scripts {
 
 		wp_register_script(
 			'algolia-autocomplete',
-			ALGOLIA_PLUGIN_URL . 'js/autocomplete.js/dist/autocomplete' . $suffix . '.js',
+			ALGOLIA_PLUGIN_URL . 'js/autocomplete.js/dist/umd/index' . $ais_suffix . '.js',
 			[
 				'underscore',
 				'wp-util',
