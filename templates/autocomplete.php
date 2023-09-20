@@ -3,7 +3,7 @@
  * WP Search With Algolia autocomplete template file.
  * @author  WebDevStudios <contact@webdevstudios.com>
  * @since   1.0.0
- * @version 2.0.0
+ * @version 3.0.0
  * @package WebDevStudios\WPSWA
  */
 
