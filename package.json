@@ -24,15 +24,15 @@
   "frontendDependencies": {
     "target": "assets/",
     "packages": {
-      "algoliasearch": "^4.18.0",
       "@algolia/autocomplete-js": {
         "version": "^1.11.0",
         "src": "dist",
-        "target": "assets/autcomplete.js"
+        "target": "assets/autocomplete.js"
       },
+      "algoliasearch": "^4.18.0",
       "instantsearch.js": "^4.56.5",
       "@algolia/autocomplete-theme-classic": {
-        "version": "^1.7.3",
+        "version": "^1.11.0",
         "src": "dist",
         "target": "assets/autocomplete-theme-classic"
       }
