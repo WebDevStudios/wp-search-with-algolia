@@ -209,7 +209,8 @@ class Algolia_Template_Loader {
 	 * @since   1.0.0
 	 */
 	public function load_autocomplete_template() {
-		require Algolia_Template_Utils::locate_template( 'autocomplete.php' );
+		$chosen_file = ( Algolia_Utils::should_use_autocomplete_modern() ) ? 'autocomplete-modern.php' : 'autocomplete.php';
+		require Algolia_Template_Utils::locate_template( $chosen_file );
 	}
 
 	/**
