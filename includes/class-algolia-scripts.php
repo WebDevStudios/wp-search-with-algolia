@@ -43,7 +43,7 @@ class Algolia_Scripts {
 
 		wp_register_script(
 			'algolia-search',
-			ALGOLIA_PLUGIN_URL . 'js/algoliasearch/dist/algoliasearch-lite.umd.js',
+			ALGOLIA_PLUGIN_URL . 'assets/algoliasearch/dist/algoliasearch-lite.umd.js',
 			[
 				'underscore',
 				'wp-util',
@@ -54,7 +54,7 @@ class Algolia_Scripts {
 
 		wp_register_script(
 			'algolia-autocomplete',
-			ALGOLIA_PLUGIN_URL . 'js/autocomplete.js/dist/umd/index' . $ais_suffix . '.js',
+			ALGOLIA_PLUGIN_URL . 'assets/autocomplete.js/dist/umd/index' . $ais_suffix . '.js',
 			[
 				'underscore',
 				'wp-util',
@@ -76,7 +76,7 @@ class Algolia_Scripts {
 
 		wp_register_script(
 			'algolia-instantsearch',
-			ALGOLIA_PLUGIN_URL . 'js/instantsearch.js/dist/instantsearch' . $ais_suffix . $suffix . '.js',
+			ALGOLIA_PLUGIN_URL . 'assets/instantsearch.js/dist/instantsearch' . $ais_suffix . $suffix . '.js',
 			[
 				'underscore',
 				'wp-util',
