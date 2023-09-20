@@ -33,10 +33,19 @@ class Algolia_Styles {
 	 */
 	public function register_styles() {
 
+		$suffix = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ? '' : '.min';
+
+		wp_register_style(
+			'algolia-autocomplete-theme-classic',
+			ALGOLIA_PLUGIN_URL . 'assets/autocomplete-theme-classic/dist/theme' . $suffix . '.css',
+			[],
+			ALGOLIA_VERSION
+		);
+
 		wp_register_style(
 			'algolia-autocomplete',
 			ALGOLIA_PLUGIN_URL . 'css/algolia-autocomplete.css',
-			[],
+			[ 'algolia-autocomplete-theme-classic' ],
 			ALGOLIA_VERSION
 		);
 
