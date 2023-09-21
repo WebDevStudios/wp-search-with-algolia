@@ -1,6 +1,7 @@
 .algolia-autocomplete {
 	z-index: 999999 !important;
 }
+
 .aa-dropdown-menu {
 	/* we set the width in JS */
 	font-family: sans-serif;
@@ -8,7 +9,7 @@
 	border-top: none;
 	border-bottom-left-radius: 4px;
 	border-bottom-right-radius: 4px;
-	box-shadow: 0 1px 2px rgba(0,0,0,.25),0 0 1px rgba(0,0,0,.35);
+	box-shadow: 0 1px 2px rgba(0, 0, 0, .25), 0 0 1px rgba(0, 0, 0, .35);
 }
 
 .aa-dropdown-menu:after {
@@ -21,6 +22,7 @@
 .aa-dropdown-menu .aa-input, .aa-dropdown-menu .aa-hint {
 	width: 100%;
 }
+
 .aa-dropdown-menu .aa-hint {
 	color: #999;
 }
@@ -37,6 +39,7 @@
 	font-weight: normal;
 	text-decoration: none;
 }
+
 .aa-dropdown-menu a:hover {
 	text-decoration: none;
 }
@@ -45,11 +48,11 @@
 .aa-dropdown-menu .autocomplete-header {
 	margin: 0 14px;
 	line-height: 3em;
-	border-bottom: 1px solid rgba(0,0,0,.05);
+	border-bottom: 1px solid rgba(0, 0, 0, .05);
 }
+
 .aa-dropdown-menu .autocomplete-header-title,
-.aa-dropdown-menu .autocomplete-header-more
-{
+.aa-dropdown-menu .autocomplete-header-more {
 	letter-spacing: 1px;
 	text-transform: uppercase;
 	font-weight: bold;
@@ -64,12 +67,12 @@
 }
 
 .aa-dropdown-menu .autocomplete-header-more a {
-	color: rgba(0,0,0,.3);
+	color: rgba(0, 0, 0, .3);
 	font-weight: bold;
 }
 
 .aa-dropdown-menu .autocomplete-header-more a:hover {
-	color:  rgba(0,0,0,.4);
+	color: rgba(0, 0, 0, .4);
 }
 
 /* Suggestion */
@@ -90,7 +93,7 @@
 
 .aa-dropdown-menu .aa-suggestion em {
 	color: #174d8c;
-	background: rgba(143,187,237,.1);
+	background: rgba(143, 187, 237, .1);
 	font-style: normal;
 }
 
@@ -113,7 +116,7 @@
 .aa-dropdown-menu .aa-suggestion .suggestion-post-content em {
 	padding: 0 0 1px;
 	background: inherit;
-	box-shadow: inset 0 -2px 0 0 rgba(69,142,225,.8);
+	box-shadow: inset 0 -2px 0 0 rgba(69, 142, 225, .8);
 	color: inherit;
 }
 
@@ -134,7 +137,7 @@
 
 .aa-dropdown-menu a.suggestion-link svg {
 	vertical-align: middle;
-	fill: rgba(0,0,0,.3);
+	fill: rgba(0, 0, 0, .3);
 	float: left;
 }
 
@@ -158,9 +161,9 @@
 
 /* Footer */
 .aa-dropdown-menu .autocomplete-footer-branding {
-	padding: 15px 14px 0px;
+	padding: 15px 14px 0;
 	float: right;
-	color: rgba(0,0,0,.3);
+	color: rgba(0, 0, 0, .3);
 	margin-bottom: 7px;
 }
 
