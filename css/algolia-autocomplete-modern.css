@@ -101,7 +101,6 @@
 .aa-Panel .aa-Item .suggestion-post-content {
 	color: #63676d;
 	display: block;
-	white-space: nowrap;
 	text-overflow: ellipsis;
 	overflow: hidden;
 }
