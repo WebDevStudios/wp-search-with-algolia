@@ -129,7 +129,7 @@
 		}
 
 		let config = {
-			container  : '#autocomplete',
+			container  : algolia.autocomplete.input_selector_modern,
 			openOnFocus: true,
 			debug      : algolia.debug,
 			getSources({query}) {
