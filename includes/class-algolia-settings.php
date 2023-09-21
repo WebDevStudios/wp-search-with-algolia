@@ -497,4 +497,30 @@ class Algolia_Settings {
 	public function disable_powered_by() {
 		update_option( 'algolia_powered_by_enabled', 'no' );
 	}
+
+	/**
+	 * Return the version keyword for Autocomplete version to use.
+	 *
+	 * @since NEXT
+	 *
+	 * @return mixed|null
+	 */
+	public function get_autocomplete_version() {
+		$chosen = get_option( 'algolia_autocomplete_version', 'legacy' );
+
+		return apply_filters( 'algolia_autocomplete_version', $chosen );
+	}
+
+	/**
+	 * Return whether or not the keyword version is set to 'modern' or 'legacy'.
+	 *
+	 * @since NEXT
+	 *
+	 * @return bool
+	 */
+	public function should_use_autocomplete_modern() {
+		$version = $this->get_autocomplete_version();
+
+		return $version === 'modern';
+	}
 }

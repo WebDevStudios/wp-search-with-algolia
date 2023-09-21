@@ -315,28 +315,4 @@ class Algolia_Utils {
 		<?php
 		return ob_get_clean();
 	}
-
-	/**
-	 * Return the version keyword for Autocomplete version to use.
-	 *
-	 * @since NEXT
-	 * @return mixed|null
-	 */
-	public static function get_autocomplete_version() {
-		$chosen = get_option( 'algolia_autocomplete_version', 'legacy' );
-
-		return apply_filters( 'algolia_autocomplete_version', $chosen );
-	}
-
-	/**
-	 * Return whether or not the keyword version is set to 'modern' or 'legacy'.
-	 *
-	 * @since NEXT
-	 * @return bool
-	 */
-	public static function should_use_autocomplete_modern() {
-		$version = self::get_autocomplete_version();
-
-		return $version === 'modern';
-	}
 }
