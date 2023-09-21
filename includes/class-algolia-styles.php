@@ -34,7 +34,8 @@ class Algolia_Styles {
 	public function register_styles() {
 
 		$suffix                 = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ? '' : '.min';
-		$autocomplete_is_modern = Algolia_Utils::should_use_autocomplete_modern();
+		$algolia = Algolia_Plugin_Factory::create();
+		$autocomplete_is_modern = $algolia->get_settings()->should_use_autocomplete_modern();
 
 		if ( $autocomplete_is_modern ) {
 			wp_register_style(

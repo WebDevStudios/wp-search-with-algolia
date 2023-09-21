@@ -52,7 +52,8 @@ class Algolia_Scripts {
 			$in_footer
 		);
 
-		$autocomplete_is_modern = Algolia_Utils::should_use_autocomplete_modern();
+		$algolia = Algolia_Plugin_Factory::create();
+		$autocomplete_is_modern = $algolia->get_settings()->should_use_autocomplete_modern();
 		if ( $autocomplete_is_modern ) {
 			wp_register_script(
 				'algolia-autocomplete',
