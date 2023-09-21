@@ -120,14 +120,6 @@
 			return sources;
 		}
 
-		let algoliaPoweredLink = document.querySelector('.algolia-powered-by-link');
-		if (algoliaPoweredLink) {
-			algoliaPoweredLink.addEventListener('click', function (e) {
-				e.preventDefault();
-				window.location = "https://www.algolia.com/?utm_source=WordPress&utm_medium=extension&utm_content=" + window.location.hostname + "&utm_campaign=poweredby";
-			});
-		}
-
 		let config = {
 			container  : algolia.autocomplete.input_selector_modern,
 			openOnFocus: true,
@@ -137,7 +129,18 @@
 					return [];
 				}
 				return get_sources(query);
-			}
+			},
+			onStateChange({state}) {
+				if (state.isOpen) {
+					let algoliaPoweredLink = document.querySelector('.algolia-powered-by-link');
+					if (algoliaPoweredLink) {
+						algoliaPoweredLink.addEventListener('click', function (e) {
+							e.preventDefault();
+							window.location = "https://www.algolia.com/?utm_source=WordPress&utm_medium=extension&utm_content=" + window.location.hostname + "&utm_campaign=poweredby";
+						});
+					}
+				}
+			},
 		}
 
 		autocomplete(config);
