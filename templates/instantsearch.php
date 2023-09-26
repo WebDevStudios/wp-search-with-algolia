@@ -128,6 +128,7 @@ get_header();
 												<p>${content_snippet}</p>
 											</div>
 										</div>
+										<div class="ais-clearfix"></div>
 									</article>`;
 							}
 						},
