@@ -100,8 +100,36 @@ get_header();
 					instantsearch.widgets.hits({
 						container: '#algolia-hits',
 						templates: {
-							empty: 'No results were found for "<strong>{{query}}</strong>".',
-							item: wp.template('instantsearch-hit')
+							empty(results, {html} ) {
+								return html `No results were found for "<strong>${results.query}</strong>".`;
+							},
+							item(hit, { html, components }) {
+								let thumbnail = '';
+								if ( hit.images.thumbnail ) {
+									thumbnail = html`
+									<div class="ais-hits--thumbnail">
+										<a href="${hit.permalink}" title="${hit.post_title }" class="ais-hits--thumbnail-link">
+											<img src="${hit.images.thumbnail.url }" alt="${hit.post_title }" title="${hit.post_title }" itemprop="image" />
+										</a>
+									</div>`;
+								}
+
+								let content_snippet = '';
+								if (hit._snippetResult['content']) {
+									content_snippet = html`<span class="suggestion-post-content ais-hits--content-snippet">${components.Snippet({hit, attribute: 'content'})}</span>`;
+								}
+
+								return html`
+									<article itemtype="http://schema.org/Article">
+										${thumbnail}
+										<div class="ais-hits--content">
+											<h2 itemprop="name headline"><a href="${hit.permalink}" title="${hit.post_title}" class="ais-hits--title-link" itemprop="url">${components.Highlight({hit, attribute: 'post_title'})}</a></h2>
+											<div class="excerpt">
+												<p>${content_snippet}</p>
+											</div>
+										</div>
+									</article>`;
+							}
 						},
 						transformData: {
 							item: function (hit) {
