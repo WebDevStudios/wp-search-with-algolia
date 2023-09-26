@@ -78,7 +78,8 @@ get_header();
 
 				search.addWidgets([
 
-					/* Search box widget */
+					// Search box widget
+					// https://www.algolia.com/doc/api-reference/widgets/search-box/js/
 					instantsearch.widgets.searchBox({
 						container: '#algolia-search-box',
 						placeholder: 'Search for...',
@@ -87,16 +88,20 @@ get_header();
 						showLoadingIndicator: false,
 					}),
 
-					/* Stats widget */
+					// Stats widget
+					// https://www.algolia.com/doc/api-reference/widgets/stats/js/
 					instantsearch.widgets.stats({
 						container: '#algolia-stats'
 					}),
 
+					// Configure widget
+					// https://www.algolia.com/doc/api-reference/widgets/configure/js/
 					instantsearch.widgets.configure({
 						hitsPerPage: 10,
 					}),
 
-					/* Hits widget */
+					// Hits widget
+					// https://www.algolia.com/doc/api-reference/widgets/hits/js/
 					instantsearch.widgets.hits({
 						container: '#algolia-hits',
 						templates: {
@@ -155,12 +160,14 @@ get_header();
 						}
 					}),
 
-					/* Pagination widget */
+					// Pagination widget
+					// https://www.algolia.com/doc/api-reference/widgets/pagination/js/
 					instantsearch.widgets.pagination({
 						container: '#algolia-pagination'
 					}),
 
-					/* Post types refinement widget */
+					// Post types refinement widget
+					// https://www.algolia.com/doc/api-reference/widgets/menu/js/
 					instantsearch.widgets.menu({
 						container: '#facet-post-types',
 						attribute: 'post_type_label',
@@ -168,7 +175,8 @@ get_header();
 						limit: 10,
 					}),
 
-					/* Categories refinement widget */
+					// Categories refinement widget
+					// https://www.algolia.com/doc/api-reference/widgets/hierarchical-menu/js/
 					instantsearch.widgets.hierarchicalMenu({
 						container: '#facet-categories',
 						separator: ' > ',
@@ -176,7 +184,8 @@ get_header();
 						attributes: ['taxonomies_hierarchical.category.lvl0', 'taxonomies_hierarchical.category.lvl1', 'taxonomies_hierarchical.category.lvl2'],
 					}),
 
-					/* Tags refinement widget */
+					// Tags refinement widget
+					// https://www.algolia.com/doc/api-reference/widgets/refinement-list/js/
 					instantsearch.widgets.refinementList({
 						container: '#facet-tags',
 						attribute: 'taxonomies.post_tag',
@@ -185,13 +194,20 @@ get_header();
 						sortBy: ['isRefined:desc', 'count:desc', 'name:asc'],
 					}),
 
-					/* Users refinement widget */
+					// Users refinement widget
+					// https://www.algolia.com/doc/api-reference/widgets/menu/js/
 					instantsearch.widgets.menu({
 						container: '#facet-users',
 						attribute: 'post_author.display_name',
 						sortBy: ['isRefined:desc', 'count:desc', 'name:asc'],
 						limit: 10,
 					}),
+
+					// Search powered-by widget
+					// https://www.algolia.com/doc/api-reference/widgets/powered-by/js/
+					instantsearch.widgets.poweredBy({
+						container: '#algolia-powered-by'
+					})
 				]);
 
 				if ( algolia.powered_by_enabled ) {
