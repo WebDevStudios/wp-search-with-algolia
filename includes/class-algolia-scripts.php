@@ -78,8 +78,6 @@ class Algolia_Scripts {
 			'algolia-instantsearch',
 			ALGOLIA_PLUGIN_URL . 'js/instantsearch.js/dist/instantsearch' . $ais_suffix . $suffix . '.js',
 			[
-				'underscore',
-				'wp-util',
 				'algolia-search',
 			],
 			ALGOLIA_VERSION,
