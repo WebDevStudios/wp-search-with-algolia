@@ -56,17 +56,17 @@
 											<div class="suggestion-post-attributes">
 												<span class="suggestion-post-title">
 													${components.Highlight({
-											hit      : item,
-											attribute: ['post_title'],
-											tagName  : 'em',
-										})}
+														hit      : item,
+														attribute: ['post_title'],
+														tagName  : 'em',
+													})}
 												</span>
 												<span class="suggestion-post-content">
-												${components.Snippet({
-											hit      : item,
-											attribute: ['content'],
-											tagName  : 'em',
-										})}
+													${components.Snippet({
+														hit      : item,
+														attribute: ['content'],
+														tagName  : 'em',
+													})}
 												</span>
 											</div>
 										</a></div>`;
