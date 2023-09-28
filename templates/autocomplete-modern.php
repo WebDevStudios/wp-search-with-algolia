@@ -75,7 +75,13 @@
 									case 'autocomplete-user-suggestion':
 										value = html`<div><a class="suggestion-link user-suggestion-link" href="${item.posts_url}" title="${item.display_name}">
 											<img class="suggestion-user-thumbnail" src="${item.avatar_url}}" alt="${item.display_name}" />
-											<span class="suggestion-post-title">${item.display_name}</span>
+											<span class="suggestion-post-title">
+												${components.Highlight({
+													hit      : item,
+													attribute: ['display_name'],
+													tagName  : 'em',
+												})}
+											</span>
 										</a></div>`;
 										break;
 
@@ -88,7 +94,13 @@
 														fill-rule="evenodd"></path>
 												</svg>
 											</svg>
-											<span class="suggestion-post-title">${item.name}</span>
+											<span class="suggestion-post-title">
+												${components.Highlight({
+													hit: item,
+													attribute: ['name'],
+													tagName: 'em',
+												})}
+											</span>
 										</a></div>`
 										break;
 								}
