@@ -443,21 +443,23 @@ final class Algolia_Searchable_Posts_Index extends Algolia_Index {
 	 *
 	 * @return array
 	 */
-	public function get_items( $page, $batch_size ) {
-		$query = new WP_Query(
-			array(
-				'post_type'              => $this->post_types,
-				'posts_per_page'         => $batch_size,
-				'post_status'            => 'any',
-				'order'                  => 'ASC',
-				'orderby'                => 'ID',
-				'paged'                  => $page,
-				'suppress_filters'       => true,
-				'cache_results'          => false,
-				'lazy_load_term_meta'    => false,
-				'update_post_term_cache' => false,
-			)
-		);
+	public function get_items( $page, $batch_size, $specific_ids = [] ) {
+		$args = [
+			'post_type'              => $this->post_types,
+			'posts_per_page'         => $batch_size,
+			'post_status'            => 'any',
+			'order'                  => 'ASC',
+			'orderby'                => 'ID',
+			'paged'                  => $page,
+			'suppress_filters'       => true,
+			'cache_results'          => false,
+			'lazy_load_term_meta'    => false,
+			'update_post_term_cache' => false,
+		];
+		if ( ! empty( $specific_ids ) ) {
+			$args['post__in'] = $specific_ids;
+		}
+		$query = new WP_Query( $args );
 
 		return $query->posts;
 	}

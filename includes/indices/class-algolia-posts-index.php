@@ -459,18 +459,20 @@ final class Algolia_Posts_Index extends Algolia_Index {
 	 *
 	 * @return array
 	 */
-	protected function get_items( $page, $batch_size ) {
-		$query = new WP_Query(
-			array(
-				'post_type'        => $this->post_type,
-				'posts_per_page'   => $batch_size,
-				'post_status'      => 'any',
-				'order'            => 'ASC',
-				'orderby'          => 'ID',
-				'paged'            => $page,
-				'suppress_filters' => true,
-			)
-		);
+	protected function get_items( $page, $batch_size, $specific_ids = [] ) {
+		$args = [
+			'post_type'        => $this->post_type,
+			'posts_per_page'   => $batch_size,
+			'post_status'      => 'any',
+			'order'            => 'ASC',
+			'orderby'          => 'ID',
+			'paged'            => $page,
+			'suppress_filters' => true,
+		];
+		if ( ! empty( $specific_ids ) ) {
+			$args['post__in'] = $specific_ids;
+		}
+		$query = new WP_Query( $args );
 
 		return $query->posts;
 	}
