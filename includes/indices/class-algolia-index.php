@@ -423,7 +423,7 @@ abstract class Algolia_Index {
 	 *
 	 * @throws InvalidArgumentException If the page is less than 1.
 	 */
-	public function re_index( $page ) {
+	public function re_index( $page, $specific_ids = [] ) {
 		$page = (int) $page;
 
 		if ( $page < 1 ) {
@@ -444,7 +444,7 @@ abstract class Algolia_Index {
 
 		$max_num_pages = (int) max( ceil( $items_count / $batch_size ), 1 );
 
-		$items = $this->get_items( $page, $batch_size );
+		$items = $this->get_items( $page, $batch_size, $specific_ids );
 
 		$records = array();
 
