@@ -61,7 +61,7 @@ class Algolia_Post_Changes_Watcher implements Algolia_Changes_Watcher {
 	 * All Import Batch size being processed.
 	 *
 	 * @author WebDevStudios <contact@webdevstudios.com>
-	 * @since NEXT
+	 * @since 2.6.2
 	 *
 	 * @var int
 	 */
@@ -71,7 +71,7 @@ class Algolia_Post_Changes_Watcher implements Algolia_Changes_Watcher {
 	 * All Import total count being processed.
 	 *
 	 * @author WebDevStudios <contact@webdevstudios.com>
-	 * @since NEXT
+	 * @since 2.6.2
 	 *
 	 * @var int
 	 */
@@ -81,7 +81,7 @@ class Algolia_Post_Changes_Watcher implements Algolia_Changes_Watcher {
 	 * All Import max pages being processed.
 	 *
 	 * @author WebDevStudios <contact@webdevstudios.com>
-	 * @since NEXT
+	 * @since 2.6.2
 	 *
 	 * @var int
 	 */
