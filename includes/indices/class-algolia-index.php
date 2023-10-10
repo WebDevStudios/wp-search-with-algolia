@@ -418,8 +418,10 @@ abstract class Algolia_Index {
 	 *
 	 * @author WebDevStudios <contact@webdevstudios.com>
 	 * @since  1.0.0
+	 * @since  2.6.2 Added $specific_ids parameter
 	 *
-	 * @param int $page Page of the index.
+	 * @param int   $page         Page of the index.
+	 * @param array $specific_ids Array of IDs to specifically fetch and index.
 	 *
 	 * @throws InvalidArgumentException If the page is less than 1.
 	 */
