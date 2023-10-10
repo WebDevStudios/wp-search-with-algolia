@@ -437,9 +437,11 @@ final class Algolia_Searchable_Posts_Index extends Algolia_Index {
 	 *
 	 * @author WebDevStudios <contact@webdevstudios.com>
 	 * @since  1.0.0
+	 * @since  2.6.2 Added $specific_ids parameter
 	 *
-	 * @param int $page       The page.
-	 * @param int $batch_size The batch size.
+	 * @param int   $page         The page.
+	 * @param int   $batch_size   The batch size.
+	 * @param array $specific_ids Array of IDs to specifically fetch and index.
 	 *
 	 * @return array
 	 */
