@@ -31,7 +31,7 @@ Introducing **WP Search with Algolia Pro**, our new premium version of WP Search
 * WooCommerce support
   * Indexing Product data including SKU, pricing (standard and variable), sales, and short descriptions.
   * Total sales and total ratings indexed for popularity
-* Advanced SEO support with Yoast SEO and All in One SEO
+* Advanced SEO support with Yoast SEO, All in One SEO, Rank Math SEO, and SEOPress
   * Content level settings to exclude individual content from the search index
   * Set Algolia’s indexing to match with existing search engine “noindex” settings
 * Multisite Network-wide support coming soon!
