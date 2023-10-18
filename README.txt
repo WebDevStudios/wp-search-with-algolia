@@ -26,15 +26,17 @@ Enable Autocomplete and Instantsearch to immediately provide a more robust searc
 
 This plugin requires API keys from [Algolia](https://www.algolia.com/). API keys are free for small personal projects and non-commercial use. Learn more about [commercial use pricing](https://www.algolia.com/pricing/).
 
+=== WP Search with Algolia Pro ===
 Introducing **WP Search with Algolia Pro**, our new premium version of WP Search with Algolia! Pro features include:
 
+* Multisite Network-wide support!
+	* Create a global search for content across all the sites in your network all in one Algolia index.
 * WooCommerce support
   * Indexing Product data including SKU, pricing (standard and variable), sales, and short descriptions.
   * Total sales and total ratings indexed for popularity
 * Advanced SEO support with Yoast SEO, All in One SEO, Rank Math SEO, and SEOPress
   * Content level settings to exclude individual content from the search index
   * Set Algolia’s indexing to match with existing search engine “noindex” settings
-* Multisite Network-wide support coming soon!
 
 Are you ready to go Pro? Check out [WP Search with Algolia Pro on Pluginize](https://pluginize.com/plugins/wp-search-with-algolia-pro/)!
 
