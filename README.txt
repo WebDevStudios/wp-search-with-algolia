@@ -2,7 +2,7 @@
 Contributors: WebDevStudios, williamsba1, tw2113, mrasharirfan, scottbasgaard, gregrickaby, richaber
 Tags: search, algolia, autocomplete, instantsearch, relevance search, faceted search, find-as-you-type search, ecommerce, seo, woocommerce, advanced search
 Requires at least: 5.0
-Tested up to: 6.3.1
+Tested up to: 6.3.2
 Requires PHP: 7.4
 Stable tag: 2.6.1
 License: GNU General Public License v2.0, MIT License
