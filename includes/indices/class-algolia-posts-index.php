@@ -472,7 +472,7 @@ final class Algolia_Posts_Index extends Algolia_Index {
 			'suppress_filters' => true,
 		];
 		if ( ! empty( $specific_ids ) ) {
-			$args['post__in'] = $specific_ids;
+			$args['post__in'] = (array) $specific_ids;
 		}
 		$query = new WP_Query( $args );
 
