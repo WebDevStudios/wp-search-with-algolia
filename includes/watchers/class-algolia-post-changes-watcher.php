@@ -58,6 +58,36 @@ class Algolia_Post_Changes_Watcher implements Algolia_Changes_Watcher {
 	public static $pmxi_is_fast_mode;
 
 	/**
+	 * All Import Batch size being processed.
+	 *
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 * @since 2.6.2
+	 *
+	 * @var int
+	 */
+	public static $pmxi_batch_size;
+
+	/**
+	 * All Import total count being processed.
+	 *
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 * @since 2.6.2
+	 *
+	 * @var int
+	 */
+	public static $pmxi_total_count;
+
+	/**
+	 * All Import max pages being processed.
+	 *
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 * @since 2.6.2
+	 *
+	 * @var int
+	 */
+	public static $pmxi_max_num_pages;
+
+	/**
 	 * Algolia_Post_Changes_Watcher constructor.
 	 *
 	 * @author WebDevStudios <contact@webdevstudios.com>
@@ -249,13 +279,17 @@ class Algolia_Post_Changes_Watcher implements Algolia_Changes_Watcher {
 	 * @return void
 	 */
 	public function sync_item_for_pmxi( $import_id ) {
+		$current_page = (int) get_option( 'algolia_pmxi_page', 1 );
 
 		if ( null === self::$pmxi_is_fast_mode ) {
 			try {
 				$import = new PMXI_Import_Record();
 				$import->getBy( 'id', $import_id );
 
-				self::$pmxi_is_fast_mode = ( ! empty( $import->options['is_fast_mode'] ) );
+				self::$pmxi_is_fast_mode  = ( ! empty( $import->options['is_fast_mode'] ) );
+				self::$pmxi_batch_size    = (int) $import->options['records_per_request'];
+				self::$pmxi_total_count   = (int) $import->count;
+				self::$pmxi_max_num_pages = (int) max( ceil( self::$pmxi_total_count / self::$pmxi_batch_size ), 1 );
 			} catch ( Exception $exception ) {
 				error_log( $exception->getMessage() ); // phpcs:ignore -- Legacy.
 				return;
@@ -266,10 +300,47 @@ class Algolia_Post_Changes_Watcher implements Algolia_Changes_Watcher {
 			return;
 		}
 
-		$post_id = end( $this->posts_updated );
+		if ( $current_page <= self::$pmxi_max_num_pages ) {
+			$current_total_posts = count( $this->posts_updated );
+			// Majority of the time, this if statement will hit
+			// for iterations where we will bundle up a re-index request.
+			if ( $current_total_posts === self::$pmxi_batch_size ) {
+				// Prevent clearing out our existing index.
+				add_filter( 'algolia_clear_index_if_existing', '__return_false' );
 
-		if ( $post_id ) {
-			$this->sync_item( $post_id );
+				// Push up our current batch, clear out the queue, and increment our current page.
+				$this->index->re_index( 1, $this->posts_updated );
+				$this->posts_updated = [];
+				$current_page++;
+
+				update_option( 'algolia_pmxi_page', $current_page );
+				// Exit out of this iteration to prevent the rest of the method.
+				return;
+			}
+
+			if ( $current_page === self::$pmxi_max_num_pages ) {
+				// We round up to the next batch to cover anything less than batch size.
+				// Subtract one so we can check on the partial.
+				$almost_max_num_pages = self::$pmxi_max_num_pages - 1;
+				// Get our total item amount based on how many fullfilled pages we'll have, by batch size.
+				$almost_remainder = $almost_max_num_pages * self::$pmxi_batch_size;
+				// Get our target remainder by taking off almost remainder from total count.
+				$total_remainder   = self::$pmxi_total_count - $almost_remainder;
+				$current_remainder = count( $this->posts_updated );
+
+				// We have finally collected them all.
+				if ( $current_remainder === $total_remainder ) {
+					// Still prevent clearing out our existing index.
+					add_filter( 'algolia_clear_index_if_existing', '__return_false' );
+
+					// Push up our final batch, clear out the queue just in case.
+					$this->index->re_index( 1, $this->posts_updated );
+					$this->posts_updated = [];
+
+					// Clear out for next import run.
+					delete_option( 'algolia_pmxi_page' );
+				}
+			}
 		}
 	}
 }
