@@ -102,7 +102,7 @@
 	<!-- Use WordPress PHP Compatibility. -->
 	<rule ref="PHPCompatibilityWP"/>
 
-	<!-- WPSWA currently supports PHP 7.2+. -->
-	<config name="testVersion" value="7.2-"/>
+	<!-- WPSWA currently supports PHP 7.4+. -->
+	<config name="testVersion" value="7.4-"/>
 
 </ruleset>
