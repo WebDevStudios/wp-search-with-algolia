@@ -2,9 +2,9 @@
 Contributors: WebDevStudios, williamsba1, tw2113, mrasharirfan, scottbasgaard, gregrickaby, richaber
 Tags: search, algolia, autocomplete, instantsearch, relevance search, faceted search, find-as-you-type search, ecommerce, seo, woocommerce, advanced search
 Requires at least: 5.0
-Tested up to: 6.3.1
+Tested up to: 6.3.2
 Requires PHP: 7.4
-Stable tag: 2.6.1
+Stable tag: 2.6.2
 License: GNU General Public License v2.0, MIT License
 
 Use the power of Algolia to enhance your website's search. Enable Autocomplete and Instantsearch for fast and accurate results. Control the look, feel, and relevance.
@@ -26,15 +26,17 @@ Enable Autocomplete and Instantsearch to immediately provide a more robust searc
 
 This plugin requires API keys from [Algolia](https://www.algolia.com/). API keys are free for small personal projects and non-commercial use. Learn more about [commercial use pricing](https://www.algolia.com/pricing/).
 
+=== WP Search with Algolia Pro ===
 Introducing **WP Search with Algolia Pro**, our new premium version of WP Search with Algolia! Pro features include:
 
+* Multisite Network-wide support!
+	* Create a global search for content across all the sites in your network all in one Algolia index.
 * WooCommerce support
   * Indexing Product data including SKU, pricing (standard and variable), sales, and short descriptions.
   * Total sales and total ratings indexed for popularity
-* Advanced SEO support with Yoast SEO and All in One SEO
+* Advanced SEO support with Yoast SEO, All in One SEO, Rank Math SEO, and SEOPress
   * Content level settings to exclude individual content from the search index
   * Set Algolia’s indexing to match with existing search engine “noindex” settings
-* Multisite Network-wide support coming soon!
 
 Are you ready to go Pro? Check out [WP Search with Algolia Pro on Pluginize](https://pluginize.com/plugins/wp-search-with-algolia-pro/)!
 
@@ -124,6 +126,9 @@ All development is handled on [GitHub](https://github.com/WebDevStudios/wp-searc
 == Changelog ==
 
 Follow along with the changelog on [Github](https://github.com/WebDevStudios/wp-search-with-algolia/releases).
+
+= 2.6.2 =
+* Fixed: More performance updates and resolutions around WP All Import.
 
 = 2.6.1 =
 * Fixed: Performance issues related to delete operations.

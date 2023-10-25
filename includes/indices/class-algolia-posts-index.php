@@ -453,24 +453,28 @@ final class Algolia_Posts_Index extends Algolia_Index {
 	 *
 	 * @author WebDevStudios <contact@webdevstudios.com>
 	 * @since  1.0.0
+	 * @since  2.6.2 Added $specific_ids parameter
 	 *
-	 * @param int $page       The page.
-	 * @param int $batch_size The batch size.
+	 * @param int   $page         The page.
+	 * @param int   $batch_size   The batch size.
+	 * @param array $specific_ids Array of IDs to specifically fetch and index.
 	 *
 	 * @return array
 	 */
-	protected function get_items( $page, $batch_size ) {
-		$query = new WP_Query(
-			array(
-				'post_type'        => $this->post_type,
-				'posts_per_page'   => $batch_size,
-				'post_status'      => 'any',
-				'order'            => 'ASC',
-				'orderby'          => 'ID',
-				'paged'            => $page,
-				'suppress_filters' => true,
-			)
-		);
+	protected function get_items( $page, $batch_size, $specific_ids = [] ) {
+		$args = [
+			'post_type'        => $this->post_type,
+			'posts_per_page'   => $batch_size,
+			'post_status'      => 'any',
+			'order'            => 'ASC',
+			'orderby'          => 'ID',
+			'paged'            => $page,
+			'suppress_filters' => true,
+		];
+		if ( ! empty( $specific_ids ) ) {
+			$args['post__in'] = (array) $specific_ids;
+		}
+		$query = new WP_Query( $args );
 
 		return $query->posts;
 	}

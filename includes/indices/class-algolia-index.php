@@ -418,12 +418,14 @@ abstract class Algolia_Index {
 	 *
 	 * @author WebDevStudios <contact@webdevstudios.com>
 	 * @since  1.0.0
+	 * @since  2.6.2 Added $specific_ids parameter
 	 *
-	 * @param int $page Page of the index.
+	 * @param int   $page         Page of the index.
+	 * @param array $specific_ids Array of IDs to specifically fetch and index.
 	 *
 	 * @throws InvalidArgumentException If the page is less than 1.
 	 */
-	public function re_index( $page ) {
+	public function re_index( $page, $specific_ids = [] ) {
 		$page = (int) $page;
 
 		if ( $page < 1 ) {
@@ -444,7 +446,7 @@ abstract class Algolia_Index {
 
 		$max_num_pages = (int) max( ceil( $items_count / $batch_size ), 1 );
 
-		$items = $this->get_items( $page, $batch_size );
+		$items = $this->get_items( $page, $batch_size, $specific_ids );
 
 		$records = array();
 
