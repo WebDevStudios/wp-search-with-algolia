@@ -1,9 +1,12 @@
+## 2.7.0
+* Updated: Moved post sync action from `save_post` to `wp_after_insert_post`. This allows for the sync to wait until after post meta and terms have been updated. Removes need to click save twice to sync everything.
+
 ## 2.6.2
 * Fixed: More performance updates and resolutions around WP All Import.
 
 ## 2.6.1
-
 * Fixed: Performance issues related to delete operations.
+
 * Fixed: Performance issues around WP All Import.
 
 ## 2.6.0
