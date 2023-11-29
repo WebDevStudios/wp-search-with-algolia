@@ -1,3 +1,6 @@
+## 2.6.2
+* Fixed: More performance updates and resolutions around WP All Import.
+
 ## 2.6.1
 
 * Fixed: Performance issues related to delete operations.
