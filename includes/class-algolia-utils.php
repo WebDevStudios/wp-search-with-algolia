@@ -286,11 +286,19 @@ class Algolia_Utils {
 					<h4><?php esc_html_e( 'WooCommerce Support', 'wp-search-with-algolia' ); ?></h4>
 					<span class="algolia-pro-feature">
 						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#0077ff" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
-						<span><?php esc_html_e( 'Index product SKUs, prices and short descriptions for display', 'wp-search-with-algolia' ); ?></span>
+						<span><?php esc_html_e( 'Index product SKUs, prices and short descriptions for display.', 'wp-search-with-algolia' ); ?></span>
 					</span>
 					<span class="algolia-pro-feature">
 						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#0077ff" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
-						<span><?php esc_html_e( 'Index product total sales ratings for relevance', 'wp-search-with-algolia' ); ?></span>
+						<span><?php esc_html_e( 'Index product total sales ratings for relevance.', 'wp-search-with-algolia' ); ?></span>
+					</span>
+					<span class="algolia-pro-feature">
+						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#0077ff" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+						<span><?php esc_html_e( 'Index product total and average ratings for relevance.', 'wp-search-with-algolia' ); ?></span>
+					</span>
+					<span class="algolia-pro-feature">
+						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#0077ff" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+						<span><?php esc_html_e( 'Amend indexing to only include WooCommerce products.', 'wp-search-with-algolia' ); ?></span>
 					</span>
 				</div>
 				<div>
@@ -301,7 +309,7 @@ class Algolia_Utils {
 				</span>
 					<span class="algolia-pro-feature">
 					<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#0077ff" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
-					<span><?php esc_html_e( 'Yoast SEO and All in One SEO Support', 'wp-search-with-algolia' ); ?></span>
+					<span><?php esc_html_e( 'Yoast SEO, All in One SEO, Rank Math SEO, and SEOPress Support', 'wp-search-with-algolia' ); ?></span>
 				</span>
 				</div>
 			</div>
