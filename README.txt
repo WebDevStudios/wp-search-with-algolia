@@ -129,6 +129,7 @@ Follow along with the changelog on [Github](https://github.com/WebDevStudios/wp-
 
 = 2.7.0 =
 * Updated: Moved post sync action from `save_post` to `wp_after_insert_post`. This allows for the sync to wait until after post meta and terms have been updated. Removes need to click save twice to sync everything.
+* Updated: WP Search with Algolia feature list.
 
 = 2.6.2 =
 * Fixed: More performance updates and resolutions around WP All Import.
