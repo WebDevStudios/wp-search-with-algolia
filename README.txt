@@ -2,9 +2,9 @@
 Contributors: WebDevStudios, williamsba1, tw2113, mrasharirfan, scottbasgaard, gregrickaby, richaber
 Tags: search, algolia, autocomplete, instantsearch, relevance search, faceted search, find-as-you-type search, ecommerce, seo, woocommerce, advanced search
 Requires at least: 5.0
-Tested up to: 6.3.2
+Tested up to: 6.4.1
 Requires PHP: 7.4
-Stable tag: 2.6.2
+Stable tag: 2.7.0
 License: GNU General Public License v2.0, MIT License
 
 Use the power of Algolia to enhance your website's search. Enable Autocomplete and Instantsearch for fast and accurate results. Control the look, feel, and relevance.
@@ -126,6 +126,10 @@ All development is handled on [GitHub](https://github.com/WebDevStudios/wp-searc
 == Changelog ==
 
 Follow along with the changelog on [Github](https://github.com/WebDevStudios/wp-search-with-algolia/releases).
+
+= 2.7.0 =
+* Updated: Moved post sync action from `save_post` to `wp_after_insert_post`. This allows for the sync to wait until after post meta and terms have been updated. Removes need to click save twice to sync everything.
+* Updated: WP Search with Algolia feature list.
 
 = 2.6.2 =
 * Fixed: More performance updates and resolutions around WP All Import.
