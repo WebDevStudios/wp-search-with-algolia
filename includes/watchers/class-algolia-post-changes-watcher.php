@@ -107,7 +107,8 @@ class Algolia_Post_Changes_Watcher implements Algolia_Changes_Watcher {
 	 */
 	public function watch() {
 		// Fires once a post has been saved.
-		add_action( 'save_post', array( $this, 'sync_item' ) );
+		// Moved from save_post to wp_after_insert_post in version 2.7.0.
+		add_action( 'wp_after_insert_post', array( $this, 'sync_item' ) );
 
 		// Fires before a post is deleted, at the start of wp_delete_post().
 		// At this stage the post metas are still available, and we need them.
