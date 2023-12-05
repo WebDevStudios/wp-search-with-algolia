@@ -167,6 +167,20 @@ class Algolia_Template_Utils {
 	 */
 	public static function locate_template( $file ) {
 
+		/**
+		 * FIlters the location to look for template files.
+		 *
+		 * Allows for providing template files outside of the active theme
+		 * and outside of the plugin's default chain to check.
+		 *
+		 * Return null to resume checking all normal paths.
+		 *
+		 * @since 2.5.0
+		 *
+		 * @param  mixed  $value Custom server path to check for a file at. Default null.
+		 * @param  string $file  The current template file being requested.
+		 * @return string $value Specified file path.
+		 */
 		$custom_location = apply_filters(
 			'algolia_custom_template_location',
 			null,
