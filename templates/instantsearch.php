@@ -46,6 +46,8 @@ get_header();
 
 	<script type="text/javascript">
 		window.addEventListener('load', function() {
+			// Set a custom user token if you enable insights and don't want the anonymous token.
+			// window.aa('setUserToken', 'some-user-id');
 			if ( document.getElementById("algolia-search-box") ) {
 				if ( algolia.indices.searchable_posts === undefined && document.getElementsByClassName("admin-bar").length > 0) {
 					alert('It looks like you haven\'t indexed the searchable posts index. Please head to the Indexing page of the Algolia Search plugin and index it.');
@@ -74,6 +76,15 @@ get_header();
 							}
 						}
 					}
+					// https://www.algolia.com/doc/guides/building-search-ui/events/js/
+					//insights: true,
+					/*
+					insights: {
+						insightsInitParams: {
+							useCookie: true
+						}
+					},
+					 */
 				});
 
 				search.addWidgets([
