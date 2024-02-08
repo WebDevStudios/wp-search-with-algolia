@@ -5,7 +5,7 @@
  * @author  WebDevStudios <contact@webdevstudios.com>
  * @since   1.0.0
  *
- * @version NEXT
+ * @version 2.7.1
  * @package WebDevStudios\WPSWA
  */
 
