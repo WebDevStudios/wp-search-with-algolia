@@ -5,7 +5,7 @@
  * @author  WebDevStudios <contact@webdevstudios.com>
  * @since   1.0.0
  *
- * @version 2.5.2
+ * @version NEXT
  * @package WebDevStudios\WPSWA
  */
 
@@ -191,12 +191,16 @@ get_header();
 						sortBy: ['isRefined:desc', 'count:desc', 'name:asc'],
 						limit: 10,
 					}),
-
-					/* Search powered-by widget */
-					instantsearch.widgets.poweredBy({
-						container: '#algolia-powered-by'
-					})
 				]);
+
+				if (algolia.powered_by_enabled) {
+					search.addWidget(
+						/* Search powered-by widget */
+						instantsearch.widgets.poweredBy({
+							container: '#algolia-powered-by'
+						}),
+					)
+				}
 
 				/* Start */
 				search.start();
