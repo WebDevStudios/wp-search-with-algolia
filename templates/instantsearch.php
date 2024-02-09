@@ -193,7 +193,7 @@ get_header();
 					}),
 				]);
 
-				if (algolia.powered_by_enabled) {
+				if ( algolia.powered_by_enabled ) {
 					search.addWidget(
 						/* Search powered-by widget */
 						instantsearch.widgets.poweredBy({
