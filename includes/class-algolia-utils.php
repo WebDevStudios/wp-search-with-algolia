@@ -154,7 +154,7 @@ class Algolia_Utils {
 		$content = self::remove_content_noise( $content );
 
 		// Prevent table content from being concatenated.
-		$content = str_replace( array( '<td>', '<th>' ), ' ', $content );
+		$content = str_replace( array( '</td>', '</th>' ), ' ', $content );
 
 		return wp_strip_all_tags( $content );
 	}
