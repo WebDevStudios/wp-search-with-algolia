@@ -153,9 +153,6 @@ class Algolia_Utils {
 	public static function prepare_content( $content ) {
 		$content = self::remove_content_noise( $content );
 
-		// Prevent table content from being concatenated.
-		$content = str_replace( array( '</td>', '</th>' ), ' ', $content );
-
 		return wp_strip_all_tags( $content );
 	}
 
@@ -202,6 +199,9 @@ class Algolia_Utils {
 		}
 
 		$content = str_replace( '&nbsp;', ' ', $content );
+
+		// Prevent table content from being concatenated.
+		$content = str_replace( array( '</td>', '</th>' ), ' ', $content );
 
 		return html_entity_decode( $content );
 	}
