@@ -46,6 +46,7 @@ Are you ready to go Pro? Check out [WP Search with Algolia Pro on Pluginize](htt
 * [Documentation](https://github.com/WebDevStudios/wp-search-with-algolia/wiki)
 * [Support](https://wordpress.org/support/plugin/wp-search-with-algolia/)
 * [Feature requests and bugs](https://github.com/WebDevStudios/wp-search-with-algolia/issues)
+* [WP Search with Algolia Snippet Library](https://github.com/WebDevStudios/algolia-snippet-library)
 
 *This plugin is a derivative work of the code from the [Search by Algolia – Instant & Relevant results](https://wordpress.org/plugins/search-by-algolia-instant-relevant-results/) plugin for WordPress, which is licensed under the GPLv2.*
 
