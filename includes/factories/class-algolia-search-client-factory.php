@@ -76,10 +76,10 @@ class Algolia_Search_Client_Factory {
 			if ( ! empty( $custom_config['connectTimeout'] ) ) {
 				$config->setConnectTimeout( (int) $custom_config['connectTimeout'] );
 			}
-			if ( ! empty( $custom_config['connectTimeout'] ) ) {
+			if ( ! empty( $custom_config['readTimeout'] ) ) {
 				$config->setReadTimeout( (int) $custom_config['readTimeout'] );
 			}
-			if ( ! empty( $custom_config['connectTimeout'] ) ) {
+			if ( ! empty( $custom_config['writeTimeout'] ) ) {
 				$config->setWriteTimeout( (int) $custom_config['writeTimeout'] );
 			}
 			return SearchClient::createWithConfig( $config );
