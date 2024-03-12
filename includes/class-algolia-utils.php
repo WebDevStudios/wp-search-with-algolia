@@ -200,6 +200,9 @@ class Algolia_Utils {
 
 		$content = str_replace( '&nbsp;', ' ', $content );
 
+		// Prevent table content from being concatenated.
+		$content = str_replace( array( '</td>', '</th>' ), ' ', $content );
+
 		return html_entity_decode( $content );
 	}
 
