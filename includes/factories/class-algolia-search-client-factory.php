@@ -6,6 +6,7 @@
  * @package WebDevStudios\WPSWA
  */
 
+use WebDevStudios\WPSWA\Algolia\AlgoliaSearch\Config\SearchConfig;
 use WebDevStudios\WPSWA\Algolia\AlgoliaSearch\Algolia;
 use WebDevStudios\WPSWA\Algolia\AlgoliaSearch\SearchClient;
 use WebDevStudios\WPSWA\Algolia\AlgoliaSearch\Support\UserAgent;
@@ -55,6 +56,34 @@ class Algolia_Search_Client_Factory {
 		$http_client = Algolia_Http_Client_Interface_Factory::create();
 
 		Algolia::setHttpClient( $http_client );
+
+		/**
+		 * Allows for providing custom configuration arguments for Algolia Search Client.
+		 *
+		 * @see https://www.algolia.com/doc/api-reference/api-methods/configuring-timeouts/
+		 * @since NEXT
+		 *
+		 * @param array $value Array of values for Algolia Config. Default empty array.
+		 */
+		$custom_config = apply_filters(
+			'algolia_custom_search_config',
+			[]
+		);
+
+		if ( ! empty( $custom_config ) && is_array( $custom_config ) ) {
+			$config = SearchConfig::create( $app_id, $api_key );
+
+			if ( ! empty( $custom_config['connectTimeout'] ) ) {
+				$config->setConnectTimeout( (int) $custom_config['connectTimeout'] );
+			}
+			if ( ! empty( $custom_config['readTimeout'] ) ) {
+				$config->setReadTimeout( (int) $custom_config['readTimeout'] );
+			}
+			if ( ! empty( $custom_config['writeTimeout'] ) ) {
+				$config->setWriteTimeout( (int) $custom_config['writeTimeout'] );
+			}
+			return SearchClient::createWithConfig( $config );
+		}
 
 		return SearchClient::create(
 			(string) $app_id,
