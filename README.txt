@@ -127,6 +127,9 @@ All development is handled on [GitHub](https://github.com/WebDevStudios/wp-searc
 
 Follow along with the changelog on [Github](https://github.com/WebDevStudios/wp-search-with-algolia/releases).
 
+= 2.8.0 =
+* Updated: Prevent table content from being concatenated. Thanks @rodrigo-arias
+
 = 2.7.1 =
 * Fixed: Instantsearch.php template file. "Powered By Algolia" Instantsearch widget wrapped in a check for if the "Remove powered by" option is checked. This should match already working behavior with Autocomplete dropdown.
 
