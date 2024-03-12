@@ -1,3 +1,9 @@
+## 2.8.0
+* Added: Filter to customize Algolia SearchClient configuration with connect/read/write timeouts.
+* Updated: Prevent table content from being concatenated. Thanks @rodrigo-arias
+* Updated: Pass `$post_id` to `algolia_get_post_images` filter.
+* Updated: Confirmed compatibility with WP 6.5
+
 ## 2.7.1
 * Fixed: Instantsearch.php template file. "Powered By Algolia" Instantsearch widget wrapped in a check for if the "Remove powered by" option is checked. This should match already working behavior with Autocomplete dropdown.
 
