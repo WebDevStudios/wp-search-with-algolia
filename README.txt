@@ -129,6 +129,7 @@ All development is handled on [GitHub](https://github.com/WebDevStudios/wp-searc
 Follow along with the changelog on [Github](https://github.com/WebDevStudios/wp-search-with-algolia/releases).
 
 = 2.8.0 =
+* Added: Filter to customize Algolia SearchClient configuration with connect/read/write timeouts.
 * Updated: Prevent table content from being concatenated. Thanks @rodrigo-arias
 * Updated: Pass `$post_id` to `algolia_get_post_images` filter.
 * Updated: Confirmed compatibility with WP 6.5
