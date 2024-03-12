@@ -7,7 +7,7 @@ Requires PHP: 7.4
 Stable tag: 2.8.0
 License: GNU General Public License v2.0, MIT License
 
-Use the power of Algolia to enhance your website's search. Enable Autocomplete and Instantsearch for fast and accurate results. Control the look, feel, and relevance.
+Use the power of Algolia to enhance your website's search. Enable Autocomplete and Instantsearch for fast and accurate results and relevance.
 
 == Description ==
 
@@ -46,6 +46,7 @@ Are you ready to go Pro? Check out [WP Search with Algolia Pro on Pluginize](htt
 * [Documentation](https://github.com/WebDevStudios/wp-search-with-algolia/wiki)
 * [Support](https://wordpress.org/support/plugin/wp-search-with-algolia/)
 * [Feature requests and bugs](https://github.com/WebDevStudios/wp-search-with-algolia/issues)
+* [WP Search with Algolia Snippet Library](https://github.com/WebDevStudios/algolia-snippet-library)
 
 *This plugin is a derivative work of the code from the [Search by Algolia – Instant & Relevant results](https://wordpress.org/plugins/search-by-algolia-instant-relevant-results/) plugin for WordPress, which is licensed under the GPLv2.*
 
@@ -130,6 +131,7 @@ Follow along with the changelog on [Github](https://github.com/WebDevStudios/wp-
 = 2.8.0 =
 * Updated: Prevent table content from being concatenated. Thanks @rodrigo-arias
 * Updated: Pass `$post_id` to `algolia_get_post_images` filter.
+* Updated: Confirmed compatibility with WP 6.5
 
 = 2.7.1 =
 * Fixed: Instantsearch.php template file. "Powered By Algolia" Instantsearch widget wrapped in a check for if the "Remove powered by" option is checked. This should match already working behavior with Autocomplete dropdown.
