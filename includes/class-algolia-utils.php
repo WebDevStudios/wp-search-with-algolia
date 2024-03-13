@@ -137,7 +137,20 @@ class Algolia_Utils {
 			}
 		}
 
-		return (array) apply_filters( 'algolia_get_post_images', $images );
+		/**
+		 * Filters the final array of images and image data.
+		 *
+		 * Parameter will be an array keyed by image size, and has
+		 * URL, width and height details for each image.
+		 *
+		 * @since 1.0.0
+		 * @since 2.8.0 Added `$post_id` as second parameter
+		 *
+		 * @param array  $images  Array of images data.
+		 * @param int    $post_id Current post ID being indexed.
+		 * @return array $images  Final array of images data.
+		 */
+		return (array) apply_filters( 'algolia_get_post_images', $images, $post_id );
 	}
 
 	/**
@@ -199,6 +212,9 @@ class Algolia_Utils {
 		}
 
 		$content = str_replace( '&nbsp;', ' ', $content );
+
+		// Prevent table content from being concatenated.
+		$content = str_replace( [ '</td>', '</th>' ], ' ', $content );
 
 		return html_entity_decode( $content );
 	}
