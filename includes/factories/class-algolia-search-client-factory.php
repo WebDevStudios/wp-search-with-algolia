@@ -61,7 +61,7 @@ class Algolia_Search_Client_Factory {
 		 * Allows for providing custom configuration arguments for Algolia Search Client.
 		 *
 		 * @see https://www.algolia.com/doc/api-reference/api-methods/configuring-timeouts/
-		 * @since NEXT
+		 * @since 2.8.0
 		 *
 		 * @param array $value Array of values for Algolia Config. Default empty array.
 		 */
