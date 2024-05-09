@@ -82,6 +82,11 @@ class Algolia_Search_Client_Factory {
 			if ( ! empty( $custom_config['writeTimeout'] ) ) {
 				$config->setWriteTimeout( (int) $custom_config['writeTimeout'] );
 			}
+
+			if ( is_array( $custom_config['headers'] ) && ! empty( $custom_config['headers'] ) ) {
+				$config->setDefaultHeaders( $custom_config['headers'] );
+			}
+
 			return SearchClient::createWithConfig( $config );
 		}
 
