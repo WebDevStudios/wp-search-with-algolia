@@ -49,8 +49,8 @@ get_header();
 			// Set a custom user token if you enable insights and don't want the anonymous token.
 			// window.aa('setUserToken', 'some-user-id');
 			if ( document.getElementById("algolia-search-box") ) {
-				if ( algolia.indices.searchable_posts === undefined && document.getElementsByClassName("admin-bar").length > 0) {
-					alert('It looks like you haven\'t indexed the searchable posts index. Please head to the Indexing page of the Algolia Search plugin and index it.');
+				if ( algolia.indices.searchable_posts === undefined && document.getElementsByClassName("admin-bar").length > 0 ) {
+					alert('<?php esc_html_e( "It looks like you have not indexed the searchable posts index. Please head to the Indexing page of the Algolia Search plugin and index it.", 'wp-search-with-algolia' ); ?>');
 				}
 
 				/* Instantiate instantsearch.js */
