@@ -5,7 +5,7 @@
  * @author  WebDevStudios <contact@webdevstudios.com>
  * @since   1.0.0
  *
- * @version 2.7.1
+ * @version 2.9.0
  * @package WebDevStudios\WPSWA
  */
 
@@ -44,43 +44,17 @@ get_header();
 		</aside>
 	</div>
 
-	<script type="text/html" id="tmpl-instantsearch-hit">
-		<article itemtype="http://schema.org/Article">
-			<# if ( data.images.thumbnail ) { #>
-				<div class="ais-hits--thumbnail">
-					<a href="{{ data.permalink }}" title="{{ data.post_title }}" class="ais-hits--thumbnail-link">
-						<img src="{{ data.images.thumbnail.url }}" alt="{{ data.post_title }}" title="{{ data.post_title }}" itemprop="image" />
-					</a>
-				</div>
-			<# } #>
-
-			<div class="ais-hits--content">
-				<h2 itemprop="name headline"><a href="{{ data.permalink }}" title="{{ data.post_title }}" class="ais-hits--title-link" itemprop="url">{{{ data._highlightResult.post_title.value }}}</a></h2>
-				<div class="excerpt">
-					<p>
-						<# if ( data._snippetResult['content'] ) { #>
-							<span class="suggestion-post-content ais-hits--content-snippet">{{{ data._snippetResult['content'].value }}}</span>
-						<# } #>
-					</p>
-				</div>
-				<?php
-				do_action( 'algolia_instantsearch_after_hit' );
-				?>
-			</div>
-			<div class="ais-clearfix"></div>
-		</article>
-	</script>
-
-
 	<script type="text/javascript">
 		window.addEventListener('load', function() {
+			// Set a custom user token if you enable insights and don't want the anonymous token.
+			// window.aa('setUserToken', 'some-user-id');
 			if ( document.getElementById("algolia-search-box") ) {
-				if ( algolia.indices.searchable_posts === undefined && document.getElementsByClassName("admin-bar").length > 0) {
-					alert('It looks like you haven\'t indexed the searchable posts index. Please head to the Indexing page of the Algolia Search plugin and index it.');
+				if ( algolia.indices.searchable_posts === undefined && document.getElementsByClassName("admin-bar").length > 0 ) {
+					alert('<?php esc_html_e( "It looks like you have not indexed the searchable posts index. Please head to the Indexing page of the Algolia Search plugin and index it.", 'wp-search-with-algolia' ); ?>');
 				}
 
 				/* Instantiate instantsearch.js */
-				var search = instantsearch({
+				const search = instantsearch({
 					indexName: algolia.indices.searchable_posts.name,
 					searchClient: algoliasearch( algolia.application_id, algolia.search_api_key ),
 					routing: {
@@ -102,11 +76,21 @@ get_header();
 							}
 						}
 					}
+					// https://www.algolia.com/doc/guides/building-search-ui/events/js/
+					//insights: true,
+					/*
+					insights: {
+						insightsInitParams: {
+							useCookie: true
+						}
+					},
+					 */
 				});
 
 				search.addWidgets([
 
-					/* Search box widget */
+					// Search box widget
+					// https://www.algolia.com/doc/api-reference/widgets/search-box/js/
 					instantsearch.widgets.searchBox({
 						container: '#algolia-search-box',
 						placeholder: 'Search for...',
@@ -115,21 +99,61 @@ get_header();
 						showLoadingIndicator: false,
 					}),
 
-					/* Stats widget */
+					// Stats widget
+					// https://www.algolia.com/doc/api-reference/widgets/stats/js/
 					instantsearch.widgets.stats({
 						container: '#algolia-stats'
 					}),
 
+					// Configure widget
+					// https://www.algolia.com/doc/api-reference/widgets/configure/js/
 					instantsearch.widgets.configure({
 						hitsPerPage: 10,
 					}),
 
-					/* Hits widget */
+					// Hits widget
+					// https://www.algolia.com/doc/api-reference/widgets/hits/js/
 					instantsearch.widgets.hits({
 						container: '#algolia-hits',
 						templates: {
-							empty: 'No results were found for "<strong>{{query}}</strong>".',
-							item: wp.template('instantsearch-hit')
+							empty(results, {html} ) {
+								return html `No results were found for "<strong>${results.query}</strong>".`;
+							},
+							item(hit, { html, components }) {
+								let thumbnail = '';
+								if ( hit.images.thumbnail ) {
+									thumbnail = html`
+									<div class="ais-hits--thumbnail">
+										<a href="${hit.permalink}" title="${hit.post_title }" class="ais-hits--thumbnail-link">
+											<img src="${hit.images.thumbnail.url }" alt="${hit.post_title }" title="${hit.post_title }" itemprop="image" />
+										</a>
+									</div>`;
+								}
+
+								let content_snippet = '';
+								if (hit._snippetResult['content']) {
+									content_snippet = html`<span class="suggestion-post-content ais-hits--content-snippet">${components.Snippet({hit, attribute: 'content'})}</span>`;
+								}
+
+								let extras = '';
+
+								<?php
+								do_action( 'algolia_instantsearch_after_hit' );
+								?>
+
+								return html`
+									<article itemtype="http://schema.org/Article">
+										${thumbnail}
+										<div class="ais-hits--content">
+											<h2 itemprop="name headline"><a href="${hit.permalink}" title="${hit.post_title}" class="ais-hits--title-link" itemprop="url">${components.Highlight({hit, attribute: 'post_title'})}</a></h2>
+											<div class="excerpt">
+												<p>${content_snippet}</p>
+											</div>
+										</div>
+										<div class="ais-clearfix"></div>
+										${extras}
+									</article>`;
+							}
 						},
 						transformData: {
 							item: function (hit) {
@@ -139,7 +163,7 @@ get_header();
 										item.value = _.escape(item.value);
 										item.value = item.value.replace(/__ais-highlight__/g, '<em>').replace(/__\/ais-highlight__/g, '</em>');
 									} else {
-										for (var key in item) {
+										for (let key in item) {
 											item[key] = replace_highlights_recursive(item[key]);
 										}
 									}
@@ -154,12 +178,14 @@ get_header();
 						}
 					}),
 
-					/* Pagination widget */
+					// Pagination widget
+					// https://www.algolia.com/doc/api-reference/widgets/pagination/js/
 					instantsearch.widgets.pagination({
 						container: '#algolia-pagination'
 					}),
 
-					/* Post types refinement widget */
+					// Post types refinement widget
+					// https://www.algolia.com/doc/api-reference/widgets/menu/js/
 					instantsearch.widgets.menu({
 						container: '#facet-post-types',
 						attribute: 'post_type_label',
@@ -167,7 +193,8 @@ get_header();
 						limit: 10,
 					}),
 
-					/* Categories refinement widget */
+					// Categories refinement widget
+					// https://www.algolia.com/doc/api-reference/widgets/hierarchical-menu/js/
 					instantsearch.widgets.hierarchicalMenu({
 						container: '#facet-categories',
 						separator: ' > ',
@@ -175,7 +202,8 @@ get_header();
 						attributes: ['taxonomies_hierarchical.category.lvl0', 'taxonomies_hierarchical.category.lvl1', 'taxonomies_hierarchical.category.lvl2'],
 					}),
 
-					/* Tags refinement widget */
+					// Tags refinement widget
+					// https://www.algolia.com/doc/api-reference/widgets/refinement-list/js/
 					instantsearch.widgets.refinementList({
 						container: '#facet-tags',
 						attribute: 'taxonomies.post_tag',
@@ -184,13 +212,20 @@ get_header();
 						sortBy: ['isRefined:desc', 'count:desc', 'name:asc'],
 					}),
 
-					/* Users refinement widget */
+					// Users refinement widget
+					// https://www.algolia.com/doc/api-reference/widgets/menu/js/
 					instantsearch.widgets.menu({
 						container: '#facet-users',
 						attribute: 'post_author.display_name',
 						sortBy: ['isRefined:desc', 'count:desc', 'name:asc'],
 						limit: 10,
 					}),
+
+					// Search powered-by widget
+					// https://www.algolia.com/doc/api-reference/widgets/powered-by/js/
+					instantsearch.widgets.poweredBy({
+						container: '#algolia-powered-by'
+					})
 				]);
 
 				if ( algolia.powered_by_enabled ) {
