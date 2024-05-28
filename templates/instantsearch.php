@@ -135,7 +135,7 @@ get_header();
 									content_snippet = html`<span class="suggestion-post-content ais-hits--content-snippet">${components.Snippet({hit, attribute: 'content'})}</span>`;
 								}
 
-								var extras = '';
+								let extras = '';
 
 								<?php
 								do_action( 'algolia_instantsearch_after_hit' );
@@ -163,7 +163,7 @@ get_header();
 										item.value = _.escape(item.value);
 										item.value = item.value.replace(/__ais-highlight__/g, '<em>').replace(/__\/ais-highlight__/g, '</em>');
 									} else {
-										for (var key in item) {
+										for (let key in item) {
 											item[key] = replace_highlights_recursive(item[key]);
 										}
 									}
