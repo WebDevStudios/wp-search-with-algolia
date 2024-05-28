@@ -54,7 +54,7 @@ get_header();
 				}
 
 				/* Instantiate instantsearch.js */
-				var search = instantsearch({
+				const search = instantsearch({
 					indexName: algolia.indices.searchable_posts.name,
 					searchClient: algoliasearch( algolia.application_id, algolia.search_api_key ),
 					routing: {
