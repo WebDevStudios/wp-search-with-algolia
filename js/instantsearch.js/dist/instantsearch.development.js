@@ -1,9 +1,17 @@
-/*! InstantSearch.js 4.56.5 | © Algolia, Inc. and contributors; MIT License | https://github.com/algolia/instantsearch.js */
+/*! InstantSearch.js 4.73.3 | © Algolia, Inc. and contributors; MIT License | https://github.com/algolia/instantsearch */
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
   typeof define === 'function' && define.amd ? define(factory) :
   (global = global || self, global.instantsearch = factory());
 }(this, (function () { 'use strict';
+
+  var id = 0;
+  function addWidgetId(widget) {
+    if (widget.dependsOn !== 'recommend') {
+      return;
+    }
+    widget.$$id = id++;
+  }
 
   function capitalize(text) {
     return text.toString().charAt(0).toUpperCase() + text.toString().slice(1);
@@ -752,7 +760,9 @@
       }
       var facetValue = args[1],
         _args$ = args[2],
-        eventName = _args$ === void 0 ? 'Filter Applied' : _args$;
+        eventName = _args$ === void 0 ? 'Filter Applied' : _args$,
+        _args$2 = args[3],
+        additionalData = _args$2 === void 0 ? {} : _args$2;
       var _args$0$split = args[0].split(':'),
         _args$0$split2 = _slicedToArray(_args$0$split, 2),
         eventType = _args$0$split2[0],
@@ -760,7 +770,7 @@
       var attribute = typeof attr === 'string' ? attr : attr(facetValue);
       if (args.length === 1 && _typeof(args[0]) === 'object') {
         instantSearchInstance.sendEventToInsights(args[0]);
-      } else if (eventType === 'click' && (args.length === 2 || args.length === 3)) {
+      } else if (eventType === 'click' && args.length >= 2 && args.length <= 4) {
         if (!isFacetRefined(helper, attribute, facetValue)) {
           // send event only when the facet is being checked "ON"
           instantSearchInstance.sendEventToInsights({
@@ -768,16 +778,16 @@
             widgetType: widgetType,
             eventType: eventType,
             eventModifier: eventModifier,
-            payload: {
+            payload: _objectSpread2({
               eventName: eventName,
               index: helper.getIndex(),
               filters: ["".concat(attribute, ":").concat(facetValue)]
-            },
+            }, additionalData),
             attribute: attribute
           });
         }
       } else {
-        throw new Error("You need to pass two arguments like:\n  sendEvent('click', facetValue);\n\nIf you want to send a custom payload, you can pass one object: sendEvent(customPayload);\n");
+        throw new Error("You need to pass between two and four arguments like:\n  sendEvent('click', facetValue, eventName?, additionalData?);\n\nIf you want to send a custom payload, you can pass one object: sendEvent(customPayload);\n");
       }
     };
     return sendEventForFacet;
@@ -799,7 +809,7 @@
     return chunks;
   }
   function _buildEventPayloadsForHits(_ref) {
-    var index = _ref.index,
+    var getIndex = _ref.getIndex,
       widgetType = _ref.widgetType,
       methodName = _ref.methodName,
       args = _ref.args,
@@ -814,6 +824,7 @@
       eventModifier = _args$0$split2[1];
     var hits = args[1];
     var eventName = args[2];
+    var additionalData = args[3] || {};
     if (!hits) {
       {
         throw new Error("You need to pass hit or hits as the second argument like:\n  ".concat(methodName, "(eventType, hit);\n  "));
@@ -849,11 +860,11 @@
           insightsMethod: 'viewedObjectIDs',
           widgetType: widgetType,
           eventType: eventType,
-          payload: {
+          payload: _objectSpread2({
             eventName: eventName || 'Hits Viewed',
-            index: index,
+            index: getIndex(),
             objectIDs: objectIDsByChunk[i]
-          },
+          }, additionalData),
           hits: batch,
           eventModifier: eventModifier
         };
@@ -864,13 +875,13 @@
           insightsMethod: 'clickedObjectIDsAfterSearch',
           widgetType: widgetType,
           eventType: eventType,
-          payload: {
+          payload: _objectSpread2({
             eventName: eventName || 'Hit Clicked',
-            index: index,
+            index: getIndex(),
             queryID: queryID,
             objectIDs: objectIDsByChunk[i],
             positions: positionsByChunk[i]
-          },
+          }, additionalData),
           hits: batch,
           eventModifier: eventModifier
         };
@@ -881,12 +892,12 @@
           insightsMethod: 'convertedObjectIDsAfterSearch',
           widgetType: widgetType,
           eventType: eventType,
-          payload: {
+          payload: _objectSpread2({
             eventName: eventName || 'Hit Converted',
-            index: index,
+            index: getIndex(),
             queryID: queryID,
             objectIDs: objectIDsByChunk[i]
-          },
+          }, additionalData),
           hits: batch,
           eventModifier: eventModifier
         };
@@ -897,7 +908,7 @@
   }
   function createSendEventForHits(_ref2) {
     var instantSearchInstance = _ref2.instantSearchInstance,
-      index = _ref2.index,
+      getIndex = _ref2.getIndex,
       widgetType = _ref2.widgetType;
     var sentEvents = {};
     var timer = undefined;
@@ -907,7 +918,7 @@
       }
       var payloads = _buildEventPayloadsForHits({
         widgetType: widgetType,
-        index: index,
+        getIndex: getIndex,
         methodName: 'sendEvent',
         args: args,
         instantSearchInstance: instantSearchInstance
@@ -927,7 +938,7 @@
     return sendEventForHits;
   }
   function createBindEventForHits(_ref3) {
-    var index = _ref3.index,
+    var getIndex = _ref3.getIndex,
       widgetType = _ref3.widgetType,
       instantSearchInstance = _ref3.instantSearchInstance;
     var bindEventForHits = function bindEventForHits() {
@@ -936,7 +947,7 @@
       }
       var payloads = _buildEventPayloadsForHits({
         widgetType: widgetType,
-        index: index,
+        getIndex: getIndex,
         methodName: 'bindEvent',
         args: args,
         instantSearchInstance: instantSearchInstance
@@ -1162,10 +1173,10 @@
   // typed as any, since it accepts the _real_ js clients, not the interface we otherwise expect
   function getAppIdAndApiKey(searchClient) {
     if (searchClient.transporter) {
-      // searchClient v4
-      var _searchClient$transpo = searchClient.transporter,
-        headers = _searchClient$transpo.headers,
-        queryParameters = _searchClient$transpo.queryParameters;
+      // searchClient v4 or v5
+      var transporter = searchClient.transporter;
+      var headers = transporter.headers || transporter.baseHeaders;
+      var queryParameters = transporter.queryParameters || transporter.baseQueryParameters;
       var APP_ID = 'x-algolia-application-id';
       var API_KEY = 'x-algolia-api-key';
       var appId = headers[APP_ID] || queryParameters[APP_ID];
@@ -1408,6 +1419,135 @@
     });
   }
 
+  function hydrateRecommendCache(helper, initialResults) {
+    var recommendCache = Object.keys(initialResults).reduce(function (acc, indexName) {
+      var initialResult = initialResults[indexName];
+      if (initialResult.recommendResults) {
+        // @MAJOR: Use `Object.assign` instead of spread operator
+        return _objectSpread2(_objectSpread2({}, acc), initialResult.recommendResults.results);
+      }
+      return acc;
+    }, {});
+    helper._recommendCache = recommendCache;
+  }
+
+  function hydrateSearchClient(client, results) {
+    if (!results) {
+      return;
+    }
+
+    // Disable cache hydration on:
+    // - Algoliasearch API Client < v4 with cache disabled
+    // - Third party clients (detected by the `addAlgoliaAgent` function missing)
+
+    if ((!('transporter' in client) || client._cacheHydrated) && (!client._useCache || typeof client.addAlgoliaAgent !== 'function')) {
+      return;
+    }
+    var cachedRequest = [Object.keys(results).reduce(function (acc, key) {
+      var _results$key = results[key],
+        state = _results$key.state,
+        requestParams = _results$key.requestParams,
+        serverResults = _results$key.results;
+      var mappedResults = serverResults && state ? serverResults.map(function (result, idx) {
+        return _objectSpread2({
+          indexName: state.index || result.index
+        }, requestParams !== null && requestParams !== void 0 && requestParams[idx] || result.params ? {
+          params: serializeQueryParameters((requestParams === null || requestParams === void 0 ? void 0 : requestParams[idx]) || deserializeQueryParameters(result.params))
+        } : {});
+      }) : [];
+      return acc.concat(mappedResults);
+    }, [])];
+    var cachedResults = Object.keys(results).reduce(function (acc, key) {
+      var res = results[key].results;
+      if (!res) {
+        return acc;
+      }
+      return acc.concat(res);
+    }, []);
+
+    // Algoliasearch API Client >= v4
+    // To hydrate the client we need to populate the cache with the data from
+    // the server (done in `hydrateSearchClientWithMultiIndexRequest` or
+    // `hydrateSearchClientWithSingleIndexRequest`). But since there is no way
+    // for us to compute the key the same way as `algoliasearch-client` we need
+    // to populate it on a custom key and override the `search` method to
+    // search on it first.
+    if ('transporter' in client && !client._cacheHydrated) {
+      client._cacheHydrated = true;
+      var baseMethod = client.search;
+      // @ts-ignore wanting type checks for v3 on this would make this too complex
+      client.search = function (requests) {
+        for (var _len = arguments.length, methodArgs = new Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+          methodArgs[_key - 1] = arguments[_key];
+        }
+        var requestsWithSerializedParams = requests.map(function (request) {
+          return _objectSpread2(_objectSpread2({}, request), {}, {
+            params: serializeQueryParameters(request.params)
+          });
+        });
+        return client.transporter.responsesCache.get({
+          method: 'search',
+          args: [requestsWithSerializedParams].concat(methodArgs)
+        }, function () {
+          return baseMethod.apply(void 0, [requests].concat(methodArgs));
+        });
+      };
+      client.transporter.responsesCache.set({
+        method: 'search',
+        args: cachedRequest
+      }, {
+        results: cachedResults
+      });
+    }
+
+    // Algoliasearch API Client < v4
+    // Prior to client v4 we didn't have a proper API to hydrate the client
+    // cache from the outside. The following code populates the cache with
+    // a single-index result. You can find more information about the
+    // computation of the key inside the client (see link below).
+    // https://github.com/algolia/algoliasearch-client-javascript/blob/c27e89ff92b2a854ae6f40dc524bffe0f0cbc169/src/AlgoliaSearchCore.js#L232-L240
+    if (!('transporter' in client)) {
+      var cacheKey = "/1/indexes/*/queries_body_".concat(JSON.stringify({
+        requests: cachedRequest
+      }));
+      client.cache = _objectSpread2(_objectSpread2({}, client.cache), {}, _defineProperty({}, cacheKey, JSON.stringify({
+        results: Object.keys(results).map(function (key) {
+          return results[key].results;
+        })
+      })));
+    }
+  }
+  function deserializeQueryParameters(parameters) {
+    return parameters.split('&').reduce(function (acc, parameter) {
+      var _parameter$split = parameter.split('='),
+        _parameter$split2 = _slicedToArray(_parameter$split, 2),
+        key = _parameter$split2[0],
+        value = _parameter$split2[1];
+      acc[key] = value ? decodeURIComponent(value) : '';
+      return acc;
+    }, {});
+  }
+
+  // This function is copied from the algoliasearch v4 API Client. If modified,
+  // consider updating it also in `serializeQueryParameters` from `@algolia/transporter`.
+  function serializeQueryParameters(parameters) {
+    var isObjectOrArray = function isObjectOrArray(value) {
+      return Object.prototype.toString.call(value) === '[object Object]' || Object.prototype.toString.call(value) === '[object Array]';
+    };
+    var encode = function encode(format) {
+      for (var _len2 = arguments.length, args = new Array(_len2 > 1 ? _len2 - 1 : 0), _key2 = 1; _key2 < _len2; _key2++) {
+        args[_key2 - 1] = arguments[_key2];
+      }
+      var i = 0;
+      return format.replace(/%s/g, function () {
+        return encodeURIComponent(args[i++]);
+      });
+    };
+    return Object.keys(parameters).map(function (key) {
+      return encode('%s=%s', key, isObjectOrArray(parameters[key]) ? JSON.stringify(parameters[key]) : parameters[key]);
+    }).join('&');
+  }
+
   function isPrimitive(obj) {
     return obj !== Object(obj);
   }
@@ -1628,8 +1768,8 @@
       error: instantSearchInstance.error
     };
   }
-  function createRenderArgs(instantSearchInstance, parent) {
-    var results = parent.getResults();
+  function createRenderArgs(instantSearchInstance, parent, widget) {
+    var results = parent.getResultsForWidget(widget);
     var helper = parent.getHelper();
     return {
       helper: helper,
@@ -1637,7 +1777,7 @@
       instantSearchInstance: instantSearchInstance,
       results: results,
       scopedResults: parent.getScopedResults(),
-      state: results ? results._state : helper.state,
+      state: results && '_state' in results ? results._state : helper.state,
       renderState: instantSearchInstance.renderState,
       templatesConfig: instantSearchInstance.templatesConfig,
       createURL: parent.createURL,
@@ -1710,6 +1850,9 @@
     name: 'answers',
     connector: true
   });
+  /**
+   * @deprecated the answers service is no longer offered, and this widget will be removed in InstantSearch.js v5
+   */
   var connectAnswers = function connectAnswers(renderFn) {
     var unmountFn = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : noop;
     checkRendering(renderFn, withUsage());
@@ -1842,8 +1985,8 @@
       }))) {
         throw new Error(withUsage$1('The `widgets` option expects an array of widgets.'));
       }
-      if (!(Array.isArray(facets) && facets.length <= 1 && (facets[0] === '*' || facets[0] === undefined))) {
-        throw new Error(withUsage$1("The `facets` option only accepts [] or [\"*\"], you passed ".concat(JSON.stringify(facets))));
+      if (!Array.isArray(facets)) {
+        throw new Error(withUsage$1("The `facets` option only accepts an array of facets, you passed ".concat(JSON.stringify(facets))));
       }
       var localWidgets = new Map();
       return {
@@ -1921,7 +2064,6 @@
           unmountFn();
         },
         getWidgetSearchParameters: function getWidgetSearchParameters(state) {
-          // broadening the scope of facets to avoid conflict between never and *
           return facets.reduce(function (acc, curr) {
             return acc.addFacet(curr);
           }, state.setQueryParameters({
@@ -2464,12 +2606,9 @@
         getWidgetUiState: function getWidgetUiState(uiState, _ref5) {
           var searchParameters = _ref5.searchParameters;
           var path = searchParameters.getHierarchicalFacetBreadcrumb(hierarchicalFacetName);
-          if (!path.length) {
-            return uiState;
-          }
-          return _objectSpread2(_objectSpread2({}, uiState), {}, {
+          return removeEmptyRefinementsFromUiState(_objectSpread2(_objectSpread2({}, uiState), {}, {
             hierarchicalMenu: _objectSpread2(_objectSpread2({}, uiState.hierarchicalMenu), {}, _defineProperty({}, hierarchicalFacetName, path))
-          });
+          }), hierarchicalFacetName);
         },
         getWidgetSearchParameters: function getWidgetSearchParameters(searchParameters, _ref6) {
           var uiState = _ref6.uiState;
@@ -2502,12 +2641,24 @@
       };
     };
   };
+  function removeEmptyRefinementsFromUiState(indexUiState, attribute) {
+    if (!indexUiState.hierarchicalMenu) {
+      return indexUiState;
+    }
+    if (!indexUiState.hierarchicalMenu[attribute] || indexUiState.hierarchicalMenu[attribute].length === 0) {
+      delete indexUiState.hierarchicalMenu[attribute];
+    }
+    if (Object.keys(indexUiState.hierarchicalMenu).length === 0) {
+      delete indexUiState.hierarchicalMenu;
+    }
+    return indexUiState;
+  }
 
   var withUsage$5 = createDocumentationMessageGenerator({
     name: 'hits',
     connector: true
   });
-  var connectHits = function connectHits(renderFn) {
+  var connectHits = (function connectHits(renderFn) {
     var unmountFn = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : noop;
     checkRendering(renderFn, withUsage$5());
     return function (widgetParams) {
@@ -2532,27 +2683,34 @@
           renderFn(_objectSpread2(_objectSpread2({}, renderState), {}, {
             instantSearchInstance: renderOptions.instantSearchInstance
           }), false);
-          renderState.sendEvent('view:internal', renderState.hits);
+          renderState.sendEvent('view:internal', renderState.items);
         },
-        getRenderState: function getRenderState(renderState, renderOptions) {
+        getRenderState: function getRenderState(renderState, renderOptions
+        // Type is explicitly redefined, to avoid having the TWidgetParams type in the definition
+        ) {
           return _objectSpread2(_objectSpread2({}, renderState), {}, {
             hits: this.getWidgetRenderState(renderOptions)
           });
         },
         getWidgetRenderState: function getWidgetRenderState(_ref2) {
+          var _results$renderingCon, _results$renderingCon2, _results$renderingCon3;
           var results = _ref2.results,
             helper = _ref2.helper,
             instantSearchInstance = _ref2.instantSearchInstance;
           if (!sendEvent) {
             sendEvent = createSendEventForHits({
               instantSearchInstance: instantSearchInstance,
-              index: helper.getIndex(),
+              getIndex: function getIndex() {
+                return helper.getIndex();
+              },
               widgetType: this.$$type
             });
           }
           if (!bindEvent) {
             bindEvent = createBindEventForHits({
-              index: helper.getIndex(),
+              getIndex: function getIndex() {
+                return helper.getIndex();
+              },
               widgetType: this.$$type,
               instantSearchInstance: instantSearchInstance
             });
@@ -2560,7 +2718,9 @@
           if (!results) {
             return {
               hits: [],
+              items: [],
               results: undefined,
+              banner: undefined,
               sendEvent: sendEvent,
               bindEvent: bindEvent,
               widgetParams: widgetParams
@@ -2571,12 +2731,15 @@
           }
           var hitsWithAbsolutePosition = addAbsolutePosition(results.hits, results.page, results.hitsPerPage);
           var hitsWithAbsolutePositionAndQueryID = addQueryID(hitsWithAbsolutePosition, results.queryID);
-          var transformedHits = transformItems(hitsWithAbsolutePositionAndQueryID, {
+          var items = transformItems(hitsWithAbsolutePositionAndQueryID, {
             results: results
           });
+          var banner = (_results$renderingCon = results.renderingContent) === null || _results$renderingCon === void 0 ? void 0 : (_results$renderingCon2 = _results$renderingCon.widgets) === null || _results$renderingCon2 === void 0 ? void 0 : (_results$renderingCon3 = _results$renderingCon2.banners) === null || _results$renderingCon3 === void 0 ? void 0 : _results$renderingCon3[0];
           return {
-            hits: transformedHits,
+            hits: items,
+            items: items,
             results: results,
+            banner: banner,
             sendEvent: sendEvent,
             bindEvent: bindEvent,
             widgetParams: widgetParams
@@ -2592,15 +2755,17 @@
             return _objectSpread2(_objectSpread2({}, acc), {}, _defineProperty({}, key, undefined));
           }, {}));
         },
-        getWidgetSearchParameters: function getWidgetSearchParameters(state) {
+        getWidgetSearchParameters: function getWidgetSearchParameters(state, _uiState) {
           if (!escapeHTML) {
             return state;
           }
+
+          // @MAJOR: set this globally, not in the Hits widget to allow Hits to be conditionally used
           return state.setQueryParameters(TAG_PLACEHOLDER);
         }
       };
     };
-  };
+  });
 
   var getSelectedHits = function getSelectedHits(hits, selectedObjectIDs) {
     return selectedObjectIDs.map(function (objectID) {
@@ -2803,6 +2968,11 @@
     }
   }
 
+  /**
+   * Due to https://github.com/microsoft/web-build-tools/issues/1050, we need
+   * Connector<...> imported in this file, even though it is only used implicitly.
+   * This _uses_ Connector<...> so it is not accidentally removed by someone.
+   */ // eslint-disable-next-line @typescript-eslint/no-unused-vars
   var connectHitsWithInsights = withInsights(connectHits);
 
   var withUsage$6 = createDocumentationMessageGenerator({
@@ -2984,12 +3154,9 @@
       return acc.concat(cachedHits[page]);
     }, []);
   }
-  var connectInfiniteHits = function connectInfiniteHits(renderFn) {
+  var connectInfiniteHits = (function connectInfiniteHits(renderFn) {
     var unmountFn = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : noop;
     checkRendering(renderFn, withUsage$7());
-
-    // @TODO: this should be a generic, but a Connector can not yet be generic itself
-
     return function (widgetParams) {
       var _ref5 = widgetParams || {},
         _ref5$escapeHTML = _ref5.escapeHTML,
@@ -3057,12 +3224,15 @@
           }), false);
           sendEvent('view:internal', widgetRenderState.currentPageHits);
         },
-        getRenderState: function getRenderState(renderState, renderOptions) {
+        getRenderState: function getRenderState(renderState, renderOptions
+        // Type is explicitly redefined, to avoid having the TWidgetParams type in the definition
+        ) {
           return _objectSpread2(_objectSpread2({}, renderState), {}, {
             infiniteHits: this.getWidgetRenderState(renderOptions)
           });
         },
         getWidgetRenderState: function getWidgetRenderState(_ref6) {
+          var _results$renderingCon, _results$renderingCon2, _results$renderingCon3;
           var results = _ref6.results,
             helper = _ref6.helper,
             parent = _ref6.parent,
@@ -3079,16 +3249,21 @@
           var cachedHits = cache.read({
             state: normalizeState(state)
           }) || {};
+          var banner = results === null || results === void 0 ? void 0 : (_results$renderingCon = results.renderingContent) === null || _results$renderingCon === void 0 ? void 0 : (_results$renderingCon2 = _results$renderingCon.widgets) === null || _results$renderingCon2 === void 0 ? void 0 : (_results$renderingCon3 = _results$renderingCon2.banners) === null || _results$renderingCon3 === void 0 ? void 0 : _results$renderingCon3[0];
           if (!results) {
             showPrevious = getShowPrevious(helper);
             showMore = getShowMore(helper);
             sendEvent = createSendEventForHits({
               instantSearchInstance: instantSearchInstance,
-              index: helper.getIndex(),
+              getIndex: function getIndex() {
+                return helper.getIndex();
+              },
               widgetType: this.$$type
             });
             bindEvent = createBindEventForHits({
-              index: helper.getIndex(),
+              getIndex: function getIndex() {
+                return helper.getIndex();
+              },
               widgetType: this.$$type,
               instantSearchInstance: instantSearchInstance
             });
@@ -3131,13 +3306,15 @@
             currentPageHits = transformedHits;
             isFirstPage = getFirstReceivedPage(state, cachedHits) === 0;
           }
-          var hits = extractHitsFromCachedHits(cachedHits);
+          var items = extractHitsFromCachedHits(cachedHits);
           var isLastPage = results ? results.nbPages <= getLastReceivedPage(state, cachedHits) + 1 : true;
           return {
-            hits: hits,
+            hits: items,
+            items: items,
             currentPageHits: currentPageHits,
             sendEvent: sendEvent,
             bindEvent: bindEvent,
+            banner: banner,
             results: results,
             showPrevious: showPrevious,
             showMore: showMore,
@@ -3175,6 +3352,7 @@
           var uiState = _ref10.uiState;
           var widgetSearchParameters = searchParameters;
           if (escapeHTML) {
+            // @MAJOR: set this globally, not in the InfiniteHits widget to allow InfiniteHits to be conditionally used
             widgetSearchParameters = searchParameters.setQueryParameters(TAG_PLACEHOLDER);
           }
 
@@ -3185,8 +3363,13 @@
         }
       };
     };
-  };
+  });
 
+  /**
+   * Due to https://github.com/microsoft/web-build-tools/issues/1050, we need
+   * Connector<...> imported in this file, even though it is only used implicitly.
+   * This _uses_ Connector<...> so it is not accidentally removed by someone.
+   */ // eslint-disable-next-line @typescript-eslint/no-unused-vars
   var connectInfiniteHitsWithInsights = withInsights(connectInfiniteHits);
 
   var _excluded$3 = ["name", "escapedValue", "path"];
@@ -3347,12 +3530,9 @@
           var _searchParameters$get = searchParameters.getHierarchicalFacetBreadcrumb(attribute),
             _searchParameters$get2 = _slicedToArray(_searchParameters$get, 1),
             value = _searchParameters$get2[0];
-          if (!value) {
-            return uiState;
-          }
-          return _objectSpread2(_objectSpread2({}, uiState), {}, {
+          return removeEmptyRefinementsFromUiState$1(_objectSpread2(_objectSpread2({}, uiState), {}, {
             menu: _objectSpread2(_objectSpread2({}, uiState.menu), {}, _defineProperty({}, attribute, value))
-          });
+          }), attribute);
         },
         getWidgetSearchParameters: function getWidgetSearchParameters(searchParameters, _ref5) {
           var uiState = _ref5.uiState;
@@ -3378,6 +3558,18 @@
       };
     };
   };
+  function removeEmptyRefinementsFromUiState$1(indexUiState, attribute) {
+    if (!indexUiState.menu) {
+      return indexUiState;
+    }
+    if (indexUiState.menu[attribute] === undefined) {
+      delete indexUiState.menu[attribute];
+    }
+    if (Object.keys(indexUiState.menu).length === 0) {
+      delete indexUiState.menu;
+    }
+    return indexUiState;
+  }
 
   var withUsage$9 = createDocumentationMessageGenerator({
     name: 'numeric-menu',
@@ -3449,7 +3641,7 @@
         dispose: function dispose(_ref4) {
           var state = _ref4.state;
           unmountFn();
-          return state.clearRefinements(attribute);
+          return state.removeNumericRefinement(attribute);
         },
         getWidgetUiState: function getWidgetUiState(uiState, _ref5) {
           var searchParameters = _ref5.searchParameters;
@@ -3462,21 +3654,18 @@
           }
           var min = values['>='] && values['>='][0] || '';
           var max = values['<='] && values['<='][0] || '';
-          if (min === '' && max === '') {
-            return uiState;
-          }
-          return _objectSpread2(_objectSpread2({}, uiState), {}, {
+          return removeEmptyRefinementsFromUiState$2(_objectSpread2(_objectSpread2({}, uiState), {}, {
             numericMenu: _objectSpread2(_objectSpread2({}, uiState.numericMenu), {}, _defineProperty({}, attribute, "".concat(min, ":").concat(max)))
-          });
+          }), attribute);
         },
         getWidgetSearchParameters: function getWidgetSearchParameters(searchParameters, _ref6) {
           var uiState = _ref6.uiState;
           var value = uiState.numericMenu && uiState.numericMenu[attribute];
-          var withoutRefinements = searchParameters.clearRefinements(attribute);
+          var withoutRefinements = searchParameters.setQueryParameters({
+            numericRefinements: _objectSpread2(_objectSpread2({}, searchParameters.numericRefinements), {}, _defineProperty({}, attribute, {}))
+          });
           if (!value) {
-            return withoutRefinements.setQueryParameters({
-              numericRefinements: _objectSpread2(_objectSpread2({}, withoutRefinements.numericRefinements), {}, _defineProperty({}, attribute, {}))
-            });
+            return withoutRefinements;
           }
           var isExact = value.indexOf(':') === -1;
           if (isExact) {
@@ -3629,6 +3818,18 @@
   function hasNumericRefinement(currentRefinements, operator, value) {
     return currentRefinements[operator] !== undefined && currentRefinements[operator].includes(value);
   }
+  function removeEmptyRefinementsFromUiState$2(indexUiState, attribute) {
+    if (!indexUiState.numericMenu) {
+      return indexUiState;
+    }
+    if (indexUiState.numericMenu[attribute] === ':') {
+      delete indexUiState.numericMenu[attribute];
+    }
+    if (Object.keys(indexUiState.numericMenu).length === 0) {
+      delete indexUiState.numericMenu;
+    }
+    return indexUiState;
+  }
 
   var Paginator = /*#__PURE__*/function () {
     function Paginator(params) {
@@ -3681,12 +3882,12 @@
     }, {
       key: "isLastPage",
       value: function isLastPage() {
-        return this.currentPage === this.total - 1 || this.total === 0;
+        return this.currentPage >= this.total - 1;
       }
     }, {
       key: "isFirstPage",
       value: function isFirstPage() {
-        return this.currentPage === 0;
+        return this.currentPage <= 0;
       }
     }]);
     return Paginator;
@@ -3770,7 +3971,7 @@
             connectorState.createURL = function (page) {
               return createURL(function (uiState) {
                 return _objectSpread2(_objectSpread2({}, uiState), {}, {
-                  page: page
+                  page: page + 1
                 });
               });
             };
@@ -3811,6 +4012,9 @@
     connector: true
   });
   var $$type$1 = 'ais.range';
+
+  // @MAJOR: potentially we should consolidate these types
+
   function toPrecision(_ref) {
     var min = _ref.min,
       max = _ref.max,
@@ -4311,12 +4515,9 @@
         getWidgetUiState: function getWidgetUiState(uiState, _ref5) {
           var searchParameters = _ref5.searchParameters;
           var values = operator === 'or' ? searchParameters.getDisjunctiveRefinements(attribute) : searchParameters.getConjunctiveRefinements(attribute);
-          if (!values.length) {
-            return uiState;
-          }
-          return _objectSpread2(_objectSpread2({}, uiState), {}, {
+          return removeEmptyRefinementsFromUiState$3(_objectSpread2(_objectSpread2({}, uiState), {}, {
             refinementList: _objectSpread2(_objectSpread2({}, uiState.refinementList), {}, _defineProperty({}, attribute, values))
-          });
+          }), attribute);
         },
         getWidgetSearchParameters: function getWidgetSearchParameters(searchParameters, _ref6) {
           var uiState = _ref6.uiState;
@@ -4330,8 +4531,7 @@
             return searchParameters;
           }
           var values = uiState.refinementList && uiState.refinementList[attribute];
-          var withoutRefinements = searchParameters.clearRefinements(attribute);
-          var withFacetConfiguration = isDisjunctive ? withoutRefinements.addDisjunctiveFacet(attribute) : withoutRefinements.addFacet(attribute);
+          var withFacetConfiguration = isDisjunctive ? searchParameters.addDisjunctiveFacet(attribute).removeDisjunctiveFacetRefinement(attribute) : searchParameters.addFacet(attribute).removeFacetRefinement(attribute);
           var currentMaxValuesPerFacet = withFacetConfiguration.maxValuesPerFacet || 0;
           var nextMaxValuesPerFacet = Math.max(currentMaxValuesPerFacet, showMore ? showMoreLimit : limit);
           var withMaxValuesPerFacet = withFacetConfiguration.setQueryParameter('maxValuesPerFacet', nextMaxValuesPerFacet);
@@ -4346,11 +4546,113 @@
       };
     };
   };
+  function removeEmptyRefinementsFromUiState$3(indexUiState, attribute) {
+    if (!indexUiState.refinementList) {
+      return indexUiState;
+    }
+    if (!indexUiState.refinementList[attribute] || indexUiState.refinementList[attribute].length === 0) {
+      delete indexUiState.refinementList[attribute];
+    }
+    if (Object.keys(indexUiState.refinementList).length === 0) {
+      delete indexUiState.refinementList;
+    }
+    return indexUiState;
+  }
 
   var withUsage$d = createDocumentationMessageGenerator({
+    name: 'related-products',
+    connector: true
+  });
+  var connectRelatedProducts = (function connectRelatedProducts(renderFn) {
+    var unmountFn = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : noop;
+    checkRendering(renderFn, withUsage$d());
+    return function (widgetParams) {
+      var _ref = widgetParams || {},
+        _ref$escapeHTML = _ref.escapeHTML,
+        escapeHTML = _ref$escapeHTML === void 0 ? true : _ref$escapeHTML,
+        objectIDs = _ref.objectIDs,
+        limit = _ref.limit,
+        threshold = _ref.threshold,
+        fallbackParameters = _ref.fallbackParameters,
+        queryParameters = _ref.queryParameters,
+        _ref$transformItems = _ref.transformItems,
+        transformItems = _ref$transformItems === void 0 ? function (items) {
+          return items;
+        } : _ref$transformItems;
+      if (!objectIDs || objectIDs.length === 0) {
+        throw new Error(withUsage$d('The `objectIDs` option is required.'));
+      }
+      return {
+        dependsOn: 'recommend',
+        $$type: 'ais.relatedProducts',
+        init: function init(initOptions) {
+          renderFn(_objectSpread2(_objectSpread2({}, this.getWidgetRenderState(initOptions)), {}, {
+            instantSearchInstance: initOptions.instantSearchInstance
+          }), true);
+        },
+        render: function render(renderOptions) {
+          var renderState = this.getWidgetRenderState(renderOptions);
+          renderFn(_objectSpread2(_objectSpread2({}, renderState), {}, {
+            instantSearchInstance: renderOptions.instantSearchInstance
+          }), false);
+        },
+        getRenderState: function getRenderState(renderState) {
+          return renderState;
+        },
+        getWidgetRenderState: function getWidgetRenderState(_ref2) {
+          var results = _ref2.results;
+          if (results === null || results === undefined) {
+            return {
+              items: [],
+              widgetParams: widgetParams
+            };
+          }
+          if (escapeHTML && results.hits.length > 0) {
+            results.hits = escapeHits(results.hits);
+          }
+          return {
+            items: transformItems(results.hits, {
+              results: results
+            }),
+            widgetParams: widgetParams
+          };
+        },
+        dispose: function dispose(_ref3) {
+          var recommendState = _ref3.recommendState;
+          unmountFn();
+          return recommendState.removeParams(this.$$id);
+        },
+        getWidgetParameters: function getWidgetParameters(state) {
+          var _this = this;
+          return objectIDs.reduce(function (acc, objectID) {
+            return acc.addRelatedProducts({
+              objectID: objectID,
+              maxRecommendations: limit,
+              threshold: threshold,
+              fallbackParameters: _objectSpread2(_objectSpread2({}, fallbackParameters), escapeHTML ? TAG_PLACEHOLDER : {}),
+              queryParameters: _objectSpread2(_objectSpread2({}, queryParameters), escapeHTML ? TAG_PLACEHOLDER : {}),
+              $$id: _this.$$id
+            });
+          }, state.removeParams(this.$$id));
+        }
+      };
+    };
+  });
+
+  var withUsage$e = createDocumentationMessageGenerator({
     name: 'search-box',
     connector: true
   });
+
+  /**
+   * @typedef {Object} CustomSearchBoxWidgetParams
+   * @property {function(string, function(string))} [queryHook = undefined] A function that will be called every time
+   * a new value for the query is set. The first parameter is the query and the second is a
+   * function to actually trigger the search. The function takes the query as the parameter.
+   *
+   * This queryHook can be used to debounce the number of searches done from the searchBox.
+   */
+
   var defaultQueryHook = function defaultQueryHook(query, hook) {
     return hook(query);
   };
@@ -4363,7 +4665,7 @@
    */
   var connectSearchBox = function connectSearchBox(renderFn) {
     var unmountFn = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : noop;
-    checkRendering(renderFn, withUsage$d());
+    checkRendering(renderFn, withUsage$e());
     return function (widgetParams) {
       var _ref = widgetParams || {},
         _ref$queryHook = _ref.queryHook,
@@ -4396,7 +4698,7 @@
         },
         getWidgetRenderState: function getWidgetRenderState(_ref3) {
           var helper = _ref3.helper,
-            searchMetadata = _ref3.searchMetadata,
+            instantSearchInstance = _ref3.instantSearchInstance,
             state = _ref3.state;
           if (!_refine) {
             _refine = function _refine(query) {
@@ -4413,7 +4715,7 @@
             refine: _refine,
             clear: _clear,
             widgetParams: widgetParams,
-            isSearchStalled: searchMetadata.isSearchStalled
+            isSearchStalled: instantSearchInstance.status === 'stalled'
           };
         },
         getWidgetUiState: function getWidgetUiState(uiState, _ref4) {
@@ -4434,7 +4736,7 @@
     };
   };
 
-  var withUsage$e = createDocumentationMessageGenerator({
+  var withUsage$f = createDocumentationMessageGenerator({
     name: 'sort-by',
     connector: true
   });
@@ -4447,7 +4749,7 @@
 
   var connectSortBy = function connectSortBy(renderFn) {
     var unmountFn = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : noop;
-    checkRendering(renderFn, withUsage$e());
+    checkRendering(renderFn, withUsage$f());
     var connectorState = {};
     return function (widgetParams) {
       var _ref = widgetParams || {},
@@ -4457,7 +4759,7 @@
           return x;
         } : _ref$transformItems;
       if (!Array.isArray(items)) {
-        throw new Error(withUsage$e('The `items` option expects an array of objects.'));
+        throw new Error(withUsage$f('The `items` option expects an array of objects.'));
       }
       return {
         $$type: 'ais.sortBy',
@@ -4529,7 +4831,7 @@
     };
   };
 
-  var withUsage$f = createDocumentationMessageGenerator({
+  var withUsage$g = createDocumentationMessageGenerator({
     name: 'rating-menu',
     connector: true
   });
@@ -4586,7 +4888,7 @@
    */
   var connectRatingMenu = function connectRatingMenu(renderFn) {
     var unmountFn = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : noop;
-    checkRendering(renderFn, withUsage$f());
+    checkRendering(renderFn, withUsage$g());
     return function (widgetParams) {
       var _ref2 = widgetParams || {},
         attribute = _ref2.attribute,
@@ -4594,7 +4896,7 @@
         max = _ref2$max === void 0 ? 5 : _ref2$max;
       var sendEvent;
       if (!attribute) {
-        throw new Error(withUsage$f('The `attribute` option is required.'));
+        throw new Error(withUsage$g('The `attribute` option is required.'));
       }
       var _getRefinedStar = function getRefinedStar(state) {
         var _values$;
@@ -4770,18 +5072,14 @@
         getWidgetUiState: function getWidgetUiState(uiState, _ref7) {
           var searchParameters = _ref7.searchParameters;
           var value = _getRefinedStar(searchParameters);
-          if (typeof value !== 'number') {
-            return uiState;
-          }
-          return _objectSpread2(_objectSpread2({}, uiState), {}, {
-            ratingMenu: _objectSpread2(_objectSpread2({}, uiState.ratingMenu), {}, _defineProperty({}, attribute, value))
-          });
+          return removeEmptyRefinementsFromUiState$4(_objectSpread2(_objectSpread2({}, uiState), {}, {
+            ratingMenu: _objectSpread2(_objectSpread2({}, uiState.ratingMenu), {}, _defineProperty({}, attribute, typeof value === 'number' ? value : undefined))
+          }), attribute);
         },
         getWidgetSearchParameters: function getWidgetSearchParameters(searchParameters, _ref8) {
           var uiState = _ref8.uiState;
           var value = uiState.ratingMenu && uiState.ratingMenu[attribute];
-          var withoutRefinements = searchParameters.clearRefinements(attribute);
-          var withDisjunctiveFacet = withoutRefinements.addDisjunctiveFacet(attribute);
+          var withDisjunctiveFacet = searchParameters.addDisjunctiveFacet(attribute).removeNumericRefinement(attribute).removeDisjunctiveFacetRefinement(attribute);
           if (!value) {
             return withDisjunctiveFacet.setQueryParameters({
               numericRefinements: _objectSpread2(_objectSpread2({}, withDisjunctiveFacet.numericRefinements), {}, _defineProperty({}, attribute, {}))
@@ -4792,8 +5090,20 @@
       };
     };
   };
+  function removeEmptyRefinementsFromUiState$4(indexUiState, attribute) {
+    if (!indexUiState.ratingMenu) {
+      return indexUiState;
+    }
+    if (typeof indexUiState.ratingMenu[attribute] !== 'number') {
+      delete indexUiState.ratingMenu[attribute];
+    }
+    if (Object.keys(indexUiState.ratingMenu).length === 0) {
+      delete indexUiState.ratingMenu;
+    }
+    return indexUiState;
+  }
 
-  var withUsage$g = createDocumentationMessageGenerator({
+  var withUsage$h = createDocumentationMessageGenerator({
     name: 'stats',
     connector: true
   });
@@ -4805,7 +5115,7 @@
 
   var connectStats = function connectStats(renderFn) {
     var unmountFn = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : noop;
-    checkRendering(renderFn, withUsage$g());
+    checkRendering(renderFn, withUsage$h());
     return function (widgetParams) {
       return {
         $$type: 'ais.stats',
@@ -4861,7 +5171,7 @@
     };
   };
 
-  var withUsage$h = createDocumentationMessageGenerator({
+  var withUsage$i = createDocumentationMessageGenerator({
     name: 'toggle-refinement',
     connector: true
   });
@@ -4921,7 +5231,7 @@
    */
   var connectToggleRefinement = function connectToggleRefinement(renderFn) {
     var unmountFn = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : noop;
-    checkRendering(renderFn, withUsage$h());
+    checkRendering(renderFn, withUsage$i());
     return function (widgetParams) {
       var _ref2 = widgetParams || {},
         attribute = _ref2.attribute,
@@ -4929,7 +5239,7 @@
         userOn = _ref2$on === void 0 ? true : _ref2$on,
         userOff = _ref2.off;
       if (!attribute) {
-        throw new Error(withUsage$h('The `attribute` option is required.'));
+        throw new Error(withUsage$i('The `attribute` option is required.'));
       }
       var hasAnOffValue = userOff !== undefined;
       // even though facet values can be numbers and boolean,
@@ -5127,7 +5437,7 @@
              _warning(false, "ToggleRefinement: Attribute \"".concat(attribute, "\" is already used by another widget of a different type.\nAs this is not supported, please make sure to remove this other widget or this ToggleRefinement widget will not work at all.")) ;
             return searchParameters;
           }
-          var withFacetConfiguration = searchParameters.clearRefinements(attribute).addDisjunctiveFacet(attribute);
+          var withFacetConfiguration = searchParameters.addDisjunctiveFacet(attribute).removeDisjunctiveFacetRefinement(attribute);
           var isRefined = Boolean(uiState.toggle && uiState.toggle[attribute]);
           if (isRefined) {
             if (on) {
@@ -5157,13 +5467,92 @@
     };
   };
 
-  var withUsage$i = createDocumentationMessageGenerator({
+  var withUsage$j = createDocumentationMessageGenerator({
+    name: 'trending-items',
+    connector: true
+  });
+  var connectTrendingItems = (function connectTrendingItems(renderFn) {
+    var unmountFn = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : noop;
+    checkRendering(renderFn, withUsage$j());
+    return function (widgetParams) {
+      var _ref = widgetParams || {},
+        facetName = _ref.facetName,
+        facetValue = _ref.facetValue,
+        limit = _ref.limit,
+        threshold = _ref.threshold,
+        fallbackParameters = _ref.fallbackParameters,
+        queryParameters = _ref.queryParameters,
+        _ref$escapeHTML = _ref.escapeHTML,
+        escapeHTML = _ref$escapeHTML === void 0 ? true : _ref$escapeHTML,
+        _ref$transformItems = _ref.transformItems,
+        transformItems = _ref$transformItems === void 0 ? function (items) {
+          return items;
+        } : _ref$transformItems;
+      if (facetName && !facetValue || !facetName && facetValue) {
+        throw new Error(withUsage$j("When you provide facetName (received type ".concat(getObjectType(facetName), "), you must also provide facetValue (received type ").concat(getObjectType(facetValue), ").")));
+      }
+      return {
+        dependsOn: 'recommend',
+        $$type: 'ais.trendingItems',
+        init: function init(initOptions) {
+          renderFn(_objectSpread2(_objectSpread2({}, this.getWidgetRenderState(initOptions)), {}, {
+            instantSearchInstance: initOptions.instantSearchInstance
+          }), true);
+        },
+        render: function render(renderOptions) {
+          var renderState = this.getWidgetRenderState(renderOptions);
+          renderFn(_objectSpread2(_objectSpread2({}, renderState), {}, {
+            instantSearchInstance: renderOptions.instantSearchInstance
+          }), false);
+        },
+        getRenderState: function getRenderState(renderState) {
+          return renderState;
+        },
+        getWidgetRenderState: function getWidgetRenderState(_ref2) {
+          var results = _ref2.results;
+          if (results === null || results === undefined) {
+            return {
+              items: [],
+              widgetParams: widgetParams
+            };
+          }
+          if (escapeHTML && results.hits.length > 0) {
+            results.hits = escapeHits(results.hits);
+          }
+          return {
+            items: transformItems(results.hits, {
+              results: results
+            }),
+            widgetParams: widgetParams
+          };
+        },
+        dispose: function dispose(_ref3) {
+          var recommendState = _ref3.recommendState;
+          unmountFn();
+          return recommendState.removeParams(this.$$id);
+        },
+        getWidgetParameters: function getWidgetParameters(state) {
+          return state.removeParams(this.$$id).addTrendingItems({
+            facetName: facetName,
+            facetValue: facetValue,
+            maxRecommendations: limit,
+            threshold: threshold,
+            fallbackParameters: _objectSpread2(_objectSpread2({}, fallbackParameters), escapeHTML ? TAG_PLACEHOLDER : {}),
+            queryParameters: _objectSpread2(_objectSpread2({}, queryParameters), escapeHTML ? TAG_PLACEHOLDER : {}),
+            $$id: this.$$id
+          });
+        }
+      };
+    };
+  });
+
+  var withUsage$k = createDocumentationMessageGenerator({
     name: 'breadcrumb',
     connector: true
   });
   var connectBreadcrumb = function connectBreadcrumb(renderFn) {
     var unmountFn = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : noop;
-    checkRendering(renderFn, withUsage$i());
+    checkRendering(renderFn, withUsage$k());
     var connectorState = {};
     return function (widgetParams) {
       var _ref = widgetParams || {},
@@ -5177,7 +5566,7 @@
           return items;
         } : _ref$transformItems;
       if (!attributes || !Array.isArray(attributes) || attributes.length === 0) {
-        throw new Error(withUsage$i('The `attributes` option expects an array of strings.'));
+        throw new Error(withUsage$k('The `attributes` option expects an array of strings.'));
       }
       var _attributes = _slicedToArray(attributes, 1),
         hierarchicalFacetName = _attributes[0];
@@ -5221,7 +5610,7 @@
           function getItems() {
             // The hierarchicalFacets condition is required for flavors
             // that render immediately with empty results, without relying
-            // on init() (like React InstantSearch Hooks).
+            // on init() (like React InstantSearch).
             if (!results || state.hierarchicalFacets.length === 0) {
               return [];
             }
@@ -5261,12 +5650,9 @@
         getWidgetUiState: function getWidgetUiState(uiState, _ref3) {
           var searchParameters = _ref3.searchParameters;
           var path = searchParameters.getHierarchicalFacetBreadcrumb(hierarchicalFacetName);
-          if (!path.length) {
-            return uiState;
-          }
-          return _objectSpread2(_objectSpread2({}, uiState), {}, {
+          return removeEmptyRefinementsFromUiState$5(_objectSpread2(_objectSpread2({}, uiState), {}, {
             hierarchicalMenu: _objectSpread2(_objectSpread2({}, uiState.hierarchicalMenu), {}, _defineProperty({}, hierarchicalFacetName, path))
-          });
+          }), hierarchicalFacetName);
         },
         getWidgetSearchParameters: function getWidgetSearchParameters(searchParameters, _ref4) {
           var uiState = _ref4.uiState;
@@ -5317,8 +5703,20 @@
       };
     });
   }
+  function removeEmptyRefinementsFromUiState$5(indexUiState, attribute) {
+    if (!indexUiState.hierarchicalMenu) {
+      return indexUiState;
+    }
+    if (!indexUiState.hierarchicalMenu[attribute] || !indexUiState.hierarchicalMenu[attribute].length) {
+      delete indexUiState.hierarchicalMenu[attribute];
+    }
+    if (Object.keys(indexUiState.hierarchicalMenu).length === 0) {
+      delete indexUiState.hierarchicalMenu;
+    }
+    return indexUiState;
+  }
 
-  var withUsage$j = createDocumentationMessageGenerator({
+  var withUsage$l = createDocumentationMessageGenerator({
     name: 'geo-search',
     connector: true
   });
@@ -5342,9 +5740,9 @@
    *
    * Currently, the feature is not compatible with multiple values in the _geoloc attribute.
    */
-  var connectGeoSearch = function connectGeoSearch(renderFn) {
+  var connectGeoSearch = (function connectGeoSearch(renderFn) {
     var unmountFn = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : noop;
-    checkRendering(renderFn, withUsage$j());
+    checkRendering(renderFn, withUsage$l());
     return function (widgetParams) {
       var _ref = widgetParams || {},
         _ref$enableRefineOnMa = _ref.enableRefineOnMapMove,
@@ -5462,7 +5860,9 @@
           if (!sendEvent) {
             sendEvent = createSendEventForHits({
               instantSearchInstance: instantSearchInstance,
-              index: helper.getIndex(),
+              getIndex: function getIndex() {
+                return helper.getIndex();
+              },
               widgetType: $$type$4
             });
           }
@@ -5481,7 +5881,9 @@
             widgetParams: widgetParams
           };
         },
-        getRenderState: function getRenderState(renderState, renderOptions) {
+        getRenderState: function getRenderState(renderState, renderOptions
+        // Type is explicitly redefined, to avoid having the TWidgetParams type in the definition
+        ) {
           return _objectSpread2(_objectSpread2({}, renderState), {}, {
             geoSearch: this.getWidgetRenderState(renderOptions)
           });
@@ -5512,9 +5914,9 @@
         }
       };
     };
-  };
+  });
 
-  var withUsage$k = createDocumentationMessageGenerator({
+  var withUsage$m = createDocumentationMessageGenerator({
     name: 'powered-by',
     connector: true
   });
@@ -5524,7 +5926,7 @@
    */
   var connectPoweredBy = function connectPoweredBy(renderFn) {
     var unmountFn = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : noop;
-    checkRendering(renderFn, withUsage$k());
+    checkRendering(renderFn, withUsage$m());
     var defaultUrl = 'https://www.algolia.com/?' + 'utm_source=instantsearch.js&' + 'utm_medium=website&' + "utm_content=".concat(safelyRunOnBrowser(function (_ref) {
       var _window$location;
       var window = _ref.window;
@@ -5569,3236 +5971,6 @@
       };
     };
   };
-
-  function clone(value) {
-    if (typeof value === 'object' && value !== null) {
-      return _merge(Array.isArray(value) ? [] : {}, value);
-    }
-    return value;
-  }
-
-  function isObjectOrArrayOrFunction(value) {
-    return (
-      typeof value === 'function' ||
-      Array.isArray(value) ||
-      Object.prototype.toString.call(value) === '[object Object]'
-    );
-  }
-
-  function _merge(target, source) {
-    if (target === source) {
-      return target;
-    }
-
-    for (var key in source) {
-      if (
-        !Object.prototype.hasOwnProperty.call(source, key) ||
-        key === '__proto__' ||
-        key === 'constructor'
-      ) {
-        continue;
-      }
-
-      var sourceVal = source[key];
-      var targetVal = target[key];
-
-      if (typeof targetVal !== 'undefined' && typeof sourceVal === 'undefined') {
-        continue;
-      }
-
-      if (
-        isObjectOrArrayOrFunction(targetVal) &&
-        isObjectOrArrayOrFunction(sourceVal)
-      ) {
-        target[key] = _merge(targetVal, sourceVal);
-      } else {
-        target[key] = clone(sourceVal);
-      }
-    }
-    return target;
-  }
-
-  /**
-   * This method is like Object.assign, but recursively merges own and inherited
-   * enumerable keyed properties of source objects into the destination object.
-   *
-   * NOTE: this behaves like lodash/merge, but:
-   * - does mutate functions if they are a source
-   * - treats non-plain objects as plain
-   * - does not work for circular objects
-   * - treats sparse arrays as sparse
-   * - does not convert Array-like objects (Arguments, NodeLists, etc.) to arrays
-   *
-   * @param {Object} object The destination object.
-   * @param {...Object} [sources] The source objects.
-   * @returns {Object} Returns `object`.
-   */
-
-  function merge(target) {
-    if (!isObjectOrArrayOrFunction(target)) {
-      target = {};
-    }
-
-    for (var i = 1, l = arguments.length; i < l; i++) {
-      var source = arguments[i];
-
-      if (isObjectOrArrayOrFunction(source)) {
-        _merge(target, source);
-      }
-    }
-    return target;
-  }
-
-  var merge_1 = merge;
-
-  // NOTE: this behaves like lodash/defaults, but doesn't mutate the target
-  // it also preserve keys order
-  var defaultsPure = function defaultsPure() {
-    var sources = Array.prototype.slice.call(arguments);
-
-    return sources.reduceRight(function(acc, source) {
-      Object.keys(Object(source)).forEach(function(key) {
-        if (source[key] === undefined) {
-          return;
-        }
-        if (acc[key] !== undefined) {
-          // remove if already added, so that we can add it in correct order
-          delete acc[key];
-        }
-        acc[key] = source[key];
-      });
-      return acc;
-    }, {});
-  };
-
-  function intersection(arr1, arr2) {
-    return arr1.filter(function(value, index) {
-      return (
-        arr2.indexOf(value) > -1 &&
-        arr1.indexOf(value) === index /* skips duplicates */
-      );
-    });
-  }
-
-  var intersection_1 = intersection;
-
-  // @MAJOR can be replaced by native Array#find when we change support
-  var find$1 = function find(array, comparator) {
-    if (!Array.isArray(array)) {
-      return undefined;
-    }
-
-    for (var i = 0; i < array.length; i++) {
-      if (comparator(array[i])) {
-        return array[i];
-      }
-    }
-  };
-
-  function valToNumber(v) {
-    if (typeof v === 'number') {
-      return v;
-    } else if (typeof v === 'string') {
-      return parseFloat(v);
-    } else if (Array.isArray(v)) {
-      return v.map(valToNumber);
-    }
-
-    throw new Error('The value should be a number, a parsable string or an array of those.');
-  }
-
-  var valToNumber_1 = valToNumber;
-
-  // https://github.com/babel/babel/blob/3aaafae053fa75febb3aa45d45b6f00646e30ba4/packages/babel-helpers/src/helpers.js#L604-L620
-  function _objectWithoutPropertiesLoose$1(source, excluded) {
-    if (source === null) return {};
-    var target = {};
-    var sourceKeys = Object.keys(source);
-    var key;
-    var i;
-    for (i = 0; i < sourceKeys.length; i++) {
-      key = sourceKeys[i];
-      if (excluded.indexOf(key) >= 0) continue;
-      target[key] = source[key];
-    }
-    return target;
-  }
-
-  var omit$1 = _objectWithoutPropertiesLoose$1;
-
-  function objectHasKeys(obj) {
-    return obj && Object.keys(obj).length > 0;
-  }
-
-  var objectHasKeys_1 = objectHasKeys;
-
-  var isValidUserToken = function isValidUserToken(userToken) {
-    if (userToken === null) {
-      return false;
-    }
-    return /^[a-zA-Z0-9_-]{1,64}$/.test(userToken);
-  };
-
-  /**
-   * Functions to manipulate refinement lists
-   *
-   * The RefinementList is not formally defined through a prototype but is based
-   * on a specific structure.
-   *
-   * @module SearchParameters.refinementList
-   *
-   * @typedef {string[]} SearchParameters.refinementList.Refinements
-   * @typedef {Object.<string, SearchParameters.refinementList.Refinements>} SearchParameters.refinementList.RefinementList
-   */
-
-
-
-
-
-  var lib = {
-    /**
-     * Adds a refinement to a RefinementList
-     * @param {RefinementList} refinementList the initial list
-     * @param {string} attribute the attribute to refine
-     * @param {string} value the value of the refinement, if the value is not a string it will be converted
-     * @return {RefinementList} a new and updated refinement list
-     */
-    addRefinement: function addRefinement(refinementList, attribute, value) {
-      if (lib.isRefined(refinementList, attribute, value)) {
-        return refinementList;
-      }
-
-      var valueAsString = '' + value;
-
-      var facetRefinement = !refinementList[attribute] ?
-        [valueAsString] :
-        refinementList[attribute].concat(valueAsString);
-
-      var mod = {};
-
-      mod[attribute] = facetRefinement;
-
-      return defaultsPure({}, mod, refinementList);
-    },
-    /**
-     * Removes refinement(s) for an attribute:
-     *  - if the value is specified removes the refinement for the value on the attribute
-     *  - if no value is specified removes all the refinements for this attribute
-     * @param {RefinementList} refinementList the initial list
-     * @param {string} attribute the attribute to refine
-     * @param {string} [value] the value of the refinement
-     * @return {RefinementList} a new and updated refinement lst
-     */
-    removeRefinement: function removeRefinement(refinementList, attribute, value) {
-      if (value === undefined) {
-        // we use the "filter" form of clearRefinement, since it leaves empty values as-is
-        // the form with a string will remove the attribute completely
-        return lib.clearRefinement(refinementList, function(v, f) {
-          return attribute === f;
-        });
-      }
-
-      var valueAsString = '' + value;
-
-      return lib.clearRefinement(refinementList, function(v, f) {
-        return attribute === f && valueAsString === v;
-      });
-    },
-    /**
-     * Toggles the refinement value for an attribute.
-     * @param {RefinementList} refinementList the initial list
-     * @param {string} attribute the attribute to refine
-     * @param {string} value the value of the refinement
-     * @return {RefinementList} a new and updated list
-     */
-    toggleRefinement: function toggleRefinement(refinementList, attribute, value) {
-      if (value === undefined) throw new Error('toggleRefinement should be used with a value');
-
-      if (lib.isRefined(refinementList, attribute, value)) {
-        return lib.removeRefinement(refinementList, attribute, value);
-      }
-
-      return lib.addRefinement(refinementList, attribute, value);
-    },
-    /**
-     * Clear all or parts of a RefinementList. Depending on the arguments, three
-     * kinds of behavior can happen:
-     *  - if no attribute is provided: clears the whole list
-     *  - if an attribute is provided as a string: clears the list for the specific attribute
-     *  - if an attribute is provided as a function: discards the elements for which the function returns true
-     * @param {RefinementList} refinementList the initial list
-     * @param {string} [attribute] the attribute or function to discard
-     * @param {string} [refinementType] optional parameter to give more context to the attribute function
-     * @return {RefinementList} a new and updated refinement list
-     */
-    clearRefinement: function clearRefinement(refinementList, attribute, refinementType) {
-      if (attribute === undefined) {
-        if (!objectHasKeys_1(refinementList)) {
-          return refinementList;
-        }
-        return {};
-      } else if (typeof attribute === 'string') {
-        return omit$1(refinementList, [attribute]);
-      } else if (typeof attribute === 'function') {
-        var hasChanged = false;
-
-        var newRefinementList = Object.keys(refinementList).reduce(function(memo, key) {
-          var values = refinementList[key] || [];
-          var facetList = values.filter(function(value) {
-            return !attribute(value, key, refinementType);
-          });
-
-          if (facetList.length !== values.length) {
-            hasChanged = true;
-          }
-          memo[key] = facetList;
-
-          return memo;
-        }, {});
-
-        if (hasChanged) return newRefinementList;
-        return refinementList;
-      }
-    },
-    /**
-     * Test if the refinement value is used for the attribute. If no refinement value
-     * is provided, test if the refinementList contains any refinement for the
-     * given attribute.
-     * @param {RefinementList} refinementList the list of refinement
-     * @param {string} attribute name of the attribute
-     * @param {string} [refinementValue] value of the filter/refinement
-     * @return {boolean}
-     */
-    isRefined: function isRefined(refinementList, attribute, refinementValue) {
-      var containsRefinements = !!refinementList[attribute] &&
-        refinementList[attribute].length > 0;
-
-      if (refinementValue === undefined || !containsRefinements) {
-        return containsRefinements;
-      }
-
-      var refinementValueAsString = '' + refinementValue;
-
-      return refinementList[attribute].indexOf(refinementValueAsString) !== -1;
-    }
-  };
-
-  var RefinementList = lib;
-
-  /**
-   * isEqual, but only for numeric refinement values, possible values:
-   * - 5
-   * - [5]
-   * - [[5]]
-   * - [[5,5],[4]]
-   */
-  function isEqualNumericRefinement(a, b) {
-    if (Array.isArray(a) && Array.isArray(b)) {
-      return (
-        a.length === b.length &&
-        a.every(function(el, i) {
-          return isEqualNumericRefinement(b[i], el);
-        })
-      );
-    }
-    return a === b;
-  }
-
-  /**
-   * like _.find but using deep equality to be able to use it
-   * to find arrays.
-   * @private
-   * @param {any[]} array array to search into (elements are base or array of base)
-   * @param {any} searchedValue the value we're looking for (base or array of base)
-   * @return {any} the searched value or undefined
-   */
-  function findArray(array, searchedValue) {
-    return find$1(array, function(currentValue) {
-      return isEqualNumericRefinement(currentValue, searchedValue);
-    });
-  }
-
-  /**
-   * The facet list is the structure used to store the list of values used to
-   * filter a single attribute.
-   * @typedef {string[]} SearchParameters.FacetList
-   */
-
-  /**
-   * Structure to store numeric filters with the operator as the key. The supported operators
-   * are `=`, `>`, `<`, `>=`, `<=` and `!=`.
-   * @typedef {Object.<string, Array.<number|number[]>>} SearchParameters.OperatorList
-   */
-
-  /**
-   * SearchParameters is the data structure that contains all the information
-   * usable for making a search to Algolia API. It doesn't do the search itself,
-   * nor does it contains logic about the parameters.
-   * It is an immutable object, therefore it has been created in a way that each
-   * changes does not change the object itself but returns a copy with the
-   * modification.
-   * This object should probably not be instantiated outside of the helper. It will
-   * be provided when needed. This object is documented for reference as you'll
-   * get it from events generated by the {@link AlgoliaSearchHelper}.
-   * If need be, instantiate the Helper from the factory function {@link SearchParameters.make}
-   * @constructor
-   * @classdesc contains all the parameters of a search
-   * @param {object|SearchParameters} newParameters existing parameters or partial object
-   * for the properties of a new SearchParameters
-   * @see SearchParameters.make
-   * @example <caption>SearchParameters of the first query in
-   *   <a href="http://demos.algolia.com/instant-search-demo/">the instant search demo</a></caption>
-  {
-     "query": "",
-     "disjunctiveFacets": [
-        "customerReviewCount",
-        "category",
-        "salePrice_range",
-        "manufacturer"
-    ],
-     "maxValuesPerFacet": 30,
-     "page": 0,
-     "hitsPerPage": 10,
-     "facets": [
-        "type",
-        "shipping"
-    ]
-  }
-   */
-  function SearchParameters(newParameters) {
-    var params = newParameters ? SearchParameters._parseNumbers(newParameters) : {};
-
-    if (params.userToken !== undefined && !isValidUserToken(params.userToken)) {
-      console.warn('[algoliasearch-helper] The `userToken` parameter is invalid. This can lead to wrong analytics.\n  - Format: [a-zA-Z0-9_-]{1,64}');
-    }
-    /**
-     * This attribute contains the list of all the conjunctive facets
-     * used. This list will be added to requested facets in the
-     * [facets attribute](https://www.algolia.com/doc/rest-api/search#param-facets) sent to algolia.
-     * @member {string[]}
-     */
-    this.facets = params.facets || [];
-    /**
-     * This attribute contains the list of all the disjunctive facets
-     * used. This list will be added to requested facets in the
-     * [facets attribute](https://www.algolia.com/doc/rest-api/search#param-facets) sent to algolia.
-     * @member {string[]}
-     */
-    this.disjunctiveFacets = params.disjunctiveFacets || [];
-    /**
-     * This attribute contains the list of all the hierarchical facets
-     * used. This list will be added to requested facets in the
-     * [facets attribute](https://www.algolia.com/doc/rest-api/search#param-facets) sent to algolia.
-     * Hierarchical facets are a sub type of disjunctive facets that
-     * let you filter faceted attributes hierarchically.
-     * @member {string[]|object[]}
-     */
-    this.hierarchicalFacets = params.hierarchicalFacets || [];
-
-    // Refinements
-    /**
-     * This attribute contains all the filters that need to be
-     * applied on the conjunctive facets. Each facet must be properly
-     * defined in the `facets` attribute.
-     *
-     * The key is the name of the facet, and the `FacetList` contains all
-     * filters selected for the associated facet name.
-     *
-     * When querying algolia, the values stored in this attribute will
-     * be translated into the `facetFilters` attribute.
-     * @member {Object.<string, SearchParameters.FacetList>}
-     */
-    this.facetsRefinements = params.facetsRefinements || {};
-    /**
-     * This attribute contains all the filters that need to be
-     * excluded from the conjunctive facets. Each facet must be properly
-     * defined in the `facets` attribute.
-     *
-     * The key is the name of the facet, and the `FacetList` contains all
-     * filters excluded for the associated facet name.
-     *
-     * When querying algolia, the values stored in this attribute will
-     * be translated into the `facetFilters` attribute.
-     * @member {Object.<string, SearchParameters.FacetList>}
-     */
-    this.facetsExcludes = params.facetsExcludes || {};
-    /**
-     * This attribute contains all the filters that need to be
-     * applied on the disjunctive facets. Each facet must be properly
-     * defined in the `disjunctiveFacets` attribute.
-     *
-     * The key is the name of the facet, and the `FacetList` contains all
-     * filters selected for the associated facet name.
-     *
-     * When querying algolia, the values stored in this attribute will
-     * be translated into the `facetFilters` attribute.
-     * @member {Object.<string, SearchParameters.FacetList>}
-     */
-    this.disjunctiveFacetsRefinements = params.disjunctiveFacetsRefinements || {};
-    /**
-     * This attribute contains all the filters that need to be
-     * applied on the numeric attributes.
-     *
-     * The key is the name of the attribute, and the value is the
-     * filters to apply to this attribute.
-     *
-     * When querying algolia, the values stored in this attribute will
-     * be translated into the `numericFilters` attribute.
-     * @member {Object.<string, SearchParameters.OperatorList>}
-     */
-    this.numericRefinements = params.numericRefinements || {};
-    /**
-     * This attribute contains all the tags used to refine the query.
-     *
-     * When querying algolia, the values stored in this attribute will
-     * be translated into the `tagFilters` attribute.
-     * @member {string[]}
-     */
-    this.tagRefinements = params.tagRefinements || [];
-    /**
-     * This attribute contains all the filters that need to be
-     * applied on the hierarchical facets. Each facet must be properly
-     * defined in the `hierarchicalFacets` attribute.
-     *
-     * The key is the name of the facet, and the `FacetList` contains all
-     * filters selected for the associated facet name. The FacetList values
-     * are structured as a string that contain the values for each level
-     * separated by the configured separator.
-     *
-     * When querying algolia, the values stored in this attribute will
-     * be translated into the `facetFilters` attribute.
-     * @member {Object.<string, SearchParameters.FacetList>}
-     */
-    this.hierarchicalFacetsRefinements = params.hierarchicalFacetsRefinements || {};
-
-    var self = this;
-    Object.keys(params).forEach(function(paramName) {
-      var isKeyKnown = SearchParameters.PARAMETERS.indexOf(paramName) !== -1;
-      var isValueDefined = params[paramName] !== undefined;
-
-      if (!isKeyKnown && isValueDefined) {
-        self[paramName] = params[paramName];
-      }
-    });
-  }
-
-  /**
-   * List all the properties in SearchParameters and therefore all the known Algolia properties
-   * This doesn't contain any beta/hidden features.
-   * @private
-   */
-  SearchParameters.PARAMETERS = Object.keys(new SearchParameters());
-
-  /**
-   * @private
-   * @param {object} partialState full or part of a state
-   * @return {object} a new object with the number keys as number
-   */
-  SearchParameters._parseNumbers = function(partialState) {
-    // Do not reparse numbers in SearchParameters, they ought to be parsed already
-    if (partialState instanceof SearchParameters) return partialState;
-
-    var numbers = {};
-
-    var numberKeys = [
-      'aroundPrecision',
-      'aroundRadius',
-      'getRankingInfo',
-      'minWordSizefor2Typos',
-      'minWordSizefor1Typo',
-      'page',
-      'maxValuesPerFacet',
-      'distinct',
-      'minimumAroundRadius',
-      'hitsPerPage',
-      'minProximity'
-    ];
-
-    numberKeys.forEach(function(k) {
-      var value = partialState[k];
-      if (typeof value === 'string') {
-        var parsedValue = parseFloat(value);
-        // global isNaN is ok to use here, value is only number or NaN
-        numbers[k] = isNaN(parsedValue) ? value : parsedValue;
-      }
-    });
-
-    // there's two formats of insideBoundingBox, we need to parse
-    // the one which is an array of float geo rectangles
-    if (Array.isArray(partialState.insideBoundingBox)) {
-      numbers.insideBoundingBox = partialState.insideBoundingBox.map(function(geoRect) {
-        if (Array.isArray(geoRect)) {
-          return geoRect.map(function(value) {
-            return parseFloat(value);
-          });
-        }
-        return geoRect;
-      });
-    }
-
-    if (partialState.numericRefinements) {
-      var numericRefinements = {};
-      Object.keys(partialState.numericRefinements).forEach(function(attribute) {
-        var operators = partialState.numericRefinements[attribute] || {};
-        numericRefinements[attribute] = {};
-        Object.keys(operators).forEach(function(operator) {
-          var values = operators[operator];
-          var parsedValues = values.map(function(v) {
-            if (Array.isArray(v)) {
-              return v.map(function(vPrime) {
-                if (typeof vPrime === 'string') {
-                  return parseFloat(vPrime);
-                }
-                return vPrime;
-              });
-            } else if (typeof v === 'string') {
-              return parseFloat(v);
-            }
-            return v;
-          });
-          numericRefinements[attribute][operator] = parsedValues;
-        });
-      });
-      numbers.numericRefinements = numericRefinements;
-    }
-
-    return merge_1({}, partialState, numbers);
-  };
-
-  /**
-   * Factory for SearchParameters
-   * @param {object|SearchParameters} newParameters existing parameters or partial
-   * object for the properties of a new SearchParameters
-   * @return {SearchParameters} frozen instance of SearchParameters
-   */
-  SearchParameters.make = function makeSearchParameters(newParameters) {
-    var instance = new SearchParameters(newParameters);
-
-    var hierarchicalFacets = newParameters.hierarchicalFacets || [];
-    hierarchicalFacets.forEach(function(facet) {
-      if (facet.rootPath) {
-        var currentRefinement = instance.getHierarchicalRefinement(facet.name);
-
-        if (currentRefinement.length > 0 && currentRefinement[0].indexOf(facet.rootPath) !== 0) {
-          instance = instance.clearRefinements(facet.name);
-        }
-
-        // get it again in case it has been cleared
-        currentRefinement = instance.getHierarchicalRefinement(facet.name);
-        if (currentRefinement.length === 0) {
-          instance = instance.toggleHierarchicalFacetRefinement(facet.name, facet.rootPath);
-        }
-      }
-    });
-
-    return instance;
-  };
-
-  /**
-   * Validates the new parameters based on the previous state
-   * @param {SearchParameters} currentState the current state
-   * @param {object|SearchParameters} parameters the new parameters to set
-   * @return {Error|null} Error if the modification is invalid, null otherwise
-   */
-  SearchParameters.validate = function(currentState, parameters) {
-    var params = parameters || {};
-
-    if (currentState.tagFilters && params.tagRefinements && params.tagRefinements.length > 0) {
-      return new Error(
-        '[Tags] Cannot switch from the managed tag API to the advanced API. It is probably ' +
-        'an error, if it is really what you want, you should first clear the tags with clearTags method.');
-    }
-
-    if (currentState.tagRefinements.length > 0 && params.tagFilters) {
-      return new Error(
-        '[Tags] Cannot switch from the advanced tag API to the managed API. It is probably ' +
-        'an error, if it is not, you should first clear the tags with clearTags method.');
-    }
-
-    if (
-      currentState.numericFilters &&
-      params.numericRefinements &&
-      objectHasKeys_1(params.numericRefinements)
-    ) {
-      return new Error(
-        "[Numeric filters] Can't switch from the advanced to the managed API. It" +
-          ' is probably an error, if this is really what you want, you have to first' +
-          ' clear the numeric filters.'
-      );
-    }
-
-    if (objectHasKeys_1(currentState.numericRefinements) && params.numericFilters) {
-      return new Error(
-        "[Numeric filters] Can't switch from the managed API to the advanced. It" +
-        ' is probably an error, if this is really what you want, you have to first' +
-        ' clear the numeric filters.');
-    }
-
-    return null;
-  };
-
-  SearchParameters.prototype = {
-    constructor: SearchParameters,
-
-    /**
-     * Remove all refinements (disjunctive + conjunctive + excludes + numeric filters)
-     * @method
-     * @param {undefined|string|SearchParameters.clearCallback} [attribute] optional string or function
-     * - If not given, means to clear all the filters.
-     * - If `string`, means to clear all refinements for the `attribute` named filter.
-     * - If `function`, means to clear all the refinements that return truthy values.
-     * @return {SearchParameters}
-     */
-    clearRefinements: function clearRefinements(attribute) {
-      var patch = {
-        numericRefinements: this._clearNumericRefinements(attribute),
-        facetsRefinements: RefinementList.clearRefinement(
-          this.facetsRefinements,
-          attribute,
-          'conjunctiveFacet'
-        ),
-        facetsExcludes: RefinementList.clearRefinement(
-          this.facetsExcludes,
-          attribute,
-          'exclude'
-        ),
-        disjunctiveFacetsRefinements: RefinementList.clearRefinement(
-          this.disjunctiveFacetsRefinements,
-          attribute,
-          'disjunctiveFacet'
-        ),
-        hierarchicalFacetsRefinements: RefinementList.clearRefinement(
-          this.hierarchicalFacetsRefinements,
-          attribute,
-          'hierarchicalFacet'
-        )
-      };
-      if (
-        patch.numericRefinements === this.numericRefinements &&
-        patch.facetsRefinements === this.facetsRefinements &&
-        patch.facetsExcludes === this.facetsExcludes &&
-        patch.disjunctiveFacetsRefinements === this.disjunctiveFacetsRefinements &&
-        patch.hierarchicalFacetsRefinements === this.hierarchicalFacetsRefinements
-      ) {
-        return this;
-      }
-      return this.setQueryParameters(patch);
-    },
-    /**
-     * Remove all the refined tags from the SearchParameters
-     * @method
-     * @return {SearchParameters}
-     */
-    clearTags: function clearTags() {
-      if (this.tagFilters === undefined && this.tagRefinements.length === 0) return this;
-
-      return this.setQueryParameters({
-        tagFilters: undefined,
-        tagRefinements: []
-      });
-    },
-    /**
-     * Set the index.
-     * @method
-     * @param {string} index the index name
-     * @return {SearchParameters}
-     */
-    setIndex: function setIndex(index) {
-      if (index === this.index) return this;
-
-      return this.setQueryParameters({
-        index: index
-      });
-    },
-    /**
-     * Query setter
-     * @method
-     * @param {string} newQuery value for the new query
-     * @return {SearchParameters}
-     */
-    setQuery: function setQuery(newQuery) {
-      if (newQuery === this.query) return this;
-
-      return this.setQueryParameters({
-        query: newQuery
-      });
-    },
-    /**
-     * Page setter
-     * @method
-     * @param {number} newPage new page number
-     * @return {SearchParameters}
-     */
-    setPage: function setPage(newPage) {
-      if (newPage === this.page) return this;
-
-      return this.setQueryParameters({
-        page: newPage
-      });
-    },
-    /**
-     * Facets setter
-     * The facets are the simple facets, used for conjunctive (and) faceting.
-     * @method
-     * @param {string[]} facets all the attributes of the algolia records used for conjunctive faceting
-     * @return {SearchParameters}
-     */
-    setFacets: function setFacets(facets) {
-      return this.setQueryParameters({
-        facets: facets
-      });
-    },
-    /**
-     * Disjunctive facets setter
-     * Change the list of disjunctive (or) facets the helper chan handle.
-     * @method
-     * @param {string[]} facets all the attributes of the algolia records used for disjunctive faceting
-     * @return {SearchParameters}
-     */
-    setDisjunctiveFacets: function setDisjunctiveFacets(facets) {
-      return this.setQueryParameters({
-        disjunctiveFacets: facets
-      });
-    },
-    /**
-     * HitsPerPage setter
-     * Hits per page represents the number of hits retrieved for this query
-     * @method
-     * @param {number} n number of hits retrieved per page of results
-     * @return {SearchParameters}
-     */
-    setHitsPerPage: function setHitsPerPage(n) {
-      if (this.hitsPerPage === n) return this;
-
-      return this.setQueryParameters({
-        hitsPerPage: n
-      });
-    },
-    /**
-     * typoTolerance setter
-     * Set the value of typoTolerance
-     * @method
-     * @param {string} typoTolerance new value of typoTolerance ("true", "false", "min" or "strict")
-     * @return {SearchParameters}
-     */
-    setTypoTolerance: function setTypoTolerance(typoTolerance) {
-      if (this.typoTolerance === typoTolerance) return this;
-
-      return this.setQueryParameters({
-        typoTolerance: typoTolerance
-      });
-    },
-    /**
-     * Add a numeric filter for a given attribute
-     * When value is an array, they are combined with OR
-     * When value is a single value, it will combined with AND
-     * @method
-     * @param {string} attribute attribute to set the filter on
-     * @param {string} operator operator of the filter (possible values: =, >, >=, <, <=, !=)
-     * @param {number | number[]} value value of the filter
-     * @return {SearchParameters}
-     * @example
-     * // for price = 50 or 40
-     * searchparameter.addNumericRefinement('price', '=', [50, 40]);
-     * @example
-     * // for size = 38 and 40
-     * searchparameter.addNumericRefinement('size', '=', 38);
-     * searchparameter.addNumericRefinement('size', '=', 40);
-     */
-    addNumericRefinement: function(attribute, operator, v) {
-      var value = valToNumber_1(v);
-
-      if (this.isNumericRefined(attribute, operator, value)) return this;
-
-      var mod = merge_1({}, this.numericRefinements);
-
-      mod[attribute] = merge_1({}, mod[attribute]);
-
-      if (mod[attribute][operator]) {
-        // Array copy
-        mod[attribute][operator] = mod[attribute][operator].slice();
-        // Add the element. Concat can't be used here because value can be an array.
-        mod[attribute][operator].push(value);
-      } else {
-        mod[attribute][operator] = [value];
-      }
-
-      return this.setQueryParameters({
-        numericRefinements: mod
-      });
-    },
-    /**
-     * Get the list of conjunctive refinements for a single facet
-     * @param {string} facetName name of the attribute used for faceting
-     * @return {string[]} list of refinements
-     */
-    getConjunctiveRefinements: function(facetName) {
-      if (!this.isConjunctiveFacet(facetName)) {
-        return [];
-      }
-      return this.facetsRefinements[facetName] || [];
-    },
-    /**
-     * Get the list of disjunctive refinements for a single facet
-     * @param {string} facetName name of the attribute used for faceting
-     * @return {string[]} list of refinements
-     */
-    getDisjunctiveRefinements: function(facetName) {
-      if (!this.isDisjunctiveFacet(facetName)) {
-        return [];
-      }
-      return this.disjunctiveFacetsRefinements[facetName] || [];
-    },
-    /**
-     * Get the list of hierarchical refinements for a single facet
-     * @param {string} facetName name of the attribute used for faceting
-     * @return {string[]} list of refinements
-     */
-    getHierarchicalRefinement: function(facetName) {
-      // we send an array but we currently do not support multiple
-      // hierarchicalRefinements for a hierarchicalFacet
-      return this.hierarchicalFacetsRefinements[facetName] || [];
-    },
-    /**
-     * Get the list of exclude refinements for a single facet
-     * @param {string} facetName name of the attribute used for faceting
-     * @return {string[]} list of refinements
-     */
-    getExcludeRefinements: function(facetName) {
-      if (!this.isConjunctiveFacet(facetName)) {
-        return [];
-      }
-      return this.facetsExcludes[facetName] || [];
-    },
-
-    /**
-     * Remove all the numeric filter for a given (attribute, operator)
-     * @method
-     * @param {string} attribute attribute to set the filter on
-     * @param {string} [operator] operator of the filter (possible values: =, >, >=, <, <=, !=)
-     * @param {number} [number] the value to be removed
-     * @return {SearchParameters}
-     */
-    removeNumericRefinement: function(attribute, operator, paramValue) {
-      if (paramValue !== undefined) {
-        if (!this.isNumericRefined(attribute, operator, paramValue)) {
-          return this;
-        }
-        return this.setQueryParameters({
-          numericRefinements: this._clearNumericRefinements(function(value, key) {
-            return (
-              key === attribute &&
-              value.op === operator &&
-              isEqualNumericRefinement(value.val, valToNumber_1(paramValue))
-            );
-          })
-        });
-      } else if (operator !== undefined) {
-        if (!this.isNumericRefined(attribute, operator)) return this;
-        return this.setQueryParameters({
-          numericRefinements: this._clearNumericRefinements(function(value, key) {
-            return key === attribute && value.op === operator;
-          })
-        });
-      }
-
-      if (!this.isNumericRefined(attribute)) return this;
-      return this.setQueryParameters({
-        numericRefinements: this._clearNumericRefinements(function(value, key) {
-          return key === attribute;
-        })
-      });
-    },
-    /**
-     * Get the list of numeric refinements for a single facet
-     * @param {string} facetName name of the attribute used for faceting
-     * @return {SearchParameters.OperatorList} list of refinements
-     */
-    getNumericRefinements: function(facetName) {
-      return this.numericRefinements[facetName] || {};
-    },
-    /**
-     * Return the current refinement for the (attribute, operator)
-     * @param {string} attribute attribute in the record
-     * @param {string} operator operator applied on the refined values
-     * @return {Array.<number|number[]>} refined values
-     */
-    getNumericRefinement: function(attribute, operator) {
-      return this.numericRefinements[attribute] && this.numericRefinements[attribute][operator];
-    },
-    /**
-     * Clear numeric filters.
-     * @method
-     * @private
-     * @param {string|SearchParameters.clearCallback} [attribute] optional string or function
-     * - If not given, means to clear all the filters.
-     * - If `string`, means to clear all refinements for the `attribute` named filter.
-     * - If `function`, means to clear all the refinements that return truthy values.
-     * @return {Object.<string, OperatorList>}
-     */
-    _clearNumericRefinements: function _clearNumericRefinements(attribute) {
-      if (attribute === undefined) {
-        if (!objectHasKeys_1(this.numericRefinements)) {
-          return this.numericRefinements;
-        }
-        return {};
-      } else if (typeof attribute === 'string') {
-        return omit$1(this.numericRefinements, [attribute]);
-      } else if (typeof attribute === 'function') {
-        var hasChanged = false;
-        var numericRefinements = this.numericRefinements;
-        var newNumericRefinements = Object.keys(numericRefinements).reduce(function(memo, key) {
-          var operators = numericRefinements[key];
-          var operatorList = {};
-
-          operators = operators || {};
-          Object.keys(operators).forEach(function(operator) {
-            var values = operators[operator] || [];
-            var outValues = [];
-            values.forEach(function(value) {
-              var predicateResult = attribute({val: value, op: operator}, key, 'numeric');
-              if (!predicateResult) outValues.push(value);
-            });
-            if (outValues.length !== values.length) {
-              hasChanged = true;
-            }
-            operatorList[operator] = outValues;
-          });
-
-          memo[key] = operatorList;
-
-          return memo;
-        }, {});
-
-        if (hasChanged) return newNumericRefinements;
-        return this.numericRefinements;
-      }
-    },
-    /**
-     * Add a facet to the facets attribute of the helper configuration, if it
-     * isn't already present.
-     * @method
-     * @param {string} facet facet name to add
-     * @return {SearchParameters}
-     */
-    addFacet: function addFacet(facet) {
-      if (this.isConjunctiveFacet(facet)) {
-        return this;
-      }
-
-      return this.setQueryParameters({
-        facets: this.facets.concat([facet])
-      });
-    },
-    /**
-     * Add a disjunctive facet to the disjunctiveFacets attribute of the helper
-     * configuration, if it isn't already present.
-     * @method
-     * @param {string} facet disjunctive facet name to add
-     * @return {SearchParameters}
-     */
-    addDisjunctiveFacet: function addDisjunctiveFacet(facet) {
-      if (this.isDisjunctiveFacet(facet)) {
-        return this;
-      }
-
-      return this.setQueryParameters({
-        disjunctiveFacets: this.disjunctiveFacets.concat([facet])
-      });
-    },
-    /**
-     * Add a hierarchical facet to the hierarchicalFacets attribute of the helper
-     * configuration.
-     * @method
-     * @param {object} hierarchicalFacet hierarchical facet to add
-     * @return {SearchParameters}
-     * @throws will throw an error if a hierarchical facet with the same name was already declared
-     */
-    addHierarchicalFacet: function addHierarchicalFacet(hierarchicalFacet) {
-      if (this.isHierarchicalFacet(hierarchicalFacet.name)) {
-        throw new Error(
-          'Cannot declare two hierarchical facets with the same name: `' + hierarchicalFacet.name + '`');
-      }
-
-      return this.setQueryParameters({
-        hierarchicalFacets: this.hierarchicalFacets.concat([hierarchicalFacet])
-      });
-    },
-    /**
-     * Add a refinement on a "normal" facet
-     * @method
-     * @param {string} facet attribute to apply the faceting on
-     * @param {string} value value of the attribute (will be converted to string)
-     * @return {SearchParameters}
-     */
-    addFacetRefinement: function addFacetRefinement(facet, value) {
-      if (!this.isConjunctiveFacet(facet)) {
-        throw new Error(facet + ' is not defined in the facets attribute of the helper configuration');
-      }
-      if (RefinementList.isRefined(this.facetsRefinements, facet, value)) return this;
-
-      return this.setQueryParameters({
-        facetsRefinements: RefinementList.addRefinement(this.facetsRefinements, facet, value)
-      });
-    },
-    /**
-     * Exclude a value from a "normal" facet
-     * @method
-     * @param {string} facet attribute to apply the exclusion on
-     * @param {string} value value of the attribute (will be converted to string)
-     * @return {SearchParameters}
-     */
-    addExcludeRefinement: function addExcludeRefinement(facet, value) {
-      if (!this.isConjunctiveFacet(facet)) {
-        throw new Error(facet + ' is not defined in the facets attribute of the helper configuration');
-      }
-      if (RefinementList.isRefined(this.facetsExcludes, facet, value)) return this;
-
-      return this.setQueryParameters({
-        facetsExcludes: RefinementList.addRefinement(this.facetsExcludes, facet, value)
-      });
-    },
-    /**
-     * Adds a refinement on a disjunctive facet.
-     * @method
-     * @param {string} facet attribute to apply the faceting on
-     * @param {string} value value of the attribute (will be converted to string)
-     * @return {SearchParameters}
-     */
-    addDisjunctiveFacetRefinement: function addDisjunctiveFacetRefinement(facet, value) {
-      if (!this.isDisjunctiveFacet(facet)) {
-        throw new Error(
-          facet + ' is not defined in the disjunctiveFacets attribute of the helper configuration');
-      }
-
-      if (RefinementList.isRefined(this.disjunctiveFacetsRefinements, facet, value)) return this;
-
-      return this.setQueryParameters({
-        disjunctiveFacetsRefinements: RefinementList.addRefinement(
-          this.disjunctiveFacetsRefinements, facet, value)
-      });
-    },
-    /**
-     * addTagRefinement adds a tag to the list used to filter the results
-     * @param {string} tag tag to be added
-     * @return {SearchParameters}
-     */
-    addTagRefinement: function addTagRefinement(tag) {
-      if (this.isTagRefined(tag)) return this;
-
-      var modification = {
-        tagRefinements: this.tagRefinements.concat(tag)
-      };
-
-      return this.setQueryParameters(modification);
-    },
-    /**
-     * Remove a facet from the facets attribute of the helper configuration, if it
-     * is present.
-     * @method
-     * @param {string} facet facet name to remove
-     * @return {SearchParameters}
-     */
-    removeFacet: function removeFacet(facet) {
-      if (!this.isConjunctiveFacet(facet)) {
-        return this;
-      }
-
-      return this.clearRefinements(facet).setQueryParameters({
-        facets: this.facets.filter(function(f) {
-          return f !== facet;
-        })
-      });
-    },
-    /**
-     * Remove a disjunctive facet from the disjunctiveFacets attribute of the
-     * helper configuration, if it is present.
-     * @method
-     * @param {string} facet disjunctive facet name to remove
-     * @return {SearchParameters}
-     */
-    removeDisjunctiveFacet: function removeDisjunctiveFacet(facet) {
-      if (!this.isDisjunctiveFacet(facet)) {
-        return this;
-      }
-
-      return this.clearRefinements(facet).setQueryParameters({
-        disjunctiveFacets: this.disjunctiveFacets.filter(function(f) {
-          return f !== facet;
-        })
-      });
-    },
-    /**
-     * Remove a hierarchical facet from the hierarchicalFacets attribute of the
-     * helper configuration, if it is present.
-     * @method
-     * @param {string} facet hierarchical facet name to remove
-     * @return {SearchParameters}
-     */
-    removeHierarchicalFacet: function removeHierarchicalFacet(facet) {
-      if (!this.isHierarchicalFacet(facet)) {
-        return this;
-      }
-
-      return this.clearRefinements(facet).setQueryParameters({
-        hierarchicalFacets: this.hierarchicalFacets.filter(function(f) {
-          return f.name !== facet;
-        })
-      });
-    },
-    /**
-     * Remove a refinement set on facet. If a value is provided, it will clear the
-     * refinement for the given value, otherwise it will clear all the refinement
-     * values for the faceted attribute.
-     * @method
-     * @param {string} facet name of the attribute used for faceting
-     * @param {string} [value] value used to filter
-     * @return {SearchParameters}
-     */
-    removeFacetRefinement: function removeFacetRefinement(facet, value) {
-      if (!this.isConjunctiveFacet(facet)) {
-        throw new Error(facet + ' is not defined in the facets attribute of the helper configuration');
-      }
-      if (!RefinementList.isRefined(this.facetsRefinements, facet, value)) return this;
-
-      return this.setQueryParameters({
-        facetsRefinements: RefinementList.removeRefinement(this.facetsRefinements, facet, value)
-      });
-    },
-    /**
-     * Remove a negative refinement on a facet
-     * @method
-     * @param {string} facet name of the attribute used for faceting
-     * @param {string} value value used to filter
-     * @return {SearchParameters}
-     */
-    removeExcludeRefinement: function removeExcludeRefinement(facet, value) {
-      if (!this.isConjunctiveFacet(facet)) {
-        throw new Error(facet + ' is not defined in the facets attribute of the helper configuration');
-      }
-      if (!RefinementList.isRefined(this.facetsExcludes, facet, value)) return this;
-
-      return this.setQueryParameters({
-        facetsExcludes: RefinementList.removeRefinement(this.facetsExcludes, facet, value)
-      });
-    },
-    /**
-     * Remove a refinement on a disjunctive facet
-     * @method
-     * @param {string} facet name of the attribute used for faceting
-     * @param {string} value value used to filter
-     * @return {SearchParameters}
-     */
-    removeDisjunctiveFacetRefinement: function removeDisjunctiveFacetRefinement(facet, value) {
-      if (!this.isDisjunctiveFacet(facet)) {
-        throw new Error(
-          facet + ' is not defined in the disjunctiveFacets attribute of the helper configuration');
-      }
-      if (!RefinementList.isRefined(this.disjunctiveFacetsRefinements, facet, value)) return this;
-
-      return this.setQueryParameters({
-        disjunctiveFacetsRefinements: RefinementList.removeRefinement(
-          this.disjunctiveFacetsRefinements, facet, value)
-      });
-    },
-    /**
-     * Remove a tag from the list of tag refinements
-     * @method
-     * @param {string} tag the tag to remove
-     * @return {SearchParameters}
-     */
-    removeTagRefinement: function removeTagRefinement(tag) {
-      if (!this.isTagRefined(tag)) return this;
-
-      var modification = {
-        tagRefinements: this.tagRefinements.filter(function(t) {
-          return t !== tag;
-        })
-      };
-
-      return this.setQueryParameters(modification);
-    },
-    /**
-     * Generic toggle refinement method to use with facet, disjunctive facets
-     * and hierarchical facets
-     * @param  {string} facet the facet to refine
-     * @param  {string} value the associated value
-     * @return {SearchParameters}
-     * @throws will throw an error if the facet is not declared in the settings of the helper
-     * @deprecated since version 2.19.0, see {@link SearchParameters#toggleFacetRefinement}
-     */
-    toggleRefinement: function toggleRefinement(facet, value) {
-      return this.toggleFacetRefinement(facet, value);
-    },
-    /**
-     * Generic toggle refinement method to use with facet, disjunctive facets
-     * and hierarchical facets
-     * @param  {string} facet the facet to refine
-     * @param  {string} value the associated value
-     * @return {SearchParameters}
-     * @throws will throw an error if the facet is not declared in the settings of the helper
-     */
-    toggleFacetRefinement: function toggleFacetRefinement(facet, value) {
-      if (this.isHierarchicalFacet(facet)) {
-        return this.toggleHierarchicalFacetRefinement(facet, value);
-      } else if (this.isConjunctiveFacet(facet)) {
-        return this.toggleConjunctiveFacetRefinement(facet, value);
-      } else if (this.isDisjunctiveFacet(facet)) {
-        return this.toggleDisjunctiveFacetRefinement(facet, value);
-      }
-
-      throw new Error('Cannot refine the undeclared facet ' + facet +
-        '; it should be added to the helper options facets, disjunctiveFacets or hierarchicalFacets');
-    },
-    /**
-     * Switch the refinement applied over a facet/value
-     * @method
-     * @param {string} facet name of the attribute used for faceting
-     * @param {value} value value used for filtering
-     * @return {SearchParameters}
-     */
-    toggleConjunctiveFacetRefinement: function toggleConjunctiveFacetRefinement(facet, value) {
-      if (!this.isConjunctiveFacet(facet)) {
-        throw new Error(facet + ' is not defined in the facets attribute of the helper configuration');
-      }
-
-      return this.setQueryParameters({
-        facetsRefinements: RefinementList.toggleRefinement(this.facetsRefinements, facet, value)
-      });
-    },
-    /**
-     * Switch the refinement applied over a facet/value
-     * @method
-     * @param {string} facet name of the attribute used for faceting
-     * @param {value} value value used for filtering
-     * @return {SearchParameters}
-     */
-    toggleExcludeFacetRefinement: function toggleExcludeFacetRefinement(facet, value) {
-      if (!this.isConjunctiveFacet(facet)) {
-        throw new Error(facet + ' is not defined in the facets attribute of the helper configuration');
-      }
-
-      return this.setQueryParameters({
-        facetsExcludes: RefinementList.toggleRefinement(this.facetsExcludes, facet, value)
-      });
-    },
-    /**
-     * Switch the refinement applied over a facet/value
-     * @method
-     * @param {string} facet name of the attribute used for faceting
-     * @param {value} value value used for filtering
-     * @return {SearchParameters}
-     */
-    toggleDisjunctiveFacetRefinement: function toggleDisjunctiveFacetRefinement(facet, value) {
-      if (!this.isDisjunctiveFacet(facet)) {
-        throw new Error(
-          facet + ' is not defined in the disjunctiveFacets attribute of the helper configuration');
-      }
-
-      return this.setQueryParameters({
-        disjunctiveFacetsRefinements: RefinementList.toggleRefinement(
-          this.disjunctiveFacetsRefinements, facet, value)
-      });
-    },
-    /**
-     * Switch the refinement applied over a facet/value
-     * @method
-     * @param {string} facet name of the attribute used for faceting
-     * @param {value} value value used for filtering
-     * @return {SearchParameters}
-     */
-    toggleHierarchicalFacetRefinement: function toggleHierarchicalFacetRefinement(facet, value) {
-      if (!this.isHierarchicalFacet(facet)) {
-        throw new Error(
-          facet + ' is not defined in the hierarchicalFacets attribute of the helper configuration');
-      }
-
-      var separator = this._getHierarchicalFacetSeparator(this.getHierarchicalFacetByName(facet));
-
-      var mod = {};
-
-      var upOneOrMultipleLevel = this.hierarchicalFacetsRefinements[facet] !== undefined &&
-        this.hierarchicalFacetsRefinements[facet].length > 0 && (
-        // remove current refinement:
-        // refinement was 'beer > IPA', call is toggleRefine('beer > IPA'), refinement should be `beer`
-        this.hierarchicalFacetsRefinements[facet][0] === value ||
-        // remove a parent refinement of the current refinement:
-        //  - refinement was 'beer > IPA > Flying dog'
-        //  - call is toggleRefine('beer > IPA')
-        //  - refinement should be `beer`
-        this.hierarchicalFacetsRefinements[facet][0].indexOf(value + separator) === 0
-      );
-
-      if (upOneOrMultipleLevel) {
-        if (value.indexOf(separator) === -1) {
-          // go back to root level
-          mod[facet] = [];
-        } else {
-          mod[facet] = [value.slice(0, value.lastIndexOf(separator))];
-        }
-      } else {
-        mod[facet] = [value];
-      }
-
-      return this.setQueryParameters({
-        hierarchicalFacetsRefinements: defaultsPure({}, mod, this.hierarchicalFacetsRefinements)
-      });
-    },
-
-    /**
-     * Adds a refinement on a hierarchical facet.
-     * @param {string} facet the facet name
-     * @param {string} path the hierarchical facet path
-     * @return {SearchParameter} the new state
-     * @throws Error if the facet is not defined or if the facet is refined
-     */
-    addHierarchicalFacetRefinement: function(facet, path) {
-      if (this.isHierarchicalFacetRefined(facet)) {
-        throw new Error(facet + ' is already refined.');
-      }
-      if (!this.isHierarchicalFacet(facet)) {
-        throw new Error(facet + ' is not defined in the hierarchicalFacets attribute of the helper configuration.');
-      }
-      var mod = {};
-      mod[facet] = [path];
-      return this.setQueryParameters({
-        hierarchicalFacetsRefinements: defaultsPure({}, mod, this.hierarchicalFacetsRefinements)
-      });
-    },
-
-    /**
-     * Removes the refinement set on a hierarchical facet.
-     * @param {string} facet the facet name
-     * @return {SearchParameter} the new state
-     * @throws Error if the facet is not defined or if the facet is not refined
-     */
-    removeHierarchicalFacetRefinement: function(facet) {
-      if (!this.isHierarchicalFacetRefined(facet)) {
-        return this;
-      }
-      var mod = {};
-      mod[facet] = [];
-      return this.setQueryParameters({
-        hierarchicalFacetsRefinements: defaultsPure({}, mod, this.hierarchicalFacetsRefinements)
-      });
-    },
-    /**
-     * Switch the tag refinement
-     * @method
-     * @param {string} tag the tag to remove or add
-     * @return {SearchParameters}
-     */
-    toggleTagRefinement: function toggleTagRefinement(tag) {
-      if (this.isTagRefined(tag)) {
-        return this.removeTagRefinement(tag);
-      }
-
-      return this.addTagRefinement(tag);
-    },
-    /**
-     * Test if the facet name is from one of the disjunctive facets
-     * @method
-     * @param {string} facet facet name to test
-     * @return {boolean}
-     */
-    isDisjunctiveFacet: function(facet) {
-      return this.disjunctiveFacets.indexOf(facet) > -1;
-    },
-    /**
-     * Test if the facet name is from one of the hierarchical facets
-     * @method
-     * @param {string} facetName facet name to test
-     * @return {boolean}
-     */
-    isHierarchicalFacet: function(facetName) {
-      return this.getHierarchicalFacetByName(facetName) !== undefined;
-    },
-    /**
-     * Test if the facet name is from one of the conjunctive/normal facets
-     * @method
-     * @param {string} facet facet name to test
-     * @return {boolean}
-     */
-    isConjunctiveFacet: function(facet) {
-      return this.facets.indexOf(facet) > -1;
-    },
-    /**
-     * Returns true if the facet is refined, either for a specific value or in
-     * general.
-     * @method
-     * @param {string} facet name of the attribute for used for faceting
-     * @param {string} value, optional value. If passed will test that this value
-     * is filtering the given facet.
-     * @return {boolean} returns true if refined
-     */
-    isFacetRefined: function isFacetRefined(facet, value) {
-      if (!this.isConjunctiveFacet(facet)) {
-        return false;
-      }
-      return RefinementList.isRefined(this.facetsRefinements, facet, value);
-    },
-    /**
-     * Returns true if the facet contains exclusions or if a specific value is
-     * excluded.
-     *
-     * @method
-     * @param {string} facet name of the attribute for used for faceting
-     * @param {string} [value] optional value. If passed will test that this value
-     * is filtering the given facet.
-     * @return {boolean} returns true if refined
-     */
-    isExcludeRefined: function isExcludeRefined(facet, value) {
-      if (!this.isConjunctiveFacet(facet)) {
-        return false;
-      }
-      return RefinementList.isRefined(this.facetsExcludes, facet, value);
-    },
-    /**
-     * Returns true if the facet contains a refinement, or if a value passed is a
-     * refinement for the facet.
-     * @method
-     * @param {string} facet name of the attribute for used for faceting
-     * @param {string} value optional, will test if the value is used for refinement
-     * if there is one, otherwise will test if the facet contains any refinement
-     * @return {boolean}
-     */
-    isDisjunctiveFacetRefined: function isDisjunctiveFacetRefined(facet, value) {
-      if (!this.isDisjunctiveFacet(facet)) {
-        return false;
-      }
-      return RefinementList.isRefined(this.disjunctiveFacetsRefinements, facet, value);
-    },
-    /**
-     * Returns true if the facet contains a refinement, or if a value passed is a
-     * refinement for the facet.
-     * @method
-     * @param {string} facet name of the attribute for used for faceting
-     * @param {string} value optional, will test if the value is used for refinement
-     * if there is one, otherwise will test if the facet contains any refinement
-     * @return {boolean}
-     */
-    isHierarchicalFacetRefined: function isHierarchicalFacetRefined(facet, value) {
-      if (!this.isHierarchicalFacet(facet)) {
-        return false;
-      }
-
-      var refinements = this.getHierarchicalRefinement(facet);
-
-      if (!value) {
-        return refinements.length > 0;
-      }
-
-      return refinements.indexOf(value) !== -1;
-    },
-    /**
-     * Test if the triple (attribute, operator, value) is already refined.
-     * If only the attribute and the operator are provided, it tests if the
-     * contains any refinement value.
-     * @method
-     * @param {string} attribute attribute for which the refinement is applied
-     * @param {string} [operator] operator of the refinement
-     * @param {string} [value] value of the refinement
-     * @return {boolean} true if it is refined
-     */
-    isNumericRefined: function isNumericRefined(attribute, operator, value) {
-      if (value === undefined && operator === undefined) {
-        return !!this.numericRefinements[attribute];
-      }
-
-      var isOperatorDefined =
-        this.numericRefinements[attribute] &&
-        this.numericRefinements[attribute][operator] !== undefined;
-
-      if (value === undefined || !isOperatorDefined) {
-        return isOperatorDefined;
-      }
-
-      var parsedValue = valToNumber_1(value);
-      var isAttributeValueDefined =
-        findArray(this.numericRefinements[attribute][operator], parsedValue) !==
-        undefined;
-
-      return isOperatorDefined && isAttributeValueDefined;
-    },
-    /**
-     * Returns true if the tag refined, false otherwise
-     * @method
-     * @param {string} tag the tag to check
-     * @return {boolean}
-     */
-    isTagRefined: function isTagRefined(tag) {
-      return this.tagRefinements.indexOf(tag) !== -1;
-    },
-    /**
-     * Returns the list of all disjunctive facets refined
-     * @method
-     * @param {string} facet name of the attribute used for faceting
-     * @param {value} value value used for filtering
-     * @return {string[]}
-     */
-    getRefinedDisjunctiveFacets: function getRefinedDisjunctiveFacets() {
-      var self = this;
-
-      // attributes used for numeric filter can also be disjunctive
-      var disjunctiveNumericRefinedFacets = intersection_1(
-        Object.keys(this.numericRefinements).filter(function(facet) {
-          return Object.keys(self.numericRefinements[facet]).length > 0;
-        }),
-        this.disjunctiveFacets
-      );
-
-      return Object.keys(this.disjunctiveFacetsRefinements).filter(function(facet) {
-        return self.disjunctiveFacetsRefinements[facet].length > 0;
-      })
-        .concat(disjunctiveNumericRefinedFacets)
-        .concat(this.getRefinedHierarchicalFacets());
-    },
-    /**
-     * Returns the list of all disjunctive facets refined
-     * @method
-     * @param {string} facet name of the attribute used for faceting
-     * @param {value} value value used for filtering
-     * @return {string[]}
-     */
-    getRefinedHierarchicalFacets: function getRefinedHierarchicalFacets() {
-      var self = this;
-      return intersection_1(
-        // enforce the order between the two arrays,
-        // so that refinement name index === hierarchical facet index
-        this.hierarchicalFacets.map(function(facet) { return facet.name; }),
-        Object.keys(this.hierarchicalFacetsRefinements).filter(function(facet) {
-          return self.hierarchicalFacetsRefinements[facet].length > 0;
-        })
-      );
-    },
-    /**
-     * Returned the list of all disjunctive facets not refined
-     * @method
-     * @return {string[]}
-     */
-    getUnrefinedDisjunctiveFacets: function() {
-      var refinedFacets = this.getRefinedDisjunctiveFacets();
-
-      return this.disjunctiveFacets.filter(function(f) {
-        return refinedFacets.indexOf(f) === -1;
-      });
-    },
-
-    managedParameters: [
-      'index',
-
-      'facets',
-      'disjunctiveFacets',
-      'facetsRefinements',
-      'hierarchicalFacets',
-      'facetsExcludes',
-
-      'disjunctiveFacetsRefinements',
-      'numericRefinements',
-      'tagRefinements',
-      'hierarchicalFacetsRefinements'
-    ],
-    getQueryParams: function getQueryParams() {
-      var managedParameters = this.managedParameters;
-
-      var queryParams = {};
-
-      var self = this;
-      Object.keys(this).forEach(function(paramName) {
-        var paramValue = self[paramName];
-        if (managedParameters.indexOf(paramName) === -1 && paramValue !== undefined) {
-          queryParams[paramName] = paramValue;
-        }
-      });
-
-      return queryParams;
-    },
-    /**
-     * Let the user set a specific value for a given parameter. Will return the
-     * same instance if the parameter is invalid or if the value is the same as the
-     * previous one.
-     * @method
-     * @param {string} parameter the parameter name
-     * @param {any} value the value to be set, must be compliant with the definition
-     * of the attribute on the object
-     * @return {SearchParameters} the updated state
-     */
-    setQueryParameter: function setParameter(parameter, value) {
-      if (this[parameter] === value) return this;
-
-      var modification = {};
-
-      modification[parameter] = value;
-
-      return this.setQueryParameters(modification);
-    },
-    /**
-     * Let the user set any of the parameters with a plain object.
-     * @method
-     * @param {object} params all the keys and the values to be updated
-     * @return {SearchParameters} a new updated instance
-     */
-    setQueryParameters: function setQueryParameters(params) {
-      if (!params) return this;
-
-      var error = SearchParameters.validate(this, params);
-
-      if (error) {
-        throw error;
-      }
-
-      var self = this;
-      var nextWithNumbers = SearchParameters._parseNumbers(params);
-      var previousPlainObject = Object.keys(this).reduce(function(acc, key) {
-        acc[key] = self[key];
-        return acc;
-      }, {});
-
-      var nextPlainObject = Object.keys(nextWithNumbers).reduce(
-        function(previous, key) {
-          var isPreviousValueDefined = previous[key] !== undefined;
-          var isNextValueDefined = nextWithNumbers[key] !== undefined;
-
-          if (isPreviousValueDefined && !isNextValueDefined) {
-            return omit$1(previous, [key]);
-          }
-
-          if (isNextValueDefined) {
-            previous[key] = nextWithNumbers[key];
-          }
-
-          return previous;
-        },
-        previousPlainObject
-      );
-
-      return new this.constructor(nextPlainObject);
-    },
-
-    /**
-     * Returns a new instance with the page reset. Two scenarios possible:
-     * the page is omitted -> return the given instance
-     * the page is set -> return a new instance with a page of 0
-     * @return {SearchParameters} a new updated instance
-     */
-    resetPage: function() {
-      if (this.page === undefined) {
-        return this;
-      }
-
-      return this.setPage(0);
-    },
-
-    /**
-     * Helper function to get the hierarchicalFacet separator or the default one (`>`)
-     * @param  {object} hierarchicalFacet
-     * @return {string} returns the hierarchicalFacet.separator or `>` as default
-     */
-    _getHierarchicalFacetSortBy: function(hierarchicalFacet) {
-      return hierarchicalFacet.sortBy || ['isRefined:desc', 'name:asc'];
-    },
-
-    /**
-     * Helper function to get the hierarchicalFacet separator or the default one (`>`)
-     * @private
-     * @param  {object} hierarchicalFacet
-     * @return {string} returns the hierarchicalFacet.separator or `>` as default
-     */
-    _getHierarchicalFacetSeparator: function(hierarchicalFacet) {
-      return hierarchicalFacet.separator || ' > ';
-    },
-
-    /**
-     * Helper function to get the hierarchicalFacet prefix path or null
-     * @private
-     * @param  {object} hierarchicalFacet
-     * @return {string} returns the hierarchicalFacet.rootPath or null as default
-     */
-    _getHierarchicalRootPath: function(hierarchicalFacet) {
-      return hierarchicalFacet.rootPath || null;
-    },
-
-    /**
-     * Helper function to check if we show the parent level of the hierarchicalFacet
-     * @private
-     * @param  {object} hierarchicalFacet
-     * @return {string} returns the hierarchicalFacet.showParentLevel or true as default
-     */
-    _getHierarchicalShowParentLevel: function(hierarchicalFacet) {
-      if (typeof hierarchicalFacet.showParentLevel === 'boolean') {
-        return hierarchicalFacet.showParentLevel;
-      }
-      return true;
-    },
-
-    /**
-     * Helper function to get the hierarchicalFacet by it's name
-     * @param  {string} hierarchicalFacetName
-     * @return {object} a hierarchicalFacet
-     */
-    getHierarchicalFacetByName: function(hierarchicalFacetName) {
-      return find$1(
-        this.hierarchicalFacets,
-        function(f) {
-          return f.name === hierarchicalFacetName;
-        }
-      );
-    },
-
-    /**
-     * Get the current breadcrumb for a hierarchical facet, as an array
-     * @param  {string} facetName Hierarchical facet name
-     * @return {array.<string>} the path as an array of string
-     */
-    getHierarchicalFacetBreadcrumb: function(facetName) {
-      if (!this.isHierarchicalFacet(facetName)) {
-        return [];
-      }
-
-      var refinement = this.getHierarchicalRefinement(facetName)[0];
-      if (!refinement) return [];
-
-      var separator = this._getHierarchicalFacetSeparator(
-        this.getHierarchicalFacetByName(facetName)
-      );
-      var path = refinement.split(separator);
-      return path.map(function(part) {
-        return part.trim();
-      });
-    },
-
-    toString: function() {
-      return JSON.stringify(this, null, 2);
-    }
-  };
-
-  /**
-   * Callback used for clearRefinement method
-   * @callback SearchParameters.clearCallback
-   * @param {OperatorList|FacetList} value the value of the filter
-   * @param {string} key the current attribute name
-   * @param {string} type `numeric`, `disjunctiveFacet`, `conjunctiveFacet`, `hierarchicalFacet` or `exclude`
-   * depending on the type of facet
-   * @return {boolean} `true` if the element should be removed. `false` otherwise.
-   */
-  var SearchParameters_1 = SearchParameters;
-
-  function compareAscending(value, other) {
-    if (value !== other) {
-      var valIsDefined = value !== undefined;
-      var valIsNull = value === null;
-
-      var othIsDefined = other !== undefined;
-      var othIsNull = other === null;
-
-      if (
-        (!othIsNull && value > other) ||
-        (valIsNull && othIsDefined) ||
-        !valIsDefined
-      ) {
-        return 1;
-      }
-      if (
-        (!valIsNull && value < other) ||
-        (othIsNull && valIsDefined) ||
-        !othIsDefined
-      ) {
-        return -1;
-      }
-    }
-    return 0;
-  }
-
-  /**
-   * @param {Array<object>} collection object with keys in attributes
-   * @param {Array<string>} iteratees attributes
-   * @param {Array<string>} orders asc | desc
-   */
-  function orderBy(collection, iteratees, orders) {
-    if (!Array.isArray(collection)) {
-      return [];
-    }
-
-    if (!Array.isArray(orders)) {
-      orders = [];
-    }
-
-    var result = collection.map(function(value, index) {
-      return {
-        criteria: iteratees.map(function(iteratee) {
-          return value[iteratee];
-        }),
-        index: index,
-        value: value
-      };
-    });
-
-    result.sort(function comparer(object, other) {
-      var index = -1;
-
-      while (++index < object.criteria.length) {
-        var res = compareAscending(object.criteria[index], other.criteria[index]);
-        if (res) {
-          if (index >= orders.length) {
-            return res;
-          }
-          if (orders[index] === 'desc') {
-            return -res;
-          }
-          return res;
-        }
-      }
-
-      // This ensures a stable sort in V8 and other engines.
-      // See https://bugs.chromium.org/p/v8/issues/detail?id=90 for more details.
-      return object.index - other.index;
-    });
-
-    return result.map(function(res) {
-      return res.value;
-    });
-  }
-
-  var orderBy_1 = orderBy;
-
-  var compact = function compact(array) {
-    if (!Array.isArray(array)) {
-      return [];
-    }
-
-    return array.filter(Boolean);
-  };
-
-  // @MAJOR can be replaced by native Array#findIndex when we change support
-  var findIndex$1 = function find(array, comparator) {
-    if (!Array.isArray(array)) {
-      return -1;
-    }
-
-    for (var i = 0; i < array.length; i++) {
-      if (comparator(array[i])) {
-        return i;
-      }
-    }
-    return -1;
-  };
-
-  /**
-   * Transform sort format from user friendly notation to lodash format
-   * @param {string[]} sortBy array of predicate of the form "attribute:order"
-   * @param {string[]} [defaults] array of predicate of the form "attribute:order"
-   * @return {array.<string[]>} array containing 2 elements : attributes, orders
-   */
-  var formatSort = function formatSort(sortBy, defaults) {
-    var defaultInstructions = (defaults || []).map(function(sort) {
-      return sort.split(':');
-    });
-
-    return sortBy.reduce(
-      function preparePredicate(out, sort) {
-        var sortInstruction = sort.split(':');
-
-        var matchingDefault = find$1(defaultInstructions, function(
-          defaultInstruction
-        ) {
-          return defaultInstruction[0] === sortInstruction[0];
-        });
-
-        if (sortInstruction.length > 1 || !matchingDefault) {
-          out[0].push(sortInstruction[0]);
-          out[1].push(sortInstruction[1]);
-          return out;
-        }
-
-        out[0].push(matchingDefault[0]);
-        out[1].push(matchingDefault[1]);
-        return out;
-      },
-      [[], []]
-    );
-  };
-
-  /**
-   * Replaces a leading - with \-
-   * @private
-   * @param {any} value the facet value to replace
-   * @returns any
-   */
-  function escapeFacetValue$1(value) {
-    if (typeof value !== 'string') return value;
-
-    return String(value).replace(/^-/, '\\-');
-  }
-
-  /**
-   * Replaces a leading \- with -
-   * @private
-   * @param {any} value the escaped facet value
-   * @returns any
-   */
-  function unescapeFacetValue$1(value) {
-    if (typeof value !== 'string') return value;
-
-    return value.replace(/^\\-/, '-');
-  }
-
-  var escapeFacetValue_1 = {
-    escapeFacetValue: escapeFacetValue$1,
-    unescapeFacetValue: unescapeFacetValue$1
-  };
-
-  var generateHierarchicalTree_1 = generateTrees;
-
-
-
-
-
-  var escapeFacetValue$2 = escapeFacetValue_1.escapeFacetValue;
-  var unescapeFacetValue$2 = escapeFacetValue_1.unescapeFacetValue;
-
-  function generateTrees(state) {
-    return function generate(hierarchicalFacetResult, hierarchicalFacetIndex) {
-      var hierarchicalFacet = state.hierarchicalFacets[hierarchicalFacetIndex];
-      var hierarchicalFacetRefinement =
-        (state.hierarchicalFacetsRefinements[hierarchicalFacet.name] &&
-          state.hierarchicalFacetsRefinements[hierarchicalFacet.name][0]) ||
-        '';
-      var hierarchicalSeparator = state._getHierarchicalFacetSeparator(
-        hierarchicalFacet
-      );
-      var hierarchicalRootPath = state._getHierarchicalRootPath(
-        hierarchicalFacet
-      );
-      var hierarchicalShowParentLevel = state._getHierarchicalShowParentLevel(
-        hierarchicalFacet
-      );
-      var sortBy = formatSort(
-        state._getHierarchicalFacetSortBy(hierarchicalFacet)
-      );
-
-      var rootExhaustive = hierarchicalFacetResult.every(function(facetResult) {
-        return facetResult.exhaustive;
-      });
-
-      var generateTreeFn = generateHierarchicalTree(
-        sortBy,
-        hierarchicalSeparator,
-        hierarchicalRootPath,
-        hierarchicalShowParentLevel,
-        hierarchicalFacetRefinement
-      );
-
-      var results = hierarchicalFacetResult;
-
-      if (hierarchicalRootPath) {
-        results = hierarchicalFacetResult.slice(
-          hierarchicalRootPath.split(hierarchicalSeparator).length
-        );
-      }
-
-      return results.reduce(generateTreeFn, {
-        name: state.hierarchicalFacets[hierarchicalFacetIndex].name,
-        count: null, // root level, no count
-        isRefined: true, // root level, always refined
-        path: null, // root level, no path
-        escapedValue: null,
-        exhaustive: rootExhaustive,
-        data: null
-      });
-    };
-  }
-
-  function generateHierarchicalTree(
-    sortBy,
-    hierarchicalSeparator,
-    hierarchicalRootPath,
-    hierarchicalShowParentLevel,
-    currentRefinement
-  ) {
-    return function generateTree(
-      hierarchicalTree,
-      hierarchicalFacetResult,
-      currentHierarchicalLevel
-    ) {
-      var parent = hierarchicalTree;
-
-      if (currentHierarchicalLevel > 0) {
-        var level = 0;
-
-        parent = hierarchicalTree;
-
-        while (level < currentHierarchicalLevel) {
-          /**
-           * @type {object[]]} hierarchical data
-           */
-          var data = parent && Array.isArray(parent.data) ? parent.data : [];
-          parent = find$1(data, function(subtree) {
-            return subtree.isRefined;
-          });
-          level++;
-        }
-      }
-
-      // we found a refined parent, let's add current level data under it
-      if (parent) {
-        // filter values in case an object has multiple categories:
-        //   {
-        //     categories: {
-        //       level0: ['beers', 'bières'],
-        //       level1: ['beers > IPA', 'bières > Belges']
-        //     }
-        //   }
-        //
-        // If parent refinement is `beers`, then we do not want to have `bières > Belges`
-        // showing up
-
-        var picked = Object.keys(hierarchicalFacetResult.data)
-          .map(function(facetValue) {
-            return [facetValue, hierarchicalFacetResult.data[facetValue]];
-          })
-          .filter(function(tuple) {
-            var facetValue = tuple[0];
-            return onlyMatchingTree(
-              facetValue,
-              parent.path || hierarchicalRootPath,
-              currentRefinement,
-              hierarchicalSeparator,
-              hierarchicalRootPath,
-              hierarchicalShowParentLevel
-            );
-          });
-
-        parent.data = orderBy_1(
-          picked.map(function(tuple) {
-            var facetValue = tuple[0];
-            var facetCount = tuple[1];
-
-            return format(
-              facetCount,
-              facetValue,
-              hierarchicalSeparator,
-              unescapeFacetValue$2(currentRefinement),
-              hierarchicalFacetResult.exhaustive
-            );
-          }),
-          sortBy[0],
-          sortBy[1]
-        );
-      }
-
-      return hierarchicalTree;
-    };
-  }
-
-  function onlyMatchingTree(
-    facetValue,
-    parentPath,
-    currentRefinement,
-    hierarchicalSeparator,
-    hierarchicalRootPath,
-    hierarchicalShowParentLevel
-  ) {
-    // we want the facetValue is a child of hierarchicalRootPath
-    if (
-      hierarchicalRootPath &&
-      (facetValue.indexOf(hierarchicalRootPath) !== 0 ||
-        hierarchicalRootPath === facetValue)
-    ) {
-      return false;
-    }
-
-    // we always want root levels (only when there is no prefix path)
-    return (
-      (!hierarchicalRootPath &&
-        facetValue.indexOf(hierarchicalSeparator) === -1) ||
-      // if there is a rootPath, being root level mean 1 level under rootPath
-      (hierarchicalRootPath &&
-        facetValue.split(hierarchicalSeparator).length -
-          hierarchicalRootPath.split(hierarchicalSeparator).length ===
-          1) ||
-      // if current refinement is a root level and current facetValue is a root level,
-      // keep the facetValue
-      (facetValue.indexOf(hierarchicalSeparator) === -1 &&
-        currentRefinement.indexOf(hierarchicalSeparator) === -1) ||
-      // currentRefinement is a child of the facet value
-      currentRefinement.indexOf(facetValue) === 0 ||
-      // facetValue is a child of the current parent, add it
-      (facetValue.indexOf(parentPath + hierarchicalSeparator) === 0 &&
-        (hierarchicalShowParentLevel ||
-          facetValue.indexOf(currentRefinement) === 0))
-    );
-  }
-
-  function format(
-    facetCount,
-    facetValue,
-    hierarchicalSeparator,
-    currentRefinement,
-    exhaustive
-  ) {
-    var parts = facetValue.split(hierarchicalSeparator);
-    return {
-      name: parts[parts.length - 1].trim(),
-      path: facetValue,
-      escapedValue: escapeFacetValue$2(facetValue),
-      count: facetCount,
-      isRefined:
-        currentRefinement === facetValue ||
-        currentRefinement.indexOf(facetValue + hierarchicalSeparator) === 0,
-      exhaustive: exhaustive,
-      data: null
-    };
-  }
-
-  var escapeFacetValue$3 = escapeFacetValue_1.escapeFacetValue;
-  var unescapeFacetValue$3 = escapeFacetValue_1.unescapeFacetValue;
-
-
-
-  /**
-   * @typedef SearchResults.Facet
-   * @type {object}
-   * @property {string} name name of the attribute in the record
-   * @property {object} data the faceting data: value, number of entries
-   * @property {object} stats undefined unless facet_stats is retrieved from algolia
-   */
-
-  /**
-   * @typedef SearchResults.HierarchicalFacet
-   * @type {object}
-   * @property {string} name name of the current value given the hierarchical level, trimmed.
-   * If root node, you get the facet name
-   * @property {number} count number of objects matching this hierarchical value
-   * @property {string} path the current hierarchical value full path
-   * @property {boolean} isRefined `true` if the current value was refined, `false` otherwise
-   * @property {HierarchicalFacet[]} data sub values for the current level
-   */
-
-  /**
-   * @typedef SearchResults.FacetValue
-   * @type {object}
-   * @property {string} name the facet value itself
-   * @property {number} count times this facet appears in the results
-   * @property {boolean} isRefined is the facet currently selected
-   * @property {boolean} isExcluded is the facet currently excluded (only for conjunctive facets)
-   */
-
-  /**
-   * @typedef Refinement
-   * @type {object}
-   * @property {string} type the type of filter used:
-   * `numeric`, `facet`, `exclude`, `disjunctive`, `hierarchical`
-   * @property {string} attributeName name of the attribute used for filtering
-   * @property {string} name the value of the filter
-   * @property {number} numericValue the value as a number. Only for numeric filters.
-   * @property {string} operator the operator used. Only for numeric filters.
-   * @property {number} count the number of computed hits for this filter. Only on facets.
-   * @property {boolean} exhaustive if the count is exhaustive
-   */
-
-  /**
-   * @param {string[]} attributes
-   */
-  function getIndices(attributes) {
-    var indices = {};
-
-    attributes.forEach(function(val, idx) {
-      indices[val] = idx;
-    });
-
-    return indices;
-  }
-
-  function assignFacetStats(dest, facetStats, key) {
-    if (facetStats && facetStats[key]) {
-      dest.stats = facetStats[key];
-    }
-  }
-
-  /**
-   * @typedef {Object} HierarchicalFacet
-   * @property {string} name
-   * @property {string[]} attributes
-   */
-
-  /**
-   * @param {HierarchicalFacet[]} hierarchicalFacets
-   * @param {string} hierarchicalAttributeName
-   */
-  function findMatchingHierarchicalFacetFromAttributeName(
-    hierarchicalFacets,
-    hierarchicalAttributeName
-  ) {
-    return find$1(hierarchicalFacets, function facetKeyMatchesAttribute(
-      hierarchicalFacet
-    ) {
-      var facetNames = hierarchicalFacet.attributes || [];
-      return facetNames.indexOf(hierarchicalAttributeName) > -1;
-    });
-  }
-
-  /*eslint-disable */
-  /**
-   * Constructor for SearchResults
-   * @class
-   * @classdesc SearchResults contains the results of a query to Algolia using the
-   * {@link AlgoliaSearchHelper}.
-   * @param {SearchParameters} state state that led to the response
-   * @param {array.<object>} results the results from algolia client
-   * @example <caption>SearchResults of the first query in
-   * <a href="http://demos.algolia.com/instant-search-demo">the instant search demo</a></caption>
-  {
-     "hitsPerPage": 10,
-     "processingTimeMS": 2,
-     "facets": [
-        {
-           "name": "type",
-           "data": {
-              "HardGood": 6627,
-              "BlackTie": 550,
-              "Music": 665,
-              "Software": 131,
-              "Game": 456,
-              "Movie": 1571
-           },
-           "exhaustive": false
-        },
-        {
-           "exhaustive": false,
-           "data": {
-              "Free shipping": 5507
-           },
-           "name": "shipping"
-        }
-    ],
-     "hits": [
-        {
-           "thumbnailImage": "http://img.bbystatic.com/BestBuy_US/images/products/1688/1688832_54x108_s.gif",
-           "_highlightResult": {
-              "shortDescription": {
-                 "matchLevel": "none",
-                 "value": "Safeguard your PC, Mac, Android and iOS devices with comprehensive Internet protection",
-                 "matchedWords": []
-              },
-              "category": {
-                 "matchLevel": "none",
-                 "value": "Computer Security Software",
-                 "matchedWords": []
-              },
-              "manufacturer": {
-                 "matchedWords": [],
-                 "value": "Webroot",
-                 "matchLevel": "none"
-              },
-              "name": {
-                 "value": "Webroot SecureAnywhere Internet Security (3-Device) (1-Year Subscription) - Mac/Windows",
-                 "matchedWords": [],
-                 "matchLevel": "none"
-              }
-           },
-           "image": "http://img.bbystatic.com/BestBuy_US/images/products/1688/1688832_105x210_sc.jpg",
-           "shipping": "Free shipping",
-           "bestSellingRank": 4,
-           "shortDescription": "Safeguard your PC, Mac, Android and iOS devices with comprehensive Internet protection",
-           "url": "http://www.bestbuy.com/site/webroot-secureanywhere-internet-security-3-devi…d=1219060687969&skuId=1688832&cmp=RMX&ky=2d3GfEmNIzjA0vkzveHdZEBgpPCyMnLTJ",
-           "name": "Webroot SecureAnywhere Internet Security (3-Device) (1-Year Subscription) - Mac/Windows",
-           "category": "Computer Security Software",
-           "salePrice_range": "1 - 50",
-           "objectID": "1688832",
-           "type": "Software",
-           "customerReviewCount": 5980,
-           "salePrice": 49.99,
-           "manufacturer": "Webroot"
-        },
-        ....
-    ],
-     "nbHits": 10000,
-     "disjunctiveFacets": [
-        {
-           "exhaustive": false,
-           "data": {
-              "5": 183,
-              "12": 112,
-              "7": 149,
-              ...
-           },
-           "name": "customerReviewCount",
-           "stats": {
-              "max": 7461,
-              "avg": 157.939,
-              "min": 1
-           }
-        },
-        {
-           "data": {
-              "Printer Ink": 142,
-              "Wireless Speakers": 60,
-              "Point & Shoot Cameras": 48,
-              ...
-           },
-           "name": "category",
-           "exhaustive": false
-        },
-        {
-           "exhaustive": false,
-           "data": {
-              "> 5000": 2,
-              "1 - 50": 6524,
-              "501 - 2000": 566,
-              "201 - 500": 1501,
-              "101 - 200": 1360,
-              "2001 - 5000": 47
-           },
-           "name": "salePrice_range"
-        },
-        {
-           "data": {
-              "Dynex™": 202,
-              "Insignia™": 230,
-              "PNY": 72,
-              ...
-           },
-           "name": "manufacturer",
-           "exhaustive": false
-        }
-    ],
-     "query": "",
-     "nbPages": 100,
-     "page": 0,
-     "index": "bestbuy"
-  }
-   **/
-  /*eslint-enable */
-  function SearchResults(state, results, options) {
-    var mainSubResponse = results[0];
-
-    this._rawResults = results;
-
-    var self = this;
-
-    // https://www.algolia.com/doc/api-reference/api-methods/search/#response
-    Object.keys(mainSubResponse).forEach(function(key) {
-      self[key] = mainSubResponse[key];
-    });
-
-    // Make every key of the result options reachable from the instance
-    Object.keys(options || {}).forEach(function(key) {
-      self[key] = options[key];
-    });
-
-    /**
-     * query used to generate the results
-     * @name query
-     * @member {string}
-     * @memberof SearchResults
-     * @instance
-     */
-    /**
-     * The query as parsed by the engine given all the rules.
-     * @name parsedQuery
-     * @member {string}
-     * @memberof SearchResults
-     * @instance
-     */
-    /**
-     * all the records that match the search parameters. Each record is
-     * augmented with a new attribute `_highlightResult`
-     * which is an object keyed by attribute and with the following properties:
-     *  - `value` : the value of the facet highlighted (html)
-     *  - `matchLevel`: full, partial or none depending on how the query terms match
-     * @name hits
-     * @member {object[]}
-     * @memberof SearchResults
-     * @instance
-     */
-    /**
-     * index where the results come from
-     * @name index
-     * @member {string}
-     * @memberof SearchResults
-     * @instance
-     */
-    /**
-     * number of hits per page requested
-     * @name hitsPerPage
-     * @member {number}
-     * @memberof SearchResults
-     * @instance
-     */
-    /**
-     * total number of hits of this query on the index
-     * @name nbHits
-     * @member {number}
-     * @memberof SearchResults
-     * @instance
-     */
-    /**
-     * total number of pages with respect to the number of hits per page and the total number of hits
-     * @name nbPages
-     * @member {number}
-     * @memberof SearchResults
-     * @instance
-     */
-    /**
-     * current page
-     * @name page
-     * @member {number}
-     * @memberof SearchResults
-     * @instance
-     */
-    /**
-     * The position if the position was guessed by IP.
-     * @name aroundLatLng
-     * @member {string}
-     * @memberof SearchResults
-     * @instance
-     * @example "48.8637,2.3615",
-     */
-    /**
-     * The radius computed by Algolia.
-     * @name automaticRadius
-     * @member {string}
-     * @memberof SearchResults
-     * @instance
-     * @example "126792922",
-     */
-    /**
-     * String identifying the server used to serve this request.
-     *
-     * getRankingInfo needs to be set to `true` for this to be returned
-     *
-     * @name serverUsed
-     * @member {string}
-     * @memberof SearchResults
-     * @instance
-     * @example "c7-use-2.algolia.net",
-     */
-    /**
-     * Boolean that indicates if the computation of the counts did time out.
-     * @deprecated
-     * @name timeoutCounts
-     * @member {boolean}
-     * @memberof SearchResults
-     * @instance
-     */
-    /**
-     * Boolean that indicates if the computation of the hits did time out.
-     * @deprecated
-     * @name timeoutHits
-     * @member {boolean}
-     * @memberof SearchResults
-     * @instance
-     */
-    /**
-     * True if the counts of the facets is exhaustive
-     * @name exhaustiveFacetsCount
-     * @member {boolean}
-     * @memberof SearchResults
-     * @instance
-     */
-    /**
-     * True if the number of hits is exhaustive
-     * @name exhaustiveNbHits
-     * @member {boolean}
-     * @memberof SearchResults
-     * @instance
-     */
-    /**
-     * Contains the userData if they are set by a [query rule](https://www.algolia.com/doc/guides/query-rules/query-rules-overview/).
-     * @name userData
-     * @member {object[]}
-     * @memberof SearchResults
-     * @instance
-     */
-    /**
-     * queryID is the unique identifier of the query used to generate the current search results.
-     * This value is only available if the `clickAnalytics` search parameter is set to `true`.
-     * @name queryID
-     * @member {string}
-     * @memberof SearchResults
-     * @instance
-     */
-
-    /**
-     * sum of the processing time of all the queries
-     * @name processingTimeMS
-     * @member {number}
-     * @memberof SearchResults
-     * @instance
-     */
-    this.processingTimeMS = results.reduce(function(sum, result) {
-      return result.processingTimeMS === undefined
-        ? sum
-        : sum + result.processingTimeMS;
-    }, 0);
-
-    /**
-     * disjunctive facets results
-     * @member {SearchResults.Facet[]}
-     */
-    this.disjunctiveFacets = [];
-    /**
-     * disjunctive facets results
-     * @member {SearchResults.HierarchicalFacet[]}
-     */
-    this.hierarchicalFacets = state.hierarchicalFacets.map(function initFutureTree() {
-      return [];
-    });
-    /**
-     * other facets results
-     * @member {SearchResults.Facet[]}
-     */
-    this.facets = [];
-
-    var disjunctiveFacets = state.getRefinedDisjunctiveFacets();
-
-    var facetsIndices = getIndices(state.facets);
-    var disjunctiveFacetsIndices = getIndices(state.disjunctiveFacets);
-    var nextDisjunctiveResult = 1;
-
-    // Since we send request only for disjunctive facets that have been refined,
-    // we get the facets information from the first, general, response.
-
-    var mainFacets = mainSubResponse.facets || {};
-
-    Object.keys(mainFacets).forEach(function(facetKey) {
-      var facetValueObject = mainFacets[facetKey];
-
-      var hierarchicalFacet = findMatchingHierarchicalFacetFromAttributeName(
-        state.hierarchicalFacets,
-        facetKey
-      );
-
-      if (hierarchicalFacet) {
-        // Place the hierarchicalFacet data at the correct index depending on
-        // the attributes order that was defined at the helper initialization
-        var facetIndex = hierarchicalFacet.attributes.indexOf(facetKey);
-        var idxAttributeName = findIndex$1(state.hierarchicalFacets, function(f) {
-          return f.name === hierarchicalFacet.name;
-        });
-        self.hierarchicalFacets[idxAttributeName][facetIndex] = {
-          attribute: facetKey,
-          data: facetValueObject,
-          exhaustive: mainSubResponse.exhaustiveFacetsCount
-        };
-      } else {
-        var isFacetDisjunctive = state.disjunctiveFacets.indexOf(facetKey) !== -1;
-        var isFacetConjunctive = state.facets.indexOf(facetKey) !== -1;
-        var position;
-
-        if (isFacetDisjunctive) {
-          position = disjunctiveFacetsIndices[facetKey];
-          self.disjunctiveFacets[position] = {
-            name: facetKey,
-            data: facetValueObject,
-            exhaustive: mainSubResponse.exhaustiveFacetsCount
-          };
-          assignFacetStats(self.disjunctiveFacets[position], mainSubResponse.facets_stats, facetKey);
-        }
-        if (isFacetConjunctive) {
-          position = facetsIndices[facetKey];
-          self.facets[position] = {
-            name: facetKey,
-            data: facetValueObject,
-            exhaustive: mainSubResponse.exhaustiveFacetsCount
-          };
-          assignFacetStats(self.facets[position], mainSubResponse.facets_stats, facetKey);
-        }
-      }
-    });
-
-    // Make sure we do not keep holes within the hierarchical facets
-    this.hierarchicalFacets = compact(this.hierarchicalFacets);
-
-    // aggregate the refined disjunctive facets
-    disjunctiveFacets.forEach(function(disjunctiveFacet) {
-      var result = results[nextDisjunctiveResult];
-      var facets = result && result.facets ? result.facets : {};
-      var hierarchicalFacet = state.getHierarchicalFacetByName(disjunctiveFacet);
-
-      // There should be only item in facets.
-      Object.keys(facets).forEach(function(dfacet) {
-        var facetResults = facets[dfacet];
-
-        var position;
-
-        if (hierarchicalFacet) {
-          position = findIndex$1(state.hierarchicalFacets, function(f) {
-            return f.name === hierarchicalFacet.name;
-          });
-          var attributeIndex = findIndex$1(self.hierarchicalFacets[position], function(f) {
-            return f.attribute === dfacet;
-          });
-
-          // previous refinements and no results so not able to find it
-          if (attributeIndex === -1) {
-            return;
-          }
-
-          self.hierarchicalFacets[position][attributeIndex].data = merge_1(
-            {},
-            self.hierarchicalFacets[position][attributeIndex].data,
-            facetResults
-          );
-        } else {
-          position = disjunctiveFacetsIndices[dfacet];
-
-          var dataFromMainRequest = mainSubResponse.facets && mainSubResponse.facets[dfacet] || {};
-
-          self.disjunctiveFacets[position] = {
-            name: dfacet,
-            data: defaultsPure({}, facetResults, dataFromMainRequest),
-            exhaustive: result.exhaustiveFacetsCount
-          };
-          assignFacetStats(self.disjunctiveFacets[position], result.facets_stats, dfacet);
-
-          if (state.disjunctiveFacetsRefinements[dfacet]) {
-            state.disjunctiveFacetsRefinements[dfacet].forEach(function(refinementValue) {
-              // add the disjunctive refinements if it is no more retrieved
-              if (!self.disjunctiveFacets[position].data[refinementValue] &&
-                state.disjunctiveFacetsRefinements[dfacet].indexOf(unescapeFacetValue$3(refinementValue)) > -1) {
-                self.disjunctiveFacets[position].data[refinementValue] = 0;
-              }
-            });
-          }
-        }
-      });
-      nextDisjunctiveResult++;
-    });
-
-    // if we have some parent level values for hierarchical facets, merge them
-    state.getRefinedHierarchicalFacets().forEach(function(refinedFacet) {
-      var hierarchicalFacet = state.getHierarchicalFacetByName(refinedFacet);
-      var separator = state._getHierarchicalFacetSeparator(hierarchicalFacet);
-
-      var currentRefinement = state.getHierarchicalRefinement(refinedFacet);
-      // if we are already at a root refinement (or no refinement at all), there is no
-      // root level values request
-      if (currentRefinement.length === 0 || currentRefinement[0].split(separator).length < 2) {
-        return;
-      }
-
-      results.slice(nextDisjunctiveResult).forEach(function(result) {
-        var facets = result && result.facets
-          ? result.facets
-          : {};
-
-        Object.keys(facets).forEach(function(dfacet) {
-          var facetResults = facets[dfacet];
-          var position = findIndex$1(state.hierarchicalFacets, function(f) {
-            return f.name === hierarchicalFacet.name;
-          });
-          var attributeIndex = findIndex$1(self.hierarchicalFacets[position], function(f) {
-            return f.attribute === dfacet;
-          });
-
-          // previous refinements and no results so not able to find it
-          if (attributeIndex === -1) {
-            return;
-          }
-
-          // when we always get root levels, if the hits refinement is `beers > IPA` (count: 5),
-          // then the disjunctive values will be `beers` (count: 100),
-          // but we do not want to display
-          //   | beers (100)
-          //     > IPA (5)
-          // We want
-          //   | beers (5)
-          //     > IPA (5)
-          var defaultData = {};
-
-          if (currentRefinement.length > 0) {
-            var root = currentRefinement[0].split(separator)[0];
-            defaultData[root] = self.hierarchicalFacets[position][attributeIndex].data[root];
-          }
-
-          self.hierarchicalFacets[position][attributeIndex].data = defaultsPure(
-            defaultData,
-            facetResults,
-            self.hierarchicalFacets[position][attributeIndex].data
-          );
-        });
-
-        nextDisjunctiveResult++;
-      });
-    });
-
-    // add the excludes
-    Object.keys(state.facetsExcludes).forEach(function(facetName) {
-      var excludes = state.facetsExcludes[facetName];
-      var position = facetsIndices[facetName];
-
-      self.facets[position] = {
-        name: facetName,
-        data: mainFacets[facetName],
-        exhaustive: mainSubResponse.exhaustiveFacetsCount
-      };
-      excludes.forEach(function(facetValue) {
-        self.facets[position] = self.facets[position] || {name: facetName};
-        self.facets[position].data = self.facets[position].data || {};
-        self.facets[position].data[facetValue] = 0;
-      });
-    });
-
-    /**
-     * @type {Array}
-     */
-    this.hierarchicalFacets = this.hierarchicalFacets.map(generateHierarchicalTree_1(state));
-
-    /**
-     * @type {Array}
-     */
-    this.facets = compact(this.facets);
-    /**
-     * @type {Array}
-     */
-    this.disjunctiveFacets = compact(this.disjunctiveFacets);
-
-    this._state = state;
-  }
-
-  /**
-   * Get a facet object with its name
-   * @deprecated
-   * @param {string} name name of the faceted attribute
-   * @return {SearchResults.Facet} the facet object
-   */
-  SearchResults.prototype.getFacetByName = function(name) {
-    function predicate(facet) {
-      return facet.name === name;
-    }
-
-    return find$1(this.facets, predicate) ||
-      find$1(this.disjunctiveFacets, predicate) ||
-      find$1(this.hierarchicalFacets, predicate);
-  };
-
-  /**
-   * Get the facet values of a specified attribute from a SearchResults object.
-   * @private
-   * @param {SearchResults} results the search results to search in
-   * @param {string} attribute name of the faceted attribute to search for
-   * @return {array|object} facet values. For the hierarchical facets it is an object.
-   */
-  function extractNormalizedFacetValues(results, attribute) {
-    function predicate(facet) {
-      return facet.name === attribute;
-    }
-
-    if (results._state.isConjunctiveFacet(attribute)) {
-      var facet = find$1(results.facets, predicate);
-      if (!facet) return [];
-
-      return Object.keys(facet.data).map(function(name) {
-        var value = escapeFacetValue$3(name);
-        return {
-          name: name,
-          escapedValue: value,
-          count: facet.data[name],
-          isRefined: results._state.isFacetRefined(attribute, value),
-          isExcluded: results._state.isExcludeRefined(attribute, name)
-        };
-      });
-    } else if (results._state.isDisjunctiveFacet(attribute)) {
-      var disjunctiveFacet = find$1(results.disjunctiveFacets, predicate);
-      if (!disjunctiveFacet) return [];
-
-      return Object.keys(disjunctiveFacet.data).map(function(name) {
-        var value = escapeFacetValue$3(name);
-        return {
-          name: name,
-          escapedValue: value,
-          count: disjunctiveFacet.data[name],
-          isRefined: results._state.isDisjunctiveFacetRefined(attribute, value)
-        };
-      });
-    } else if (results._state.isHierarchicalFacet(attribute)) {
-      var hierarchicalFacetValues = find$1(results.hierarchicalFacets, predicate);
-      if (!hierarchicalFacetValues) return hierarchicalFacetValues;
-
-      var hierarchicalFacet = results._state.getHierarchicalFacetByName(attribute);
-      var currentRefinementSplit = unescapeFacetValue$3(
-        results._state.getHierarchicalRefinement(attribute)[0] || ''
-      ).split(results._state._getHierarchicalFacetSeparator(hierarchicalFacet));
-      currentRefinementSplit.unshift(attribute);
-
-      setIsRefined(hierarchicalFacetValues, currentRefinementSplit, 0);
-
-      return hierarchicalFacetValues;
-    }
-  }
-
-  /**
-   * Set the isRefined of a hierarchical facet result based on the current state.
-   * @param {SearchResults.HierarchicalFacet} item Hierarchical facet to fix
-   * @param {string[]} currentRefinementSplit array of parts of the current hierarchical refinement
-   * @param {number} depth recursion depth in the currentRefinement
-   */
-  function setIsRefined(item, currentRefinement, depth) {
-    item.isRefined = item.name === currentRefinement[depth];
-    if (item.data) {
-      item.data.forEach(function(child) {
-        setIsRefined(child, currentRefinement, depth + 1);
-      });
-    }
-  }
-
-  /**
-   * Sort nodes of a hierarchical or disjunctive facet results
-   * @private
-   * @param {function} sortFn
-   * @param {HierarchicalFacet|Array} node node upon which we want to apply the sort
-   * @param {string[]} names attribute names
-   * @param {number} [level=0] current index in the names array
-   */
-  function recSort(sortFn, node, names, level) {
-    level = level || 0;
-
-    if (Array.isArray(node)) {
-      return sortFn(node, names[level]);
-    }
-
-    if (!node.data || node.data.length === 0) {
-      return node;
-    }
-
-    var children = node.data.map(function(childNode) {
-      return recSort(sortFn, childNode, names, level + 1);
-    });
-    var sortedChildren = sortFn(children, names[level]);
-    var newNode = defaultsPure({data: sortedChildren}, node);
-    return newNode;
-  }
-
-  SearchResults.DEFAULT_SORT = ['isRefined:desc', 'count:desc', 'name:asc'];
-
-  function vanillaSortFn(order, data) {
-    return data.sort(order);
-  }
-
-  /**
-   * @typedef FacetOrdering
-   * @type {Object}
-   * @property {string[]} [order]
-   * @property {'count' | 'alpha' | 'hidden'} [sortRemainingBy]
-   */
-
-  /**
-   * Sorts facet arrays via their facet ordering
-   * @param {Array} facetValues the values
-   * @param {FacetOrdering} facetOrdering the ordering
-   * @returns {Array}
-   */
-  function sortViaFacetOrdering(facetValues, facetOrdering) {
-    var orderedFacets = [];
-    var remainingFacets = [];
-
-    var order = facetOrdering.order || [];
-    /**
-     * an object with the keys being the values in order, the values their index:
-     * ['one', 'two'] -> { one: 0, two: 1 }
-     */
-    var reverseOrder = order.reduce(function(acc, name, i) {
-      acc[name] = i;
-      return acc;
-    }, {});
-
-    facetValues.forEach(function(item) {
-      // hierarchical facets get sorted using their raw name
-      var name = item.path || item.name;
-      if (reverseOrder[name] !== undefined) {
-        orderedFacets[reverseOrder[name]] = item;
-      } else {
-        remainingFacets.push(item);
-      }
-    });
-
-    orderedFacets = orderedFacets.filter(function(facet) {
-      return facet;
-    });
-
-    var sortRemainingBy = facetOrdering.sortRemainingBy;
-    var ordering;
-    if (sortRemainingBy === 'hidden') {
-      return orderedFacets;
-    } else if (sortRemainingBy === 'alpha') {
-      ordering = [['path', 'name'], ['asc', 'asc']];
-    } else {
-      ordering = [['count'], ['desc']];
-    }
-
-    return orderedFacets.concat(
-      orderBy_1(remainingFacets, ordering[0], ordering[1])
-    );
-  }
-
-  /**
-   * @param {SearchResults} results the search results class
-   * @param {string} attribute the attribute to retrieve ordering of
-   * @returns {FacetOrdering=}
-   */
-  function getFacetOrdering(results, attribute) {
-    return (
-      results.renderingContent &&
-      results.renderingContent.facetOrdering &&
-      results.renderingContent.facetOrdering.values &&
-      results.renderingContent.facetOrdering.values[attribute]
-    );
-  }
-
-  /**
-   * Get a the list of values for a given facet attribute. Those values are sorted
-   * refinement first, descending count (bigger value on top), and name ascending
-   * (alphabetical order). The sort formula can overridden using either string based
-   * predicates or a function.
-   *
-   * This method will return all the values returned by the Algolia engine plus all
-   * the values already refined. This means that it can happen that the
-   * `maxValuesPerFacet` [configuration](https://www.algolia.com/doc/rest-api/search#param-maxValuesPerFacet)
-   * might not be respected if you have facet values that are already refined.
-   * @param {string} attribute attribute name
-   * @param {object} opts configuration options.
-   * @param {boolean} [opts.facetOrdering]
-   * Force the use of facetOrdering from the result if a sortBy is present. If
-   * sortBy isn't present, facetOrdering will be used automatically.
-   * @param {Array.<string> | function} opts.sortBy
-   * When using strings, it consists of
-   * the name of the [FacetValue](#SearchResults.FacetValue) or the
-   * [HierarchicalFacet](#SearchResults.HierarchicalFacet) attributes with the
-   * order (`asc` or `desc`). For example to order the value by count, the
-   * argument would be `['count:asc']`.
-   *
-   * If only the attribute name is specified, the ordering defaults to the one
-   * specified in the default value for this attribute.
-   *
-   * When not specified, the order is
-   * ascending.  This parameter can also be a function which takes two facet
-   * values and should return a number, 0 if equal, 1 if the first argument is
-   * bigger or -1 otherwise.
-   *
-   * The default value for this attribute `['isRefined:desc', 'count:desc', 'name:asc']`
-   * @return {FacetValue[]|HierarchicalFacet|undefined} depending on the type of facet of
-   * the attribute requested (hierarchical, disjunctive or conjunctive)
-   * @example
-   * helper.on('result', function(event){
-   *   //get values ordered only by name ascending using the string predicate
-   *   event.results.getFacetValues('city', {sortBy: ['name:asc']});
-   *   //get values  ordered only by count ascending using a function
-   *   event.results.getFacetValues('city', {
-   *     // this is equivalent to ['count:asc']
-   *     sortBy: function(a, b) {
-   *       if (a.count === b.count) return 0;
-   *       if (a.count > b.count)   return 1;
-   *       if (b.count > a.count)   return -1;
-   *     }
-   *   });
-   * });
-   */
-  SearchResults.prototype.getFacetValues = function(attribute, opts) {
-    var facetValues = extractNormalizedFacetValues(this, attribute);
-    if (!facetValues) {
-      return undefined;
-    }
-
-    var options = defaultsPure({}, opts, {
-      sortBy: SearchResults.DEFAULT_SORT,
-      // if no sortBy is given, attempt to sort based on facetOrdering
-      // if it is given, we still allow to sort via facet ordering first
-      facetOrdering: !(opts && opts.sortBy)
-    });
-
-    var results = this;
-    var attributes;
-    if (Array.isArray(facetValues)) {
-      attributes = [attribute];
-    } else {
-      var config = results._state.getHierarchicalFacetByName(facetValues.name);
-      attributes = config.attributes;
-    }
-
-    return recSort(function(data, facetName) {
-      if (options.facetOrdering) {
-        var facetOrdering = getFacetOrdering(results, facetName);
-        if (Boolean(facetOrdering)) {
-          return sortViaFacetOrdering(data, facetOrdering);
-        }
-      }
-
-      if (Array.isArray(options.sortBy)) {
-        var order = formatSort(options.sortBy, SearchResults.DEFAULT_SORT);
-        return orderBy_1(data, order[0], order[1]);
-      } else if (typeof options.sortBy === 'function') {
-        return vanillaSortFn(options.sortBy, data);
-      }
-      throw new Error(
-        'options.sortBy is optional but if defined it must be ' +
-          'either an array of string (predicates) or a sorting function'
-      );
-    }, facetValues, attributes);
-  };
-
-  /**
-   * Returns the facet stats if attribute is defined and the facet contains some.
-   * Otherwise returns undefined.
-   * @param {string} attribute name of the faceted attribute
-   * @return {object} The stats of the facet
-   */
-  SearchResults.prototype.getFacetStats = function(attribute) {
-    if (this._state.isConjunctiveFacet(attribute)) {
-      return getFacetStatsIfAvailable(this.facets, attribute);
-    } else if (this._state.isDisjunctiveFacet(attribute)) {
-      return getFacetStatsIfAvailable(this.disjunctiveFacets, attribute);
-    }
-
-    return undefined;
-  };
-
-  /**
-   * @typedef {Object} FacetListItem
-   * @property {string} name
-   */
-
-  /**
-   * @param {FacetListItem[]} facetList (has more items, but enough for here)
-   * @param {string} facetName
-   */
-  function getFacetStatsIfAvailable(facetList, facetName) {
-    var data = find$1(facetList, function(facet) {
-      return facet.name === facetName;
-    });
-    return data && data.stats;
-  }
-
-  /**
-   * Returns all refinements for all filters + tags. It also provides
-   * additional information: count and exhaustiveness for each filter.
-   *
-   * See the [refinement type](#Refinement) for an exhaustive view of the available
-   * data.
-   *
-   * Note that for a numeric refinement, results are grouped per operator, this
-   * means that it will return responses for operators which are empty.
-   *
-   * @return {Array.<Refinement>} all the refinements
-   */
-  SearchResults.prototype.getRefinements = function() {
-    var state = this._state;
-    var results = this;
-    var res = [];
-
-    Object.keys(state.facetsRefinements).forEach(function(attributeName) {
-      state.facetsRefinements[attributeName].forEach(function(name) {
-        res.push(getRefinement$1(state, 'facet', attributeName, name, results.facets));
-      });
-    });
-
-    Object.keys(state.facetsExcludes).forEach(function(attributeName) {
-      state.facetsExcludes[attributeName].forEach(function(name) {
-        res.push(getRefinement$1(state, 'exclude', attributeName, name, results.facets));
-      });
-    });
-
-    Object.keys(state.disjunctiveFacetsRefinements).forEach(function(attributeName) {
-      state.disjunctiveFacetsRefinements[attributeName].forEach(function(name) {
-        res.push(getRefinement$1(state, 'disjunctive', attributeName, name, results.disjunctiveFacets));
-      });
-    });
-
-    Object.keys(state.hierarchicalFacetsRefinements).forEach(function(attributeName) {
-      state.hierarchicalFacetsRefinements[attributeName].forEach(function(name) {
-        res.push(getHierarchicalRefinement(state, attributeName, name, results.hierarchicalFacets));
-      });
-    });
-
-
-    Object.keys(state.numericRefinements).forEach(function(attributeName) {
-      var operators = state.numericRefinements[attributeName];
-      Object.keys(operators).forEach(function(operator) {
-        operators[operator].forEach(function(value) {
-          res.push({
-            type: 'numeric',
-            attributeName: attributeName,
-            name: value,
-            numericValue: value,
-            operator: operator
-          });
-        });
-      });
-    });
-
-    state.tagRefinements.forEach(function(name) {
-      res.push({type: 'tag', attributeName: '_tags', name: name});
-    });
-
-    return res;
-  };
-
-  /**
-   * @typedef {Object} Facet
-   * @property {string} name
-   * @property {Object} data
-   * @property {boolean} exhaustive
-   */
-
-  /**
-   * @param {*} state
-   * @param {*} type
-   * @param {string} attributeName
-   * @param {*} name
-   * @param {Facet[]} resultsFacets
-   */
-  function getRefinement$1(state, type, attributeName, name, resultsFacets) {
-    var facet = find$1(resultsFacets, function(f) {
-      return f.name === attributeName;
-    });
-    var count = facet && facet.data && facet.data[name] ? facet.data[name] : 0;
-    var exhaustive = (facet && facet.exhaustive) || false;
-
-    return {
-      type: type,
-      attributeName: attributeName,
-      name: name,
-      count: count,
-      exhaustive: exhaustive
-    };
-  }
-
-  /**
-   * @param {*} state
-   * @param {string} attributeName
-   * @param {*} name
-   * @param {Facet[]} resultsFacets
-   */
-  function getHierarchicalRefinement(state, attributeName, name, resultsFacets) {
-    var facetDeclaration = state.getHierarchicalFacetByName(attributeName);
-    var separator = state._getHierarchicalFacetSeparator(facetDeclaration);
-    var split = name.split(separator);
-    var rootFacet = find$1(resultsFacets, function(facet) {
-      return facet.name === attributeName;
-    });
-
-    var facet = split.reduce(function(intermediateFacet, part) {
-      var newFacet =
-        intermediateFacet && find$1(intermediateFacet.data, function(f) {
-          return f.name === part;
-        });
-      return newFacet !== undefined ? newFacet : intermediateFacet;
-    }, rootFacet);
-
-    var count = (facet && facet.count) || 0;
-    var exhaustive = (facet && facet.exhaustive) || false;
-    var path = (facet && facet.path) || '';
-
-    return {
-      type: 'hierarchical',
-      attributeName: attributeName,
-      name: path,
-      count: count,
-      exhaustive: exhaustive
-    };
-  }
-
-  var SearchResults_1 = SearchResults;
 
   // Copyright Joyent, Inc. and other Node contributors.
   //
@@ -9109,8 +6281,8 @@
         value: ctor,
         enumerable: false,
         writable: true,
-        configurable: true
-      }
+        configurable: true,
+      },
     });
   }
 
@@ -9125,11 +6297,16 @@
    *  - result: when the response is retrieved from Algolia and is processed.
    *    This event contains a {@link SearchResults} object and the
    *    {@link SearchParameters} corresponding to this answer.
+   * @param {AlgoliaSearchHelper} mainHelper the main helper
+   * @param {function} fn the function to create the derived state for search
+   * @param {function} recommendFn the function to create the derived state for recommendations
    */
-  function DerivedHelper(mainHelper, fn) {
+  function DerivedHelper(mainHelper, fn, recommendFn) {
     this.main = mainHelper;
     this.fn = fn;
+    this.recommendFn = recommendFn;
     this.lastResults = null;
+    this.lastRecommendResults = null;
   }
 
   inherits_1(DerivedHelper, events);
@@ -9139,23 +6316,276 @@
    * @return {undefined}
    * @throws Error if the derived helper is already detached
    */
-  DerivedHelper.prototype.detach = function() {
+  DerivedHelper.prototype.detach = function () {
     this.removeAllListeners();
     this.main.detachDerivedHelper(this);
   };
 
-  DerivedHelper.prototype.getModifiedState = function(parameters) {
+  DerivedHelper.prototype.getModifiedState = function (parameters) {
     return this.fn(parameters);
+  };
+
+  DerivedHelper.prototype.getModifiedRecommendState = function (parameters) {
+    return this.recommendFn(parameters);
   };
 
   var DerivedHelper_1 = DerivedHelper;
 
+  /**
+   * Replaces a leading - with \-
+   * @private
+   * @param {any} value the facet value to replace
+   * @returns {any} the escaped facet value or the value if it was not a string
+   */
+  function escapeFacetValue$1(value) {
+    if (typeof value !== 'string') return value;
+
+    return String(value).replace(/^-/, '\\-');
+  }
+
+  /**
+   * Replaces a leading \- with -
+   * @private
+   * @param {any} value the escaped facet value
+   * @returns {any} the unescaped facet value or the value if it was not a string
+   */
+  function unescapeFacetValue$1(value) {
+    if (typeof value !== 'string') return value;
+
+    return value.replace(/^\\-/, '-');
+  }
+
+  var escapeFacetValue_1 = {
+    escapeFacetValue: escapeFacetValue$1,
+    unescapeFacetValue: unescapeFacetValue$1,
+  };
+
+  function clone(value) {
+    if (typeof value === 'object' && value !== null) {
+      return _merge(Array.isArray(value) ? [] : {}, value);
+    }
+    return value;
+  }
+
+  function isObjectOrArrayOrFunction(value) {
+    return (
+      typeof value === 'function' ||
+      Array.isArray(value) ||
+      Object.prototype.toString.call(value) === '[object Object]'
+    );
+  }
+
+  function _merge(target, source) {
+    if (target === source) {
+      return target;
+    }
+
+    // eslint-disable-next-line no-restricted-syntax
+    for (var key in source) {
+      if (
+        !Object.prototype.hasOwnProperty.call(source, key) ||
+        key === '__proto__' ||
+        key === 'constructor'
+      ) {
+        // eslint-disable-next-line no-continue
+        continue;
+      }
+
+      var sourceVal = source[key];
+      var targetVal = target[key];
+
+      if (typeof targetVal !== 'undefined' && typeof sourceVal === 'undefined') {
+        // eslint-disable-next-line no-continue
+        continue;
+      }
+
+      if (
+        isObjectOrArrayOrFunction(targetVal) &&
+        isObjectOrArrayOrFunction(sourceVal)
+      ) {
+        target[key] = _merge(targetVal, sourceVal);
+      } else {
+        target[key] = clone(sourceVal);
+      }
+    }
+    return target;
+  }
+
+  /**
+   * This method is like Object.assign, but recursively merges own and inherited
+   * enumerable keyed properties of source objects into the destination object.
+   *
+   * NOTE: this behaves like lodash/merge, but:
+   * - does mutate functions if they are a source
+   * - treats non-plain objects as plain
+   * - does not work for circular objects
+   * - treats sparse arrays as sparse
+   * - does not convert Array-like objects (Arguments, NodeLists, etc.) to arrays
+   *
+   * @param {Object} target The destination object.
+   * @param {...Object} [sources] The source objects.
+   * @returns {Object} Returns `object`.
+   */
+  function merge(target) {
+    if (!isObjectOrArrayOrFunction(target)) {
+      target = {};
+    }
+
+    for (var i = 1, l = arguments.length; i < l; i++) {
+      var source = arguments[i];
+
+      if (isObjectOrArrayOrFunction(source)) {
+        _merge(target, source);
+      }
+    }
+    return target;
+  }
+
+  var merge_1 = merge;
+
+  function objectHasKeys(obj) {
+    return obj && Object.keys(obj).length > 0;
+  }
+
+  var objectHasKeys_1 = objectHasKeys;
+
+  // https://github.com/babel/babel/blob/3aaafae053fa75febb3aa45d45b6f00646e30ba4/packages/babel-helpers/src/helpers.js#L604-L620
+  function _objectWithoutPropertiesLoose$1(source, excluded) {
+    if (source === null) return {};
+    var target = {};
+    var sourceKeys = Object.keys(source);
+    var key;
+    var i;
+    for (i = 0; i < sourceKeys.length; i++) {
+      key = sourceKeys[i];
+      // eslint-disable-next-line no-continue
+      if (excluded.indexOf(key) >= 0) continue;
+      target[key] = source[key];
+    }
+    return target;
+  }
+
+  var omit$1 = _objectWithoutPropertiesLoose$1;
+
+  /**
+   * RecommendParameters is the data structure that contains all the information
+   * usable for getting recommendations from the Algolia API. It doesn't do the
+   * search itself, nor does it contains logic about the parameters.
+   * It is an immutable object, therefore it has been created in a way that each
+   * changes does not change the object itself but returns a copy with the
+   * modification.
+   * This object should probably not be instantiated outside of the helper. It
+   * will be provided when needed.
+   * @constructor
+   * @classdesc contains all the parameters for recommendations
+   * @param {RecommendParametersOptions} opts the options to create the object
+   */
+  function RecommendParameters(opts) {
+    opts = opts || {};
+    this.params = opts.params || [];
+  }
+
+  RecommendParameters.prototype = {
+    constructor: RecommendParameters,
+
+    addParams: function (params) {
+      var newParams = this.params.slice();
+
+      newParams.push(params);
+
+      return new RecommendParameters({ params: newParams });
+    },
+
+    removeParams: function (id) {
+      return new RecommendParameters({
+        params: this.params.filter(function (param) {
+          return param.$$id !== id;
+        }),
+      });
+    },
+
+    addFrequentlyBoughtTogether: function (params) {
+      return this.addParams(
+        Object.assign({}, params, { model: 'bought-together' })
+      );
+    },
+
+    addRelatedProducts: function (params) {
+      return this.addParams(
+        Object.assign({}, params, { model: 'related-products' })
+      );
+    },
+
+    addTrendingItems: function (params) {
+      return this.addParams(
+        Object.assign({}, params, { model: 'trending-items' })
+      );
+    },
+
+    addTrendingFacets: function (params) {
+      return this.addParams(
+        Object.assign({}, params, { model: 'trending-facets' })
+      );
+    },
+
+    addLookingSimilar: function (params) {
+      return this.addParams(
+        Object.assign({}, params, { model: 'looking-similar' })
+      );
+    },
+
+    _buildQueries: function (indexName, cache) {
+      return this.params
+        .filter(function (params) {
+          return cache[params.$$id] === undefined;
+        })
+        .map(function (params) {
+          var query = Object.assign({}, params, {
+            indexName: indexName,
+            // @TODO: remove this if it ever gets handled by the API
+            threshold: params.threshold || 0,
+          });
+          delete query.$$id;
+
+          return query;
+        });
+    },
+  };
+
+  var RecommendParameters_1 = RecommendParameters;
+
+  /**
+   * Constructor for SearchResults
+   * @class
+   * @classdesc SearchResults contains the results of a query to Algolia using the
+   * {@link AlgoliaSearchHelper}.
+   * @param {RecommendParameters} state state that led to the response
+   * @param {Record<string,RecommendResultItem>} results the results from algolia client
+   **/
+  function RecommendResults(state, results) {
+    this._state = state;
+    this._rawResults = {};
+
+    // eslint-disable-next-line consistent-this
+    var self = this;
+
+    state.params.forEach(function (param) {
+      var id = param.$$id;
+      self[id] = results[id];
+      self._rawResults[id] = results[id];
+    });
+  }
+
+  RecommendResults.prototype = {
+    constructor: RecommendResults,
+  };
+
+  var RecommendResults_1 = RecommendResults;
+
   function sortObject(obj) {
     return Object.keys(obj)
-      .sort(function(a, b) {
-        return a.localeCompare(b);
-      })
-      .reduce(function(acc, curr) {
+      .sort()
+      .reduce(function (acc, curr) {
         acc[curr] = obj[curr];
         return acc;
       }, {});
@@ -9166,6 +6596,8 @@
      * Get all the queries to send to the client, those queries can used directly
      * with the Algolia client.
      * @private
+     * @param  {string} index The name of the index
+     * @param  {SearchParameters} state The state from which to get the queries
      * @return {object[]} The queries
      */
     _getQueries: function getQueries(index, state) {
@@ -9174,39 +6606,47 @@
       // One query for the hits
       queries.push({
         indexName: index,
-        params: requestBuilder._getHitsSearchParams(state)
+        params: requestBuilder._getHitsSearchParams(state),
       });
 
       // One for each disjunctive facets
-      state.getRefinedDisjunctiveFacets().forEach(function(refinedFacet) {
+      state.getRefinedDisjunctiveFacets().forEach(function (refinedFacet) {
         queries.push({
           indexName: index,
-          params: requestBuilder._getDisjunctiveFacetSearchParams(state, refinedFacet)
+          params: requestBuilder._getDisjunctiveFacetSearchParams(
+            state,
+            refinedFacet
+          ),
         });
       });
 
       // More to get the parent levels of the hierarchical facets when refined
-      state.getRefinedHierarchicalFacets().forEach(function(refinedFacet) {
+      state.getRefinedHierarchicalFacets().forEach(function (refinedFacet) {
         var hierarchicalFacet = state.getHierarchicalFacetByName(refinedFacet);
         var currentRefinement = state.getHierarchicalRefinement(refinedFacet);
         var separator = state._getHierarchicalFacetSeparator(hierarchicalFacet);
 
         // If we are deeper than level 0 (starting from `beer > IPA`)
         // we want to get all parent values
-        if (currentRefinement.length > 0 && currentRefinement[0].split(separator).length > 1) {
+        if (
+          currentRefinement.length > 0 &&
+          currentRefinement[0].split(separator).length > 1
+        ) {
           // We generate a map of the filters we will use for our facet values queries
-          var filtersMap = currentRefinement[0].split(separator).slice(0, -1).reduce(
-            function createFiltersMap(map, segment, level) {
+          var filtersMap = currentRefinement[0]
+            .split(separator)
+            .slice(0, -1)
+            .reduce(function createFiltersMap(map, segment, level) {
               return map.concat({
                 attribute: hierarchicalFacet.attributes[level],
-                value: level === 0
-                  ? segment
-                  : [map[map.length - 1].value, segment].join(separator)
+                value:
+                  level === 0
+                    ? segment
+                    : [map[map.length - 1].value, segment].join(separator),
               });
-            }
-          , []);
+            }, []);
 
-          filtersMap.forEach(function(filter, level) {
+          filtersMap.forEach(function (filter, level) {
             var params = requestBuilder._getDisjunctiveFacetSearchParams(
               state,
               filter.attribute,
@@ -9215,37 +6655,47 @@
 
             // Keep facet filters unrelated to current hierarchical attributes
             function hasHierarchicalFacetFilter(value) {
-              return hierarchicalFacet.attributes.some(function(attribute) {
+              return hierarchicalFacet.attributes.some(function (attribute) {
                 return attribute === value.split(':')[0];
               });
             }
 
-            var filteredFacetFilters = (params.facetFilters || []).reduce(function(acc, facetFilter) {
-              if (Array.isArray(facetFilter)) {
-                var filtered = facetFilter.filter(function(filterValue) {
-                  return !hasHierarchicalFacetFilter(filterValue);
-                });
+            var filteredFacetFilters = (params.facetFilters || []).reduce(
+              function (acc, facetFilter) {
+                if (Array.isArray(facetFilter)) {
+                  var filtered = facetFilter.filter(function (filterValue) {
+                    return !hasHierarchicalFacetFilter(filterValue);
+                  });
 
-                if (filtered.length > 0) {
-                  acc.push(filtered);
+                  if (filtered.length > 0) {
+                    acc.push(filtered);
+                  }
                 }
-              }
 
-              if (typeof facetFilter === 'string' && !hasHierarchicalFacetFilter(facetFilter)) {
-                acc.push(facetFilter);
-              }
+                if (
+                  typeof facetFilter === 'string' &&
+                  !hasHierarchicalFacetFilter(facetFilter)
+                ) {
+                  acc.push(facetFilter);
+                }
 
-              return acc;
-            }, []);
+                return acc;
+              },
+              []
+            );
 
             var parent = filtersMap[level - 1];
             if (level > 0) {
-              params.facetFilters = filteredFacetFilters.concat(parent.attribute + ':' + parent.value);
+              params.facetFilters = filteredFacetFilters.concat(
+                parent.attribute + ':' + parent.value
+              );
+            } else if (filteredFacetFilters.length > 0) {
+              params.facetFilters = filteredFacetFilters;
             } else {
-              params.facetFilters = filteredFacetFilters.length > 0 ? filteredFacetFilters : undefined;
+              delete params.facetFilters;
             }
 
-            queries.push({indexName: index, params: params});
+            queries.push({ indexName: index, params: params });
           });
         }
       });
@@ -9256,21 +6706,27 @@
     /**
      * Build search parameters used to fetch hits
      * @private
-     * @return {object.<string, any>}
+     * @param  {SearchParameters} state The state from which to get the queries
+     * @return {object.<string, any>} The search parameters for hits
      */
-    _getHitsSearchParams: function(state) {
+    _getHitsSearchParams: function (state) {
       var facets = state.facets
         .concat(state.disjunctiveFacets)
-        .concat(requestBuilder._getHitsHierarchicalFacetsAttributes(state));
-
+        .concat(requestBuilder._getHitsHierarchicalFacetsAttributes(state))
+        .sort();
 
       var facetFilters = requestBuilder._getFacetFilters(state);
       var numericFilters = requestBuilder._getNumericFilters(state);
       var tagFilters = requestBuilder._getTagFilters(state);
-      var additionalParams = {
-        facets: facets.indexOf('*') > -1 ? ['*'] : facets,
-        tagFilters: tagFilters
-      };
+      var additionalParams = {};
+
+      if (facets.length > 0) {
+        additionalParams.facets = facets.indexOf('*') > -1 ? ['*'] : facets;
+      }
+
+      if (tagFilters.length > 0) {
+        additionalParams.tagFilters = tagFilters;
+      }
 
       if (facetFilters.length > 0) {
         additionalParams.facetFilters = facetFilters;
@@ -9286,19 +6742,28 @@
     /**
      * Build search parameters used to fetch a disjunctive facet
      * @private
+     * @param  {SearchParameters} state The state from which to get the queries
      * @param  {string} facet the associated facet name
      * @param  {boolean} hierarchicalRootLevel ?? FIXME
-     * @return {object}
+     * @return {object} The search parameters for a disjunctive facet
      */
-    _getDisjunctiveFacetSearchParams: function(state, facet, hierarchicalRootLevel) {
-      var facetFilters = requestBuilder._getFacetFilters(state, facet, hierarchicalRootLevel);
+    _getDisjunctiveFacetSearchParams: function (
+      state,
+      facet,
+      hierarchicalRootLevel
+    ) {
+      var facetFilters = requestBuilder._getFacetFilters(
+        state,
+        facet,
+        hierarchicalRootLevel
+      );
       var numericFilters = requestBuilder._getNumericFilters(state, facet);
       var tagFilters = requestBuilder._getTagFilters(state);
       var additionalParams = {
         hitsPerPage: 0,
         page: 0,
         analytics: false,
-        clickAnalytics: false
+        clickAnalytics: false,
       };
 
       if (tagFilters.length > 0) {
@@ -9308,11 +6773,12 @@
       var hierarchicalFacet = state.getHierarchicalFacetByName(facet);
 
       if (hierarchicalFacet) {
-        additionalParams.facets = requestBuilder._getDisjunctiveHierarchicalFacetAttribute(
-          state,
-          hierarchicalFacet,
-          hierarchicalRootLevel
-        );
+        additionalParams.facets =
+          requestBuilder._getDisjunctiveHierarchicalFacetAttribute(
+            state,
+            hierarchicalFacet,
+            hierarchicalRootLevel
+          );
       } else {
         additionalParams.facets = facet;
       }
@@ -9331,24 +6797,25 @@
     /**
      * Return the numeric filters in an algolia request fashion
      * @private
+     * @param {SearchParameters} state the state from which to get the filters
      * @param {string} [facetName] the name of the attribute for which the filters should be excluded
      * @return {string[]} the numeric filters in the algolia format
      */
-    _getNumericFilters: function(state, facetName) {
+    _getNumericFilters: function (state, facetName) {
       if (state.numericFilters) {
         return state.numericFilters;
       }
 
       var numericFilters = [];
 
-      Object.keys(state.numericRefinements).forEach(function(attribute) {
+      Object.keys(state.numericRefinements).forEach(function (attribute) {
         var operators = state.numericRefinements[attribute] || {};
-        Object.keys(operators).forEach(function(operator) {
+        Object.keys(operators).forEach(function (operator) {
           var values = operators[operator] || [];
           if (facetName !== attribute) {
-            values.forEach(function(value) {
+            values.forEach(function (value) {
               if (Array.isArray(value)) {
-                var vs = value.map(function(v) {
+                var vs = value.map(function (v) {
                   return attribute + operator + v;
                 });
                 numericFilters.push(vs);
@@ -9364,11 +6831,12 @@
     },
 
     /**
-     * Return the tags filters depending
+     * Return the tags filters depending on which format is used, either tagFilters or tagRefinements
      * @private
-     * @return {string}
+     * @param {SearchParameters} state the state from which to get the filters
+     * @return {string} Tag filters in a single string
      */
-    _getTagFilters: function(state) {
+    _getTagFilters: function (state) {
       if (state.tagFilters) {
         return state.tagFilters;
       }
@@ -9376,102 +6844,128 @@
       return state.tagRefinements.join(',');
     },
 
-
     /**
      * Build facetFilters parameter based on current refinements. The array returned
      * contains strings representing the facet filters in the algolia format.
      * @private
+     * @param  {SearchParameters} state The state from which to get the queries
      * @param  {string} [facet] if set, the current disjunctive facet
-     * @return {array.<string>}
+     * @param  {boolean} [hierarchicalRootLevel] ?? FIXME
+     * @return {array.<string>} The facet filters in the algolia format
      */
-    _getFacetFilters: function(state, facet, hierarchicalRootLevel) {
+    _getFacetFilters: function (state, facet, hierarchicalRootLevel) {
       var facetFilters = [];
 
       var facetsRefinements = state.facetsRefinements || {};
-      Object.keys(facetsRefinements).forEach(function(facetName) {
-        var facetValues = facetsRefinements[facetName] || [];
-        facetValues.forEach(function(facetValue) {
-          facetFilters.push(facetName + ':' + facetValue);
+      Object.keys(facetsRefinements)
+        .sort()
+        .forEach(function (facetName) {
+          var facetValues = facetsRefinements[facetName] || [];
+          facetValues
+            .slice()
+            .sort()
+            .forEach(function (facetValue) {
+              facetFilters.push(facetName + ':' + facetValue);
+            });
         });
-      });
 
       var facetsExcludes = state.facetsExcludes || {};
-      Object.keys(facetsExcludes).forEach(function(facetName) {
-        var facetValues = facetsExcludes[facetName] || [];
-        facetValues.forEach(function(facetValue) {
-          facetFilters.push(facetName + ':-' + facetValue);
+      Object.keys(facetsExcludes)
+        .sort()
+        .forEach(function (facetName) {
+          var facetValues = facetsExcludes[facetName] || [];
+          facetValues.sort().forEach(function (facetValue) {
+            facetFilters.push(facetName + ':-' + facetValue);
+          });
         });
-      });
 
       var disjunctiveFacetsRefinements = state.disjunctiveFacetsRefinements || {};
-      Object.keys(disjunctiveFacetsRefinements).forEach(function(facetName) {
-        var facetValues = disjunctiveFacetsRefinements[facetName] || [];
-        if (facetName === facet || !facetValues || facetValues.length === 0) {
-          return;
-        }
-        var orFilters = [];
+      Object.keys(disjunctiveFacetsRefinements)
+        .sort()
+        .forEach(function (facetName) {
+          var facetValues = disjunctiveFacetsRefinements[facetName] || [];
+          if (facetName === facet || !facetValues || facetValues.length === 0) {
+            return;
+          }
+          var orFilters = [];
 
-        facetValues.forEach(function(facetValue) {
-          orFilters.push(facetName + ':' + facetValue);
+          facetValues
+            .slice()
+            .sort()
+            .forEach(function (facetValue) {
+              orFilters.push(facetName + ':' + facetValue);
+            });
+
+          facetFilters.push(orFilters);
         });
 
-        facetFilters.push(orFilters);
-      });
+      var hierarchicalFacetsRefinements =
+        state.hierarchicalFacetsRefinements || {};
+      Object.keys(hierarchicalFacetsRefinements)
+        .sort()
+        .forEach(function (facetName) {
+          var facetValues = hierarchicalFacetsRefinements[facetName] || [];
+          var facetValue = facetValues[0];
 
-      var hierarchicalFacetsRefinements = state.hierarchicalFacetsRefinements || {};
-      Object.keys(hierarchicalFacetsRefinements).forEach(function(facetName) {
-        var facetValues = hierarchicalFacetsRefinements[facetName] || [];
-        var facetValue = facetValues[0];
-
-        if (facetValue === undefined) {
-          return;
-        }
-
-        var hierarchicalFacet = state.getHierarchicalFacetByName(facetName);
-        var separator = state._getHierarchicalFacetSeparator(hierarchicalFacet);
-        var rootPath = state._getHierarchicalRootPath(hierarchicalFacet);
-        var attributeToRefine;
-        var attributesIndex;
-
-        // we ask for parent facet values only when the `facet` is the current hierarchical facet
-        if (facet === facetName) {
-          // if we are at the root level already, no need to ask for facet values, we get them from
-          // the hits query
-          if (facetValue.indexOf(separator) === -1 || (!rootPath && hierarchicalRootLevel === true) ||
-            (rootPath && rootPath.split(separator).length === facetValue.split(separator).length)) {
+          if (facetValue === undefined) {
             return;
           }
 
-          if (!rootPath) {
-            attributesIndex = facetValue.split(separator).length - 2;
-            facetValue = facetValue.slice(0, facetValue.lastIndexOf(separator));
+          var hierarchicalFacet = state.getHierarchicalFacetByName(facetName);
+          var separator = state._getHierarchicalFacetSeparator(hierarchicalFacet);
+          var rootPath = state._getHierarchicalRootPath(hierarchicalFacet);
+          var attributeToRefine;
+          var attributesIndex;
+
+          // we ask for parent facet values only when the `facet` is the current hierarchical facet
+          if (facet === facetName) {
+            // if we are at the root level already, no need to ask for facet values, we get them from
+            // the hits query
+            if (
+              facetValue.indexOf(separator) === -1 ||
+              (!rootPath && hierarchicalRootLevel === true) ||
+              (rootPath &&
+                rootPath.split(separator).length ===
+                  facetValue.split(separator).length)
+            ) {
+              return;
+            }
+
+            if (!rootPath) {
+              attributesIndex = facetValue.split(separator).length - 2;
+              facetValue = facetValue.slice(0, facetValue.lastIndexOf(separator));
+            } else {
+              attributesIndex = rootPath.split(separator).length - 1;
+              facetValue = rootPath;
+            }
+
+            attributeToRefine = hierarchicalFacet.attributes[attributesIndex];
           } else {
-            attributesIndex = rootPath.split(separator).length - 1;
-            facetValue = rootPath;
+            attributesIndex = facetValue.split(separator).length - 1;
+
+            attributeToRefine = hierarchicalFacet.attributes[attributesIndex];
           }
 
-          attributeToRefine = hierarchicalFacet.attributes[attributesIndex];
-        } else {
-          attributesIndex = facetValue.split(separator).length - 1;
-
-          attributeToRefine = hierarchicalFacet.attributes[attributesIndex];
-        }
-
-        if (attributeToRefine) {
-          facetFilters.push([attributeToRefine + ':' + facetValue]);
-        }
-      });
+          if (attributeToRefine) {
+            facetFilters.push([attributeToRefine + ':' + facetValue]);
+          }
+        });
 
       return facetFilters;
     },
 
-    _getHitsHierarchicalFacetsAttributes: function(state) {
+    _getHitsHierarchicalFacetsAttributes: function (state) {
       var out = [];
 
       return state.hierarchicalFacets.reduce(
         // ask for as much levels as there's hierarchical refinements
-        function getHitsAttributesForHierarchicalFacet(allAttributes, hierarchicalFacet) {
-          var hierarchicalRefinement = state.getHierarchicalRefinement(hierarchicalFacet.name)[0];
+        function getHitsAttributesForHierarchicalFacet(
+          allAttributes,
+          hierarchicalFacet
+        ) {
+          var hierarchicalRefinement = state.getHierarchicalRefinement(
+            hierarchicalFacet.name
+          )[0];
 
           // if no refinement, ask for root level
           if (!hierarchicalRefinement) {
@@ -9484,10 +6978,16 @@
           var newAttributes = hierarchicalFacet.attributes.slice(0, level + 1);
 
           return allAttributes.concat(newAttributes);
-        }, out);
+        },
+        out
+      );
     },
 
-    _getDisjunctiveHierarchicalFacetAttribute: function(state, hierarchicalFacet, rootLevel) {
+    _getDisjunctiveHierarchicalFacetAttribute: function (
+      state,
+      hierarchicalFacet,
+      rootLevel
+    ) {
       var separator = state._getHierarchicalFacetSeparator(hierarchicalFacet);
       if (rootLevel === true) {
         var rootPath = state._getHierarchicalRootPath(hierarchicalFacet);
@@ -9499,7 +6999,8 @@
         return [hierarchicalFacet.attributes[attributeIndex]];
       }
 
-      var hierarchicalRefinement = state.getHierarchicalRefinement(hierarchicalFacet.name)[0] || '';
+      var hierarchicalRefinement =
+        state.getHierarchicalRefinement(hierarchicalFacet.name)[0] || '';
       // if refinement is 'beers > IPA > Flying dog',
       // then we want `facets: ['beers > IPA']` as disjunctive facet (parent level values)
 
@@ -9507,30 +7008,3506 @@
       return hierarchicalFacet.attributes.slice(0, parentLevel + 1);
     },
 
-    getSearchForFacetQuery: function(facetName, query, maxFacetHits, state) {
-      var stateForSearchForFacetValues = state.isDisjunctiveFacet(facetName) ?
-        state.clearRefinements(facetName) :
-        state;
+    getSearchForFacetQuery: function (facetName, query, maxFacetHits, state) {
+      var stateForSearchForFacetValues = state.isDisjunctiveFacet(facetName)
+        ? state.clearRefinements(facetName)
+        : state;
       var searchForFacetSearchParameters = {
         facetQuery: query,
-        facetName: facetName
+        facetName: facetName,
       };
       if (typeof maxFacetHits === 'number') {
         searchForFacetSearchParameters.maxFacetHits = maxFacetHits;
       }
-      return sortObject(merge_1(
-        {},
-        requestBuilder._getHitsSearchParams(stateForSearchForFacetValues),
-        searchForFacetSearchParameters
-      ));
-    }
+      return sortObject(
+        merge_1(
+          {},
+          requestBuilder._getHitsSearchParams(stateForSearchForFacetValues),
+          searchForFacetSearchParameters
+        )
+      );
+    },
   };
 
   var requestBuilder_1 = requestBuilder;
 
-  var version = '3.13.2';
+  // NOTE: this behaves like lodash/defaults, but doesn't mutate the target
+  // it also preserve keys order
+  var defaultsPure = function defaultsPure() {
+    var sources = Array.prototype.slice.call(arguments);
+
+    return sources.reduceRight(function (acc, source) {
+      Object.keys(Object(source)).forEach(function (key) {
+        if (source[key] === undefined) {
+          return;
+        }
+        if (acc[key] !== undefined) {
+          // remove if already added, so that we can add it in correct order
+          delete acc[key];
+        }
+        acc[key] = source[key];
+      });
+      return acc;
+    }, {});
+  };
+
+  // @MAJOR can be replaced by native Array#find when we change support
+  var find$1 = function find(array, comparator) {
+    if (!Array.isArray(array)) {
+      return undefined;
+    }
+
+    for (var i = 0; i < array.length; i++) {
+      if (comparator(array[i])) {
+        return array[i];
+      }
+    }
+
+    return undefined;
+  };
+
+  function intersection(arr1, arr2) {
+    return arr1.filter(function (value, index) {
+      return (
+        arr2.indexOf(value) > -1 &&
+        arr1.indexOf(value) === index /* skips duplicates */
+      );
+    });
+  }
+
+  var intersection_1 = intersection;
+
+  function valToNumber(v) {
+    if (typeof v === 'number') {
+      return v;
+    } else if (typeof v === 'string') {
+      return parseFloat(v);
+    } else if (Array.isArray(v)) {
+      return v.map(valToNumber);
+    }
+
+    throw new Error(
+      'The value should be a number, a parsable string or an array of those.'
+    );
+  }
+
+  var valToNumber_1 = valToNumber;
+
+  var isValidUserToken = function isValidUserToken(userToken) {
+    if (userToken === null) {
+      return false;
+    }
+    return /^[a-zA-Z0-9_-]{1,64}$/.test(userToken);
+  };
+
+  /**
+   * Functions to manipulate refinement lists
+   *
+   * The RefinementList is not formally defined through a prototype but is based
+   * on a specific structure.
+   *
+   * @module SearchParameters.refinementList
+   *
+   * @typedef {string[]} SearchParameters.refinementList.Refinements
+   * @typedef {Object.<string, SearchParameters.refinementList.Refinements>} SearchParameters.refinementList.RefinementList
+   */
+
+
+
+
+
+  var lib = {
+    /**
+     * Adds a refinement to a RefinementList
+     * @param {RefinementList} refinementList the initial list
+     * @param {string} attribute the attribute to refine
+     * @param {string} value the value of the refinement, if the value is not a string it will be converted
+     * @return {RefinementList} a new and updated refinement list
+     */
+    addRefinement: function addRefinement(refinementList, attribute, value) {
+      if (lib.isRefined(refinementList, attribute, value)) {
+        return refinementList;
+      }
+
+      var valueAsString = '' + value;
+
+      var facetRefinement = !refinementList[attribute]
+        ? [valueAsString]
+        : refinementList[attribute].concat(valueAsString);
+
+      var mod = {};
+
+      mod[attribute] = facetRefinement;
+
+      return defaultsPure({}, mod, refinementList);
+    },
+    /**
+     * Removes refinement(s) for an attribute:
+     *  - if the value is specified removes the refinement for the value on the attribute
+     *  - if no value is specified removes all the refinements for this attribute
+     * @param {RefinementList} refinementList the initial list
+     * @param {string} attribute the attribute to refine
+     * @param {string} [value] the value of the refinement
+     * @return {RefinementList} a new and updated refinement lst
+     */
+    removeRefinement: function removeRefinement(
+      refinementList,
+      attribute,
+      value
+    ) {
+      if (value === undefined) {
+        // we use the "filter" form of clearRefinement, since it leaves empty values as-is
+        // the form with a string will remove the attribute completely
+        return lib.clearRefinement(refinementList, function (v, f) {
+          return attribute === f;
+        });
+      }
+
+      var valueAsString = '' + value;
+
+      return lib.clearRefinement(refinementList, function (v, f) {
+        return attribute === f && valueAsString === v;
+      });
+    },
+    /**
+     * Toggles the refinement value for an attribute.
+     * @param {RefinementList} refinementList the initial list
+     * @param {string} attribute the attribute to refine
+     * @param {string} value the value of the refinement
+     * @return {RefinementList} a new and updated list
+     */
+    toggleRefinement: function toggleRefinement(
+      refinementList,
+      attribute,
+      value
+    ) {
+      if (value === undefined)
+        throw new Error('toggleRefinement should be used with a value');
+
+      if (lib.isRefined(refinementList, attribute, value)) {
+        return lib.removeRefinement(refinementList, attribute, value);
+      }
+
+      return lib.addRefinement(refinementList, attribute, value);
+    },
+    /**
+     * Clear all or parts of a RefinementList. Depending on the arguments, three
+     * kinds of behavior can happen:
+     *  - if no attribute is provided: clears the whole list
+     *  - if an attribute is provided as a string: clears the list for the specific attribute
+     *  - if an attribute is provided as a function: discards the elements for which the function returns true
+     * @param {RefinementList} refinementList the initial list
+     * @param {string} [attribute] the attribute or function to discard
+     * @param {string} [refinementType] optional parameter to give more context to the attribute function
+     * @return {RefinementList} a new and updated refinement list
+     */
+    clearRefinement: function clearRefinement(
+      refinementList,
+      attribute,
+      refinementType
+    ) {
+      if (attribute === undefined) {
+        // return the same object if the list is already empty
+        // this is mainly for tests, as it doesn't have much impact on performance
+        if (!objectHasKeys_1(refinementList)) {
+          return refinementList;
+        }
+        return {};
+      } else if (typeof attribute === 'string') {
+        return omit$1(refinementList, [attribute]);
+      } else if (typeof attribute === 'function') {
+        var hasChanged = false;
+
+        var newRefinementList = Object.keys(refinementList).reduce(function (
+          memo,
+          key
+        ) {
+          var values = refinementList[key] || [];
+          var facetList = values.filter(function (value) {
+            return !attribute(value, key, refinementType);
+          });
+
+          if (facetList.length !== values.length) {
+            hasChanged = true;
+          }
+
+          memo[key] = facetList;
+
+          return memo;
+        },
+        {});
+
+        if (hasChanged) return newRefinementList;
+        return refinementList;
+      }
+
+      // We return nothing if the attribute is not undefined, a string or a function,
+      // as it is not a valid value for a refinement
+      return undefined;
+    },
+    /**
+     * Test if the refinement value is used for the attribute. If no refinement value
+     * is provided, test if the refinementList contains any refinement for the
+     * given attribute.
+     * @param {RefinementList} refinementList the list of refinement
+     * @param {string} attribute name of the attribute
+     * @param {string} [refinementValue] value of the filter/refinement
+     * @return {boolean} true if the attribute is refined, false otherwise
+     */
+    isRefined: function isRefined(refinementList, attribute, refinementValue) {
+      var containsRefinements =
+        Boolean(refinementList[attribute]) &&
+        refinementList[attribute].length > 0;
+
+      if (refinementValue === undefined || !containsRefinements) {
+        return containsRefinements;
+      }
+
+      var refinementValueAsString = '' + refinementValue;
+
+      return refinementList[attribute].indexOf(refinementValueAsString) !== -1;
+    },
+  };
+
+  var RefinementList = lib;
+
+  /**
+   * isEqual, but only for numeric refinement values, possible values:
+   * - 5
+   * - [5]
+   * - [[5]]
+   * - [[5,5],[4]]
+   * @param {any} a numeric refinement value
+   * @param {any} b numeric refinement value
+   * @return {boolean} true if the values are equal
+   */
+  function isEqualNumericRefinement(a, b) {
+    if (Array.isArray(a) && Array.isArray(b)) {
+      return (
+        a.length === b.length &&
+        a.every(function (el, i) {
+          return isEqualNumericRefinement(b[i], el);
+        })
+      );
+    }
+    return a === b;
+  }
+
+  /**
+   * like _.find but using deep equality to be able to use it
+   * to find arrays.
+   * @private
+   * @param {any[]} array array to search into (elements are base or array of base)
+   * @param {any} searchedValue the value we're looking for (base or array of base)
+   * @return {any} the searched value or undefined
+   */
+  function findArray(array, searchedValue) {
+    return find$1(array, function (currentValue) {
+      return isEqualNumericRefinement(currentValue, searchedValue);
+    });
+  }
+
+  /**
+   * The facet list is the structure used to store the list of values used to
+   * filter a single attribute.
+   * @typedef {string[]} SearchParameters.FacetList
+   */
+
+  /**
+   * Structure to store numeric filters with the operator as the key. The supported operators
+   * are `=`, `>`, `<`, `>=`, `<=` and `!=`.
+   * @typedef {Object.<string, Array.<number|number[]>>} SearchParameters.OperatorList
+   */
+
+  /**
+   * SearchParameters is the data structure that contains all the information
+   * usable for making a search to Algolia API. It doesn't do the search itself,
+   * nor does it contains logic about the parameters.
+   * It is an immutable object, therefore it has been created in a way that each
+   * changes does not change the object itself but returns a copy with the
+   * modification.
+   * This object should probably not be instantiated outside of the helper. It will
+   * be provided when needed. This object is documented for reference as you'll
+   * get it from events generated by the {@link AlgoliaSearchHelper}.
+   * If need be, instantiate the Helper from the factory function {@link SearchParameters.make}
+   * @constructor
+   * @classdesc contains all the parameters of a search
+   * @param {object|SearchParameters} newParameters existing parameters or partial object
+   * for the properties of a new SearchParameters
+   * @see SearchParameters.make
+   * @example <caption>SearchParameters of the first query in
+   *   <a href="http://demos.algolia.com/instant-search-demo/">the instant search demo</a></caption>
+  {
+     "query": "",
+     "disjunctiveFacets": [
+        "customerReviewCount",
+        "category",
+        "salePrice_range",
+        "manufacturer"
+    ],
+     "maxValuesPerFacet": 30,
+     "page": 0,
+     "hitsPerPage": 10,
+     "facets": [
+        "type",
+        "shipping"
+    ]
+  }
+   */
+  function SearchParameters(newParameters) {
+    var params = newParameters
+      ? SearchParameters._parseNumbers(newParameters)
+      : {};
+
+    if (params.userToken !== undefined && !isValidUserToken(params.userToken)) {
+      // eslint-disable-next-line no-console
+      console.warn(
+        '[algoliasearch-helper] The `userToken` parameter is invalid. This can lead to wrong analytics.\n  - Format: [a-zA-Z0-9_-]{1,64}'
+      );
+    }
+    /**
+     * This attribute contains the list of all the conjunctive facets
+     * used. This list will be added to requested facets in the
+     * [facets attribute](https://www.algolia.com/doc/rest-api/search#param-facets) sent to algolia.
+     * @member {string[]}
+     */
+    this.facets = params.facets || [];
+    /**
+     * This attribute contains the list of all the disjunctive facets
+     * used. This list will be added to requested facets in the
+     * [facets attribute](https://www.algolia.com/doc/rest-api/search#param-facets) sent to algolia.
+     * @member {string[]}
+     */
+    this.disjunctiveFacets = params.disjunctiveFacets || [];
+    /**
+     * This attribute contains the list of all the hierarchical facets
+     * used. This list will be added to requested facets in the
+     * [facets attribute](https://www.algolia.com/doc/rest-api/search#param-facets) sent to algolia.
+     * Hierarchical facets are a sub type of disjunctive facets that
+     * let you filter faceted attributes hierarchically.
+     * @member {string[]|object[]}
+     */
+    this.hierarchicalFacets = params.hierarchicalFacets || [];
+
+    // Refinements
+    /**
+     * This attribute contains all the filters that need to be
+     * applied on the conjunctive facets. Each facet must be properly
+     * defined in the `facets` attribute.
+     *
+     * The key is the name of the facet, and the `FacetList` contains all
+     * filters selected for the associated facet name.
+     *
+     * When querying algolia, the values stored in this attribute will
+     * be translated into the `facetFilters` attribute.
+     * @member {Object.<string, SearchParameters.FacetList>}
+     */
+    this.facetsRefinements = params.facetsRefinements || {};
+    /**
+     * This attribute contains all the filters that need to be
+     * excluded from the conjunctive facets. Each facet must be properly
+     * defined in the `facets` attribute.
+     *
+     * The key is the name of the facet, and the `FacetList` contains all
+     * filters excluded for the associated facet name.
+     *
+     * When querying algolia, the values stored in this attribute will
+     * be translated into the `facetFilters` attribute.
+     * @member {Object.<string, SearchParameters.FacetList>}
+     */
+    this.facetsExcludes = params.facetsExcludes || {};
+    /**
+     * This attribute contains all the filters that need to be
+     * applied on the disjunctive facets. Each facet must be properly
+     * defined in the `disjunctiveFacets` attribute.
+     *
+     * The key is the name of the facet, and the `FacetList` contains all
+     * filters selected for the associated facet name.
+     *
+     * When querying algolia, the values stored in this attribute will
+     * be translated into the `facetFilters` attribute.
+     * @member {Object.<string, SearchParameters.FacetList>}
+     */
+    this.disjunctiveFacetsRefinements = params.disjunctiveFacetsRefinements || {};
+    /**
+     * This attribute contains all the filters that need to be
+     * applied on the numeric attributes.
+     *
+     * The key is the name of the attribute, and the value is the
+     * filters to apply to this attribute.
+     *
+     * When querying algolia, the values stored in this attribute will
+     * be translated into the `numericFilters` attribute.
+     * @member {Object.<string, SearchParameters.OperatorList>}
+     */
+    this.numericRefinements = params.numericRefinements || {};
+    /**
+     * This attribute contains all the tags used to refine the query.
+     *
+     * When querying algolia, the values stored in this attribute will
+     * be translated into the `tagFilters` attribute.
+     * @member {string[]}
+     */
+    this.tagRefinements = params.tagRefinements || [];
+    /**
+     * This attribute contains all the filters that need to be
+     * applied on the hierarchical facets. Each facet must be properly
+     * defined in the `hierarchicalFacets` attribute.
+     *
+     * The key is the name of the facet, and the `FacetList` contains all
+     * filters selected for the associated facet name. The FacetList values
+     * are structured as a string that contain the values for each level
+     * separated by the configured separator.
+     *
+     * When querying algolia, the values stored in this attribute will
+     * be translated into the `facetFilters` attribute.
+     * @member {Object.<string, SearchParameters.FacetList>}
+     */
+    this.hierarchicalFacetsRefinements =
+      params.hierarchicalFacetsRefinements || {};
+
+    // eslint-disable-next-line consistent-this
+    var self = this;
+    Object.keys(params).forEach(function (paramName) {
+      var isKeyKnown = SearchParameters.PARAMETERS.indexOf(paramName) !== -1;
+      var isValueDefined = params[paramName] !== undefined;
+
+      if (!isKeyKnown && isValueDefined) {
+        self[paramName] = params[paramName];
+      }
+    });
+  }
+
+  /**
+   * List all the properties in SearchParameters and therefore all the known Algolia properties
+   * This doesn't contain any beta/hidden features.
+   * @private
+   */
+  SearchParameters.PARAMETERS = Object.keys(new SearchParameters());
+
+  /**
+   * @private
+   * @param {object} partialState full or part of a state
+   * @return {object} a new object with the number keys as number
+   */
+  SearchParameters._parseNumbers = function (partialState) {
+    // Do not parse numbers again in SearchParameters, they ought to be parsed already
+    if (partialState instanceof SearchParameters) return partialState;
+
+    var numbers = {};
+
+    var numberKeys = [
+      'aroundPrecision',
+      'aroundRadius',
+      'getRankingInfo',
+      'minWordSizefor2Typos',
+      'minWordSizefor1Typo',
+      'page',
+      'maxValuesPerFacet',
+      'distinct',
+      'minimumAroundRadius',
+      'hitsPerPage',
+      'minProximity',
+    ];
+
+    numberKeys.forEach(function (k) {
+      var value = partialState[k];
+      if (typeof value === 'string') {
+        var parsedValue = parseFloat(value);
+        // global isNaN is ok to use here, value is only number or NaN
+        numbers[k] = isNaN(parsedValue) ? value : parsedValue;
+      }
+    });
+
+    // there's two formats of insideBoundingBox, we need to parse
+    // the one which is an array of float geo rectangles
+    if (Array.isArray(partialState.insideBoundingBox)) {
+      numbers.insideBoundingBox = partialState.insideBoundingBox.map(function (
+        geoRect
+      ) {
+        if (Array.isArray(geoRect)) {
+          return geoRect.map(function (value) {
+            return parseFloat(value);
+          });
+        }
+        return geoRect;
+      });
+    }
+
+    if (partialState.numericRefinements) {
+      var numericRefinements = {};
+      Object.keys(partialState.numericRefinements).forEach(function (attribute) {
+        var operators = partialState.numericRefinements[attribute] || {};
+        numericRefinements[attribute] = {};
+        Object.keys(operators).forEach(function (operator) {
+          var values = operators[operator];
+          var parsedValues = values.map(function (v) {
+            if (Array.isArray(v)) {
+              return v.map(function (vPrime) {
+                if (typeof vPrime === 'string') {
+                  return parseFloat(vPrime);
+                }
+                return vPrime;
+              });
+            } else if (typeof v === 'string') {
+              return parseFloat(v);
+            }
+            return v;
+          });
+          numericRefinements[attribute][operator] = parsedValues;
+        });
+      });
+      numbers.numericRefinements = numericRefinements;
+    }
+
+    return merge_1(partialState, numbers);
+  };
+
+  /**
+   * Factory for SearchParameters
+   * @param {object|SearchParameters} newParameters existing parameters or partial
+   * object for the properties of a new SearchParameters
+   * @return {SearchParameters} frozen instance of SearchParameters
+   */
+  SearchParameters.make = function makeSearchParameters(newParameters) {
+    var instance = new SearchParameters(newParameters);
+
+    var hierarchicalFacets = newParameters.hierarchicalFacets || [];
+    hierarchicalFacets.forEach(function (facet) {
+      if (facet.rootPath) {
+        var currentRefinement = instance.getHierarchicalRefinement(facet.name);
+
+        if (
+          currentRefinement.length > 0 &&
+          currentRefinement[0].indexOf(facet.rootPath) !== 0
+        ) {
+          instance = instance.clearRefinements(facet.name);
+        }
+
+        // get it again in case it has been cleared
+        currentRefinement = instance.getHierarchicalRefinement(facet.name);
+        if (currentRefinement.length === 0) {
+          instance = instance.toggleHierarchicalFacetRefinement(
+            facet.name,
+            facet.rootPath
+          );
+        }
+      }
+    });
+
+    return instance;
+  };
+
+  /**
+   * Validates the new parameters based on the previous state
+   * @param {SearchParameters} currentState the current state
+   * @param {object|SearchParameters} parameters the new parameters to set
+   * @return {Error|null} Error if the modification is invalid, null otherwise
+   */
+  SearchParameters.validate = function (currentState, parameters) {
+    var params = parameters || {};
+
+    if (
+      currentState.tagFilters &&
+      params.tagRefinements &&
+      params.tagRefinements.length > 0
+    ) {
+      return new Error(
+        '[Tags] Cannot switch from the managed tag API to the advanced API. It is probably ' +
+          'an error, if it is really what you want, you should first clear the tags with clearTags method.'
+      );
+    }
+
+    if (currentState.tagRefinements.length > 0 && params.tagFilters) {
+      return new Error(
+        '[Tags] Cannot switch from the advanced tag API to the managed API. It is probably ' +
+          'an error, if it is not, you should first clear the tags with clearTags method.'
+      );
+    }
+
+    if (
+      currentState.numericFilters &&
+      params.numericRefinements &&
+      objectHasKeys_1(params.numericRefinements)
+    ) {
+      return new Error(
+        "[Numeric filters] Can't switch from the advanced to the managed API. It" +
+          ' is probably an error, if this is really what you want, you have to first' +
+          ' clear the numeric filters.'
+      );
+    }
+
+    if (objectHasKeys_1(currentState.numericRefinements) && params.numericFilters) {
+      return new Error(
+        "[Numeric filters] Can't switch from the managed API to the advanced. It" +
+          ' is probably an error, if this is really what you want, you have to first' +
+          ' clear the numeric filters.'
+      );
+    }
+
+    return null;
+  };
+
+  SearchParameters.prototype = {
+    constructor: SearchParameters,
+
+    /**
+     * Remove all refinements (disjunctive + conjunctive + excludes + numeric filters)
+     * @method
+     * @param {undefined|string|SearchParameters.clearCallback} [attribute] optional string or function
+     * - If not given, means to clear all the filters.
+     * - If `string`, means to clear all refinements for the `attribute` named filter.
+     * - If `function`, means to clear all the refinements that return truthy values.
+     * @return {SearchParameters} new instance with filters cleared
+     */
+    clearRefinements: function clearRefinements(attribute) {
+      var patch = {
+        numericRefinements: this._clearNumericRefinements(attribute),
+        facetsRefinements: RefinementList.clearRefinement(
+          this.facetsRefinements,
+          attribute,
+          'conjunctiveFacet'
+        ),
+        facetsExcludes: RefinementList.clearRefinement(
+          this.facetsExcludes,
+          attribute,
+          'exclude'
+        ),
+        disjunctiveFacetsRefinements: RefinementList.clearRefinement(
+          this.disjunctiveFacetsRefinements,
+          attribute,
+          'disjunctiveFacet'
+        ),
+        hierarchicalFacetsRefinements: RefinementList.clearRefinement(
+          this.hierarchicalFacetsRefinements,
+          attribute,
+          'hierarchicalFacet'
+        ),
+      };
+      if (
+        patch.numericRefinements === this.numericRefinements &&
+        patch.facetsRefinements === this.facetsRefinements &&
+        patch.facetsExcludes === this.facetsExcludes &&
+        patch.disjunctiveFacetsRefinements ===
+          this.disjunctiveFacetsRefinements &&
+        patch.hierarchicalFacetsRefinements === this.hierarchicalFacetsRefinements
+      ) {
+        return this;
+      }
+      return this.setQueryParameters(patch);
+    },
+    /**
+     * Remove all the refined tags from the SearchParameters
+     * @method
+     * @return {SearchParameters} new instance with tags cleared
+     */
+    clearTags: function clearTags() {
+      if (this.tagFilters === undefined && this.tagRefinements.length === 0)
+        return this;
+
+      return this.setQueryParameters({
+        tagFilters: undefined,
+        tagRefinements: [],
+      });
+    },
+    /**
+     * Set the index.
+     * @method
+     * @param {string} index the index name
+     * @return {SearchParameters} new instance
+     */
+    setIndex: function setIndex(index) {
+      if (index === this.index) return this;
+
+      return this.setQueryParameters({
+        index: index,
+      });
+    },
+    /**
+     * Query setter
+     * @method
+     * @param {string} newQuery value for the new query
+     * @return {SearchParameters} new instance
+     */
+    setQuery: function setQuery(newQuery) {
+      if (newQuery === this.query) return this;
+
+      return this.setQueryParameters({
+        query: newQuery,
+      });
+    },
+    /**
+     * Page setter
+     * @method
+     * @param {number} newPage new page number
+     * @return {SearchParameters} new instance
+     */
+    setPage: function setPage(newPage) {
+      if (newPage === this.page) return this;
+
+      return this.setQueryParameters({
+        page: newPage,
+      });
+    },
+    /**
+     * Facets setter
+     * The facets are the simple facets, used for conjunctive (and) faceting.
+     * @method
+     * @param {string[]} facets all the attributes of the algolia records used for conjunctive faceting
+     * @return {SearchParameters} new instance
+     */
+    setFacets: function setFacets(facets) {
+      return this.setQueryParameters({
+        facets: facets,
+      });
+    },
+    /**
+     * Disjunctive facets setter
+     * Change the list of disjunctive (or) facets the helper chan handle.
+     * @method
+     * @param {string[]} facets all the attributes of the algolia records used for disjunctive faceting
+     * @return {SearchParameters} new instance
+     */
+    setDisjunctiveFacets: function setDisjunctiveFacets(facets) {
+      return this.setQueryParameters({
+        disjunctiveFacets: facets,
+      });
+    },
+    /**
+     * HitsPerPage setter
+     * Hits per page represents the number of hits retrieved for this query
+     * @method
+     * @param {number} n number of hits retrieved per page of results
+     * @return {SearchParameters} new instance
+     */
+    setHitsPerPage: function setHitsPerPage(n) {
+      if (this.hitsPerPage === n) return this;
+
+      return this.setQueryParameters({
+        hitsPerPage: n,
+      });
+    },
+    /**
+     * typoTolerance setter
+     * Set the value of typoTolerance
+     * @method
+     * @param {string} typoTolerance new value of typoTolerance ("true", "false", "min" or "strict")
+     * @return {SearchParameters} new instance
+     */
+    setTypoTolerance: function setTypoTolerance(typoTolerance) {
+      if (this.typoTolerance === typoTolerance) return this;
+
+      return this.setQueryParameters({
+        typoTolerance: typoTolerance,
+      });
+    },
+    /**
+     * Add a numeric filter for a given attribute
+     * When value is an array, they are combined with OR
+     * When value is a single value, it will combined with AND
+     * @method
+     * @param {string} attribute attribute to set the filter on
+     * @param {string} operator operator of the filter (possible values: =, >, >=, <, <=, !=)
+     * @param {number | number[]} value value of the filter
+     * @return {SearchParameters} new instance
+     * @example
+     * // for price = 50 or 40
+     * state.addNumericRefinement('price', '=', [50, 40]);
+     * @example
+     * // for size = 38 and 40
+     * state.addNumericRefinement('size', '=', 38);
+     * state.addNumericRefinement('size', '=', 40);
+     */
+    addNumericRefinement: function (attribute, operator, value) {
+      var val = valToNumber_1(value);
+
+      if (this.isNumericRefined(attribute, operator, val)) return this;
+
+      var mod = merge_1({}, this.numericRefinements);
+
+      mod[attribute] = merge_1({}, mod[attribute]);
+
+      if (mod[attribute][operator]) {
+        // Array copy
+        mod[attribute][operator] = mod[attribute][operator].slice();
+        // Add the element. Concat can't be used here because value can be an array.
+        mod[attribute][operator].push(val);
+      } else {
+        mod[attribute][operator] = [val];
+      }
+
+      return this.setQueryParameters({
+        numericRefinements: mod,
+      });
+    },
+    /**
+     * Get the list of conjunctive refinements for a single facet
+     * @param {string} facetName name of the attribute used for faceting
+     * @return {string[]} list of refinements
+     */
+    getConjunctiveRefinements: function (facetName) {
+      if (!this.isConjunctiveFacet(facetName)) {
+        return [];
+      }
+      return this.facetsRefinements[facetName] || [];
+    },
+    /**
+     * Get the list of disjunctive refinements for a single facet
+     * @param {string} facetName name of the attribute used for faceting
+     * @return {string[]} list of refinements
+     */
+    getDisjunctiveRefinements: function (facetName) {
+      if (!this.isDisjunctiveFacet(facetName)) {
+        return [];
+      }
+      return this.disjunctiveFacetsRefinements[facetName] || [];
+    },
+    /**
+     * Get the list of hierarchical refinements for a single facet
+     * @param {string} facetName name of the attribute used for faceting
+     * @return {string[]} list of refinements
+     */
+    getHierarchicalRefinement: function (facetName) {
+      // we send an array but we currently do not support multiple
+      // hierarchicalRefinements for a hierarchicalFacet
+      return this.hierarchicalFacetsRefinements[facetName] || [];
+    },
+    /**
+     * Get the list of exclude refinements for a single facet
+     * @param {string} facetName name of the attribute used for faceting
+     * @return {string[]} list of refinements
+     */
+    getExcludeRefinements: function (facetName) {
+      if (!this.isConjunctiveFacet(facetName)) {
+        return [];
+      }
+      return this.facetsExcludes[facetName] || [];
+    },
+
+    /**
+     * Remove all the numeric filter for a given (attribute, operator)
+     * @method
+     * @param {string} attribute attribute to set the filter on
+     * @param {string} [operator] operator of the filter (possible values: =, >, >=, <, <=, !=)
+     * @param {number} [number] the value to be removed
+     * @return {SearchParameters} new instance
+     */
+    removeNumericRefinement: function (attribute, operator, number) {
+      var paramValue = number;
+      if (paramValue !== undefined) {
+        if (!this.isNumericRefined(attribute, operator, paramValue)) {
+          return this;
+        }
+        return this.setQueryParameters({
+          numericRefinements: this._clearNumericRefinements(function (
+            value,
+            key
+          ) {
+            return (
+              key === attribute &&
+              value.op === operator &&
+              isEqualNumericRefinement(value.val, valToNumber_1(paramValue))
+            );
+          }),
+        });
+      } else if (operator !== undefined) {
+        if (!this.isNumericRefined(attribute, operator)) return this;
+        return this.setQueryParameters({
+          numericRefinements: this._clearNumericRefinements(function (
+            value,
+            key
+          ) {
+            return key === attribute && value.op === operator;
+          }),
+        });
+      }
+
+      if (!this.isNumericRefined(attribute)) return this;
+      return this.setQueryParameters({
+        numericRefinements: this._clearNumericRefinements(function (value, key) {
+          return key === attribute;
+        }),
+      });
+    },
+    /**
+     * Get the list of numeric refinements for a single facet
+     * @param {string} facetName name of the attribute used for faceting
+     * @return {SearchParameters.OperatorList} list of refinements
+     */
+    getNumericRefinements: function (facetName) {
+      return this.numericRefinements[facetName] || {};
+    },
+    /**
+     * Return the current refinement for the (attribute, operator)
+     * @param {string} attribute attribute in the record
+     * @param {string} operator operator applied on the refined values
+     * @return {Array.<number|number[]>} refined values
+     */
+    getNumericRefinement: function (attribute, operator) {
+      return (
+        this.numericRefinements[attribute] &&
+        this.numericRefinements[attribute][operator]
+      );
+    },
+    /**
+     * Clear numeric filters.
+     * @method
+     * @private
+     * @param {string|SearchParameters.clearCallback} [attribute] optional string or function
+     * - If not given, means to clear all the filters.
+     * - If `string`, means to clear all refinements for the `attribute` named filter.
+     * - If `function`, means to clear all the refinements that return truthy values.
+     * @return {Object.<string, OperatorList>} new numeric refinements
+     */
+    _clearNumericRefinements: function _clearNumericRefinements(attribute) {
+      if (attribute === undefined) {
+        if (!objectHasKeys_1(this.numericRefinements)) {
+          return this.numericRefinements;
+        }
+        return {};
+      } else if (typeof attribute === 'string') {
+        return omit$1(this.numericRefinements, [attribute]);
+      } else if (typeof attribute === 'function') {
+        var hasChanged = false;
+        var numericRefinements = this.numericRefinements;
+        var newNumericRefinements = Object.keys(numericRefinements).reduce(
+          function (memo, key) {
+            var operators = numericRefinements[key];
+            var operatorList = {};
+
+            operators = operators || {};
+            Object.keys(operators).forEach(function (operator) {
+              var values = operators[operator] || [];
+              var outValues = [];
+              values.forEach(function (value) {
+                var predicateResult = attribute(
+                  { val: value, op: operator },
+                  key,
+                  'numeric'
+                );
+                if (!predicateResult) outValues.push(value);
+              });
+              if (outValues.length !== values.length) {
+                hasChanged = true;
+              }
+              operatorList[operator] = outValues;
+            });
+
+            memo[key] = operatorList;
+
+            return memo;
+          },
+          {}
+        );
+
+        if (hasChanged) return newNumericRefinements;
+        return this.numericRefinements;
+      }
+
+      // We return nothing if the attribute is not undefined, a string or a function,
+      // as it is not a valid value for a refinement
+      return undefined;
+    },
+    /**
+     * Add a facet to the facets attribute of the helper configuration, if it
+     * isn't already present.
+     * @method
+     * @param {string} facet facet name to add
+     * @return {SearchParameters} new instance
+     */
+    addFacet: function addFacet(facet) {
+      if (this.isConjunctiveFacet(facet)) {
+        return this;
+      }
+
+      return this.setQueryParameters({
+        facets: this.facets.concat([facet]),
+      });
+    },
+    /**
+     * Add a disjunctive facet to the disjunctiveFacets attribute of the helper
+     * configuration, if it isn't already present.
+     * @method
+     * @param {string} facet disjunctive facet name to add
+     * @return {SearchParameters} new instance
+     */
+    addDisjunctiveFacet: function addDisjunctiveFacet(facet) {
+      if (this.isDisjunctiveFacet(facet)) {
+        return this;
+      }
+
+      return this.setQueryParameters({
+        disjunctiveFacets: this.disjunctiveFacets.concat([facet]),
+      });
+    },
+    /**
+     * Add a hierarchical facet to the hierarchicalFacets attribute of the helper
+     * configuration.
+     * @method
+     * @param {object} hierarchicalFacet hierarchical facet to add
+     * @return {SearchParameters} new instance
+     * @throws will throw an error if a hierarchical facet with the same name was already declared
+     */
+    addHierarchicalFacet: function addHierarchicalFacet(hierarchicalFacet) {
+      if (this.isHierarchicalFacet(hierarchicalFacet.name)) {
+        throw new Error(
+          'Cannot declare two hierarchical facets with the same name: `' +
+            hierarchicalFacet.name +
+            '`'
+        );
+      }
+
+      return this.setQueryParameters({
+        hierarchicalFacets: this.hierarchicalFacets.concat([hierarchicalFacet]),
+      });
+    },
+    /**
+     * Add a refinement on a "normal" facet
+     * @method
+     * @param {string} facet attribute to apply the faceting on
+     * @param {string} value value of the attribute (will be converted to string)
+     * @return {SearchParameters} new instance
+     */
+    addFacetRefinement: function addFacetRefinement(facet, value) {
+      if (!this.isConjunctiveFacet(facet)) {
+        throw new Error(
+          facet +
+            ' is not defined in the facets attribute of the helper configuration'
+        );
+      }
+      if (RefinementList.isRefined(this.facetsRefinements, facet, value))
+        return this;
+
+      return this.setQueryParameters({
+        facetsRefinements: RefinementList.addRefinement(
+          this.facetsRefinements,
+          facet,
+          value
+        ),
+      });
+    },
+    /**
+     * Exclude a value from a "normal" facet
+     * @method
+     * @param {string} facet attribute to apply the exclusion on
+     * @param {string} value value of the attribute (will be converted to string)
+     * @return {SearchParameters} new instance
+     */
+    addExcludeRefinement: function addExcludeRefinement(facet, value) {
+      if (!this.isConjunctiveFacet(facet)) {
+        throw new Error(
+          facet +
+            ' is not defined in the facets attribute of the helper configuration'
+        );
+      }
+      if (RefinementList.isRefined(this.facetsExcludes, facet, value))
+        return this;
+
+      return this.setQueryParameters({
+        facetsExcludes: RefinementList.addRefinement(
+          this.facetsExcludes,
+          facet,
+          value
+        ),
+      });
+    },
+    /**
+     * Adds a refinement on a disjunctive facet.
+     * @method
+     * @param {string} facet attribute to apply the faceting on
+     * @param {string} value value of the attribute (will be converted to string)
+     * @return {SearchParameters} new instance
+     */
+    addDisjunctiveFacetRefinement: function addDisjunctiveFacetRefinement(
+      facet,
+      value
+    ) {
+      if (!this.isDisjunctiveFacet(facet)) {
+        throw new Error(
+          facet +
+            ' is not defined in the disjunctiveFacets attribute of the helper configuration'
+        );
+      }
+
+      if (
+        RefinementList.isRefined(this.disjunctiveFacetsRefinements, facet, value)
+      )
+        return this;
+
+      return this.setQueryParameters({
+        disjunctiveFacetsRefinements: RefinementList.addRefinement(
+          this.disjunctiveFacetsRefinements,
+          facet,
+          value
+        ),
+      });
+    },
+    /**
+     * addTagRefinement adds a tag to the list used to filter the results
+     * @param {string} tag tag to be added
+     * @return {SearchParameters} new instance
+     */
+    addTagRefinement: function addTagRefinement(tag) {
+      if (this.isTagRefined(tag)) return this;
+
+      var modification = {
+        tagRefinements: this.tagRefinements.concat(tag),
+      };
+
+      return this.setQueryParameters(modification);
+    },
+    /**
+     * Remove a facet from the facets attribute of the helper configuration, if it
+     * is present.
+     * @method
+     * @param {string} facet facet name to remove
+     * @return {SearchParameters} new instance
+     */
+    removeFacet: function removeFacet(facet) {
+      if (!this.isConjunctiveFacet(facet)) {
+        return this;
+      }
+
+      return this.clearRefinements(facet).setQueryParameters({
+        facets: this.facets.filter(function (f) {
+          return f !== facet;
+        }),
+      });
+    },
+    /**
+     * Remove a disjunctive facet from the disjunctiveFacets attribute of the
+     * helper configuration, if it is present.
+     * @method
+     * @param {string} facet disjunctive facet name to remove
+     * @return {SearchParameters} new instance
+     */
+    removeDisjunctiveFacet: function removeDisjunctiveFacet(facet) {
+      if (!this.isDisjunctiveFacet(facet)) {
+        return this;
+      }
+
+      return this.clearRefinements(facet).setQueryParameters({
+        disjunctiveFacets: this.disjunctiveFacets.filter(function (f) {
+          return f !== facet;
+        }),
+      });
+    },
+    /**
+     * Remove a hierarchical facet from the hierarchicalFacets attribute of the
+     * helper configuration, if it is present.
+     * @method
+     * @param {string} facet hierarchical facet name to remove
+     * @return {SearchParameters} new instance
+     */
+    removeHierarchicalFacet: function removeHierarchicalFacet(facet) {
+      if (!this.isHierarchicalFacet(facet)) {
+        return this;
+      }
+
+      return this.clearRefinements(facet).setQueryParameters({
+        hierarchicalFacets: this.hierarchicalFacets.filter(function (f) {
+          return f.name !== facet;
+        }),
+      });
+    },
+    /**
+     * Remove a refinement set on facet. If a value is provided, it will clear the
+     * refinement for the given value, otherwise it will clear all the refinement
+     * values for the faceted attribute.
+     * @method
+     * @param {string} facet name of the attribute used for faceting
+     * @param {string} [value] value used to filter
+     * @return {SearchParameters} new instance
+     */
+    removeFacetRefinement: function removeFacetRefinement(facet, value) {
+      if (!this.isConjunctiveFacet(facet)) {
+        throw new Error(
+          facet +
+            ' is not defined in the facets attribute of the helper configuration'
+        );
+      }
+      if (!RefinementList.isRefined(this.facetsRefinements, facet, value))
+        return this;
+
+      return this.setQueryParameters({
+        facetsRefinements: RefinementList.removeRefinement(
+          this.facetsRefinements,
+          facet,
+          value
+        ),
+      });
+    },
+    /**
+     * Remove a negative refinement on a facet
+     * @method
+     * @param {string} facet name of the attribute used for faceting
+     * @param {string} value value used to filter
+     * @return {SearchParameters} new instance
+     */
+    removeExcludeRefinement: function removeExcludeRefinement(facet, value) {
+      if (!this.isConjunctiveFacet(facet)) {
+        throw new Error(
+          facet +
+            ' is not defined in the facets attribute of the helper configuration'
+        );
+      }
+      if (!RefinementList.isRefined(this.facetsExcludes, facet, value))
+        return this;
+
+      return this.setQueryParameters({
+        facetsExcludes: RefinementList.removeRefinement(
+          this.facetsExcludes,
+          facet,
+          value
+        ),
+      });
+    },
+    /**
+     * Remove a refinement on a disjunctive facet
+     * @method
+     * @param {string} facet name of the attribute used for faceting
+     * @param {string} value value used to filter
+     * @return {SearchParameters} new instance
+     */
+    removeDisjunctiveFacetRefinement: function removeDisjunctiveFacetRefinement(
+      facet,
+      value
+    ) {
+      if (!this.isDisjunctiveFacet(facet)) {
+        throw new Error(
+          facet +
+            ' is not defined in the disjunctiveFacets attribute of the helper configuration'
+        );
+      }
+      if (
+        !RefinementList.isRefined(this.disjunctiveFacetsRefinements, facet, value)
+      )
+        return this;
+
+      return this.setQueryParameters({
+        disjunctiveFacetsRefinements: RefinementList.removeRefinement(
+          this.disjunctiveFacetsRefinements,
+          facet,
+          value
+        ),
+      });
+    },
+    /**
+     * Remove a tag from the list of tag refinements
+     * @method
+     * @param {string} tag the tag to remove
+     * @return {SearchParameters} new instance
+     */
+    removeTagRefinement: function removeTagRefinement(tag) {
+      if (!this.isTagRefined(tag)) return this;
+
+      var modification = {
+        tagRefinements: this.tagRefinements.filter(function (t) {
+          return t !== tag;
+        }),
+      };
+
+      return this.setQueryParameters(modification);
+    },
+    /**
+     * Generic toggle refinement method to use with facet, disjunctive facets
+     * and hierarchical facets
+     * @param  {string} facet the facet to refine
+     * @param  {string} value the associated value
+     * @return {SearchParameters} new instance
+     * @throws will throw an error if the facet is not declared in the settings of the helper
+     * @deprecated since version 2.19.0, see {@link SearchParameters#toggleFacetRefinement}
+     */
+    toggleRefinement: function toggleRefinement(facet, value) {
+      return this.toggleFacetRefinement(facet, value);
+    },
+    /**
+     * Generic toggle refinement method to use with facet, disjunctive facets
+     * and hierarchical facets
+     * @param  {string} facet the facet to refine
+     * @param  {string} value the associated value
+     * @return {SearchParameters} new instance
+     * @throws will throw an error if the facet is not declared in the settings of the helper
+     */
+    toggleFacetRefinement: function toggleFacetRefinement(facet, value) {
+      if (this.isHierarchicalFacet(facet)) {
+        return this.toggleHierarchicalFacetRefinement(facet, value);
+      } else if (this.isConjunctiveFacet(facet)) {
+        return this.toggleConjunctiveFacetRefinement(facet, value);
+      } else if (this.isDisjunctiveFacet(facet)) {
+        return this.toggleDisjunctiveFacetRefinement(facet, value);
+      }
+
+      throw new Error(
+        'Cannot refine the undeclared facet ' +
+          facet +
+          '; it should be added to the helper options facets, disjunctiveFacets or hierarchicalFacets'
+      );
+    },
+    /**
+     * Switch the refinement applied over a facet/value
+     * @method
+     * @param {string} facet name of the attribute used for faceting
+     * @param {value} value value used for filtering
+     * @return {SearchParameters} new instance
+     */
+    toggleConjunctiveFacetRefinement: function toggleConjunctiveFacetRefinement(
+      facet,
+      value
+    ) {
+      if (!this.isConjunctiveFacet(facet)) {
+        throw new Error(
+          facet +
+            ' is not defined in the facets attribute of the helper configuration'
+        );
+      }
+
+      return this.setQueryParameters({
+        facetsRefinements: RefinementList.toggleRefinement(
+          this.facetsRefinements,
+          facet,
+          value
+        ),
+      });
+    },
+    /**
+     * Switch the refinement applied over a facet/value
+     * @method
+     * @param {string} facet name of the attribute used for faceting
+     * @param {value} value value used for filtering
+     * @return {SearchParameters} new instance
+     */
+    toggleExcludeFacetRefinement: function toggleExcludeFacetRefinement(
+      facet,
+      value
+    ) {
+      if (!this.isConjunctiveFacet(facet)) {
+        throw new Error(
+          facet +
+            ' is not defined in the facets attribute of the helper configuration'
+        );
+      }
+
+      return this.setQueryParameters({
+        facetsExcludes: RefinementList.toggleRefinement(
+          this.facetsExcludes,
+          facet,
+          value
+        ),
+      });
+    },
+    /**
+     * Switch the refinement applied over a facet/value
+     * @method
+     * @param {string} facet name of the attribute used for faceting
+     * @param {value} value value used for filtering
+     * @return {SearchParameters} new instance
+     */
+    toggleDisjunctiveFacetRefinement: function toggleDisjunctiveFacetRefinement(
+      facet,
+      value
+    ) {
+      if (!this.isDisjunctiveFacet(facet)) {
+        throw new Error(
+          facet +
+            ' is not defined in the disjunctiveFacets attribute of the helper configuration'
+        );
+      }
+
+      return this.setQueryParameters({
+        disjunctiveFacetsRefinements: RefinementList.toggleRefinement(
+          this.disjunctiveFacetsRefinements,
+          facet,
+          value
+        ),
+      });
+    },
+    /**
+     * Switch the refinement applied over a facet/value
+     * @method
+     * @param {string} facet name of the attribute used for faceting
+     * @param {value} value value used for filtering
+     * @return {SearchParameters} new instance
+     */
+    toggleHierarchicalFacetRefinement: function toggleHierarchicalFacetRefinement(
+      facet,
+      value
+    ) {
+      if (!this.isHierarchicalFacet(facet)) {
+        throw new Error(
+          facet +
+            ' is not defined in the hierarchicalFacets attribute of the helper configuration'
+        );
+      }
+
+      var separator = this._getHierarchicalFacetSeparator(
+        this.getHierarchicalFacetByName(facet)
+      );
+
+      var mod = {};
+
+      var upOneOrMultipleLevel =
+        this.hierarchicalFacetsRefinements[facet] !== undefined &&
+        this.hierarchicalFacetsRefinements[facet].length > 0 &&
+        // remove current refinement:
+        // refinement was 'beer > IPA', call is toggleRefine('beer > IPA'), refinement should be `beer`
+        (this.hierarchicalFacetsRefinements[facet][0] === value ||
+          // remove a parent refinement of the current refinement:
+          //  - refinement was 'beer > IPA > Flying dog'
+          //  - call is toggleRefine('beer > IPA')
+          //  - refinement should be `beer`
+          this.hierarchicalFacetsRefinements[facet][0].indexOf(
+            value + separator
+          ) === 0);
+
+      if (upOneOrMultipleLevel) {
+        if (value.indexOf(separator) === -1) {
+          // go back to root level
+          mod[facet] = [];
+        } else {
+          mod[facet] = [value.slice(0, value.lastIndexOf(separator))];
+        }
+      } else {
+        mod[facet] = [value];
+      }
+
+      return this.setQueryParameters({
+        hierarchicalFacetsRefinements: defaultsPure(
+          {},
+          mod,
+          this.hierarchicalFacetsRefinements
+        ),
+      });
+    },
+
+    /**
+     * Adds a refinement on a hierarchical facet.
+     * @param {string} facet the facet name
+     * @param {string} path the hierarchical facet path
+     * @return {SearchParameter} the new state
+     * @throws Error if the facet is not defined or if the facet is refined
+     */
+    addHierarchicalFacetRefinement: function (facet, path) {
+      if (this.isHierarchicalFacetRefined(facet)) {
+        throw new Error(facet + ' is already refined.');
+      }
+      if (!this.isHierarchicalFacet(facet)) {
+        throw new Error(
+          facet +
+            ' is not defined in the hierarchicalFacets attribute of the helper configuration.'
+        );
+      }
+      var mod = {};
+      mod[facet] = [path];
+      return this.setQueryParameters({
+        hierarchicalFacetsRefinements: defaultsPure(
+          {},
+          mod,
+          this.hierarchicalFacetsRefinements
+        ),
+      });
+    },
+
+    /**
+     * Removes the refinement set on a hierarchical facet.
+     * @param {string} facet the facet name
+     * @return {SearchParameter} the new state
+     * @throws Error if the facet is not defined or if the facet is not refined
+     */
+    removeHierarchicalFacetRefinement: function (facet) {
+      if (!this.isHierarchicalFacetRefined(facet)) {
+        return this;
+      }
+      var mod = {};
+      mod[facet] = [];
+      return this.setQueryParameters({
+        hierarchicalFacetsRefinements: defaultsPure(
+          {},
+          mod,
+          this.hierarchicalFacetsRefinements
+        ),
+      });
+    },
+    /**
+     * Switch the tag refinement
+     * @method
+     * @param {string} tag the tag to remove or add
+     * @return {SearchParameters} new instance
+     */
+    toggleTagRefinement: function toggleTagRefinement(tag) {
+      if (this.isTagRefined(tag)) {
+        return this.removeTagRefinement(tag);
+      }
+
+      return this.addTagRefinement(tag);
+    },
+    /**
+     * Test if the facet name is from one of the disjunctive facets
+     * @method
+     * @param {string} facet facet name to test
+     * @return {boolean} true if facet is a disjunctive facet
+     */
+    isDisjunctiveFacet: function (facet) {
+      return this.disjunctiveFacets.indexOf(facet) > -1;
+    },
+    /**
+     * Test if the facet name is from one of the hierarchical facets
+     * @method
+     * @param {string} facetName facet name to test
+     * @return {boolean} true if facetName is a hierarchical facet
+     */
+    isHierarchicalFacet: function (facetName) {
+      return this.getHierarchicalFacetByName(facetName) !== undefined;
+    },
+    /**
+     * Test if the facet name is from one of the conjunctive/normal facets
+     * @method
+     * @param {string} facet facet name to test
+     * @return {boolean} true if facet is a conjunctive facet
+     */
+    isConjunctiveFacet: function (facet) {
+      return this.facets.indexOf(facet) > -1;
+    },
+    /**
+     * Returns true if the facet is refined, either for a specific value or in
+     * general.
+     * @method
+     * @param {string} facet name of the attribute for used for faceting
+     * @param {string} value, optional value. If passed will test that this value
+     * is filtering the given facet.
+     * @return {boolean} returns true if refined
+     */
+    isFacetRefined: function isFacetRefined(facet, value) {
+      if (!this.isConjunctiveFacet(facet)) {
+        return false;
+      }
+      return RefinementList.isRefined(this.facetsRefinements, facet, value);
+    },
+    /**
+     * Returns true if the facet contains exclusions or if a specific value is
+     * excluded.
+     *
+     * @method
+     * @param {string} facet name of the attribute for used for faceting
+     * @param {string} [value] optional value. If passed will test that this value
+     * is filtering the given facet.
+     * @return {boolean} returns true if refined
+     */
+    isExcludeRefined: function isExcludeRefined(facet, value) {
+      if (!this.isConjunctiveFacet(facet)) {
+        return false;
+      }
+      return RefinementList.isRefined(this.facetsExcludes, facet, value);
+    },
+    /**
+     * Returns true if the facet contains a refinement, or if a value passed is a
+     * refinement for the facet.
+     * @method
+     * @param {string} facet name of the attribute for used for faceting
+     * @param {string} value optional, will test if the value is used for refinement
+     * if there is one, otherwise will test if the facet contains any refinement
+     * @return {boolean} true if the facet is refined
+     */
+    isDisjunctiveFacetRefined: function isDisjunctiveFacetRefined(facet, value) {
+      if (!this.isDisjunctiveFacet(facet)) {
+        return false;
+      }
+      return RefinementList.isRefined(
+        this.disjunctiveFacetsRefinements,
+        facet,
+        value
+      );
+    },
+    /**
+     * Returns true if the facet contains a refinement, or if a value passed is a
+     * refinement for the facet.
+     * @method
+     * @param {string} facet name of the attribute for used for faceting
+     * @param {string} value optional, will test if the value is used for refinement
+     * if there is one, otherwise will test if the facet contains any refinement
+     * @return {boolean} true if the facet is refined
+     */
+    isHierarchicalFacetRefined: function isHierarchicalFacetRefined(
+      facet,
+      value
+    ) {
+      if (!this.isHierarchicalFacet(facet)) {
+        return false;
+      }
+
+      var refinements = this.getHierarchicalRefinement(facet);
+
+      if (!value) {
+        return refinements.length > 0;
+      }
+
+      return refinements.indexOf(value) !== -1;
+    },
+    /**
+     * Test if the triple (attribute, operator, value) is already refined.
+     * If only the attribute and the operator are provided, it tests if the
+     * contains any refinement value.
+     * @method
+     * @param {string} attribute attribute for which the refinement is applied
+     * @param {string} [operator] operator of the refinement
+     * @param {string} [value] value of the refinement
+     * @return {boolean} true if it is refined
+     */
+    isNumericRefined: function isNumericRefined(attribute, operator, value) {
+      if (value === undefined && operator === undefined) {
+        return Boolean(this.numericRefinements[attribute]);
+      }
+
+      var isOperatorDefined =
+        this.numericRefinements[attribute] &&
+        this.numericRefinements[attribute][operator] !== undefined;
+
+      if (value === undefined || !isOperatorDefined) {
+        return isOperatorDefined;
+      }
+
+      var parsedValue = valToNumber_1(value);
+      var isAttributeValueDefined =
+        findArray(this.numericRefinements[attribute][operator], parsedValue) !==
+        undefined;
+
+      return isOperatorDefined && isAttributeValueDefined;
+    },
+    /**
+     * Returns true if the tag refined, false otherwise
+     * @method
+     * @param {string} tag the tag to check
+     * @return {boolean} true if tag is refined
+     */
+    isTagRefined: function isTagRefined(tag) {
+      return this.tagRefinements.indexOf(tag) !== -1;
+    },
+    /**
+     * Returns the list of all disjunctive facets refined
+     * @method
+     * @param {string} facet name of the attribute used for faceting
+     * @param {value} value value used for filtering
+     * @return {string[]} returns the list of refinements
+     */
+    getRefinedDisjunctiveFacets: function getRefinedDisjunctiveFacets() {
+      // eslint-disable-next-line consistent-this
+      var self = this;
+
+      // attributes used for numeric filter can also be disjunctive
+      var disjunctiveNumericRefinedFacets = intersection_1(
+        Object.keys(this.numericRefinements).filter(function (facet) {
+          return Object.keys(self.numericRefinements[facet]).length > 0;
+        }),
+        this.disjunctiveFacets
+      );
+
+      return Object.keys(this.disjunctiveFacetsRefinements)
+        .filter(function (facet) {
+          return self.disjunctiveFacetsRefinements[facet].length > 0;
+        })
+        .concat(disjunctiveNumericRefinedFacets)
+        .concat(this.getRefinedHierarchicalFacets())
+        .sort();
+    },
+    /**
+     * Returns the list of all disjunctive facets refined
+     * @method
+     * @param {string} facet name of the attribute used for faceting
+     * @param {value} value value used for filtering
+     * @return {string[]} returns the list of refinements
+     */
+    getRefinedHierarchicalFacets: function getRefinedHierarchicalFacets() {
+      // eslint-disable-next-line consistent-this
+      var self = this;
+      return intersection_1(
+        // enforce the order between the two arrays,
+        // so that refinement name index === hierarchical facet index
+        this.hierarchicalFacets.map(function (facet) {
+          return facet.name;
+        }),
+        Object.keys(this.hierarchicalFacetsRefinements).filter(function (facet) {
+          return self.hierarchicalFacetsRefinements[facet].length > 0;
+        })
+      ).sort();
+    },
+    /**
+     * Returned the list of all disjunctive facets not refined
+     * @method
+     * @return {string[]} returns the list of facets that are not refined
+     */
+    getUnrefinedDisjunctiveFacets: function () {
+      var refinedFacets = this.getRefinedDisjunctiveFacets();
+
+      return this.disjunctiveFacets.filter(function (f) {
+        return refinedFacets.indexOf(f) === -1;
+      });
+    },
+
+    managedParameters: [
+      'index',
+
+      'facets',
+      'disjunctiveFacets',
+      'facetsRefinements',
+      'hierarchicalFacets',
+      'facetsExcludes',
+
+      'disjunctiveFacetsRefinements',
+      'numericRefinements',
+      'tagRefinements',
+      'hierarchicalFacetsRefinements',
+    ],
+
+    getQueryParams: function getQueryParams() {
+      var managedParameters = this.managedParameters;
+
+      var queryParams = {};
+
+      // eslint-disable-next-line consistent-this
+      var self = this;
+      Object.keys(this).forEach(function (paramName) {
+        var paramValue = self[paramName];
+        if (
+          managedParameters.indexOf(paramName) === -1 &&
+          paramValue !== undefined
+        ) {
+          queryParams[paramName] = paramValue;
+        }
+      });
+
+      return queryParams;
+    },
+    /**
+     * Let the user set a specific value for a given parameter. Will return the
+     * same instance if the parameter is invalid or if the value is the same as the
+     * previous one.
+     * @method
+     * @param {string} parameter the parameter name
+     * @param {any} value the value to be set, must be compliant with the definition
+     * of the attribute on the object
+     * @return {SearchParameters} the updated state
+     */
+    setQueryParameter: function setParameter(parameter, value) {
+      if (this[parameter] === value) return this;
+
+      var modification = {};
+
+      modification[parameter] = value;
+
+      return this.setQueryParameters(modification);
+    },
+    /**
+     * Let the user set any of the parameters with a plain object.
+     * @method
+     * @param {object} params all the keys and the values to be updated
+     * @return {SearchParameters} a new updated instance
+     */
+    setQueryParameters: function setQueryParameters(params) {
+      if (!params) return this;
+
+      var error = SearchParameters.validate(this, params);
+
+      if (error) {
+        throw error;
+      }
+
+      // eslint-disable-next-line consistent-this
+      var self = this;
+      var nextWithNumbers = SearchParameters._parseNumbers(params);
+      var previousPlainObject = Object.keys(this).reduce(function (acc, key) {
+        acc[key] = self[key];
+        return acc;
+      }, {});
+
+      var nextPlainObject = Object.keys(nextWithNumbers).reduce(function (
+        previous,
+        key
+      ) {
+        var isPreviousValueDefined = previous[key] !== undefined;
+        var isNextValueDefined = nextWithNumbers[key] !== undefined;
+
+        if (isPreviousValueDefined && !isNextValueDefined) {
+          return omit$1(previous, [key]);
+        }
+
+        if (isNextValueDefined) {
+          previous[key] = nextWithNumbers[key];
+        }
+
+        return previous;
+      },
+      previousPlainObject);
+
+      return new this.constructor(nextPlainObject);
+    },
+
+    /**
+     * Returns a new instance with the page reset. Two scenarios possible:
+     * the page is omitted -> return the given instance
+     * the page is set -> return a new instance with a page of 0
+     * @return {SearchParameters} a new updated instance
+     */
+    resetPage: function () {
+      if (this.page === undefined) {
+        return this;
+      }
+
+      return this.setPage(0);
+    },
+
+    /**
+     * Helper function to get the hierarchicalFacet separator or the default one (`>`)
+     * @param  {object} hierarchicalFacet the hierarchicalFacet object
+     * @return {string} returns the hierarchicalFacet.separator or `>` as default
+     */
+    _getHierarchicalFacetSortBy: function (hierarchicalFacet) {
+      return hierarchicalFacet.sortBy || ['isRefined:desc', 'name:asc'];
+    },
+
+    /**
+     * Helper function to get the hierarchicalFacet separator or the default one (`>`)
+     * @private
+     * @param  {object} hierarchicalFacet the hierarchicalFacet object
+     * @return {string} returns the hierarchicalFacet.separator or `>` as default
+     */
+    _getHierarchicalFacetSeparator: function (hierarchicalFacet) {
+      return hierarchicalFacet.separator || ' > ';
+    },
+
+    /**
+     * Helper function to get the hierarchicalFacet prefix path or null
+     * @private
+     * @param  {object} hierarchicalFacet the hierarchicalFacet object
+     * @return {string} returns the hierarchicalFacet.rootPath or null as default
+     */
+    _getHierarchicalRootPath: function (hierarchicalFacet) {
+      return hierarchicalFacet.rootPath || null;
+    },
+
+    /**
+     * Helper function to check if we show the parent level of the hierarchicalFacet
+     * @private
+     * @param  {object} hierarchicalFacet the hierarchicalFacet object
+     * @return {string} returns the hierarchicalFacet.showParentLevel or true as default
+     */
+    _getHierarchicalShowParentLevel: function (hierarchicalFacet) {
+      if (typeof hierarchicalFacet.showParentLevel === 'boolean') {
+        return hierarchicalFacet.showParentLevel;
+      }
+      return true;
+    },
+
+    /**
+     * Helper function to get the hierarchicalFacet by it's name
+     * @param  {string} hierarchicalFacetName the hierarchicalFacet name
+     * @return {object} a hierarchicalFacet
+     */
+    getHierarchicalFacetByName: function (hierarchicalFacetName) {
+      return find$1(this.hierarchicalFacets, function (f) {
+        return f.name === hierarchicalFacetName;
+      });
+    },
+
+    /**
+     * Get the current breadcrumb for a hierarchical facet, as an array
+     * @param  {string} facetName Hierarchical facet name
+     * @return {array.<string>} the path as an array of string
+     */
+    getHierarchicalFacetBreadcrumb: function (facetName) {
+      if (!this.isHierarchicalFacet(facetName)) {
+        return [];
+      }
+
+      var refinement = this.getHierarchicalRefinement(facetName)[0];
+      if (!refinement) return [];
+
+      var separator = this._getHierarchicalFacetSeparator(
+        this.getHierarchicalFacetByName(facetName)
+      );
+      var path = refinement.split(separator);
+      return path.map(function (part) {
+        return part.trim();
+      });
+    },
+
+    toString: function () {
+      return JSON.stringify(this, null, 2);
+    },
+  };
+
+  /**
+   * Callback used for clearRefinement method
+   * @callback SearchParameters.clearCallback
+   * @param {OperatorList|FacetList} value the value of the filter
+   * @param {string} key the current attribute name
+   * @param {string} type `numeric`, `disjunctiveFacet`, `conjunctiveFacet`, `hierarchicalFacet` or `exclude`
+   * depending on the type of facet
+   * @return {boolean} `true` if the element should be removed. `false` otherwise.
+   */
+  var SearchParameters_1 = SearchParameters;
+
+  var compact = function compact(array) {
+    if (!Array.isArray(array)) {
+      return [];
+    }
+
+    return array.filter(Boolean);
+  };
+
+  // @MAJOR can be replaced by native Array#findIndex when we change support
+  var findIndex$1 = function find(array, comparator) {
+    if (!Array.isArray(array)) {
+      return -1;
+    }
+
+    for (var i = 0; i < array.length; i++) {
+      if (comparator(array[i])) {
+        return i;
+      }
+    }
+    return -1;
+  };
+
+  /**
+   * Transform sort format from user friendly notation to lodash format
+   * @param {string[]} sortBy array of predicate of the form "attribute:order"
+   * @param {string[]} [defaults] array of predicate of the form "attribute:order"
+   * @return {array.<string[]>} array containing 2 elements : attributes, orders
+   */
+  var formatSort = function formatSort(sortBy, defaults) {
+    var defaultInstructions = (defaults || []).map(function (sort) {
+      return sort.split(':');
+    });
+
+    return sortBy.reduce(
+      function preparePredicate(out, sort) {
+        var sortInstruction = sort.split(':');
+
+        var matchingDefault = find$1(
+          defaultInstructions,
+          function (defaultInstruction) {
+            return defaultInstruction[0] === sortInstruction[0];
+          }
+        );
+
+        if (sortInstruction.length > 1 || !matchingDefault) {
+          out[0].push(sortInstruction[0]);
+          out[1].push(sortInstruction[1]);
+          return out;
+        }
+
+        out[0].push(matchingDefault[0]);
+        out[1].push(matchingDefault[1]);
+        return out;
+      },
+      [[], []]
+    );
+  };
+
+  function compareAscending(value, other) {
+    if (value !== other) {
+      var valIsDefined = value !== undefined;
+      var valIsNull = value === null;
+
+      var othIsDefined = other !== undefined;
+      var othIsNull = other === null;
+
+      if (
+        (!othIsNull && value > other) ||
+        (valIsNull && othIsDefined) ||
+        !valIsDefined
+      ) {
+        return 1;
+      }
+      if (
+        (!valIsNull && value < other) ||
+        (othIsNull && valIsDefined) ||
+        !othIsDefined
+      ) {
+        return -1;
+      }
+    }
+    return 0;
+  }
+
+  /**
+   * @param {Array<object>} collection object with keys in attributes
+   * @param {Array<string>} iteratees attributes
+   * @param {Array<string>} orders asc | desc
+   * @return {Array<object>} sorted collection
+   */
+  function orderBy(collection, iteratees, orders) {
+    if (!Array.isArray(collection)) {
+      return [];
+    }
+
+    if (!Array.isArray(orders)) {
+      orders = [];
+    }
+
+    var result = collection.map(function (value, index) {
+      return {
+        criteria: iteratees.map(function (iteratee) {
+          return value[iteratee];
+        }),
+        index: index,
+        value: value,
+      };
+    });
+
+    result.sort(function comparer(object, other) {
+      var index = -1;
+
+      while (++index < object.criteria.length) {
+        var res = compareAscending(object.criteria[index], other.criteria[index]);
+        if (res) {
+          if (index >= orders.length) {
+            return res;
+          }
+          if (orders[index] === 'desc') {
+            return -res;
+          }
+          return res;
+        }
+      }
+
+      // This ensures a stable sort in V8 and other engines.
+      // See https://bugs.chromium.org/p/v8/issues/detail?id=90 for more details.
+      return object.index - other.index;
+    });
+
+    return result.map(function (res) {
+      return res.value;
+    });
+  }
+
+  var orderBy_1 = orderBy;
+
+  var generateHierarchicalTree_1 = generateTrees;
+
+
+
+
+
+  var escapeFacetValue$2 = escapeFacetValue_1.escapeFacetValue;
+  var unescapeFacetValue$2 = escapeFacetValue_1.unescapeFacetValue;
+
+  function generateTrees(state) {
+    return function generate(hierarchicalFacetResult, hierarchicalFacetIndex) {
+      var hierarchicalFacet = state.hierarchicalFacets[hierarchicalFacetIndex];
+      var hierarchicalFacetRefinement =
+        (state.hierarchicalFacetsRefinements[hierarchicalFacet.name] &&
+          state.hierarchicalFacetsRefinements[hierarchicalFacet.name][0]) ||
+        '';
+      var hierarchicalSeparator =
+        state._getHierarchicalFacetSeparator(hierarchicalFacet);
+      var hierarchicalRootPath =
+        state._getHierarchicalRootPath(hierarchicalFacet);
+      var hierarchicalShowParentLevel =
+        state._getHierarchicalShowParentLevel(hierarchicalFacet);
+      var sortBy = formatSort(
+        state._getHierarchicalFacetSortBy(hierarchicalFacet)
+      );
+
+      var rootExhaustive = hierarchicalFacetResult.every(function (facetResult) {
+        return facetResult.exhaustive;
+      });
+
+      var generateTreeFn = generateHierarchicalTree(
+        sortBy,
+        hierarchicalSeparator,
+        hierarchicalRootPath,
+        hierarchicalShowParentLevel,
+        hierarchicalFacetRefinement
+      );
+
+      var results = hierarchicalFacetResult;
+
+      if (hierarchicalRootPath) {
+        results = hierarchicalFacetResult.slice(
+          hierarchicalRootPath.split(hierarchicalSeparator).length
+        );
+      }
+
+      return results.reduce(generateTreeFn, {
+        name: state.hierarchicalFacets[hierarchicalFacetIndex].name,
+        count: null, // root level, no count
+        isRefined: true, // root level, always refined
+        path: null, // root level, no path
+        escapedValue: null,
+        exhaustive: rootExhaustive,
+        data: null,
+      });
+    };
+  }
+
+  function generateHierarchicalTree(
+    sortBy,
+    hierarchicalSeparator,
+    hierarchicalRootPath,
+    hierarchicalShowParentLevel,
+    currentRefinement
+  ) {
+    return function generateTree(
+      hierarchicalTree,
+      hierarchicalFacetResult,
+      currentHierarchicalLevel
+    ) {
+      var parent = hierarchicalTree;
+
+      if (currentHierarchicalLevel > 0) {
+        var level = 0;
+
+        parent = hierarchicalTree;
+
+        while (level < currentHierarchicalLevel) {
+          /**
+           * @type {object[]]} hierarchical data
+           */
+          var data = parent && Array.isArray(parent.data) ? parent.data : [];
+          parent = find$1(data, function (subtree) {
+            return subtree.isRefined;
+          });
+          level++;
+        }
+      }
+
+      // we found a refined parent, let's add current level data under it
+      if (parent) {
+        // filter values in case an object has multiple categories:
+        //   {
+        //     categories: {
+        //       level0: ['beers', 'bières'],
+        //       level1: ['beers > IPA', 'bières > Belges']
+        //     }
+        //   }
+        //
+        // If parent refinement is `beers`, then we do not want to have `bières > Belges`
+        // showing up
+
+        var picked = Object.keys(hierarchicalFacetResult.data)
+          .map(function (facetValue) {
+            return [facetValue, hierarchicalFacetResult.data[facetValue]];
+          })
+          .filter(function (tuple) {
+            var facetValue = tuple[0];
+            return onlyMatchingTree(
+              facetValue,
+              parent.path || hierarchicalRootPath,
+              currentRefinement,
+              hierarchicalSeparator,
+              hierarchicalRootPath,
+              hierarchicalShowParentLevel
+            );
+          });
+
+        parent.data = orderBy_1(
+          picked.map(function (tuple) {
+            var facetValue = tuple[0];
+            var facetCount = tuple[1];
+
+            return format(
+              facetCount,
+              facetValue,
+              hierarchicalSeparator,
+              unescapeFacetValue$2(currentRefinement),
+              hierarchicalFacetResult.exhaustive
+            );
+          }),
+          sortBy[0],
+          sortBy[1]
+        );
+      }
+
+      return hierarchicalTree;
+    };
+  }
+
+  // eslint-disable-next-line max-params
+  function onlyMatchingTree(
+    facetValue,
+    parentPath,
+    currentRefinement,
+    hierarchicalSeparator,
+    hierarchicalRootPath,
+    hierarchicalShowParentLevel
+  ) {
+    // we want the facetValue is a child of hierarchicalRootPath
+    if (
+      hierarchicalRootPath &&
+      (facetValue.indexOf(hierarchicalRootPath) !== 0 ||
+        hierarchicalRootPath === facetValue)
+    ) {
+      return false;
+    }
+
+    // we always want root levels (only when there is no prefix path)
+    return (
+      (!hierarchicalRootPath &&
+        facetValue.indexOf(hierarchicalSeparator) === -1) ||
+      // if there is a rootPath, being root level mean 1 level under rootPath
+      (hierarchicalRootPath &&
+        facetValue.split(hierarchicalSeparator).length -
+          hierarchicalRootPath.split(hierarchicalSeparator).length ===
+          1) ||
+      // if current refinement is a root level and current facetValue is a root level,
+      // keep the facetValue
+      (facetValue.indexOf(hierarchicalSeparator) === -1 &&
+        currentRefinement.indexOf(hierarchicalSeparator) === -1) ||
+      // currentRefinement is a child of the facet value
+      currentRefinement.indexOf(facetValue) === 0 ||
+      // facetValue is a child of the current parent, add it
+      (facetValue.indexOf(parentPath + hierarchicalSeparator) === 0 &&
+        (hierarchicalShowParentLevel ||
+          facetValue.indexOf(currentRefinement) === 0))
+    );
+  }
+
+  function format(
+    facetCount,
+    facetValue,
+    hierarchicalSeparator,
+    currentRefinement,
+    exhaustive
+  ) {
+    var parts = facetValue.split(hierarchicalSeparator);
+    return {
+      name: parts[parts.length - 1].trim(),
+      path: facetValue,
+      escapedValue: escapeFacetValue$2(facetValue),
+      count: facetCount,
+      isRefined:
+        currentRefinement === facetValue ||
+        currentRefinement.indexOf(facetValue + hierarchicalSeparator) === 0,
+      exhaustive: exhaustive,
+      data: null,
+    };
+  }
+
+  var escapeFacetValue$3 = escapeFacetValue_1.escapeFacetValue;
+  var unescapeFacetValue$3 = escapeFacetValue_1.unescapeFacetValue;
+
+
+
+  /**
+   * @typedef SearchResults.Facet
+   * @type {object}
+   * @property {string} name name of the attribute in the record
+   * @property {object} data the faceting data: value, number of entries
+   * @property {object} stats undefined unless facet_stats is retrieved from algolia
+   */
+
+  /**
+   * @typedef SearchResults.HierarchicalFacet
+   * @type {object}
+   * @property {string} name name of the current value given the hierarchical level, trimmed.
+   * If root node, you get the facet name
+   * @property {number} count number of objects matching this hierarchical value
+   * @property {string} path the current hierarchical value full path
+   * @property {boolean} isRefined `true` if the current value was refined, `false` otherwise
+   * @property {HierarchicalFacet[]} data sub values for the current level
+   */
+
+  /**
+   * @typedef SearchResults.FacetValue
+   * @type {object}
+   * @property {string} name the facet value itself
+   * @property {number} count times this facet appears in the results
+   * @property {boolean} isRefined is the facet currently selected
+   * @property {boolean} isExcluded is the facet currently excluded (only for conjunctive facets)
+   */
+
+  /**
+   * @typedef Refinement
+   * @type {object}
+   * @property {string} type the type of filter used:
+   * `numeric`, `facet`, `exclude`, `disjunctive`, `hierarchical`
+   * @property {string} attributeName name of the attribute used for filtering
+   * @property {string} name the value of the filter
+   * @property {number} numericValue the value as a number. Only for numeric filters.
+   * @property {string} operator the operator used. Only for numeric filters.
+   * @property {number} count the number of computed hits for this filter. Only on facets.
+   * @property {boolean} exhaustive if the count is exhaustive
+   */
+
+  /**
+   * Turn an array of attributes in an object of attributes with their position in the array as value
+   * @param {string[]} attributes the list of attributes in the record
+   * @return {object} the list of attributes indexed by attribute name
+   */
+  function getIndices(attributes) {
+    var indices = {};
+
+    attributes.forEach(function (val, idx) {
+      indices[val] = idx;
+    });
+
+    return indices;
+  }
+
+  function assignFacetStats(dest, facetStats, key) {
+    if (facetStats && facetStats[key]) {
+      dest.stats = facetStats[key];
+    }
+  }
+
+  /**
+   * @typedef {Object} HierarchicalFacet
+   * @property {string} name
+   * @property {string[]} attributes
+   */
+
+  /**
+   * @param {HierarchicalFacet[]} hierarchicalFacets All hierarchical facets
+   * @param {string} hierarchicalAttributeName The name of the hierarchical attribute
+   * @return {HierarchicalFacet} The hierarchical facet matching the attribute name
+   */
+  function findMatchingHierarchicalFacetFromAttributeName(
+    hierarchicalFacets,
+    hierarchicalAttributeName
+  ) {
+    return find$1(
+      hierarchicalFacets,
+      function facetKeyMatchesAttribute(hierarchicalFacet) {
+        var facetNames = hierarchicalFacet.attributes || [];
+        return facetNames.indexOf(hierarchicalAttributeName) > -1;
+      }
+    );
+  }
+
+  /**
+   * Constructor for SearchResults
+   * @class
+   * @classdesc SearchResults contains the results of a query to Algolia using the
+   * {@link AlgoliaSearchHelper}.
+   * @param {SearchParameters} state state that led to the response
+   * @param {array.<object>} results the results from algolia client
+   * @param {object} options options to control results content
+   * @example <caption>SearchResults of the first query in
+   * <a href="http://demos.algolia.com/instant-search-demo">the instant search demo</a></caption>
+  {
+     "hitsPerPage": 10,
+     "processingTimeMS": 2,
+     "facets": [
+        {
+           "name": "type",
+           "data": {
+              "HardGood": 6627,
+              "BlackTie": 550,
+              "Music": 665,
+              "Software": 131,
+              "Game": 456,
+              "Movie": 1571
+           },
+           "exhaustive": false
+        },
+        {
+           "exhaustive": false,
+           "data": {
+              "Free shipping": 5507
+           },
+           "name": "shipping"
+        }
+    ],
+     "hits": [
+        {
+           "thumbnailImage": "http://img.bbystatic.com/BestBuy_US/images/products/1688/1688832_54x108_s.gif",
+           "_highlightResult": {
+              "shortDescription": {
+                 "matchLevel": "none",
+                 "value": "Safeguard your PC, Mac, Android and iOS devices with comprehensive Internet protection",
+                 "matchedWords": []
+              },
+              "category": {
+                 "matchLevel": "none",
+                 "value": "Computer Security Software",
+                 "matchedWords": []
+              },
+              "manufacturer": {
+                 "matchedWords": [],
+                 "value": "Webroot",
+                 "matchLevel": "none"
+              },
+              "name": {
+                 "value": "Webroot SecureAnywhere Internet Security (3-Device) (1-Year Subscription) - Mac/Windows",
+                 "matchedWords": [],
+                 "matchLevel": "none"
+              }
+           },
+           "image": "http://img.bbystatic.com/BestBuy_US/images/products/1688/1688832_105x210_sc.jpg",
+           "shipping": "Free shipping",
+           "bestSellingRank": 4,
+           "shortDescription": "Safeguard your PC, Mac, Android and iOS devices with comprehensive Internet protection",
+           "url": "http://www.bestbuy.com/site/webroot-secureanywhere-internet-security-3-devi…d=1219060687969&skuId=1688832&cmp=RMX&ky=2d3GfEmNIzjA0vkzveHdZEBgpPCyMnLTJ",
+           "name": "Webroot SecureAnywhere Internet Security (3-Device) (1-Year Subscription) - Mac/Windows",
+           "category": "Computer Security Software",
+           "salePrice_range": "1 - 50",
+           "objectID": "1688832",
+           "type": "Software",
+           "customerReviewCount": 5980,
+           "salePrice": 49.99,
+           "manufacturer": "Webroot"
+        },
+        ....
+    ],
+     "nbHits": 10000,
+     "disjunctiveFacets": [
+        {
+           "exhaustive": false,
+           "data": {
+              "5": 183,
+              "12": 112,
+              "7": 149,
+              ...
+           },
+           "name": "customerReviewCount",
+           "stats": {
+              "max": 7461,
+              "avg": 157.939,
+              "min": 1
+           }
+        },
+        {
+           "data": {
+              "Printer Ink": 142,
+              "Wireless Speakers": 60,
+              "Point & Shoot Cameras": 48,
+              ...
+           },
+           "name": "category",
+           "exhaustive": false
+        },
+        {
+           "exhaustive": false,
+           "data": {
+              "> 5000": 2,
+              "1 - 50": 6524,
+              "501 - 2000": 566,
+              "201 - 500": 1501,
+              "101 - 200": 1360,
+              "2001 - 5000": 47
+           },
+           "name": "salePrice_range"
+        },
+        {
+           "data": {
+              "Dynex™": 202,
+              "Insignia™": 230,
+              "PNY": 72,
+              ...
+           },
+           "name": "manufacturer",
+           "exhaustive": false
+        }
+    ],
+     "query": "",
+     "nbPages": 100,
+     "page": 0,
+     "index": "bestbuy"
+  }
+   **/
+  function SearchResults(state, results, options) {
+    var mainSubResponse = results[0] || {};
+
+    this._rawResults = results;
+
+    // eslint-disable-next-line consistent-this
+    var self = this;
+
+    // https://www.algolia.com/doc/api-reference/api-methods/search/#response
+    Object.keys(mainSubResponse).forEach(function (key) {
+      self[key] = mainSubResponse[key];
+    });
+
+    // Make every key of the result options reachable from the instance
+    var opts = merge_1(
+      {
+        persistHierarchicalRootCount: false,
+      },
+      options
+    );
+    Object.keys(opts).forEach(function (key) {
+      self[key] = opts[key];
+    });
+
+    /**
+     * query used to generate the results
+     * @name query
+     * @member {string}
+     * @memberof SearchResults
+     * @instance
+     */
+    /**
+     * The query as parsed by the engine given all the rules.
+     * @name parsedQuery
+     * @member {string}
+     * @memberof SearchResults
+     * @instance
+     */
+    /**
+     * all the records that match the search parameters. Each record is
+     * augmented with a new attribute `_highlightResult`
+     * which is an object keyed by attribute and with the following properties:
+     * - `value` : the value of the facet highlighted (html)
+     * - `matchLevel`: `full`, `partial` or `none`, depending on how the query terms match
+     * @name hits
+     * @member {object[]}
+     * @memberof SearchResults
+     * @instance
+     */
+    /**
+     * index where the results come from
+     * @name index
+     * @member {string}
+     * @memberof SearchResults
+     * @instance
+     */
+    /**
+     * number of hits per page requested
+     * @name hitsPerPage
+     * @member {number}
+     * @memberof SearchResults
+     * @instance
+     */
+    /**
+     * total number of hits of this query on the index
+     * @name nbHits
+     * @member {number}
+     * @memberof SearchResults
+     * @instance
+     */
+    /**
+     * total number of pages with respect to the number of hits per page and the total number of hits
+     * @name nbPages
+     * @member {number}
+     * @memberof SearchResults
+     * @instance
+     */
+    /**
+     * current page
+     * @name page
+     * @member {number}
+     * @memberof SearchResults
+     * @instance
+     */
+    /**
+     * The position if the position was guessed by IP.
+     * @name aroundLatLng
+     * @member {string}
+     * @memberof SearchResults
+     * @instance
+     * @example "48.8637,2.3615",
+     */
+    /**
+     * The radius computed by Algolia.
+     * @name automaticRadius
+     * @member {string}
+     * @memberof SearchResults
+     * @instance
+     * @example "126792922",
+     */
+    /**
+     * String identifying the server used to serve this request.
+     *
+     * getRankingInfo needs to be set to `true` for this to be returned
+     *
+     * @name serverUsed
+     * @member {string}
+     * @memberof SearchResults
+     * @instance
+     * @example "c7-use-2.algolia.net",
+     */
+    /**
+     * Boolean that indicates if the computation of the counts did time out.
+     * @deprecated
+     * @name timeoutCounts
+     * @member {boolean}
+     * @memberof SearchResults
+     * @instance
+     */
+    /**
+     * Boolean that indicates if the computation of the hits did time out.
+     * @deprecated
+     * @name timeoutHits
+     * @member {boolean}
+     * @memberof SearchResults
+     * @instance
+     */
+    /**
+     * True if the counts of the facets is exhaustive
+     * @name exhaustiveFacetsCount
+     * @member {boolean}
+     * @memberof SearchResults
+     * @instance
+     */
+    /**
+     * True if the number of hits is exhaustive
+     * @name exhaustiveNbHits
+     * @member {boolean}
+     * @memberof SearchResults
+     * @instance
+     */
+    /**
+     * Contains the userData if they are set by a [query rule](https://www.algolia.com/doc/guides/query-rules/query-rules-overview/).
+     * @name userData
+     * @member {object[]}
+     * @memberof SearchResults
+     * @instance
+     */
+    /**
+     * queryID is the unique identifier of the query used to generate the current search results.
+     * This value is only available if the `clickAnalytics` search parameter is set to `true`.
+     * @name queryID
+     * @member {string}
+     * @memberof SearchResults
+     * @instance
+     */
+
+    /**
+     * sum of the processing time of all the queries
+     * @name processingTimeMS
+     * @member {number}
+     * @memberof SearchResults
+     * @instance
+     */
+    this.processingTimeMS = results.reduce(function (sum, result) {
+      return result.processingTimeMS === undefined
+        ? sum
+        : sum + result.processingTimeMS;
+    }, 0);
+
+    /**
+     * disjunctive facets results
+     * @member {SearchResults.Facet[]}
+     */
+    this.disjunctiveFacets = [];
+    /**
+     * disjunctive facets results
+     * @member {SearchResults.HierarchicalFacet[]}
+     */
+    this.hierarchicalFacets = state.hierarchicalFacets.map(
+      function initFutureTree() {
+        return [];
+      }
+    );
+    /**
+     * other facets results
+     * @member {SearchResults.Facet[]}
+     */
+    this.facets = [];
+
+    var disjunctiveFacets = state.getRefinedDisjunctiveFacets();
+
+    var facetsIndices = getIndices(state.facets);
+    var disjunctiveFacetsIndices = getIndices(state.disjunctiveFacets);
+    var nextDisjunctiveResult = 1;
+
+    // Since we send request only for disjunctive facets that have been refined,
+    // we get the facets information from the first, general, response.
+
+    var mainFacets = mainSubResponse.facets || {};
+
+    Object.keys(mainFacets).forEach(function (facetKey) {
+      var facetValueObject = mainFacets[facetKey];
+
+      var hierarchicalFacet = findMatchingHierarchicalFacetFromAttributeName(
+        state.hierarchicalFacets,
+        facetKey
+      );
+
+      if (hierarchicalFacet) {
+        // Place the hierarchicalFacet data at the correct index depending on
+        // the attributes order that was defined at the helper initialization
+        var facetIndex = hierarchicalFacet.attributes.indexOf(facetKey);
+        var idxAttributeName = findIndex$1(state.hierarchicalFacets, function (f) {
+          return f.name === hierarchicalFacet.name;
+        });
+        self.hierarchicalFacets[idxAttributeName][facetIndex] = {
+          attribute: facetKey,
+          data: facetValueObject,
+          exhaustive: mainSubResponse.exhaustiveFacetsCount,
+        };
+      } else {
+        var isFacetDisjunctive = state.disjunctiveFacets.indexOf(facetKey) !== -1;
+        var isFacetConjunctive = state.facets.indexOf(facetKey) !== -1;
+        var position;
+
+        if (isFacetDisjunctive) {
+          position = disjunctiveFacetsIndices[facetKey];
+          self.disjunctiveFacets[position] = {
+            name: facetKey,
+            data: facetValueObject,
+            exhaustive: mainSubResponse.exhaustiveFacetsCount,
+          };
+          assignFacetStats(
+            self.disjunctiveFacets[position],
+            mainSubResponse.facets_stats,
+            facetKey
+          );
+        }
+        if (isFacetConjunctive) {
+          position = facetsIndices[facetKey];
+          self.facets[position] = {
+            name: facetKey,
+            data: facetValueObject,
+            exhaustive: mainSubResponse.exhaustiveFacetsCount,
+          };
+          assignFacetStats(
+            self.facets[position],
+            mainSubResponse.facets_stats,
+            facetKey
+          );
+        }
+      }
+    });
+
+    // Make sure we do not keep holes within the hierarchical facets
+    this.hierarchicalFacets = compact(this.hierarchicalFacets);
+
+    // aggregate the refined disjunctive facets
+    disjunctiveFacets.forEach(function (disjunctiveFacet) {
+      var result = results[nextDisjunctiveResult];
+      var facets = result && result.facets ? result.facets : {};
+      var hierarchicalFacet = state.getHierarchicalFacetByName(disjunctiveFacet);
+
+      // There should be only item in facets.
+      Object.keys(facets).forEach(function (dfacet) {
+        var facetResults = facets[dfacet];
+
+        var position;
+
+        if (hierarchicalFacet) {
+          position = findIndex$1(state.hierarchicalFacets, function (f) {
+            return f.name === hierarchicalFacet.name;
+          });
+          var attributeIndex = findIndex$1(
+            self.hierarchicalFacets[position],
+            function (f) {
+              return f.attribute === dfacet;
+            }
+          );
+
+          // previous refinements and no results so not able to find it
+          if (attributeIndex === -1) {
+            return;
+          }
+
+          self.hierarchicalFacets[position][attributeIndex].data = merge_1(
+            {},
+            self.hierarchicalFacets[position][attributeIndex].data,
+            facetResults
+          );
+        } else {
+          position = disjunctiveFacetsIndices[dfacet];
+
+          var dataFromMainRequest =
+            (mainSubResponse.facets && mainSubResponse.facets[dfacet]) || {};
+
+          self.disjunctiveFacets[position] = {
+            name: dfacet,
+            data: defaultsPure({}, facetResults, dataFromMainRequest),
+            exhaustive: result.exhaustiveFacetsCount,
+          };
+          assignFacetStats(
+            self.disjunctiveFacets[position],
+            result.facets_stats,
+            dfacet
+          );
+
+          if (state.disjunctiveFacetsRefinements[dfacet]) {
+            state.disjunctiveFacetsRefinements[dfacet].forEach(function (
+              refinementValue
+            ) {
+              // add the disjunctive refinements if it is no more retrieved
+              if (
+                !self.disjunctiveFacets[position].data[refinementValue] &&
+                state.disjunctiveFacetsRefinements[dfacet].indexOf(
+                  unescapeFacetValue$3(refinementValue)
+                ) > -1
+              ) {
+                self.disjunctiveFacets[position].data[refinementValue] = 0;
+              }
+            });
+          }
+        }
+      });
+      nextDisjunctiveResult++;
+    });
+
+    // if we have some parent level values for hierarchical facets, merge them
+    state.getRefinedHierarchicalFacets().forEach(function (refinedFacet) {
+      var hierarchicalFacet = state.getHierarchicalFacetByName(refinedFacet);
+      var separator = state._getHierarchicalFacetSeparator(hierarchicalFacet);
+
+      var currentRefinement = state.getHierarchicalRefinement(refinedFacet);
+      // if we are already at a root refinement (or no refinement at all), there is no
+      // root level values request
+      if (
+        currentRefinement.length === 0 ||
+        currentRefinement[0].split(separator).length < 2
+      ) {
+        return;
+      }
+
+      results.slice(nextDisjunctiveResult).forEach(function (result) {
+        var facets = result && result.facets ? result.facets : {};
+
+        Object.keys(facets).forEach(function (dfacet) {
+          var facetResults = facets[dfacet];
+          var position = findIndex$1(state.hierarchicalFacets, function (f) {
+            return f.name === hierarchicalFacet.name;
+          });
+          var attributeIndex = findIndex$1(
+            self.hierarchicalFacets[position],
+            function (f) {
+              return f.attribute === dfacet;
+            }
+          );
+
+          // previous refinements and no results so not able to find it
+          if (attributeIndex === -1) {
+            return;
+          }
+
+          // when we always get root levels, if the hits refinement is `beers > IPA` (count: 5),
+          // then the disjunctive values will be `beers` (count: 100),
+          // but we do not want to display
+          //   | beers (100)
+          //     > IPA (5)
+          // We want
+          //   | beers (5)
+          //     > IPA (5)
+          // @MAJOR: remove this legacy behaviour in next major version
+          var defaultData = {};
+
+          if (
+            currentRefinement.length > 0 &&
+            !self.persistHierarchicalRootCount
+          ) {
+            var root = currentRefinement[0].split(separator)[0];
+            defaultData[root] =
+              self.hierarchicalFacets[position][attributeIndex].data[root];
+          }
+
+          self.hierarchicalFacets[position][attributeIndex].data = defaultsPure(
+            defaultData,
+            facetResults,
+            self.hierarchicalFacets[position][attributeIndex].data
+          );
+        });
+
+        nextDisjunctiveResult++;
+      });
+    });
+
+    // add the excludes
+    Object.keys(state.facetsExcludes).forEach(function (facetName) {
+      var excludes = state.facetsExcludes[facetName];
+      var position = facetsIndices[facetName];
+
+      self.facets[position] = {
+        name: facetName,
+        data: mainFacets[facetName],
+        exhaustive: mainSubResponse.exhaustiveFacetsCount,
+      };
+      excludes.forEach(function (facetValue) {
+        self.facets[position] = self.facets[position] || { name: facetName };
+        self.facets[position].data = self.facets[position].data || {};
+        self.facets[position].data[facetValue] = 0;
+      });
+    });
+
+    /**
+     * @type {Array}
+     */
+    this.hierarchicalFacets = this.hierarchicalFacets.map(
+      generateHierarchicalTree_1(state)
+    );
+
+    /**
+     * @type {Array}
+     */
+    this.facets = compact(this.facets);
+    /**
+     * @type {Array}
+     */
+    this.disjunctiveFacets = compact(this.disjunctiveFacets);
+
+    this._state = state;
+  }
+
+  /**
+   * Get a facet object with its name
+   * @deprecated
+   * @param {string} name name of the faceted attribute
+   * @return {SearchResults.Facet} the facet object
+   */
+  SearchResults.prototype.getFacetByName = function (name) {
+    function predicate(facet) {
+      return facet.name === name;
+    }
+
+    return (
+      find$1(this.facets, predicate) ||
+      find$1(this.disjunctiveFacets, predicate) ||
+      find$1(this.hierarchicalFacets, predicate)
+    );
+  };
+
+  /**
+   * Get the facet values of a specified attribute from a SearchResults object.
+   * @private
+   * @param {SearchResults} results the search results to search in
+   * @param {string} attribute name of the faceted attribute to search for
+   * @return {array|object} facet values. For the hierarchical facets it is an object.
+   */
+  function extractNormalizedFacetValues(results, attribute) {
+    function predicate(facet) {
+      return facet.name === attribute;
+    }
+
+    if (results._state.isConjunctiveFacet(attribute)) {
+      var facet = find$1(results.facets, predicate);
+      if (!facet) return [];
+
+      return Object.keys(facet.data).map(function (name) {
+        var value = escapeFacetValue$3(name);
+        return {
+          name: name,
+          escapedValue: value,
+          count: facet.data[name],
+          isRefined: results._state.isFacetRefined(attribute, value),
+          isExcluded: results._state.isExcludeRefined(attribute, name),
+        };
+      });
+    } else if (results._state.isDisjunctiveFacet(attribute)) {
+      var disjunctiveFacet = find$1(results.disjunctiveFacets, predicate);
+      if (!disjunctiveFacet) return [];
+
+      return Object.keys(disjunctiveFacet.data).map(function (name) {
+        var value = escapeFacetValue$3(name);
+        return {
+          name: name,
+          escapedValue: value,
+          count: disjunctiveFacet.data[name],
+          isRefined: results._state.isDisjunctiveFacetRefined(attribute, value),
+        };
+      });
+    } else if (results._state.isHierarchicalFacet(attribute)) {
+      var hierarchicalFacetValues = find$1(results.hierarchicalFacets, predicate);
+      if (!hierarchicalFacetValues) return hierarchicalFacetValues;
+
+      var hierarchicalFacet =
+        results._state.getHierarchicalFacetByName(attribute);
+      var separator =
+        results._state._getHierarchicalFacetSeparator(hierarchicalFacet);
+      var currentRefinement = unescapeFacetValue$3(
+        results._state.getHierarchicalRefinement(attribute)[0] || ''
+      );
+
+      if (currentRefinement.indexOf(hierarchicalFacet.rootPath) === 0) {
+        currentRefinement = currentRefinement.replace(
+          hierarchicalFacet.rootPath + separator,
+          ''
+        );
+      }
+
+      var currentRefinementSplit = currentRefinement.split(separator);
+      currentRefinementSplit.unshift(attribute);
+
+      setIsRefined(hierarchicalFacetValues, currentRefinementSplit, 0);
+
+      return hierarchicalFacetValues;
+    }
+
+    return undefined;
+  }
+
+  /**
+   * Set the isRefined of a hierarchical facet result based on the current state.
+   * @param {SearchResults.HierarchicalFacet} item Hierarchical facet to fix
+   * @param {string[]} currentRefinement array of parts of the current hierarchical refinement
+   * @param {number} depth recursion depth in the currentRefinement
+   * @return {undefined} function mutates the item
+   */
+  function setIsRefined(item, currentRefinement, depth) {
+    item.isRefined =
+      item.name === (currentRefinement[depth] && currentRefinement[depth].trim());
+    if (item.data) {
+      item.data.forEach(function (child) {
+        setIsRefined(child, currentRefinement, depth + 1);
+      });
+    }
+  }
+
+  /**
+   * Sort nodes of a hierarchical or disjunctive facet results
+   * @private
+   * @param {function} sortFn sort function to apply
+   * @param {HierarchicalFacet|Array} node node upon which we want to apply the sort
+   * @param {string[]} names attribute names
+   * @param {number} [level=0] current index in the names array
+   * @return {HierarchicalFacet|Array} sorted node
+   */
+  function recSort(sortFn, node, names, level) {
+    level = level || 0;
+
+    if (Array.isArray(node)) {
+      return sortFn(node, names[level]);
+    }
+
+    if (!node.data || node.data.length === 0) {
+      return node;
+    }
+
+    var children = node.data.map(function (childNode) {
+      return recSort(sortFn, childNode, names, level + 1);
+    });
+    var sortedChildren = sortFn(children, names[level]);
+    var newNode = defaultsPure({ data: sortedChildren }, node);
+    return newNode;
+  }
+
+  SearchResults.DEFAULT_SORT = ['isRefined:desc', 'count:desc', 'name:asc'];
+
+  function vanillaSortFn(order, data) {
+    return data.sort(order);
+  }
+
+  /**
+   * @typedef FacetOrdering
+   * @type {Object}
+   * @property {string[]} [order]
+   * @property {'count' | 'alpha' | 'hidden'} [sortRemainingBy]
+   */
+
+  /**
+   * Sorts facet arrays via their facet ordering
+   * @param {Array} facetValues the values
+   * @param {FacetOrdering} facetOrdering the ordering
+   * @returns {Array} the sorted facet values
+   */
+  function sortViaFacetOrdering(facetValues, facetOrdering) {
+    var orderedFacets = [];
+    var remainingFacets = [];
+    var hide = facetOrdering.hide || [];
+    var order = facetOrdering.order || [];
+
+    /**
+     * an object with the keys being the values in order, the values their index:
+     * ['one', 'two'] -> { one: 0, two: 1 }
+     */
+    var reverseOrder = order.reduce(function (acc, name, i) {
+      acc[name] = i;
+      return acc;
+    }, {});
+
+    facetValues.forEach(function (item) {
+      // hierarchical facets get sorted using their raw name
+      var name = item.path || item.name;
+      var hidden = hide.indexOf(name) > -1;
+      if (!hidden && reverseOrder[name] !== undefined) {
+        orderedFacets[reverseOrder[name]] = item;
+      } else if (!hidden) {
+        remainingFacets.push(item);
+      }
+    });
+
+    orderedFacets = orderedFacets.filter(function (facet) {
+      return facet;
+    });
+
+    var sortRemainingBy = facetOrdering.sortRemainingBy;
+    var ordering;
+    if (sortRemainingBy === 'hidden') {
+      return orderedFacets;
+    } else if (sortRemainingBy === 'alpha') {
+      ordering = [
+        ['path', 'name'],
+        ['asc', 'asc'],
+      ];
+    } else {
+      ordering = [['count'], ['desc']];
+    }
+
+    return orderedFacets.concat(
+      orderBy_1(remainingFacets, ordering[0], ordering[1])
+    );
+  }
+
+  /**
+   * @param {SearchResults} results the search results class
+   * @param {string} attribute the attribute to retrieve ordering of
+   * @returns {FacetOrdering | undefined} the facet ordering
+   */
+  function getFacetOrdering(results, attribute) {
+    return (
+      results.renderingContent &&
+      results.renderingContent.facetOrdering &&
+      results.renderingContent.facetOrdering.values &&
+      results.renderingContent.facetOrdering.values[attribute]
+    );
+  }
+
+  /**
+   * Get a the list of values for a given facet attribute. Those values are sorted
+   * refinement first, descending count (bigger value on top), and name ascending
+   * (alphabetical order). The sort formula can overridden using either string based
+   * predicates or a function.
+   *
+   * This method will return all the values returned by the Algolia engine plus all
+   * the values already refined. This means that it can happen that the
+   * `maxValuesPerFacet` [configuration](https://www.algolia.com/doc/rest-api/search#param-maxValuesPerFacet)
+   * might not be respected if you have facet values that are already refined.
+   * @param {string} attribute attribute name
+   * @param {object} opts configuration options.
+   * @param {boolean} [opts.facetOrdering]
+   * Force the use of facetOrdering from the result if a sortBy is present. If
+   * sortBy isn't present, facetOrdering will be used automatically.
+   * @param {Array.<string> | function} opts.sortBy
+   * When using strings, it consists of
+   * the name of the [FacetValue](#SearchResults.FacetValue) or the
+   * [HierarchicalFacet](#SearchResults.HierarchicalFacet) attributes with the
+   * order (`asc` or `desc`). For example to order the value by count, the
+   * argument would be `['count:asc']`.
+   *
+   * If only the attribute name is specified, the ordering defaults to the one
+   * specified in the default value for this attribute.
+   *
+   * When not specified, the order is
+   * ascending.  This parameter can also be a function which takes two facet
+   * values and should return a number, 0 if equal, 1 if the first argument is
+   * bigger or -1 otherwise.
+   *
+   * The default value for this attribute `['isRefined:desc', 'count:desc', 'name:asc']`
+   * @return {FacetValue[]|HierarchicalFacet|undefined} depending on the type of facet of
+   * the attribute requested (hierarchical, disjunctive or conjunctive)
+   * @example
+   * helper.on('result', function(event){
+   *   //get values ordered only by name ascending using the string predicate
+   *   event.results.getFacetValues('city', {sortBy: ['name:asc']});
+   *   //get values  ordered only by count ascending using a function
+   *   event.results.getFacetValues('city', {
+   *     // this is equivalent to ['count:asc']
+   *     sortBy: function(a, b) {
+   *       if (a.count === b.count) return 0;
+   *       if (a.count > b.count)   return 1;
+   *       if (b.count > a.count)   return -1;
+   *     }
+   *   });
+   * });
+   */
+  SearchResults.prototype.getFacetValues = function (attribute, opts) {
+    var facetValues = extractNormalizedFacetValues(this, attribute);
+    if (!facetValues) {
+      return undefined;
+    }
+
+    var options = defaultsPure({}, opts, {
+      sortBy: SearchResults.DEFAULT_SORT,
+      // if no sortBy is given, attempt to sort based on facetOrdering
+      // if it is given, we still allow to sort via facet ordering first
+      facetOrdering: !(opts && opts.sortBy),
+    });
+
+    // eslint-disable-next-line consistent-this
+    var results = this;
+    var attributes;
+    if (Array.isArray(facetValues)) {
+      attributes = [attribute];
+    } else {
+      var config = results._state.getHierarchicalFacetByName(facetValues.name);
+      attributes = config.attributes;
+    }
+
+    return recSort(
+      function (data, facetName) {
+        if (options.facetOrdering) {
+          var facetOrdering = getFacetOrdering(results, facetName);
+          if (facetOrdering) {
+            return sortViaFacetOrdering(data, facetOrdering);
+          }
+        }
+
+        if (Array.isArray(options.sortBy)) {
+          var order = formatSort(options.sortBy, SearchResults.DEFAULT_SORT);
+          return orderBy_1(data, order[0], order[1]);
+        } else if (typeof options.sortBy === 'function') {
+          return vanillaSortFn(options.sortBy, data);
+        }
+        throw new Error(
+          'options.sortBy is optional but if defined it must be ' +
+            'either an array of string (predicates) or a sorting function'
+        );
+      },
+      facetValues,
+      attributes
+    );
+  };
+
+  /**
+   * Returns the facet stats if attribute is defined and the facet contains some.
+   * Otherwise returns undefined.
+   * @param {string} attribute name of the faceted attribute
+   * @return {object} The stats of the facet
+   */
+  SearchResults.prototype.getFacetStats = function (attribute) {
+    if (this._state.isConjunctiveFacet(attribute)) {
+      return getFacetStatsIfAvailable(this.facets, attribute);
+    } else if (this._state.isDisjunctiveFacet(attribute)) {
+      return getFacetStatsIfAvailable(this.disjunctiveFacets, attribute);
+    }
+
+    return undefined;
+  };
+
+  /**
+   * @typedef {Object} FacetListItem
+   * @property {string} name
+   */
+
+  /**
+   * @param {FacetListItem[]} facetList (has more items, but enough for here)
+   * @param {string} facetName The attribute to look for
+   * @return {object|undefined} The stats of the facet
+   */
+  function getFacetStatsIfAvailable(facetList, facetName) {
+    var data = find$1(facetList, function (facet) {
+      return facet.name === facetName;
+    });
+    return data && data.stats;
+  }
+
+  /**
+   * Returns all refinements for all filters + tags. It also provides
+   * additional information: count and exhaustiveness for each filter.
+   *
+   * See the [refinement type](#Refinement) for an exhaustive view of the available
+   * data.
+   *
+   * Note that for a numeric refinement, results are grouped per operator, this
+   * means that it will return responses for operators which are empty.
+   *
+   * @return {Array.<Refinement>} all the refinements
+   */
+  SearchResults.prototype.getRefinements = function () {
+    var state = this._state;
+    // eslint-disable-next-line consistent-this
+    var results = this;
+    var res = [];
+
+    Object.keys(state.facetsRefinements).forEach(function (attributeName) {
+      state.facetsRefinements[attributeName].forEach(function (name) {
+        res.push(
+          getRefinement$1(state, 'facet', attributeName, name, results.facets)
+        );
+      });
+    });
+
+    Object.keys(state.facetsExcludes).forEach(function (attributeName) {
+      state.facetsExcludes[attributeName].forEach(function (name) {
+        res.push(
+          getRefinement$1(state, 'exclude', attributeName, name, results.facets)
+        );
+      });
+    });
+
+    Object.keys(state.disjunctiveFacetsRefinements).forEach(function (
+      attributeName
+    ) {
+      state.disjunctiveFacetsRefinements[attributeName].forEach(function (name) {
+        res.push(
+          getRefinement$1(
+            state,
+            'disjunctive',
+            attributeName,
+            name,
+            results.disjunctiveFacets
+          )
+        );
+      });
+    });
+
+    Object.keys(state.hierarchicalFacetsRefinements).forEach(function (
+      attributeName
+    ) {
+      state.hierarchicalFacetsRefinements[attributeName].forEach(function (name) {
+        res.push(
+          getHierarchicalRefinement(
+            state,
+            attributeName,
+            name,
+            results.hierarchicalFacets
+          )
+        );
+      });
+    });
+
+    Object.keys(state.numericRefinements).forEach(function (attributeName) {
+      var operators = state.numericRefinements[attributeName];
+      Object.keys(operators).forEach(function (operator) {
+        operators[operator].forEach(function (value) {
+          res.push({
+            type: 'numeric',
+            attributeName: attributeName,
+            name: value,
+            numericValue: value,
+            operator: operator,
+          });
+        });
+      });
+    });
+
+    state.tagRefinements.forEach(function (name) {
+      res.push({ type: 'tag', attributeName: '_tags', name: name });
+    });
+
+    return res;
+  };
+
+  /**
+   * @typedef {Object} Facet
+   * @property {string} name
+   * @property {Object} data
+   * @property {boolean} exhaustive
+   */
+
+  /**
+   * @param {SearchParameters} state the current state
+   * @param {string} type the type of the refinement
+   * @param {string} attributeName The attribute of the facet
+   * @param {*} name The name of the facet
+   * @param {Facet[]} resultsFacets facets from the results
+   * @return {Refinement} the refinement
+   */
+  function getRefinement$1(state, type, attributeName, name, resultsFacets) {
+    var facet = find$1(resultsFacets, function (f) {
+      return f.name === attributeName;
+    });
+    var count = facet && facet.data && facet.data[name] ? facet.data[name] : 0;
+    var exhaustive = (facet && facet.exhaustive) || false;
+
+    return {
+      type: type,
+      attributeName: attributeName,
+      name: name,
+      count: count,
+      exhaustive: exhaustive,
+    };
+  }
+
+  /**
+   * @param {SearchParameters} state the current state
+   * @param {string} attributeName the attribute of the hierarchical facet
+   * @param {string} name the name of the facet
+   * @param {Facet[]} resultsFacets facets from the results
+   * @return {HierarchicalFacet} the hierarchical facet
+   */
+  function getHierarchicalRefinement(state, attributeName, name, resultsFacets) {
+    var facetDeclaration = state.getHierarchicalFacetByName(attributeName);
+    var separator = state._getHierarchicalFacetSeparator(facetDeclaration);
+    var split = name.split(separator);
+    var rootFacet = find$1(resultsFacets, function (facet) {
+      return facet.name === attributeName;
+    });
+
+    var facet = split.reduce(function (intermediateFacet, part) {
+      var newFacet =
+        intermediateFacet &&
+        find$1(intermediateFacet.data, function (f) {
+          return f.name === part;
+        });
+      return newFacet !== undefined ? newFacet : intermediateFacet;
+    }, rootFacet);
+
+    var count = (facet && facet.count) || 0;
+    var exhaustive = (facet && facet.exhaustive) || false;
+    var path = (facet && facet.path) || '';
+
+    return {
+      type: 'hierarchical',
+      attributeName: attributeName,
+      name: path,
+      count: count,
+      exhaustive: exhaustive,
+    };
+  }
+
+  var SearchResults_1 = SearchResults;
+
+  // @MAJOR: remove this function and use Array.prototype.flat
+  var flat = function flat(arr) {
+    return arr.reduce(function (acc, val) {
+      return acc.concat(val);
+    }, []);
+  };
+
+  function getAverageIndices(indexTracker, nrOfObjs) {
+    var avgIndices = [];
+
+    Object.keys(indexTracker).forEach(function (key) {
+      if (indexTracker[key].count < 2) {
+        indexTracker[key].indexSum += 100;
+      }
+      avgIndices.push({
+        objectID: key,
+        avgOfIndices: indexTracker[key].indexSum / nrOfObjs,
+      });
+    });
+
+    return avgIndices.sort(function (a, b) {
+      return a.avgOfIndices > b.avgOfIndices ? 1 : -1;
+    });
+  }
+
+  function sortAndMergeRecommendations(results) {
+    var indexTracker = {};
+
+    results.forEach(function (hits) {
+      hits.forEach(function (hit, index) {
+        if (!indexTracker[hit.objectID]) {
+          indexTracker[hit.objectID] = { indexSum: index, count: 1 };
+        } else {
+          indexTracker[hit.objectID] = {
+            indexSum: indexTracker[hit.objectID].indexSum + index,
+            count: indexTracker[hit.objectID].count + 1,
+          };
+        }
+      });
+    });
+
+    var sortedAverageIndices = getAverageIndices(indexTracker, results.length);
+
+    var finalOrder = sortedAverageIndices.reduce(function (
+      orderedHits,
+      avgIndexRef
+    ) {
+      var result = find$1(flat(results), function (hit) {
+        return hit.objectID === avgIndexRef.objectID;
+      });
+      return result ? orderedHits.concat(result) : orderedHits;
+    },
+    []);
+
+    return finalOrder;
+  }
+
+  var sortAndMergeRecommendations_1 = sortAndMergeRecommendations;
+
+  var version = '3.22.3';
 
   var escapeFacetValue$4 = escapeFacetValue_1.escapeFacetValue;
+
+
+
+
+
+
+
+
+
+
+
 
   /**
    * Event triggered when a parameter is set or updated
@@ -9634,8 +10611,9 @@
    * @param  {SearchParameters | object} options an object defining the initial
    * config of the search. It doesn't have to be a {SearchParameters},
    * just an object containing the properties you need from it.
+   * @param {SearchResultsOptions|object} searchResultsOptions an object defining the options to use when creating the search results.
    */
-  function AlgoliaSearchHelper(client, index, options) {
+  function AlgoliaSearchHelper(client, index, options, searchResultsOptions) {
     if (typeof client.addAlgoliaAgent === 'function') {
       client.addAlgoliaAgent('JS Helper (' + version + ')');
     }
@@ -9644,11 +10622,20 @@
     var opts = options || {};
     opts.index = index;
     this.state = SearchParameters_1.make(opts);
+    this.recommendState = new RecommendParameters_1({
+      params: opts.recommendState,
+    });
     this.lastResults = null;
+    this.lastRecommendResults = null;
     this._queryId = 0;
+    this._recommendQueryId = 0;
     this._lastQueryIdReceived = -1;
+    this._lastRecommendQueryIdReceived = -1;
     this.derivedHelpers = [];
     this._currentNbQueries = 0;
+    this._currentNbRecommendQueries = 0;
+    this._searchResultsOptions = searchResultsOptions;
+    this._recommendCache = {};
   }
 
   inherits_1(AlgoliaSearchHelper, events);
@@ -9658,19 +10645,34 @@
    * method is called, it triggers a `search` event. The results will
    * be available through the `result` event. If an error occurs, an
    * `error` will be fired instead.
-   * @return {AlgoliaSearchHelper}
+   * @return {AlgoliaSearchHelper} Method is chainable, it returns itself
    * @fires search
    * @fires result
    * @fires error
    * @chainable
    */
-  AlgoliaSearchHelper.prototype.search = function() {
-    this._search({onlyWithDerivedHelpers: false});
+  AlgoliaSearchHelper.prototype.search = function () {
+    this._search({ onlyWithDerivedHelpers: false });
     return this;
   };
 
-  AlgoliaSearchHelper.prototype.searchOnlyWithDerivedHelpers = function() {
-    this._search({onlyWithDerivedHelpers: true});
+  AlgoliaSearchHelper.prototype.searchOnlyWithDerivedHelpers = function () {
+    this._search({ onlyWithDerivedHelpers: true });
+    return this;
+  };
+
+  /**
+   * Sends the recommendation queries set in the state. When the method is
+   * called, it triggers a `fetch` event. The results will be available through
+   * the `result` event. If an error occurs, an `error` will be fired instead.
+   * @return {AlgoliaSearchHelper} Method is chainable, it returns itself
+   * @fires fetch
+   * @fires result
+   * @fires error
+   * @chainable
+   */
+  AlgoliaSearchHelper.prototype.recommend = function () {
+    this._recommend();
     return this;
   };
 
@@ -9679,7 +10681,7 @@
    * for the hits
    * @return {object} Query Parameters
    */
-  AlgoliaSearchHelper.prototype.getQuery = function() {
+  AlgoliaSearchHelper.prototype.getQuery = function () {
     var state = this.state;
     return requestBuilder_1._getHitsSearchParams(state);
   };
@@ -9691,7 +10693,7 @@
    * same as a search call before calling searchOnce.
    * @param {object} options can contain all the parameters that can be set to SearchParameters
    * plus the index
-   * @param {function} [callback] optional callback executed when the response from the
+   * @param {function} [cb] optional callback executed when the response from the
    * server is back.
    * @return {promise|undefined} if a callback is passed the method returns undefined
    * otherwise it returns a promise containing an object with two keys :
@@ -9720,21 +10722,24 @@
    *   // }
    * }
    */
-  AlgoliaSearchHelper.prototype.searchOnce = function(options, cb) {
-    var tempState = !options ? this.state : this.state.setQueryParameters(options);
+  AlgoliaSearchHelper.prototype.searchOnce = function (options, cb) {
+    var tempState = !options
+      ? this.state
+      : this.state.setQueryParameters(options);
     var queries = requestBuilder_1._getQueries(tempState.index, tempState);
+    // eslint-disable-next-line consistent-this
     var self = this;
 
     this._currentNbQueries++;
 
     this.emit('searchOnce', {
-      state: tempState
+      state: tempState,
     });
 
     if (cb) {
       this.client
         .search(queries)
-        .then(function(content) {
+        .then(function (content) {
           self._currentNbQueries--;
           if (self._currentNbQueries === 0) {
             self.emit('searchQueueEmpty');
@@ -9742,7 +10747,7 @@
 
           cb(null, new SearchResults_1(tempState, content.results), tempState);
         })
-        .catch(function(err) {
+        .catch(function (err) {
           self._currentNbQueries--;
           if (self._currentNbQueries === 0) {
             self.emit('searchQueueEmpty');
@@ -9754,22 +10759,25 @@
       return undefined;
     }
 
-    return this.client.search(queries).then(function(content) {
-      self._currentNbQueries--;
-      if (self._currentNbQueries === 0) self.emit('searchQueueEmpty');
-      return {
-        content: new SearchResults_1(tempState, content.results),
-        state: tempState,
-        _originalResponse: content
-      };
-    }, function(e) {
-      self._currentNbQueries--;
-      if (self._currentNbQueries === 0) self.emit('searchQueueEmpty');
-      throw e;
-    });
+    return this.client.search(queries).then(
+      function (content) {
+        self._currentNbQueries--;
+        if (self._currentNbQueries === 0) self.emit('searchQueueEmpty');
+        return {
+          content: new SearchResults_1(tempState, content.results),
+          state: tempState,
+          _originalResponse: content,
+        };
+      },
+      function (e) {
+        self._currentNbQueries--;
+        if (self._currentNbQueries === 0) self.emit('searchQueueEmpty');
+        throw e;
+      }
+    );
   };
 
-   /**
+  /**
    * Start the search for answers with the parameters set in the state.
    * This method returns a promise.
    * @param {Object} options - the options for answers API call
@@ -9780,7 +10788,8 @@
    * @return {promise} the answer results
    * @deprecated answers is deprecated and will be replaced with new initiatives
    */
-  AlgoliaSearchHelper.prototype.findAnswers = function(options) {
+  AlgoliaSearchHelper.prototype.findAnswers = function (options) {
+    // eslint-disable-next-line no-console
     console.warn('[algoliasearch-helper] answers is no longer supported');
     var state = this.state;
     var derivedHelper = this.derivedHelpers[0];
@@ -9791,19 +10800,20 @@
     var data = merge_1(
       {
         attributesForPrediction: options.attributesForPrediction,
-        nbHits: options.nbHits
+        nbHits: options.nbHits,
       },
       {
         params: omit$1(requestBuilder_1._getHitsSearchParams(derivedState), [
           'attributesToSnippet',
           'hitsPerPage',
           'restrictSearchableAttributes',
-          'snippetEllipsisText' // FIXME remove this line once the engine is fixed.
-        ])
+          'snippetEllipsisText',
+        ]),
       }
     );
 
-    var errorMessage = 'search for answers was called, but this client does not have a function client.initIndex(index).findAnswers';
+    var errorMessage =
+      'search for answers was called, but this client does not have a function client.initIndex(index).findAnswers';
     if (typeof this.client.initIndex !== 'function') {
       throw new Error(errorMessage);
     }
@@ -9848,7 +10858,12 @@
    * it in the generated query.
    * @return {promise.<FacetSearchResult>} the results of the search
    */
-  AlgoliaSearchHelper.prototype.searchForFacetValues = function(facet, query, maxFacetHits, userState) {
+  AlgoliaSearchHelper.prototype.searchForFacetValues = function (
+    facet,
+    query,
+    maxFacetHits,
+    userState
+  ) {
     var clientHasSFFV = typeof this.client.searchForFacetValues === 'function';
     var clientHasInitIndex = typeof this.client.initIndex === 'function';
     if (
@@ -9863,15 +10878,21 @@
 
     var state = this.state.setQueryParameters(userState || {});
     var isDisjunctive = state.isDisjunctiveFacet(facet);
-    var algoliaQuery = requestBuilder_1.getSearchForFacetQuery(facet, query, maxFacetHits, state);
+    var algoliaQuery = requestBuilder_1.getSearchForFacetQuery(
+      facet,
+      query,
+      maxFacetHits,
+      state
+    );
 
     this._currentNbQueries++;
+    // eslint-disable-next-line consistent-this
     var self = this;
     var searchForFacetValuesPromise;
     // newer algoliasearch ^3.27.1 - ~4.0.0
     if (clientHasSFFV) {
       searchForFacetValuesPromise = this.client.searchForFacetValues([
-        {indexName: state.index, params: algoliaQuery}
+        { indexName: state.index, params: algoliaQuery },
       ]);
       // algoliasearch < 3.27.1
     } else if (clientHasInitIndex) {
@@ -9888,8 +10909,8 @@
             type: 'facet',
             facet: facet,
             indexName: state.index,
-            params: algoliaQuery
-          }
+            params: algoliaQuery,
+          },
         ])
         .then(function processResponse(response) {
           return response.results[0];
@@ -9899,28 +10920,31 @@
     this.emit('searchForFacetValues', {
       state: state,
       facet: facet,
-      query: query
+      query: query,
     });
 
-    return searchForFacetValuesPromise.then(function addIsRefined(content) {
-      self._currentNbQueries--;
-      if (self._currentNbQueries === 0) self.emit('searchQueueEmpty');
+    return searchForFacetValuesPromise.then(
+      function addIsRefined(content) {
+        self._currentNbQueries--;
+        if (self._currentNbQueries === 0) self.emit('searchQueueEmpty');
 
-      content = Array.isArray(content) ? content[0] : content;
+        content = Array.isArray(content) ? content[0] : content;
 
-      content.facetHits.forEach(function(f) {
-        f.escapedValue = escapeFacetValue$4(f.value);
-        f.isRefined = isDisjunctive
-          ? state.isDisjunctiveFacetRefined(facet, f.escapedValue)
-          : state.isFacetRefined(facet, f.escapedValue);
-      });
+        content.facetHits.forEach(function (f) {
+          f.escapedValue = escapeFacetValue$4(f.value);
+          f.isRefined = isDisjunctive
+            ? state.isDisjunctiveFacetRefined(facet, f.escapedValue)
+            : state.isFacetRefined(facet, f.escapedValue);
+        });
 
-      return content;
-    }, function(e) {
-      self._currentNbQueries--;
-      if (self._currentNbQueries === 0) self.emit('searchQueueEmpty');
-      throw e;
-    });
+        return content;
+      },
+      function (e) {
+        self._currentNbQueries--;
+        if (self._currentNbQueries === 0) self.emit('searchQueueEmpty');
+        throw e;
+      }
+    );
   };
 
   /**
@@ -9928,14 +10952,14 @@
    *
    * This method resets the current page to 0.
    * @param  {string} q the user query
-   * @return {AlgoliaSearchHelper}
+   * @return {AlgoliaSearchHelper} Method is chainable, it returns itself
    * @fires change
    * @chainable
    */
-  AlgoliaSearchHelper.prototype.setQuery = function(q) {
+  AlgoliaSearchHelper.prototype.setQuery = function (q) {
     this._change({
       state: this.state.resetPage().setQuery(q),
-      isPageReset: true
+      isPageReset: true,
     });
 
     return this;
@@ -9949,7 +10973,7 @@
    *
    * This method resets the current page to 0.
    * @param {string} [name] optional name of the facet / attribute on which we want to remove all refinements
-   * @return {AlgoliaSearchHelper}
+   * @return {AlgoliaSearchHelper} Method is chainable, it returns itself
    * @fires change
    * @chainable
    * @example
@@ -9964,10 +10988,10 @@
    *   return type === 'exclude' && attribute === 'category';
    * }).search();
    */
-  AlgoliaSearchHelper.prototype.clearRefinements = function(name) {
+  AlgoliaSearchHelper.prototype.clearRefinements = function (name) {
     this._change({
       state: this.state.resetPage().clearRefinements(name),
-      isPageReset: true
+      isPageReset: true,
     });
 
     return this;
@@ -9977,14 +11001,14 @@
    * Remove all the tag filters.
    *
    * This method resets the current page to 0.
-   * @return {AlgoliaSearchHelper}
+   * @return {AlgoliaSearchHelper} Method is chainable, it returns itself
    * @fires change
    * @chainable
    */
-  AlgoliaSearchHelper.prototype.clearTags = function() {
+  AlgoliaSearchHelper.prototype.clearTags = function () {
     this._change({
       state: this.state.resetPage().clearTags(),
-      isPageReset: true
+      isPageReset: true,
     });
 
     return this;
@@ -9997,23 +11021,27 @@
    * This method resets the current page to 0.
    * @param  {string} facet the facet to refine
    * @param  {string} value the associated value (will be converted to string)
-   * @return {AlgoliaSearchHelper}
+   * @return {AlgoliaSearchHelper} Method is chainable, it returns itself
    * @fires change
    * @chainable
    */
-  AlgoliaSearchHelper.prototype.addDisjunctiveFacetRefinement = function(facet, value) {
+  AlgoliaSearchHelper.prototype.addDisjunctiveFacetRefinement = function (
+    facet,
+    value
+  ) {
     this._change({
       state: this.state.resetPage().addDisjunctiveFacetRefinement(facet, value),
-      isPageReset: true
+      isPageReset: true,
     });
 
     return this;
   };
 
+  // eslint-disable-next-line valid-jsdoc
   /**
    * @deprecated since version 2.4.0, see {@link AlgoliaSearchHelper#addDisjunctiveFacetRefinement}
    */
-  AlgoliaSearchHelper.prototype.addDisjunctiveRefine = function() {
+  AlgoliaSearchHelper.prototype.addDisjunctiveRefine = function () {
     return this.addDisjunctiveFacetRefinement.apply(this, arguments);
   };
 
@@ -10025,15 +11053,18 @@
    * This method resets the current page to 0.
    * @param {string} facet the facet name
    * @param {string} path the hierarchical facet path
-   * @return {AlgoliaSearchHelper}
+   * @return {AlgoliaSearchHelper} Method is chainable, it returns itself
    * @throws Error if the facet is not defined or if the facet is refined
    * @chainable
    * @fires change
    */
-  AlgoliaSearchHelper.prototype.addHierarchicalFacetRefinement = function(facet, value) {
+  AlgoliaSearchHelper.prototype.addHierarchicalFacetRefinement = function (
+    facet,
+    path
+  ) {
     this._change({
-      state: this.state.resetPage().addHierarchicalFacetRefinement(facet, value),
-      isPageReset: true
+      state: this.state.resetPage().addHierarchicalFacetRefinement(facet, path),
+      isPageReset: true,
     });
 
     return this;
@@ -10047,14 +11078,20 @@
    * @param  {string} attribute the attribute on which the numeric filter applies
    * @param  {string} operator the operator of the filter
    * @param  {number} value the value of the filter
-   * @return {AlgoliaSearchHelper}
+   * @return {AlgoliaSearchHelper} Method is chainable, it returns itself
    * @fires change
    * @chainable
    */
-  AlgoliaSearchHelper.prototype.addNumericRefinement = function(attribute, operator, value) {
+  AlgoliaSearchHelper.prototype.addNumericRefinement = function (
+    attribute,
+    operator,
+    value
+  ) {
     this._change({
-      state: this.state.resetPage().addNumericRefinement(attribute, operator, value),
-      isPageReset: true
+      state: this.state
+        .resetPage()
+        .addNumericRefinement(attribute, operator, value),
+      isPageReset: true,
     });
 
     return this;
@@ -10067,26 +11104,26 @@
    * This method resets the current page to 0.
    * @param  {string} facet the facet to refine
    * @param  {string} value the associated value (will be converted to string)
-   * @return {AlgoliaSearchHelper}
+   * @return {AlgoliaSearchHelper} Method is chainable, it returns itself
    * @fires change
    * @chainable
    */
-  AlgoliaSearchHelper.prototype.addFacetRefinement = function(facet, value) {
+  AlgoliaSearchHelper.prototype.addFacetRefinement = function (facet, value) {
     this._change({
       state: this.state.resetPage().addFacetRefinement(facet, value),
-      isPageReset: true
+      isPageReset: true,
     });
 
     return this;
   };
 
+  // eslint-disable-next-line valid-jsdoc
   /**
    * @deprecated since version 2.4.0, see {@link AlgoliaSearchHelper#addFacetRefinement}
    */
-  AlgoliaSearchHelper.prototype.addRefine = function() {
+  AlgoliaSearchHelper.prototype.addRefine = function () {
     return this.addFacetRefinement.apply(this, arguments);
   };
-
 
   /**
    * Adds a an exclusion filter to a faceted attribute with the `value` provided. If the
@@ -10095,23 +11132,24 @@
    * This method resets the current page to 0.
    * @param  {string} facet the facet to refine
    * @param  {string} value the associated value (will be converted to string)
-   * @return {AlgoliaSearchHelper}
+   * @return {AlgoliaSearchHelper} Method is chainable, it returns itself
    * @fires change
    * @chainable
    */
-  AlgoliaSearchHelper.prototype.addFacetExclusion = function(facet, value) {
+  AlgoliaSearchHelper.prototype.addFacetExclusion = function (facet, value) {
     this._change({
       state: this.state.resetPage().addExcludeRefinement(facet, value),
-      isPageReset: true
+      isPageReset: true,
     });
 
     return this;
   };
 
+  // eslint-disable-next-line valid-jsdoc
   /**
    * @deprecated since version 2.4.0, see {@link AlgoliaSearchHelper#addFacetExclusion}
    */
-  AlgoliaSearchHelper.prototype.addExclude = function() {
+  AlgoliaSearchHelper.prototype.addExclude = function () {
     return this.addFacetExclusion.apply(this, arguments);
   };
 
@@ -10121,14 +11159,94 @@
    *
    * This method resets the current page to 0.
    * @param {string} tag the tag to add to the filter
-   * @return {AlgoliaSearchHelper}
+   * @return {AlgoliaSearchHelper} Method is chainable, it returns itself
    * @fires change
    * @chainable
    */
-  AlgoliaSearchHelper.prototype.addTag = function(tag) {
+  AlgoliaSearchHelper.prototype.addTag = function (tag) {
     this._change({
       state: this.state.resetPage().addTagRefinement(tag),
-      isPageReset: true
+      isPageReset: true,
+    });
+
+    return this;
+  };
+
+  /**
+   * Adds a "frequently bought together" recommendation query.
+   *
+   * @param {FrequentlyBoughtTogetherQuery} params the parameters for the recommendation
+   * @return {AlgoliaSearchHelper} Method is chainable, it returns itself
+   * @fires change
+   * @chainable
+   */
+  AlgoliaSearchHelper.prototype.addFrequentlyBoughtTogether = function (params) {
+    this._recommendChange({
+      state: this.recommendState.addFrequentlyBoughtTogether(params),
+    });
+
+    return this;
+  };
+
+  /**
+   * Adds a "related products" recommendation query.
+   *
+   * @param {RelatedProductsQuery} params the parameters for the recommendation
+   * @return {AlgoliaSearchHelper} Method is chainable, it returns itself
+   * @fires change
+   * @chainable
+   */
+  AlgoliaSearchHelper.prototype.addRelatedProducts = function (params) {
+    this._recommendChange({
+      state: this.recommendState.addRelatedProducts(params),
+    });
+
+    return this;
+  };
+
+  /**
+   * Adds a "trending items" recommendation query.
+   *
+   * @param {TrendingItemsQuery} params the parameters for the recommendation
+   * @return {AlgoliaSearchHelper} Method is chainable, it returns itself
+   * @fires change
+   * @chainable
+   */
+  AlgoliaSearchHelper.prototype.addTrendingItems = function (params) {
+    this._recommendChange({
+      state: this.recommendState.addTrendingItems(params),
+    });
+
+    return this;
+  };
+
+  /**
+   * Adds a "trending facets" recommendation query.
+   *
+   * @param {TrendingFacetsQuery} params the parameters for the recommendation
+   * @return {AlgoliaSearchHelper} Method is chainable, it returns itself
+   * @fires change
+   * @chainable
+   */
+  AlgoliaSearchHelper.prototype.addTrendingFacets = function (params) {
+    this._recommendChange({
+      state: this.recommendState.addTrendingFacets(params),
+    });
+
+    return this;
+  };
+
+  /**
+   * Adds a "looking similar" recommendation query.
+   *
+   * @param {LookingSimilarQuery} params the parameters for the recommendation
+   * @return {AlgoliaSearchHelper} Method is chainable, it returns itself
+   * @fires change
+   * @chainable
+   */
+  AlgoliaSearchHelper.prototype.addLookingSimilar = function (params) {
+    this._recommendChange({
+      state: this.recommendState.addLookingSimilar(params),
     });
 
     return this;
@@ -10148,14 +11266,20 @@
    * @param  {string} attribute the attribute on which the numeric filter applies
    * @param  {string} [operator] the operator of the filter
    * @param  {number} [value] the value of the filter
-   * @return {AlgoliaSearchHelper}
+   * @return {AlgoliaSearchHelper} Method is chainable, it returns itself
    * @fires change
    * @chainable
    */
-  AlgoliaSearchHelper.prototype.removeNumericRefinement = function(attribute, operator, value) {
+  AlgoliaSearchHelper.prototype.removeNumericRefinement = function (
+    attribute,
+    operator,
+    value
+  ) {
     this._change({
-      state: this.state.resetPage().removeNumericRefinement(attribute, operator, value),
-      isPageReset: true
+      state: this.state
+        .resetPage()
+        .removeNumericRefinement(attribute, operator, value),
+      isPageReset: true,
     });
 
     return this;
@@ -10171,38 +11295,46 @@
    * This method resets the current page to 0.
    * @param  {string} facet the facet to refine
    * @param  {string} [value] the associated value
-   * @return {AlgoliaSearchHelper}
+   * @return {AlgoliaSearchHelper} Method is chainable, it returns itself
    * @fires change
    * @chainable
    */
-  AlgoliaSearchHelper.prototype.removeDisjunctiveFacetRefinement = function(facet, value) {
+  AlgoliaSearchHelper.prototype.removeDisjunctiveFacetRefinement = function (
+    facet,
+    value
+  ) {
     this._change({
-      state: this.state.resetPage().removeDisjunctiveFacetRefinement(facet, value),
-      isPageReset: true
+      state: this.state
+        .resetPage()
+        .removeDisjunctiveFacetRefinement(facet, value),
+      isPageReset: true,
     });
 
     return this;
   };
 
+  // eslint-disable-next-line valid-jsdoc
   /**
    * @deprecated since version 2.4.0, see {@link AlgoliaSearchHelper#removeDisjunctiveFacetRefinement}
    */
-  AlgoliaSearchHelper.prototype.removeDisjunctiveRefine = function() {
+  AlgoliaSearchHelper.prototype.removeDisjunctiveRefine = function () {
     return this.removeDisjunctiveFacetRefinement.apply(this, arguments);
   };
 
   /**
    * Removes the refinement set on a hierarchical facet.
    * @param {string} facet the facet name
-   * @return {AlgoliaSearchHelper}
+   * @return {AlgoliaSearchHelper} Method is chainable, it returns itself
    * @throws Error if the facet is not defined or if the facet is not refined
    * @fires change
    * @chainable
    */
-  AlgoliaSearchHelper.prototype.removeHierarchicalFacetRefinement = function(facet) {
+  AlgoliaSearchHelper.prototype.removeHierarchicalFacetRefinement = function (
+    facet
+  ) {
     this._change({
       state: this.state.resetPage().removeHierarchicalFacetRefinement(facet),
-      isPageReset: true
+      isPageReset: true,
     });
 
     return this;
@@ -10218,23 +11350,24 @@
    * This method resets the current page to 0.
    * @param  {string} facet the facet to refine
    * @param  {string} [value] the associated value
-   * @return {AlgoliaSearchHelper}
+   * @return {AlgoliaSearchHelper} Method is chainable, it returns itself
    * @fires change
    * @chainable
    */
-  AlgoliaSearchHelper.prototype.removeFacetRefinement = function(facet, value) {
+  AlgoliaSearchHelper.prototype.removeFacetRefinement = function (facet, value) {
     this._change({
       state: this.state.resetPage().removeFacetRefinement(facet, value),
-      isPageReset: true
+      isPageReset: true,
     });
 
     return this;
   };
 
+  // eslint-disable-next-line valid-jsdoc
   /**
    * @deprecated since version 2.4.0, see {@link AlgoliaSearchHelper#removeFacetRefinement}
    */
-  AlgoliaSearchHelper.prototype.removeRefine = function() {
+  AlgoliaSearchHelper.prototype.removeRefine = function () {
     return this.removeFacetRefinement.apply(this, arguments);
   };
 
@@ -10248,23 +11381,24 @@
    * This method resets the current page to 0.
    * @param  {string} facet the facet to refine
    * @param  {string} [value] the associated value
-   * @return {AlgoliaSearchHelper}
+   * @return {AlgoliaSearchHelper} Method is chainable, it returns itself
    * @fires change
    * @chainable
    */
-  AlgoliaSearchHelper.prototype.removeFacetExclusion = function(facet, value) {
+  AlgoliaSearchHelper.prototype.removeFacetExclusion = function (facet, value) {
     this._change({
       state: this.state.resetPage().removeExcludeRefinement(facet, value),
-      isPageReset: true
+      isPageReset: true,
     });
 
     return this;
   };
 
+  // eslint-disable-next-line valid-jsdoc
   /**
    * @deprecated since version 2.4.0, see {@link AlgoliaSearchHelper#removeFacetExclusion}
    */
-  AlgoliaSearchHelper.prototype.removeExclude = function() {
+  AlgoliaSearchHelper.prototype.removeExclude = function () {
     return this.removeFacetExclusion.apply(this, arguments);
   };
 
@@ -10274,14 +11408,94 @@
    *
    * This method resets the current page to 0.
    * @param {string} tag tag to remove from the filter
-   * @return {AlgoliaSearchHelper}
+   * @return {AlgoliaSearchHelper} Method is chainable, it returns itself
    * @fires change
    * @chainable
    */
-  AlgoliaSearchHelper.prototype.removeTag = function(tag) {
+  AlgoliaSearchHelper.prototype.removeTag = function (tag) {
     this._change({
       state: this.state.resetPage().removeTagRefinement(tag),
-      isPageReset: true
+      isPageReset: true,
+    });
+
+    return this;
+  };
+
+  /**
+   * Removes a "frequently bought together" recommendation query.
+   *
+   * @param {number} id identifier of the recommendation widget
+   * @returns {AlgoliaSearchHelper} Method is chainable, it returns itself
+   * @fires change
+   * @chainable
+   */
+  AlgoliaSearchHelper.prototype.removeFrequentlyBoughtTogether = function (id) {
+    this._recommendChange({
+      state: this.recommendState.removeParams(id),
+    });
+
+    return this;
+  };
+
+  /**
+   * Removes a "related products" recommendation query.
+   *
+   * @param {number} id identifier of the recommendation widget
+   * @returns {AlgoliaSearchHelper} Method is chainable, it returns itself
+   * @fires change
+   * @chainable
+   */
+  AlgoliaSearchHelper.prototype.removeRelatedProducts = function (id) {
+    this._recommendChange({
+      state: this.recommendState.removeParams(id),
+    });
+
+    return this;
+  };
+
+  /**
+   * Removes a "trending items" recommendation query.
+   *
+   * @param {number} id identifier of the recommendation widget
+   * @returns {AlgoliaSearchHelper} Method is chainable, it returns itself
+   * @fires change
+   * @chainable
+   */
+  AlgoliaSearchHelper.prototype.removeTrendingItems = function (id) {
+    this._recommendChange({
+      state: this.recommendState.removeParams(id),
+    });
+
+    return this;
+  };
+
+  /**
+   * Removes a "trending facets" recommendation query.
+   *
+   * @param {number} id identifier of the recommendation widget
+   * @returns {AlgoliaSearchHelper} Method is chainable, it returns itself
+   * @fires change
+   * @chainable
+   */
+  AlgoliaSearchHelper.prototype.removeTrendingFacets = function (id) {
+    this._recommendChange({
+      state: this.recommendState.removeParams(id),
+    });
+
+    return this;
+  };
+
+  /**
+   * Removes a "looking similar" recommendation query.
+   *
+   * @param {number} id identifier of the recommendation widget
+   * @returns {AlgoliaSearchHelper} Method is chainable, it returns itself
+   * @fires change
+   * @chainable
+   */
+  AlgoliaSearchHelper.prototype.removeLookingSimilar = function (id) {
+    this._recommendChange({
+      state: this.recommendState.removeParams(id),
     });
 
     return this;
@@ -10294,23 +11508,24 @@
    * This method resets the current page to 0.
    * @param  {string} facet the facet to refine
    * @param  {string} value the associated value
-   * @return {AlgoliaSearchHelper}
+   * @return {AlgoliaSearchHelper} Method is chainable, it returns itself
    * @fires change
    * @chainable
    */
-  AlgoliaSearchHelper.prototype.toggleFacetExclusion = function(facet, value) {
+  AlgoliaSearchHelper.prototype.toggleFacetExclusion = function (facet, value) {
     this._change({
       state: this.state.resetPage().toggleExcludeFacetRefinement(facet, value),
-      isPageReset: true
+      isPageReset: true,
     });
 
     return this;
   };
 
+  // eslint-disable-next-line valid-jsdoc
   /**
    * @deprecated since version 2.4.0, see {@link AlgoliaSearchHelper#toggleFacetExclusion}
    */
-  AlgoliaSearchHelper.prototype.toggleExclude = function() {
+  AlgoliaSearchHelper.prototype.toggleExclude = function () {
     return this.toggleFacetExclusion.apply(this, arguments);
   };
 
@@ -10323,13 +11538,13 @@
    * This method resets the current page to 0.
    * @param  {string} facet the facet to refine
    * @param  {string} value the associated value
-   * @return {AlgoliaSearchHelper}
+   * @return {AlgoliaSearchHelper} Method is chainable, it returns itself
    * @throws Error will throw an error if the facet is not declared in the settings of the helper
    * @fires change
    * @chainable
    * @deprecated since version 2.19.0, see {@link AlgoliaSearchHelper#toggleFacetRefinement}
    */
-  AlgoliaSearchHelper.prototype.toggleRefinement = function(facet, value) {
+  AlgoliaSearchHelper.prototype.toggleRefinement = function (facet, value) {
     return this.toggleFacetRefinement(facet, value);
   };
 
@@ -10342,24 +11557,25 @@
    * This method resets the current page to 0.
    * @param  {string} facet the facet to refine
    * @param  {string} value the associated value
-   * @return {AlgoliaSearchHelper}
+   * @return {AlgoliaSearchHelper} Method is chainable, it returns itself
    * @throws Error will throw an error if the facet is not declared in the settings of the helper
    * @fires change
    * @chainable
    */
-  AlgoliaSearchHelper.prototype.toggleFacetRefinement = function(facet, value) {
+  AlgoliaSearchHelper.prototype.toggleFacetRefinement = function (facet, value) {
     this._change({
       state: this.state.resetPage().toggleFacetRefinement(facet, value),
-      isPageReset: true
+      isPageReset: true,
     });
 
     return this;
   };
 
+  // eslint-disable-next-line valid-jsdoc
   /**
    * @deprecated since version 2.4.0, see {@link AlgoliaSearchHelper#toggleFacetRefinement}
    */
-  AlgoliaSearchHelper.prototype.toggleRefine = function() {
+  AlgoliaSearchHelper.prototype.toggleRefine = function () {
     return this.toggleFacetRefinement.apply(this, arguments);
   };
 
@@ -10369,14 +11585,14 @@
    *
    * This method resets the current page to 0.
    * @param {string} tag tag to remove or add
-   * @return {AlgoliaSearchHelper}
+   * @return {AlgoliaSearchHelper} Method is chainable, it returns itself
    * @fires change
    * @chainable
    */
-  AlgoliaSearchHelper.prototype.toggleTag = function(tag) {
+  AlgoliaSearchHelper.prototype.toggleTag = function (tag) {
     this._change({
       state: this.state.resetPage().toggleTagRefinement(tag),
-      isPageReset: true
+      isPageReset: true,
     });
 
     return this;
@@ -10384,14 +11600,14 @@
 
   /**
    * Increments the page number by one.
-   * @return {AlgoliaSearchHelper}
+   * @return {AlgoliaSearchHelper} Method is chainable, it returns itself
    * @fires change
    * @chainable
    * @example
    * helper.setPage(0).nextPage().getPage();
    * // returns 1
    */
-  AlgoliaSearchHelper.prototype.nextPage = function() {
+  AlgoliaSearchHelper.prototype.nextPage = function () {
     var page = this.state.page || 0;
     return this.setPage(page + 1);
   };
@@ -10399,26 +11615,30 @@
   /**
    * Decrements the page number by one.
    * @fires change
-   * @return {AlgoliaSearchHelper}
+   * @return {AlgoliaSearchHelper} Method is chainable, it returns itself
    * @chainable
    * @example
    * helper.setPage(1).previousPage().getPage();
    * // returns 0
    */
-  AlgoliaSearchHelper.prototype.previousPage = function() {
+  AlgoliaSearchHelper.prototype.previousPage = function () {
     var page = this.state.page || 0;
     return this.setPage(page - 1);
   };
 
   /**
    * @private
+   * @param {number} page The page number
+   * @return {AlgoliaSearchHelper} Method is chainable, it returns itself
+   * @chainable
+   * @fires change
    */
   function setCurrentPage(page) {
     if (page < 0) throw new Error('Page requested below 0.');
 
     this._change({
       state: this.state.setPage(page),
-      isPageReset: false
+      isPageReset: false,
     });
 
     return this;
@@ -10428,7 +11648,7 @@
    * Change the current page
    * @deprecated
    * @param  {number} page The page number
-   * @return {AlgoliaSearchHelper}
+   * @return {AlgoliaSearchHelper} Method is chainable, it returns itself
    * @fires change
    * @chainable
    */
@@ -10438,7 +11658,7 @@
    * Updates the current page.
    * @function
    * @param  {number} page The page number
-   * @return {AlgoliaSearchHelper}
+   * @return {AlgoliaSearchHelper} Method is chainable, it returns itself
    * @fires change
    * @chainable
    */
@@ -10449,14 +11669,14 @@
    *
    * This method resets the current page to 0.
    * @param {string} name the index name
-   * @return {AlgoliaSearchHelper}
+   * @return {AlgoliaSearchHelper} Method is chainable, it returns itself
    * @fires change
    * @chainable
    */
-  AlgoliaSearchHelper.prototype.setIndex = function(name) {
+  AlgoliaSearchHelper.prototype.setIndex = function (name) {
     this._change({
       state: this.state.resetPage().setIndex(name),
-      isPageReset: true
+      isPageReset: true,
     });
 
     return this;
@@ -10473,16 +11693,16 @@
    * This method resets the current page to 0.
    * @param {string} parameter name of the parameter to update
    * @param {any} value new value of the parameter
-   * @return {AlgoliaSearchHelper}
+   * @return {AlgoliaSearchHelper} Method is chainable, it returns itself
    * @fires change
    * @chainable
    * @example
    * helper.setQueryParameter('hitsPerPage', 20).search();
    */
-  AlgoliaSearchHelper.prototype.setQueryParameter = function(parameter, value) {
+  AlgoliaSearchHelper.prototype.setQueryParameter = function (parameter, value) {
     this._change({
       state: this.state.resetPage().setQueryParameter(parameter, value),
-      isPageReset: true
+      isPageReset: true,
     });
 
     return this;
@@ -10491,14 +11711,14 @@
   /**
    * Set the whole state (warning: will erase previous state)
    * @param {SearchParameters} newState the whole new state
-   * @return {AlgoliaSearchHelper}
+   * @return {AlgoliaSearchHelper} Method is chainable, it returns itself
    * @fires change
    * @chainable
    */
-  AlgoliaSearchHelper.prototype.setState = function(newState) {
+  AlgoliaSearchHelper.prototype.setState = function (newState) {
     this._change({
       state: SearchParameters_1.make(newState),
-      isPageReset: false
+      isPageReset: false,
     });
 
     return this;
@@ -10509,7 +11729,7 @@
    * Do not use this method unless you know what you are doing. (see the example
    * for a legit use case)
    * @param {SearchParameters} newState the whole new state
-   * @return {AlgoliaSearchHelper}
+   * @return {AlgoliaSearchHelper} Method is chainable, it returns itself
    * @example
    *  helper.on('change', function(state){
    *    // In this function you might want to find a way to store the state in the url/history
@@ -10521,10 +11741,11 @@
    *  }
    * @chainable
    */
-  AlgoliaSearchHelper.prototype.overrideStateWithoutTriggeringChangeEvent = function(newState) {
-    this.state = new SearchParameters_1(newState);
-    return this;
-  };
+  AlgoliaSearchHelper.prototype.overrideStateWithoutTriggeringChangeEvent =
+    function (newState) {
+      this.state = new SearchParameters_1(newState);
+      return this;
+    };
 
   /**
    * Check if an attribute has any numeric, conjunctive, disjunctive or hierarchical filters.
@@ -10549,7 +11770,7 @@
    * helper.hasRefinements('categories'); // true
    *
    */
-  AlgoliaSearchHelper.prototype.hasRefinements = function(attribute) {
+  AlgoliaSearchHelper.prototype.hasRefinements = function (attribute) {
     if (objectHasKeys_1(this.state.getNumericRefinements(attribute))) {
       return true;
     } else if (this.state.isConjunctiveFacet(attribute)) {
@@ -10574,7 +11795,7 @@
    *
    * @param  {string}  facet name of the attribute for used for faceting
    * @param  {string}  [value] optional value. If passed will test that this value
-     * is filtering the given facet.
+   * is filtering the given facet.
    * @return {boolean} true if refined
    * @example
    * helper.isExcludeRefined('color'); // false
@@ -10587,42 +11808,43 @@
    * helper.isExcludeRefined('color', 'blue') // false
    * helper.isExcludeRefined('color', 'red') // true
    */
-  AlgoliaSearchHelper.prototype.isExcluded = function(facet, value) {
+  AlgoliaSearchHelper.prototype.isExcluded = function (facet, value) {
     return this.state.isExcludeRefined(facet, value);
   };
 
+  // eslint-disable-next-line valid-jsdoc
   /**
    * @deprecated since 2.4.0, see {@link AlgoliaSearchHelper#hasRefinements}
    */
-  AlgoliaSearchHelper.prototype.isDisjunctiveRefined = function(facet, value) {
+  AlgoliaSearchHelper.prototype.isDisjunctiveRefined = function (facet, value) {
     return this.state.isDisjunctiveFacetRefined(facet, value);
   };
 
   /**
    * Check if the string is a currently filtering tag.
    * @param {string} tag tag to check
-   * @return {boolean}
+   * @return {boolean} true if the tag is currently refined
    */
-  AlgoliaSearchHelper.prototype.hasTag = function(tag) {
+  AlgoliaSearchHelper.prototype.hasTag = function (tag) {
     return this.state.isTagRefined(tag);
   };
 
+  // eslint-disable-next-line valid-jsdoc
   /**
    * @deprecated since 2.4.0, see {@link AlgoliaSearchHelper#hasTag}
    */
-  AlgoliaSearchHelper.prototype.isTagRefined = function() {
+  AlgoliaSearchHelper.prototype.isTagRefined = function () {
     return this.hasTagRefinements.apply(this, arguments);
   };
 
-
   /**
    * Get the name of the currently used index.
-   * @return {string}
+   * @return {string} name of the index
    * @example
    * helper.setIndex('highestPrice_products').getIndex();
    * // returns 'highestPrice_products'
    */
-  AlgoliaSearchHelper.prototype.getIndex = function() {
+  AlgoliaSearchHelper.prototype.getIndex = function () {
     return this.state.index;
   };
 
@@ -10648,7 +11870,7 @@
    *
    * @return {string[]} The list of tags currently set.
    */
-  AlgoliaSearchHelper.prototype.getTags = function() {
+  AlgoliaSearchHelper.prototype.getTags = function () {
     return this.state.tagRefinements;
   };
 
@@ -10696,47 +11918,48 @@
    * //   }
    * // ]
    */
-  AlgoliaSearchHelper.prototype.getRefinements = function(facetName) {
+  AlgoliaSearchHelper.prototype.getRefinements = function (facetName) {
     var refinements = [];
 
     if (this.state.isConjunctiveFacet(facetName)) {
       var conjRefinements = this.state.getConjunctiveRefinements(facetName);
 
-      conjRefinements.forEach(function(r) {
+      conjRefinements.forEach(function (r) {
         refinements.push({
           value: r,
-          type: 'conjunctive'
+          type: 'conjunctive',
         });
       });
 
       var excludeRefinements = this.state.getExcludeRefinements(facetName);
 
-      excludeRefinements.forEach(function(r) {
+      excludeRefinements.forEach(function (r) {
         refinements.push({
           value: r,
-          type: 'exclude'
+          type: 'exclude',
         });
       });
     } else if (this.state.isDisjunctiveFacet(facetName)) {
-      var disjRefinements = this.state.getDisjunctiveRefinements(facetName);
+      var disjunctiveRefinements =
+        this.state.getDisjunctiveRefinements(facetName);
 
-      disjRefinements.forEach(function(r) {
+      disjunctiveRefinements.forEach(function (r) {
         refinements.push({
           value: r,
-          type: 'disjunctive'
+          type: 'disjunctive',
         });
       });
     }
 
     var numericRefinements = this.state.getNumericRefinements(facetName);
 
-    Object.keys(numericRefinements).forEach(function(operator) {
+    Object.keys(numericRefinements).forEach(function (operator) {
       var value = numericRefinements[operator];
 
       refinements.push({
         value: value,
         operator: operator,
-        type: 'numeric'
+        type: 'numeric',
       });
     });
 
@@ -10749,7 +11972,10 @@
    * @param {string} operator operator applied on the refined values
    * @return {Array.<number|number[]>} refined values
    */
-  AlgoliaSearchHelper.prototype.getNumericRefinement = function(attribute, operator) {
+  AlgoliaSearchHelper.prototype.getNumericRefinement = function (
+    attribute,
+    operator
+  ) {
     return this.state.getNumericRefinement(attribute, operator);
   };
 
@@ -10758,7 +11984,9 @@
    * @param  {string} facetName Hierarchical facet name
    * @return {array.<string>} the path as an array of string
    */
-  AlgoliaSearchHelper.prototype.getHierarchicalFacetBreadcrumb = function(facetName) {
+  AlgoliaSearchHelper.prototype.getHierarchicalFacetBreadcrumb = function (
+    facetName
+  ) {
     return this.state.getHierarchicalFacetBreadcrumb(facetName);
   };
 
@@ -10767,12 +11995,14 @@
   /**
    * Perform the underlying queries
    * @private
-   * @return {undefined}
+   * @param {object} options options for the query
+   * @param {boolean} [options.onlyWithDerivedHelpers=false] if true, only the derived helpers will be queried
+   * @return {undefined} does not return anything
    * @fires search
    * @fires result
    * @fires error
    */
-  AlgoliaSearchHelper.prototype._search = function(options) {
+  AlgoliaSearchHelper.prototype._search = function (options) {
     var state = this.state;
     var states = [];
     var mainQueries = [];
@@ -10783,16 +12013,16 @@
       states.push({
         state: state,
         queriesCount: mainQueries.length,
-        helper: this
+        helper: this,
       });
 
       this.emit('search', {
         state: state,
-        results: this.lastResults
+        results: this.lastResults,
       });
     }
 
-    var derivedQueries = this.derivedHelpers.map(function(derivedHelper) {
+    var derivedQueries = this.derivedHelpers.map(function (derivedHelper) {
       var derivedState = derivedHelper.getModifiedState(state);
       var derivedStateQueries = derivedState.index
         ? requestBuilder_1._getQueries(derivedState.index, derivedState)
@@ -10801,12 +12031,12 @@
       states.push({
         state: derivedState,
         queriesCount: derivedStateQueries.length,
-        helper: derivedHelper
+        helper: derivedHelper,
       });
 
       derivedHelper.emit('search', {
         state: derivedState,
-        results: derivedHelper.lastResults
+        results: derivedHelper.lastResults,
       });
 
       return derivedStateQueries;
@@ -10818,21 +12048,115 @@
     this._currentNbQueries++;
 
     if (!queries.length) {
-      return Promise.resolve({results: []}).then(
+      return Promise.resolve({ results: [] }).then(
         this._dispatchAlgoliaResponse.bind(this, states, queryId)
       );
     }
 
     try {
-      this.client.search(queries)
+      this.client
+        .search(queries)
         .then(this._dispatchAlgoliaResponse.bind(this, states, queryId))
         .catch(this._dispatchAlgoliaError.bind(this, queryId));
     } catch (error) {
       // If we reach this part, we're in an internal error state
       this.emit('error', {
-        error: error
+        error: error,
       });
     }
+
+    return undefined;
+  };
+
+  AlgoliaSearchHelper.prototype._recommend = function () {
+    var searchState = this.state;
+    var recommendState = this.recommendState;
+    var index = this.getIndex();
+    var states = [{ state: recommendState, index: index, helper: this }];
+    var ids = recommendState.params.map(function (param) {
+      return param.$$id;
+    });
+
+    this.emit('fetch', {
+      recommend: {
+        state: recommendState,
+        results: this.lastRecommendResults,
+      },
+    });
+
+    var cache = this._recommendCache;
+
+    var derivedQueries = this.derivedHelpers.map(function (derivedHelper) {
+      var derivedIndex = derivedHelper.getModifiedState(searchState).index;
+      if (!derivedIndex) {
+        return [];
+      }
+
+      // Contrary to what is done when deriving the search state, we don't want to
+      // provide the current recommend state to the derived helper, as it would
+      // inherit unwanted queries. We instead provide an empty recommend state.
+      var derivedState = derivedHelper.getModifiedRecommendState(
+        new RecommendParameters_1()
+      );
+      states.push({
+        state: derivedState,
+        index: derivedIndex,
+        helper: derivedHelper,
+      });
+
+      ids = Array.prototype.concat.apply(
+        ids,
+        derivedState.params.map(function (param) {
+          return param.$$id;
+        })
+      );
+
+      derivedHelper.emit('fetch', {
+        recommend: {
+          state: derivedState,
+          results: derivedHelper.lastRecommendResults,
+        },
+      });
+
+      return derivedState._buildQueries(derivedIndex, cache);
+    });
+
+    var queries = Array.prototype.concat.apply(
+      this.recommendState._buildQueries(index, cache),
+      derivedQueries
+    );
+
+    if (queries.length === 0) {
+      return;
+    }
+
+    if (
+      queries.length > 0 &&
+      typeof this.client.getRecommendations === 'undefined'
+    ) {
+      // eslint-disable-next-line no-console
+      console.warn(
+        'Please update algoliasearch/lite to the latest version in order to use recommend widgets.'
+      );
+      return;
+    }
+
+    var queryId = this._recommendQueryId++;
+    this._currentNbRecommendQueries++;
+
+    try {
+      this.client
+        .getRecommendations(queries)
+        .then(this._dispatchRecommendResponse.bind(this, queryId, states, ids))
+        .catch(this._dispatchRecommendError.bind(this, queryId));
+    } catch (error) {
+      // If we reach this part, we're in an internal error state
+      this.emit('error', {
+        error: error,
+      });
+    }
+
+    return;
   };
 
   /**
@@ -10840,28 +12164,34 @@
    * usable object that merge the results of all the batch requests. It will dispatch
    * over the different helper + derived helpers (when there are some).
    * @private
-   * @param {array.<{SearchParameters, AlgoliaQueries, AlgoliaSearchHelper}>}
-   *  state state used for to generate the request
+   * @param {array.<{SearchParameters, AlgoliaQueries, AlgoliaSearchHelper}>} states state used to generate the request
    * @param {number} queryId id of the current request
    * @param {object} content content of the response
    * @return {undefined}
    */
-  AlgoliaSearchHelper.prototype._dispatchAlgoliaResponse = function(states, queryId, content) {
-    // FIXME remove the number of outdated queries discarded instead of just one
+  AlgoliaSearchHelper.prototype._dispatchAlgoliaResponse = function (
+    states,
+    queryId,
+    content
+  ) {
+    // eslint-disable-next-line consistent-this
+    var self = this;
+
+    // @TODO remove the number of outdated queries discarded instead of just one
 
     if (queryId < this._lastQueryIdReceived) {
       // Outdated answer
       return;
     }
 
-    this._currentNbQueries -= (queryId - this._lastQueryIdReceived);
+    this._currentNbQueries -= queryId - this._lastQueryIdReceived;
     this._lastQueryIdReceived = queryId;
 
     if (this._currentNbQueries === 0) this.emit('searchQueueEmpty');
 
     var results = content.results.slice();
 
-    states.forEach(function(s) {
+    states.forEach(function (s) {
       var state = s.state;
       var queriesCount = s.queriesCount;
       var helper = s.helper;
@@ -10870,21 +12200,108 @@
       if (!state.index) {
         helper.emit('result', {
           results: null,
-          state: state
+          state: state,
         });
         return;
       }
 
-      var formattedResponse = helper.lastResults = new SearchResults_1(state, specificResults);
+      helper.lastResults = new SearchResults_1(
+        state,
+        specificResults,
+        self._searchResultsOptions
+      );
 
       helper.emit('result', {
-        results: formattedResponse,
-        state: state
+        results: helper.lastResults,
+        state: state,
       });
     });
   };
 
-  AlgoliaSearchHelper.prototype._dispatchAlgoliaError = function(queryId, error) {
+  AlgoliaSearchHelper.prototype._dispatchRecommendResponse = function (
+    queryId,
+    states,
+    ids,
+    content
+  ) {
+    // @TODO remove the number of outdated queries discarded instead of just one
+
+    if (queryId < this._lastRecommendQueryIdReceived) {
+      // Outdated answer
+      return;
+    }
+
+    this._currentNbRecommendQueries -=
+      queryId - this._lastRecommendQueryIdReceived;
+    this._lastRecommendQueryIdReceived = queryId;
+
+    if (this._currentNbRecommendQueries === 0) this.emit('recommendQueueEmpty');
+
+    var cache = this._recommendCache;
+
+    var idsMap = {};
+    ids
+      .filter(function (id) {
+        return cache[id] === undefined;
+      })
+      .forEach(function (id, index) {
+        if (!idsMap[id]) idsMap[id] = [];
+
+        idsMap[id].push(index);
+      });
+
+    Object.keys(idsMap).forEach(function (id) {
+      var indices = idsMap[id];
+      var firstResult = content.results[indices[0]];
+      if (indices.length === 1) {
+        cache[id] = firstResult;
+        return;
+      }
+      cache[id] = Object.assign({}, firstResult, {
+        hits: sortAndMergeRecommendations_1(
+          indices.map(function (idx) {
+            return content.results[idx].hits;
+          })
+        ),
+      });
+    });
+
+    var results = {};
+    ids.forEach(function (id) {
+      results[id] = cache[id];
+    });
+
+    states.forEach(function (s) {
+      var state = s.state;
+      var helper = s.helper;
+
+      if (!s.index) {
+        // eslint-disable-next-line no-warning-comments
+        // TODO: emit "result" event when events for Recommend are implemented
+        helper.emit('recommend:result', {
+          results: null,
+          state: state,
+        });
+        return;
+      }
+
+      helper.lastRecommendResults = new RecommendResults_1(state, results);
+
+      // eslint-disable-next-line no-warning-comments
+      // TODO: emit "result" event when events for Recommend are implemented
+      helper.emit('recommend:result', {
+        recommend: {
+          results: helper.lastRecommendResults,
+          state: state,
+        },
+      });
+    });
+  };
+
+  AlgoliaSearchHelper.prototype._dispatchAlgoliaError = function (
+    queryId,
+    error
+  ) {
     if (queryId < this._lastQueryIdReceived) {
       // Outdated answer
       return;
@@ -10894,31 +12311,60 @@
     this._lastQueryIdReceived = queryId;
 
     this.emit('error', {
-      error: error
+      error: error,
     });
 
     if (this._currentNbQueries === 0) this.emit('searchQueueEmpty');
   };
 
-  AlgoliaSearchHelper.prototype.containsRefinement = function(query, facetFilters, numericFilters, tagFilters) {
-    return query ||
+  AlgoliaSearchHelper.prototype._dispatchRecommendError = function (
+    queryId,
+    error
+  ) {
+    if (queryId < this._lastRecommendQueryIdReceived) {
+      // Outdated answer
+      return;
+    }
+
+    this._currentNbRecommendQueries -=
+      queryId - this._lastRecommendQueryIdReceived;
+    this._lastRecommendQueryIdReceived = queryId;
+
+    this.emit('error', {
+      error: error,
+    });
+
+    if (this._currentNbRecommendQueries === 0) this.emit('recommendQueueEmpty');
+  };
+
+  AlgoliaSearchHelper.prototype.containsRefinement = function (
+    query,
+    facetFilters,
+    numericFilters,
+    tagFilters
+  ) {
+    return (
+      query ||
       facetFilters.length !== 0 ||
       numericFilters.length !== 0 ||
-      tagFilters.length !== 0;
+      tagFilters.length !== 0
+    );
   };
 
   /**
    * Test if there are some disjunctive refinements on the facet
    * @private
    * @param {string} facet the attribute to test
-   * @return {boolean}
+   * @return {boolean} true if there are refinements on this attribute
    */
-  AlgoliaSearchHelper.prototype._hasDisjunctiveRefinements = function(facet) {
-    return this.state.disjunctiveRefinements[facet] &&
-      this.state.disjunctiveRefinements[facet].length > 0;
+  AlgoliaSearchHelper.prototype._hasDisjunctiveRefinements = function (facet) {
+    return (
+      this.state.disjunctiveRefinements[facet] &&
+      this.state.disjunctiveRefinements[facet].length > 0
+    );
   };
 
-  AlgoliaSearchHelper.prototype._change = function(event) {
+  AlgoliaSearchHelper.prototype._change = function (event) {
     var state = event.state;
     var isPageReset = event.isPageReset;
 
@@ -10928,17 +12374,38 @@
       this.emit('change', {
         state: this.state,
         results: this.lastResults,
-        isPageReset: isPageReset
+        isPageReset: isPageReset,
+      });
+    }
+  };
+
+  AlgoliaSearchHelper.prototype._recommendChange = function (event) {
+    var state = event.state;
+
+    if (state !== this.recommendState) {
+      this.recommendState = state;
+
+      // eslint-disable-next-line no-warning-comments
+      // TODO: emit "change" event when events for Recommend are implemented
+      this.emit('recommend:change', {
+        search: {
+          results: this.lastResults,
+          state: this.state,
+        },
+        recommend: {
+          results: this.lastRecommendResults,
+          state: this.recommendState,
+        },
       });
     }
   };
 
   /**
    * Clears the cache of the underlying Algolia client.
-   * @return {AlgoliaSearchHelper}
+   * @return {AlgoliaSearchHelper} Method is chainable, it returns itself
    */
-  AlgoliaSearchHelper.prototype.clearCache = function() {
-    this.client.clearCache && this.client.clearCache();
+  AlgoliaSearchHelper.prototype.clearCache = function () {
+    if (this.client.clearCache) this.client.clearCache();
     return this;
   };
 
@@ -10946,9 +12413,9 @@
    * Updates the internal client instance. If the reference of the clients
    * are equal then no update is actually done.
    * @param  {AlgoliaSearch} newClient an AlgoliaSearch client
-   * @return {AlgoliaSearchHelper}
+   * @return {AlgoliaSearchHelper} Method is chainable, it returns itself
    */
-  AlgoliaSearchHelper.prototype.setClient = function(newClient) {
+  AlgoliaSearchHelper.prototype.setClient = function (newClient) {
     if (this.client === newClient) return this;
 
     if (typeof newClient.addAlgoliaAgent === 'function') {
@@ -10961,9 +12428,9 @@
 
   /**
    * Gets the instance of the currently used client.
-   * @return {AlgoliaSearch}
+   * @return {AlgoliaSearch} the currently used client
    */
-  AlgoliaSearchHelper.prototype.getClient = function() {
+  AlgoliaSearchHelper.prototype.getClient = function () {
     return this.client;
   };
 
@@ -10984,10 +12451,11 @@
    * and the SearchParameters that is returned by the call of the
    * parameter function.
    * @param {function} fn SearchParameters -> SearchParameters
-   * @return {DerivedHelper}
+   * @param {function} recommendFn RecommendParameters -> RecommendParameters
+   * @return {DerivedHelper} a new DerivedHelper
    */
-  AlgoliaSearchHelper.prototype.derive = function(fn) {
-    var derivedHelper = new DerivedHelper_1(this, fn);
+  AlgoliaSearchHelper.prototype.derive = function (fn, recommendFn) {
+    var derivedHelper = new DerivedHelper_1(this, fn, recommendFn);
     this.derivedHelpers.push(derivedHelper);
     return derivedHelper;
   };
@@ -10996,10 +12464,11 @@
    * This method detaches a derived Helper from the main one. Prefer using the one from the
    * derived helper itself, to remove the event listeners too.
    * @private
-   * @return {undefined}
+   * @param  {DerivedHelper} derivedHelper the derived helper to detach
+   * @return {undefined} nothing is returned
    * @throws Error
    */
-  AlgoliaSearchHelper.prototype.detachDerivedHelper = function(derivedHelper) {
+  AlgoliaSearchHelper.prototype.detachDerivedHelper = function (derivedHelper) {
     var pos = this.derivedHelpers.indexOf(derivedHelper);
     if (pos === -1) throw new Error('Derived helper already detached');
     this.derivedHelpers.splice(pos, 1);
@@ -11009,7 +12478,7 @@
    * This method returns true if there is currently at least one on-going search.
    * @return {boolean} true if there is a search pending
    */
-  AlgoliaSearchHelper.prototype.hasPendingRequests = function() {
+  AlgoliaSearchHelper.prototype.hasPendingRequests = function () {
     return this._currentNbQueries > 0;
   };
 
@@ -11060,10 +12529,11 @@
    * @param  {AlgoliaSearch} client an AlgoliaSearch client
    * @param  {string} index the name of the index to query
    * @param  {SearchParameters|object} opts an object defining the initial config of the search. It doesn't have to be a {SearchParameters}, just an object containing the properties you need from it.
-   * @return {AlgoliaSearchHelper}
+   * @param {SearchResultsOptions|object} searchResultsOptions an object defining the options to use when creating the search results.
+   * @return {AlgoliaSearchHelper} The helper instance
    */
-  function algoliasearchHelper(client, index, opts) {
-    return new algoliasearch_helper(client, index, opts);
+  function algoliasearchHelper(client, index, opts, searchResultsOptions) {
+    return new algoliasearch_helper(client, index, opts, searchResultsOptions);
   }
 
   /**
@@ -11088,15 +12558,33 @@
   algoliasearchHelper.SearchParameters = SearchParameters_1;
 
   /**
+   * Constructor for the object containing all the parameters for Recommend.
+   * @member module:algoliasearchHelper.RecommendParameters
+   * @type {RecommendParameters}
+   */
+  algoliasearchHelper.RecommendParameters = RecommendParameters_1;
+
+  /**
    * Constructor for the object containing the results of the search.
    * @member module:algoliasearchHelper.SearchResults
    * @type {SearchResults}
    */
   algoliasearchHelper.SearchResults = SearchResults_1;
 
+  /**
+   * Constructor for the object containing the results for Recommend.
+   * @member module:algoliasearchHelper.RecommendResults
+   * @type {RecommendResults}
+   */
+  algoliasearchHelper.RecommendResults = RecommendResults_1;
+
   var algoliasearchHelper_1 = algoliasearchHelper;
 
-  var withUsage$l = createDocumentationMessageGenerator({
+  /**
+   * Refine the given search parameters.
+   */
+
+  var withUsage$n = createDocumentationMessageGenerator({
     name: 'configure',
     connector: true
   });
@@ -11113,7 +12601,7 @@
     var unmountFn = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : noop;
     return function (widgetParams) {
       if (!widgetParams || !isPlainObject(widgetParams.searchParameters)) {
-        throw new Error(withUsage$l('The `searchParameters` option expects an object.'));
+        throw new Error(withUsage$n('The `searchParameters` option expects an object.'));
       }
       var connectorState = {};
       function refine(helper) {
@@ -11182,7 +12670,7 @@
     };
   };
 
-  var withUsage$m = createDocumentationMessageGenerator({
+  var withUsage$o = createDocumentationMessageGenerator({
     name: 'configure-related-items',
     connector: true
   });
@@ -11202,10 +12690,10 @@
           return x;
         } : _ref2$transformSearch;
       if (!hit) {
-        throw new Error(withUsage$m('The `hit` option is required.'));
+        throw new Error(withUsage$o('The `hit` option is required.'));
       }
       if (!matchingPatterns) {
-        throw new Error(withUsage$m('The `matchingPatterns` option is required.'));
+        throw new Error(withUsage$o('The `matchingPatterns` option is required.'));
       }
       var optionalFilters = Object.keys(matchingPatterns).reduce(function (acc, attributeName) {
         var attribute = matchingPatterns[attributeName];
@@ -11244,13 +12732,13 @@
     };
   };
 
-  var withUsage$n = createDocumentationMessageGenerator({
+  var withUsage$p = createDocumentationMessageGenerator({
     name: 'autocomplete',
     connector: true
   });
   var connectAutocomplete = function connectAutocomplete(renderFn) {
     var unmountFn = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : noop;
-    checkRendering(renderFn, withUsage$n());
+    checkRendering(renderFn, withUsage$p());
     return function (widgetParams) {
       var _ref = widgetParams || {},
         _ref$escapeHTML = _ref.escapeHTML,
@@ -11302,7 +12790,9 @@
             scopedResult.results.hits = escapeHTML ? escapeHits(scopedResult.results.hits) : scopedResult.results.hits;
             var sendEvent = createSendEventForHits({
               instantSearchInstance: instantSearchInstance,
-              index: scopedResult.results.index,
+              getIndex: function getIndex() {
+                return scopedResult.results.index;
+              },
               widgetType: _this.$$type
             });
             return {
@@ -11355,7 +12845,7 @@
     };
   };
 
-  var withUsage$o = createDocumentationMessageGenerator({
+  var withUsage$q = createDocumentationMessageGenerator({
     name: 'query-rules',
     connector: true
   });
@@ -11413,7 +12903,7 @@
   }
   var connectQueryRules = function connectQueryRules(_render) {
     var unmount = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : noop;
-    checkRendering(_render, withUsage$o());
+    checkRendering(_render, withUsage$q());
     return function (widgetParams) {
       var _ref2 = widgetParams || {},
         _ref2$trackedFilters = _ref2.trackedFilters,
@@ -11428,7 +12918,7 @@
         } : _ref2$transformItems;
       Object.keys(trackedFilters).forEach(function (facetName) {
         if (typeof trackedFilters[facetName] !== 'function') {
-          throw new Error(withUsage$o("'The \"".concat(facetName, "\" filter value in the `trackedFilters` option expects a function.")));
+          throw new Error(withUsage$q("'The \"".concat(facetName, "\" filter value in the `trackedFilters` option expects a function.")));
         }
       });
       var hasTrackedFilters = Object.keys(trackedFilters).length > 0;
@@ -11621,13 +13111,13 @@
     };
   };
 
-  var withUsage$p = createDocumentationMessageGenerator({
+  var withUsage$r = createDocumentationMessageGenerator({
     name: 'voice-search',
     connector: true
   });
   var connectVoiceSearch = function connectVoiceSearch(renderFn) {
     var unmountFn = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : noop;
-    checkRendering(renderFn, withUsage$p());
+    checkRendering(renderFn, withUsage$r());
     return function (widgetParams) {
       var _widgetParams$searchA = widgetParams.searchAsYouSpeak,
         searchAsYouSpeak = _widgetParams$searchA === void 0 ? false : _widgetParams$searchA,
@@ -11819,6 +13309,165 @@
     };
   };
 
+  var withUsage$s = createDocumentationMessageGenerator({
+    name: 'frequently-bought-together',
+    connector: true
+  });
+  var connectFrequentlyBoughtTogether = (function connectFrequentlyBoughtTogether(renderFn) {
+    var unmountFn = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : noop;
+    checkRendering(renderFn, withUsage$s());
+    return function (widgetParams) {
+      var _ref = widgetParams || {},
+        _ref$escapeHTML = _ref.escapeHTML,
+        escapeHTML = _ref$escapeHTML === void 0 ? true : _ref$escapeHTML,
+        _ref$transformItems = _ref.transformItems,
+        transformItems = _ref$transformItems === void 0 ? function (items) {
+          return items;
+        } : _ref$transformItems,
+        objectIDs = _ref.objectIDs,
+        limit = _ref.limit,
+        threshold = _ref.threshold,
+        queryParameters = _ref.queryParameters;
+      if (!objectIDs || objectIDs.length === 0) {
+        throw new Error(withUsage$s('The `objectIDs` option is required.'));
+      }
+      return {
+        dependsOn: 'recommend',
+        $$type: 'ais.frequentlyBoughtTogether',
+        init: function init(initOptions) {
+          renderFn(_objectSpread2(_objectSpread2({}, this.getWidgetRenderState(initOptions)), {}, {
+            instantSearchInstance: initOptions.instantSearchInstance
+          }), true);
+        },
+        render: function render(renderOptions) {
+          var renderState = this.getWidgetRenderState(renderOptions);
+          renderFn(_objectSpread2(_objectSpread2({}, renderState), {}, {
+            instantSearchInstance: renderOptions.instantSearchInstance
+          }), false);
+        },
+        getRenderState: function getRenderState(renderState) {
+          return renderState;
+        },
+        getWidgetRenderState: function getWidgetRenderState(_ref2) {
+          var results = _ref2.results;
+          if (results === null || results === undefined) {
+            return {
+              items: [],
+              widgetParams: widgetParams
+            };
+          }
+          if (escapeHTML && results.hits.length > 0) {
+            results.hits = escapeHits(results.hits);
+          }
+          var transformedItems = transformItems(results.hits, {
+            results: results
+          });
+          return {
+            items: transformedItems,
+            widgetParams: widgetParams
+          };
+        },
+        dispose: function dispose(_ref3) {
+          var recommendState = _ref3.recommendState;
+          unmountFn();
+          return recommendState.removeParams(this.$$id);
+        },
+        getWidgetParameters: function getWidgetParameters(state) {
+          var _this = this;
+          return objectIDs.reduce(function (acc, objectID) {
+            return acc.addFrequentlyBoughtTogether({
+              objectID: objectID,
+              threshold: threshold,
+              maxRecommendations: limit,
+              queryParameters: _objectSpread2(_objectSpread2({}, queryParameters), escapeHTML ? TAG_PLACEHOLDER : {}),
+              $$id: _this.$$id
+            });
+          }, state.removeParams(this.$$id));
+        }
+      };
+    };
+  });
+
+  var withUsage$t = createDocumentationMessageGenerator({
+    name: 'looking-similar',
+    connector: true
+  });
+  var connectLookingSimilar = (function connectLookingSimilar(renderFn) {
+    var unmountFn = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : noop;
+    checkRendering(renderFn, withUsage$t());
+    return function (widgetParams) {
+      var _ref = widgetParams || {},
+        _ref$escapeHTML = _ref.escapeHTML,
+        escapeHTML = _ref$escapeHTML === void 0 ? true : _ref$escapeHTML,
+        objectIDs = _ref.objectIDs,
+        limit = _ref.limit,
+        threshold = _ref.threshold,
+        fallbackParameters = _ref.fallbackParameters,
+        queryParameters = _ref.queryParameters,
+        _ref$transformItems = _ref.transformItems,
+        transformItems = _ref$transformItems === void 0 ? function (items) {
+          return items;
+        } : _ref$transformItems;
+      if (!objectIDs || objectIDs.length === 0) {
+        throw new Error(withUsage$t('The `objectIDs` option is required.'));
+      }
+      return {
+        dependsOn: 'recommend',
+        $$type: 'ais.lookingSimilar',
+        init: function init(initOptions) {
+          renderFn(_objectSpread2(_objectSpread2({}, this.getWidgetRenderState(initOptions)), {}, {
+            instantSearchInstance: initOptions.instantSearchInstance
+          }), true);
+        },
+        render: function render(renderOptions) {
+          var renderState = this.getWidgetRenderState(renderOptions);
+          renderFn(_objectSpread2(_objectSpread2({}, renderState), {}, {
+            instantSearchInstance: renderOptions.instantSearchInstance
+          }), false);
+        },
+        getRenderState: function getRenderState(renderState) {
+          return renderState;
+        },
+        getWidgetRenderState: function getWidgetRenderState(_ref2) {
+          var results = _ref2.results;
+          if (results === null || results === undefined) {
+            return {
+              items: [],
+              widgetParams: widgetParams
+            };
+          }
+          if (escapeHTML && results.hits.length > 0) {
+            results.hits = escapeHits(results.hits);
+          }
+          return {
+            items: transformItems(results.hits, {
+              results: results
+            }),
+            widgetParams: widgetParams
+          };
+        },
+        dispose: function dispose(_ref3) {
+          var recommendState = _ref3.recommendState;
+          unmountFn();
+          return recommendState.removeParams(this.$$id);
+        },
+        getWidgetParameters: function getWidgetParameters(state) {
+          var _this = this;
+          return objectIDs.reduce(function (acc, objectID) {
+            return acc.addLookingSimilar({
+              objectID: objectID,
+              maxRecommendations: limit,
+              threshold: threshold,
+              fallbackParameters: _objectSpread2(_objectSpread2({}, fallbackParameters), escapeHTML ? TAG_PLACEHOLDER : {}),
+              queryParameters: _objectSpread2(_objectSpread2({}, queryParameters), escapeHTML ? TAG_PLACEHOLDER : {}),
+              $$id: _this.$$id
+            });
+          }, state.removeParams(this.$$id));
+        }
+      };
+    };
+  });
+
   /** @deprecated answers is no longer supported */
   var EXPERIMENTAL_connectAnswers = deprecate(connectAnswers, 'answers is no longer supported');
 
@@ -11843,11 +13492,13 @@
     connectPagination: connectPagination,
     connectRange: connectRange,
     connectRefinementList: connectRefinementList,
+    connectRelatedProducts: connectRelatedProducts,
     connectSearchBox: connectSearchBox,
     connectSortBy: connectSortBy,
     connectRatingMenu: connectRatingMenu,
     connectStats: connectStats,
     connectToggleRefinement: connectToggleRefinement,
+    connectTrendingItems: connectTrendingItems,
     connectBreadcrumb: connectBreadcrumb,
     connectGeoSearch: connectGeoSearch,
     connectPoweredBy: connectPoweredBy,
@@ -11856,7 +13507,9 @@
     connectAutocomplete: connectAutocomplete,
     connectQueryRules: connectQueryRules,
     connectVoiceSearch: connectVoiceSearch,
-    connectRelevantSort: connectRelevantSort
+    connectRelevantSort: connectRelevantSort,
+    connectFrequentlyBoughtTogether: connectFrequentlyBoughtTogether,
+    connectLookingSimilar: connectLookingSimilar
   });
 
   var NAMESPACE = 'ais';
@@ -12064,7 +13717,7 @@
     };
   }
 
-  var ALGOLIA_INSIGHTS_VERSION = '2.6.0';
+  var ALGOLIA_INSIGHTS_VERSION = '2.15.0';
   var ALGOLIA_INSIGHTS_SRC = "https://cdn.jsdelivr.net/npm/search-insights@".concat(ALGOLIA_INSIGHTS_VERSION, "/dist/search-insights.min.js");
   function createInsightsMiddleware() {
     var props = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
@@ -12072,7 +13725,9 @@
       insightsInitParams = props.insightsInitParams,
       onEvent = props.onEvent,
       _props$$$internal = props.$$internal,
-      $$internal = _props$$$internal === void 0 ? false : _props$$$internal;
+      $$internal = _props$$$internal === void 0 ? false : _props$$$internal,
+      _props$$$automatic = props.$$automatic,
+      $$automatic = _props$$$automatic === void 0 ? false : _props$$$automatic;
     var potentialInsightsClient = _insightsClient;
     if (!_insightsClient && _insightsClient !== null) {
       safelyRunOnBrowser(function (_ref) {
@@ -12120,8 +13775,11 @@
       // search-insights.js also throws an error so dev-only clarification is sufficient
        _warning(Boolean(appId && apiKey), 'could not extract Algolia credentials from searchClient in insights middleware.') ;
       var queuedUserToken = undefined;
+      var queuedAuthenticatedUserToken = undefined;
       var userTokenBeforeInit = undefined;
-      if (Array.isArray(insightsClient.queue)) {
+      var authenticatedUserTokenBeforeInit = undefined;
+      var queue = insightsClient.queue;
+      if (Array.isArray(queue)) {
         // Context: The umd build of search-insights is asynchronously loaded by the snippet.
         //
         // When user calls `aa('setUserToken', 'my-user-token')` before `search-insights` is loaded,
@@ -12132,21 +13790,31 @@
         // At this point, even though `search-insights` is not loaded yet,
         // we still want to read the token from the queue.
         // Otherwise, the first search call will be fired without the token.
-        var _ref3 = find(insightsClient.queue.slice().reverse(), function (_ref5) {
-          var _ref6 = _slicedToArray(_ref5, 1),
-            method = _ref6[0];
-          return method === 'setUserToken';
-        }) || [];
-        var _ref4 = _slicedToArray(_ref3, 2);
-        queuedUserToken = _ref4[1];
+        var _map = ['setUserToken', 'setAuthenticatedUserToken'].map(function (key) {
+          var _ref3 = find(queue.slice().reverse(), function (_ref5) {
+              var _ref6 = _slicedToArray(_ref5, 1),
+                method = _ref6[0];
+              return method === key;
+            }) || [],
+            _ref4 = _slicedToArray(_ref3, 2),
+            value = _ref4[1];
+          return value;
+        });
+        var _map2 = _slicedToArray(_map, 2);
+        queuedUserToken = _map2[0];
+        queuedAuthenticatedUserToken = _map2[1];
       }
+
+      // If user called `aa('setUserToken')` or `aa('setAuthenticatedUserToken')`
+      // before creating the Insights middleware, we temporarily store the token
+      // and set it later on.
+      //
+      // Otherwise, the `init` call might override them with anonymous user token.
       insightsClient('getUserToken', null, function (_error, userToken) {
-        // If user has called `aa('setUserToken', 'my-user-token')` before creating
-        // the `insights` middleware, we store them temporarily and
-        // set it later on.
-        //
-        // Otherwise, the `init` call might override it with anonymous user token.
-        userTokenBeforeInit = userToken;
+        userTokenBeforeInit = normalizeUserToken(userToken);
+      });
+      insightsClient('getAuthenticatedUserToken', null, function (_error, userToken) {
+        authenticatedUserTokenBeforeInit = normalizeUserToken(userToken);
       });
 
       // Only `init` if the `insightsInitParams` option is passed or
@@ -12163,6 +13831,7 @@
       return {
         $$type: 'ais.insights',
         $$internal: $$internal,
+        $$automatic: $$automatic,
         onStateChange: function onStateChange() {},
         subscribe: function subscribe() {
           if (!insightsClient.shouldAddScript) return;
@@ -12183,26 +13852,32 @@
         },
         started: function started() {
           insightsClient('addAlgoliaAgent', 'insights-middleware');
-          helper = instantSearchInstance.helper;
+          helper = instantSearchInstance.mainHelper;
           initialParameters = {
             userToken: helper.state.userToken,
             clickAnalytics: helper.state.clickAnalytics
           };
-          helper.overrideStateWithoutTriggeringChangeEvent(_objectSpread2(_objectSpread2({}, helper.state), {}, {
-            clickAnalytics: true
-          }));
+
+          // We don't want to force clickAnalytics when the insights is enabled from the search response.
+          // This means we don't enable insights for indices that don't opt in
+          if (!$$automatic) {
+            helper.overrideStateWithoutTriggeringChangeEvent(_objectSpread2(_objectSpread2({}, helper.state), {}, {
+              clickAnalytics: true
+            }));
+          }
           if (!$$internal) {
             instantSearchInstance.scheduleSearch();
           }
           var setUserTokenToSearch = function setUserTokenToSearch(userToken) {
             var immediate = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
-            if (!userToken) {
+            var normalizedUserToken = normalizeUserToken(userToken);
+            if (!normalizedUserToken) {
               return;
             }
             var existingToken = helper.state.userToken;
             function applyToken() {
               helper.overrideStateWithoutTriggeringChangeEvent(_objectSpread2(_objectSpread2({}, helper.state), {}, {
-                userToken: userToken
+                userToken: normalizedUserToken
               }));
               if (existingToken && existingToken !== userToken) {
                 instantSearchInstance.scheduleSearch();
@@ -12222,19 +13897,41 @@
             // We can set it as userToken.
             setUserTokenToSearch(anonymousUserToken, true);
           }
+          function setUserToken(token, userToken, authenticatedUserToken) {
+            setUserTokenToSearch(token, true);
+            if (userToken) {
+              insightsClient('setUserToken', userToken);
+            }
+            if (authenticatedUserToken) {
+              insightsClient('setAuthenticatedUserToken', authenticatedUserToken);
+            }
+          }
 
-          // We consider the `userToken` coming from a `init` call to have a higher
-          // importance than the one coming from the queue.
-          if (userTokenBeforeInit) {
-            setUserTokenToSearch(userTokenBeforeInit, true);
-            insightsClient('setUserToken', userTokenBeforeInit);
-          } else if (queuedUserToken) {
-            setUserTokenToSearch(queuedUserToken, true);
-            insightsClient('setUserToken', queuedUserToken);
+          // We consider the `userToken` or `authenticatedUserToken` before an
+          // `init` call of higher importance than one from the queue.
+          var tokenBeforeInit = authenticatedUserTokenBeforeInit || userTokenBeforeInit;
+          var queuedToken = queuedAuthenticatedUserToken || queuedUserToken;
+          if (tokenBeforeInit) {
+            setUserToken(tokenBeforeInit, userTokenBeforeInit, authenticatedUserTokenBeforeInit);
+          } else if (queuedToken) {
+            setUserToken(queuedToken, queuedUserToken, queuedAuthenticatedUserToken);
           }
 
           // This updates userToken which is set explicitly by `aa('setUserToken', userToken)`
           insightsClient('onUserTokenChange', setUserTokenToSearch, {
+            immediate: true
+          });
+
+          // This updates userToken which is set explicitly by `aa('setAuthenticatedtUserToken', authenticatedUserToken)`
+          insightsClient('onAuthenticatedUserTokenChange', function (authenticatedUserToken) {
+            // If we're unsetting the `authenticatedUserToken`, we revert to the `userToken`
+            if (!authenticatedUserToken) {
+              insightsClient('getUserToken', null, function (_, userToken) {
+                setUserTokenToSearch(userToken);
+              });
+            }
+            setUserTokenToSearch(authenticatedUserToken);
+          }, {
             immediate: true
           });
           var insightsClientWithLocalCredentials = insightsClient;
@@ -12257,6 +13954,9 @@
             } else if (event.insightsMethod) {
               // Source is used to differentiate events sent by instantsearch from those sent manually.
               event.payload.algoliaSource = ['instantsearch'];
+              if ($$automatic) {
+                event.payload.algoliaSource.push('instantsearch-automatic');
+              }
               if (event.eventModifier === 'internal') {
                 event.payload.algoliaSource.push('instantsearch-internal');
               }
@@ -12269,6 +13969,7 @@
         },
         unsubscribe: function unsubscribe() {
           insightsClient('onUserTokenChange', undefined);
+          insightsClient('onAuthenticatedUserTokenChange', undefined);
           instantSearchInstance.sendEventToInsights = noop;
           if (helper && initialParameters) {
             helper.overrideStateWithoutTriggeringChangeEvent(_objectSpread2(_objectSpread2({}, helper.state), initialParameters));
@@ -12296,6 +13997,17 @@
     /* eslint-enable @typescript-eslint/naming-convention */
 
     return v3 || v2_6 || v1_10;
+  }
+
+  /**
+   * While `search-insights` supports both string and number user tokens,
+   * the Search API only accepts strings. This function normalizes the user token.
+   */
+  function normalizeUserToken(userToken) {
+    if (!userToken) {
+      return undefined;
+    }
+    return typeof userToken === 'number' ? userToken.toString() : userToken;
   }
 
   function extractWidgetPayload(widgets, instantSearchInstance, payload) {
@@ -13208,48 +14920,6 @@
   };
   var BrowserHistory = /*#__PURE__*/function () {
     /**
-     * Transforms a UI state into a title for the page.
-     */
-
-    /**
-     * Time in milliseconds before performing a write in the history.
-     * It prevents from adding too many entries in the history and
-     * makes the back button more usable.
-     *
-     * @default 400
-     */
-
-    /**
-     * Creates a full URL based on the route state.
-     * The storage adaptor maps all syncable keys to the query string of the URL.
-     */
-
-    /**
-     * Parses the URL into a route state.
-     * It should be symmetrical to `createURL`.
-     */
-
-    /**
-     * Returns the location to store in the history.
-     * @default () => window.location
-     */
-
-    /**
-     * Indicates if last action was back/forward in the browser.
-     */
-
-    /**
-     * Indicates whether the history router is disposed or not.
-     */
-
-    /**
-     * Indicates the window.history.length before the last call to
-     * window.history.pushState (called in `write`).
-     * It allows to determine if a `pushState` has been triggered elsewhere,
-     * and thus to prevent the `write` method from calling `pushState`.
-     */
-
-    /**
      * Initializes a new storage provider that syncs the search state to the URL
      * using web APIs (`window.location.pushState` and `onpopstate` event).
      */
@@ -13263,22 +14933,58 @@
         getLocation = _ref.getLocation,
         start = _ref.start,
         dispose = _ref.dispose,
-        push = _ref.push;
+        push = _ref.push,
+        cleanUrlOnDispose = _ref.cleanUrlOnDispose;
       _classCallCheck(this, BrowserHistory);
       _defineProperty(this, "$$type", 'ais.browser');
+      /**
+       * Transforms a UI state into a title for the page.
+       */
       _defineProperty(this, "windowTitle", void 0);
+      /**
+       * Time in milliseconds before performing a write in the history.
+       * It prevents from adding too many entries in the history and
+       * makes the back button more usable.
+       *
+       * @default 400
+       */
       _defineProperty(this, "writeDelay", void 0);
+      /**
+       * Creates a full URL based on the route state.
+       * The storage adaptor maps all syncable keys to the query string of the URL.
+       */
       _defineProperty(this, "_createURL", void 0);
+      /**
+       * Parses the URL into a route state.
+       * It should be symmetrical to `createURL`.
+       */
       _defineProperty(this, "parseURL", void 0);
+      /**
+       * Returns the location to store in the history.
+       * @default () => window.location
+       */
       _defineProperty(this, "getLocation", void 0);
       _defineProperty(this, "writeTimer", void 0);
       _defineProperty(this, "_onPopState", void 0);
+      /**
+       * Indicates if last action was back/forward in the browser.
+       */
       _defineProperty(this, "inPopState", false);
+      /**
+       * Indicates whether the history router is disposed or not.
+       */
       _defineProperty(this, "isDisposed", false);
+      /**
+       * Indicates the window.history.length before the last call to
+       * window.history.pushState (called in `write`).
+       * It allows to determine if a `pushState` has been triggered elsewhere,
+       * and thus to prevent the `write` method from calling `pushState`.
+       */
       _defineProperty(this, "latestAcknowledgedHistory", 0);
       _defineProperty(this, "_start", void 0);
       _defineProperty(this, "_dispose", void 0);
       _defineProperty(this, "_push", void 0);
+      _defineProperty(this, "_cleanUrlOnDispose", void 0);
       this.windowTitle = windowTitle;
       this.writeTimer = undefined;
       this.writeDelay = writeDelay;
@@ -13288,6 +14994,13 @@
       this._start = start;
       this._dispose = dispose;
       this._push = push;
+      this._cleanUrlOnDispose = typeof cleanUrlOnDispose === 'undefined' ? true : cleanUrlOnDispose;
+      if ( typeof cleanUrlOnDispose === 'undefined') {
+        // eslint-disable-next-line no-console
+        console.info("Starting from the next major version, InstantSearch will not clean up the URL from active refinements when it is disposed.\n\nWe recommend setting `cleanUrlOnDispose` to false to adopt this change today.\nTo stay with the current behaviour and remove this warning, set the option to true.\n\nSee documentation: ".concat(createDocumentationLink({
+          name: 'history-router'
+        }), "#widget-param-cleanurlondispose"));
+      }
       safelyRunOnBrowser(function (_ref2) {
         var window = _ref2.window;
         var title = _this.windowTitle && _this.windowTitle(_this.read());
@@ -13373,7 +15086,7 @@
        *
        * It always generates the full URL, not a relative one.
        * This allows to handle cases like using a <base href>.
-       * See: https://github.com/algolia/instantsearch.js/issues/790
+       * See: https://github.com/algolia/instantsearch/issues/790
        */
     }, {
       key: "createURL",
@@ -13415,7 +15128,9 @@
         if (this.writeTimer) {
           clearTimeout(this.writeTimer);
         }
-        this.write({});
+        if (this._cleanUrlOnDispose) {
+          this.write({});
+        }
       }
     }, {
       key: "start",
@@ -13428,6 +15143,11 @@
         var _this5 = this;
         return safelyRunOnBrowser(function (_ref6) {
           var window = _ref6.window;
+          // When disposed and the cleanUrlOnDispose is set to false, we do not want to write the URL.
+          if (_this5.isDisposed && !_this5._cleanUrlOnDispose) {
+            return false;
+          }
+
           // We do want to `pushState` if:
           // - the router is not disposed, IS.js needs to update the URL
           // OR
@@ -13504,7 +15224,8 @@
       } : _ref7$getLocation,
       start = _ref7.start,
       dispose = _ref7.dispose,
-      push = _ref7.push;
+      push = _ref7.push,
+      cleanUrlOnDispose = _ref7.cleanUrlOnDispose;
     return new BrowserHistory({
       createURL: createURL,
       parseURL: parseURL,
@@ -13513,7 +15234,8 @@
       getLocation: getLocation,
       start: start,
       dispose: dispose,
-      push: push
+      push: push,
+      cleanUrlOnDispose: cleanUrlOnDispose
     });
   }
 
@@ -13587,6 +15309,7 @@
           }
         },
         subscribe: function subscribe() {
+           _warning(Object.keys(initialUiState).length === 0, 'Using `initialUiState` together with routing is not recommended. The `initialUiState` will be overwritten by the URL parameters.') ;
           instantSearchInstance._initialUiState = _objectSpread2(_objectSpread2({}, initialUiState), stateMapping.routeToState(router.read()));
           router.onUpdate(function (route) {
             if (instantSearchInstance.mainIndex.getWidgets().length > 0) {
@@ -13605,1155 +15328,679 @@
     };
   };
 
-  var _excluded$7 = ["initialSearchParameters"];
-  var withUsage$q = createDocumentationMessageGenerator({
-    name: 'index-widget'
+  function unwrapExports (x) {
+  	return x && x.__esModule && Object.prototype.hasOwnProperty.call(x, 'default') ? x['default'] : x;
+  }
+
+  function createCommonjsModule(fn, module) {
+  	return module = { exports: {} }, fn(module, module.exports), module.exports;
+  }
+
+  var _extends_1 = createCommonjsModule(function (module) {
+  function _extends() {
+    module.exports = _extends = Object.assign ? Object.assign.bind() : function (target) {
+      for (var i = 1; i < arguments.length; i++) {
+        var source = arguments[i];
+        for (var key in source) {
+          if (Object.prototype.hasOwnProperty.call(source, key)) {
+            target[key] = source[key];
+          }
+        }
+      }
+      return target;
+    }, module.exports.__esModule = true, module.exports["default"] = module.exports;
+    return _extends.apply(this, arguments);
+  }
+  module.exports = _extends, module.exports.__esModule = true, module.exports["default"] = module.exports;
   });
-  /**
-   * This is the same content as helper._change / setState, but allowing for extra
-   * UiState to be synchronized.
-   * see: https://github.com/algolia/algoliasearch-helper-js/blob/6b835ffd07742f2d6b314022cce6848f5cfecd4a/src/algoliasearch.helper.js#L1311-L1324
-   */
-  function privateHelperSetState(helper, _ref) {
-    var state = _ref.state,
-      isPageReset = _ref.isPageReset,
-      _uiState = _ref._uiState;
-    if (state !== helper.state) {
-      helper.state = state;
-      helper.emit('change', {
-        state: helper.state,
-        results: helper.lastResults,
-        isPageReset: isPageReset,
-        _uiState: _uiState
+
+  var _extends$1 = unwrapExports(_extends_1);
+
+  var _typeof_1 = createCommonjsModule(function (module) {
+  function _typeof(obj) {
+    "@babel/helpers - typeof";
+
+    return (module.exports = _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) {
+      return typeof obj;
+    } : function (obj) {
+      return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
+    }, module.exports.__esModule = true, module.exports["default"] = module.exports), _typeof(obj);
+  }
+  module.exports = _typeof, module.exports.__esModule = true, module.exports["default"] = module.exports;
+  });
+
+  unwrapExports(_typeof_1);
+
+  var toPrimitive = createCommonjsModule(function (module) {
+  var _typeof = _typeof_1["default"];
+  function _toPrimitive(input, hint) {
+    if (_typeof(input) !== "object" || input === null) return input;
+    var prim = input[Symbol.toPrimitive];
+    if (prim !== undefined) {
+      var res = prim.call(input, hint || "default");
+      if (_typeof(res) !== "object") return res;
+      throw new TypeError("@@toPrimitive must return a primitive value.");
+    }
+    return (hint === "string" ? String : Number)(input);
+  }
+  module.exports = _toPrimitive, module.exports.__esModule = true, module.exports["default"] = module.exports;
+  });
+
+  unwrapExports(toPrimitive);
+
+  var toPropertyKey = createCommonjsModule(function (module) {
+  var _typeof = _typeof_1["default"];
+
+  function _toPropertyKey(arg) {
+    var key = toPrimitive(arg, "string");
+    return _typeof(key) === "symbol" ? key : String(key);
+  }
+  module.exports = _toPropertyKey, module.exports.__esModule = true, module.exports["default"] = module.exports;
+  });
+
+  unwrapExports(toPropertyKey);
+
+  var defineProperty = createCommonjsModule(function (module) {
+  function _defineProperty(obj, key, value) {
+    key = toPropertyKey(key);
+    if (key in obj) {
+      Object.defineProperty(obj, key, {
+        value: value,
+        enumerable: true,
+        configurable: true,
+        writable: true
       });
+    } else {
+      obj[key] = value;
     }
+    return obj;
   }
-  function getLocalWidgetsUiState(widgets, widgetStateOptions) {
-    var initialUiState = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
-    return widgets.reduce(function (uiState, widget) {
-      if (isIndexWidget(widget)) {
-        return uiState;
-      }
-      if (!widget.getWidgetUiState && !widget.getWidgetState) {
-        return uiState;
-      }
-      if (widget.getWidgetUiState) {
-        return widget.getWidgetUiState(uiState, widgetStateOptions);
-      }
-      return widget.getWidgetState(uiState, widgetStateOptions);
-    }, initialUiState);
-  }
-  function getLocalWidgetsSearchParameters(widgets, widgetSearchParametersOptions) {
-    var initialSearchParameters = widgetSearchParametersOptions.initialSearchParameters,
-      rest = _objectWithoutProperties(widgetSearchParametersOptions, _excluded$7);
-    return widgets.filter(function (widget) {
-      return !isIndexWidget(widget);
-    }).reduce(function (state, widget) {
-      if (!widget.getWidgetSearchParameters) {
-        return state;
-      }
-      return widget.getWidgetSearchParameters(state, rest);
-    }, initialSearchParameters);
-  }
-  function resetPageFromWidgets(widgets) {
-    var indexWidgets = widgets.filter(isIndexWidget);
-    if (indexWidgets.length === 0) {
-      return;
-    }
-    indexWidgets.forEach(function (widget) {
-      var widgetHelper = widget.getHelper();
-      privateHelperSetState(widgetHelper, {
-        state: widgetHelper.state.resetPage(),
-        isPageReset: true
-      });
-      resetPageFromWidgets(widget.getWidgets());
-    });
-  }
-  function resolveScopedResultsFromWidgets(widgets) {
-    var indexWidgets = widgets.filter(isIndexWidget);
-    return indexWidgets.reduce(function (scopedResults, current) {
-      return scopedResults.concat.apply(scopedResults, [{
-        indexId: current.getIndexId(),
-        results: current.getResults(),
-        helper: current.getHelper()
-      }].concat(_toConsumableArray(resolveScopedResultsFromWidgets(current.getWidgets()))));
-    }, []);
-  }
-  var index = function index(widgetParams) {
-    if (widgetParams === undefined || widgetParams.indexName === undefined) {
-      throw new Error(withUsage$q('The `indexName` option is required.'));
-    }
-    var indexName = widgetParams.indexName,
-      _widgetParams$indexId = widgetParams.indexId,
-      indexId = _widgetParams$indexId === void 0 ? indexName : _widgetParams$indexId;
-    var localWidgets = [];
-    var localUiState = {};
-    var localInstantSearchInstance = null;
-    var localParent = null;
-    var helper = null;
-    var derivedHelper = null;
-    var lastValidSearchParameters = null;
-    return {
-      $$type: 'ais.index',
-      $$widgetType: 'ais.index',
-      getIndexName: function getIndexName() {
-        return indexName;
-      },
-      getIndexId: function getIndexId() {
-        return indexId;
-      },
-      getHelper: function getHelper() {
-        return helper;
-      },
-      getResults: function getResults() {
-        var _derivedHelper;
-        if (!((_derivedHelper = derivedHelper) !== null && _derivedHelper !== void 0 && _derivedHelper.lastResults)) return null;
-
-        // To make the UI optimistic, we patch the state to display to the current
-        // one instead of the one associated with the latest results.
-        // This means user-driven UI changes (e.g., checked checkbox) are reflected
-        // immediately instead of waiting for Algolia to respond, regardless of
-        // the status of the network request.
-        derivedHelper.lastResults._state = helper.state;
-        return derivedHelper.lastResults;
-      },
-      getPreviousState: function getPreviousState() {
-        return lastValidSearchParameters;
-      },
-      getScopedResults: function getScopedResults() {
-        var widgetParent = this.getParent();
-
-        // If the widget is the root, we consider itself as the only sibling.
-        var widgetSiblings = widgetParent ? widgetParent.getWidgets() : [this];
-        return resolveScopedResultsFromWidgets(widgetSiblings);
-      },
-      getParent: function getParent() {
-        return localParent;
-      },
-      createURL: function createURL(nextState) {
-        if (typeof nextState === 'function') {
-          return localInstantSearchInstance._createURL(_defineProperty({}, indexId, nextState(localUiState)));
-        }
-        return localInstantSearchInstance._createURL(_defineProperty({}, indexId, getLocalWidgetsUiState(localWidgets, {
-          searchParameters: nextState,
-          helper: helper
-        })));
-      },
-      getWidgets: function getWidgets() {
-        return localWidgets;
-      },
-      addWidgets: function addWidgets(widgets) {
-        var _this = this;
-        if (!Array.isArray(widgets)) {
-          throw new Error(withUsage$q('The `addWidgets` method expects an array of widgets.'));
-        }
-        if (widgets.some(function (widget) {
-          return typeof widget.init !== 'function' && typeof widget.render !== 'function';
-        })) {
-          throw new Error(withUsage$q('The widget definition expects a `render` and/or an `init` method.'));
-        }
-        localWidgets = localWidgets.concat(widgets);
-        if (localInstantSearchInstance && Boolean(widgets.length)) {
-          privateHelperSetState(helper, {
-            state: getLocalWidgetsSearchParameters(localWidgets, {
-              uiState: localUiState,
-              initialSearchParameters: helper.state
-            }),
-            _uiState: localUiState
-          });
-
-          // We compute the render state before calling `init` in a separate loop
-          // to construct the whole render state object that is then passed to
-          // `init`.
-          widgets.forEach(function (widget) {
-            if (widget.getRenderState) {
-              var renderState = widget.getRenderState(localInstantSearchInstance.renderState[_this.getIndexId()] || {}, createInitArgs(localInstantSearchInstance, _this, localInstantSearchInstance._initialUiState));
-              storeRenderState({
-                renderState: renderState,
-                instantSearchInstance: localInstantSearchInstance,
-                parent: _this
-              });
-            }
-          });
-          widgets.forEach(function (widget) {
-            if (widget.init) {
-              widget.init(createInitArgs(localInstantSearchInstance, _this, localInstantSearchInstance._initialUiState));
-            }
-          });
-          localInstantSearchInstance.scheduleSearch();
-        }
-        return this;
-      },
-      removeWidgets: function removeWidgets(widgets) {
-        var _this2 = this;
-        if (!Array.isArray(widgets)) {
-          throw new Error(withUsage$q('The `removeWidgets` method expects an array of widgets.'));
-        }
-        if (widgets.some(function (widget) {
-          return typeof widget.dispose !== 'function';
-        })) {
-          throw new Error(withUsage$q('The widget definition expects a `dispose` method.'));
-        }
-        localWidgets = localWidgets.filter(function (widget) {
-          return widgets.indexOf(widget) === -1;
-        });
-        if (localInstantSearchInstance && Boolean(widgets.length)) {
-          var _nextState = widgets.reduce(function (state, widget) {
-            // the `dispose` method exists at this point we already assert it
-            var next = widget.dispose({
-              helper: helper,
-              state: state,
-              parent: _this2
-            });
-            return next || state;
-          }, helper.state);
-          localUiState = getLocalWidgetsUiState(localWidgets, {
-            searchParameters: _nextState,
-            helper: helper
-          });
-          helper.setState(getLocalWidgetsSearchParameters(localWidgets, {
-            uiState: localUiState,
-            initialSearchParameters: _nextState
-          }));
-          if (localWidgets.length) {
-            localInstantSearchInstance.scheduleSearch();
-          }
-        }
-        return this;
-      },
-      init: function init(_ref2) {
-        var _this3 = this,
-          _instantSearchInstanc;
-        var instantSearchInstance = _ref2.instantSearchInstance,
-          parent = _ref2.parent,
-          uiState = _ref2.uiState;
-        if (helper !== null) {
-          // helper is already initialized, therefore we do not need to set up
-          // any listeners
-          return;
-        }
-        localInstantSearchInstance = instantSearchInstance;
-        localParent = parent;
-        localUiState = uiState[indexId] || {};
-
-        // The `mainHelper` is already defined at this point. The instance is created
-        // inside InstantSearch at the `start` method, which occurs before the `init`
-        // step.
-        var mainHelper = instantSearchInstance.mainHelper;
-        var parameters = getLocalWidgetsSearchParameters(localWidgets, {
-          uiState: localUiState,
-          initialSearchParameters: new algoliasearchHelper_1.SearchParameters({
-            index: indexName
-          })
-        });
-
-        // This Helper is only used for state management we do not care about the
-        // `searchClient`. Only the "main" Helper created at the `InstantSearch`
-        // level is aware of the client.
-        helper = algoliasearchHelper_1({}, parameters.index, parameters);
-
-        // We forward the call to `search` to the "main" instance of the Helper
-        // which is responsible for managing the queries (it's the only one that is
-        // aware of the `searchClient`).
-        helper.search = function () {
-          if (instantSearchInstance.onStateChange) {
-            instantSearchInstance.onStateChange({
-              uiState: instantSearchInstance.mainIndex.getWidgetUiState({}),
-              setUiState: function setUiState(nextState) {
-                return instantSearchInstance.setUiState(nextState, false);
-              }
-            });
-
-            // We don't trigger a search when controlled because it becomes the
-            // responsibility of `setUiState`.
-            return mainHelper;
-          }
-          return mainHelper.search();
-        };
-        helper.searchWithoutTriggeringOnStateChange = function () {
-          return mainHelper.search();
-        };
-
-        // We use the same pattern for the `searchForFacetValues`.
-        helper.searchForFacetValues = function (facetName, facetValue, maxFacetHits, userState) {
-          var state = helper.state.setQueryParameters(userState);
-          return mainHelper.searchForFacetValues(facetName, facetValue, maxFacetHits, state);
-        };
-        derivedHelper = mainHelper.derive(function () {
-          return mergeSearchParameters.apply(void 0, _toConsumableArray(resolveSearchParameters(_this3)));
-        });
-        var indexInitialResults = (_instantSearchInstanc = instantSearchInstance._initialResults) === null || _instantSearchInstanc === void 0 ? void 0 : _instantSearchInstanc[this.getIndexId()];
-        if (indexInitialResults) {
-          // We restore the shape of the results provided to the instance to respect
-          // the helper's structure.
-          var results = new algoliasearchHelper_1.SearchResults(new algoliasearchHelper_1.SearchParameters(indexInitialResults.state), indexInitialResults.results);
-          derivedHelper.lastResults = results;
-          helper.lastResults = results;
-        }
-
-        // Subscribe to the Helper state changes for the page before widgets
-        // are initialized. This behavior mimics the original one of the Helper.
-        // It makes sense to replicate it at the `init` step. We have another
-        // listener on `change` below, once `init` is done.
-        helper.on('change', function (_ref3) {
-          var isPageReset = _ref3.isPageReset;
-          if (isPageReset) {
-            resetPageFromWidgets(localWidgets);
-          }
-        });
-        derivedHelper.on('search', function () {
-          // The index does not manage the "staleness" of the search. This is the
-          // responsibility of the main instance. It does not make sense to manage
-          // it at the index level because it's either: all of them or none of them
-          // that are stalled. The queries are performed into a single network request.
-          instantSearchInstance.scheduleStalledRender();
-          {
-            checkIndexUiState({
-              index: _this3,
-              indexUiState: localUiState
-            });
-          }
-        });
-        derivedHelper.on('result', function (_ref4) {
-          var results = _ref4.results;
-          // The index does not render the results it schedules a new render
-          // to let all the other indices emit their own results. It allows us to
-          // run the render process in one pass.
-          instantSearchInstance.scheduleRender();
-
-          // the derived helper is the one which actually searches, but the helper
-          // which is exposed e.g. via instance.helper, doesn't search, and thus
-          // does not have access to lastResults, which it used to in pre-federated
-          // search behavior.
-          helper.lastResults = results;
-          lastValidSearchParameters = results === null || results === void 0 ? void 0 : results._state;
-        });
-
-        // We compute the render state before calling `init` in a separate loop
-        // to construct the whole render state object that is then passed to
-        // `init`.
-        localWidgets.forEach(function (widget) {
-          if (widget.getRenderState) {
-            var renderState = widget.getRenderState(instantSearchInstance.renderState[_this3.getIndexId()] || {}, createInitArgs(instantSearchInstance, _this3, uiState));
-            storeRenderState({
-              renderState: renderState,
-              instantSearchInstance: instantSearchInstance,
-              parent: _this3
-            });
-          }
-        });
-        localWidgets.forEach(function (widget) {
-           _warning(
-          // if it has NO getWidgetState or if it has getWidgetUiState, we don't warn
-          // aka we warn if there's _only_ getWidgetState
-          !widget.getWidgetState || Boolean(widget.getWidgetUiState), 'The `getWidgetState` method is renamed `getWidgetUiState` and will no longer exist under that name in InstantSearch.js 5.x. Please use `getWidgetUiState` instead.') ;
-          if (widget.init) {
-            widget.init(createInitArgs(instantSearchInstance, _this3, uiState));
-          }
-        });
-
-        // Subscribe to the Helper state changes for the `uiState` once widgets
-        // are initialized. Until the first render, state changes are part of the
-        // configuration step. This is mainly for backward compatibility with custom
-        // widgets. When the subscription happens before the `init` step, the (static)
-        // configuration of the widget is pushed in the URL. That's what we want to avoid.
-        // https://github.com/algolia/instantsearch.js/pull/994/commits/4a672ae3fd78809e213de0368549ef12e9dc9454
-        helper.on('change', function (event) {
-          var state = event.state;
-          var _uiState = event._uiState;
-          localUiState = getLocalWidgetsUiState(localWidgets, {
-            searchParameters: state,
-            helper: helper
-          }, _uiState || {});
-
-          // We don't trigger an internal change when controlled because it
-          // becomes the responsibility of `setUiState`.
-          if (!instantSearchInstance.onStateChange) {
-            instantSearchInstance.onInternalStateChange();
-          }
-        });
-        if (indexInitialResults) {
-          // If there are initial results, we're not notified of the next results
-          // because we don't trigger an initial search. We therefore need to directly
-          // schedule a render that will render the results injected on the helper.
-          instantSearchInstance.scheduleRender();
-        }
-      },
-      render: function render(_ref5) {
-        var _this4 = this;
-        var instantSearchInstance = _ref5.instantSearchInstance;
-        // we can't attach a listener to the error event of search, as the error
-        // then would no longer be thrown for global handlers.
-        if (instantSearchInstance.status === 'error' && !instantSearchInstance.mainHelper.hasPendingRequests() && lastValidSearchParameters) {
-          helper.setState(lastValidSearchParameters);
-        }
-
-        // We only render index widgets if there are no results.
-        // This makes sure `render` is never called with `results` being `null`.
-        var widgetsToRender = this.getResults() ? localWidgets : localWidgets.filter(isIndexWidget);
-        widgetsToRender.forEach(function (widget) {
-          if (widget.getRenderState) {
-            var renderState = widget.getRenderState(instantSearchInstance.renderState[_this4.getIndexId()] || {}, createRenderArgs(instantSearchInstance, _this4));
-            storeRenderState({
-              renderState: renderState,
-              instantSearchInstance: instantSearchInstance,
-              parent: _this4
-            });
-          }
-        });
-        widgetsToRender.forEach(function (widget) {
-          // At this point, all the variables used below are set. Both `helper`
-          // and `derivedHelper` have been created at the `init` step. The attribute
-          // `lastResults` might be `null` though. It's possible that a stalled render
-          // happens before the result e.g with a dynamically added index the request might
-          // be delayed. The render is triggered for the complete tree but some parts do
-          // not have results yet.
-
-          if (widget.render) {
-            widget.render(createRenderArgs(instantSearchInstance, _this4));
-          }
-        });
-      },
-      dispose: function dispose() {
-        var _this5 = this,
-          _helper,
-          _derivedHelper2;
-        localWidgets.forEach(function (widget) {
-          if (widget.dispose) {
-            // The dispose function is always called once the instance is started
-            // (it's an effect of `removeWidgets`). The index is initialized and
-            // the Helper is available. We don't care about the return value of
-            // `dispose` because the index is removed. We can't call `removeWidgets`
-            // because we want to keep the widgets on the instance, to allow idempotent
-            // operations on `add` & `remove`.
-            widget.dispose({
-              helper: helper,
-              state: helper.state,
-              parent: _this5
-            });
-          }
-        });
-        localInstantSearchInstance = null;
-        localParent = null;
-        (_helper = helper) === null || _helper === void 0 ? void 0 : _helper.removeAllListeners();
-        helper = null;
-        (_derivedHelper2 = derivedHelper) === null || _derivedHelper2 === void 0 ? void 0 : _derivedHelper2.detach();
-        derivedHelper = null;
-      },
-      getWidgetUiState: function getWidgetUiState(uiState) {
-        return localWidgets.filter(isIndexWidget).reduce(function (previousUiState, innerIndex) {
-          return innerIndex.getWidgetUiState(previousUiState);
-        }, _objectSpread2(_objectSpread2({}, uiState), {}, _defineProperty({}, indexId, _objectSpread2(_objectSpread2({}, uiState[indexId]), localUiState))));
-      },
-      getWidgetState: function getWidgetState(uiState) {
-         _warning(false, 'The `getWidgetState` method is renamed `getWidgetUiState` and will no longer exist under that name in InstantSearch.js 5.x. Please use `getWidgetUiState` instead.') ;
-        return this.getWidgetUiState(uiState);
-      },
-      getWidgetSearchParameters: function getWidgetSearchParameters(searchParameters, _ref6) {
-        var uiState = _ref6.uiState;
-        return getLocalWidgetsSearchParameters(localWidgets, {
-          uiState: uiState,
-          initialSearchParameters: searchParameters
-        });
-      },
-      refreshUiState: function refreshUiState() {
-        localUiState = getLocalWidgetsUiState(localWidgets, {
-          searchParameters: this.getHelper().state,
-          helper: this.getHelper()
-        }, localUiState);
-      },
-      setIndexUiState: function setIndexUiState(indexUiState) {
-        var nextIndexUiState = typeof indexUiState === 'function' ? indexUiState(localUiState) : indexUiState;
-        localInstantSearchInstance.setUiState(function (state) {
-          return _objectSpread2(_objectSpread2({}, state), {}, _defineProperty({}, indexId, nextIndexUiState));
-        });
-      }
-    };
-  };
-  function storeRenderState(_ref7) {
-    var renderState = _ref7.renderState,
-      instantSearchInstance = _ref7.instantSearchInstance,
-      parent = _ref7.parent;
-    var parentIndexName = parent ? parent.getIndexId() : instantSearchInstance.mainIndex.getIndexId();
-    instantSearchInstance.renderState = _objectSpread2(_objectSpread2({}, instantSearchInstance.renderState), {}, _defineProperty({}, parentIndexName, _objectSpread2(_objectSpread2({}, instantSearchInstance.renderState[parentIndexName]), renderState)));
-  }
-
-  function formatNumber(value, numberLocale) {
-    return value.toLocaleString(numberLocale);
-  }
-
-  function hoganHelpers(_ref) {
-    var numberLocale = _ref.numberLocale;
-    return {
-      formatNumber: function formatNumber$1(value, render) {
-        return formatNumber(Number(render(value)), numberLocale);
-      },
-      highlight: function highlight$1(options, render) {
-        try {
-          var highlightOptions = JSON.parse(options);
-          return render(highlight(_objectSpread2(_objectSpread2({}, highlightOptions), {}, {
-            hit: this
-          })));
-        } catch (error) {
-          throw new Error("\nThe highlight helper expects a JSON object of the format:\n{ \"attribute\": \"name\", \"highlightedTagName\": \"mark\" }");
-        }
-      },
-      reverseHighlight: function reverseHighlight$1(options, render) {
-        try {
-          var reverseHighlightOptions = JSON.parse(options);
-          return render(reverseHighlight(_objectSpread2(_objectSpread2({}, reverseHighlightOptions), {}, {
-            hit: this
-          })));
-        } catch (error) {
-          throw new Error("\n  The reverseHighlight helper expects a JSON object of the format:\n  { \"attribute\": \"name\", \"highlightedTagName\": \"mark\" }");
-        }
-      },
-      snippet: function snippet$1(options, render) {
-        try {
-          var snippetOptions = JSON.parse(options);
-          return render(snippet(_objectSpread2(_objectSpread2({}, snippetOptions), {}, {
-            hit: this
-          })));
-        } catch (error) {
-          throw new Error("\nThe snippet helper expects a JSON object of the format:\n{ \"attribute\": \"name\", \"highlightedTagName\": \"mark\" }");
-        }
-      },
-      reverseSnippet: function reverseSnippet$1(options, render) {
-        try {
-          var reverseSnippetOptions = JSON.parse(options);
-          return render(reverseSnippet(_objectSpread2(_objectSpread2({}, reverseSnippetOptions), {}, {
-            hit: this
-          })));
-        } catch (error) {
-          throw new Error("\n  The reverseSnippet helper expects a JSON object of the format:\n  { \"attribute\": \"name\", \"highlightedTagName\": \"mark\" }");
-        }
-      },
-      insights: function insights$1(options, render) {
-        try {
-          var _JSON$parse = JSON.parse(options),
-            method = _JSON$parse.method,
-            payload = _JSON$parse.payload;
-          return render(insights(method, _objectSpread2({
-            objectIDs: [this.objectID]
-          }, payload)));
-        } catch (error) {
-          throw new Error("\nThe insights helper expects a JSON object of the format:\n{ \"method\": \"method-name\", \"payload\": { \"eventName\": \"name of the event\" } }");
-        }
-      }
-    };
-  }
-
-  var version$1 = '4.56.5';
-
-  var withUsage$r = createDocumentationMessageGenerator({
-    name: 'instantsearch'
-  });
-  function defaultCreateURL() {
-    return '#';
-  }
-
-  // this purposely breaks typescript's type inference to ensure it's not used
-  // as it's used for a default parameter for example
-  // source: https://github.com/Microsoft/TypeScript/issues/14829#issuecomment-504042546
-  /**
-   * The actual implementation of the InstantSearch. This is
-   * created using the `instantsearch` factory function.
-   * It emits the 'render' event every time a search is done
-   */
-  var InstantSearch = /*#__PURE__*/function (_EventEmitter) {
-    _inherits(InstantSearch, _EventEmitter);
-    var _super = _createSuper(InstantSearch);
-    function InstantSearch(options) {
-      var _this;
-      _classCallCheck(this, InstantSearch);
-      _this = _super.call(this);
-
-      // prevent `render` event listening from causing a warning
-      _defineProperty(_assertThisInitialized(_this), "client", void 0);
-      _defineProperty(_assertThisInitialized(_this), "indexName", void 0);
-      _defineProperty(_assertThisInitialized(_this), "insightsClient", void 0);
-      _defineProperty(_assertThisInitialized(_this), "onStateChange", null);
-      _defineProperty(_assertThisInitialized(_this), "helper", void 0);
-      _defineProperty(_assertThisInitialized(_this), "mainHelper", void 0);
-      _defineProperty(_assertThisInitialized(_this), "mainIndex", void 0);
-      _defineProperty(_assertThisInitialized(_this), "started", void 0);
-      _defineProperty(_assertThisInitialized(_this), "templatesConfig", void 0);
-      _defineProperty(_assertThisInitialized(_this), "renderState", {});
-      _defineProperty(_assertThisInitialized(_this), "_stalledSearchDelay", void 0);
-      _defineProperty(_assertThisInitialized(_this), "_searchStalledTimer", void 0);
-      _defineProperty(_assertThisInitialized(_this), "_initialUiState", void 0);
-      _defineProperty(_assertThisInitialized(_this), "_initialResults", void 0);
-      _defineProperty(_assertThisInitialized(_this), "_createURL", void 0);
-      _defineProperty(_assertThisInitialized(_this), "_searchFunction", void 0);
-      _defineProperty(_assertThisInitialized(_this), "_mainHelperSearch", void 0);
-      _defineProperty(_assertThisInitialized(_this), "middleware", []);
-      _defineProperty(_assertThisInitialized(_this), "sendEventToInsights", void 0);
-      _defineProperty(_assertThisInitialized(_this), "status", 'idle');
-      _defineProperty(_assertThisInitialized(_this), "error", undefined);
-      _defineProperty(_assertThisInitialized(_this), "scheduleSearch", defer(function () {
-        if (_this.started) {
-          _this.mainHelper.search();
-        }
-      }));
-      _defineProperty(_assertThisInitialized(_this), "scheduleRender", defer(function () {
-        var _this$mainHelper;
-        var shouldResetStatus = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : true;
-        if (!((_this$mainHelper = _this.mainHelper) !== null && _this$mainHelper !== void 0 && _this$mainHelper.hasPendingRequests())) {
-          clearTimeout(_this._searchStalledTimer);
-          _this._searchStalledTimer = null;
-          if (shouldResetStatus) {
-            _this.status = 'idle';
-            _this.error = undefined;
-          }
-        }
-        _this.mainIndex.render({
-          instantSearchInstance: _assertThisInitialized(_this)
-        });
-        _this.emit('render');
-      }));
-      _defineProperty(_assertThisInitialized(_this), "onInternalStateChange", defer(function () {
-        var nextUiState = _this.mainIndex.getWidgetUiState({});
-        _this.middleware.forEach(function (_ref) {
-          var instance = _ref.instance;
-          instance.onStateChange({
-            uiState: nextUiState
-          });
-        });
-      }));
-      _this.setMaxListeners(100);
-      var _options$indexName = options.indexName,
-        indexName = _options$indexName === void 0 ? '' : _options$indexName,
-        numberLocale = options.numberLocale,
-        _options$initialUiSta = options.initialUiState,
-        initialUiState = _options$initialUiSta === void 0 ? {} : _options$initialUiSta,
-        _options$routing = options.routing,
-        routing = _options$routing === void 0 ? null : _options$routing,
-        _options$insights = options.insights,
-        insights = _options$insights === void 0 ? false : _options$insights,
-        searchFunction = options.searchFunction,
-        _options$stalledSearc = options.stalledSearchDelay,
-        stalledSearchDelay = _options$stalledSearc === void 0 ? 200 : _options$stalledSearc,
-        _options$searchClient = options.searchClient,
-        searchClient = _options$searchClient === void 0 ? null : _options$searchClient,
-        _options$insightsClie = options.insightsClient,
-        insightsClient = _options$insightsClie === void 0 ? null : _options$insightsClie,
-        _options$onStateChang = options.onStateChange,
-        onStateChange = _options$onStateChang === void 0 ? null : _options$onStateChang;
-      if (searchClient === null) {
-        throw new Error(withUsage$r('The `searchClient` option is required.'));
-      }
-      if (typeof searchClient.search !== 'function') {
-        throw new Error("The `searchClient` must implement a `search` method.\n\nSee: https://www.algolia.com/doc/guides/building-search-ui/going-further/backend-search/in-depth/backend-instantsearch/js/");
-      }
-      if (typeof searchClient.addAlgoliaAgent === 'function') {
-        searchClient.addAlgoliaAgent("instantsearch.js (".concat(version$1, ")"));
-      }
-       _warning(insightsClient === null, "`insightsClient` property has been deprecated. It is still supported in 4.x releases, but not further. It is replaced by the `insights` middleware.\n\nFor more information, visit https://www.algolia.com/doc/guides/getting-insights-and-analytics/search-analytics/click-through-and-conversions/how-to/send-click-and-conversion-events-with-instantsearch/js/") ;
-      if (insightsClient && typeof insightsClient !== 'function') {
-        throw new Error(withUsage$r('The `insightsClient` option should be a function.'));
-      }
-       _warning(!options.searchParameters, "The `searchParameters` option is deprecated and will not be supported in InstantSearch.js 4.x.\n\nYou can replace it with the `configure` widget:\n\n```\nsearch.addWidgets([\n  configure(".concat(JSON.stringify(options.searchParameters, null, 2), ")\n]);\n```\n\nSee ").concat(createDocumentationLink({
-        name: 'configure'
-      }))) ;
-      _this.client = searchClient;
-      _this.insightsClient = insightsClient;
-      _this.indexName = indexName;
-      _this.helper = null;
-      _this.mainHelper = null;
-      _this.mainIndex = index({
-        indexName: indexName
-      });
-      _this.onStateChange = onStateChange;
-      _this.started = false;
-      _this.templatesConfig = {
-        helpers: hoganHelpers({
-          numberLocale: numberLocale
-        }),
-        compileOptions: {}
-      };
-      _this._stalledSearchDelay = stalledSearchDelay;
-      _this._searchStalledTimer = null;
-      _this._createURL = defaultCreateURL;
-      _this._initialUiState = initialUiState;
-      _this._initialResults = null;
-      if (searchFunction) {
-         _warning(false, "The `searchFunction` option is deprecated. Use `onStateChange` instead.") ;
-        _this._searchFunction = searchFunction;
-      }
-      _this.sendEventToInsights = noop;
-      if (routing) {
-        var routerOptions = typeof routing === 'boolean' ? {} : routing;
-        routerOptions.$$internal = true;
-        _this.use(createRouterMiddleware(routerOptions));
-      }
-
-      // This is the default middleware,
-      // any user-provided middleware will be added later and override this one.
-      if (insights) {
-        var insightsOptions = typeof insights === 'boolean' ? {} : insights;
-        insightsOptions.$$internal = true;
-        _this.use(createInsightsMiddleware(insightsOptions));
-      }
-      if (isMetadataEnabled()) {
-        _this.use(createMetadataMiddleware({
-          $$internal: true
-        }));
-      }
-      return _this;
-    }
-
-    /**
-     * Hooks a middleware into the InstantSearch lifecycle.
-     */
-    _createClass(InstantSearch, [{
-      key: "_isSearchStalled",
-      get:
-      /**
-       * The status of the search. Can be "idle", "loading", "stalled", or "error".
-       */
-
-      /**
-       * The last returned error from the Search API.
-       * The error gets cleared when the next valid search response is rendered.
-       */
-
-      /**
-       * @deprecated use `status === 'stalled'` instead
-       */
-      function get() {
-         _warning(false, "`InstantSearch._isSearchStalled` is deprecated and will be removed in InstantSearch.js 5.0.\n\nUse `InstantSearch.status === \"stalled\"` instead.") ;
-        return this.status === 'stalled';
-      }
-    }, {
-      key: "use",
-      value: function use() {
-        var _this2 = this;
-        for (var _len = arguments.length, middleware = new Array(_len), _key = 0; _key < _len; _key++) {
-          middleware[_key] = arguments[_key];
-        }
-        var newMiddlewareList = middleware.map(function (fn) {
-          var newMiddleware = _objectSpread2({
-            $$type: '__unknown__',
-            $$internal: false,
-            subscribe: noop,
-            started: noop,
-            unsubscribe: noop,
-            onStateChange: noop
-          }, fn({
-            instantSearchInstance: _this2
-          }));
-          _this2.middleware.push({
-            creator: fn,
-            instance: newMiddleware
-          });
-          return newMiddleware;
-        });
-
-        // If the instance has already started, we directly subscribe the
-        // middleware so they're notified of changes.
-        if (this.started) {
-          newMiddlewareList.forEach(function (m) {
-            m.subscribe();
-            m.started();
-          });
-        }
-        return this;
-      }
-
-      /**
-       * Removes a middleware from the InstantSearch lifecycle.
-       */
-    }, {
-      key: "unuse",
-      value: function unuse() {
-        for (var _len2 = arguments.length, middlewareToUnuse = new Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
-          middlewareToUnuse[_key2] = arguments[_key2];
-        }
-        this.middleware.filter(function (m) {
-          return middlewareToUnuse.includes(m.creator);
-        }).forEach(function (m) {
-          return m.instance.unsubscribe();
-        });
-        this.middleware = this.middleware.filter(function (m) {
-          return !middlewareToUnuse.includes(m.creator);
-        });
-        return this;
-      }
-
-      // @major we shipped with EXPERIMENTAL_use, but have changed that to just `use` now
-    }, {
-      key: "EXPERIMENTAL_use",
-      value: function EXPERIMENTAL_use() {
-         _warning(false, 'The middleware API is now considered stable, so we recommend replacing `EXPERIMENTAL_use` with `use` before upgrading to the next major version.') ;
-        return this.use.apply(this, arguments);
-      }
-
-      /**
-       * Adds a widget to the search instance.
-       * A widget can be added either before or after InstantSearch has started.
-       * @param widget The widget to add to InstantSearch.
-       *
-       * @deprecated This method will still be supported in 4.x releases, but not further. It is replaced by `addWidgets([widget])`.
-       */
-    }, {
-      key: "addWidget",
-      value: function addWidget(widget) {
-         _warning(false, 'addWidget will still be supported in 4.x releases, but not further. It is replaced by `addWidgets([widget])`') ;
-        return this.addWidgets([widget]);
-      }
-
-      /**
-       * Adds multiple widgets to the search instance.
-       * Widgets can be added either before or after InstantSearch has started.
-       * @param widgets The array of widgets to add to InstantSearch.
-       */
-    }, {
-      key: "addWidgets",
-      value: function addWidgets(widgets) {
-        if (!Array.isArray(widgets)) {
-          throw new Error(withUsage$r('The `addWidgets` method expects an array of widgets. Please use `addWidget`.'));
-        }
-        if (widgets.some(function (widget) {
-          return typeof widget.init !== 'function' && typeof widget.render !== 'function';
-        })) {
-          throw new Error(withUsage$r('The widget definition expects a `render` and/or an `init` method.'));
-        }
-        this.mainIndex.addWidgets(widgets);
-        return this;
-      }
-
-      /**
-       * Removes a widget from the search instance.
-       * @deprecated This method will still be supported in 4.x releases, but not further. It is replaced by `removeWidgets([widget])`
-       * @param widget The widget instance to remove from InstantSearch.
-       *
-       * The widget must implement a `dispose()` method to clear its state.
-       */
-    }, {
-      key: "removeWidget",
-      value: function removeWidget(widget) {
-         _warning(false, 'removeWidget will still be supported in 4.x releases, but not further. It is replaced by `removeWidgets([widget])`') ;
-        return this.removeWidgets([widget]);
-      }
-
-      /**
-       * Removes multiple widgets from the search instance.
-       * @param widgets Array of widgets instances to remove from InstantSearch.
-       *
-       * The widgets must implement a `dispose()` method to clear their states.
-       */
-    }, {
-      key: "removeWidgets",
-      value: function removeWidgets(widgets) {
-        if (!Array.isArray(widgets)) {
-          throw new Error(withUsage$r('The `removeWidgets` method expects an array of widgets. Please use `removeWidget`.'));
-        }
-        if (widgets.some(function (widget) {
-          return typeof widget.dispose !== 'function';
-        })) {
-          throw new Error(withUsage$r('The widget definition expects a `dispose` method.'));
-        }
-        this.mainIndex.removeWidgets(widgets);
-        return this;
-      }
-
-      /**
-       * Ends the initialization of InstantSearch.js and triggers the
-       * first search. This method should be called after all widgets have been added
-       * to the instance of InstantSearch.js. InstantSearch.js also supports adding and removing
-       * widgets after the start as an **EXPERIMENTAL** feature.
-       */
-    }, {
-      key: "start",
-      value: function start() {
-        var _this3 = this;
-        if (this.started) {
-          throw new Error(withUsage$r('The `start` method has already been called once.'));
-        }
-
-        // This Helper is used for the queries, we don't care about its state. The
-        // states are managed at the `index` level. We use this Helper to create
-        // DerivedHelper scoped into the `index` widgets.
-        // In Vue InstantSearch' hydrate, a main helper gets set before start, so
-        // we need to respect this helper as a way to keep all listeners correct.
-        var mainHelper = this.mainHelper || algoliasearchHelper_1(this.client, this.indexName);
-        mainHelper.search = function () {
-          _this3.status = 'loading';
-          _this3.scheduleRender(false);
-           _warning(Boolean(_this3.indexName) || _this3.mainIndex.getWidgets().some(isIndexWidget), 'No indexName provided, nor an explicit index widget in the widgets tree. This is required to be able to display results.') ;
-
-          // This solution allows us to keep the exact same API for the users but
-          // under the hood, we have a different implementation. It should be
-          // completely transparent for the rest of the codebase. Only this module
-          // is impacted.
-          return mainHelper.searchOnlyWithDerivedHelpers();
-        };
-        if (this._searchFunction) {
-          // this client isn't used to actually search, but required for the helper
-          // to not throw errors
-          var fakeClient = {
-            search: function search() {
-              return new Promise(noop);
-            }
-          };
-          this._mainHelperSearch = mainHelper.search.bind(mainHelper);
-          mainHelper.search = function () {
-            var mainIndexHelper = _this3.mainIndex.getHelper();
-            var searchFunctionHelper = algoliasearchHelper_1(fakeClient, mainIndexHelper.state.index, mainIndexHelper.state);
-            searchFunctionHelper.once('search', function (_ref2) {
-              var state = _ref2.state;
-              mainIndexHelper.overrideStateWithoutTriggeringChangeEvent(state);
-              _this3._mainHelperSearch();
-            });
-            // Forward state changes from `searchFunctionHelper` to `mainIndexHelper`
-            searchFunctionHelper.on('change', function (_ref3) {
-              var state = _ref3.state;
-              mainIndexHelper.setState(state);
-            });
-            _this3._searchFunction(searchFunctionHelper);
-            return mainHelper;
-          };
-        }
-
-        // Only the "main" Helper emits the `error` event vs the one for `search`
-        // and `results` that are also emitted on the derived one.
-        mainHelper.on('error', function (_ref4) {
-          var error = _ref4.error;
-          if (!(error instanceof Error)) {
-            // typescript lies here, error is in some cases { name: string, message: string }
-            var err = error;
-            error = Object.keys(err).reduce(function (acc, key) {
-              acc[key] = err[key];
-              return acc;
-            }, new Error(err.message));
-          }
-          // If an error is emitted, it is re-thrown by events. In previous versions
-          // we emitted {error}, which is thrown as:
-          // "Uncaught, unspecified \"error\" event. ([object Object])"
-          // To avoid breaking changes, we make the error available in both
-          // `error` and `error.error`
-          // @MAJOR emit only error
-          error.error = error;
-          _this3.error = error;
-          _this3.status = 'error';
-          _this3.scheduleRender(false);
-
-          // This needs to execute last because it throws the error.
-          _this3.emit('error', error);
-        });
-        this.mainHelper = mainHelper;
-        this.middleware.forEach(function (_ref5) {
-          var instance = _ref5.instance;
-          instance.subscribe();
-        });
-        this.mainIndex.init({
-          instantSearchInstance: this,
-          parent: null,
-          uiState: this._initialUiState
-        });
-        if (this._initialResults) {
-          var originalScheduleSearch = this.scheduleSearch;
-          // We don't schedule a first search when initial results are provided
-          // because we already have the results to render. This skips the initial
-          // network request on the browser on `start`.
-          this.scheduleSearch = defer(noop);
-          // We also skip the initial network request when widgets are dynamically
-          // added in the first tick (that's the case in all the framework-based flavors).
-          // When we add a widget to `index`, it calls `scheduleSearch`. We can rely
-          // on our `defer` util to restore the original `scheduleSearch` value once
-          // widgets are added to hook back to the regular lifecycle.
-          defer(function () {
-            _this3.scheduleSearch = originalScheduleSearch;
-          })();
-        }
-        // We only schedule a search when widgets have been added before `start()`
-        // because there are listeners that can use these results.
-        // This is especially useful in framework-based flavors that wait for
-        // dynamically-added widgets to trigger a network request. It avoids
-        // having to batch this initial network request with the one coming from
-        // `addWidgets()`.
-        // Later, we could also skip `index()` widgets and widgets that don't read
-        // the results, but this is an optimization that has a very low impact for now.
-        else if (this.mainIndex.getWidgets().length > 0) {
-          this.scheduleSearch();
-        }
-
-        // Keep the previous reference for legacy purpose, some pattern use
-        // the direct Helper access `search.helper` (e.g multi-index).
-        this.helper = this.mainIndex.getHelper();
-
-        // track we started the search if we add more widgets,
-        // to init them directly after add
-        this.started = true;
-        this.middleware.forEach(function (_ref6) {
-          var instance = _ref6.instance;
-          instance.started();
-        });
-      }
-
-      /**
-       * Removes all widgets without triggering a search afterwards. This is an **EXPERIMENTAL** feature,
-       * if you find an issue with it, please
-       * [open an issue](https://github.com/algolia/instantsearch.js/issues/new?title=Problem%20with%20dispose).
-       * @return {undefined} This method does not return anything
-       */
-    }, {
-      key: "dispose",
-      value: function dispose() {
-        var _this$mainHelper2;
-        this.scheduleSearch.cancel();
-        this.scheduleRender.cancel();
-        clearTimeout(this._searchStalledTimer);
-        this.removeWidgets(this.mainIndex.getWidgets());
-        this.mainIndex.dispose();
-
-        // You can not start an instance two times, therefore a disposed instance
-        // needs to set started as false otherwise this can not be restarted at a
-        // later point.
-        this.started = false;
-
-        // The helper needs to be reset to perform the next search from a fresh state.
-        // If not reset, it would use the state stored before calling `dispose()`.
-        this.removeAllListeners();
-        (_this$mainHelper2 = this.mainHelper) === null || _this$mainHelper2 === void 0 ? void 0 : _this$mainHelper2.removeAllListeners();
-        this.mainHelper = null;
-        this.helper = null;
-        this.middleware.forEach(function (_ref7) {
-          var instance = _ref7.instance;
-          instance.unsubscribe();
-        });
-      }
-    }, {
-      key: "scheduleStalledRender",
-      value: function scheduleStalledRender() {
-        var _this4 = this;
-        if (!this._searchStalledTimer) {
-          this._searchStalledTimer = setTimeout(function () {
-            _this4.status = 'stalled';
-            _this4.scheduleRender();
-          }, this._stalledSearchDelay);
-        }
-      }
-
-      /**
-       * Set the UI state and trigger a search.
-       * @param uiState The next UI state or a function computing it from the current state
-       * @param callOnStateChange private parameter used to know if the method is called from a state change
-       */
-    }, {
-      key: "setUiState",
-      value: function setUiState(uiState) {
-        var _this5 = this;
-        var callOnStateChange = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
-        if (!this.mainHelper) {
-          throw new Error(withUsage$r('The `start` method needs to be called before `setUiState`.'));
-        }
-
-        // We refresh the index UI state to update the local UI state that the
-        // main index passes to the function form of `setUiState`.
-        this.mainIndex.refreshUiState();
-        var nextUiState = typeof uiState === 'function' ? uiState(this.mainIndex.getWidgetUiState({})) : uiState;
-        if (this.onStateChange && callOnStateChange) {
-          this.onStateChange({
-            uiState: nextUiState,
-            setUiState: function setUiState(finalUiState) {
-              setIndexHelperState(typeof finalUiState === 'function' ? finalUiState(nextUiState) : finalUiState, _this5.mainIndex);
-              _this5.scheduleSearch();
-              _this5.onInternalStateChange();
-            }
-          });
-        } else {
-          setIndexHelperState(nextUiState, this.mainIndex);
-          this.scheduleSearch();
-          this.onInternalStateChange();
-        }
-      }
-    }, {
-      key: "getUiState",
-      value: function getUiState() {
-        if (this.started) {
-          // We refresh the index UI state to make sure changes from `refine` are taken in account
-          this.mainIndex.refreshUiState();
-        }
-        return this.mainIndex.getWidgetUiState({});
-      }
-    }, {
-      key: "createURL",
-      value: function createURL() {
-        var nextState = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-        if (!this.started) {
-          throw new Error(withUsage$r('The `start` method needs to be called before `createURL`.'));
-        }
-        return this._createURL(nextState);
-      }
-    }, {
-      key: "refresh",
-      value: function refresh() {
-        if (!this.mainHelper) {
-          throw new Error(withUsage$r('The `start` method needs to be called before `refresh`.'));
-        }
-        this.mainHelper.clearCache().search();
-      }
-    }]);
-    return InstantSearch;
-  }(events);
-
-
-
-  var routers = /*#__PURE__*/Object.freeze({
-    __proto__: null,
-    history: historyRouter
+  module.exports = _defineProperty, module.exports.__esModule = true, module.exports["default"] = module.exports;
   });
 
-  var _excluded$8 = ["configure"];
-  function getIndexStateWithoutConfigure$1(uiState) {
-    var configure = uiState.configure,
-      trackedUiState = _objectWithoutProperties(uiState, _excluded$8);
-    return trackedUiState;
+  var _defineProperty$1 = unwrapExports(defineProperty);
+
+  var objectWithoutPropertiesLoose = createCommonjsModule(function (module) {
+  function _objectWithoutPropertiesLoose(source, excluded) {
+    if (source == null) return {};
+    var target = {};
+    var sourceKeys = Object.keys(source);
+    var key, i;
+    for (i = 0; i < sourceKeys.length; i++) {
+      key = sourceKeys[i];
+      if (excluded.indexOf(key) >= 0) continue;
+      target[key] = source[key];
+    }
+    return target;
   }
-  function singleIndexStateMapping(indexName) {
-    return {
-      $$type: 'ais.singleIndex',
-      stateToRoute: function stateToRoute(uiState) {
-        return getIndexStateWithoutConfigure$1(uiState[indexName] || {});
-      },
-      routeToState: function routeToState() {
-        var routeState = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-        return _defineProperty({}, indexName, getIndexStateWithoutConfigure$1(routeState));
+  module.exports = _objectWithoutPropertiesLoose, module.exports.__esModule = true, module.exports["default"] = module.exports;
+  });
+
+  unwrapExports(objectWithoutPropertiesLoose);
+
+  var objectWithoutProperties = createCommonjsModule(function (module) {
+  function _objectWithoutProperties(source, excluded) {
+    if (source == null) return {};
+    var target = objectWithoutPropertiesLoose(source, excluded);
+    var key, i;
+    if (Object.getOwnPropertySymbols) {
+      var sourceSymbolKeys = Object.getOwnPropertySymbols(source);
+      for (i = 0; i < sourceSymbolKeys.length; i++) {
+        key = sourceSymbolKeys[i];
+        if (excluded.indexOf(key) >= 0) continue;
+        if (!Object.prototype.propertyIsEnumerable.call(source, key)) continue;
+        target[key] = source[key];
       }
-    };
+    }
+    return target;
   }
-
-
-
-  var stateMappings = /*#__PURE__*/Object.freeze({
-    __proto__: null,
-    simple: simpleStateMapping,
-    singleIndex: singleIndexStateMapping
+  module.exports = _objectWithoutProperties, module.exports.__esModule = true, module.exports["default"] = module.exports;
   });
 
-
-
-  var middlewares = /*#__PURE__*/Object.freeze({
-    __proto__: null,
-    createInsightsMiddleware: createInsightsMiddleware,
-    createRouterMiddleware: createRouterMiddleware,
-    isMetadataEnabled: isMetadataEnabled,
-    createMetadataMiddleware: createMetadataMiddleware
-  });
+  var _objectWithoutProperties$1 = unwrapExports(objectWithoutProperties);
 
   function cx() {
-    for (var _len = arguments.length, cssClasses = new Array(_len), _key = 0; _key < _len; _key++) {
-      cssClasses[_key] = arguments[_key];
+    for (var _len = arguments.length, classNames = new Array(_len), _key = 0; _key < _len; _key++) {
+      classNames[_key] = arguments[_key];
     }
-
-    return cssClasses.reduce(function (acc, className) {
+    return classNames.reduce(function (acc, className) {
       if (Array.isArray(className)) {
         return acc.concat(className);
       }
-
       return acc.concat([className]);
     }, []).filter(Boolean).join(' ');
+  }
+
+  function createDefaultEmptyComponent(_ref) {
+    var createElement = _ref.createElement,
+      Fragment = _ref.Fragment;
+    return function DefaultEmpty() {
+      return createElement(Fragment, null, "No results");
+    };
+  }
+
+  function createDefaultHeaderComponent(_ref) {
+    var createElement = _ref.createElement;
+    return function DefaultHeader(userProps) {
+      var _userProps$classNames = userProps.classNames,
+        classNames = _userProps$classNames === void 0 ? {} : _userProps$classNames,
+        items = userProps.items,
+        translations = userProps.translations;
+      if (!items || items.length < 1) {
+        return null;
+      }
+      if (!translations.title) {
+        return null;
+      }
+      return createElement("h3", {
+        className: classNames.title
+      }, translations.title);
+    };
+  }
+
+  function createDefaultItemComponent(_ref) {
+    var createElement = _ref.createElement,
+      Fragment = _ref.Fragment;
+    return function DefaultItem(userProps) {
+      return createElement(Fragment, null, JSON.stringify(userProps.item, null, 2));
+    };
+  }
+
+  function createListViewComponent(_ref) {
+    var createElement = _ref.createElement;
+    return function ListView(userProps) {
+      var _userProps$classNames = userProps.classNames,
+        classNames = _userProps$classNames === void 0 ? {} : _userProps$classNames,
+        ItemComponent = userProps.itemComponent,
+        items = userProps.items,
+        sendEvent = userProps.sendEvent;
+      return createElement("div", {
+        className: classNames.container
+      }, createElement("ol", {
+        className: classNames.list
+      }, items.map(function (item) {
+        return createElement("li", {
+          key: item.objectID,
+          className: classNames.item,
+          onClick: sendEvent,
+          onAuxClick: sendEvent
+        }, createElement(ItemComponent, {
+          item: item
+        }));
+      })));
+    };
+  }
+
+  var _excluded$7 = ["classNames", "emptyComponent", "headerComponent", "itemComponent", "view", "items", "status", "translations", "sendEvent"];
+  function ownKeys$1(object, enumerableOnly) {
+    var keys = Object.keys(object);
+    if (Object.getOwnPropertySymbols) {
+      var symbols = Object.getOwnPropertySymbols(object);
+      enumerableOnly && (symbols = symbols.filter(function (sym) {
+        return Object.getOwnPropertyDescriptor(object, sym).enumerable;
+      })), keys.push.apply(keys, symbols);
+    }
+    return keys;
+  }
+  function _objectSpread(target) {
+    for (var i = 1; i < arguments.length; i++) {
+      var source = null != arguments[i] ? arguments[i] : {};
+      i % 2 ? ownKeys$1(Object(source), !0).forEach(function (key) {
+        _defineProperty$1(target, key, source[key]);
+      }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys$1(Object(source)).forEach(function (key) {
+        Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key));
+      });
+    }
+    return target;
+  }
+  function createFrequentlyBoughtTogetherComponent(_ref) {
+    var createElement = _ref.createElement,
+      Fragment = _ref.Fragment;
+    return function FrequentlyBoughtTogether(userProps) {
+      var _userProps$classNames = userProps.classNames,
+        classNames = _userProps$classNames === void 0 ? {} : _userProps$classNames,
+        _userProps$emptyCompo = userProps.emptyComponent,
+        EmptyComponent = _userProps$emptyCompo === void 0 ? createDefaultEmptyComponent({
+          createElement: createElement,
+          Fragment: Fragment
+        }) : _userProps$emptyCompo,
+        _userProps$headerComp = userProps.headerComponent,
+        HeaderComponent = _userProps$headerComp === void 0 ? createDefaultHeaderComponent({
+          createElement: createElement,
+          Fragment: Fragment
+        }) : _userProps$headerComp,
+        _userProps$itemCompon = userProps.itemComponent,
+        ItemComponent = _userProps$itemCompon === void 0 ? createDefaultItemComponent({
+          createElement: createElement,
+          Fragment: Fragment
+        }) : _userProps$itemCompon,
+        _userProps$view = userProps.view,
+        View = _userProps$view === void 0 ? createListViewComponent({
+          createElement: createElement,
+          Fragment: Fragment
+        }) : _userProps$view,
+        items = userProps.items,
+        status = userProps.status,
+        userTranslations = userProps.translations,
+        sendEvent = userProps.sendEvent,
+        props = _objectWithoutProperties$1(userProps, _excluded$7);
+      var translations = _objectSpread({
+        title: 'Frequently bought together',
+        sliderLabel: 'Frequently bought together products'
+      }, userTranslations);
+      var cssClasses = {
+        root: cx('ais-FrequentlyBoughtTogether', classNames.root),
+        emptyRoot: cx('ais-FrequentlyBoughtTogether', classNames.root, 'ais-FrequentlyBoughtTogether--empty', classNames.emptyRoot, props.className),
+        title: cx('ais-FrequentlyBoughtTogether-title', classNames.title),
+        container: cx('ais-FrequentlyBoughtTogether-container', classNames.container),
+        list: cx('ais-FrequentlyBoughtTogether-list', classNames.list),
+        item: cx('ais-FrequentlyBoughtTogether-item', classNames.item)
+      };
+      if (items.length === 0 && status === 'idle') {
+        return createElement("section", _extends$1({}, props, {
+          className: cssClasses.emptyRoot
+        }), createElement(EmptyComponent, null));
+      }
+      return createElement("section", _extends$1({}, props, {
+        className: cssClasses.root
+      }), createElement(HeaderComponent, {
+        classNames: cssClasses,
+        items: items,
+        translations: translations
+      }), createElement(View, {
+        classNames: cssClasses,
+        translations: translations,
+        itemComponent: ItemComponent,
+        items: items,
+        sendEvent: sendEvent
+      }));
+    };
+  }
+
+  var _excluded$8 = ["parts", "highlightedTagName", "nonHighlightedTagName", "separator", "className", "classNames"];
+  function createHighlightPartComponent(_ref) {
+    var createElement = _ref.createElement;
+    return function HighlightPart(_ref2) {
+      var classNames = _ref2.classNames,
+        children = _ref2.children,
+        highlightedTagName = _ref2.highlightedTagName,
+        isHighlighted = _ref2.isHighlighted,
+        nonHighlightedTagName = _ref2.nonHighlightedTagName;
+      var TagName = isHighlighted ? highlightedTagName : nonHighlightedTagName;
+      return createElement(TagName, {
+        className: isHighlighted ? classNames.highlighted : classNames.nonHighlighted
+      }, children);
+    };
+  }
+  function createHighlightComponent(_ref3) {
+    var createElement = _ref3.createElement,
+      Fragment = _ref3.Fragment;
+    var HighlightPart = createHighlightPartComponent({
+      createElement: createElement,
+      Fragment: Fragment
+    });
+    return function Highlight(userProps) {
+      var parts = userProps.parts,
+        _userProps$highlighte = userProps.highlightedTagName,
+        highlightedTagName = _userProps$highlighte === void 0 ? 'mark' : _userProps$highlighte,
+        _userProps$nonHighlig = userProps.nonHighlightedTagName,
+        nonHighlightedTagName = _userProps$nonHighlig === void 0 ? 'span' : _userProps$nonHighlig,
+        _userProps$separator = userProps.separator,
+        separator = _userProps$separator === void 0 ? ', ' : _userProps$separator,
+        className = userProps.className,
+        _userProps$classNames = userProps.classNames,
+        classNames = _userProps$classNames === void 0 ? {} : _userProps$classNames,
+        props = _objectWithoutProperties$1(userProps, _excluded$8);
+      return createElement("span", _extends$1({}, props, {
+        className: cx(classNames.root, className)
+      }), parts.map(function (part, partIndex) {
+        var isLastPart = partIndex === parts.length - 1;
+        return createElement(Fragment, {
+          key: partIndex
+        }, part.map(function (subPart, subPartIndex) {
+          return createElement(HighlightPart, {
+            key: subPartIndex,
+            classNames: classNames,
+            highlightedTagName: highlightedTagName,
+            nonHighlightedTagName: nonHighlightedTagName,
+            isHighlighted: subPart.isHighlighted
+          }, subPart.value);
+        }), !isLastPart && createElement("span", {
+          className: classNames.separator
+        }, separator));
+      }));
+    };
+  }
+
+  var _excluded$9 = ["classNames", "hits", "itemComponent", "sendEvent", "emptyComponent", "banner", "bannerComponent"];
+
+  // Should be imported from a shared package in the future
+
+  function createDefaultBannerComponent(_ref) {
+    var createElement = _ref.createElement;
+    return function DefaultBanner(_ref2) {
+      var classNames = _ref2.classNames,
+        banner = _ref2.banner;
+      if (!banner.image.urls[0].url) {
+        return null;
+      }
+      return createElement("aside", {
+        className: cx('ais-Hits-banner', classNames.bannerRoot)
+      }, banner.link ? createElement("a", {
+        className: cx('ais-Hits-banner-link', classNames.bannerLink),
+        href: banner.link.url,
+        target: banner.link.target
+      }, createElement("img", {
+        className: cx('ais-Hits-banner-image', classNames.bannerImage),
+        src: banner.image.urls[0].url,
+        alt: banner.image.title
+      })) : createElement("img", {
+        className: cx('ais-Hits-banner-image', classNames.bannerImage),
+        src: banner.image.urls[0].url,
+        alt: banner.image.title
+      }));
+    };
+  }
+  function createHitsComponent(_ref3) {
+    var createElement = _ref3.createElement,
+      Fragment = _ref3.Fragment;
+    var DefaultBannerComponent = createDefaultBannerComponent({
+      createElement: createElement,
+      Fragment: Fragment
+    });
+    return function Hits(userProps) {
+      var _userProps$classNames = userProps.classNames,
+        classNames = _userProps$classNames === void 0 ? {} : _userProps$classNames,
+        hits = userProps.hits,
+        ItemComponent = userProps.itemComponent,
+        sendEvent = userProps.sendEvent,
+        EmptyComponent = userProps.emptyComponent,
+        banner = userProps.banner,
+        BannerComponent = userProps.bannerComponent,
+        props = _objectWithoutProperties$1(userProps, _excluded$9);
+      return createElement("div", _extends$1({}, props, {
+        className: cx('ais-Hits', classNames.root, hits.length === 0 && cx('ais-Hits--empty', classNames.emptyRoot), props.className)
+      }), banner && (BannerComponent ? createElement(BannerComponent, {
+        className: cx('ais-Hits-banner', classNames.bannerRoot),
+        banner: banner
+      }) : createElement(DefaultBannerComponent, {
+        classNames: classNames,
+        banner: banner
+      })), hits.length === 0 && EmptyComponent ? createElement(EmptyComponent, null) : createElement("ol", {
+        className: cx('ais-Hits-list', classNames.list)
+      }, hits.map(function (hit, index) {
+        return createElement(ItemComponent, {
+          key: hit.objectID,
+          hit: hit,
+          index: index,
+          className: cx('ais-Hits-item', classNames.item),
+          onClick: function onClick() {
+            sendEvent('click:internal', hit, 'Hit Clicked');
+          },
+          onAuxClick: function onAuxClick() {
+            sendEvent('click:internal', hit, 'Hit Clicked');
+          }
+        });
+      })));
+    };
+  }
+
+  var _excluded$a = ["classNames", "emptyComponent", "headerComponent", "itemComponent", "view", "items", "status", "translations", "sendEvent"];
+  function ownKeys$2(object, enumerableOnly) {
+    var keys = Object.keys(object);
+    if (Object.getOwnPropertySymbols) {
+      var symbols = Object.getOwnPropertySymbols(object);
+      enumerableOnly && (symbols = symbols.filter(function (sym) {
+        return Object.getOwnPropertyDescriptor(object, sym).enumerable;
+      })), keys.push.apply(keys, symbols);
+    }
+    return keys;
+  }
+  function _objectSpread$1(target) {
+    for (var i = 1; i < arguments.length; i++) {
+      var source = null != arguments[i] ? arguments[i] : {};
+      i % 2 ? ownKeys$2(Object(source), !0).forEach(function (key) {
+        _defineProperty$1(target, key, source[key]);
+      }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys$2(Object(source)).forEach(function (key) {
+        Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key));
+      });
+    }
+    return target;
+  }
+  function createLookingSimilarComponent(_ref) {
+    var createElement = _ref.createElement,
+      Fragment = _ref.Fragment;
+    return function LookingSimilar(userProps) {
+      var _userProps$classNames = userProps.classNames,
+        classNames = _userProps$classNames === void 0 ? {} : _userProps$classNames,
+        _userProps$emptyCompo = userProps.emptyComponent,
+        EmptyComponent = _userProps$emptyCompo === void 0 ? createDefaultEmptyComponent({
+          createElement: createElement,
+          Fragment: Fragment
+        }) : _userProps$emptyCompo,
+        _userProps$headerComp = userProps.headerComponent,
+        HeaderComponent = _userProps$headerComp === void 0 ? createDefaultHeaderComponent({
+          createElement: createElement,
+          Fragment: Fragment
+        }) : _userProps$headerComp,
+        _userProps$itemCompon = userProps.itemComponent,
+        ItemComponent = _userProps$itemCompon === void 0 ? createDefaultItemComponent({
+          createElement: createElement,
+          Fragment: Fragment
+        }) : _userProps$itemCompon,
+        _userProps$view = userProps.view,
+        View = _userProps$view === void 0 ? createListViewComponent({
+          createElement: createElement,
+          Fragment: Fragment
+        }) : _userProps$view,
+        items = userProps.items,
+        status = userProps.status,
+        userTranslations = userProps.translations,
+        sendEvent = userProps.sendEvent,
+        props = _objectWithoutProperties$1(userProps, _excluded$a);
+      var translations = _objectSpread$1({
+        title: 'Looking similar',
+        sliderLabel: 'Looking similar'
+      }, userTranslations);
+      var cssClasses = {
+        root: cx('ais-LookingSimilar', classNames.root),
+        emptyRoot: cx('ais-LookingSimilar', classNames.root, 'ais-LookingSimilar--empty', classNames.emptyRoot, props.className),
+        title: cx('ais-LookingSimilar-title', classNames.title),
+        container: cx('ais-LookingSimilar-container', classNames.container),
+        list: cx('ais-LookingSimilar-list', classNames.list),
+        item: cx('ais-LookingSimilar-item', classNames.item)
+      };
+      if (items.length === 0 && status === 'idle') {
+        return createElement("section", _extends$1({}, props, {
+          className: cssClasses.emptyRoot
+        }), createElement(EmptyComponent, null));
+      }
+      return createElement("section", _extends$1({}, props, {
+        className: cssClasses.root
+      }), createElement(HeaderComponent, {
+        classNames: cssClasses,
+        items: items,
+        translations: translations
+      }), createElement(View, {
+        classNames: cssClasses,
+        translations: translations,
+        itemComponent: ItemComponent,
+        items: items,
+        sendEvent: sendEvent
+      }));
+    };
+  }
+
+  var _excluded$b = ["classNames", "emptyComponent", "headerComponent", "itemComponent", "view", "items", "status", "translations", "sendEvent"];
+  function ownKeys$3(object, enumerableOnly) {
+    var keys = Object.keys(object);
+    if (Object.getOwnPropertySymbols) {
+      var symbols = Object.getOwnPropertySymbols(object);
+      enumerableOnly && (symbols = symbols.filter(function (sym) {
+        return Object.getOwnPropertyDescriptor(object, sym).enumerable;
+      })), keys.push.apply(keys, symbols);
+    }
+    return keys;
+  }
+  function _objectSpread$2(target) {
+    for (var i = 1; i < arguments.length; i++) {
+      var source = null != arguments[i] ? arguments[i] : {};
+      i % 2 ? ownKeys$3(Object(source), !0).forEach(function (key) {
+        _defineProperty$1(target, key, source[key]);
+      }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys$3(Object(source)).forEach(function (key) {
+        Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key));
+      });
+    }
+    return target;
+  }
+  function createRelatedProductsComponent(_ref) {
+    var createElement = _ref.createElement,
+      Fragment = _ref.Fragment;
+    return function RelatedProducts(userProps) {
+      var _userProps$classNames = userProps.classNames,
+        classNames = _userProps$classNames === void 0 ? {} : _userProps$classNames,
+        _userProps$emptyCompo = userProps.emptyComponent,
+        EmptyComponent = _userProps$emptyCompo === void 0 ? createDefaultEmptyComponent({
+          createElement: createElement,
+          Fragment: Fragment
+        }) : _userProps$emptyCompo,
+        _userProps$headerComp = userProps.headerComponent,
+        HeaderComponent = _userProps$headerComp === void 0 ? createDefaultHeaderComponent({
+          createElement: createElement,
+          Fragment: Fragment
+        }) : _userProps$headerComp,
+        _userProps$itemCompon = userProps.itemComponent,
+        ItemComponent = _userProps$itemCompon === void 0 ? createDefaultItemComponent({
+          createElement: createElement,
+          Fragment: Fragment
+        }) : _userProps$itemCompon,
+        _userProps$view = userProps.view,
+        View = _userProps$view === void 0 ? createListViewComponent({
+          createElement: createElement,
+          Fragment: Fragment
+        }) : _userProps$view,
+        items = userProps.items,
+        status = userProps.status,
+        userTranslations = userProps.translations,
+        sendEvent = userProps.sendEvent,
+        props = _objectWithoutProperties$1(userProps, _excluded$b);
+      var translations = _objectSpread$2({
+        title: 'Related products',
+        sliderLabel: 'Related products'
+      }, userTranslations);
+      var cssClasses = {
+        root: cx('ais-RelatedProducts', classNames.root),
+        emptyRoot: cx('ais-RelatedProducts', classNames.root, 'ais-RelatedProducts--empty', classNames.emptyRoot, props.className),
+        title: cx('ais-RelatedProducts-title', classNames.title),
+        container: cx('ais-RelatedProducts-container', classNames.container),
+        list: cx('ais-RelatedProducts-list', classNames.list),
+        item: cx('ais-RelatedProducts-item', classNames.item)
+      };
+      if (items.length === 0 && status === 'idle') {
+        return createElement("section", _extends$1({}, props, {
+          className: cssClasses.emptyRoot
+        }), createElement(EmptyComponent, null));
+      }
+      return createElement("section", _extends$1({}, props, {
+        className: cssClasses.root
+      }), createElement(HeaderComponent, {
+        classNames: cssClasses,
+        items: items,
+        translations: translations
+      }), createElement(View, {
+        classNames: cssClasses,
+        translations: translations,
+        itemComponent: ItemComponent,
+        items: items,
+        sendEvent: sendEvent
+      }));
+    };
+  }
+
+  var _excluded$c = ["classNames", "emptyComponent", "headerComponent", "itemComponent", "view", "items", "status", "translations", "sendEvent"];
+  function ownKeys$4(object, enumerableOnly) {
+    var keys = Object.keys(object);
+    if (Object.getOwnPropertySymbols) {
+      var symbols = Object.getOwnPropertySymbols(object);
+      enumerableOnly && (symbols = symbols.filter(function (sym) {
+        return Object.getOwnPropertyDescriptor(object, sym).enumerable;
+      })), keys.push.apply(keys, symbols);
+    }
+    return keys;
+  }
+  function _objectSpread$3(target) {
+    for (var i = 1; i < arguments.length; i++) {
+      var source = null != arguments[i] ? arguments[i] : {};
+      i % 2 ? ownKeys$4(Object(source), !0).forEach(function (key) {
+        _defineProperty$1(target, key, source[key]);
+      }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys$4(Object(source)).forEach(function (key) {
+        Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key));
+      });
+    }
+    return target;
+  }
+  function createTrendingItemsComponent(_ref) {
+    var createElement = _ref.createElement,
+      Fragment = _ref.Fragment;
+    return function TrendingItems(userProps) {
+      var _userProps$classNames = userProps.classNames,
+        classNames = _userProps$classNames === void 0 ? {} : _userProps$classNames,
+        _userProps$emptyCompo = userProps.emptyComponent,
+        EmptyComponent = _userProps$emptyCompo === void 0 ? createDefaultEmptyComponent({
+          createElement: createElement,
+          Fragment: Fragment
+        }) : _userProps$emptyCompo,
+        _userProps$headerComp = userProps.headerComponent,
+        HeaderComponent = _userProps$headerComp === void 0 ? createDefaultHeaderComponent({
+          createElement: createElement,
+          Fragment: Fragment
+        }) : _userProps$headerComp,
+        _userProps$itemCompon = userProps.itemComponent,
+        ItemComponent = _userProps$itemCompon === void 0 ? createDefaultItemComponent({
+          createElement: createElement,
+          Fragment: Fragment
+        }) : _userProps$itemCompon,
+        _userProps$view = userProps.view,
+        View = _userProps$view === void 0 ? createListViewComponent({
+          createElement: createElement,
+          Fragment: Fragment
+        }) : _userProps$view,
+        items = userProps.items,
+        status = userProps.status,
+        userTranslations = userProps.translations,
+        sendEvent = userProps.sendEvent,
+        props = _objectWithoutProperties$1(userProps, _excluded$c);
+      var translations = _objectSpread$3({
+        title: 'Trending items',
+        sliderLabel: 'Trending items'
+      }, userTranslations);
+      var cssClasses = {
+        root: cx('ais-TrendingItems', classNames.root),
+        emptyRoot: cx('ais-TrendingItems', classNames.root, 'ais-TrendingItems--empty', classNames.emptyRoot, props.className),
+        title: cx('ais-TrendingItems-title', classNames.title),
+        container: cx('ais-TrendingItems-container', classNames.container),
+        list: cx('ais-TrendingItems-list', classNames.list),
+        item: cx('ais-TrendingItems-item', classNames.item)
+      };
+      if (items.length === 0 && status === 'idle') {
+        return createElement("section", _extends$1({}, props, {
+          className: cssClasses.emptyRoot
+        }), createElement(EmptyComponent, null));
+      }
+      return createElement("section", _extends$1({}, props, {
+        className: cssClasses.root
+      }), createElement(HeaderComponent, {
+        classNames: cssClasses,
+        items: items,
+        translations: translations
+      }), createElement(View, {
+        classNames: cssClasses,
+        translations: translations,
+        itemComponent: ItemComponent,
+        items: items,
+        sendEvent: sendEvent
+      }));
+    };
   }
 
   function prepareTemplates(
@@ -14787,14 +16034,6 @@
     return _objectSpread2({
       templatesConfig: templatesConfig
     }, preparedTemplates);
-  }
-
-  function unwrapExports (x) {
-  	return x && x.__esModule && Object.prototype.hasOwnProperty.call(x, 'default') ? x['default'] : x;
-  }
-
-  function createCommonjsModule(fn, module) {
-  	return module = { exports: {} }, fn(module, module.exports), module.exports;
   }
 
   var compiler = createCommonjsModule(function (module, exports) {
@@ -15575,134 +16814,16 @@
 
   var m$1=e$1.bind(h);
 
-  var _extends_1 = createCommonjsModule(function (module) {
-  function _extends() {
-    module.exports = _extends = Object.assign ? Object.assign.bind() : function (target) {
-      for (var i = 1; i < arguments.length; i++) {
-        var source = arguments[i];
-        for (var key in source) {
-          if (Object.prototype.hasOwnProperty.call(source, key)) {
-            target[key] = source[key];
-          }
-        }
-      }
-      return target;
-    }, module.exports.__esModule = true, module.exports["default"] = module.exports;
-    return _extends.apply(this, arguments);
-  }
-  module.exports = _extends, module.exports.__esModule = true, module.exports["default"] = module.exports;
-  });
-
-  var _extends$1 = unwrapExports(_extends_1);
-
-  var objectWithoutPropertiesLoose = createCommonjsModule(function (module) {
-  function _objectWithoutPropertiesLoose(source, excluded) {
-    if (source == null) return {};
-    var target = {};
-    var sourceKeys = Object.keys(source);
-    var key, i;
-    for (i = 0; i < sourceKeys.length; i++) {
-      key = sourceKeys[i];
-      if (excluded.indexOf(key) >= 0) continue;
-      target[key] = source[key];
-    }
-    return target;
-  }
-  module.exports = _objectWithoutPropertiesLoose, module.exports.__esModule = true, module.exports["default"] = module.exports;
-  });
-
-  unwrapExports(objectWithoutPropertiesLoose);
-
-  var objectWithoutProperties = createCommonjsModule(function (module) {
-  function _objectWithoutProperties(source, excluded) {
-    if (source == null) return {};
-    var target = objectWithoutPropertiesLoose(source, excluded);
-    var key, i;
-    if (Object.getOwnPropertySymbols) {
-      var sourceSymbolKeys = Object.getOwnPropertySymbols(source);
-      for (i = 0; i < sourceSymbolKeys.length; i++) {
-        key = sourceSymbolKeys[i];
-        if (excluded.indexOf(key) >= 0) continue;
-        if (!Object.prototype.propertyIsEnumerable.call(source, key)) continue;
-        target[key] = source[key];
-      }
-    }
-    return target;
-  }
-  module.exports = _objectWithoutProperties, module.exports.__esModule = true, module.exports["default"] = module.exports;
-  });
-
-  var _objectWithoutProperties$1 = unwrapExports(objectWithoutProperties);
-
-  var _excluded$9 = ["parts", "highlightedTagName", "nonHighlightedTagName", "separator", "className", "classNames"];
-  // This is a minimal subset of the actual types from the `JSX` namespace.
-
-  function createHighlightPartComponent(_ref) {
-    var createElement = _ref.createElement;
-    return function HighlightPart(_ref2) {
-      var classNames = _ref2.classNames,
-          children = _ref2.children,
-          highlightedTagName = _ref2.highlightedTagName,
-          isHighlighted = _ref2.isHighlighted,
-          nonHighlightedTagName = _ref2.nonHighlightedTagName;
-      var TagName = isHighlighted ? highlightedTagName : nonHighlightedTagName;
-      return createElement(TagName, {
-        className: isHighlighted ? classNames.highlighted : classNames.nonHighlighted
-      }, children);
-    };
-  }
-
-  function createHighlightComponent(_ref3) {
-    var createElement = _ref3.createElement,
-        Fragment = _ref3.Fragment;
-    var HighlightPart = createHighlightPartComponent({
-      createElement: createElement,
-      Fragment: Fragment
-    });
-    return function Highlight(_ref4) {
-      var parts = _ref4.parts,
-          _ref4$highlightedTagN = _ref4.highlightedTagName,
-          highlightedTagName = _ref4$highlightedTagN === void 0 ? 'mark' : _ref4$highlightedTagN,
-          _ref4$nonHighlightedT = _ref4.nonHighlightedTagName,
-          nonHighlightedTagName = _ref4$nonHighlightedT === void 0 ? 'span' : _ref4$nonHighlightedT,
-          _ref4$separator = _ref4.separator,
-          separator = _ref4$separator === void 0 ? ', ' : _ref4$separator,
-          className = _ref4.className,
-          _ref4$classNames = _ref4.classNames,
-          classNames = _ref4$classNames === void 0 ? {} : _ref4$classNames,
-          props = _objectWithoutProperties$1(_ref4, _excluded$9);
-
-      return createElement("span", _extends$1({}, props, {
-        className: cx(classNames.root, className)
-      }), parts.map(function (part, partIndex) {
-        var isLastPart = partIndex === parts.length - 1;
-        return createElement(Fragment, {
-          key: partIndex
-        }, part.map(function (subPart, subPartIndex) {
-          return createElement(HighlightPart, {
-            key: subPartIndex,
-            classNames: classNames,
-            highlightedTagName: highlightedTagName,
-            nonHighlightedTagName: nonHighlightedTagName,
-            isHighlighted: subPart.isHighlighted
-          }, subPart.value);
-        }), !isLastPart && createElement("span", {
-          className: classNames.separator
-        }, separator));
-      }));
-    };
-  }
-
   var InternalHighlight = createHighlightComponent({
     createElement: h,
     Fragment: p
   });
 
-  var _excluded$a = ["classNames"];
+  var _excluded$d = ["classNames"];
   function Highlight(_ref) {
     var _ref$classNames = _ref.classNames,
       classNames = _ref$classNames === void 0 ? {} : _ref$classNames,
-      props = _objectWithoutProperties(_ref, _excluded$a);
+      props = _objectWithoutProperties(_ref, _excluded$d);
     return h(InternalHighlight, _extends({
       classNames: {
         root: cx('ais-Highlight', classNames.root),
@@ -15713,12 +16834,12 @@
     }, props));
   }
 
-  var _excluded$b = ["hit", "attribute", "cssClasses"];
+  var _excluded$e = ["hit", "attribute", "cssClasses"];
   function Highlight$1(_ref) {
     var hit = _ref.hit,
       attribute = _ref.attribute,
       cssClasses = _ref.cssClasses,
-      props = _objectWithoutProperties(_ref, _excluded$b);
+      props = _objectWithoutProperties(_ref, _excluded$e);
     var property = getPropertyByPath(hit._highlightResult, attribute) || [];
     var properties = toArray(property);
      _warning(Boolean(properties.length), "Could not enable highlight for \"".concat(attribute.toString(), "\", will display an empty string.\nPlease check whether this attribute exists and is either searchable or specified in `attributesToHighlight`.\n\nSee: https://alg.li/highlighting\n")) ;
@@ -15732,11 +16853,11 @@
     }));
   }
 
-  var _excluded$c = ["classNames"];
+  var _excluded$f = ["classNames"];
   function ReverseHighlight(_ref) {
     var _ref$classNames = _ref.classNames,
       classNames = _ref$classNames === void 0 ? {} : _ref$classNames,
-      props = _objectWithoutProperties(_ref, _excluded$c);
+      props = _objectWithoutProperties(_ref, _excluded$f);
     return h(InternalHighlight, _extends({
       classNames: {
         root: cx('ais-ReverseHighlight', classNames.root),
@@ -15747,13 +16868,13 @@
     }, props));
   }
 
-  var _excluded$d = ["hit", "attribute", "cssClasses"],
+  var _excluded$g = ["hit", "attribute", "cssClasses"],
     _excluded2$2 = ["isHighlighted"];
   function ReverseHighlight$1(_ref) {
     var hit = _ref.hit,
       attribute = _ref.attribute,
       cssClasses = _ref.cssClasses,
-      props = _objectWithoutProperties(_ref, _excluded$d);
+      props = _objectWithoutProperties(_ref, _excluded$g);
     var property = getPropertyByPath(hit._highlightResult, attribute) || [];
     var properties = toArray(property);
      _warning(Boolean(properties.length), "Could not enable highlight for \"".concat(attribute.toString(), "\", will display an empty string.\nPlease check whether this attribute exists and is either searchable or specified in `attributesToHighlight`.\n\nSee: https://alg.li/highlighting\n")) ;
@@ -15773,11 +16894,11 @@
     }));
   }
 
-  var _excluded$e = ["classNames"];
+  var _excluded$h = ["classNames"];
   function ReverseSnippet(_ref) {
     var _ref$classNames = _ref.classNames,
       classNames = _ref$classNames === void 0 ? {} : _ref$classNames,
-      props = _objectWithoutProperties(_ref, _excluded$e);
+      props = _objectWithoutProperties(_ref, _excluded$h);
     return h(InternalHighlight, _extends({
       classNames: {
         root: cx('ais-ReverseSnippet', classNames.root),
@@ -15788,13 +16909,13 @@
     }, props));
   }
 
-  var _excluded$f = ["hit", "attribute", "cssClasses"],
+  var _excluded$i = ["hit", "attribute", "cssClasses"],
     _excluded2$3 = ["isHighlighted"];
   function ReverseSnippet$1(_ref) {
     var hit = _ref.hit,
       attribute = _ref.attribute,
       cssClasses = _ref.cssClasses,
-      props = _objectWithoutProperties(_ref, _excluded$f);
+      props = _objectWithoutProperties(_ref, _excluded$i);
     var property = getPropertyByPath(hit._snippetResult, attribute) || [];
     var properties = toArray(property);
      _warning(Boolean(properties.length), "Could not enable snippet for \"".concat(attribute.toString(), "\", will display an empty string.\nPlease check whether this attribute exists and is specified in `attributesToSnippet`.\n\nSee: https://alg.li/highlighting\n")) ;
@@ -15814,11 +16935,11 @@
     }));
   }
 
-  var _excluded$g = ["classNames"];
+  var _excluded$j = ["classNames"];
   function Snippet(_ref) {
     var _ref$classNames = _ref.classNames,
       classNames = _ref$classNames === void 0 ? {} : _ref$classNames,
-      props = _objectWithoutProperties(_ref, _excluded$g);
+      props = _objectWithoutProperties(_ref, _excluded$j);
     return h(InternalHighlight, _extends({
       classNames: {
         root: cx('ais-Snippet', classNames.root),
@@ -15829,12 +16950,12 @@
     }, props));
   }
 
-  var _excluded$h = ["hit", "attribute", "cssClasses"];
+  var _excluded$k = ["hit", "attribute", "cssClasses"];
   function Snippet$1(_ref) {
     var hit = _ref.hit,
       attribute = _ref.attribute,
       cssClasses = _ref.cssClasses,
-      props = _objectWithoutProperties(_ref, _excluded$h);
+      props = _objectWithoutProperties(_ref, _excluded$k);
     var property = getPropertyByPath(hit._snippetResult, attribute) || [];
     var properties = toArray(property);
      _warning(Boolean(properties.length), "Could not enable snippet for \"".concat(attribute.toString(), "\", will display an empty string.\nPlease check whether this attribute exists and is specified in `attributesToSnippet`.\n\nSee: https://alg.li/highlighting\n")) ;
@@ -15904,6 +17025,58 @@
     }).trim();
   }
 
+  var RawHtml = /*#__PURE__*/function (_Component) {
+    _inherits(RawHtml, _Component);
+    var _super = _createSuper(RawHtml);
+    function RawHtml() {
+      var _this;
+      _classCallCheck(this, RawHtml);
+      for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+        args[_key] = arguments[_key];
+      }
+      _this = _super.call.apply(_super, [this].concat(args));
+      _defineProperty(_assertThisInitialized(_this), "ref", y());
+      _defineProperty(_assertThisInitialized(_this), "nodes", []);
+      return _this;
+    }
+    _createClass(RawHtml, [{
+      key: "componentDidMount",
+      value: function componentDidMount() {
+        var fragment = new DocumentFragment();
+        var root = document.createElement('div');
+        root.innerHTML = this.props.content;
+        this.nodes = _toConsumableArray(root.childNodes);
+        this.nodes.forEach(function (node) {
+          return fragment.appendChild(node);
+        });
+        this.ref.current.replaceWith(fragment);
+      }
+    }, {
+      key: "componentWillUnmount",
+      value: function componentWillUnmount() {
+        this.nodes.forEach(function (node) {
+          if (node instanceof Element) {
+            node.outerHTML = '';
+            return;
+          }
+          node.nodeValue = '';
+        });
+        // if there is one TextNode first and one TextNode last, the
+        // last one's nodeValue will be assigned to the first.
+        if (this.nodes[0].nodeValue) {
+          this.nodes[0].nodeValue = '';
+        }
+      }
+    }, {
+      key: "render",
+      value: function render() {
+        return h("div", {
+          ref: this.ref
+        });
+      }
+    }]);
+    return RawHtml;
+  }(d);
   var defaultProps = {
     data: {},
     rootTagName: 'div',
@@ -15912,12 +17085,12 @@
     templatesConfig: {}
   };
   // @TODO: Template should be a generic and receive TData to pass to Templates (to avoid TTemplateData to be set as `any`)
-  var Template = /*#__PURE__*/function (_Component) {
-    _inherits(Template, _Component);
-    var _super = _createSuper(Template);
+  var Template = /*#__PURE__*/function (_Component2) {
+    _inherits(Template, _Component2);
+    var _super2 = _createSuper(Template);
     function Template() {
       _classCallCheck(this, Template);
-      return _super.apply(this, arguments);
+      return _super2.apply(this, arguments);
     }
     _createClass(Template, [{
       key: "shouldComponentUpdate",
@@ -15927,14 +17100,14 @@
     }, {
       key: "render",
       value: function render() {
-        var _this = this;
+        var _this2 = this;
         {
           var nonFunctionTemplates = Object.keys(this.props.templates).filter(function (key) {
-            return typeof _this.props.templates[key] !== 'function';
+            return typeof _this2.props.templates[key] !== 'function';
           });
            _warning(nonFunctionTemplates.length === 0, "Hogan.js and string-based templates are deprecated and will not be supported in InstantSearch.js 5.x.\n\nYou can replace them with function-form templates and use either the provided `html` function or JSX templates.\n\nString-based templates: ".concat(nonFunctionTemplates.join(', '), ".\n\nSee: https://www.algolia.com/doc/guides/building-search-ui/upgrade-guides/js/#upgrade-templates")) ;
         }
-        var RootTagName = this.props.rootTagName;
+        var RootTagName = this.props.rootTagName === 'fragment' ? p : this.props.rootTagName;
         var useCustomCompileOptions = this.props.useCustomCompileOptions[this.props.templateKey];
         var compileOptions = useCustomCompileOptions ? this.props.templatesConfig.compileOptions : {};
         var content = renderTemplate({
@@ -15953,6 +17126,14 @@
         }
         if (_typeof(content) === 'object') {
           return h(RootTagName, this.props.rootProps, content);
+        }
+
+        // This is to handle Hogan templates with Fragment as rootTagName
+        if (RootTagName === p) {
+          return h(RawHtml, {
+            content: content,
+            key: Math.random()
+          });
         }
         return h(RootTagName, _extends({}, this.props.rootProps, {
           dangerouslySetInnerHTML: {
@@ -16018,7 +17199,7 @@
     }
   };
 
-  var withUsage$s = createDocumentationMessageGenerator({
+  var withUsage$u = createDocumentationMessageGenerator({
     name: 'answers'
   });
   var suit$4 = component('Answers');
@@ -16047,6 +17228,9 @@
       }), containerNode);
     };
   };
+  /**
+   * @deprecated the answers service is no longer offered, and this widget will be removed in InstantSearch.js v5
+   */
   var answersWidget = function answersWidget(widgetParams) {
     var _ref3 = widgetParams || {},
       container = _ref3.container,
@@ -16062,7 +17246,7 @@
       _ref3$cssClasses = _ref3.cssClasses,
       userCssClasses = _ref3$cssClasses === void 0 ? {} : _ref3$cssClasses;
     if (!container) {
-      throw new Error(withUsage$s('The `container` option is required.'));
+      throw new Error(withUsage$u('The `container` option is required.'));
     }
     var containerNode = getContainerNode(container);
     var cssClasses = {
@@ -16104,9 +17288,10 @@
       $$widgetType: 'ais.answers'
     });
   };
+  var answers = deprecate(answersWidget, 'The answers widget is deprecated and will be removed in InstantSearch.js 5.0');
 
-  var _excluded$i = ["container", "widgets", "fallbackWidget"];
-  var withUsage$t = createDocumentationMessageGenerator({
+  var _excluded$l = ["container", "widgets", "fallbackWidget"];
+  var withUsage$v = createDocumentationMessageGenerator({
     name: 'dynamic-widgets'
   });
   var suit$5 = component('DynamicWidgets');
@@ -16123,14 +17308,14 @@
       containerSelector = _ref.container,
       widgets = _ref.widgets,
       fallbackWidget = _ref.fallbackWidget,
-      otherWidgetParams = _objectWithoutProperties(_ref, _excluded$i);
+      otherWidgetParams = _objectWithoutProperties(_ref, _excluded$l);
     if (!containerSelector) {
-      throw new Error(withUsage$t('The `container` option is required.'));
+      throw new Error(withUsage$v('The `container` option is required.'));
     }
     if (!(widgets && Array.isArray(widgets) && widgets.every(function (widget) {
       return typeof widget === 'function';
     }))) {
-      throw new Error(withUsage$t('The `widgets` option expects an array of callbacks.'));
+      throw new Error(withUsage$v('The `widgets` option expects an array of callbacks.'));
     }
     var userContainer = getContainerNode(containerSelector);
     var rootContainer = document.createElement('div');
@@ -16179,7 +17364,7 @@
     });
   };
 
-  var withUsage$u = createDocumentationMessageGenerator({
+  var withUsage$w = createDocumentationMessageGenerator({
     name: 'analytics'
   });
   // @major this widget will be removed from the next major version.
@@ -16195,7 +17380,7 @@
       _ref$pushPagination = _ref.pushPagination,
       pushPagination = _ref$pushPagination === void 0 ? false : _ref$pushPagination;
     if (!pushFunction) {
-      throw new Error(withUsage$u('The `pushFunction` option is required.'));
+      throw new Error(withUsage$w('The `pushFunction` option is required.'));
     }
      _warning(false, "`analytics` widget has been deprecated. It is still supported in 4.x releases, but not further. It is replaced by the `insights` middleware.\n\nFor the migration, visit https://www.algolia.com/doc/guides/building-search-ui/upgrade-guides/js/#analytics-widget") ;
     var cachedState = null;
@@ -16381,7 +17566,7 @@
     }
   };
 
-  var withUsage$v = createDocumentationMessageGenerator({
+  var withUsage$x = createDocumentationMessageGenerator({
     name: 'breadcrumb'
   });
   var suit$6 = component('Breadcrumb');
@@ -16426,7 +17611,7 @@
       _ref3$cssClasses = _ref3.cssClasses,
       userCssClasses = _ref3$cssClasses === void 0 ? {} : _ref3$cssClasses;
     if (!container) {
-      throw new Error(withUsage$v('The `container` option is required.'));
+      throw new Error(withUsage$x('The `container` option is required.'));
     }
     var containerNode = getContainerNode(container);
     var cssClasses = {
@@ -16497,7 +17682,7 @@
     }
   };
 
-  var withUsage$w = createDocumentationMessageGenerator({
+  var withUsage$y = createDocumentationMessageGenerator({
     name: 'clear-refinements'
   });
   var suit$7 = component('ClearRefinements');
@@ -16537,7 +17722,7 @@
       _ref3$cssClasses = _ref3.cssClasses,
       userCssClasses = _ref3$cssClasses === void 0 ? {} : _ref3$cssClasses;
     if (!container) {
-      throw new Error(withUsage$w('The `container` option is required.'));
+      throw new Error(withUsage$y('The `container` option is required.'));
     }
     var containerNode = getContainerNode(container);
     var cssClasses = {
@@ -16567,6 +17752,11 @@
       $$widgetType: 'ais.clearRefinements'
     });
   };
+
+  /**
+   * A list of [search parameters](https://www.algolia.com/doc/api-reference/search-api-parameters/)
+   * to enable when the widget mounts.
+   */
 
   var configure = function configure(widgetParams) {
     // This is a renderless widget that falls back to the connector's
@@ -16611,7 +17801,7 @@
         className: cssClasses.item
       }, h("span", {
         className: cssClasses.label
-      }, capitalize(item.label), ":"), item.refinements.map(function (refinement) {
+      }, capitalize(item.label), ": "), item.refinements.map(function (refinement) {
         return h("span", {
           key: createItemKey(refinement),
           className: cssClasses.category
@@ -16619,13 +17809,14 @@
           className: cssClasses.categoryLabel
         }, refinement.attribute === 'query' ? h("q", null, refinement.label) : refinement.label), h("button", {
           className: cssClasses.delete,
+          type: "button",
           onClick: handleClick(item.refine.bind(null, refinement))
         }, "\u2715"));
       }));
     })));
   };
 
-  var withUsage$x = createDocumentationMessageGenerator({
+  var withUsage$z = createDocumentationMessageGenerator({
     name: 'current-refinements'
   });
   var suit$8 = component('CurrentRefinements');
@@ -16654,7 +17845,7 @@
       userCssClasses = _ref3$cssClasses === void 0 ? {} : _ref3$cssClasses,
       transformItems = _ref3.transformItems;
     if (!container) {
-      throw new Error(withUsage$x('The `container` option is required.'));
+      throw new Error(withUsage$z('The `container` option is required.'));
     }
     var containerNode = getContainerNode(container);
     var cssClasses = {
@@ -17091,10 +18282,10 @@
     }), container.querySelector(".".concat(cssClasses.tree)));
   };
 
-  var _excluded$j = ["initialZoom", "initialPosition", "templates", "cssClasses", "builtInMarker", "customHTMLMarker", "enableRefine", "enableClearMapRefinement", "enableRefineControl", "container", "googleReference"],
+  var _excluded$m = ["initialZoom", "initialPosition", "templates", "cssClasses", "builtInMarker", "customHTMLMarker", "enableRefine", "enableClearMapRefinement", "enableRefineControl", "container", "googleReference"],
     _excluded2$4 = ["item"],
     _excluded3 = ["item"];
-  var withUsage$y = createDocumentationMessageGenerator({
+  var withUsage$A = createDocumentationMessageGenerator({
     name: 'geo-search'
   });
   var suit$9 = component('GeoSearch');
@@ -17111,7 +18302,7 @@
    *
    * Don't forget to explicitly set the `height` of the map container (default class `.ais-geo-search--map`), otherwise it won't be shown (it's a requirement of Google Maps).
    */
-  var geoSearch = function geoSearch(widgetParams) {
+  var geoSearch = (function geoSearch(widgetParams) {
     var _ref = widgetParams || {},
       _ref$initialZoom = _ref.initialZoom,
       initialZoom = _ref$initialZoom === void 0 ? 1 : _ref$initialZoom,
@@ -17135,7 +18326,7 @@
       enableRefineControl = _ref$enableRefineCont === void 0 ? true : _ref$enableRefineCont,
       container = _ref.container,
       googleReference = _ref.googleReference,
-      otherWidgetParams = _objectWithoutProperties(_ref, _excluded$j);
+      otherWidgetParams = _objectWithoutProperties(_ref, _excluded$m);
     var defaultBuiltInMarker = {
       createOptions: function createOptions() {
         return {};
@@ -17149,10 +18340,10 @@
       events: {}
     };
     if (!container) {
-      throw new Error(withUsage$y('The `container` option is required.'));
+      throw new Error(withUsage$A('The `container` option is required.'));
     }
     if (!googleReference) {
-      throw new Error(withUsage$y('The `googleReference` option is required.'));
+      throw new Error(withUsage$A('The `googleReference` option is required.'));
     }
     var containerNode = getContainerNode(container);
     var cssClasses = {
@@ -17224,12 +18415,14 @@
       return P(null, containerNode);
     });
     return _objectSpread2(_objectSpread2({}, makeWidget(_objectSpread2(_objectSpread2({}, otherWidgetParams), {}, {
+      // @TODO: this type doesn't preserve the generic correctly,
+      // (but as they're internal only it's not a big problem)
+      templates: templates,
       renderState: {},
       container: containerNode,
       googleReference: googleReference,
       initialZoom: initialZoom,
       initialPosition: initialPosition,
-      templates: templates,
       cssClasses: cssClasses,
       createMarker: createMarker,
       markerOptions: markerOptions,
@@ -17239,7 +18432,7 @@
     }))), {}, {
       $$widgetType: 'ais.geoSearch'
     });
-  };
+  });
 
   var defaultProps$1 = {
     query: '',
@@ -17248,8 +18441,10 @@
     showLoadingIndicator: true,
     autofocus: false,
     searchAsYouType: true,
+    ignoreCompositionEvents: false,
     isSearchStalled: false,
     disabled: false,
+    ariaLabel: 'Search',
     onChange: noop,
     onSubmit: noop,
     onReset: noop,
@@ -17276,13 +18471,15 @@
           refine = _this$props.refine,
           onChange = _this$props.onChange;
         var query = event.target.value;
-        if (searchAsYouType) {
-          refine(query);
+        if (!(_this.props.ignoreCompositionEvents && event.isComposing)) {
+          if (searchAsYouType) {
+            refine(query);
+          }
+          _this.setState({
+            query: query
+          });
+          onChange(event);
         }
-        _this.setState({
-          query: query
-        });
-        onChange(event);
       });
       _defineProperty(_assertThisInitialized(_this), "onSubmit", function (event) {
         var _this$props2 = _this.props,
@@ -17347,7 +18544,7 @@
         /**
          * when the user is typing, we don't want to replace the query typed
          * by the user (state.query) with the query exposed by the connector (props.query)
-         * see: https://github.com/algolia/instantsearch.js/issues/4141
+         * see: https://github.com/algolia/instantsearch/issues/4141
          */
         if (!this.state.focused && nextProps.query !== this.state.query) {
           this.setState({
@@ -17366,7 +18563,8 @@
           showReset = _this$props4.showReset,
           showLoadingIndicator = _this$props4.showLoadingIndicator,
           templates = _this$props4.templates,
-          isSearchStalled = _this$props4.isSearchStalled;
+          isSearchStalled = _this$props4.isSearchStalled,
+          ariaLabel = _this$props4.ariaLabel;
         return h("div", {
           className: cssClasses.root
         }, h("form", {
@@ -17391,16 +18589,21 @@
           ,
           spellCheck: "false",
           maxLength: 512,
-          onInput: this.onInput,
+          onInput: this.onInput
+          // see: https://github.com/preactjs/preact/issues/1978
+          // eslint-disable-next-line react/no-unknown-property
+          ,
+          oncompositionend: this.onInput,
           onBlur: this.onBlur,
-          onFocus: this.onFocus
+          onFocus: this.onFocus,
+          "aria-label": ariaLabel
         }), h(Template, {
           templateKey: "submit",
           rootTagName: "button",
           rootProps: {
             className: cssClasses.submit,
             type: 'submit',
-            title: 'Submit the search query.',
+            title: 'Submit the search query',
             hidden: !showSubmit
           },
           templates: templates,
@@ -17413,7 +18616,7 @@
           rootProps: {
             className: cssClasses.reset,
             type: 'reset',
-            title: 'Clear the search query.',
+            title: 'Clear the search query',
             hidden: !(showReset && this.state.query.trim() && !isSearchStalled)
           },
           templates: templates,
@@ -17462,7 +18665,10 @@
     })), subItems);
   }
 
-  var _excluded$k = ["root"];
+  var _excluded$n = ["root"];
+
+  // CSS types
+
   var defaultProps$2 = {
     cssClasses: {},
     depth: 0
@@ -17486,7 +18692,7 @@
         if (isHierarchicalMenuItem(facetValue) && Array.isArray(facetValue.data) && facetValue.data.length > 0) {
           var _this$props$cssClasse = _this.props.cssClasses,
             root = _this$props$cssClasse.root,
-            cssClasses = _objectWithoutProperties(_this$props$cssClasse, _excluded$k);
+            cssClasses = _objectWithoutProperties(_this$props$cssClasse, _excluded$n);
           subItems = h(RefinementList, _extends({}, _this.props, {
             // We want to keep `root` required for external usage but not for the
             // sub items.
@@ -17524,6 +18730,21 @@
           templateProps: _this.props.templateProps
         });
       });
+      // Click events on DOM tree like LABEL > INPUT will result in two click events
+      // instead of one.
+      // No matter the framework, see https://www.google.com/search?q=click+label+twice
+      //
+      // Thus making it hard to distinguish activation from deactivation because both click events
+      // are very close. Debounce is a solution but hacky.
+      //
+      // So the code here checks if the click was done on or in a LABEL. If this LABEL
+      // has a checkbox inside, we ignore the first click event because we will get another one.
+      //
+      // We also check if the click was done inside a link and then e.preventDefault() because we already
+      // handle the url
+      //
+      // Finally, we always stop propagation of the event to avoid multiple levels RefinementLists to fail: click
+      // on child would click on parent also
       _defineProperty(_assertThisInitialized(_this), "handleItemClick", function (_ref) {
         var facetValueToRefine = _ref.facetValueToRefine,
           isRefined = _ref.isRefined,
@@ -17533,18 +18754,18 @@
           // if one special key is down
           return;
         }
-        if (!(originalEvent.target instanceof HTMLElement) || !(originalEvent.target.parentNode instanceof HTMLElement)) {
+        var parent = originalEvent.target;
+        if (parent === null || parent.parentNode === null) {
           return;
         }
-        if (isRefined && originalEvent.target.parentNode.querySelector('input[type="radio"]:checked')) {
+        if (isRefined && parent.parentNode.querySelector('input[type="radio"]:checked')) {
           // Prevent refinement for being reset if the user clicks on an already checked radio button
           return;
         }
-        if (originalEvent.target.tagName === 'INPUT') {
+        if (parent.tagName === 'INPUT') {
           _this.refine(facetValueToRefine);
           return;
         }
-        var parent = originalEvent.target;
         while (parent !== originalEvent.currentTarget) {
           if (parent.tagName === 'LABEL' && (parent.querySelector('input[type="checkbox"]') || parent.querySelector('input[type="radio"]'))) {
             return;
@@ -17624,7 +18845,8 @@
           // This sets the search box to a controlled state because
           // we don't rely on the `refine` prop but on `onChange`.
           ,
-          searchAsYouType: false
+          searchAsYouType: false,
+          ariaLabel: "Search for filters"
         }));
         var facetValues = this.props.facetValues && this.props.facetValues.length > 0 && h("ul", {
           className: this.props.cssClasses.list
@@ -17644,6 +18866,10 @@
     return RefinementList;
   }(d);
   _defineProperty(RefinementList$1, "defaultProps", defaultProps$2);
+
+  function formatNumber(value, numberLocale) {
+    return value.toLocaleString(numberLocale);
+  }
 
   var defaultTemplates$4 = {
     item: function item(_ref) {
@@ -17667,7 +18893,7 @@
     }
   };
 
-  var withUsage$z = createDocumentationMessageGenerator({
+  var withUsage$B = createDocumentationMessageGenerator({
     name: 'hierarchical-menu'
   });
   var suit$a = component('HierarchicalMenu');
@@ -17777,7 +19003,7 @@
       _ref3$cssClasses = _ref3.cssClasses,
       userCssClasses = _ref3$cssClasses === void 0 ? {} : _ref3$cssClasses;
     if (!container) {
-      throw new Error(withUsage$z('The `container` option is required.'));
+      throw new Error(withUsage$B('The `container` option is required.'));
     }
     var containerNode = getContainerNode(container);
     var cssClasses = {
@@ -17849,60 +19075,8 @@
     });
   };
 
-  function Hits(_ref) {
-    var results = _ref.results,
-      hits = _ref.hits,
-      insights = _ref.insights,
-      bindEvent = _ref.bindEvent,
-      sendEvent = _ref.sendEvent,
-      cssClasses = _ref.cssClasses,
-      templateProps = _ref.templateProps;
-    var handleInsightsClick = createInsightsEventHandler({
-      insights: insights,
-      sendEvent: sendEvent
-    });
-    if (results.hits.length === 0) {
-      return h(Template, _extends({}, templateProps, {
-        templateKey: "empty",
-        rootProps: {
-          className: cx(cssClasses.root, cssClasses.emptyRoot),
-          onClick: handleInsightsClick
-        },
-        data: results
-      }));
-    }
-    return h("div", {
-      className: cssClasses.root
-    }, h("ol", {
-      className: cssClasses.list
-    }, hits.map(function (hit, index) {
-      return h(Template, _extends({}, templateProps, {
-        templateKey: "item",
-        rootTagName: "li",
-        rootProps: {
-          className: cssClasses.item,
-          onClick: function onClick(event) {
-            handleInsightsClick(event);
-            sendEvent('click:internal', hit, 'Hit Clicked');
-          },
-          onAuxClick: function onAuxClick(event) {
-            handleInsightsClick(event);
-            sendEvent('click:internal', hit, 'Hit Clicked');
-          }
-        },
-        key: hit.objectID,
-        data: _objectSpread2(_objectSpread2({}, hit), {}, {
-          get __hitIndex() {
-             _warning(false, 'The `__hitIndex` property is deprecated. Use the absolute `__position` instead.') ;
-            return index;
-          }
-        }),
-        bindEvent: bindEvent,
-        sendEvent: sendEvent
-      }));
-    })));
-  }
-
+  // false positive lint error
+  // eslint-disable-next-line @typescript-eslint/consistent-type-imports
   var defaultTemplates$5 = {
     empty: function empty() {
       return 'No results';
@@ -17912,22 +19086,27 @@
     }
   };
 
-  var withUsage$A = createDocumentationMessageGenerator({
+  var _excluded$o = ["hit", "index"];
+  var withUsage$C = createDocumentationMessageGenerator({
     name: 'hits'
   });
-  var suit$b = component('Hits');
+  var Hits = createHitsComponent({
+    createElement: h,
+    Fragment: p
+  });
   var renderer$6 = function renderer(_ref) {
     var renderState = _ref.renderState,
       cssClasses = _ref.cssClasses,
       containerNode = _ref.containerNode,
       templates = _ref.templates;
     return function (_ref2, isFirstRendering) {
-      var receivedHits = _ref2.hits,
+      var items = _ref2.items,
         results = _ref2.results,
         instantSearchInstance = _ref2.instantSearchInstance,
         insights = _ref2.insights,
         bindEvent = _ref2.bindEvent,
-        sendEvent = _ref2.sendEvent;
+        sendEvent = _ref2.sendEvent,
+        banner = _ref2.banner;
       if (isFirstRendering) {
         renderState.templateProps = prepareTemplateProps({
           defaultTemplates: defaultTemplates$5,
@@ -17936,42 +19115,80 @@
         });
         return;
       }
-      P(h(Hits, {
-        cssClasses: cssClasses,
-        hits: receivedHits,
-        results: results,
-        templateProps: renderState.templateProps,
+      var handleInsightsClick = createInsightsEventHandler({
         insights: insights,
+        sendEvent: sendEvent
+      });
+      var emptyComponent = function emptyComponent(_ref3) {
+        var rootProps = _extends({}, (_objectDestructuringEmpty(_ref3), _ref3));
+        return h(Template, _extends({}, renderState.templateProps, {
+          rootProps: rootProps,
+          templateKey: "empty",
+          data: results,
+          rootTagName: "fragment"
+        }));
+      };
+
+      // @MAJOR: Move default hit component back to the UI library
+      // once flavour specificities are erased
+      var itemComponent = function itemComponent(_ref4) {
+        var hit = _ref4.hit,
+          index = _ref4.index,
+          rootProps = _objectWithoutProperties(_ref4, _excluded$o);
+        return h(Template, _extends({}, renderState.templateProps, {
+          templateKey: "item",
+          rootTagName: "li",
+          rootProps: _objectSpread2(_objectSpread2({}, rootProps), {}, {
+            onClick: function onClick(event) {
+              handleInsightsClick(event);
+              rootProps.onClick();
+            },
+            onAuxClick: function onAuxClick(event) {
+              handleInsightsClick(event);
+              rootProps.onAuxClick();
+            }
+          }),
+          data: _objectSpread2(_objectSpread2({}, hit), {}, {
+            get __hitIndex() {
+               _warning(false, 'The `__hitIndex` property is deprecated. Use the absolute `__position` instead.') ;
+              return index;
+            }
+          }),
+          bindEvent: bindEvent,
+          sendEvent: sendEvent
+        }));
+      };
+      var bannerComponent = function bannerComponent(props) {
+        return h(Template, _extends({}, renderState.templateProps, {
+          templateKey: "banner",
+          data: props,
+          rootTagName: "fragment"
+        }));
+      };
+      P(h(Hits, {
+        hits: items,
+        itemComponent: itemComponent,
         sendEvent: sendEvent,
-        bindEvent: bindEvent
+        classNames: cssClasses,
+        emptyComponent: emptyComponent,
+        banner: banner,
+        bannerComponent: templates.banner ? bannerComponent : undefined
       }), containerNode);
     };
   };
-  var hits = function hits(widgetParams) {
-    var _ref3 = widgetParams || {},
-      container = _ref3.container,
-      escapeHTML = _ref3.escapeHTML,
-      transformItems = _ref3.transformItems,
-      _ref3$templates = _ref3.templates,
-      templates = _ref3$templates === void 0 ? {} : _ref3$templates,
-      _ref3$cssClasses = _ref3.cssClasses,
-      userCssClasses = _ref3$cssClasses === void 0 ? {} : _ref3$cssClasses;
+  var hits = (function hits(widgetParams) {
+    var _ref5 = widgetParams || {},
+      container = _ref5.container,
+      escapeHTML = _ref5.escapeHTML,
+      transformItems = _ref5.transformItems,
+      _ref5$templates = _ref5.templates,
+      templates = _ref5$templates === void 0 ? {} : _ref5$templates,
+      _ref5$cssClasses = _ref5.cssClasses,
+      cssClasses = _ref5$cssClasses === void 0 ? {} : _ref5$cssClasses;
     if (!container) {
-      throw new Error(withUsage$A('The `container` option is required.'));
+      throw new Error(withUsage$C('The `container` option is required.'));
     }
     var containerNode = getContainerNode(container);
-    var cssClasses = {
-      root: cx(suit$b(), userCssClasses.root),
-      emptyRoot: cx(suit$b({
-        modifierName: 'empty'
-      }), userCssClasses.emptyRoot),
-      list: cx(suit$b({
-        descendantName: 'list'
-      }), userCssClasses.list),
-      item: cx(suit$b({
-        descendantName: 'item'
-      }), userCssClasses.item)
-    };
     var specializedRenderer = renderer$6({
       containerNode: containerNode,
       cssClasses: cssClasses,
@@ -17987,19 +19204,21 @@
     })), {}, {
       $$widgetType: 'ais.hits'
     });
-  };
+  });
 
   function Selector(_ref) {
     var currentValue = _ref.currentValue,
       options = _ref.options,
       cssClasses = _ref.cssClasses,
-      setValue = _ref.setValue;
+      setValue = _ref.setValue,
+      ariaLabel = _ref.ariaLabel;
     return h("select", {
       className: cx(cssClasses.select),
       onChange: function onChange(event) {
         return setValue(event.target.value);
       },
-      value: "".concat(currentValue)
+      value: "".concat(currentValue),
+      "aria-label": ariaLabel
     }, options.map(function (option) {
       return h("option", {
         className: cx(cssClasses.option),
@@ -18009,10 +19228,10 @@
     }));
   }
 
-  var withUsage$B = createDocumentationMessageGenerator({
+  var withUsage$D = createDocumentationMessageGenerator({
     name: 'hits-per-page'
   });
-  var suit$c = component('HitsPerPage');
+  var suit$b = component('HitsPerPage');
   var renderer$7 = function renderer(_ref) {
     var containerNode = _ref.containerNode,
       cssClasses = _ref.cssClasses;
@@ -18045,15 +19264,15 @@
       userCssClasses = _ref5$cssClasses === void 0 ? {} : _ref5$cssClasses,
       transformItems = _ref5.transformItems;
     if (!container) {
-      throw new Error(withUsage$B('The `container` option is required.'));
+      throw new Error(withUsage$D('The `container` option is required.'));
     }
     var containerNode = getContainerNode(container);
     var cssClasses = {
-      root: cx(suit$c(), userCssClasses.root),
-      select: cx(suit$c({
+      root: cx(suit$b(), userCssClasses.root),
+      select: cx(suit$b({
         descendantName: 'select'
       }), userCssClasses.select),
-      option: cx(suit$c({
+      option: cx(suit$b({
         descendantName: 'option'
       }), userCssClasses.option)
     };
@@ -18072,32 +19291,679 @@
     });
   };
 
-  var InfiniteHits = function InfiniteHits(_ref) {
-    var results = _ref.results,
-      hits = _ref.hits,
-      insights = _ref.insights,
-      bindEvent = _ref.bindEvent,
-      sendEvent = _ref.sendEvent,
-      hasShowPrevious = _ref.hasShowPrevious,
-      showPrevious = _ref.showPrevious,
-      showMore = _ref.showMore,
-      isFirstPage = _ref.isFirstPage,
-      isLastPage = _ref.isLastPage,
-      cssClasses = _ref.cssClasses,
-      templateProps = _ref.templateProps;
+  var _excluded$p = ["initialSearchParameters"],
+    _excluded2$5 = ["initialRecommendParameters"];
+  var withUsage$E = createDocumentationMessageGenerator({
+    name: 'index-widget'
+  });
+  /**
+   * This is the same content as helper._change / setState, but allowing for extra
+   * UiState to be synchronized.
+   * see: https://github.com/algolia/algoliasearch-helper-js/blob/6b835ffd07742f2d6b314022cce6848f5cfecd4a/src/algoliasearch.helper.js#L1311-L1324
+   */
+  function privateHelperSetState(helper, _ref) {
+    var state = _ref.state,
+      recommendState = _ref.recommendState,
+      isPageReset = _ref.isPageReset,
+      _uiState = _ref._uiState;
+    if (state !== helper.state) {
+      helper.state = state;
+      helper.emit('change', {
+        state: helper.state,
+        results: helper.lastResults,
+        isPageReset: isPageReset,
+        _uiState: _uiState
+      });
+    }
+    if (recommendState !== helper.recommendState) {
+      helper.recommendState = recommendState;
+
+      // eslint-disable-next-line no-warning-comments
+      // TODO: emit "change" event when events for Recommend are implemented
+    }
+  }
+
+  function getLocalWidgetsUiState(widgets, widgetStateOptions) {
+    var initialUiState = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+    return widgets.reduce(function (uiState, widget) {
+      if (isIndexWidget(widget)) {
+        return uiState;
+      }
+      if (!widget.getWidgetUiState && !widget.getWidgetState) {
+        return uiState;
+      }
+      if (widget.getWidgetUiState) {
+        return widget.getWidgetUiState(uiState, widgetStateOptions);
+      }
+      return widget.getWidgetState(uiState, widgetStateOptions);
+    }, initialUiState);
+  }
+  function getLocalWidgetsSearchParameters(widgets, widgetSearchParametersOptions) {
+    var initialSearchParameters = widgetSearchParametersOptions.initialSearchParameters,
+      rest = _objectWithoutProperties(widgetSearchParametersOptions, _excluded$p);
+    return widgets.reduce(function (state, widget) {
+      if (!widget.getWidgetSearchParameters || isIndexWidget(widget)) {
+        return state;
+      }
+      if (widget.dependsOn === 'search' && widget.getWidgetParameters) {
+        return widget.getWidgetParameters(state, rest);
+      }
+      return widget.getWidgetSearchParameters(state, rest);
+    }, initialSearchParameters);
+  }
+  function getLocalWidgetsRecommendParameters(widgets, widgetRecommendParametersOptions) {
+    var initialRecommendParameters = widgetRecommendParametersOptions.initialRecommendParameters,
+      rest = _objectWithoutProperties(widgetRecommendParametersOptions, _excluded2$5);
+    return widgets.reduce(function (state, widget) {
+      if (!isIndexWidget(widget) && widget.dependsOn === 'recommend' && widget.getWidgetParameters) {
+        return widget.getWidgetParameters(state, rest);
+      }
+      return state;
+    }, initialRecommendParameters);
+  }
+  function resetPageFromWidgets(widgets) {
+    var indexWidgets = widgets.filter(isIndexWidget);
+    if (indexWidgets.length === 0) {
+      return;
+    }
+    indexWidgets.forEach(function (widget) {
+      var widgetHelper = widget.getHelper();
+      privateHelperSetState(widgetHelper, {
+        state: widgetHelper.state.resetPage(),
+        recommendState: widgetHelper.recommendState,
+        isPageReset: true
+      });
+      resetPageFromWidgets(widget.getWidgets());
+    });
+  }
+  function resolveScopedResultsFromWidgets(widgets) {
+    var indexWidgets = widgets.filter(isIndexWidget);
+    return indexWidgets.reduce(function (scopedResults, current) {
+      return scopedResults.concat.apply(scopedResults, [{
+        indexId: current.getIndexId(),
+        results: current.getResults(),
+        helper: current.getHelper()
+      }].concat(_toConsumableArray(resolveScopedResultsFromWidgets(current.getWidgets()))));
+    }, []);
+  }
+  var index = function index(widgetParams) {
+    if (widgetParams === undefined || widgetParams.indexName === undefined) {
+      throw new Error(withUsage$E('The `indexName` option is required.'));
+    }
+    var indexName = widgetParams.indexName,
+      _widgetParams$indexId = widgetParams.indexId,
+      indexId = _widgetParams$indexId === void 0 ? indexName : _widgetParams$indexId;
+    var localWidgets = [];
+    var localUiState = {};
+    var localInstantSearchInstance = null;
+    var localParent = null;
+    var helper = null;
+    var derivedHelper = null;
+    var lastValidSearchParameters = null;
+    var hasRecommendWidget = false;
+    var hasSearchWidget = false;
+    return {
+      $$type: 'ais.index',
+      $$widgetType: 'ais.index',
+      getIndexName: function getIndexName() {
+        return indexName;
+      },
+      getIndexId: function getIndexId() {
+        return indexId;
+      },
+      getHelper: function getHelper() {
+        return helper;
+      },
+      getResults: function getResults() {
+        var _derivedHelper;
+        if (!((_derivedHelper = derivedHelper) !== null && _derivedHelper !== void 0 && _derivedHelper.lastResults)) return null;
+
+        // To make the UI optimistic, we patch the state to display to the current
+        // one instead of the one associated with the latest results.
+        // This means user-driven UI changes (e.g., checked checkbox) are reflected
+        // immediately instead of waiting for Algolia to respond, regardless of
+        // the status of the network request.
+        derivedHelper.lastResults._state = helper.state;
+        return derivedHelper.lastResults;
+      },
+      getResultsForWidget: function getResultsForWidget(widget) {
+        var _helper;
+        if (widget.dependsOn !== 'recommend' || isIndexWidget(widget) || widget.$$id === undefined) {
+          return this.getResults();
+        }
+        if (!((_helper = helper) !== null && _helper !== void 0 && _helper.lastRecommendResults)) {
+          return null;
+        }
+        return helper.lastRecommendResults[widget.$$id];
+      },
+      getPreviousState: function getPreviousState() {
+        return lastValidSearchParameters;
+      },
+      getScopedResults: function getScopedResults() {
+        var widgetParent = this.getParent();
+        var widgetSiblings;
+        if (widgetParent) {
+          widgetSiblings = widgetParent.getWidgets();
+        } else if (indexName.length === 0) {
+          // The widget is the root but has no index name:
+          // we resolve results from its children index widgets
+          widgetSiblings = this.getWidgets();
+        } else {
+          // The widget is the root and has an index name:
+          // we consider itself as the only sibling
+          widgetSiblings = [this];
+        }
+        return resolveScopedResultsFromWidgets(widgetSiblings);
+      },
+      getParent: function getParent() {
+        return localParent;
+      },
+      createURL: function createURL(nextState) {
+        if (typeof nextState === 'function') {
+          return localInstantSearchInstance._createURL(_defineProperty({}, indexId, nextState(localUiState)));
+        }
+        return localInstantSearchInstance._createURL(_defineProperty({}, indexId, getLocalWidgetsUiState(localWidgets, {
+          searchParameters: nextState,
+          helper: helper
+        })));
+      },
+      getWidgets: function getWidgets() {
+        return localWidgets;
+      },
+      addWidgets: function addWidgets(widgets) {
+        var _this = this;
+        if (!Array.isArray(widgets)) {
+          throw new Error(withUsage$E('The `addWidgets` method expects an array of widgets.'));
+        }
+        if (widgets.some(function (widget) {
+          return typeof widget.init !== 'function' && typeof widget.render !== 'function';
+        })) {
+          throw new Error(withUsage$E('The widget definition expects a `render` and/or an `init` method.'));
+        }
+        widgets.forEach(function (widget) {
+          if (isIndexWidget(widget)) {
+            return;
+          }
+          if (localInstantSearchInstance && widget.dependsOn === 'recommend') {
+            localInstantSearchInstance._hasRecommendWidget = true;
+          } else if (localInstantSearchInstance) {
+            localInstantSearchInstance._hasSearchWidget = true;
+          } else if (widget.dependsOn === 'recommend') {
+            hasRecommendWidget = true;
+          } else {
+            hasSearchWidget = true;
+          }
+          addWidgetId(widget);
+        });
+        localWidgets = localWidgets.concat(widgets);
+        if (localInstantSearchInstance && Boolean(widgets.length)) {
+          privateHelperSetState(helper, {
+            state: getLocalWidgetsSearchParameters(localWidgets, {
+              uiState: localUiState,
+              initialSearchParameters: helper.state
+            }),
+            recommendState: getLocalWidgetsRecommendParameters(localWidgets, {
+              uiState: localUiState,
+              initialRecommendParameters: helper.recommendState
+            }),
+            _uiState: localUiState
+          });
+
+          // We compute the render state before calling `init` in a separate loop
+          // to construct the whole render state object that is then passed to
+          // `init`.
+          widgets.forEach(function (widget) {
+            if (widget.getRenderState) {
+              var renderState = widget.getRenderState(localInstantSearchInstance.renderState[_this.getIndexId()] || {}, createInitArgs(localInstantSearchInstance, _this, localInstantSearchInstance._initialUiState));
+              storeRenderState({
+                renderState: renderState,
+                instantSearchInstance: localInstantSearchInstance,
+                parent: _this
+              });
+            }
+          });
+          widgets.forEach(function (widget) {
+            if (widget.init) {
+              widget.init(createInitArgs(localInstantSearchInstance, _this, localInstantSearchInstance._initialUiState));
+            }
+          });
+          localInstantSearchInstance.scheduleSearch();
+        }
+        return this;
+      },
+      removeWidgets: function removeWidgets(widgets) {
+        var _this2 = this;
+        if (!Array.isArray(widgets)) {
+          throw new Error(withUsage$E('The `removeWidgets` method expects an array of widgets.'));
+        }
+        if (widgets.some(function (widget) {
+          return typeof widget.dispose !== 'function';
+        })) {
+          throw new Error(withUsage$E('The widget definition expects a `dispose` method.'));
+        }
+        localWidgets = localWidgets.filter(function (widget) {
+          return widgets.indexOf(widget) === -1;
+        });
+        localWidgets.forEach(function (widget) {
+          if (isIndexWidget(widget)) {
+            return;
+          }
+          if (localInstantSearchInstance && widget.dependsOn === 'recommend') {
+            localInstantSearchInstance._hasRecommendWidget = true;
+          } else if (localInstantSearchInstance) {
+            localInstantSearchInstance._hasSearchWidget = true;
+          } else if (widget.dependsOn === 'recommend') {
+            hasRecommendWidget = true;
+          } else {
+            hasSearchWidget = true;
+          }
+        });
+        if (localInstantSearchInstance && Boolean(widgets.length)) {
+          var _widgets$reduce = widgets.reduce(function (states, widget) {
+              // the `dispose` method exists at this point we already assert it
+              var next = widget.dispose({
+                helper: helper,
+                state: states.cleanedSearchState,
+                recommendState: states.cleanedRecommendState,
+                parent: _this2
+              });
+              if (next instanceof algoliasearchHelper_1.RecommendParameters) {
+                states.cleanedRecommendState = next;
+              } else if (next) {
+                states.cleanedSearchState = next;
+              }
+              return states;
+            }, {
+              cleanedSearchState: helper.state,
+              cleanedRecommendState: helper.recommendState
+            }),
+            cleanedSearchState = _widgets$reduce.cleanedSearchState,
+            cleanedRecommendState = _widgets$reduce.cleanedRecommendState;
+          var newState = localInstantSearchInstance.future.preserveSharedStateOnUnmount ? getLocalWidgetsSearchParameters(localWidgets, {
+            uiState: localUiState,
+            initialSearchParameters: new algoliasearchHelper_1.SearchParameters({
+              index: this.getIndexName()
+            })
+          }) : getLocalWidgetsSearchParameters(localWidgets, {
+            uiState: getLocalWidgetsUiState(localWidgets, {
+              searchParameters: cleanedSearchState,
+              helper: helper
+            }),
+            initialSearchParameters: cleanedSearchState
+          });
+          localUiState = getLocalWidgetsUiState(localWidgets, {
+            searchParameters: newState,
+            helper: helper
+          });
+          helper.setState(newState);
+          helper.recommendState = cleanedRecommendState;
+          if (localWidgets.length) {
+            localInstantSearchInstance.scheduleSearch();
+          }
+        }
+        return this;
+      },
+      init: function init(_ref2) {
+        var _this3 = this,
+          _instantSearchInstanc;
+        var instantSearchInstance = _ref2.instantSearchInstance,
+          parent = _ref2.parent,
+          uiState = _ref2.uiState;
+        if (helper !== null) {
+          // helper is already initialized, therefore we do not need to set up
+          // any listeners
+          return;
+        }
+        localInstantSearchInstance = instantSearchInstance;
+        localParent = parent;
+        localUiState = uiState[indexId] || {};
+
+        // The `mainHelper` is already defined at this point. The instance is created
+        // inside InstantSearch at the `start` method, which occurs before the `init`
+        // step.
+        var mainHelper = instantSearchInstance.mainHelper;
+        var parameters = getLocalWidgetsSearchParameters(localWidgets, {
+          uiState: localUiState,
+          initialSearchParameters: new algoliasearchHelper_1.SearchParameters({
+            index: indexName
+          })
+        });
+        var recommendParameters = getLocalWidgetsRecommendParameters(localWidgets, {
+          uiState: localUiState,
+          initialRecommendParameters: new algoliasearchHelper_1.RecommendParameters()
+        });
+
+        // This Helper is only used for state management we do not care about the
+        // `searchClient`. Only the "main" Helper created at the `InstantSearch`
+        // level is aware of the client.
+        helper = algoliasearchHelper_1({}, parameters.index, parameters);
+        helper.recommendState = recommendParameters;
+
+        // We forward the call to `search` to the "main" instance of the Helper
+        // which is responsible for managing the queries (it's the only one that is
+        // aware of the `searchClient`).
+        helper.search = function () {
+          if (instantSearchInstance.onStateChange) {
+            instantSearchInstance.onStateChange({
+              uiState: instantSearchInstance.mainIndex.getWidgetUiState({}),
+              setUiState: function setUiState(nextState) {
+                return instantSearchInstance.setUiState(nextState, false);
+              }
+            });
+
+            // We don't trigger a search when controlled because it becomes the
+            // responsibility of `setUiState`.
+            return mainHelper;
+          }
+          return mainHelper.search();
+        };
+        helper.searchWithoutTriggeringOnStateChange = function () {
+          return mainHelper.search();
+        };
+
+        // We use the same pattern for the `searchForFacetValues`.
+        helper.searchForFacetValues = function (facetName, facetValue, maxFacetHits, userState) {
+          var state = helper.state.setQueryParameters(userState);
+          return mainHelper.searchForFacetValues(facetName, facetValue, maxFacetHits, state);
+        };
+        derivedHelper = mainHelper.derive(function () {
+          return mergeSearchParameters.apply(void 0, [mainHelper.state].concat(_toConsumableArray(resolveSearchParameters(_this3))));
+        }, function () {
+          return _this3.getHelper().recommendState;
+        });
+        var indexInitialResults = (_instantSearchInstanc = instantSearchInstance._initialResults) === null || _instantSearchInstanc === void 0 ? void 0 : _instantSearchInstanc[this.getIndexId()];
+        if (indexInitialResults !== null && indexInitialResults !== void 0 && indexInitialResults.results) {
+          // We restore the shape of the results provided to the instance to respect
+          // the helper's structure.
+          var results = new algoliasearchHelper_1.SearchResults(new algoliasearchHelper_1.SearchParameters(indexInitialResults.state), indexInitialResults.results);
+          derivedHelper.lastResults = results;
+          helper.lastResults = results;
+        }
+        if (indexInitialResults !== null && indexInitialResults !== void 0 && indexInitialResults.recommendResults) {
+          var recommendResults = new algoliasearchHelper_1.RecommendResults(new algoliasearchHelper_1.RecommendParameters({
+            params: indexInitialResults.recommendResults.params
+          }), indexInitialResults.recommendResults.results);
+          derivedHelper.lastRecommendResults = recommendResults;
+          helper.lastRecommendResults = recommendResults;
+        }
+
+        // Subscribe to the Helper state changes for the page before widgets
+        // are initialized. This behavior mimics the original one of the Helper.
+        // It makes sense to replicate it at the `init` step. We have another
+        // listener on `change` below, once `init` is done.
+        helper.on('change', function (_ref3) {
+          var isPageReset = _ref3.isPageReset;
+          if (isPageReset) {
+            resetPageFromWidgets(localWidgets);
+          }
+        });
+        derivedHelper.on('search', function () {
+          // The index does not manage the "staleness" of the search. This is the
+          // responsibility of the main instance. It does not make sense to manage
+          // it at the index level because it's either: all of them or none of them
+          // that are stalled. The queries are performed into a single network request.
+          instantSearchInstance.scheduleStalledRender();
+          {
+            checkIndexUiState({
+              index: _this3,
+              indexUiState: localUiState
+            });
+          }
+        });
+        derivedHelper.on('result', function (_ref4) {
+          var results = _ref4.results;
+          // The index does not render the results it schedules a new render
+          // to let all the other indices emit their own results. It allows us to
+          // run the render process in one pass.
+          instantSearchInstance.scheduleRender();
+
+          // the derived helper is the one which actually searches, but the helper
+          // which is exposed e.g. via instance.helper, doesn't search, and thus
+          // does not have access to lastResults, which it used to in pre-federated
+          // search behavior.
+          helper.lastResults = results;
+          lastValidSearchParameters = results === null || results === void 0 ? void 0 : results._state;
+        });
+
+        // eslint-disable-next-line no-warning-comments
+        // TODO: listen to "result" event when events for Recommend are implemented
+        derivedHelper.on('recommend:result', function (_ref5) {
+          var recommend = _ref5.recommend;
+          // The index does not render the results it schedules a new render
+          // to let all the other indices emit their own results. It allows us to
+          // run the render process in one pass.
+          instantSearchInstance.scheduleRender();
+
+          // the derived helper is the one which actually searches, but the helper
+          // which is exposed e.g. via instance.helper, doesn't search, and thus
+          // does not have access to lastRecommendResults.
+          helper.lastRecommendResults = recommend.results;
+        });
+
+        // We compute the render state before calling `init` in a separate loop
+        // to construct the whole render state object that is then passed to
+        // `init`.
+        localWidgets.forEach(function (widget) {
+          if (widget.getRenderState) {
+            var renderState = widget.getRenderState(instantSearchInstance.renderState[_this3.getIndexId()] || {}, createInitArgs(instantSearchInstance, _this3, uiState));
+            storeRenderState({
+              renderState: renderState,
+              instantSearchInstance: instantSearchInstance,
+              parent: _this3
+            });
+          }
+        });
+        localWidgets.forEach(function (widget) {
+           _warning(
+          // if it has NO getWidgetState or if it has getWidgetUiState, we don't warn
+          // aka we warn if there's _only_ getWidgetState
+          !widget.getWidgetState || Boolean(widget.getWidgetUiState), 'The `getWidgetState` method is renamed `getWidgetUiState` and will no longer exist under that name in InstantSearch.js 5.x. Please use `getWidgetUiState` instead.') ;
+          if (widget.init) {
+            widget.init(createInitArgs(instantSearchInstance, _this3, uiState));
+          }
+        });
+
+        // Subscribe to the Helper state changes for the `uiState` once widgets
+        // are initialized. Until the first render, state changes are part of the
+        // configuration step. This is mainly for backward compatibility with custom
+        // widgets. When the subscription happens before the `init` step, the (static)
+        // configuration of the widget is pushed in the URL. That's what we want to avoid.
+        // https://github.com/algolia/instantsearch/pull/994/commits/4a672ae3fd78809e213de0368549ef12e9dc9454
+        helper.on('change', function (event) {
+          var state = event.state;
+          var _uiState = event._uiState;
+          localUiState = getLocalWidgetsUiState(localWidgets, {
+            searchParameters: state,
+            helper: helper
+          }, _uiState || {});
+
+          // We don't trigger an internal change when controlled because it
+          // becomes the responsibility of `setUiState`.
+          if (!instantSearchInstance.onStateChange) {
+            instantSearchInstance.onInternalStateChange();
+          }
+        });
+        if (indexInitialResults) {
+          // If there are initial results, we're not notified of the next results
+          // because we don't trigger an initial search. We therefore need to directly
+          // schedule a render that will render the results injected on the helper.
+          instantSearchInstance.scheduleRender();
+        }
+        if (hasRecommendWidget) {
+          instantSearchInstance._hasRecommendWidget = true;
+        }
+        if (hasSearchWidget) {
+          instantSearchInstance._hasSearchWidget = true;
+        }
+      },
+      render: function render(_ref6) {
+        var _derivedHelper2,
+          _this4 = this;
+        var instantSearchInstance = _ref6.instantSearchInstance;
+        // we can't attach a listener to the error event of search, as the error
+        // then would no longer be thrown for global handlers.
+        if (instantSearchInstance.status === 'error' && !instantSearchInstance.mainHelper.hasPendingRequests() && lastValidSearchParameters) {
+          helper.setState(lastValidSearchParameters);
+        }
+
+        // We only render index widgets if there are no results.
+        // This makes sure `render` is never called with `results` being `null`.
+        var widgetsToRender = this.getResults() || (_derivedHelper2 = derivedHelper) !== null && _derivedHelper2 !== void 0 && _derivedHelper2.lastRecommendResults ? localWidgets : localWidgets.filter(isIndexWidget);
+        widgetsToRender = widgetsToRender.filter(function (widget) {
+          if (!widget.shouldRender) {
+            return true;
+          }
+          return widget.shouldRender({
+            instantSearchInstance: instantSearchInstance
+          });
+        });
+        widgetsToRender.forEach(function (widget) {
+          if (widget.getRenderState) {
+            var renderState = widget.getRenderState(instantSearchInstance.renderState[_this4.getIndexId()] || {}, createRenderArgs(instantSearchInstance, _this4, widget));
+            storeRenderState({
+              renderState: renderState,
+              instantSearchInstance: instantSearchInstance,
+              parent: _this4
+            });
+          }
+        });
+        widgetsToRender.forEach(function (widget) {
+          // At this point, all the variables used below are set. Both `helper`
+          // and `derivedHelper` have been created at the `init` step. The attribute
+          // `lastResults` might be `null` though. It's possible that a stalled render
+          // happens before the result e.g with a dynamically added index the request might
+          // be delayed. The render is triggered for the complete tree but some parts do
+          // not have results yet.
+
+          if (widget.render) {
+            widget.render(createRenderArgs(instantSearchInstance, _this4, widget));
+          }
+        });
+      },
+      dispose: function dispose() {
+        var _this5 = this,
+          _helper2,
+          _derivedHelper3;
+        localWidgets.forEach(function (widget) {
+          if (widget.dispose && helper) {
+            // The dispose function is always called once the instance is started
+            // (it's an effect of `removeWidgets`). The index is initialized and
+            // the Helper is available. We don't care about the return value of
+            // `dispose` because the index is removed. We can't call `removeWidgets`
+            // because we want to keep the widgets on the instance, to allow idempotent
+            // operations on `add` & `remove`.
+            widget.dispose({
+              helper: helper,
+              state: helper.state,
+              recommendState: helper.recommendState,
+              parent: _this5
+            });
+          }
+        });
+        localInstantSearchInstance = null;
+        localParent = null;
+        (_helper2 = helper) === null || _helper2 === void 0 ? void 0 : _helper2.removeAllListeners();
+        helper = null;
+        (_derivedHelper3 = derivedHelper) === null || _derivedHelper3 === void 0 ? void 0 : _derivedHelper3.detach();
+        derivedHelper = null;
+      },
+      getWidgetUiState: function getWidgetUiState(uiState) {
+        return localWidgets.filter(isIndexWidget).reduce(function (previousUiState, innerIndex) {
+          return innerIndex.getWidgetUiState(previousUiState);
+        }, _objectSpread2(_objectSpread2({}, uiState), {}, _defineProperty({}, indexId, _objectSpread2(_objectSpread2({}, uiState[indexId]), localUiState))));
+      },
+      getWidgetState: function getWidgetState(uiState) {
+         _warning(false, 'The `getWidgetState` method is renamed `getWidgetUiState` and will no longer exist under that name in InstantSearch.js 5.x. Please use `getWidgetUiState` instead.') ;
+        return this.getWidgetUiState(uiState);
+      },
+      getWidgetSearchParameters: function getWidgetSearchParameters(searchParameters, _ref7) {
+        var uiState = _ref7.uiState;
+        return getLocalWidgetsSearchParameters(localWidgets, {
+          uiState: uiState,
+          initialSearchParameters: searchParameters
+        });
+      },
+      refreshUiState: function refreshUiState() {
+        localUiState = getLocalWidgetsUiState(localWidgets, {
+          searchParameters: this.getHelper().state,
+          helper: this.getHelper()
+        }, localUiState);
+      },
+      setIndexUiState: function setIndexUiState(indexUiState) {
+        var nextIndexUiState = typeof indexUiState === 'function' ? indexUiState(localUiState) : indexUiState;
+        localInstantSearchInstance.setUiState(function (state) {
+          return _objectSpread2(_objectSpread2({}, state), {}, _defineProperty({}, indexId, nextIndexUiState));
+        });
+      }
+    };
+  };
+  function storeRenderState(_ref8) {
+    var renderState = _ref8.renderState,
+      instantSearchInstance = _ref8.instantSearchInstance,
+      parent = _ref8.parent;
+    var parentIndexName = parent ? parent.getIndexId() : instantSearchInstance.mainIndex.getIndexId();
+    instantSearchInstance.renderState = _objectSpread2(_objectSpread2({}, instantSearchInstance.renderState), {}, _defineProperty({}, parentIndexName, _objectSpread2(_objectSpread2({}, instantSearchInstance.renderState[parentIndexName]), renderState)));
+  }
+
+  var DefaultBanner = function DefaultBanner(_ref) {
+    var banner = _ref.banner,
+      classNames = _ref.classNames;
+    if (!banner.image.urls[0].url) {
+      return null;
+    }
+    return h("aside", {
+      className: cx(classNames.bannerRoot)
+    }, banner.link ? h("a", {
+      className: cx(classNames.bannerLink),
+      href: banner.link.url,
+      target: banner.link.target
+    }, h("img", {
+      className: cx(classNames.bannerImage),
+      src: banner.image.urls[0].url,
+      alt: banner.image.title
+    })) : h("img", {
+      className: cx(classNames.bannerImage),
+      src: banner.image.urls[0].url,
+      alt: banner.image.title
+    }));
+  };
+  var InfiniteHits = function InfiniteHits(_ref2) {
+    var results = _ref2.results,
+      hits = _ref2.hits,
+      insights = _ref2.insights,
+      bindEvent = _ref2.bindEvent,
+      sendEvent = _ref2.sendEvent,
+      hasShowPrevious = _ref2.hasShowPrevious,
+      showPrevious = _ref2.showPrevious,
+      showMore = _ref2.showMore,
+      isFirstPage = _ref2.isFirstPage,
+      isLastPage = _ref2.isLastPage,
+      cssClasses = _ref2.cssClasses,
+      templateProps = _ref2.templateProps,
+      banner = _ref2.banner;
     var handleInsightsClick = createInsightsEventHandler({
       insights: insights,
       sendEvent: sendEvent
     });
     if (results.hits.length === 0) {
-      return h(Template, _extends({}, templateProps, {
+      return h("div", {
+        className: cx(cssClasses.root, cssClasses.emptyRoot),
+        onClick: handleInsightsClick
+      }, banner && (templateProps.templates.banner ? h(Template, _extends({}, templateProps, {
+        templateKey: "banner",
+        rootTagName: "fragment",
+        data: {
+          banner: banner,
+          className: cssClasses.bannerRoot
+        }
+      })) : h(DefaultBanner, {
+        banner: banner,
+        classNames: cssClasses
+      })), h(Template, _extends({}, templateProps, {
         templateKey: "empty",
-        rootProps: {
-          className: cx(cssClasses.root, cssClasses.emptyRoot),
-          onClick: handleInsightsClick
-        },
+        rootTagName: "fragment",
         data: results
-      }));
+      })));
     }
     return h("div", {
       className: cssClasses.root
@@ -18109,6 +19975,16 @@
         disabled: isFirstPage,
         onClick: showPrevious
       }
+    })), banner && (templateProps.templates.banner ? h(Template, _extends({}, templateProps, {
+      templateKey: "banner",
+      rootTagName: "fragment",
+      data: {
+        banner: banner,
+        className: cssClasses.bannerRoot
+      }
+    })) : h(DefaultBanner, {
+      banner: banner,
+      classNames: cssClasses
     })), h("ol", {
       className: cssClasses.list
     }, hits.map(function (hit, index) {
@@ -18162,10 +20038,10 @@
     }
   };
 
-  var withUsage$C = createDocumentationMessageGenerator({
+  var withUsage$F = createDocumentationMessageGenerator({
     name: 'infinite-hits'
   });
-  var suit$d = component('InfiniteHits');
+  var suit$c = component('InfiniteHits');
   var renderer$8 = function renderer(_ref) {
     var containerNode = _ref.containerNode,
       cssClasses = _ref.cssClasses,
@@ -18173,7 +20049,7 @@
       templates = _ref.templates,
       hasShowPrevious = _ref.showPrevious;
     return function (_ref2, isFirstRendering) {
-      var hits = _ref2.hits,
+      var items = _ref2.items,
         results = _ref2.results,
         showMore = _ref2.showMore,
         showPrevious = _ref2.showPrevious,
@@ -18182,7 +20058,8 @@
         instantSearchInstance = _ref2.instantSearchInstance,
         insights = _ref2.insights,
         bindEvent = _ref2.bindEvent,
-        sendEvent = _ref2.sendEvent;
+        sendEvent = _ref2.sendEvent,
+        banner = _ref2.banner;
       if (isFirstRendering) {
         renderState.templateProps = prepareTemplateProps({
           defaultTemplates: defaultTemplates$6,
@@ -18193,7 +20070,7 @@
       }
       P(h(InfiniteHits, {
         cssClasses: cssClasses,
-        hits: hits,
+        hits: items,
         results: results,
         hasShowPrevious: hasShowPrevious,
         showPrevious: showPrevious,
@@ -18203,11 +20080,12 @@
         isLastPage: isLastPage,
         insights: insights,
         sendEvent: sendEvent,
-        bindEvent: bindEvent
+        bindEvent: bindEvent,
+        banner: banner
       }), containerNode);
     };
   };
-  var infiniteHits = function infiniteHits(widgetParams) {
+  var infiniteHits = (function infiniteHits(widgetParams) {
     var _ref3 = widgetParams || {},
       container = _ref3.container,
       escapeHTML = _ref3.escapeHTML,
@@ -18219,34 +20097,43 @@
       showPrevious = _ref3.showPrevious,
       cache = _ref3.cache;
     if (!container) {
-      throw new Error(withUsage$C('The `container` option is required.'));
+      throw new Error(withUsage$F('The `container` option is required.'));
     }
     var containerNode = getContainerNode(container);
     var cssClasses = {
-      root: cx(suit$d(), userCssClasses.root),
-      emptyRoot: cx(suit$d({
+      root: cx(suit$c(), userCssClasses.root),
+      emptyRoot: cx(suit$c({
         modifierName: 'empty'
       }), userCssClasses.emptyRoot),
-      item: cx(suit$d({
+      item: cx(suit$c({
         descendantName: 'item'
       }), userCssClasses.item),
-      list: cx(suit$d({
+      list: cx(suit$c({
         descendantName: 'list'
       }), userCssClasses.list),
-      loadPrevious: cx(suit$d({
+      loadPrevious: cx(suit$c({
         descendantName: 'loadPrevious'
       }), userCssClasses.loadPrevious),
-      disabledLoadPrevious: cx(suit$d({
+      disabledLoadPrevious: cx(suit$c({
         descendantName: 'loadPrevious',
         modifierName: 'disabled'
       }), userCssClasses.disabledLoadPrevious),
-      loadMore: cx(suit$d({
+      loadMore: cx(suit$c({
         descendantName: 'loadMore'
       }), userCssClasses.loadMore),
-      disabledLoadMore: cx(suit$d({
+      disabledLoadMore: cx(suit$c({
         descendantName: 'loadMore',
         modifierName: 'disabled'
-      }), userCssClasses.disabledLoadMore)
+      }), userCssClasses.disabledLoadMore),
+      bannerRoot: cx(suit$c({
+        descendantName: 'banner'
+      }), userCssClasses.bannerRoot),
+      bannerImage: cx(suit$c({
+        descendantName: 'banner-image'
+      }), userCssClasses.bannerImage),
+      bannerLink: cx(suit$c({
+        descendantName: 'banner-link'
+      }), userCssClasses.bannerLink)
     };
     var specializedRenderer = renderer$8({
       containerNode: containerNode,
@@ -18266,7 +20153,7 @@
     })), {}, {
       $$widgetType: 'ais.infiniteHits'
     });
-  };
+  });
 
   var defaultTemplates$7 = {
     item: function item(_ref) {
@@ -18289,10 +20176,10 @@
     }
   };
 
-  var withUsage$D = createDocumentationMessageGenerator({
+  var withUsage$G = createDocumentationMessageGenerator({
     name: 'menu'
   });
-  var suit$e = component('Menu');
+  var suit$d = component('Menu');
   var renderer$9 = function renderer(_ref) {
     var containerNode = _ref.containerNode,
       cssClasses = _ref.cssClasses,
@@ -18347,37 +20234,37 @@
       templates = _ref3$templates === void 0 ? {} : _ref3$templates,
       transformItems = _ref3.transformItems;
     if (!container) {
-      throw new Error(withUsage$D('The `container` option is required.'));
+      throw new Error(withUsage$G('The `container` option is required.'));
     }
     var containerNode = getContainerNode(container);
     var cssClasses = {
-      root: cx(suit$e(), userCssClasses.root),
-      noRefinementRoot: cx(suit$e({
+      root: cx(suit$d(), userCssClasses.root),
+      noRefinementRoot: cx(suit$d({
         modifierName: 'noRefinement'
       }), userCssClasses.noRefinementRoot),
-      list: cx(suit$e({
+      list: cx(suit$d({
         descendantName: 'list'
       }), userCssClasses.list),
-      item: cx(suit$e({
+      item: cx(suit$d({
         descendantName: 'item'
       }), userCssClasses.item),
-      selectedItem: cx(suit$e({
+      selectedItem: cx(suit$d({
         descendantName: 'item',
         modifierName: 'selected'
       }), userCssClasses.selectedItem),
-      link: cx(suit$e({
+      link: cx(suit$d({
         descendantName: 'link'
       }), userCssClasses.link),
-      label: cx(suit$e({
+      label: cx(suit$d({
         descendantName: 'label'
       }), userCssClasses.label),
-      count: cx(suit$e({
+      count: cx(suit$d({
         descendantName: 'count'
       }), userCssClasses.count),
-      showMore: cx(suit$e({
+      showMore: cx(suit$d({
         descendantName: 'showMore'
       }), userCssClasses.showMore),
-      disabledShowMore: cx(suit$e({
+      disabledShowMore: cx(suit$d({
         descendantName: 'showMore',
         modifierName: 'disabled'
       }), userCssClasses.disabledShowMore)
@@ -18455,10 +20342,10 @@
     }
   };
 
-  var withUsage$E = createDocumentationMessageGenerator({
+  var withUsage$H = createDocumentationMessageGenerator({
     name: 'menu-select'
   });
-  var suit$f = component('MenuSelect');
+  var suit$e = component('MenuSelect');
   var renderer$a = function renderer(_ref) {
     var containerNode = _ref.containerNode,
       cssClasses = _ref.cssClasses,
@@ -18498,18 +20385,18 @@
       templates = _ref3$templates === void 0 ? {} : _ref3$templates,
       transformItems = _ref3.transformItems;
     if (!container) {
-      throw new Error(withUsage$E('The `container` option is required.'));
+      throw new Error(withUsage$H('The `container` option is required.'));
     }
     var containerNode = getContainerNode(container);
     var cssClasses = {
-      root: cx(suit$f(), userCssClasses.root),
-      noRefinementRoot: cx(suit$f({
+      root: cx(suit$e(), userCssClasses.root),
+      noRefinementRoot: cx(suit$e({
         modifierName: 'noRefinement'
       }), userCssClasses.noRefinementRoot),
-      select: cx(suit$f({
+      select: cx(suit$e({
         descendantName: 'select'
       }), userCssClasses.select),
-      option: cx(suit$f({
+      option: cx(suit$e({
         descendantName: 'option'
       }), userCssClasses.option)
     };
@@ -18551,10 +20438,10 @@
     }
   };
 
-  var withUsage$F = createDocumentationMessageGenerator({
+  var withUsage$I = createDocumentationMessageGenerator({
     name: 'numeric-menu'
   });
-  var suit$g = component('NumericMenu');
+  var suit$f = component('NumericMenu');
   var renderer$b = function renderer(_ref) {
     var containerNode = _ref.containerNode,
       attribute = _ref.attribute,
@@ -18595,31 +20482,31 @@
       templates = _ref3$templates === void 0 ? {} : _ref3$templates,
       transformItems = _ref3.transformItems;
     if (!container) {
-      throw new Error(withUsage$F('The `container` option is required.'));
+      throw new Error(withUsage$I('The `container` option is required.'));
     }
     var containerNode = getContainerNode(container);
     var cssClasses = {
-      root: cx(suit$g(), userCssClasses.root),
-      noRefinementRoot: cx(suit$g({
+      root: cx(suit$f(), userCssClasses.root),
+      noRefinementRoot: cx(suit$f({
         modifierName: 'noRefinement'
       }), userCssClasses.noRefinementRoot),
-      list: cx(suit$g({
+      list: cx(suit$f({
         descendantName: 'list'
       }), userCssClasses.list),
-      item: cx(suit$g({
+      item: cx(suit$f({
         descendantName: 'item'
       }), userCssClasses.item),
-      selectedItem: cx(suit$g({
+      selectedItem: cx(suit$f({
         descendantName: 'item',
         modifierName: 'selected'
       }), userCssClasses.selectedItem),
-      label: cx(suit$g({
+      label: cx(suit$f({
         descendantName: 'label'
       }), userCssClasses.label),
-      radio: cx(suit$g({
+      radio: cx(suit$f({
         descendantName: 'radio'
       }), userCssClasses.radio),
-      labelText: cx(suit$g({
+      labelText: cx(suit$f({
         descendantName: 'labelText'
       }), userCssClasses.labelText)
     };
@@ -18659,7 +20546,7 @@
     }, h("ul", {
       className: props.cssClasses.list
     }, props.showFirst && h(PaginationLink, {
-      ariaLabel: "First",
+      ariaLabel: "First Page",
       className: props.cssClasses.firstPageItem,
       isDisabled: props.isFirstPage,
       templates: props.templates,
@@ -18669,7 +20556,7 @@
       cssClasses: props.cssClasses,
       createClickHandler: createClickHandler
     }), props.showPrevious && h(PaginationLink, {
-      ariaLabel: "Previous",
+      ariaLabel: "Previous Page",
       className: props.cssClasses.previousPageItem,
       isDisabled: props.isFirstPage,
       templates: props.templates,
@@ -18692,7 +20579,7 @@
         createClickHandler: createClickHandler
       });
     }), props.showNext && h(PaginationLink, {
-      ariaLabel: "Next",
+      ariaLabel: "Next Page",
       className: props.cssClasses.nextPageItem,
       isDisabled: props.isLastPage,
       templates: props.templates,
@@ -18702,7 +20589,7 @@
       cssClasses: props.cssClasses,
       createClickHandler: createClickHandler
     }), props.showLast && h(PaginationLink, {
-      ariaLabel: "Last",
+      ariaLabel: "Last Page, Page ".concat(props.nbPages),
       className: props.cssClasses.lastPageItem,
       isDisabled: props.isLastPage,
       templates: props.templates,
@@ -18727,11 +20614,12 @@
       createURL = _ref.createURL,
       createClickHandler = _ref.createClickHandler;
     return h("li", {
-      className: cx(cssClasses.item, className, isDisabled && cssClasses.disabledItem, isSelected && cssClasses.selectedItem)
+      className: cx(cssClasses.item, isDisabled && cssClasses.disabledItem, className, isSelected && cssClasses.selectedItem)
     }, isDisabled ? h(Template, {
       rootTagName: "span",
       rootProps: {
-        className: cssClasses.link
+        className: cssClasses.link,
+        'aria-label': ariaLabel
       },
       templateKey: templateKey,
       templates: templates,
@@ -18754,8 +20642,8 @@
     }));
   }
 
-  var suit$h = component('Pagination');
-  var withUsage$G = createDocumentationMessageGenerator({
+  var suit$g = component('Pagination');
+  var withUsage$J = createDocumentationMessageGenerator({
     name: 'pagination'
   });
   var defaultTemplates$a = {
@@ -18837,51 +20725,51 @@
       _ref4$scrollTo = _ref4.scrollTo,
       userScrollTo = _ref4$scrollTo === void 0 ? 'body' : _ref4$scrollTo;
     if (!container) {
-      throw new Error(withUsage$G('The `container` option is required.'));
+      throw new Error(withUsage$J('The `container` option is required.'));
     }
     var containerNode = getContainerNode(container);
     var scrollTo = userScrollTo === true ? 'body' : userScrollTo;
     var scrollToNode = scrollTo !== false ? getContainerNode(scrollTo) : false;
     var cssClasses = {
-      root: cx(suit$h(), userCssClasses.root),
-      noRefinementRoot: cx(suit$h({
+      root: cx(suit$g(), userCssClasses.root),
+      noRefinementRoot: cx(suit$g({
         modifierName: 'noRefinement'
       }), userCssClasses.noRefinementRoot),
-      list: cx(suit$h({
+      list: cx(suit$g({
         descendantName: 'list'
       }), userCssClasses.list),
-      item: cx(suit$h({
+      item: cx(suit$g({
         descendantName: 'item'
       }), userCssClasses.item),
-      firstPageItem: cx(suit$h({
+      firstPageItem: cx(suit$g({
         descendantName: 'item',
         modifierName: 'firstPage'
       }), userCssClasses.firstPageItem),
-      lastPageItem: cx(suit$h({
+      lastPageItem: cx(suit$g({
         descendantName: 'item',
         modifierName: 'lastPage'
       }), userCssClasses.lastPageItem),
-      previousPageItem: cx(suit$h({
+      previousPageItem: cx(suit$g({
         descendantName: 'item',
         modifierName: 'previousPage'
       }), userCssClasses.previousPageItem),
-      nextPageItem: cx(suit$h({
+      nextPageItem: cx(suit$g({
         descendantName: 'item',
         modifierName: 'nextPage'
       }), userCssClasses.nextPageItem),
-      pageItem: cx(suit$h({
+      pageItem: cx(suit$g({
         descendantName: 'item',
         modifierName: 'page'
       }), userCssClasses.pageItem),
-      selectedItem: cx(suit$h({
+      selectedItem: cx(suit$g({
         descendantName: 'item',
         modifierName: 'selected'
       }), userCssClasses.selectedItem),
-      disabledItem: cx(suit$h({
+      disabledItem: cx(suit$g({
         descendantName: 'item',
         modifierName: 'disabled'
       }), userCssClasses.disabledItem),
-      link: cx(suit$h({
+      link: cx(suit$g({
         descendantName: 'link'
       }), userCssClasses.link)
     };
@@ -18972,10 +20860,10 @@
     }));
   }
 
-  var withUsage$H = createDocumentationMessageGenerator({
+  var withUsage$K = createDocumentationMessageGenerator({
     name: 'panel'
   });
-  var suit$i = component('Panel');
+  var suit$h = component('Panel');
   var renderer$d = function renderer(_ref) {
     var containerNode = _ref.containerNode,
       bodyContainerNode = _ref.bodyContainerNode,
@@ -19020,36 +20908,36 @@
       return false;
     };
     var cssClasses = {
-      root: cx(suit$i(), userCssClasses.root),
-      noRefinementRoot: cx(suit$i({
+      root: cx(suit$h(), userCssClasses.root),
+      noRefinementRoot: cx(suit$h({
         modifierName: 'noRefinement'
       }), userCssClasses.noRefinementRoot),
-      collapsibleRoot: cx(suit$i({
+      collapsibleRoot: cx(suit$h({
         modifierName: 'collapsible'
       }), userCssClasses.collapsibleRoot),
-      collapsedRoot: cx(suit$i({
+      collapsedRoot: cx(suit$h({
         modifierName: 'collapsed'
       }), userCssClasses.collapsedRoot),
-      collapseButton: cx(suit$i({
+      collapseButton: cx(suit$h({
         descendantName: 'collapseButton'
       }), userCssClasses.collapseButton),
-      collapseIcon: cx(suit$i({
+      collapseIcon: cx(suit$h({
         descendantName: 'collapseIcon'
       }), userCssClasses.collapseIcon),
-      body: cx(suit$i({
+      body: cx(suit$h({
         descendantName: 'body'
       }), userCssClasses.body),
-      header: cx(suit$i({
+      header: cx(suit$h({
         descendantName: 'header'
       }), userCssClasses.header),
-      footer: cx(suit$i({
+      footer: cx(suit$h({
         descendantName: 'footer'
       }), userCssClasses.footer)
     };
     return function (widgetFactory) {
       return function (widgetParams) {
         if (!(widgetParams && widgetParams.container)) {
-          throw new Error(withUsage$H("The `container` option is required in the widget within the panel."));
+          throw new Error(withUsage$K("The `container` option is required in the widget within the panel."));
         }
         var containerNode = getContainerNode(widgetParams.container);
         var defaultTemplates = {
@@ -19123,23 +21011,23 @@
     };
   };
 
-  var _excluded$l = ["placesReference", "defaultPosition"],
-    _excluded2$5 = ["places"];
+  var _excluded$q = ["placesReference", "defaultPosition"],
+    _excluded2$6 = ["places"];
+
   /* Places.js is an optional dependency, no error should be reported if the package is missing */
   /** @ts-ignore */
-
   // using the type like this requires only one ts-ignore
-
   /**
    * This widget sets the geolocation value for the search based on the selected
    * result in the Algolia Places autocomplete.
+   * @deprecated the places service is no longer offered, and this widget will be removed in InstantSearch.js v5
    */
   var placesWidget = function placesWidget(widgetParams) {
     var _ref = widgetParams || {},
       placesReference = _ref.placesReference,
       _ref$defaultPosition = _ref.defaultPosition,
       defaultPosition = _ref$defaultPosition === void 0 ? [] : _ref$defaultPosition,
-      placesOptions = _objectWithoutProperties(_ref, _excluded$l);
+      placesOptions = _objectWithoutProperties(_ref, _excluded$q);
     if (typeof placesReference !== 'function') {
       throw new Error('The `placesReference` option requires a valid Places.js reference.');
     }
@@ -19180,7 +21068,7 @@
         var hasPositionSet = position !== defaultPosition.join(',');
         if (!hasPositionSet && !state.query) {
           var places = uiState.places,
-            uiStateWithoutPlaces = _objectWithoutProperties(uiState, _excluded2$5);
+            uiStateWithoutPlaces = _objectWithoutProperties(uiState, _excluded2$6);
           return uiStateWithoutPlaces;
         }
         return _objectSpread2(_objectSpread2({}, uiState), {}, {
@@ -19218,6 +21106,7 @@
       }
     };
   };
+  var places = deprecate(placesWidget, 'The places widget is deprecated and will be removed in InstantSearch.js 5.0.');
 
   var PoweredBy = function PoweredBy(_ref) {
     var url = _ref.url,
@@ -19250,8 +21139,8 @@
     }))));
   };
 
-  var suit$j = component('PoweredBy');
-  var withUsage$I = createDocumentationMessageGenerator({
+  var suit$i = component('PoweredBy');
+  var withUsage$L = createDocumentationMessageGenerator({
     name: 'powered-by'
   });
   var renderer$e = function renderer(_ref) {
@@ -19280,17 +21169,17 @@
       _ref3$theme = _ref3.theme,
       theme = _ref3$theme === void 0 ? 'light' : _ref3$theme;
     if (!container) {
-      throw new Error(withUsage$I('The `container` option is required.'));
+      throw new Error(withUsage$L('The `container` option is required.'));
     }
     var containerNode = getContainerNode(container);
     var cssClasses = {
-      root: cx(suit$j(), suit$j({
+      root: cx(suit$i(), suit$i({
         modifierName: theme === 'dark' ? 'dark' : 'light'
       }), userCssClasses.root),
-      link: cx(suit$j({
+      link: cx(suit$i({
         descendantName: 'link'
       }), userCssClasses.link),
-      logo: cx(suit$j({
+      logo: cx(suit$i({
         descendantName: 'logo'
       }), userCssClasses.logo)
     };
@@ -19308,13 +21197,13 @@
     });
   };
 
-  var withUsage$J = createDocumentationMessageGenerator({
+  var withUsage$M = createDocumentationMessageGenerator({
     name: 'query-rule-context'
   });
   var queryRuleContext = function queryRuleContext() {
     var widgetParams = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
     if (!widgetParams.trackedFilters) {
-      throw new Error(withUsage$J('The `trackedFilters` option is required.'));
+      throw new Error(withUsage$M('The `trackedFilters` option is required.'));
     }
     return _objectSpread2(_objectSpread2({}, connectQueryRules(noop)(widgetParams)), {}, {
       $$widgetType: 'ais.queryRuleContext'
@@ -19343,10 +21232,10 @@
       return JSON.stringify(items, null, 2);
     }
   };
-  var withUsage$K = createDocumentationMessageGenerator({
+  var withUsage$N = createDocumentationMessageGenerator({
     name: 'query-rule-custom-data'
   });
-  var suit$k = component('QueryRuleCustomData');
+  var suit$j = component('QueryRuleCustomData');
   var renderer$f = function renderer(_ref2) {
     var containerNode = _ref2.containerNode,
       cssClasses = _ref2.cssClasses,
@@ -19372,10 +21261,10 @@
         return items;
       } : _ref4$transformItems;
     if (!container) {
-      throw new Error(withUsage$K('The `container` option is required.'));
+      throw new Error(withUsage$N('The `container` option is required.'));
     }
     var cssClasses = {
-      root: cx(suit$k(), userCssClasses.root)
+      root: cx(suit$j(), userCssClasses.root)
     };
     var containerNode = getContainerNode(container);
     var templates = _objectSpread2(_objectSpread2({}, defaultTemplates$b), userTemplates);
@@ -19394,6 +21283,106 @@
       $$widgetType: 'ais.queryRuleCustomData'
     });
   };
+
+  var withUsage$O = createDocumentationMessageGenerator({
+    name: 'related-products'
+  });
+  var RelatedProducts = createRelatedProductsComponent({
+    createElement: h,
+    Fragment: p
+  });
+  function createRenderer(_ref) {
+    var renderState = _ref.renderState,
+      cssClasses = _ref.cssClasses,
+      containerNode = _ref.containerNode,
+      templates = _ref.templates;
+    return function renderer(_ref2, isFirstRendering) {
+      var items = _ref2.items,
+        results = _ref2.results,
+        instantSearchInstance = _ref2.instantSearchInstance;
+      if (isFirstRendering) {
+        renderState.templateProps = prepareTemplateProps({
+          defaultTemplates: {},
+          templatesConfig: instantSearchInstance.templatesConfig,
+          templates: templates
+        });
+        return;
+      }
+      var headerComponent = templates.header ? function (data) {
+        return h(Template, _extends({}, renderState.templateProps, {
+          templateKey: "header",
+          rootTagName: "fragment",
+          data: {
+            cssClasses: data.classNames,
+            items: data.items
+          }
+        }));
+      } : undefined;
+      var itemComponent = templates.item ? function (_ref3) {
+        var item = _ref3.item;
+        return h(Template, _extends({}, renderState.templateProps, {
+          templateKey: "item",
+          rootTagName: "fragment",
+          data: item
+        }));
+      } : undefined;
+      var emptyComponent = templates.empty ? function () {
+        return h(Template, _extends({}, renderState.templateProps, {
+          templateKey: "empty",
+          rootTagName: "fragment",
+          data: results
+        }));
+      } : undefined;
+      P(h(RelatedProducts, {
+        items: items,
+        sendEvent: function sendEvent() {},
+        classNames: cssClasses,
+        headerComponent: headerComponent,
+        itemComponent: itemComponent,
+        emptyComponent: emptyComponent,
+        status: instantSearchInstance.status
+      }), containerNode);
+    };
+  }
+  var relatedProducts = (function relatedProducts(widgetParams) {
+    var _ref4 = widgetParams || {},
+      container = _ref4.container,
+      objectIDs = _ref4.objectIDs,
+      limit = _ref4.limit,
+      queryParameters = _ref4.queryParameters,
+      fallbackParameters = _ref4.fallbackParameters,
+      threshold = _ref4.threshold,
+      escapeHTML = _ref4.escapeHTML,
+      transformItems = _ref4.transformItems,
+      _ref4$templates = _ref4.templates,
+      templates = _ref4$templates === void 0 ? {} : _ref4$templates,
+      _ref4$cssClasses = _ref4.cssClasses,
+      cssClasses = _ref4$cssClasses === void 0 ? {} : _ref4$cssClasses;
+    if (!container) {
+      throw new Error(withUsage$O('The `container` option is required.'));
+    }
+    var containerNode = getContainerNode(container);
+    var specializedRenderer = createRenderer({
+      containerNode: containerNode,
+      cssClasses: cssClasses,
+      renderState: {},
+      templates: templates
+    });
+    var makeWidget = connectRelatedProducts(specializedRenderer, function () {
+      return P(null, containerNode);
+    });
+    return _objectSpread2(_objectSpread2({}, makeWidget({
+      objectIDs: objectIDs,
+      limit: limit,
+      queryParameters: queryParameters,
+      fallbackParameters: fallbackParameters,
+      threshold: threshold,
+      escapeHTML: escapeHTML,
+      transformItems: transformItems
+    })), {}, {
+      $$widgetType: 'ais.relatedProducts'
+    });
+  });
 
   // Strips leading `0` from a positive number value
   function stripLeadingZeroFromInput(value) {
@@ -19505,10 +21494,10 @@
     return RangeInput;
   }(d);
 
-  var withUsage$L = createDocumentationMessageGenerator({
+  var withUsage$P = createDocumentationMessageGenerator({
     name: 'range-input'
   });
-  var suit$l = component('RangeInput');
+  var suit$k = component('RangeInput');
   var defaultTemplates$c = {
     separatorText: function separatorText() {
       return 'to';
@@ -19570,35 +21559,35 @@
       _ref3$templates = _ref3.templates,
       templates = _ref3$templates === void 0 ? {} : _ref3$templates;
     if (!container) {
-      throw new Error(withUsage$L('The `container` option is required.'));
+      throw new Error(withUsage$P('The `container` option is required.'));
     }
     var containerNode = getContainerNode(container);
     var cssClasses = {
-      root: cx(suit$l(), userCssClasses.root),
-      noRefinement: cx(suit$l({
+      root: cx(suit$k(), userCssClasses.root),
+      noRefinement: cx(suit$k({
         modifierName: 'noRefinement'
       })),
-      form: cx(suit$l({
+      form: cx(suit$k({
         descendantName: 'form'
       }), userCssClasses.form),
-      label: cx(suit$l({
+      label: cx(suit$k({
         descendantName: 'label'
       }), userCssClasses.label),
-      input: cx(suit$l({
+      input: cx(suit$k({
         descendantName: 'input'
       }), userCssClasses.input),
-      inputMin: cx(suit$l({
+      inputMin: cx(suit$k({
         descendantName: 'input',
         modifierName: 'min'
       }), userCssClasses.inputMin),
-      inputMax: cx(suit$l({
+      inputMax: cx(suit$k({
         descendantName: 'input',
         modifierName: 'max'
       }), userCssClasses.inputMax),
-      separator: cx(suit$l({
+      separator: cx(suit$k({
         descendantName: 'separator'
       }), userCssClasses.separator),
-      submit: cx(suit$l({
+      submit: cx(suit$k({
         descendantName: 'submit'
       }), userCssClasses.submit)
     };
@@ -20012,6 +22001,8 @@
         }
         killEvent(ev);
       });
+      // Make sure the proposed position respects the bounds and
+      // does not collide with other handles too much.
       _defineProperty(_assertThisInitialized(_this), "validatePosition", function (idx, proposedPosition) {
         var _this$state4 = _this.state,
           handlePos = _this$state4.handlePos,
@@ -20198,8 +22189,10 @@
           parseFloat(props['aria-valuenow']) * 100) / 100;
           var value = _typeof(tooltips) === 'object' && tooltips.format ? tooltips.format(roundedValue) : roundedValue;
           var className = cx(props.className, props['data-handle-key'] === 0 && 'rheostat-handle-lower', props['data-handle-key'] === 1 && 'rheostat-handle-upper');
+          var ariaLabel = props['data-handle-key'] === 0 ? 'Minimum Filter Handle' : 'Maximum Filter Handle';
           return h("div", _extends({}, props, {
-            className: className
+            className: className,
+            "aria-label": ariaLabel
           }), tooltips && h("div", {
             className: "rheostat-tooltip"
           }, value));
@@ -20289,10 +22282,10 @@
     return Slider;
   }(d);
 
-  var withUsage$M = createDocumentationMessageGenerator({
+  var withUsage$Q = createDocumentationMessageGenerator({
     name: 'range-slider'
   });
-  var suit$m = component('RangeSlider');
+  var suit$l = component('RangeSlider');
   var renderer$h = function renderer(_ref) {
     var containerNode = _ref.containerNode,
       cssClasses = _ref.cssClasses,
@@ -20358,12 +22351,12 @@
       _ref3$tooltips = _ref3.tooltips,
       tooltips = _ref3$tooltips === void 0 ? true : _ref3$tooltips;
     if (!container) {
-      throw new Error(withUsage$M('The `container` option is required.'));
+      throw new Error(withUsage$Q('The `container` option is required.'));
     }
     var containerNode = getContainerNode(container);
     var cssClasses = {
-      root: cx(suit$m(), userCssClasses.root),
-      disabledRoot: cx(suit$m({
+      root: cx(suit$l(), userCssClasses.root),
+      disabledRoot: cx(suit$l({
         modifierName: 'disabled'
       }), userCssClasses.disabledRoot)
     };
@@ -20430,6 +22423,7 @@
           xlinkHref: isFull ? '#ais-RatingMenu-starSymbol' : '#ais-RatingMenu-starEmptySymbol'
         }));
       }), h("span", {
+        "aria-hidden": "true",
         className: cx(cssClasses.label)
       }, "& Up"), count && h("span", {
         className: cx(cssClasses.count)
@@ -20437,10 +22431,10 @@
     }
   };
 
-  var withUsage$N = createDocumentationMessageGenerator({
+  var withUsage$R = createDocumentationMessageGenerator({
     name: 'rating-menu'
   });
-  var suit$n = component('RatingMenu');
+  var suit$m = component('RatingMenu');
   var _ref3 = h("path", {
     d: "M12 .288l2.833 8.718h9.167l-7.417 5.389 2.833 8.718-7.416-5.388-7.417 5.388 2.833-8.718-7.416-5.389h9.167z"
   });
@@ -20474,12 +22468,12 @@
       }, h("svg", {
         style: "display:none;"
       }, h("symbol", {
-        id: suit$n({
+        id: suit$m({
           descendantName: 'starSymbol'
         }),
         viewBox: "0 0 24 24"
       }, _ref3), h("symbol", {
-        id: suit$n({
+        id: suit$m({
           descendantName: 'starEmptySymbol'
         }),
         viewBox: "0 0 24 24"
@@ -20525,46 +22519,46 @@
       _ref5$templates = _ref5.templates,
       templates = _ref5$templates === void 0 ? {} : _ref5$templates;
     if (!container) {
-      throw new Error(withUsage$N('The `container` option is required.'));
+      throw new Error(withUsage$R('The `container` option is required.'));
     }
     var containerNode = getContainerNode(container);
     var cssClasses = {
-      root: cx(suit$n(), userCssClasses.root),
-      noRefinementRoot: cx(suit$n({
+      root: cx(suit$m(), userCssClasses.root),
+      noRefinementRoot: cx(suit$m({
         modifierName: 'noRefinement'
       }), userCssClasses.noRefinementRoot),
-      list: cx(suit$n({
+      list: cx(suit$m({
         descendantName: 'list'
       }), userCssClasses.list),
-      item: cx(suit$n({
+      item: cx(suit$m({
         descendantName: 'item'
       }), userCssClasses.item),
-      selectedItem: cx(suit$n({
+      selectedItem: cx(suit$m({
         descendantName: 'item',
         modifierName: 'selected'
       }), userCssClasses.selectedItem),
-      disabledItem: cx(suit$n({
+      disabledItem: cx(suit$m({
         descendantName: 'item',
         modifierName: 'disabled'
       }), userCssClasses.disabledItem),
-      link: cx(suit$n({
+      link: cx(suit$m({
         descendantName: 'link'
       }), userCssClasses.link),
-      starIcon: cx(suit$n({
+      starIcon: cx(suit$m({
         descendantName: 'starIcon'
       }), userCssClasses.starIcon),
-      fullStarIcon: cx(suit$n({
+      fullStarIcon: cx(suit$m({
         descendantName: 'starIcon',
         modifierName: 'full'
       }), userCssClasses.fullStarIcon),
-      emptyStarIcon: cx(suit$n({
+      emptyStarIcon: cx(suit$m({
         descendantName: 'starIcon',
         modifierName: 'empty'
       }), userCssClasses.emptyStarIcon),
-      label: cx(suit$n({
+      label: cx(suit$m({
         descendantName: 'label'
       }), userCssClasses.label),
-      count: cx(suit$n({
+      count: cx(suit$m({
         descendantName: 'count'
       }), userCssClasses.count)
     };
@@ -20593,12 +22587,12 @@
   });
   var _ref6$1 = h("g", {
     fill: "none",
-    fillRule: "evenodd"
+    "fill-rule": "evenodd"
   }, h("g", {
     transform: "translate(1 1)",
-    strokeWidth: "2"
+    "stroke-width": "2"
   }, h("circle", {
-    strokeOpacity: ".5",
+    "stroke-opacity": ".5",
     cx: "18",
     cy: "18",
     r: "18"
@@ -20635,7 +22629,12 @@
     },
     loadingIndicator: function loadingIndicator(_ref5) {
       var cssClasses = _ref5.cssClasses;
+      /* eslint-disable react/no-unknown-property */
+      // Preact supports kebab case attributes, and using camel case would
+      // require using `preact/compat`.
+      // @TODO: reconsider using the `react` ESLint preset
       return h("svg", {
+        "aria-label": "Results are loading",
         className: cssClasses.loadingIcon,
         width: "16",
         height: "16",
@@ -20643,6 +22642,7 @@
         stroke: "#444",
         "aria-hidden": "true"
       }, _ref6$1);
+      /* eslint-enable react/no-unknown-property */
     }
   };
 
@@ -20679,10 +22679,10 @@
     }
   };
 
-  var withUsage$O = createDocumentationMessageGenerator({
+  var withUsage$S = createDocumentationMessageGenerator({
     name: 'refinement-list'
   });
-  var suit$o = component('RefinementList');
+  var suit$n = component('RefinementList');
   var searchBoxSuit = component('SearchBox');
   var renderer$j = function renderer(_ref) {
     var containerNode = _ref.containerNode,
@@ -20779,47 +22779,47 @@
       templates = _ref3$templates === void 0 ? {} : _ref3$templates,
       transformItems = _ref3.transformItems;
     if (!container) {
-      throw new Error(withUsage$O('The `container` option is required.'));
+      throw new Error(withUsage$S('The `container` option is required.'));
     }
     var escapeFacetValues = searchable ? Boolean(searchableEscapeFacetValues) : false;
     var containerNode = getContainerNode(container);
     var cssClasses = {
-      root: cx(suit$o(), userCssClasses.root),
-      noRefinementRoot: cx(suit$o({
+      root: cx(suit$n(), userCssClasses.root),
+      noRefinementRoot: cx(suit$n({
         modifierName: 'noRefinement'
       }), userCssClasses.noRefinementRoot),
-      list: cx(suit$o({
+      list: cx(suit$n({
         descendantName: 'list'
       }), userCssClasses.list),
-      item: cx(suit$o({
+      item: cx(suit$n({
         descendantName: 'item'
       }), userCssClasses.item),
-      selectedItem: cx(suit$o({
+      selectedItem: cx(suit$n({
         descendantName: 'item',
         modifierName: 'selected'
       }), userCssClasses.selectedItem),
-      searchBox: cx(suit$o({
+      searchBox: cx(suit$n({
         descendantName: 'searchBox'
       }), userCssClasses.searchBox),
-      label: cx(suit$o({
+      label: cx(suit$n({
         descendantName: 'label'
       }), userCssClasses.label),
-      checkbox: cx(suit$o({
+      checkbox: cx(suit$n({
         descendantName: 'checkbox'
       }), userCssClasses.checkbox),
-      labelText: cx(suit$o({
+      labelText: cx(suit$n({
         descendantName: 'labelText'
       }), userCssClasses.labelText),
-      count: cx(suit$o({
+      count: cx(suit$n({
         descendantName: 'count'
       }), userCssClasses.count),
-      noResults: cx(suit$o({
+      noResults: cx(suit$n({
         descendantName: 'noResults'
       }), userCssClasses.noResults),
-      showMore: cx(suit$o({
+      showMore: cx(suit$n({
         descendantName: 'showMore'
       }), userCssClasses.showMore),
-      disabledShowMore: cx(suit$o({
+      disabledShowMore: cx(suit$n({
         descendantName: 'showMore',
         modifierName: 'disabled'
       }), userCssClasses.disabledShowMore),
@@ -20930,10 +22930,10 @@
     }
   };
 
-  var withUsage$P = createDocumentationMessageGenerator({
+  var withUsage$T = createDocumentationMessageGenerator({
     name: 'relevant-sort'
   });
-  var suit$p = component('RelevantSort');
+  var suit$o = component('RelevantSort');
   var renderer$k = function renderer(_ref) {
     var containerNode = _ref.containerNode,
       cssClasses = _ref.cssClasses,
@@ -20958,15 +22958,15 @@
       _widgetParams$cssClas = widgetParams.cssClasses,
       userCssClasses = _widgetParams$cssClas === void 0 ? {} : _widgetParams$cssClas;
     if (!container) {
-      throw new Error(withUsage$P('The `container` option is required.'));
+      throw new Error(withUsage$T('The `container` option is required.'));
     }
     var containerNode = getContainerNode(container);
     var cssClasses = {
-      root: cx(suit$p(), userCssClasses.root),
-      text: cx(suit$p({
+      root: cx(suit$o(), userCssClasses.root),
+      text: cx(suit$o({
         descendantName: 'text'
       }), userCssClasses.text),
-      button: cx(suit$p({
+      button: cx(suit$o({
         descendantName: 'button'
       }), userCssClasses.button)
     };
@@ -20985,10 +22985,10 @@
     });
   };
 
-  var withUsage$Q = createDocumentationMessageGenerator({
+  var withUsage$U = createDocumentationMessageGenerator({
     name: 'search-box'
   });
-  var suit$q = component('SearchBox');
+  var suit$p = component('SearchBox');
   var renderer$l = function renderer(_ref) {
     var containerNode = _ref.containerNode,
       cssClasses = _ref.cssClasses,
@@ -20996,6 +22996,7 @@
       templates = _ref.templates,
       autofocus = _ref.autofocus,
       searchAsYouType = _ref.searchAsYouType,
+      ignoreCompositionEvents = _ref.ignoreCompositionEvents,
       showReset = _ref.showReset,
       showSubmit = _ref.showSubmit,
       showLoadingIndicator = _ref.showLoadingIndicator;
@@ -21009,6 +23010,7 @@
         autofocus: autofocus,
         refine: refine,
         searchAsYouType: searchAsYouType,
+        ignoreCompositionEvents: ignoreCompositionEvents,
         templates: templates,
         showSubmit: showSubmit,
         showReset: showReset,
@@ -21039,6 +23041,8 @@
       autofocus = _ref3$autofocus === void 0 ? false : _ref3$autofocus,
       _ref3$searchAsYouType = _ref3.searchAsYouType,
       searchAsYouType = _ref3$searchAsYouType === void 0 ? true : _ref3$searchAsYouType,
+      _ref3$ignoreCompositi = _ref3.ignoreCompositionEvents,
+      ignoreCompositionEvents = _ref3$ignoreCompositi === void 0 ? false : _ref3$ignoreCompositi,
       _ref3$showReset = _ref3.showReset,
       showReset = _ref3$showReset === void 0 ? true : _ref3$showReset,
       _ref3$showSubmit = _ref3.showSubmit,
@@ -21049,33 +23053,33 @@
       _ref3$templates = _ref3.templates,
       userTemplates = _ref3$templates === void 0 ? {} : _ref3$templates;
     if (!container) {
-      throw new Error(withUsage$Q('The `container` option is required.'));
+      throw new Error(withUsage$U('The `container` option is required.'));
     }
     var containerNode = getContainerNode(container);
     var cssClasses = {
-      root: cx(suit$q(), userCssClasses.root),
-      form: cx(suit$q({
+      root: cx(suit$p(), userCssClasses.root),
+      form: cx(suit$p({
         descendantName: 'form'
       }), userCssClasses.form),
-      input: cx(suit$q({
+      input: cx(suit$p({
         descendantName: 'input'
       }), userCssClasses.input),
-      submit: cx(suit$q({
+      submit: cx(suit$p({
         descendantName: 'submit'
       }), userCssClasses.submit),
-      submitIcon: cx(suit$q({
+      submitIcon: cx(suit$p({
         descendantName: 'submitIcon'
       }), userCssClasses.submitIcon),
-      reset: cx(suit$q({
+      reset: cx(suit$p({
         descendantName: 'reset'
       }), userCssClasses.reset),
-      resetIcon: cx(suit$q({
+      resetIcon: cx(suit$p({
         descendantName: 'resetIcon'
       }), userCssClasses.resetIcon),
-      loadingIndicator: cx(suit$q({
+      loadingIndicator: cx(suit$p({
         descendantName: 'loadingIndicator'
       }), userCssClasses.loadingIndicator),
-      loadingIcon: cx(suit$q({
+      loadingIcon: cx(suit$p({
         descendantName: 'loadingIcon'
       }), userCssClasses.loadingIcon)
     };
@@ -21087,6 +23091,7 @@
       templates: templates,
       autofocus: autofocus,
       searchAsYouType: searchAsYouType,
+      ignoreCompositionEvents: ignoreCompositionEvents,
       showReset: showReset,
       showSubmit: showSubmit,
       showLoadingIndicator: showLoadingIndicator
@@ -21101,10 +23106,10 @@
     });
   };
 
-  var withUsage$R = createDocumentationMessageGenerator({
+  var withUsage$V = createDocumentationMessageGenerator({
     name: 'sort-by'
   });
-  var suit$r = component('SortBy');
+  var suit$q = component('SortBy');
   var renderer$m = function renderer(_ref) {
     var containerNode = _ref.containerNode,
       cssClasses = _ref.cssClasses;
@@ -21121,7 +23126,8 @@
         cssClasses: cssClasses,
         currentValue: currentRefinement,
         options: options,
-        setValue: refine
+        setValue: refine,
+        ariaLabel: "Sort results by"
       })), containerNode);
     };
   };
@@ -21138,15 +23144,15 @@
       userCssClasses = _ref3$cssClasses === void 0 ? {} : _ref3$cssClasses,
       transformItems = _ref3.transformItems;
     if (!container) {
-      throw new Error(withUsage$R('The `container` option is required.'));
+      throw new Error(withUsage$V('The `container` option is required.'));
     }
     var containerNode = getContainerNode(container);
     var cssClasses = {
-      root: cx(suit$r(), userCssClasses.root),
-      select: cx(suit$r({
+      root: cx(suit$q(), userCssClasses.root),
+      select: cx(suit$q({
         descendantName: 'select'
       }), userCssClasses.select),
-      option: cx(suit$r({
+      option: cx(suit$q({
         descendantName: 'option'
       }), userCssClasses.option)
     };
@@ -21166,13 +23172,13 @@
     });
   };
 
-  var _excluded$m = ["nbHits", "nbSortedHits", "cssClasses", "templateProps"];
+  var _excluded$r = ["nbHits", "nbSortedHits", "cssClasses", "templateProps"];
   var Stats = function Stats(_ref) {
     var nbHits = _ref.nbHits,
       nbSortedHits = _ref.nbSortedHits,
       cssClasses = _ref.cssClasses,
       templateProps = _ref.templateProps,
-      rest = _objectWithoutProperties(_ref, _excluded$m);
+      rest = _objectWithoutProperties(_ref, _excluded$r);
     return h("div", {
       className: cx(cssClasses.root)
     }, h(Template, _extends({}, templateProps, {
@@ -21195,10 +23201,10 @@
     })));
   };
 
-  var withUsage$S = createDocumentationMessageGenerator({
+  var withUsage$W = createDocumentationMessageGenerator({
     name: 'stats'
   });
-  var suit$s = component('Stats');
+  var suit$r = component('Stats');
   var defaultTemplates$g = {
     text: function text(props) {
       return "".concat(props.areHitsSorted ? getSortedResultsSentence(props) : getResultsSentence(props), " found in ").concat(props.processingTimeMS, "ms");
@@ -21290,12 +23296,12 @@
       _ref5$templates = _ref5.templates,
       templates = _ref5$templates === void 0 ? {} : _ref5$templates;
     if (!container) {
-      throw new Error(withUsage$S('The `container` option is required.'));
+      throw new Error(withUsage$W('The `container` option is required.'));
     }
     var containerNode = getContainerNode(container);
     var cssClasses = {
-      root: cx(suit$s(), userCssClasses.root),
-      text: cx(suit$s({
+      root: cx(suit$r(), userCssClasses.root),
+      text: cx(suit$r({
         descendantName: 'text'
       }), userCssClasses.text)
     };
@@ -21348,10 +23354,10 @@
     }
   };
 
-  var withUsage$T = createDocumentationMessageGenerator({
+  var withUsage$X = createDocumentationMessageGenerator({
     name: 'toggle-refinement'
   });
-  var suit$t = component('ToggleRefinement');
+  var suit$s = component('ToggleRefinement');
   var renderer$o = function renderer(_ref) {
     var containerNode = _ref.containerNode,
       cssClasses = _ref.cssClasses,
@@ -21401,18 +23407,18 @@
       on = _ref3$on === void 0 ? true : _ref3$on,
       off = _ref3.off;
     if (!container) {
-      throw new Error(withUsage$T('The `container` option is required.'));
+      throw new Error(withUsage$X('The `container` option is required.'));
     }
     var containerNode = getContainerNode(container);
     var cssClasses = {
-      root: cx(suit$t(), userCssClasses.root),
-      label: cx(suit$t({
+      root: cx(suit$s(), userCssClasses.root),
+      label: cx(suit$s({
         descendantName: 'label'
       }), userCssClasses.label),
-      checkbox: cx(suit$t({
+      checkbox: cx(suit$s({
         descendantName: 'checkbox'
       }), userCssClasses.checkbox),
-      labelText: cx(suit$t({
+      labelText: cx(suit$s({
         descendantName: 'labelText'
       }), userCssClasses.labelText)
     };
@@ -21433,6 +23439,110 @@
       $$widgetType: 'ais.toggleRefinement'
     });
   };
+
+  var withUsage$Y = createDocumentationMessageGenerator({
+    name: 'trending-items'
+  });
+  var TrendingItems = createTrendingItemsComponent({
+    createElement: h,
+    Fragment: p
+  });
+  function createRenderer$1(_ref) {
+    var renderState = _ref.renderState,
+      cssClasses = _ref.cssClasses,
+      containerNode = _ref.containerNode,
+      templates = _ref.templates;
+    return function renderer(_ref2, isFirstRendering) {
+      var items = _ref2.items,
+        results = _ref2.results,
+        instantSearchInstance = _ref2.instantSearchInstance;
+      if (isFirstRendering) {
+        renderState.templateProps = prepareTemplateProps({
+          defaultTemplates: {},
+          templatesConfig: instantSearchInstance.templatesConfig,
+          templates: templates
+        });
+        return;
+      }
+      var headerComponent = templates.header ? function (data) {
+        return h(Template, _extends({}, renderState.templateProps, {
+          templateKey: "header",
+          rootTagName: "fragment",
+          data: {
+            cssClasses: data.classNames,
+            items: data.items
+          }
+        }));
+      } : undefined;
+      var itemComponent = templates.item ? function (_ref3) {
+        var item = _ref3.item;
+        return h(Template, _extends({}, renderState.templateProps, {
+          templateKey: "item",
+          rootTagName: "fragment",
+          data: item
+        }));
+      } : undefined;
+      var emptyComponent = templates.empty ? function () {
+        return h(Template, _extends({}, renderState.templateProps, {
+          templateKey: "empty",
+          rootTagName: "fragment",
+          data: results
+        }));
+      } : undefined;
+      P(h(TrendingItems, {
+        items: items,
+        sendEvent: function sendEvent() {},
+        classNames: cssClasses,
+        headerComponent: headerComponent,
+        itemComponent: itemComponent,
+        emptyComponent: emptyComponent,
+        status: instantSearchInstance.status
+      }), containerNode);
+    };
+  }
+  var trendingItems = (function trendingItems(widgetParams) {
+    var _ref4 = widgetParams || {},
+      container = _ref4.container,
+      facetName = _ref4.facetName,
+      facetValue = _ref4.facetValue,
+      limit = _ref4.limit,
+      queryParameters = _ref4.queryParameters,
+      fallbackParameters = _ref4.fallbackParameters,
+      threshold = _ref4.threshold,
+      escapeHTML = _ref4.escapeHTML,
+      transformItems = _ref4.transformItems,
+      _ref4$templates = _ref4.templates,
+      templates = _ref4$templates === void 0 ? {} : _ref4$templates,
+      _ref4$cssClasses = _ref4.cssClasses,
+      cssClasses = _ref4$cssClasses === void 0 ? {} : _ref4$cssClasses;
+    if (!container) {
+      throw new Error(withUsage$Y('The `container` option is required.'));
+    }
+    var containerNode = getContainerNode(container);
+    var specializedRenderer = createRenderer$1({
+      containerNode: containerNode,
+      cssClasses: cssClasses,
+      renderState: {},
+      templates: templates
+    });
+    var makeWidget = connectTrendingItems(specializedRenderer, function () {
+      return P(null, containerNode);
+    });
+    var facetParameters = facetName && facetValue ? {
+      facetName: facetName,
+      facetValue: facetValue
+    } : {};
+    return _objectSpread2(_objectSpread2({}, makeWidget(_objectSpread2(_objectSpread2({}, facetParameters), {}, {
+      limit: limit,
+      queryParameters: queryParameters,
+      fallbackParameters: fallbackParameters,
+      threshold: threshold,
+      escapeHTML: escapeHTML,
+      transformItems: transformItems
+    }))), {}, {
+      $$widgetType: 'ais.trendingItems'
+    });
+  });
 
   var VoiceSearch = function VoiceSearch(_ref) {
     var cssClasses = _ref.cssClasses,
@@ -21568,10 +23678,10 @@
     }
   };
 
-  var withUsage$U = createDocumentationMessageGenerator({
+  var withUsage$Z = createDocumentationMessageGenerator({
     name: 'voice-search'
   });
-  var suit$u = component('VoiceSearch');
+  var suit$t = component('VoiceSearch');
   var renderer$p = function renderer(_ref) {
     var containerNode = _ref.containerNode,
       cssClasses = _ref.cssClasses,
@@ -21604,15 +23714,15 @@
       additionalQueryParameters = _ref3.additionalQueryParameters,
       createVoiceSearchHelper = _ref3.createVoiceSearchHelper;
     if (!container) {
-      throw new Error(withUsage$U('The `container` option is required.'));
+      throw new Error(withUsage$Z('The `container` option is required.'));
     }
     var containerNode = getContainerNode(container);
     var cssClasses = {
-      root: cx(suit$u(), userCssClasses.root),
-      button: cx(suit$u({
+      root: cx(suit$t(), userCssClasses.root),
+      button: cx(suit$t({
         descendantName: 'button'
       }), userCssClasses.button),
-      status: cx(suit$u({
+      status: cx(suit$t({
         descendantName: 'status'
       }), userCssClasses.status)
     };
@@ -21638,8 +23748,206 @@
     });
   };
 
+  var withUsage$_ = createDocumentationMessageGenerator({
+    name: 'frequently-bought-together'
+  });
+  var FrequentlyBoughtTogether = createFrequentlyBoughtTogetherComponent({
+    createElement: h,
+    Fragment: p
+  });
+  var renderer$q = function renderer(_ref) {
+    var renderState = _ref.renderState,
+      cssClasses = _ref.cssClasses,
+      containerNode = _ref.containerNode,
+      templates = _ref.templates;
+    return function (_ref2, isFirstRendering) {
+      var items = _ref2.items,
+        results = _ref2.results,
+        instantSearchInstance = _ref2.instantSearchInstance;
+      if (isFirstRendering) {
+        renderState.templateProps = prepareTemplateProps({
+          defaultTemplates: {},
+          templatesConfig: instantSearchInstance.templatesConfig,
+          templates: templates
+        });
+        return;
+      }
+      var headerComponent = templates.header ? function (data) {
+        return h(Template, _extends({}, renderState.templateProps, {
+          templateKey: "header",
+          rootTagName: "fragment",
+          data: {
+            cssClasses: data.classNames,
+            items: data.items
+          }
+        }));
+      } : undefined;
+      var itemComponent = templates.item ? function (_ref3) {
+        var item = _ref3.item;
+        return h(Template, _extends({}, renderState.templateProps, {
+          templateKey: "item",
+          rootTagName: "fragment",
+          data: item
+        }));
+      } : undefined;
+      var emptyComponent = templates.empty ? function () {
+        return h(Template, _extends({}, renderState.templateProps, {
+          templateKey: "empty",
+          rootTagName: "fragment",
+          data: results
+        }));
+      } : undefined;
+      P(h(FrequentlyBoughtTogether, {
+        items: items,
+        headerComponent: headerComponent,
+        itemComponent: itemComponent,
+        sendEvent: function sendEvent() {},
+        classNames: cssClasses,
+        emptyComponent: emptyComponent,
+        status: instantSearchInstance.status
+      }), containerNode);
+    };
+  };
+  var frequentlyBoughtTogether = (function frequentlyBoughtTogether(widgetParams) {
+    var _ref4 = widgetParams || {},
+      container = _ref4.container,
+      objectIDs = _ref4.objectIDs,
+      limit = _ref4.limit,
+      queryParameters = _ref4.queryParameters,
+      threshold = _ref4.threshold,
+      escapeHTML = _ref4.escapeHTML,
+      transformItems = _ref4.transformItems,
+      _ref4$templates = _ref4.templates,
+      templates = _ref4$templates === void 0 ? {} : _ref4$templates,
+      _ref4$cssClasses = _ref4.cssClasses,
+      cssClasses = _ref4$cssClasses === void 0 ? {} : _ref4$cssClasses;
+    if (!container) {
+      throw new Error(withUsage$_('The `container` option is required.'));
+    }
+    var containerNode = getContainerNode(container);
+    var specializedRenderer = renderer$q({
+      containerNode: containerNode,
+      cssClasses: cssClasses,
+      renderState: {},
+      templates: templates
+    });
+    var makeWidget = connectFrequentlyBoughtTogether(specializedRenderer, function () {
+      return P(null, containerNode);
+    });
+    return _objectSpread2(_objectSpread2({}, makeWidget({
+      objectIDs: objectIDs,
+      limit: limit,
+      queryParameters: queryParameters,
+      threshold: threshold,
+      escapeHTML: escapeHTML,
+      transformItems: transformItems
+    })), {}, {
+      $$widgetType: 'ais.frequentlyBoughtTogether'
+    });
+  });
+
+  var withUsage$$ = createDocumentationMessageGenerator({
+    name: 'looking-similar'
+  });
+  var LookingSimilar = createLookingSimilarComponent({
+    createElement: h,
+    Fragment: p
+  });
+  function createRenderer$2(_ref) {
+    var renderState = _ref.renderState,
+      cssClasses = _ref.cssClasses,
+      containerNode = _ref.containerNode,
+      templates = _ref.templates;
+    return function (_ref2, isFirstRendering) {
+      var items = _ref2.items,
+        results = _ref2.results,
+        instantSearchInstance = _ref2.instantSearchInstance;
+      if (isFirstRendering) {
+        renderState.templateProps = prepareTemplateProps({
+          defaultTemplates: {},
+          templatesConfig: instantSearchInstance.templatesConfig,
+          templates: templates
+        });
+        return;
+      }
+      var headerComponent = templates.header ? function (data) {
+        return h(Template, _extends({}, renderState.templateProps, {
+          templateKey: "header",
+          rootTagName: "fragment",
+          data: {
+            cssClasses: data.classNames,
+            items: data.items
+          }
+        }));
+      } : undefined;
+      var itemComponent = templates.item ? function (_ref3) {
+        var item = _ref3.item;
+        return h(Template, _extends({}, renderState.templateProps, {
+          templateKey: "item",
+          rootTagName: "fragment",
+          data: item
+        }));
+      } : undefined;
+      var emptyComponent = templates.empty ? function () {
+        return h(Template, _extends({}, renderState.templateProps, {
+          templateKey: "empty",
+          rootTagName: "fragment",
+          data: results
+        }));
+      } : undefined;
+      P(h(LookingSimilar, {
+        items: items,
+        headerComponent: headerComponent,
+        itemComponent: itemComponent,
+        sendEvent: function sendEvent() {},
+        classNames: cssClasses,
+        emptyComponent: emptyComponent,
+        status: instantSearchInstance.status
+      }), containerNode);
+    };
+  }
+  var lookingSimilar = (function lookingSimilar(widgetParams) {
+    var _ref4 = widgetParams || {},
+      container = _ref4.container,
+      objectIDs = _ref4.objectIDs,
+      limit = _ref4.limit,
+      queryParameters = _ref4.queryParameters,
+      fallbackParameters = _ref4.fallbackParameters,
+      threshold = _ref4.threshold,
+      escapeHTML = _ref4.escapeHTML,
+      transformItems = _ref4.transformItems,
+      _ref4$templates = _ref4.templates,
+      templates = _ref4$templates === void 0 ? {} : _ref4$templates,
+      _ref4$cssClasses = _ref4.cssClasses,
+      cssClasses = _ref4$cssClasses === void 0 ? {} : _ref4$cssClasses;
+    if (!container) {
+      throw new Error(withUsage$$('The `container` option is required.'));
+    }
+    var containerNode = getContainerNode(container);
+    var specializedRenderer = createRenderer$2({
+      containerNode: containerNode,
+      cssClasses: cssClasses,
+      renderState: {},
+      templates: templates
+    });
+    var makeWidget = connectLookingSimilar(specializedRenderer, function () {
+      return P(null, containerNode);
+    });
+    return _objectSpread2(_objectSpread2({}, makeWidget({
+      objectIDs: objectIDs,
+      limit: limit,
+      queryParameters: queryParameters,
+      fallbackParameters: fallbackParameters,
+      threshold: threshold,
+      escapeHTML: escapeHTML,
+      transformItems: transformItems
+    })), {}, {
+      $$widgetType: 'ais.lookingSimilar'
+    });
+  });
+
   /** @deprecated answers is no longer supported */
-  var EXPERIMENTAL_answers = deprecate(answersWidget, 'answers is no longer supported');
+  var EXPERIMENTAL_answers = deprecate(answers, 'answers is no longer supported');
 
   /** @deprecated use dynamicWidgets */
   var EXPERIMENTAL_dynamicWidgets = deprecate(dynamicWidgets, 'use dynamicWidgets');
@@ -21666,10 +23974,11 @@
     numericMenu: numericMenu,
     pagination: pagination,
     panel: panel,
-    places: placesWidget,
+    places: places,
     poweredBy: poweredBy,
     queryRuleContext: queryRuleContext,
     queryRuleCustomData: queryRuleCustomData,
+    relatedProducts: relatedProducts,
     rangeInput: rangeInput,
     rangeSlider: rangeSlider,
     ratingMenu: ratingMenu,
@@ -21679,7 +23988,716 @@
     sortBy: sortBy,
     stats: stats,
     toggleRefinement: toggleRefinement,
-    voiceSearch: voiceSearch
+    trendingItems: trendingItems,
+    voiceSearch: voiceSearch,
+    frequentlyBoughtTogether: frequentlyBoughtTogether,
+    lookingSimilar: lookingSimilar
+  });
+
+  function hoganHelpers(_ref) {
+    var numberLocale = _ref.numberLocale;
+    return {
+      formatNumber: function formatNumber$1(value, render) {
+        return formatNumber(Number(render(value)), numberLocale);
+      },
+      highlight: function highlight$1(options, render) {
+        try {
+          var highlightOptions = JSON.parse(options);
+          return render(highlight(_objectSpread2(_objectSpread2({}, highlightOptions), {}, {
+            hit: this
+          })));
+        } catch (error) {
+          throw new Error("\nThe highlight helper expects a JSON object of the format:\n{ \"attribute\": \"name\", \"highlightedTagName\": \"mark\" }");
+        }
+      },
+      reverseHighlight: function reverseHighlight$1(options, render) {
+        try {
+          var reverseHighlightOptions = JSON.parse(options);
+          return render(reverseHighlight(_objectSpread2(_objectSpread2({}, reverseHighlightOptions), {}, {
+            hit: this
+          })));
+        } catch (error) {
+          throw new Error("\n  The reverseHighlight helper expects a JSON object of the format:\n  { \"attribute\": \"name\", \"highlightedTagName\": \"mark\" }");
+        }
+      },
+      snippet: function snippet$1(options, render) {
+        try {
+          var snippetOptions = JSON.parse(options);
+          return render(snippet(_objectSpread2(_objectSpread2({}, snippetOptions), {}, {
+            hit: this
+          })));
+        } catch (error) {
+          throw new Error("\nThe snippet helper expects a JSON object of the format:\n{ \"attribute\": \"name\", \"highlightedTagName\": \"mark\" }");
+        }
+      },
+      reverseSnippet: function reverseSnippet$1(options, render) {
+        try {
+          var reverseSnippetOptions = JSON.parse(options);
+          return render(reverseSnippet(_objectSpread2(_objectSpread2({}, reverseSnippetOptions), {}, {
+            hit: this
+          })));
+        } catch (error) {
+          throw new Error("\n  The reverseSnippet helper expects a JSON object of the format:\n  { \"attribute\": \"name\", \"highlightedTagName\": \"mark\" }");
+        }
+      },
+      insights: function insights$1(options, render) {
+        try {
+          var _JSON$parse = JSON.parse(options),
+            method = _JSON$parse.method,
+            payload = _JSON$parse.payload;
+          return render(insights(method, _objectSpread2({
+            objectIDs: [this.objectID]
+          }, payload)));
+        } catch (error) {
+          throw new Error("\nThe insights helper expects a JSON object of the format:\n{ \"method\": \"method-name\", \"payload\": { \"eventName\": \"name of the event\" } }");
+        }
+      }
+    };
+  }
+
+  var version$1 = '4.73.3';
+
+  var withUsage$10 = createDocumentationMessageGenerator({
+    name: 'instantsearch'
+  });
+  function defaultCreateURL() {
+    return '#';
+  }
+
+  // this purposely breaks typescript's type inference to ensure it's not used
+  // as it's used for a default parameter for example
+  // source: https://github.com/Microsoft/TypeScript/issues/14829#issuecomment-504042546
+  /**
+   * Global options for an InstantSearch instance.
+   */
+  var INSTANTSEARCH_FUTURE_DEFAULTS = {
+    preserveSharedStateOnUnmount: false,
+    persistHierarchicalRootCount: false
+  };
+
+  /**
+   * The actual implementation of the InstantSearch. This is
+   * created using the `instantsearch` factory function.
+   * It emits the 'render' event every time a search is done
+   */
+  var InstantSearch = /*#__PURE__*/function (_EventEmitter) {
+    _inherits(InstantSearch, _EventEmitter);
+    var _super = _createSuper(InstantSearch);
+    function InstantSearch(options) {
+      var _options$future2;
+      var _this;
+      _classCallCheck(this, InstantSearch);
+      _this = _super.call(this);
+
+      // prevent `render` event listening from causing a warning
+      _defineProperty(_assertThisInitialized(_this), "client", void 0);
+      _defineProperty(_assertThisInitialized(_this), "indexName", void 0);
+      _defineProperty(_assertThisInitialized(_this), "insightsClient", void 0);
+      _defineProperty(_assertThisInitialized(_this), "onStateChange", null);
+      _defineProperty(_assertThisInitialized(_this), "future", void 0);
+      _defineProperty(_assertThisInitialized(_this), "helper", void 0);
+      _defineProperty(_assertThisInitialized(_this), "mainHelper", void 0);
+      _defineProperty(_assertThisInitialized(_this), "mainIndex", void 0);
+      _defineProperty(_assertThisInitialized(_this), "started", void 0);
+      _defineProperty(_assertThisInitialized(_this), "templatesConfig", void 0);
+      _defineProperty(_assertThisInitialized(_this), "renderState", {});
+      _defineProperty(_assertThisInitialized(_this), "_stalledSearchDelay", void 0);
+      _defineProperty(_assertThisInitialized(_this), "_searchStalledTimer", void 0);
+      _defineProperty(_assertThisInitialized(_this), "_initialUiState", void 0);
+      _defineProperty(_assertThisInitialized(_this), "_initialResults", void 0);
+      _defineProperty(_assertThisInitialized(_this), "_createURL", void 0);
+      _defineProperty(_assertThisInitialized(_this), "_searchFunction", void 0);
+      _defineProperty(_assertThisInitialized(_this), "_mainHelperSearch", void 0);
+      _defineProperty(_assertThisInitialized(_this), "_hasSearchWidget", false);
+      _defineProperty(_assertThisInitialized(_this), "_hasRecommendWidget", false);
+      _defineProperty(_assertThisInitialized(_this), "_insights", void 0);
+      _defineProperty(_assertThisInitialized(_this), "middleware", []);
+      _defineProperty(_assertThisInitialized(_this), "sendEventToInsights", void 0);
+      /**
+       * The status of the search. Can be "idle", "loading", "stalled", or "error".
+       */
+      _defineProperty(_assertThisInitialized(_this), "status", 'idle');
+      /**
+       * The last returned error from the Search API.
+       * The error gets cleared when the next valid search response is rendered.
+       */
+      _defineProperty(_assertThisInitialized(_this), "error", undefined);
+      _defineProperty(_assertThisInitialized(_this), "scheduleSearch", defer(function () {
+        if (_this.started) {
+          _this.mainHelper.search();
+        }
+      }));
+      _defineProperty(_assertThisInitialized(_this), "scheduleRender", defer(function () {
+        var _this$mainHelper;
+        var shouldResetStatus = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : true;
+        if (!((_this$mainHelper = _this.mainHelper) !== null && _this$mainHelper !== void 0 && _this$mainHelper.hasPendingRequests())) {
+          clearTimeout(_this._searchStalledTimer);
+          _this._searchStalledTimer = null;
+          if (shouldResetStatus) {
+            _this.status = 'idle';
+            _this.error = undefined;
+          }
+        }
+        _this.mainIndex.render({
+          instantSearchInstance: _assertThisInitialized(_this)
+        });
+        _this.emit('render');
+      }));
+      _defineProperty(_assertThisInitialized(_this), "onInternalStateChange", defer(function () {
+        var nextUiState = _this.mainIndex.getWidgetUiState({});
+        _this.middleware.forEach(function (_ref) {
+          var instance = _ref.instance;
+          instance.onStateChange({
+            uiState: nextUiState
+          });
+        });
+      }));
+      _this.setMaxListeners(100);
+      var _options$indexName = options.indexName,
+        indexName = _options$indexName === void 0 ? '' : _options$indexName,
+        numberLocale = options.numberLocale,
+        _options$initialUiSta = options.initialUiState,
+        initialUiState = _options$initialUiSta === void 0 ? {} : _options$initialUiSta,
+        _options$routing = options.routing,
+        routing = _options$routing === void 0 ? null : _options$routing,
+        _options$insights = options.insights,
+        insights = _options$insights === void 0 ? undefined : _options$insights,
+        searchFunction = options.searchFunction,
+        _options$stalledSearc = options.stalledSearchDelay,
+        stalledSearchDelay = _options$stalledSearc === void 0 ? 200 : _options$stalledSearc,
+        _options$searchClient = options.searchClient,
+        searchClient = _options$searchClient === void 0 ? null : _options$searchClient,
+        _options$insightsClie = options.insightsClient,
+        insightsClient = _options$insightsClie === void 0 ? null : _options$insightsClie,
+        _options$onStateChang = options.onStateChange,
+        onStateChange = _options$onStateChang === void 0 ? null : _options$onStateChang,
+        _options$future = options.future,
+        future = _options$future === void 0 ? _objectSpread2(_objectSpread2({}, INSTANTSEARCH_FUTURE_DEFAULTS), options.future || {}) : _options$future;
+      if (searchClient === null) {
+        throw new Error(withUsage$10('The `searchClient` option is required.'));
+      }
+      if (typeof searchClient.search !== 'function') {
+        throw new Error("The `searchClient` must implement a `search` method.\n\nSee: https://www.algolia.com/doc/guides/building-search-ui/going-further/backend-search/in-depth/backend-instantsearch/js/");
+      }
+      if (typeof searchClient.addAlgoliaAgent === 'function') {
+        searchClient.addAlgoliaAgent("instantsearch.js (".concat(version$1, ")"));
+      }
+       _warning(insightsClient === null, "`insightsClient` property has been deprecated. It is still supported in 4.x releases, but not further. It is replaced by the `insights` middleware.\n\nFor more information, visit https://www.algolia.com/doc/guides/getting-insights-and-analytics/search-analytics/click-through-and-conversions/how-to/send-click-and-conversion-events-with-instantsearch/js/") ;
+      if (insightsClient && typeof insightsClient !== 'function') {
+        throw new Error(withUsage$10('The `insightsClient` option should be a function.'));
+      }
+       _warning(!options.searchParameters, "The `searchParameters` option is deprecated and will not be supported in InstantSearch.js 4.x.\n\nYou can replace it with the `configure` widget:\n\n```\nsearch.addWidgets([\n  configure(".concat(JSON.stringify(options.searchParameters, null, 2), ")\n]);\n```\n\nSee ").concat(createDocumentationLink({
+        name: 'configure'
+      }))) ;
+      if ( ((_options$future2 = options.future) === null || _options$future2 === void 0 ? void 0 : _options$future2.preserveSharedStateOnUnmount) === undefined) {
+        // eslint-disable-next-line no-console
+        console.info("Starting from the next major version, InstantSearch will change how widgets state is preserved when they are removed. InstantSearch will keep the state of unmounted widgets to be usable by other widgets with the same attribute.\n\nWe recommend setting `future.preserveSharedStateOnUnmount` to true to adopt this change today.\nTo stay with the current behaviour and remove this warning, set the option to false.\n\nSee documentation: ".concat(createDocumentationLink({
+          name: 'instantsearch'
+        }), "#widget-param-future\n          "));
+      }
+      _this.client = searchClient;
+      _this.future = future;
+      _this.insightsClient = insightsClient;
+      _this.indexName = indexName;
+      _this.helper = null;
+      _this.mainHelper = null;
+      _this.mainIndex = index({
+        indexName: indexName
+      });
+      _this.onStateChange = onStateChange;
+      _this.started = false;
+      _this.templatesConfig = {
+        helpers: hoganHelpers({
+          numberLocale: numberLocale
+        }),
+        compileOptions: {}
+      };
+      _this._stalledSearchDelay = stalledSearchDelay;
+      _this._searchStalledTimer = null;
+      _this._createURL = defaultCreateURL;
+      _this._initialUiState = initialUiState;
+      _this._initialResults = null;
+      _this._insights = insights;
+      if (searchFunction) {
+         _warning(false, "The `searchFunction` option is deprecated. Use `onStateChange` instead.") ;
+        _this._searchFunction = searchFunction;
+      }
+      _this.sendEventToInsights = noop;
+      if (routing) {
+        var routerOptions = typeof routing === 'boolean' ? {} : routing;
+        routerOptions.$$internal = true;
+        _this.use(createRouterMiddleware(routerOptions));
+      }
+
+      // This is the default Insights middleware,
+      // added when `insights` is set to true by the user.
+      // Any user-provided middleware will be added later and override this one.
+      if (insights) {
+        var insightsOptions = typeof insights === 'boolean' ? {} : insights;
+        insightsOptions.$$internal = true;
+        _this.use(createInsightsMiddleware(insightsOptions));
+      }
+      if (isMetadataEnabled()) {
+        _this.use(createMetadataMiddleware({
+          $$internal: true
+        }));
+      }
+      return _this;
+    }
+
+    /**
+     * Hooks a middleware into the InstantSearch lifecycle.
+     */
+    _createClass(InstantSearch, [{
+      key: "_isSearchStalled",
+      get:
+      /**
+       * @deprecated use `status === 'stalled'` instead
+       */
+      function get() {
+         _warning(false, "`InstantSearch._isSearchStalled` is deprecated and will be removed in InstantSearch.js 5.0.\n\nUse `InstantSearch.status === \"stalled\"` instead.") ;
+        return this.status === 'stalled';
+      }
+    }, {
+      key: "use",
+      value: function use() {
+        var _this2 = this;
+        for (var _len = arguments.length, middleware = new Array(_len), _key = 0; _key < _len; _key++) {
+          middleware[_key] = arguments[_key];
+        }
+        var newMiddlewareList = middleware.map(function (fn) {
+          var newMiddleware = _objectSpread2({
+            $$type: '__unknown__',
+            $$internal: false,
+            subscribe: noop,
+            started: noop,
+            unsubscribe: noop,
+            onStateChange: noop
+          }, fn({
+            instantSearchInstance: _this2
+          }));
+          _this2.middleware.push({
+            creator: fn,
+            instance: newMiddleware
+          });
+          return newMiddleware;
+        });
+
+        // If the instance has already started, we directly subscribe the
+        // middleware so they're notified of changes.
+        if (this.started) {
+          newMiddlewareList.forEach(function (m) {
+            m.subscribe();
+            m.started();
+          });
+        }
+        return this;
+      }
+
+      /**
+       * Removes a middleware from the InstantSearch lifecycle.
+       */
+    }, {
+      key: "unuse",
+      value: function unuse() {
+        for (var _len2 = arguments.length, middlewareToUnuse = new Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
+          middlewareToUnuse[_key2] = arguments[_key2];
+        }
+        this.middleware.filter(function (m) {
+          return middlewareToUnuse.includes(m.creator);
+        }).forEach(function (m) {
+          return m.instance.unsubscribe();
+        });
+        this.middleware = this.middleware.filter(function (m) {
+          return !middlewareToUnuse.includes(m.creator);
+        });
+        return this;
+      }
+
+      // @major we shipped with EXPERIMENTAL_use, but have changed that to just `use` now
+    }, {
+      key: "EXPERIMENTAL_use",
+      value: function EXPERIMENTAL_use() {
+         _warning(false, 'The middleware API is now considered stable, so we recommend replacing `EXPERIMENTAL_use` with `use` before upgrading to the next major version.') ;
+        return this.use.apply(this, arguments);
+      }
+
+      /**
+       * Adds a widget to the search instance.
+       * A widget can be added either before or after InstantSearch has started.
+       * @param widget The widget to add to InstantSearch.
+       *
+       * @deprecated This method will still be supported in 4.x releases, but not further. It is replaced by `addWidgets([widget])`.
+       */
+    }, {
+      key: "addWidget",
+      value: function addWidget(widget) {
+         _warning(false, 'addWidget will still be supported in 4.x releases, but not further. It is replaced by `addWidgets([widget])`') ;
+        return this.addWidgets([widget]);
+      }
+
+      /**
+       * Adds multiple widgets to the search instance.
+       * Widgets can be added either before or after InstantSearch has started.
+       * @param widgets The array of widgets to add to InstantSearch.
+       */
+    }, {
+      key: "addWidgets",
+      value: function addWidgets(widgets) {
+        if (!Array.isArray(widgets)) {
+          throw new Error(withUsage$10('The `addWidgets` method expects an array of widgets. Please use `addWidget`.'));
+        }
+        if (widgets.some(function (widget) {
+          return typeof widget.init !== 'function' && typeof widget.render !== 'function';
+        })) {
+          throw new Error(withUsage$10('The widget definition expects a `render` and/or an `init` method.'));
+        }
+        this.mainIndex.addWidgets(widgets);
+        return this;
+      }
+
+      /**
+       * Removes a widget from the search instance.
+       * @deprecated This method will still be supported in 4.x releases, but not further. It is replaced by `removeWidgets([widget])`
+       * @param widget The widget instance to remove from InstantSearch.
+       *
+       * The widget must implement a `dispose()` method to clear its state.
+       */
+    }, {
+      key: "removeWidget",
+      value: function removeWidget(widget) {
+         _warning(false, 'removeWidget will still be supported in 4.x releases, but not further. It is replaced by `removeWidgets([widget])`') ;
+        return this.removeWidgets([widget]);
+      }
+
+      /**
+       * Removes multiple widgets from the search instance.
+       * @param widgets Array of widgets instances to remove from InstantSearch.
+       *
+       * The widgets must implement a `dispose()` method to clear their states.
+       */
+    }, {
+      key: "removeWidgets",
+      value: function removeWidgets(widgets) {
+        if (!Array.isArray(widgets)) {
+          throw new Error(withUsage$10('The `removeWidgets` method expects an array of widgets. Please use `removeWidget`.'));
+        }
+        if (widgets.some(function (widget) {
+          return typeof widget.dispose !== 'function';
+        })) {
+          throw new Error(withUsage$10('The widget definition expects a `dispose` method.'));
+        }
+        this.mainIndex.removeWidgets(widgets);
+        return this;
+      }
+
+      /**
+       * Ends the initialization of InstantSearch.js and triggers the
+       * first search.
+       */
+    }, {
+      key: "start",
+      value: function start() {
+        var _this3 = this;
+        if (this.started) {
+          throw new Error(withUsage$10('The `start` method has already been called once.'));
+        }
+
+        // This Helper is used for the queries, we don't care about its state. The
+        // states are managed at the `index` level. We use this Helper to create
+        // DerivedHelper scoped into the `index` widgets.
+        // In Vue InstantSearch' hydrate, a main helper gets set before start, so
+        // we need to respect this helper as a way to keep all listeners correct.
+        var mainHelper = this.mainHelper || algoliasearchHelper_1(this.client, this.indexName, undefined, {
+          persistHierarchicalRootCount: this.future.persistHierarchicalRootCount
+        });
+        mainHelper.search = function () {
+          _this3.status = 'loading';
+          _this3.scheduleRender(false);
+           _warning(Boolean(_this3.indexName) || _this3.mainIndex.getWidgets().some(isIndexWidget), 'No indexName provided, nor an explicit index widget in the widgets tree. This is required to be able to display results.') ;
+
+          // This solution allows us to keep the exact same API for the users but
+          // under the hood, we have a different implementation. It should be
+          // completely transparent for the rest of the codebase. Only this module
+          // is impacted.
+          if (_this3._hasSearchWidget) {
+            mainHelper.searchOnlyWithDerivedHelpers();
+          }
+          if (_this3._hasRecommendWidget) {
+            mainHelper.recommend();
+          }
+          return mainHelper;
+        };
+        if (this._searchFunction) {
+          // this client isn't used to actually search, but required for the helper
+          // to not throw errors
+          var fakeClient = {
+            search: function search() {
+              return new Promise(noop);
+            }
+          };
+          this._mainHelperSearch = mainHelper.search.bind(mainHelper);
+          mainHelper.search = function () {
+            var mainIndexHelper = _this3.mainIndex.getHelper();
+            var searchFunctionHelper = algoliasearchHelper_1(fakeClient, mainIndexHelper.state.index, mainIndexHelper.state);
+            searchFunctionHelper.once('search', function (_ref2) {
+              var state = _ref2.state;
+              mainIndexHelper.overrideStateWithoutTriggeringChangeEvent(state);
+              _this3._mainHelperSearch();
+            });
+            // Forward state changes from `searchFunctionHelper` to `mainIndexHelper`
+            searchFunctionHelper.on('change', function (_ref3) {
+              var state = _ref3.state;
+              mainIndexHelper.setState(state);
+            });
+            _this3._searchFunction(searchFunctionHelper);
+            return mainHelper;
+          };
+        }
+
+        // Only the "main" Helper emits the `error` event vs the one for `search`
+        // and `results` that are also emitted on the derived one.
+        mainHelper.on('error', function (_ref4) {
+          var error = _ref4.error;
+          if (!(error instanceof Error)) {
+            // typescript lies here, error is in some cases { name: string, message: string }
+            var err = error;
+            error = Object.keys(err).reduce(function (acc, key) {
+              acc[key] = err[key];
+              return acc;
+            }, new Error(err.message));
+          }
+          // If an error is emitted, it is re-thrown by events. In previous versions
+          // we emitted {error}, which is thrown as:
+          // "Uncaught, unspecified \"error\" event. ([object Object])"
+          // To avoid breaking changes, we make the error available in both
+          // `error` and `error.error`
+          // @MAJOR emit only error
+          error.error = error;
+          _this3.error = error;
+          _this3.status = 'error';
+          _this3.scheduleRender(false);
+
+          // This needs to execute last because it throws the error.
+          _this3.emit('error', error);
+        });
+        this.mainHelper = mainHelper;
+        this.middleware.forEach(function (_ref5) {
+          var instance = _ref5.instance;
+          instance.subscribe();
+        });
+        this.mainIndex.init({
+          instantSearchInstance: this,
+          parent: null,
+          uiState: this._initialUiState
+        });
+        if (this._initialResults) {
+          hydrateSearchClient(this.client, this._initialResults);
+          hydrateRecommendCache(this.mainHelper, this._initialResults);
+          var originalScheduleSearch = this.scheduleSearch;
+          // We don't schedule a first search when initial results are provided
+          // because we already have the results to render. This skips the initial
+          // network request on the browser on `start`.
+          this.scheduleSearch = defer(noop);
+          // We also skip the initial network request when widgets are dynamically
+          // added in the first tick (that's the case in all the framework-based flavors).
+          // When we add a widget to `index`, it calls `scheduleSearch`. We can rely
+          // on our `defer` util to restore the original `scheduleSearch` value once
+          // widgets are added to hook back to the regular lifecycle.
+          defer(function () {
+            _this3.scheduleSearch = originalScheduleSearch;
+          })();
+        }
+        // We only schedule a search when widgets have been added before `start()`
+        // because there are listeners that can use these results.
+        // This is especially useful in framework-based flavors that wait for
+        // dynamically-added widgets to trigger a network request. It avoids
+        // having to batch this initial network request with the one coming from
+        // `addWidgets()`.
+        // Later, we could also skip `index()` widgets and widgets that don't read
+        // the results, but this is an optimization that has a very low impact for now.
+        else if (this.mainIndex.getWidgets().length > 0) {
+          this.scheduleSearch();
+        }
+
+        // Keep the previous reference for legacy purpose, some pattern use
+        // the direct Helper access `search.helper` (e.g multi-index).
+        this.helper = this.mainIndex.getHelper();
+
+        // track we started the search if we add more widgets,
+        // to init them directly after add
+        this.started = true;
+        this.middleware.forEach(function (_ref6) {
+          var instance = _ref6.instance;
+          instance.started();
+        });
+
+        // This is the automatic Insights middleware,
+        // added when `insights` is unset and the initial results possess `queryID`.
+        // Any user-provided middleware will be added later and override this one.
+        if (typeof this._insights === 'undefined') {
+          mainHelper.derivedHelpers[0].once('result', function () {
+            var hasAutomaticInsights = _this3.mainIndex.getScopedResults().some(function (_ref7) {
+              var results = _ref7.results;
+              return results === null || results === void 0 ? void 0 : results._automaticInsights;
+            });
+            if (hasAutomaticInsights) {
+              _this3.use(createInsightsMiddleware({
+                $$internal: true,
+                $$automatic: true
+              }));
+            }
+          });
+        }
+      }
+
+      /**
+       * Removes all widgets without triggering a search afterwards.
+       * @return {undefined} This method does not return anything
+       */
+    }, {
+      key: "dispose",
+      value: function dispose() {
+        var _this$mainHelper2;
+        this.scheduleSearch.cancel();
+        this.scheduleRender.cancel();
+        clearTimeout(this._searchStalledTimer);
+        this.removeWidgets(this.mainIndex.getWidgets());
+        this.mainIndex.dispose();
+
+        // You can not start an instance two times, therefore a disposed instance
+        // needs to set started as false otherwise this can not be restarted at a
+        // later point.
+        this.started = false;
+
+        // The helper needs to be reset to perform the next search from a fresh state.
+        // If not reset, it would use the state stored before calling `dispose()`.
+        this.removeAllListeners();
+        (_this$mainHelper2 = this.mainHelper) === null || _this$mainHelper2 === void 0 ? void 0 : _this$mainHelper2.removeAllListeners();
+        this.mainHelper = null;
+        this.helper = null;
+        this.middleware.forEach(function (_ref8) {
+          var instance = _ref8.instance;
+          instance.unsubscribe();
+        });
+      }
+    }, {
+      key: "scheduleStalledRender",
+      value: function scheduleStalledRender() {
+        var _this4 = this;
+        if (!this._searchStalledTimer) {
+          this._searchStalledTimer = setTimeout(function () {
+            _this4.status = 'stalled';
+            _this4.scheduleRender();
+          }, this._stalledSearchDelay);
+        }
+      }
+
+      /**
+       * Set the UI state and trigger a search.
+       * @param uiState The next UI state or a function computing it from the current state
+       * @param callOnStateChange private parameter used to know if the method is called from a state change
+       */
+    }, {
+      key: "setUiState",
+      value: function setUiState(uiState) {
+        var _this5 = this;
+        var callOnStateChange = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
+        if (!this.mainHelper) {
+          throw new Error(withUsage$10('The `start` method needs to be called before `setUiState`.'));
+        }
+
+        // We refresh the index UI state to update the local UI state that the
+        // main index passes to the function form of `setUiState`.
+        this.mainIndex.refreshUiState();
+        var nextUiState = typeof uiState === 'function' ? uiState(this.mainIndex.getWidgetUiState({})) : uiState;
+        if (this.onStateChange && callOnStateChange) {
+          this.onStateChange({
+            uiState: nextUiState,
+            setUiState: function setUiState(finalUiState) {
+              setIndexHelperState(typeof finalUiState === 'function' ? finalUiState(nextUiState) : finalUiState, _this5.mainIndex);
+              _this5.scheduleSearch();
+              _this5.onInternalStateChange();
+            }
+          });
+        } else {
+          setIndexHelperState(nextUiState, this.mainIndex);
+          this.scheduleSearch();
+          this.onInternalStateChange();
+        }
+      }
+    }, {
+      key: "getUiState",
+      value: function getUiState() {
+        if (this.started) {
+          // We refresh the index UI state to make sure changes from `refine` are taken in account
+          this.mainIndex.refreshUiState();
+        }
+        return this.mainIndex.getWidgetUiState({});
+      }
+    }, {
+      key: "createURL",
+      value: function createURL() {
+        var nextState = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+        if (!this.started) {
+          throw new Error(withUsage$10('The `start` method needs to be called before `createURL`.'));
+        }
+        return this._createURL(nextState);
+      }
+    }, {
+      key: "refresh",
+      value: function refresh() {
+        if (!this.mainHelper) {
+          throw new Error(withUsage$10('The `start` method needs to be called before `refresh`.'));
+        }
+        this.mainHelper.clearCache().search();
+      }
+    }]);
+    return InstantSearch;
+  }(events);
+
+
+
+  var routers = /*#__PURE__*/Object.freeze({
+    __proto__: null,
+    history: historyRouter
+  });
+
+  var _excluded$s = ["configure"];
+  function getIndexStateWithoutConfigure$1(uiState) {
+    var configure = uiState.configure,
+      trackedUiState = _objectWithoutProperties(uiState, _excluded$s);
+    return trackedUiState;
+  }
+  function singleIndexStateMapping(indexName) {
+    return {
+      $$type: 'ais.singleIndex',
+      stateToRoute: function stateToRoute(uiState) {
+        return getIndexStateWithoutConfigure$1(uiState[indexName] || {});
+      },
+      routeToState: function routeToState() {
+        var routeState = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+        return _defineProperty({}, indexName, getIndexStateWithoutConfigure$1(routeState));
+      }
+    };
+  }
+
+
+
+  var stateMappings = /*#__PURE__*/Object.freeze({
+    __proto__: null,
+    simple: simpleStateMapping,
+    singleIndex: singleIndexStateMapping
+  });
+
+
+
+  var middlewares = /*#__PURE__*/Object.freeze({
+    __proto__: null,
+    createInsightsMiddleware: createInsightsMiddleware,
+    createRouterMiddleware: createRouterMiddleware,
+    isMetadataEnabled: isMetadataEnabled,
+    createMetadataMiddleware: createMetadataMiddleware
   });
 
   /**

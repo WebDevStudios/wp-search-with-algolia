@@ -29,7 +29,7 @@ var $$type = 'ais.geoSearch';
  *
  * Currently, the feature is not compatible with multiple values in the _geoloc attribute.
  */
-var connectGeoSearch = function connectGeoSearch(renderFn) {
+export default (function connectGeoSearch(renderFn) {
   var unmountFn = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : noop;
   checkRendering(renderFn, withUsage());
   return function (widgetParams) {
@@ -149,7 +149,9 @@ var connectGeoSearch = function connectGeoSearch(renderFn) {
         if (!sendEvent) {
           sendEvent = createSendEventForHits({
             instantSearchInstance: instantSearchInstance,
-            index: helper.getIndex(),
+            getIndex: function getIndex() {
+              return helper.getIndex();
+            },
             widgetType: $$type
           });
         }
@@ -168,7 +170,9 @@ var connectGeoSearch = function connectGeoSearch(renderFn) {
           widgetParams: widgetParams
         };
       },
-      getRenderState: function getRenderState(renderState, renderOptions) {
+      getRenderState: function getRenderState(renderState, renderOptions
+      // Type is explicitly redefined, to avoid having the TWidgetParams type in the definition
+      ) {
         return _objectSpread(_objectSpread({}, renderState), {}, {
           geoSearch: this.getWidgetRenderState(renderOptions)
         });
@@ -199,5 +203,4 @@ var connectGeoSearch = function connectGeoSearch(renderFn) {
       }
     };
   };
-};
-export default connectGeoSearch;
+});

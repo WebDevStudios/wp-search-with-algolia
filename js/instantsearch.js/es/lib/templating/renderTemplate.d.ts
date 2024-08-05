@@ -9,4 +9,4 @@ export declare function renderTemplate({ templates, templateKey, compileOptions,
     data?: Record<string, any>;
     bindEvent?: BindEventForHits;
     sendEvent?: SendEventForHits;
-}): string | import("preact").VNode<{}> | import("preact").VNode<{}>[];
+}): string | import("preact").VNode<{}> | import("preact").VNode<{}>[] | null;

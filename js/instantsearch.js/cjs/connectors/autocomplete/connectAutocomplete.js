@@ -69,7 +69,9 @@ var connectAutocomplete = function connectAutocomplete(renderFn) {
           scopedResult.results.hits = escapeHTML ? (0, _utils.escapeHits)(scopedResult.results.hits) : scopedResult.results.hits;
           var sendEvent = (0, _utils.createSendEventForHits)({
             instantSearchInstance: instantSearchInstance,
-            index: scopedResult.results.index,
+            getIndex: function getIndex() {
+              return scopedResult.results.index;
+            },
             widgetType: _this.$$type
           });
           return {

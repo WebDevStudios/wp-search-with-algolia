@@ -11,7 +11,7 @@ function _objectWithoutProperties(source, excluded) { if (source == null) return
 function _objectWithoutPropertiesLoose(source, excluded) { if (source == null) return {}; var target = {}; var sourceKeys = Object.keys(source); var key, i; for (i = 0; i < sourceKeys.length; i++) { key = sourceKeys[i]; if (excluded.indexOf(key) >= 0) continue; target[key] = source[key]; } return target; }
 // global for TypeScript alone
 /* global google */
-import { cx } from '@algolia/ui-components-shared';
+import { cx } from 'instantsearch-ui-components';
 import { render } from 'preact';
 import connectGeoSearch from "../../connectors/geo-search/connectGeoSearch.js";
 import { component } from "../../lib/suit.js";
@@ -37,7 +37,7 @@ var suit = component('GeoSearch');
  *
  * Don't forget to explicitly set the `height` of the map container (default class `.ais-geo-search--map`), otherwise it won't be shown (it's a requirement of Google Maps).
  */
-var geoSearch = function geoSearch(widgetParams) {
+export default (function geoSearch(widgetParams) {
   var _ref = widgetParams || {},
     _ref$initialZoom = _ref.initialZoom,
     initialZoom = _ref$initialZoom === void 0 ? 1 : _ref$initialZoom,
@@ -150,12 +150,14 @@ var geoSearch = function geoSearch(widgetParams) {
     return render(null, containerNode);
   });
   return _objectSpread(_objectSpread({}, makeWidget(_objectSpread(_objectSpread({}, otherWidgetParams), {}, {
+    // @TODO: this type doesn't preserve the generic correctly,
+    // (but as they're internal only it's not a big problem)
+    templates: templates,
     renderState: {},
     container: containerNode,
     googleReference: googleReference,
     initialZoom: initialZoom,
     initialPosition: initialPosition,
-    templates: templates,
     cssClasses: cssClasses,
     createMarker: createMarker,
     markerOptions: markerOptions,
@@ -165,5 +167,4 @@ var geoSearch = function geoSearch(widgetParams) {
   }))), {}, {
     $$widgetType: 'ais.geoSearch'
   });
-};
-export default geoSearch;
+});

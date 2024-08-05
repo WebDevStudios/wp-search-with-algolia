@@ -7,6 +7,11 @@ exports._buildEventPayloadsForHits = _buildEventPayloadsForHits;
 exports.createBindEventForHits = createBindEventForHits;
 exports.createSendEventForHits = createSendEventForHits;
 var _serializer = require("./serializer");
+function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
+function _defineProperty(obj, key, value) { key = _toPropertyKey(key); if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+function _toPropertyKey(arg) { var key = _toPrimitive(arg, "string"); return _typeof(key) === "symbol" ? key : String(key); }
+function _toPrimitive(input, hint) { if (_typeof(input) !== "object" || input === null) return input; var prim = input[Symbol.toPrimitive]; if (prim !== undefined) { var res = prim.call(input, hint || "default"); if (_typeof(res) !== "object") return res; throw new TypeError("@@toPrimitive must return a primitive value."); } return (hint === "string" ? String : Number)(input); }
 function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest(); }
 function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
 function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
@@ -23,7 +28,7 @@ function chunk(arr) {
   return chunks;
 }
 function _buildEventPayloadsForHits(_ref) {
-  var index = _ref.index,
+  var getIndex = _ref.getIndex,
     widgetType = _ref.widgetType,
     methodName = _ref.methodName,
     args = _ref.args,
@@ -38,6 +43,7 @@ function _buildEventPayloadsForHits(_ref) {
     eventModifier = _args$0$split2[1];
   var hits = args[1];
   var eventName = args[2];
+  var additionalData = args[3] || {};
   if (!hits) {
     if (process.env.NODE_ENV === 'development') {
       throw new Error("You need to pass hit or hits as the second argument like:\n  ".concat(methodName, "(eventType, hit);\n  "));
@@ -77,11 +83,11 @@ function _buildEventPayloadsForHits(_ref) {
         insightsMethod: 'viewedObjectIDs',
         widgetType: widgetType,
         eventType: eventType,
-        payload: {
+        payload: _objectSpread({
           eventName: eventName || 'Hits Viewed',
-          index: index,
+          index: getIndex(),
           objectIDs: objectIDsByChunk[i]
-        },
+        }, additionalData),
         hits: batch,
         eventModifier: eventModifier
       };
@@ -92,13 +98,13 @@ function _buildEventPayloadsForHits(_ref) {
         insightsMethod: 'clickedObjectIDsAfterSearch',
         widgetType: widgetType,
         eventType: eventType,
-        payload: {
+        payload: _objectSpread({
           eventName: eventName || 'Hit Clicked',
-          index: index,
+          index: getIndex(),
           queryID: queryID,
           objectIDs: objectIDsByChunk[i],
           positions: positionsByChunk[i]
-        },
+        }, additionalData),
         hits: batch,
         eventModifier: eventModifier
       };
@@ -109,12 +115,12 @@ function _buildEventPayloadsForHits(_ref) {
         insightsMethod: 'convertedObjectIDsAfterSearch',
         widgetType: widgetType,
         eventType: eventType,
-        payload: {
+        payload: _objectSpread({
           eventName: eventName || 'Hit Converted',
-          index: index,
+          index: getIndex(),
           queryID: queryID,
           objectIDs: objectIDsByChunk[i]
-        },
+        }, additionalData),
         hits: batch,
         eventModifier: eventModifier
       };
@@ -127,7 +133,7 @@ function _buildEventPayloadsForHits(_ref) {
 }
 function createSendEventForHits(_ref2) {
   var instantSearchInstance = _ref2.instantSearchInstance,
-    index = _ref2.index,
+    getIndex = _ref2.getIndex,
     widgetType = _ref2.widgetType;
   var sentEvents = {};
   var timer = undefined;
@@ -137,7 +143,7 @@ function createSendEventForHits(_ref2) {
     }
     var payloads = _buildEventPayloadsForHits({
       widgetType: widgetType,
-      index: index,
+      getIndex: getIndex,
       methodName: 'sendEvent',
       args: args,
       instantSearchInstance: instantSearchInstance
@@ -157,7 +163,7 @@ function createSendEventForHits(_ref2) {
   return sendEventForHits;
 }
 function createBindEventForHits(_ref3) {
-  var index = _ref3.index,
+  var getIndex = _ref3.getIndex,
     widgetType = _ref3.widgetType,
     instantSearchInstance = _ref3.instantSearchInstance;
   var bindEventForHits = function bindEventForHits() {
@@ -166,7 +172,7 @@ function createBindEventForHits(_ref3) {
     }
     var payloads = _buildEventPayloadsForHits({
       widgetType: widgetType,
-      index: index,
+      getIndex: getIndex,
       methodName: 'bindEvent',
       args: args,
       instantSearchInstance: instantSearchInstance

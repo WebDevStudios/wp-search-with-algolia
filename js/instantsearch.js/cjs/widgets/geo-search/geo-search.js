@@ -5,7 +5,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
-var _uiComponentsShared = require("@algolia/ui-components-shared");
+var _instantsearchUiComponents = require("instantsearch-ui-components");
 var _preact = require("preact");
 var _connectGeoSearch = _interopRequireDefault(require("../../connectors/geo-search/connectGeoSearch"));
 var _suit = require("../../lib/suit");
@@ -16,7 +16,8 @@ var _defaultTemplates = _interopRequireDefault(require("./defaultTemplates"));
 var _GeoSearchRenderer = _interopRequireDefault(require("./GeoSearchRenderer"));
 var _excluded = ["initialZoom", "initialPosition", "templates", "cssClasses", "builtInMarker", "customHTMLMarker", "enableRefine", "enableClearMapRefinement", "enableRefineControl", "container", "googleReference"],
   _excluded2 = ["item"],
-  _excluded3 = ["item"];
+  _excluded3 = ["item"]; // global for TypeScript alone
+/* global google */
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
 function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
@@ -87,35 +88,35 @@ var geoSearch = function geoSearch(widgetParams) {
   }
   var containerNode = (0, _utils.getContainerNode)(container);
   var cssClasses = {
-    root: (0, _uiComponentsShared.cx)(suit(), userCssClasses.root),
+    root: (0, _instantsearchUiComponents.cx)(suit(), userCssClasses.root),
     // Required only to mount / unmount the Preact tree
     tree: suit({
       descendantName: 'tree'
     }),
-    map: (0, _uiComponentsShared.cx)(suit({
+    map: (0, _instantsearchUiComponents.cx)(suit({
       descendantName: 'map'
     }), userCssClasses.map),
-    control: (0, _uiComponentsShared.cx)(suit({
+    control: (0, _instantsearchUiComponents.cx)(suit({
       descendantName: 'control'
     }), userCssClasses.control),
-    label: (0, _uiComponentsShared.cx)(suit({
+    label: (0, _instantsearchUiComponents.cx)(suit({
       descendantName: 'label'
     }), userCssClasses.label),
-    selectedLabel: (0, _uiComponentsShared.cx)(suit({
+    selectedLabel: (0, _instantsearchUiComponents.cx)(suit({
       descendantName: 'label',
       modifierName: 'selected'
     }), userCssClasses.selectedLabel),
-    input: (0, _uiComponentsShared.cx)(suit({
+    input: (0, _instantsearchUiComponents.cx)(suit({
       descendantName: 'input'
     }), userCssClasses.input),
-    redo: (0, _uiComponentsShared.cx)(suit({
+    redo: (0, _instantsearchUiComponents.cx)(suit({
       descendantName: 'redo'
     }), userCssClasses.redo),
-    disabledRedo: (0, _uiComponentsShared.cx)(suit({
+    disabledRedo: (0, _instantsearchUiComponents.cx)(suit({
       descendantName: 'redo',
       modifierName: 'disabled'
     }), userCssClasses.disabledRedo),
-    reset: (0, _uiComponentsShared.cx)(suit({
+    reset: (0, _instantsearchUiComponents.cx)(suit({
       descendantName: 'reset'
     }), userCssClasses.reset)
   };
@@ -139,7 +140,7 @@ var geoSearch = function geoSearch(widgetParams) {
     return new HTMLMarker(_objectSpread(_objectSpread(_objectSpread({}, customHTMLMarker.createOptions(item)), rest), {}, {
       __id: item.objectID,
       position: item._geoloc,
-      className: (0, _uiComponentsShared.cx)(suit({
+      className: (0, _instantsearchUiComponents.cx)(suit({
         descendantName: 'marker'
       })),
       template: (0, _templating.renderTemplate)({
@@ -155,12 +156,14 @@ var geoSearch = function geoSearch(widgetParams) {
     return (0, _preact.render)(null, containerNode);
   });
   return _objectSpread(_objectSpread({}, makeWidget(_objectSpread(_objectSpread({}, otherWidgetParams), {}, {
+    // @TODO: this type doesn't preserve the generic correctly,
+    // (but as they're internal only it's not a big problem)
+    templates: templates,
     renderState: {},
     container: containerNode,
     googleReference: googleReference,
     initialZoom: initialZoom,
     initialPosition: initialPosition,
-    templates: templates,
     cssClasses: cssClasses,
     createMarker: createMarker,
     markerOptions: markerOptions,
@@ -171,5 +174,4 @@ var geoSearch = function geoSearch(widgetParams) {
     $$widgetType: 'ais.geoSearch'
   });
 };
-var _default = geoSearch;
-exports.default = _default;
+exports.default = geoSearch;

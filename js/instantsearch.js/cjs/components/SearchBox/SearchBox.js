@@ -29,8 +29,10 @@ var defaultProps = {
   showLoadingIndicator: true,
   autofocus: false,
   searchAsYouType: true,
+  ignoreCompositionEvents: false,
   isSearchStalled: false,
   disabled: false,
+  ariaLabel: 'Search',
   onChange: _utils.noop,
   onSubmit: _utils.noop,
   onReset: _utils.noop,
@@ -57,13 +59,15 @@ var SearchBox = /*#__PURE__*/function (_Component) {
         refine = _this$props.refine,
         onChange = _this$props.onChange;
       var query = event.target.value;
-      if (searchAsYouType) {
-        refine(query);
+      if (!(_this.props.ignoreCompositionEvents && event.isComposing)) {
+        if (searchAsYouType) {
+          refine(query);
+        }
+        _this.setState({
+          query: query
+        });
+        onChange(event);
       }
-      _this.setState({
-        query: query
-      });
-      onChange(event);
     });
     _defineProperty(_assertThisInitialized(_this), "onSubmit", function (event) {
       var _this$props2 = _this.props,
@@ -128,7 +132,7 @@ var SearchBox = /*#__PURE__*/function (_Component) {
       /**
        * when the user is typing, we don't want to replace the query typed
        * by the user (state.query) with the query exposed by the connector (props.query)
-       * see: https://github.com/algolia/instantsearch.js/issues/4141
+       * see: https://github.com/algolia/instantsearch/issues/4141
        */
       if (!this.state.focused && nextProps.query !== this.state.query) {
         this.setState({
@@ -147,7 +151,8 @@ var SearchBox = /*#__PURE__*/function (_Component) {
         showReset = _this$props4.showReset,
         showLoadingIndicator = _this$props4.showLoadingIndicator,
         templates = _this$props4.templates,
-        isSearchStalled = _this$props4.isSearchStalled;
+        isSearchStalled = _this$props4.isSearchStalled,
+        ariaLabel = _this$props4.ariaLabel;
       return (0, _preact.h)("div", {
         className: cssClasses.root
       }, (0, _preact.h)("form", {
@@ -172,16 +177,21 @@ var SearchBox = /*#__PURE__*/function (_Component) {
         ,
         spellCheck: "false",
         maxLength: 512,
-        onInput: this.onInput,
+        onInput: this.onInput
+        // see: https://github.com/preactjs/preact/issues/1978
+        // eslint-disable-next-line react/no-unknown-property
+        ,
+        oncompositionend: this.onInput,
         onBlur: this.onBlur,
-        onFocus: this.onFocus
+        onFocus: this.onFocus,
+        "aria-label": ariaLabel
       }), (0, _preact.h)(_Template.default, {
         templateKey: "submit",
         rootTagName: "button",
         rootProps: {
           className: cssClasses.submit,
           type: 'submit',
-          title: 'Submit the search query.',
+          title: 'Submit the search query',
           hidden: !showSubmit
         },
         templates: templates,
@@ -194,7 +204,7 @@ var SearchBox = /*#__PURE__*/function (_Component) {
         rootProps: {
           className: cssClasses.reset,
           type: 'reset',
-          title: 'Clear the search query.',
+          title: 'Clear the search query',
           hidden: !(showReset && this.state.query.trim() && !isSearchStalled)
         },
         templates: templates,

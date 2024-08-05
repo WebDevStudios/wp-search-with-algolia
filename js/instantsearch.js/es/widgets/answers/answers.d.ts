@@ -61,5 +61,5 @@ export type AnswersWidgetParams = {
 export type AnswersWidget = WidgetFactory<AnswersWidgetDescription & {
     $$widgetType: 'ais.answers';
 }, AnswersConnectorParams, AnswersWidgetParams>;
-declare const answersWidget: AnswersWidget;
-export default answersWidget;
+declare const _default: AnswersWidget;
+export default _default;

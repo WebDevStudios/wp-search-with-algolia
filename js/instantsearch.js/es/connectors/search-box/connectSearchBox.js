@@ -9,6 +9,16 @@ var withUsage = createDocumentationMessageGenerator({
   name: 'search-box',
   connector: true
 });
+
+/**
+ * @typedef {Object} CustomSearchBoxWidgetParams
+ * @property {function(string, function(string))} [queryHook = undefined] A function that will be called every time
+ * a new value for the query is set. The first parameter is the query and the second is a
+ * function to actually trigger the search. The function takes the query as the parameter.
+ *
+ * This queryHook can be used to debounce the number of searches done from the searchBox.
+ */
+
 var defaultQueryHook = function defaultQueryHook(query, hook) {
   return hook(query);
 };
@@ -54,7 +64,7 @@ var connectSearchBox = function connectSearchBox(renderFn) {
       },
       getWidgetRenderState: function getWidgetRenderState(_ref3) {
         var helper = _ref3.helper,
-          searchMetadata = _ref3.searchMetadata,
+          instantSearchInstance = _ref3.instantSearchInstance,
           state = _ref3.state;
         if (!_refine) {
           _refine = function _refine(query) {
@@ -71,7 +81,7 @@ var connectSearchBox = function connectSearchBox(renderFn) {
           refine: _refine,
           clear: _clear,
           widgetParams: widgetParams,
-          isSearchStalled: searchMetadata.isSearchStalled
+          isSearchStalled: instantSearchInstance.status === 'stalled'
         };
       },
       getWidgetUiState: function getWidgetUiState(uiState, _ref4) {

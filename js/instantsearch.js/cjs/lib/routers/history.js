@@ -23,48 +23,6 @@ var setWindowTitle = function setWindowTitle(title) {
 };
 var BrowserHistory = /*#__PURE__*/function () {
   /**
-   * Transforms a UI state into a title for the page.
-   */
-
-  /**
-   * Time in milliseconds before performing a write in the history.
-   * It prevents from adding too many entries in the history and
-   * makes the back button more usable.
-   *
-   * @default 400
-   */
-
-  /**
-   * Creates a full URL based on the route state.
-   * The storage adaptor maps all syncable keys to the query string of the URL.
-   */
-
-  /**
-   * Parses the URL into a route state.
-   * It should be symmetrical to `createURL`.
-   */
-
-  /**
-   * Returns the location to store in the history.
-   * @default () => window.location
-   */
-
-  /**
-   * Indicates if last action was back/forward in the browser.
-   */
-
-  /**
-   * Indicates whether the history router is disposed or not.
-   */
-
-  /**
-   * Indicates the window.history.length before the last call to
-   * window.history.pushState (called in `write`).
-   * It allows to determine if a `pushState` has been triggered elsewhere,
-   * and thus to prevent the `write` method from calling `pushState`.
-   */
-
-  /**
    * Initializes a new storage provider that syncs the search state to the URL
    * using web APIs (`window.location.pushState` and `onpopstate` event).
    */
@@ -78,22 +36,58 @@ var BrowserHistory = /*#__PURE__*/function () {
       getLocation = _ref.getLocation,
       start = _ref.start,
       dispose = _ref.dispose,
-      push = _ref.push;
+      push = _ref.push,
+      cleanUrlOnDispose = _ref.cleanUrlOnDispose;
     _classCallCheck(this, BrowserHistory);
     _defineProperty(this, "$$type", 'ais.browser');
+    /**
+     * Transforms a UI state into a title for the page.
+     */
     _defineProperty(this, "windowTitle", void 0);
+    /**
+     * Time in milliseconds before performing a write in the history.
+     * It prevents from adding too many entries in the history and
+     * makes the back button more usable.
+     *
+     * @default 400
+     */
     _defineProperty(this, "writeDelay", void 0);
+    /**
+     * Creates a full URL based on the route state.
+     * The storage adaptor maps all syncable keys to the query string of the URL.
+     */
     _defineProperty(this, "_createURL", void 0);
+    /**
+     * Parses the URL into a route state.
+     * It should be symmetrical to `createURL`.
+     */
     _defineProperty(this, "parseURL", void 0);
+    /**
+     * Returns the location to store in the history.
+     * @default () => window.location
+     */
     _defineProperty(this, "getLocation", void 0);
     _defineProperty(this, "writeTimer", void 0);
     _defineProperty(this, "_onPopState", void 0);
+    /**
+     * Indicates if last action was back/forward in the browser.
+     */
     _defineProperty(this, "inPopState", false);
+    /**
+     * Indicates whether the history router is disposed or not.
+     */
     _defineProperty(this, "isDisposed", false);
+    /**
+     * Indicates the window.history.length before the last call to
+     * window.history.pushState (called in `write`).
+     * It allows to determine if a `pushState` has been triggered elsewhere,
+     * and thus to prevent the `write` method from calling `pushState`.
+     */
     _defineProperty(this, "latestAcknowledgedHistory", 0);
     _defineProperty(this, "_start", void 0);
     _defineProperty(this, "_dispose", void 0);
     _defineProperty(this, "_push", void 0);
+    _defineProperty(this, "_cleanUrlOnDispose", void 0);
     this.windowTitle = windowTitle;
     this.writeTimer = undefined;
     this.writeDelay = writeDelay;
@@ -103,6 +97,13 @@ var BrowserHistory = /*#__PURE__*/function () {
     this._start = start;
     this._dispose = dispose;
     this._push = push;
+    this._cleanUrlOnDispose = typeof cleanUrlOnDispose === 'undefined' ? true : cleanUrlOnDispose;
+    if (process.env.NODE_ENV === 'development' && typeof cleanUrlOnDispose === 'undefined') {
+      // eslint-disable-next-line no-console
+      console.info("Starting from the next major version, InstantSearch will not clean up the URL from active refinements when it is disposed.\n\nWe recommend setting `cleanUrlOnDispose` to false to adopt this change today.\nTo stay with the current behaviour and remove this warning, set the option to true.\n\nSee documentation: ".concat((0, _utils.createDocumentationLink)({
+        name: 'history-router'
+      }), "#widget-param-cleanurlondispose"));
+    }
     (0, _utils.safelyRunOnBrowser)(function (_ref2) {
       var window = _ref2.window;
       var title = _this.windowTitle && _this.windowTitle(_this.read());
@@ -188,7 +189,7 @@ var BrowserHistory = /*#__PURE__*/function () {
      *
      * It always generates the full URL, not a relative one.
      * This allows to handle cases like using a <base href>.
-     * See: https://github.com/algolia/instantsearch.js/issues/790
+     * See: https://github.com/algolia/instantsearch/issues/790
      */
   }, {
     key: "createURL",
@@ -230,7 +231,9 @@ var BrowserHistory = /*#__PURE__*/function () {
       if (this.writeTimer) {
         clearTimeout(this.writeTimer);
       }
-      this.write({});
+      if (this._cleanUrlOnDispose) {
+        this.write({});
+      }
     }
   }, {
     key: "start",
@@ -243,6 +246,11 @@ var BrowserHistory = /*#__PURE__*/function () {
       var _this5 = this;
       return (0, _utils.safelyRunOnBrowser)(function (_ref6) {
         var window = _ref6.window;
+        // When disposed and the cleanUrlOnDispose is set to false, we do not want to write the URL.
+        if (_this5.isDisposed && !_this5._cleanUrlOnDispose) {
+          return false;
+        }
+
         // We do want to `pushState` if:
         // - the router is not disposed, IS.js needs to update the URL
         // OR
@@ -319,7 +327,8 @@ function historyRouter() {
     } : _ref7$getLocation,
     start = _ref7.start,
     dispose = _ref7.dispose,
-    push = _ref7.push;
+    push = _ref7.push,
+    cleanUrlOnDispose = _ref7.cleanUrlOnDispose;
   return new BrowserHistory({
     createURL: createURL,
     parseURL: parseURL,
@@ -328,6 +337,7 @@ function historyRouter() {
     getLocation: getLocation,
     start: start,
     dispose: dispose,
-    push: push
+    push: push,
+    cleanUrlOnDispose: cleanUrlOnDispose
   });
 }

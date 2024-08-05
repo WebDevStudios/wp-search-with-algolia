@@ -4,7 +4,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
-var _uiComponentsShared = require("@algolia/ui-components-shared");
+var _instantsearchUiComponents = require("instantsearch-ui-components");
 var _preact = require("preact");
 var _formatNumber = require("../../lib/formatNumber");
 var defaultTemplates = {
@@ -15,12 +15,12 @@ var defaultTemplates = {
       cssClasses = _ref.cssClasses,
       isRefined = _ref.isRefined;
     return (0, _preact.h)("a", {
-      className: (0, _uiComponentsShared.cx)((0, _uiComponentsShared.cx)(cssClasses.link), (0, _uiComponentsShared.cx)(isRefined ? cssClasses.selectedItemLink : undefined)),
+      className: (0, _instantsearchUiComponents.cx)((0, _instantsearchUiComponents.cx)(cssClasses.link), (0, _instantsearchUiComponents.cx)(isRefined ? cssClasses.selectedItemLink : undefined)),
       href: url
     }, (0, _preact.h)("span", {
-      className: (0, _uiComponentsShared.cx)(cssClasses.label)
+      className: (0, _instantsearchUiComponents.cx)(cssClasses.label)
     }, label), (0, _preact.h)("span", {
-      className: (0, _uiComponentsShared.cx)(cssClasses.count)
+      className: (0, _instantsearchUiComponents.cx)(cssClasses.count)
     }, (0, _formatNumber.formatNumber)(count)));
   },
   showMoreText: function showMoreText(_ref2) {

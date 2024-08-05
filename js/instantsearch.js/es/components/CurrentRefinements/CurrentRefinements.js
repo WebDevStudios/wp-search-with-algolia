@@ -1,4 +1,4 @@
-import { cx } from '@algolia/ui-components-shared';
+import { cx } from 'instantsearch-ui-components';
 import { h } from 'preact';
 import { isSpecialClick, capitalize } from "../../lib/utils/index.js";
 var createItemKey = function createItemKey(_ref) {
@@ -33,7 +33,7 @@ var CurrentRefinements = function CurrentRefinements(_ref2) {
       className: cssClasses.item
     }, h("span", {
       className: cssClasses.label
-    }, capitalize(item.label), ":"), item.refinements.map(function (refinement) {
+    }, capitalize(item.label), ": "), item.refinements.map(function (refinement) {
       return h("span", {
         key: createItemKey(refinement),
         className: cssClasses.category
@@ -41,6 +41,7 @@ var CurrentRefinements = function CurrentRefinements(_ref2) {
         className: cssClasses.categoryLabel
       }, refinement.attribute === 'query' ? h("q", null, refinement.label) : refinement.label), h("button", {
         className: cssClasses.delete,
+        type: "button",
         onClick: handleClick(item.refine.bind(null, refinement))
       }, "\u2715"));
     }));

@@ -4,13 +4,13 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
 function _defineProperty(obj, key, value) { key = _toPropertyKey(key); if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 function _toPropertyKey(arg) { var key = _toPrimitive(arg, "string"); return _typeof(key) === "symbol" ? key : String(key); }
 function _toPrimitive(input, hint) { if (_typeof(input) !== "object" || input === null) return input; var prim = input[Symbol.toPrimitive]; if (prim !== undefined) { var res = prim.call(input, hint || "default"); if (_typeof(res) !== "object") return res; throw new TypeError("@@toPrimitive must return a primitive value."); } return (hint === "string" ? String : Number)(input); }
-import { cx } from '@algolia/ui-components-shared';
+import { cx } from 'instantsearch-ui-components';
 import { h, render } from 'preact';
 import Answers from "../../components/Answers/Answers.js";
 import connectAnswers from "../../connectors/answers/connectAnswers.js";
 import { component } from "../../lib/suit.js";
 import { prepareTemplateProps } from "../../lib/templating/index.js";
-import { createDocumentationMessageGenerator, getContainerNode } from "../../lib/utils/index.js";
+import { createDocumentationMessageGenerator, deprecate, getContainerNode } from "../../lib/utils/index.js";
 import defaultTemplates from "./defaultTemplates.js";
 var withUsage = createDocumentationMessageGenerator({
   name: 'answers'
@@ -41,6 +41,9 @@ var renderer = function renderer(_ref) {
     }), containerNode);
   };
 };
+/**
+ * @deprecated the answers service is no longer offered, and this widget will be removed in InstantSearch.js v5
+ */
 var answersWidget = function answersWidget(widgetParams) {
   var _ref3 = widgetParams || {},
     container = _ref3.container,
@@ -98,4 +101,4 @@ var answersWidget = function answersWidget(widgetParams) {
     $$widgetType: 'ais.answers'
   });
 };
-export default answersWidget;
+export default deprecate(answersWidget, 'The answers widget is deprecated and will be removed in InstantSearch.js 5.0');

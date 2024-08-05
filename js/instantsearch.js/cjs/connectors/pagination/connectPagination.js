@@ -91,7 +91,7 @@ var connectPagination = function connectPagination(renderFn) {
           connectorState.createURL = function (page) {
             return createURL(function (uiState) {
               return _objectSpread(_objectSpread({}, uiState), {}, {
-                page: page
+                page: page + 1
               });
             });
           };

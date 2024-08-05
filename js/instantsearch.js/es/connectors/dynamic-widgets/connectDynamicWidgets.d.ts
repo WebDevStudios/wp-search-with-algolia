@@ -24,11 +24,21 @@ export type DynamicWidgetsConnectorParams = {
     }>;
     /**
      * To prevent unneeded extra network requests when widgets mount or unmount,
-     * we request all facet values.
+     * we request all facet values by default. If you want to only request the
+     * facet values that are needed, you can set this option to the list of
+     * attributes you want to display.
+     *
+     * If `facets` is set to `['*']`, we request all facet values.
+     *
+     * Any facets that are requested due to the `facetOrdering` result are always
+     * requested by the widget that mounted itself.
+     *
+     * Setting `facets` to a value other than `['*']` will only prevent extra
+     * requests if all potential facets are listed.
      *
      * @default ['*']
      */
-    facets?: ['*'] | never[];
+    facets?: ['*'] | string[];
     /**
      * If you have more than 20 facet values pinned, you need to increase the
      * maxValuesPerFacet to at least that value.

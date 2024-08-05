@@ -4,7 +4,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
-var _uiComponentsShared = require("@algolia/ui-components-shared");
+var _instantsearchUiComponents = require("instantsearch-ui-components");
 var _preact = require("preact");
 var _ToggleRefinement = _interopRequireDefault(require("../../components/ToggleRefinement/ToggleRefinement"));
 var _connectToggleRefinement = _interopRequireDefault(require("../../connectors/toggle-refinement/connectToggleRefinement"));
@@ -76,14 +76,14 @@ var toggleRefinement = function toggleRefinement(widgetParams) {
   }
   var containerNode = (0, _utils.getContainerNode)(container);
   var cssClasses = {
-    root: (0, _uiComponentsShared.cx)(suit(), userCssClasses.root),
-    label: (0, _uiComponentsShared.cx)(suit({
+    root: (0, _instantsearchUiComponents.cx)(suit(), userCssClasses.root),
+    label: (0, _instantsearchUiComponents.cx)(suit({
       descendantName: 'label'
     }), userCssClasses.label),
-    checkbox: (0, _uiComponentsShared.cx)(suit({
+    checkbox: (0, _instantsearchUiComponents.cx)(suit({
       descendantName: 'checkbox'
     }), userCssClasses.checkbox),
-    labelText: (0, _uiComponentsShared.cx)(suit({
+    labelText: (0, _instantsearchUiComponents.cx)(suit({
       descendantName: 'labelText'
     }), userCssClasses.labelText)
   };

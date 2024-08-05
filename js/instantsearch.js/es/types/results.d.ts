@@ -1,4 +1,5 @@
-import type { PlainSearchParameters, SearchForFacetValues, SearchResults } from 'algoliasearch-helper';
+import type { SearchOptions } from './algoliasearch';
+import type { PlainSearchParameters, RecommendParametersOptions, RecommendResults, SearchForFacetValues, SearchResults } from 'algoliasearch-helper';
 export type HitAttributeHighlightResult = {
     value: string;
     matchLevel: 'none' | 'partial' | 'full';
@@ -16,7 +17,7 @@ export type GeoLoc = {
     lat: number;
     lng: number;
 };
-export type AlgoliaHit<THit extends BaseHit = Record<string, any>> = {
+export type AlgoliaHit<THit extends NonNullable<object> = Record<string, any>> = {
     objectID: string;
     _highlightResult?: HitHighlightResult;
     _snippetResult?: HitSnippetResult;
@@ -40,11 +41,12 @@ export type AlgoliaHit<THit extends BaseHit = Record<string, any>> = {
     _distinctSeqID?: number;
     _geoloc?: GeoLoc;
 } & THit;
-export type BaseHit = Record<string, unknown>;
-export type Hit<THit extends BaseHit = Record<string, any>> = {
+export type BaseHit = Record<string, any>;
+export type Hit<THit extends NonNullable<object> = Record<string, any>> = {
     __position: number;
     __queryID?: string;
 } & AlgoliaHit<THit>;
+export type GeoHit<THit extends NonNullable<object> = BaseHit> = Hit<THit> & Required<Pick<Hit, '_geoloc'>>;
 /**
  * @deprecated use Hit[] directly instead
  */
@@ -64,8 +66,13 @@ export type NumericRefinement = {
 };
 export type Refinement = FacetRefinement | NumericRefinement;
 type InitialResult = {
-    state: PlainSearchParameters;
-    results: SearchResults['_rawResults'];
+    state?: PlainSearchParameters;
+    results?: SearchResults['_rawResults'];
+    recommendResults?: {
+        params: NonNullable<RecommendParametersOptions['params']>;
+        results: RecommendResults['_rawResults'];
+    };
+    requestParams?: SearchOptions[];
 };
 export type InitialResults = Record<string, InitialResult>;
 export {};

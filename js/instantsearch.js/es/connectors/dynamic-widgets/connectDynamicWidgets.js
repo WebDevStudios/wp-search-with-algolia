@@ -29,8 +29,8 @@ var connectDynamicWidgets = function connectDynamicWidgets(renderFn) {
     }))) {
       throw new Error(withUsage('The `widgets` option expects an array of widgets.'));
     }
-    if (!(Array.isArray(facets) && facets.length <= 1 && (facets[0] === '*' || facets[0] === undefined))) {
-      throw new Error(withUsage("The `facets` option only accepts [] or [\"*\"], you passed ".concat(JSON.stringify(facets))));
+    if (!Array.isArray(facets)) {
+      throw new Error(withUsage("The `facets` option only accepts an array of facets, you passed ".concat(JSON.stringify(facets))));
     }
     var localWidgets = new Map();
     return {
@@ -108,7 +108,6 @@ var connectDynamicWidgets = function connectDynamicWidgets(renderFn) {
         unmountFn();
       },
       getWidgetSearchParameters: function getWidgetSearchParameters(state) {
-        // broadening the scope of facets to avoid conflict between never and *
         return facets.reduce(function (acc, curr) {
           return acc.addFacet(curr);
         }, state.setQueryParameters({

@@ -4,9 +4,9 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.InternalHighlight = void 0;
-var _uiComponentsHighlightVdom = require("@algolia/ui-components-highlight-vdom");
+var _instantsearchUiComponents = require("instantsearch-ui-components");
 var _preact = require("preact");
-var InternalHighlight = (0, _uiComponentsHighlightVdom.createHighlightComponent)({
+var InternalHighlight = (0, _instantsearchUiComponents.createHighlightComponent)({
   createElement: _preact.createElement,
   Fragment: _preact.Fragment
 });

@@ -40,27 +40,34 @@ var connectHits = function connectHits(renderFn) {
         renderFn(_objectSpread(_objectSpread({}, renderState), {}, {
           instantSearchInstance: renderOptions.instantSearchInstance
         }), false);
-        renderState.sendEvent('view:internal', renderState.hits);
+        renderState.sendEvent('view:internal', renderState.items);
       },
-      getRenderState: function getRenderState(renderState, renderOptions) {
+      getRenderState: function getRenderState(renderState, renderOptions
+      // Type is explicitly redefined, to avoid having the TWidgetParams type in the definition
+      ) {
         return _objectSpread(_objectSpread({}, renderState), {}, {
           hits: this.getWidgetRenderState(renderOptions)
         });
       },
       getWidgetRenderState: function getWidgetRenderState(_ref2) {
+        var _results$renderingCon, _results$renderingCon2, _results$renderingCon3;
         var results = _ref2.results,
           helper = _ref2.helper,
           instantSearchInstance = _ref2.instantSearchInstance;
         if (!sendEvent) {
           sendEvent = (0, _utils.createSendEventForHits)({
             instantSearchInstance: instantSearchInstance,
-            index: helper.getIndex(),
+            getIndex: function getIndex() {
+              return helper.getIndex();
+            },
             widgetType: this.$$type
           });
         }
         if (!bindEvent) {
           bindEvent = (0, _utils.createBindEventForHits)({
-            index: helper.getIndex(),
+            getIndex: function getIndex() {
+              return helper.getIndex();
+            },
             widgetType: this.$$type,
             instantSearchInstance: instantSearchInstance
           });
@@ -68,7 +75,9 @@ var connectHits = function connectHits(renderFn) {
         if (!results) {
           return {
             hits: [],
+            items: [],
             results: undefined,
+            banner: undefined,
             sendEvent: sendEvent,
             bindEvent: bindEvent,
             widgetParams: widgetParams
@@ -79,12 +88,15 @@ var connectHits = function connectHits(renderFn) {
         }
         var hitsWithAbsolutePosition = (0, _utils.addAbsolutePosition)(results.hits, results.page, results.hitsPerPage);
         var hitsWithAbsolutePositionAndQueryID = (0, _utils.addQueryID)(hitsWithAbsolutePosition, results.queryID);
-        var transformedHits = transformItems(hitsWithAbsolutePositionAndQueryID, {
+        var items = transformItems(hitsWithAbsolutePositionAndQueryID, {
           results: results
         });
+        var banner = (_results$renderingCon = results.renderingContent) === null || _results$renderingCon === void 0 ? void 0 : (_results$renderingCon2 = _results$renderingCon.widgets) === null || _results$renderingCon2 === void 0 ? void 0 : (_results$renderingCon3 = _results$renderingCon2.banners) === null || _results$renderingCon3 === void 0 ? void 0 : _results$renderingCon3[0];
         return {
-          hits: transformedHits,
+          hits: items,
+          items: items,
           results: results,
+          banner: banner,
           sendEvent: sendEvent,
           bindEvent: bindEvent,
           widgetParams: widgetParams
@@ -100,14 +112,15 @@ var connectHits = function connectHits(renderFn) {
           return _objectSpread(_objectSpread({}, acc), {}, _defineProperty({}, key, undefined));
         }, {}));
       },
-      getWidgetSearchParameters: function getWidgetSearchParameters(state) {
+      getWidgetSearchParameters: function getWidgetSearchParameters(state, _uiState) {
         if (!escapeHTML) {
           return state;
         }
+
+        // @MAJOR: set this globally, not in the Hits widget to allow Hits to be conditionally used
         return state.setQueryParameters(_utils.TAG_PLACEHOLDER);
       }
     };
   };
 };
-var _default = connectHits;
-exports.default = _default;
+exports.default = connectHits;

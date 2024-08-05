@@ -4,7 +4,7 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
 function _defineProperty(obj, key, value) { key = _toPropertyKey(key); if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 function _toPropertyKey(arg) { var key = _toPrimitive(arg, "string"); return _typeof(key) === "symbol" ? key : String(key); }
 function _toPrimitive(input, hint) { if (_typeof(input) !== "object" || input === null) return input; var prim = input[Symbol.toPrimitive]; if (prim !== undefined) { var res = prim.call(input, hint || "default"); if (_typeof(res) !== "object") return res; throw new TypeError("@@toPrimitive must return a primitive value."); } return (hint === "string" ? String : Number)(input); }
-import { cx } from '@algolia/ui-components-shared';
+import { cx } from 'instantsearch-ui-components';
 import { h, render } from 'preact';
 import InfiniteHits from "../../components/InfiniteHits/InfiniteHits.js";
 import connectInfiniteHits from "../../connectors/infinite-hits/connectInfiniteHits.js";
@@ -24,7 +24,7 @@ var renderer = function renderer(_ref) {
     templates = _ref.templates,
     hasShowPrevious = _ref.showPrevious;
   return function (_ref2, isFirstRendering) {
-    var hits = _ref2.hits,
+    var items = _ref2.items,
       results = _ref2.results,
       showMore = _ref2.showMore,
       showPrevious = _ref2.showPrevious,
@@ -33,7 +33,8 @@ var renderer = function renderer(_ref) {
       instantSearchInstance = _ref2.instantSearchInstance,
       insights = _ref2.insights,
       bindEvent = _ref2.bindEvent,
-      sendEvent = _ref2.sendEvent;
+      sendEvent = _ref2.sendEvent,
+      banner = _ref2.banner;
     if (isFirstRendering) {
       renderState.templateProps = prepareTemplateProps({
         defaultTemplates: defaultTemplates,
@@ -44,7 +45,7 @@ var renderer = function renderer(_ref) {
     }
     render(h(InfiniteHits, {
       cssClasses: cssClasses,
-      hits: hits,
+      hits: items,
       results: results,
       hasShowPrevious: hasShowPrevious,
       showPrevious: showPrevious,
@@ -54,11 +55,12 @@ var renderer = function renderer(_ref) {
       isLastPage: isLastPage,
       insights: insights,
       sendEvent: sendEvent,
-      bindEvent: bindEvent
+      bindEvent: bindEvent,
+      banner: banner
     }), containerNode);
   };
 };
-var infiniteHits = function infiniteHits(widgetParams) {
+export default (function infiniteHits(widgetParams) {
   var _ref3 = widgetParams || {},
     container = _ref3.container,
     escapeHTML = _ref3.escapeHTML,
@@ -97,7 +99,16 @@ var infiniteHits = function infiniteHits(widgetParams) {
     disabledLoadMore: cx(suit({
       descendantName: 'loadMore',
       modifierName: 'disabled'
-    }), userCssClasses.disabledLoadMore)
+    }), userCssClasses.disabledLoadMore),
+    bannerRoot: cx(suit({
+      descendantName: 'banner'
+    }), userCssClasses.bannerRoot),
+    bannerImage: cx(suit({
+      descendantName: 'banner-image'
+    }), userCssClasses.bannerImage),
+    bannerLink: cx(suit({
+      descendantName: 'banner-link'
+    }), userCssClasses.bannerLink)
   };
   var specializedRenderer = renderer({
     containerNode: containerNode,
@@ -117,5 +128,4 @@ var infiniteHits = function infiniteHits(widgetParams) {
   })), {}, {
     $$widgetType: 'ais.infiniteHits'
   });
-};
-export default infiniteHits;
+});

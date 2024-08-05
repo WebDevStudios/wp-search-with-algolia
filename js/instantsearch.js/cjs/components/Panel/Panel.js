@@ -4,7 +4,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
-var _uiComponentsShared = require("@algolia/ui-components-shared");
+var _instantsearchUiComponents = require("instantsearch-ui-components");
 var _preact = require("preact");
 var _hooks = require("preact/hooks");
 var _Template = _interopRequireDefault(require("../Template/Template"));
@@ -39,7 +39,7 @@ function Panel(props) {
     setIsCollapsed(props.isCollapsed);
   }
   return (0, _preact.h)("div", {
-    className: (0, _uiComponentsShared.cx)(props.cssClasses.root, props.hidden && props.cssClasses.noRefinementRoot, props.collapsible && props.cssClasses.collapsibleRoot, isCollapsed && props.cssClasses.collapsedRoot),
+    className: (0, _instantsearchUiComponents.cx)(props.cssClasses.root, props.hidden && props.cssClasses.noRefinementRoot, props.collapsible && props.cssClasses.collapsibleRoot, isCollapsed && props.cssClasses.collapsedRoot),
     hidden: props.hidden
   }, props.templates.header && (0, _preact.h)("div", {
     className: props.cssClasses.header

@@ -5,37 +5,70 @@ function _defineProperty(obj, key, value) { key = _toPropertyKey(key); if (key i
 function _toPropertyKey(arg) { var key = _toPrimitive(arg, "string"); return _typeof(key) === "symbol" ? key : String(key); }
 function _toPrimitive(input, hint) { if (_typeof(input) !== "object" || input === null) return input; var prim = input[Symbol.toPrimitive]; if (prim !== undefined) { var res = prim.call(input, hint || "default"); if (_typeof(res) !== "object") return res; throw new TypeError("@@toPrimitive must return a primitive value."); } return (hint === "string" ? String : Number)(input); }
 function _extends() { _extends = Object.assign ? Object.assign.bind() : function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; return _extends.apply(this, arguments); }
-import { cx } from '@algolia/ui-components-shared';
+import { cx } from 'instantsearch-ui-components';
 import { h } from 'preact';
 import { createInsightsEventHandler } from "../../lib/insights/listener.js";
 import { warning } from "../../lib/utils/index.js";
 import Template from "../Template/Template.js";
-var InfiniteHits = function InfiniteHits(_ref) {
-  var results = _ref.results,
-    hits = _ref.hits,
-    insights = _ref.insights,
-    bindEvent = _ref.bindEvent,
-    sendEvent = _ref.sendEvent,
-    hasShowPrevious = _ref.hasShowPrevious,
-    showPrevious = _ref.showPrevious,
-    showMore = _ref.showMore,
-    isFirstPage = _ref.isFirstPage,
-    isLastPage = _ref.isLastPage,
-    cssClasses = _ref.cssClasses,
-    templateProps = _ref.templateProps;
+var DefaultBanner = function DefaultBanner(_ref) {
+  var banner = _ref.banner,
+    classNames = _ref.classNames;
+  if (!banner.image.urls[0].url) {
+    return null;
+  }
+  return h("aside", {
+    className: cx(classNames.bannerRoot)
+  }, banner.link ? h("a", {
+    className: cx(classNames.bannerLink),
+    href: banner.link.url,
+    target: banner.link.target
+  }, h("img", {
+    className: cx(classNames.bannerImage),
+    src: banner.image.urls[0].url,
+    alt: banner.image.title
+  })) : h("img", {
+    className: cx(classNames.bannerImage),
+    src: banner.image.urls[0].url,
+    alt: banner.image.title
+  }));
+};
+var InfiniteHits = function InfiniteHits(_ref2) {
+  var results = _ref2.results,
+    hits = _ref2.hits,
+    insights = _ref2.insights,
+    bindEvent = _ref2.bindEvent,
+    sendEvent = _ref2.sendEvent,
+    hasShowPrevious = _ref2.hasShowPrevious,
+    showPrevious = _ref2.showPrevious,
+    showMore = _ref2.showMore,
+    isFirstPage = _ref2.isFirstPage,
+    isLastPage = _ref2.isLastPage,
+    cssClasses = _ref2.cssClasses,
+    templateProps = _ref2.templateProps,
+    banner = _ref2.banner;
   var handleInsightsClick = createInsightsEventHandler({
     insights: insights,
     sendEvent: sendEvent
   });
   if (results.hits.length === 0) {
-    return h(Template, _extends({}, templateProps, {
+    return h("div", {
+      className: cx(cssClasses.root, cssClasses.emptyRoot),
+      onClick: handleInsightsClick
+    }, banner && (templateProps.templates.banner ? h(Template, _extends({}, templateProps, {
+      templateKey: "banner",
+      rootTagName: "fragment",
+      data: {
+        banner: banner,
+        className: cssClasses.bannerRoot
+      }
+    })) : h(DefaultBanner, {
+      banner: banner,
+      classNames: cssClasses
+    })), h(Template, _extends({}, templateProps, {
       templateKey: "empty",
-      rootProps: {
-        className: cx(cssClasses.root, cssClasses.emptyRoot),
-        onClick: handleInsightsClick
-      },
+      rootTagName: "fragment",
       data: results
-    }));
+    })));
   }
   return h("div", {
     className: cssClasses.root
@@ -47,6 +80,16 @@ var InfiniteHits = function InfiniteHits(_ref) {
       disabled: isFirstPage,
       onClick: showPrevious
     }
+  })), banner && (templateProps.templates.banner ? h(Template, _extends({}, templateProps, {
+    templateKey: "banner",
+    rootTagName: "fragment",
+    data: {
+      banner: banner,
+      className: cssClasses.bannerRoot
+    }
+  })) : h(DefaultBanner, {
+    banner: banner,
+    classNames: cssClasses
   })), h("ol", {
     className: cssClasses.list
   }, hits.map(function (hit, index) {

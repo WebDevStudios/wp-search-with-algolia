@@ -5,6 +5,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
+var _utils = require("../../lib/utils");
 var _excluded = ["placesReference", "defaultPosition"],
   _excluded2 = ["places"];
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
@@ -16,12 +17,11 @@ function _objectWithoutProperties(source, excluded) { if (source == null) return
 function _objectWithoutPropertiesLoose(source, excluded) { if (source == null) return {}; var target = {}; var sourceKeys = Object.keys(source); var key, i; for (i = 0; i < sourceKeys.length; i++) { key = sourceKeys[i]; if (excluded.indexOf(key) >= 0) continue; target[key] = source[key]; } return target; }
 /* Places.js is an optional dependency, no error should be reported if the package is missing */
 /** @ts-ignore */
-
 // using the type like this requires only one ts-ignore
-
 /**
  * This widget sets the geolocation value for the search based on the selected
  * result in the Algolia Places autocomplete.
+ * @deprecated the places service is no longer offered, and this widget will be removed in InstantSearch.js v5
  */
 var placesWidget = function placesWidget(widgetParams) {
   var _ref = widgetParams || {},
@@ -107,5 +107,5 @@ var placesWidget = function placesWidget(widgetParams) {
     }
   };
 };
-var _default = placesWidget;
+var _default = (0, _utils.deprecate)(placesWidget, 'The places widget is deprecated and will be removed in InstantSearch.js 5.0.');
 exports.default = _default;

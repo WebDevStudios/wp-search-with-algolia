@@ -4,7 +4,7 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
 function _defineProperty(obj, key, value) { key = _toPropertyKey(key); if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 function _toPropertyKey(arg) { var key = _toPrimitive(arg, "string"); return _typeof(key) === "symbol" ? key : String(key); }
 function _toPrimitive(input, hint) { if (_typeof(input) !== "object" || input === null) return input; var prim = input[Symbol.toPrimitive]; if (prim !== undefined) { var res = prim.call(input, hint || "default"); if (_typeof(res) !== "object") return res; throw new TypeError("@@toPrimitive must return a primitive value."); } return (hint === "string" ? String : Number)(input); }
-import { cx } from '@algolia/ui-components-shared';
+import { cx } from 'instantsearch-ui-components';
 import { h, render } from 'preact';
 import SearchBox from "../../components/SearchBox/SearchBox.js";
 import connectSearchBox from "../../connectors/search-box/connectSearchBox.js";
@@ -22,6 +22,7 @@ var renderer = function renderer(_ref) {
     templates = _ref.templates,
     autofocus = _ref.autofocus,
     searchAsYouType = _ref.searchAsYouType,
+    ignoreCompositionEvents = _ref.ignoreCompositionEvents,
     showReset = _ref.showReset,
     showSubmit = _ref.showSubmit,
     showLoadingIndicator = _ref.showLoadingIndicator;
@@ -35,6 +36,7 @@ var renderer = function renderer(_ref) {
       autofocus: autofocus,
       refine: refine,
       searchAsYouType: searchAsYouType,
+      ignoreCompositionEvents: ignoreCompositionEvents,
       templates: templates,
       showSubmit: showSubmit,
       showReset: showReset,
@@ -65,6 +67,8 @@ var searchBox = function searchBox(widgetParams) {
     autofocus = _ref3$autofocus === void 0 ? false : _ref3$autofocus,
     _ref3$searchAsYouType = _ref3.searchAsYouType,
     searchAsYouType = _ref3$searchAsYouType === void 0 ? true : _ref3$searchAsYouType,
+    _ref3$ignoreCompositi = _ref3.ignoreCompositionEvents,
+    ignoreCompositionEvents = _ref3$ignoreCompositi === void 0 ? false : _ref3$ignoreCompositi,
     _ref3$showReset = _ref3.showReset,
     showReset = _ref3$showReset === void 0 ? true : _ref3$showReset,
     _ref3$showSubmit = _ref3.showSubmit,
@@ -113,6 +117,7 @@ var searchBox = function searchBox(widgetParams) {
     templates: templates,
     autofocus: autofocus,
     searchAsYouType: searchAsYouType,
+    ignoreCompositionEvents: ignoreCompositionEvents,
     showReset: showReset,
     showSubmit: showSubmit,
     showLoadingIndicator: showLoadingIndicator

@@ -1,8 +1,7 @@
 import EventEmitter from '@algolia/events';
 import type { InsightsEvent, InsightsProps } from '../middlewares/createInsightsMiddleware';
 import type { RouterProps } from '../middlewares/createRouterMiddleware';
-import type { InsightsClient as AlgoliaInsightsClient, SearchClient, Widget, UiState, CreateURL, Middleware, MiddlewareDefinition, RenderState, InitialResults } from '../types';
-import type { IndexWidget } from '../widgets/index/index';
+import type { InsightsClient as AlgoliaInsightsClient, SearchClient, Widget, IndexWidget, UiState, CreateURL, Middleware, MiddlewareDefinition, RenderState, InitialResults } from '../types';
 import type { AlgoliaSearchHelper } from 'algoliasearch-helper';
 type NoInfer<T> = T extends infer S ? S : never;
 /**
@@ -96,8 +95,31 @@ export type InstantSearchOptions<TUiState extends UiState = UiState, TRouteState
      * @deprecated This property will be still supported in 4.x releases, but not further. It is replaced by the `insights` middleware. For more information, visit https://www.algolia.com/doc/guides/getting-insights-and-analytics/search-analytics/click-through-and-conversions/how-to/send-click-and-conversion-events-with-instantsearch/js/
      */
     insightsClient?: AlgoliaInsightsClient;
+    future?: {
+        /**
+         * Changes the way `dispose` is used in InstantSearch lifecycle.
+         *
+         * If `false` (by default), each widget unmounting will remove its state as well, even if there are multiple widgets reading that UI State.
+         *
+         * If `true`, each widget unmounting will only remove its own state if it's the last of its type. This allows for dynamically adding and removing widgets without losing their state.
+         *
+         * @default false
+         */
+        preserveSharedStateOnUnmount?: boolean;
+        /**
+         * Changes the way root levels of hierarchical facets have their count displayed.
+         *
+         * If `false` (by default), the count of the refined root level is updated to match the count of the actively refined parent level.
+         *
+         * If `true`, the count of the root level stays the same as the count of all children levels.
+         *
+         * @default false
+         */
+        persistHierarchicalRootCount?: boolean;
+    };
 };
 export type InstantSearchStatus = 'idle' | 'loading' | 'stalled' | 'error';
+export declare const INSTANTSEARCH_FUTURE_DEFAULTS: Required<InstantSearchOptions['future']>;
 /**
  * The actual implementation of the InstantSearch. This is
  * created using the `instantsearch` factory function.
@@ -108,6 +130,7 @@ declare class InstantSearch<TUiState extends UiState = UiState, TRouteState = TU
     indexName: string;
     insightsClient: AlgoliaInsightsClient | null;
     onStateChange: InstantSearchOptions<TUiState>['onStateChange'] | null;
+    future: NonNullable<InstantSearchOptions<TUiState>['future']>;
     helper: AlgoliaSearchHelper | null;
     mainHelper: AlgoliaSearchHelper | null;
     mainIndex: IndexWidget;
@@ -121,6 +144,9 @@ declare class InstantSearch<TUiState extends UiState = UiState, TRouteState = TU
     _createURL: CreateURL<TUiState>;
     _searchFunction?: InstantSearchOptions['searchFunction'];
     _mainHelperSearch?: AlgoliaSearchHelper['search'];
+    _hasSearchWidget: boolean;
+    _hasRecommendWidget: boolean;
+    _insights: InstantSearchOptions['insights'];
     middleware: Array<{
         creator: Middleware<TUiState>;
         instance: MiddlewareDefinition<TUiState>;
@@ -180,15 +206,11 @@ declare class InstantSearch<TUiState extends UiState = UiState, TRouteState = TU
     removeWidgets(widgets: Array<Widget | IndexWidget>): this;
     /**
      * Ends the initialization of InstantSearch.js and triggers the
-     * first search. This method should be called after all widgets have been added
-     * to the instance of InstantSearch.js. InstantSearch.js also supports adding and removing
-     * widgets after the start as an **EXPERIMENTAL** feature.
+     * first search.
      */
     start(): void;
     /**
-     * Removes all widgets without triggering a search afterwards. This is an **EXPERIMENTAL** feature,
-     * if you find an issue with it, please
-     * [open an issue](https://github.com/algolia/instantsearch.js/issues/new?title=Problem%20with%20dispose).
+     * Removes all widgets without triggering a search afterwards.
      * @return {undefined} This method does not return anything
      */
     dispose(): void;

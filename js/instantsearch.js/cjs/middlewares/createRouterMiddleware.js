@@ -57,6 +57,7 @@ var createRouterMiddleware = function createRouterMiddleware() {
         }
       },
       subscribe: function subscribe() {
+        process.env.NODE_ENV === 'development' ? (0, _utils.warning)(Object.keys(initialUiState).length === 0, 'Using `initialUiState` together with routing is not recommended. The `initialUiState` will be overwritten by the URL parameters.') : void 0;
         instantSearchInstance._initialUiState = _objectSpread(_objectSpread({}, initialUiState), stateMapping.routeToState(router.read()));
         router.onUpdate(function (route) {
           if (instantSearchInstance.mainIndex.getWidgets().length > 0) {

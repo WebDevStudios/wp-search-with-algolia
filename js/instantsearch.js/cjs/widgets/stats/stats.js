@@ -4,7 +4,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.defaultTemplates = exports.default = void 0;
-var _uiComponentsShared = require("@algolia/ui-components-shared");
+var _instantsearchUiComponents = require("instantsearch-ui-components");
 var _preact = require("preact");
 var _Stats = _interopRequireDefault(require("../../components/Stats/Stats"));
 var _connectStats = _interopRequireDefault(require("../../connectors/stats/connectStats"));
@@ -119,8 +119,8 @@ var stats = function stats(widgetParams) {
   }
   var containerNode = (0, _utils.getContainerNode)(container);
   var cssClasses = {
-    root: (0, _uiComponentsShared.cx)(suit(), userCssClasses.root),
-    text: (0, _uiComponentsShared.cx)(suit({
+    root: (0, _instantsearchUiComponents.cx)(suit(), userCssClasses.root),
+    text: (0, _instantsearchUiComponents.cx)(suit({
       descendantName: 'text'
     }), userCssClasses.text)
   };

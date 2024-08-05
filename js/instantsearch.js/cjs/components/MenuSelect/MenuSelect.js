@@ -4,7 +4,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
-var _uiComponentsShared = require("@algolia/ui-components-shared");
+var _instantsearchUiComponents = require("instantsearch-ui-components");
 var _preact = require("preact");
 var _utils = require("../../lib/utils");
 var _Template = _interopRequireDefault(require("../Template/Template"));
@@ -22,7 +22,7 @@ function MenuSelect(_ref) {
     },
     selectedValue = _ref2.value;
   return (0, _preact.h)("div", {
-    className: (0, _uiComponentsShared.cx)(cssClasses.root, items.length === 0 && cssClasses.noRefinementRoot)
+    className: (0, _instantsearchUiComponents.cx)(cssClasses.root, items.length === 0 && cssClasses.noRefinementRoot)
   }, (0, _preact.h)("select", {
     className: cssClasses.select,
     value: selectedValue,

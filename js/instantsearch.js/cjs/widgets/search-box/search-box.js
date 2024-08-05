@@ -4,7 +4,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
-var _uiComponentsShared = require("@algolia/ui-components-shared");
+var _instantsearchUiComponents = require("instantsearch-ui-components");
 var _preact = require("preact");
 var _SearchBox = _interopRequireDefault(require("../../components/SearchBox/SearchBox"));
 var _connectSearchBox = _interopRequireDefault(require("../../connectors/search-box/connectSearchBox"));
@@ -29,6 +29,7 @@ var renderer = function renderer(_ref) {
     templates = _ref.templates,
     autofocus = _ref.autofocus,
     searchAsYouType = _ref.searchAsYouType,
+    ignoreCompositionEvents = _ref.ignoreCompositionEvents,
     showReset = _ref.showReset,
     showSubmit = _ref.showSubmit,
     showLoadingIndicator = _ref.showLoadingIndicator;
@@ -42,6 +43,7 @@ var renderer = function renderer(_ref) {
       autofocus: autofocus,
       refine: refine,
       searchAsYouType: searchAsYouType,
+      ignoreCompositionEvents: ignoreCompositionEvents,
       templates: templates,
       showSubmit: showSubmit,
       showReset: showReset,
@@ -72,6 +74,8 @@ var searchBox = function searchBox(widgetParams) {
     autofocus = _ref3$autofocus === void 0 ? false : _ref3$autofocus,
     _ref3$searchAsYouType = _ref3.searchAsYouType,
     searchAsYouType = _ref3$searchAsYouType === void 0 ? true : _ref3$searchAsYouType,
+    _ref3$ignoreCompositi = _ref3.ignoreCompositionEvents,
+    ignoreCompositionEvents = _ref3$ignoreCompositi === void 0 ? false : _ref3$ignoreCompositi,
     _ref3$showReset = _ref3.showReset,
     showReset = _ref3$showReset === void 0 ? true : _ref3$showReset,
     _ref3$showSubmit = _ref3.showSubmit,
@@ -86,29 +90,29 @@ var searchBox = function searchBox(widgetParams) {
   }
   var containerNode = (0, _utils.getContainerNode)(container);
   var cssClasses = {
-    root: (0, _uiComponentsShared.cx)(suit(), userCssClasses.root),
-    form: (0, _uiComponentsShared.cx)(suit({
+    root: (0, _instantsearchUiComponents.cx)(suit(), userCssClasses.root),
+    form: (0, _instantsearchUiComponents.cx)(suit({
       descendantName: 'form'
     }), userCssClasses.form),
-    input: (0, _uiComponentsShared.cx)(suit({
+    input: (0, _instantsearchUiComponents.cx)(suit({
       descendantName: 'input'
     }), userCssClasses.input),
-    submit: (0, _uiComponentsShared.cx)(suit({
+    submit: (0, _instantsearchUiComponents.cx)(suit({
       descendantName: 'submit'
     }), userCssClasses.submit),
-    submitIcon: (0, _uiComponentsShared.cx)(suit({
+    submitIcon: (0, _instantsearchUiComponents.cx)(suit({
       descendantName: 'submitIcon'
     }), userCssClasses.submitIcon),
-    reset: (0, _uiComponentsShared.cx)(suit({
+    reset: (0, _instantsearchUiComponents.cx)(suit({
       descendantName: 'reset'
     }), userCssClasses.reset),
-    resetIcon: (0, _uiComponentsShared.cx)(suit({
+    resetIcon: (0, _instantsearchUiComponents.cx)(suit({
       descendantName: 'resetIcon'
     }), userCssClasses.resetIcon),
-    loadingIndicator: (0, _uiComponentsShared.cx)(suit({
+    loadingIndicator: (0, _instantsearchUiComponents.cx)(suit({
       descendantName: 'loadingIndicator'
     }), userCssClasses.loadingIndicator),
-    loadingIcon: (0, _uiComponentsShared.cx)(suit({
+    loadingIcon: (0, _instantsearchUiComponents.cx)(suit({
       descendantName: 'loadingIcon'
     }), userCssClasses.loadingIcon)
   };
@@ -120,6 +124,7 @@ var searchBox = function searchBox(widgetParams) {
     templates: templates,
     autofocus: autofocus,
     searchAsYouType: searchAsYouType,
+    ignoreCompositionEvents: ignoreCompositionEvents,
     showReset: showReset,
     showSubmit: showSubmit,
     showLoadingIndicator: showLoadingIndicator

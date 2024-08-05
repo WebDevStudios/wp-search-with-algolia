@@ -5,7 +5,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
-var _uiComponentsShared = require("@algolia/ui-components-shared");
+var _instantsearchUiComponents = require("instantsearch-ui-components");
 var _preact = require("preact");
 var _Slider = _interopRequireDefault(require("../../components/Slider/Slider"));
 var _connectRange = _interopRequireDefault(require("../../connectors/range/connectRange"));
@@ -96,8 +96,8 @@ var rangeSlider = function rangeSlider(widgetParams) {
   }
   var containerNode = (0, _utils.getContainerNode)(container);
   var cssClasses = {
-    root: (0, _uiComponentsShared.cx)(suit(), userCssClasses.root),
-    disabledRoot: (0, _uiComponentsShared.cx)(suit({
+    root: (0, _instantsearchUiComponents.cx)(suit(), userCssClasses.root),
+    disabledRoot: (0, _instantsearchUiComponents.cx)(suit({
       modifierName: 'disabled'
     }), userCssClasses.disabledRoot)
   };

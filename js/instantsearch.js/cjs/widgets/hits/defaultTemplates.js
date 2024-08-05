@@ -5,6 +5,8 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = void 0;
 var _utils = require("../../lib/utils");
+// false positive lint error
+// eslint-disable-next-line @typescript-eslint/consistent-type-imports
 var defaultTemplates = {
   empty: function empty() {
     return 'No results';

@@ -249,12 +249,9 @@ var connectRefinementList = function connectRefinementList(renderFn) {
       getWidgetUiState: function getWidgetUiState(uiState, _ref5) {
         var searchParameters = _ref5.searchParameters;
         var values = operator === 'or' ? searchParameters.getDisjunctiveRefinements(attribute) : searchParameters.getConjunctiveRefinements(attribute);
-        if (!values.length) {
-          return uiState;
-        }
-        return _objectSpread(_objectSpread({}, uiState), {}, {
+        return removeEmptyRefinementsFromUiState(_objectSpread(_objectSpread({}, uiState), {}, {
           refinementList: _objectSpread(_objectSpread({}, uiState.refinementList), {}, _defineProperty({}, attribute, values))
-        });
+        }), attribute);
       },
       getWidgetSearchParameters: function getWidgetSearchParameters(searchParameters, _ref6) {
         var uiState = _ref6.uiState;
@@ -268,8 +265,7 @@ var connectRefinementList = function connectRefinementList(renderFn) {
           return searchParameters;
         }
         var values = uiState.refinementList && uiState.refinementList[attribute];
-        var withoutRefinements = searchParameters.clearRefinements(attribute);
-        var withFacetConfiguration = isDisjunctive ? withoutRefinements.addDisjunctiveFacet(attribute) : withoutRefinements.addFacet(attribute);
+        var withFacetConfiguration = isDisjunctive ? searchParameters.addDisjunctiveFacet(attribute).removeDisjunctiveFacetRefinement(attribute) : searchParameters.addFacet(attribute).removeFacetRefinement(attribute);
         var currentMaxValuesPerFacet = withFacetConfiguration.maxValuesPerFacet || 0;
         var nextMaxValuesPerFacet = Math.max(currentMaxValuesPerFacet, showMore ? showMoreLimit : limit);
         var withMaxValuesPerFacet = withFacetConfiguration.setQueryParameter('maxValuesPerFacet', nextMaxValuesPerFacet);
@@ -284,5 +280,17 @@ var connectRefinementList = function connectRefinementList(renderFn) {
     };
   };
 };
+function removeEmptyRefinementsFromUiState(indexUiState, attribute) {
+  if (!indexUiState.refinementList) {
+    return indexUiState;
+  }
+  if (!indexUiState.refinementList[attribute] || indexUiState.refinementList[attribute].length === 0) {
+    delete indexUiState.refinementList[attribute];
+  }
+  if (Object.keys(indexUiState.refinementList).length === 0) {
+    delete indexUiState.refinementList;
+  }
+  return indexUiState;
+}
 var _default = connectRefinementList;
 exports.default = _default;

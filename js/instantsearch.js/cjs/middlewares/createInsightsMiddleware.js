@@ -22,7 +22,7 @@ function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o =
 function _iterableToArray(iter) { if (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null || iter["@@iterator"] != null) return Array.from(iter); }
 function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) return _arrayLikeToArray(arr); }
 function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i]; return arr2; }
-var ALGOLIA_INSIGHTS_VERSION = '2.6.0';
+var ALGOLIA_INSIGHTS_VERSION = '2.15.0';
 var ALGOLIA_INSIGHTS_SRC = "https://cdn.jsdelivr.net/npm/search-insights@".concat(ALGOLIA_INSIGHTS_VERSION, "/dist/search-insights.min.js");
 function createInsightsMiddleware() {
   var props = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
@@ -30,7 +30,9 @@ function createInsightsMiddleware() {
     insightsInitParams = props.insightsInitParams,
     onEvent = props.onEvent,
     _props$$$internal = props.$$internal,
-    $$internal = _props$$$internal === void 0 ? false : _props$$$internal;
+    $$internal = _props$$$internal === void 0 ? false : _props$$$internal,
+    _props$$$automatic = props.$$automatic,
+    $$automatic = _props$$$automatic === void 0 ? false : _props$$$automatic;
   var potentialInsightsClient = _insightsClient;
   if (!_insightsClient && _insightsClient !== null) {
     (0, _utils.safelyRunOnBrowser)(function (_ref) {
@@ -78,8 +80,11 @@ function createInsightsMiddleware() {
     // search-insights.js also throws an error so dev-only clarification is sufficient
     process.env.NODE_ENV === 'development' ? (0, _utils.warning)(Boolean(appId && apiKey), 'could not extract Algolia credentials from searchClient in insights middleware.') : void 0;
     var queuedUserToken = undefined;
+    var queuedAuthenticatedUserToken = undefined;
     var userTokenBeforeInit = undefined;
-    if (Array.isArray(insightsClient.queue)) {
+    var authenticatedUserTokenBeforeInit = undefined;
+    var queue = insightsClient.queue;
+    if (Array.isArray(queue)) {
       // Context: The umd build of search-insights is asynchronously loaded by the snippet.
       //
       // When user calls `aa('setUserToken', 'my-user-token')` before `search-insights` is loaded,
@@ -90,21 +95,31 @@ function createInsightsMiddleware() {
       // At this point, even though `search-insights` is not loaded yet,
       // we still want to read the token from the queue.
       // Otherwise, the first search call will be fired without the token.
-      var _ref3 = (0, _utils.find)(insightsClient.queue.slice().reverse(), function (_ref5) {
-        var _ref6 = _slicedToArray(_ref5, 1),
-          method = _ref6[0];
-        return method === 'setUserToken';
-      }) || [];
-      var _ref4 = _slicedToArray(_ref3, 2);
-      queuedUserToken = _ref4[1];
+      var _map = ['setUserToken', 'setAuthenticatedUserToken'].map(function (key) {
+        var _ref3 = (0, _utils.find)(queue.slice().reverse(), function (_ref5) {
+            var _ref6 = _slicedToArray(_ref5, 1),
+              method = _ref6[0];
+            return method === key;
+          }) || [],
+          _ref4 = _slicedToArray(_ref3, 2),
+          value = _ref4[1];
+        return value;
+      });
+      var _map2 = _slicedToArray(_map, 2);
+      queuedUserToken = _map2[0];
+      queuedAuthenticatedUserToken = _map2[1];
     }
+
+    // If user called `aa('setUserToken')` or `aa('setAuthenticatedUserToken')`
+    // before creating the Insights middleware, we temporarily store the token
+    // and set it later on.
+    //
+    // Otherwise, the `init` call might override them with anonymous user token.
     insightsClient('getUserToken', null, function (_error, userToken) {
-      // If user has called `aa('setUserToken', 'my-user-token')` before creating
-      // the `insights` middleware, we store them temporarily and
-      // set it later on.
-      //
-      // Otherwise, the `init` call might override it with anonymous user token.
-      userTokenBeforeInit = userToken;
+      userTokenBeforeInit = normalizeUserToken(userToken);
+    });
+    insightsClient('getAuthenticatedUserToken', null, function (_error, userToken) {
+      authenticatedUserTokenBeforeInit = normalizeUserToken(userToken);
     });
 
     // Only `init` if the `insightsInitParams` option is passed or
@@ -121,6 +136,7 @@ function createInsightsMiddleware() {
     return {
       $$type: 'ais.insights',
       $$internal: $$internal,
+      $$automatic: $$automatic,
       onStateChange: function onStateChange() {},
       subscribe: function subscribe() {
         if (!insightsClient.shouldAddScript) return;
@@ -141,26 +157,32 @@ function createInsightsMiddleware() {
       },
       started: function started() {
         insightsClient('addAlgoliaAgent', 'insights-middleware');
-        helper = instantSearchInstance.helper;
+        helper = instantSearchInstance.mainHelper;
         initialParameters = {
           userToken: helper.state.userToken,
           clickAnalytics: helper.state.clickAnalytics
         };
-        helper.overrideStateWithoutTriggeringChangeEvent(_objectSpread(_objectSpread({}, helper.state), {}, {
-          clickAnalytics: true
-        }));
+
+        // We don't want to force clickAnalytics when the insights is enabled from the search response.
+        // This means we don't enable insights for indices that don't opt in
+        if (!$$automatic) {
+          helper.overrideStateWithoutTriggeringChangeEvent(_objectSpread(_objectSpread({}, helper.state), {}, {
+            clickAnalytics: true
+          }));
+        }
         if (!$$internal) {
           instantSearchInstance.scheduleSearch();
         }
         var setUserTokenToSearch = function setUserTokenToSearch(userToken) {
           var immediate = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
-          if (!userToken) {
+          var normalizedUserToken = normalizeUserToken(userToken);
+          if (!normalizedUserToken) {
             return;
           }
           var existingToken = helper.state.userToken;
           function applyToken() {
             helper.overrideStateWithoutTriggeringChangeEvent(_objectSpread(_objectSpread({}, helper.state), {}, {
-              userToken: userToken
+              userToken: normalizedUserToken
             }));
             if (existingToken && existingToken !== userToken) {
               instantSearchInstance.scheduleSearch();
@@ -180,19 +202,41 @@ function createInsightsMiddleware() {
           // We can set it as userToken.
           setUserTokenToSearch(anonymousUserToken, true);
         }
+        function setUserToken(token, userToken, authenticatedUserToken) {
+          setUserTokenToSearch(token, true);
+          if (userToken) {
+            insightsClient('setUserToken', userToken);
+          }
+          if (authenticatedUserToken) {
+            insightsClient('setAuthenticatedUserToken', authenticatedUserToken);
+          }
+        }
 
-        // We consider the `userToken` coming from a `init` call to have a higher
-        // importance than the one coming from the queue.
-        if (userTokenBeforeInit) {
-          setUserTokenToSearch(userTokenBeforeInit, true);
-          insightsClient('setUserToken', userTokenBeforeInit);
-        } else if (queuedUserToken) {
-          setUserTokenToSearch(queuedUserToken, true);
-          insightsClient('setUserToken', queuedUserToken);
+        // We consider the `userToken` or `authenticatedUserToken` before an
+        // `init` call of higher importance than one from the queue.
+        var tokenBeforeInit = authenticatedUserTokenBeforeInit || userTokenBeforeInit;
+        var queuedToken = queuedAuthenticatedUserToken || queuedUserToken;
+        if (tokenBeforeInit) {
+          setUserToken(tokenBeforeInit, userTokenBeforeInit, authenticatedUserTokenBeforeInit);
+        } else if (queuedToken) {
+          setUserToken(queuedToken, queuedUserToken, queuedAuthenticatedUserToken);
         }
 
         // This updates userToken which is set explicitly by `aa('setUserToken', userToken)`
         insightsClient('onUserTokenChange', setUserTokenToSearch, {
+          immediate: true
+        });
+
+        // This updates userToken which is set explicitly by `aa('setAuthenticatedtUserToken', authenticatedUserToken)`
+        insightsClient('onAuthenticatedUserTokenChange', function (authenticatedUserToken) {
+          // If we're unsetting the `authenticatedUserToken`, we revert to the `userToken`
+          if (!authenticatedUserToken) {
+            insightsClient('getUserToken', null, function (_, userToken) {
+              setUserTokenToSearch(userToken);
+            });
+          }
+          setUserTokenToSearch(authenticatedUserToken);
+        }, {
           immediate: true
         });
         var insightsClientWithLocalCredentials = insightsClient;
@@ -215,6 +259,9 @@ function createInsightsMiddleware() {
           } else if (event.insightsMethod) {
             // Source is used to differentiate events sent by instantsearch from those sent manually.
             event.payload.algoliaSource = ['instantsearch'];
+            if ($$automatic) {
+              event.payload.algoliaSource.push('instantsearch-automatic');
+            }
             if (event.eventModifier === 'internal') {
               event.payload.algoliaSource.push('instantsearch-internal');
             }
@@ -227,6 +274,7 @@ function createInsightsMiddleware() {
       },
       unsubscribe: function unsubscribe() {
         insightsClient('onUserTokenChange', undefined);
+        insightsClient('onAuthenticatedUserTokenChange', undefined);
         instantSearchInstance.sendEventToInsights = _utils.noop;
         if (helper && initialParameters) {
           helper.overrideStateWithoutTriggeringChangeEvent(_objectSpread(_objectSpread({}, helper.state), initialParameters));
@@ -254,4 +302,15 @@ function isModernInsightsClient(client) {
   /* eslint-enable @typescript-eslint/naming-convention */
 
   return v3 || v2_6 || v1_10;
+}
+
+/**
+ * While `search-insights` supports both string and number user tokens,
+ * the Search API only accepts strings. This function normalizes the user token.
+ */
+function normalizeUserToken(userToken) {
+  if (!userToken) {
+    return undefined;
+  }
+  return typeof userToken === 'number' ? userToken.toString() : userToken;
 }

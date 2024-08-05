@@ -47,6 +47,12 @@ Object.defineProperty(exports, "connectDynamicWidgets", {
     return _connectDynamicWidgets.default;
   }
 });
+Object.defineProperty(exports, "connectFrequentlyBoughtTogether", {
+  enumerable: true,
+  get: function get() {
+    return _connectFrequentlyBoughtTogether.default;
+  }
+});
 Object.defineProperty(exports, "connectGeoSearch", {
   enumerable: true,
   get: function get() {
@@ -87,6 +93,12 @@ Object.defineProperty(exports, "connectInfiniteHitsWithInsights", {
   enumerable: true,
   get: function get() {
     return _connectInfiniteHitsWithInsights.default;
+  }
+});
+Object.defineProperty(exports, "connectLookingSimilar", {
+  enumerable: true,
+  get: function get() {
+    return _connectLookingSimilar.default;
   }
 });
 Object.defineProperty(exports, "connectMenu", {
@@ -137,6 +149,12 @@ Object.defineProperty(exports, "connectRefinementList", {
     return _connectRefinementList.default;
   }
 });
+Object.defineProperty(exports, "connectRelatedProducts", {
+  enumerable: true,
+  get: function get() {
+    return _connectRelatedProducts.default;
+  }
+});
 Object.defineProperty(exports, "connectRelevantSort", {
   enumerable: true,
   get: function get() {
@@ -167,6 +185,12 @@ Object.defineProperty(exports, "connectToggleRefinement", {
     return _connectToggleRefinement.default;
   }
 });
+Object.defineProperty(exports, "connectTrendingItems", {
+  enumerable: true,
+  get: function get() {
+    return _connectTrendingItems.default;
+  }
+});
 Object.defineProperty(exports, "connectVoiceSearch", {
   enumerable: true,
   get: function get() {
@@ -189,11 +213,13 @@ var _connectNumericMenu = _interopRequireDefault(require("./numeric-menu/connect
 var _connectPagination = _interopRequireDefault(require("./pagination/connectPagination"));
 var _connectRange = _interopRequireDefault(require("./range/connectRange"));
 var _connectRefinementList = _interopRequireDefault(require("./refinement-list/connectRefinementList"));
+var _connectRelatedProducts = _interopRequireDefault(require("./related-products/connectRelatedProducts"));
 var _connectSearchBox = _interopRequireDefault(require("./search-box/connectSearchBox"));
 var _connectSortBy = _interopRequireDefault(require("./sort-by/connectSortBy"));
 var _connectRatingMenu = _interopRequireDefault(require("./rating-menu/connectRatingMenu"));
 var _connectStats = _interopRequireDefault(require("./stats/connectStats"));
 var _connectToggleRefinement = _interopRequireDefault(require("./toggle-refinement/connectToggleRefinement"));
+var _connectTrendingItems = _interopRequireDefault(require("./trending-items/connectTrendingItems"));
 var _connectBreadcrumb = _interopRequireDefault(require("./breadcrumb/connectBreadcrumb"));
 var _connectGeoSearch = _interopRequireDefault(require("./geo-search/connectGeoSearch"));
 var _connectPoweredBy = _interopRequireDefault(require("./powered-by/connectPoweredBy"));
@@ -203,6 +229,8 @@ var _connectAutocomplete = _interopRequireDefault(require("./autocomplete/connec
 var _connectQueryRules = _interopRequireDefault(require("./query-rules/connectQueryRules"));
 var _connectVoiceSearch = _interopRequireDefault(require("./voice-search/connectVoiceSearch"));
 var _connectRelevantSort = _interopRequireDefault(require("./relevant-sort/connectRelevantSort"));
+var _connectFrequentlyBoughtTogether = _interopRequireDefault(require("./frequently-bought-together/connectFrequentlyBoughtTogether"));
+var _connectLookingSimilar = _interopRequireDefault(require("./looking-similar/connectLookingSimilar"));
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 /** @deprecated answers is no longer supported */
 var EXPERIMENTAL_connectAnswers = (0, _utils.deprecate)(_connectAnswers.default, 'answers is no longer supported');

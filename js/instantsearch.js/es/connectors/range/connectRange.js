@@ -19,6 +19,9 @@ var withUsage = createDocumentationMessageGenerator({
   connector: true
 });
 var $$type = 'ais.range';
+
+// @MAJOR: potentially we should consolidate these types
+
 function toPrecision(_ref) {
   var min = _ref.min,
     max = _ref.max,

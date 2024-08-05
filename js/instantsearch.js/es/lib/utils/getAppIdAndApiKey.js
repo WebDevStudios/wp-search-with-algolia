@@ -1,10 +1,10 @@
 // typed as any, since it accepts the _real_ js clients, not the interface we otherwise expect
 export function getAppIdAndApiKey(searchClient) {
   if (searchClient.transporter) {
-    // searchClient v4
-    var _searchClient$transpo = searchClient.transporter,
-      headers = _searchClient$transpo.headers,
-      queryParameters = _searchClient$transpo.queryParameters;
+    // searchClient v4 or v5
+    var transporter = searchClient.transporter;
+    var headers = transporter.headers || transporter.baseHeaders;
+    var queryParameters = transporter.queryParameters || transporter.baseQueryParameters;
     var APP_ID = 'x-algolia-application-id';
     var API_KEY = 'x-algolia-api-key';
     var appId = headers[APP_ID] || queryParameters[APP_ID];

@@ -21,11 +21,13 @@ export { default as connectNumericMenu } from "./numeric-menu/connectNumericMenu
 export { default as connectPagination } from "./pagination/connectPagination.js";
 export { default as connectRange } from "./range/connectRange.js";
 export { default as connectRefinementList } from "./refinement-list/connectRefinementList.js";
+export { default as connectRelatedProducts } from "./related-products/connectRelatedProducts.js";
 export { default as connectSearchBox } from "./search-box/connectSearchBox.js";
 export { default as connectSortBy } from "./sort-by/connectSortBy.js";
 export { default as connectRatingMenu } from "./rating-menu/connectRatingMenu.js";
 export { default as connectStats } from "./stats/connectStats.js";
 export { default as connectToggleRefinement } from "./toggle-refinement/connectToggleRefinement.js";
+export { default as connectTrendingItems } from "./trending-items/connectTrendingItems.js";
 export { default as connectBreadcrumb } from "./breadcrumb/connectBreadcrumb.js";
 export { default as connectGeoSearch } from "./geo-search/connectGeoSearch.js";
 export { default as connectPoweredBy } from "./powered-by/connectPoweredBy.js";
@@ -35,3 +37,5 @@ export { default as connectAutocomplete } from "./autocomplete/connectAutocomple
 export { default as connectQueryRules } from "./query-rules/connectQueryRules.js";
 export { default as connectVoiceSearch } from "./voice-search/connectVoiceSearch.js";
 export { default as connectRelevantSort } from "./relevant-sort/connectRelevantSort.js";
+export { default as connectFrequentlyBoughtTogether } from "./frequently-bought-together/connectFrequentlyBoughtTogether.js";
+export { default as connectLookingSimilar } from "./looking-similar/connectLookingSimilar.js";

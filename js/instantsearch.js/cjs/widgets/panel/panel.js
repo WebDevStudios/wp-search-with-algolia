@@ -4,7 +4,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
-var _uiComponentsShared = require("@algolia/ui-components-shared");
+var _instantsearchUiComponents = require("instantsearch-ui-components");
 var _preact = require("preact");
 var _Panel = _interopRequireDefault(require("../../components/Panel/Panel"));
 var _suit = require("../../lib/suit");
@@ -64,29 +64,29 @@ var panel = function panel(panelWidgetParams) {
     return false;
   };
   var cssClasses = {
-    root: (0, _uiComponentsShared.cx)(suit(), userCssClasses.root),
-    noRefinementRoot: (0, _uiComponentsShared.cx)(suit({
+    root: (0, _instantsearchUiComponents.cx)(suit(), userCssClasses.root),
+    noRefinementRoot: (0, _instantsearchUiComponents.cx)(suit({
       modifierName: 'noRefinement'
     }), userCssClasses.noRefinementRoot),
-    collapsibleRoot: (0, _uiComponentsShared.cx)(suit({
+    collapsibleRoot: (0, _instantsearchUiComponents.cx)(suit({
       modifierName: 'collapsible'
     }), userCssClasses.collapsibleRoot),
-    collapsedRoot: (0, _uiComponentsShared.cx)(suit({
+    collapsedRoot: (0, _instantsearchUiComponents.cx)(suit({
       modifierName: 'collapsed'
     }), userCssClasses.collapsedRoot),
-    collapseButton: (0, _uiComponentsShared.cx)(suit({
+    collapseButton: (0, _instantsearchUiComponents.cx)(suit({
       descendantName: 'collapseButton'
     }), userCssClasses.collapseButton),
-    collapseIcon: (0, _uiComponentsShared.cx)(suit({
+    collapseIcon: (0, _instantsearchUiComponents.cx)(suit({
       descendantName: 'collapseIcon'
     }), userCssClasses.collapseIcon),
-    body: (0, _uiComponentsShared.cx)(suit({
+    body: (0, _instantsearchUiComponents.cx)(suit({
       descendantName: 'body'
     }), userCssClasses.body),
-    header: (0, _uiComponentsShared.cx)(suit({
+    header: (0, _instantsearchUiComponents.cx)(suit({
       descendantName: 'header'
     }), userCssClasses.header),
-    footer: (0, _uiComponentsShared.cx)(suit({
+    footer: (0, _instantsearchUiComponents.cx)(suit({
       descendantName: 'footer'
     }), userCssClasses.footer)
   };

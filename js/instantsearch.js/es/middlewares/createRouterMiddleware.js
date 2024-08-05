@@ -6,7 +6,7 @@ function _toPropertyKey(arg) { var key = _toPrimitive(arg, "string"); return _ty
 function _toPrimitive(input, hint) { if (_typeof(input) !== "object" || input === null) return input; var prim = input[Symbol.toPrimitive]; if (prim !== undefined) { var res = prim.call(input, hint || "default"); if (_typeof(res) !== "object") return res; throw new TypeError("@@toPrimitive must return a primitive value."); } return (hint === "string" ? String : Number)(input); }
 import historyRouter from "../lib/routers/history.js";
 import simpleStateMapping from "../lib/stateMappings/simple.js";
-import { isEqual } from "../lib/utils/index.js";
+import { isEqual, warning } from "../lib/utils/index.js";
 export var createRouterMiddleware = function createRouterMiddleware() {
   var props = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
   var _props$router = props.router,
@@ -50,6 +50,7 @@ export var createRouterMiddleware = function createRouterMiddleware() {
         }
       },
       subscribe: function subscribe() {
+        process.env.NODE_ENV === 'development' ? warning(Object.keys(initialUiState).length === 0, 'Using `initialUiState` together with routing is not recommended. The `initialUiState` will be overwritten by the URL parameters.') : void 0;
         instantSearchInstance._initialUiState = _objectSpread(_objectSpread({}, initialUiState), stateMapping.routeToState(router.read()));
         router.onUpdate(function (route) {
           if (instantSearchInstance.mainIndex.getWidgets().length > 0) {

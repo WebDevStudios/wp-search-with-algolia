@@ -18,12 +18,15 @@ function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.g
 function _defineProperty(obj, key, value) { key = _toPropertyKey(key); if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 function _toPropertyKey(arg) { var key = _toPrimitive(arg, "string"); return _typeof(key) === "symbol" ? key : String(key); }
 function _toPrimitive(input, hint) { if (_typeof(input) !== "object" || input === null) return input; var prim = input[Symbol.toPrimitive]; if (prim !== undefined) { var res = prim.call(input, hint || "default"); if (_typeof(res) !== "object") return res; throw new TypeError("@@toPrimitive must return a primitive value."); } return (hint === "string" ? String : Number)(input); }
-import { cx } from '@algolia/ui-components-shared';
+import { cx } from 'instantsearch-ui-components';
 import { h, createRef, Component } from 'preact';
 import { isSpecialClick, isEqual } from "../../lib/utils/index.js";
 import SearchBox from "../SearchBox/SearchBox.js";
 import Template from "../Template/Template.js";
 import RefinementListItem from "./RefinementListItem.js";
+
+// CSS types
+
 var defaultProps = {
   cssClasses: {},
   depth: 0
@@ -85,6 +88,21 @@ var RefinementList = /*#__PURE__*/function (_Component) {
         templateProps: _this.props.templateProps
       });
     });
+    // Click events on DOM tree like LABEL > INPUT will result in two click events
+    // instead of one.
+    // No matter the framework, see https://www.google.com/search?q=click+label+twice
+    //
+    // Thus making it hard to distinguish activation from deactivation because both click events
+    // are very close. Debounce is a solution but hacky.
+    //
+    // So the code here checks if the click was done on or in a LABEL. If this LABEL
+    // has a checkbox inside, we ignore the first click event because we will get another one.
+    //
+    // We also check if the click was done inside a link and then e.preventDefault() because we already
+    // handle the url
+    //
+    // Finally, we always stop propagation of the event to avoid multiple levels RefinementLists to fail: click
+    // on child would click on parent also
     _defineProperty(_assertThisInitialized(_this), "handleItemClick", function (_ref) {
       var facetValueToRefine = _ref.facetValueToRefine,
         isRefined = _ref.isRefined,
@@ -94,18 +112,18 @@ var RefinementList = /*#__PURE__*/function (_Component) {
         // if one special key is down
         return;
       }
-      if (!(originalEvent.target instanceof HTMLElement) || !(originalEvent.target.parentNode instanceof HTMLElement)) {
+      var parent = originalEvent.target;
+      if (parent === null || parent.parentNode === null) {
         return;
       }
-      if (isRefined && originalEvent.target.parentNode.querySelector('input[type="radio"]:checked')) {
+      if (isRefined && parent.parentNode.querySelector('input[type="radio"]:checked')) {
         // Prevent refinement for being reset if the user clicks on an already checked radio button
         return;
       }
-      if (originalEvent.target.tagName === 'INPUT') {
+      if (parent.tagName === 'INPUT') {
         _this.refine(facetValueToRefine);
         return;
       }
-      var parent = originalEvent.target;
       while (parent !== originalEvent.currentTarget) {
         if (parent.tagName === 'LABEL' && (parent.querySelector('input[type="checkbox"]') || parent.querySelector('input[type="radio"]'))) {
           return;
@@ -185,7 +203,8 @@ var RefinementList = /*#__PURE__*/function (_Component) {
         // This sets the search box to a controlled state because
         // we don't rely on the `refine` prop but on `onChange`.
         ,
-        searchAsYouType: false
+        searchAsYouType: false,
+        ariaLabel: "Search for filters"
       }));
       var facetValues = this.props.facetValues && this.props.facetValues.length > 0 && h("ul", {
         className: this.props.cssClasses.list

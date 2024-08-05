@@ -4,7 +4,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
-var _uiComponentsShared = require("@algolia/ui-components-shared");
+var _instantsearchUiComponents = require("instantsearch-ui-components");
 var _preact = require("preact");
 var _Template = _interopRequireDefault(require("../Template/Template"));
 var _GeoSearchButton = _interopRequireDefault(require("./GeoSearchButton"));
@@ -26,7 +26,7 @@ var GeoSearchControls = function GeoSearchControls(_ref) {
   return (0, _preact.h)(_preact.Fragment, null, enableRefine && (0, _preact.h)("div", null, enableRefineControl && (0, _preact.h)("div", {
     className: cssClasses.control
   }, isRefineOnMapMove || !hasMapMoveSinceLastRefine ? (0, _preact.h)(_GeoSearchToggle.default, {
-    classNameLabel: (0, _uiComponentsShared.cx)(cssClasses.label, isRefineOnMapMove && cssClasses.selectedLabel),
+    classNameLabel: (0, _instantsearchUiComponents.cx)(cssClasses.label, isRefineOnMapMove && cssClasses.selectedLabel),
     classNameInput: cssClasses.input,
     checked: isRefineOnMapMove,
     onToggle: onRefineToggle
@@ -43,7 +43,7 @@ var GeoSearchControls = function GeoSearchControls(_ref) {
   })))), !enableRefineControl && !isRefineOnMapMove && (0, _preact.h)("div", {
     className: cssClasses.control
   }, (0, _preact.h)(_GeoSearchButton.default, {
-    className: (0, _uiComponentsShared.cx)(cssClasses.redo, !hasMapMoveSinceLastRefine && cssClasses.disabledRedo),
+    className: (0, _instantsearchUiComponents.cx)(cssClasses.redo, !hasMapMoveSinceLastRefine && cssClasses.disabledRedo),
     disabled: !hasMapMoveSinceLastRefine,
     onClick: onRefineClick
   }, (0, _preact.h)(_Template.default, _extends({}, templateProps, {
