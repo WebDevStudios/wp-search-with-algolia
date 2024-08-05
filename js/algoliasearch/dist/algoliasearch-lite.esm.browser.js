@@ -206,7 +206,7 @@ function encode(format, ...args) {
     return format.replace(/%s/g, () => encodeURIComponent(args[i++]));
 }
 
-const version = '4.18.0';
+const version = '4.24.0';
 
 const AuthMode = {
     /**
@@ -671,7 +671,7 @@ function createDeserializationError(message, response) {
 function createRetryError(transporterStackTrace) {
     return {
         name: 'RetryError',
-        message: 'Unreachable hosts - your application id may be incorrect. If the error persists, contact support@algolia.com.',
+        message: 'Unreachable hosts - your application id may be incorrect. If the error persists, please reach out to the Algolia Support team: https://alg.li/support .',
         transporterStackTrace,
     };
 }
@@ -836,6 +836,26 @@ function createConsoleLogger(logLevel) {
     };
 }
 
+const getRecommendations = base => {
+    return (queries, requestOptions) => {
+        const requests = queries.map(query => ({
+            ...query,
+            // The `threshold` param is required by the endpoint to make it easier
+            // to provide a default value later, so we default it in the client
+            // so that users don't have to provide a value.
+            threshold: query.threshold || 0,
+        }));
+        return base.transporter.read({
+            method: MethodEnum.Post,
+            path: '1/indexes/*/recommendations',
+            data: {
+                requests,
+            },
+            cacheable: true,
+        }, requestOptions);
+    };
+};
+
 function createBrowserXhrRequester() {
     return {
         send(request) {
@@ -931,6 +951,7 @@ function algoliasearch(appId, apiKey, options) {
                     methods: { search, searchForFacetValues, findAnswers },
                 });
             },
+            getRecommendations,
         },
     });
 }

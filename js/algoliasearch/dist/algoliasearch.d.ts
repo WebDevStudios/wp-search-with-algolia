@@ -65,7 +65,7 @@ import { PersonalizationClientOptions } from '@algolia/client-personalization';
 import { PersonalizationStrategy } from '@algolia/client-personalization';
 import { RemoveUserIDResponse } from '@algolia/client-search';
 import { ReplaceAllObjectsOptions } from '@algolia/client-search';
-import { Request } from '@algolia/transporter';
+import { Request as Request_2 } from '@algolia/transporter';
 import { RequestOptions } from '@algolia/transporter';
 import { RestoreApiKeyResponse } from '@algolia/client-search';
 import { Rule } from '@algolia/client-search';
@@ -101,6 +101,7 @@ import { UpdateApiKeyOptions } from '@algolia/client-search';
 import { UpdateApiKeyResponse } from '@algolia/client-search';
 import { UserIDResponse } from '@algolia/client-search';
 import { WaitablePromise } from '@algolia/client-common';
+import { WithRecommendMethods } from '@algolia/recommend';
 
 declare function algoliasearch(appId: string, apiKey: string, options?: AlgoliaSearchOptions): SearchClient;
 
@@ -191,13 +192,20 @@ export declare type SearchClient = SearchClient_2 & {
     readonly getDictionarySettings: (requestOptions?: RequestOptions) => Readonly<Promise<GetDictionarySettingsResponse>>;
     readonly setDictionarySettings: (settings: DictionarySettings, requestOptions?: RequestOptions) => Readonly<WaitablePromise<DictionaryEntriesResponse>>;
     readonly getAppTask: (taskID: number, requestOptions?: RequestOptions) => Readonly<Promise<TaskStatusResponse>>;
-    readonly customRequest: <TResponse>(request: Request, requestOptions?: RequestOptions) => Readonly<Promise<TResponse>>;
+    readonly customRequest: <TResponse>(request: Request_2, requestOptions?: RequestOptions) => Readonly<Promise<TResponse>>;
     readonly initAnalytics: (options?: InitAnalyticsOptions) => AnalyticsClient;
     readonly initPersonalization: (options?: InitPersonalizationOptions) => PersonalizationClient;
     /**
      * @deprecated Use `initPersonalization` instead.
      */
     readonly initRecommendation: (options?: InitPersonalizationOptions) => PersonalizationClient;
+    readonly getRecommendations: WithRecommendMethods<SearchClient_2>['getRecommendations'];
+    readonly getFrequentlyBoughtTogether: WithRecommendMethods<SearchClient_2>['getFrequentlyBoughtTogether'];
+    readonly getLookingSimilar: WithRecommendMethods<SearchClient_2>['getLookingSimilar'];
+    readonly getRecommendedForYou: WithRecommendMethods<SearchClient_2>['getRecommendedForYou'];
+    readonly getRelatedProducts: WithRecommendMethods<SearchClient_2>['getRelatedProducts'];
+    readonly getTrendingFacets: WithRecommendMethods<SearchClient_2>['getTrendingFacets'];
+    readonly getTrendingItems: WithRecommendMethods<SearchClient_2>['getTrendingItems'];
 } & Destroyable;
 
 export declare type SearchIndex = SearchIndex_2 & {

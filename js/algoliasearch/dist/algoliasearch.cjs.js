@@ -7,6 +7,7 @@ var clientCommon = require('@algolia/client-common');
 var clientPersonalization = require('@algolia/client-personalization');
 var clientSearch = require('@algolia/client-search');
 var loggerCommon = require('@algolia/logger-common');
+var recommend = require('@algolia/recommend');
 var requesterNodeHttp = require('@algolia/requester-node-http');
 var transporter = require('@algolia/transporter');
 
@@ -147,6 +148,13 @@ function algoliasearch(appId, apiKey, options) {
                 searchClientOptions.logger.info('The `initRecommendation` method is deprecated. Use `initPersonalization` instead.');
                 return initPersonalization()(clientOptions);
             },
+            getRecommendations: recommend.getRecommendations,
+            getFrequentlyBoughtTogether: recommend.getFrequentlyBoughtTogether,
+            getLookingSimilar: recommend.getLookingSimilar,
+            getRecommendedForYou: recommend.getRecommendedForYou,
+            getRelatedProducts: recommend.getRelatedProducts,
+            getTrendingFacets: recommend.getTrendingFacets,
+            getTrendingItems: recommend.getTrendingItems,
         },
     });
 }
