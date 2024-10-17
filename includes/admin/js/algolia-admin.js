@@ -1,50 +1,47 @@
-(function( $ ) {
-	'use strict';
+'use strict';
 
-	$(
-		function() {
+((window, $) => {
 
-			function updateAutocompletePositions () {
-				$( '.table-autocomplete .position-input' ).each(
-					function(index, value) {
-						$( value ).val( index );
-					}
-				);
-			}
-			$( '.table-autocomplete tbody' ).sortable(
-				{
-					update: function() {
-						updateAutocompletePositions();
-					}
+	window.addEventListener('load', function () {
+
+		function updateAutocompletePositions() {
+			/*
+			const autocompleteInputs = document.querySelectorAll('.table-autocomplete .position-input');
+			if (autocompleteInputs) {
+				Array.from(autocompleteInputs).forEach((input, index) => {
+					console.log(input.value);
+				});
+			}*/
+			$('.table-autocomplete .position-input').each(
+				function (index, value) {
+					$(value).val(index);
 				}
 			);
+		}
 
-			function submenuHighlight () {
-				let menu = document.querySelector('#toplevel_page_algolia')
-				if (!menu) {
-					return
+		$('.table-autocomplete tbody').sortable(
+			{
+				update: function () {
+					updateAutocompletePositions();
 				}
+			}
+		);
 
-				let children = menu.querySelectorAll('.wp-submenu li')
-				children.forEach(child => {
-					let link = child.querySelector('a')
-					if (!link) {
-						return
-					}
-
-					let linkChild = link.querySelector('.algolia-menu-highlight')
+		function submenuHighlight() {
+			let linksHighlight = document.querySelectorAll('#toplevel_page_algolia .wp-submenu li');
+			if (linksHighlight) {
+				Array.from(linksHighlight).forEach((link) => {
+					let linkChild = link.querySelector('.algolia-menu-highlight');
 					if (linkChild) {
-						child.classList.add('algolia-submenu-highlight')
-
-						let link = child.querySelector('a')
-						if (link) {
-							link.setAttribute('target', '_blank')
+						link.classList.add('algolia-submenu-highlight');
+						let theLink = link.querySelector('a');
+						if (theLink) {
+							theLink.setAttribute('target', '_blank');
 						}
 					}
-				})
+				});
 			}
-
-			submenuHighlight();
 		}
-	);
-})( jQuery );
+		submenuHighlight();
+	});
+})(window, jQuery);
