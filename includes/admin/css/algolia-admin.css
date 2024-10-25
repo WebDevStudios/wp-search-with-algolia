@@ -2,6 +2,19 @@
  * All of the CSS for your admin-specific functionality should be
  * included in this file.
  */
+
+/*
+ * https://algolia.frontify.com/document/1?#/basics/colors
+ */
+:root {
+  --algolia-white: #fff;
+  --algolia-gray: #f5f5fa;
+  --algolia-blue: #003dff;
+  --algolia-blue-lighten: #07f;
+  --algolia-dark-blue: #003;
+  --algolia-neon: #ceff00;
+}
+
 .form-table .table-autocomplete th {
   padding: 8px 10px !important;
 }
