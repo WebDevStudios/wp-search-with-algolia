@@ -147,3 +147,31 @@ form .radio-info {
 .algolia-pro-cta .algolia-pro-feature svg {
   padding-right: 4px;
 }
+.algolia-premium-wrap-block {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  justify-content: space-between;
+}
+.algolia-premium-support-block {
+  text-align: center;
+}
+.wds-premium {
+  background: var(--algolia-blue);
+  color: var(--algolia-white);
+  padding: 10px;
+  border-radius: 9999px;
+  text-decoration: none;
+}
+.wds-premium:hover {
+  color: var(--algolia-white);
+}
+.algolia-flex {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.algolia-flex-item {
+  padding: 5px 10px;
+}
