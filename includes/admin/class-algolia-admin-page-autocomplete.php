@@ -142,6 +142,14 @@ class Algolia_Admin_Page_Autocomplete {
 		);
 
 		add_settings_field(
+			'algolia_autocomplete_debounce',
+			esc_html__( 'Autocomplete Debounce', 'wp-search-with-algolia' ),
+			array( $this, 'autocomplete_debounce_callback' ),
+			$this->slug,
+			$this->section
+		);
+
+		add_settings_field(
 			'algolia_autocomplete_config',
 			esc_html__( 'Autocomplete Config', 'wp-search-with-algolia' ),
 			array( $this, 'autocomplete_config_callback' ),
@@ -150,6 +158,7 @@ class Algolia_Admin_Page_Autocomplete {
 		);
 
 		register_setting( $this->option_group, 'algolia_autocomplete_enabled', array( $this, 'sanitize_autocomplete_enabled' ) );
+		register_setting( $this->option_group, 'algolia_autocomplete_debounce', array( $this, 'sanitize_autocomplete_debounce' ) );
 		register_setting( $this->option_group, 'algolia_autocomplete_config', array( $this, 'sanitize_autocomplete_config' ) );
 	}
 
@@ -166,6 +175,25 @@ class Algolia_Admin_Page_Autocomplete {
 		$disabled = empty( $indices ) ? 'disabled ' : '';
 		?>
 		<input type='checkbox' name='algolia_autocomplete_enabled' value='yes' <?php echo esc_html( $checked . ' ' . $disabled ); ?>/>
+		<?php
+	}
+
+	/**
+	 * Callback to print the autocomplete debounce value.
+	 *
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 * @since NEXT
+	 */
+	public function autocomplete_debounce_callback() {
+		$value    = $this->settings->get_autocomplete_debounce();
+		$indices  = $this->autocomplete_config->get_form_data();
+		$disabled = empty( $indices ) ? 'disabled ' : '';
+		?>
+		<input type="number" name="algolia_autocomplete_debounce" class="small-text" min="0" value="<?php echo esc_attr( $value ); ?>" <?php echo esc_html( $disabled ); ?>/>
+		<p class="description" id="home-description">
+			<?php esc_html_e( 'Enter the debounce timeout value in miliseconds. Use 0 (default) to disable debounce.', 'wp-search-with-algolia' ); ?>
+			<a href="https://www.algolia.com/doc/ui-libraries/autocomplete/guides/debouncing-sources/" target="_blank"><?php esc_html_e( 'Debouncing sources documentation', 'wp-search-with-algolia' ); ?></a>
+		</p>
 		<?php
 	}
 
@@ -189,6 +217,20 @@ class Algolia_Admin_Page_Autocomplete {
 		);
 
 		return 'yes' === $value ? 'yes' : 'no';
+	}
+
+	/**
+	 * Sanitize the Autocomplete debounce setting.
+	 *
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 * @since  NEXT
+	 *
+	 * @param int $value The original value.
+	 *
+	 * @return int The sanitized value.
+	 */
+	public function sanitize_autocomplete_debounce( $value ) {
+		return intval( $value );
 	}
 
 	/**
