@@ -59,6 +59,7 @@ class Algolia_Admin {
 
 		new Algolia_Admin_Page_WooCommerce( $plugin );
 		new Algolia_Admin_Page_SEO( $plugin );
+		new Algolia_Admin_Page_Premium_Support( $plugin );
 
 		add_action( 'admin_notices', array( $this, 'display_unmet_requirements_notices' ) );
 
