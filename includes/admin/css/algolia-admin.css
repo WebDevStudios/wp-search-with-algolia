@@ -52,23 +52,23 @@ form .radio-info {
 }
 
 #toplevel_page_algolia .algolia-pro-indicator {
-  background-color: #003dff;
+  background-color: var(--algolia-blue);
   border-radius: 3px;
-  color: #f5f5fa;
+  color: var(--algolia-white);
   font-size: 10px;
   padding: 2px 3px;
   vertical-align: text-top;
 }
 .algolia-menu-highlight {
-  color: #fff;
+  color: var(--algolia-white);
 }
 #toplevel_page_algolia .algolia-submenu-highlight {
-  background-color: #003dff;
+  background-color: var(--algolia-blue);
   font-weight: bold;
 }
 
 .algolia-pro-cta {
-  background-color: #fff;
+  background-color: var(--algolia-white);
   left: 50%;
   margin-top: 0;
   max-width: 850px;
@@ -96,10 +96,10 @@ form .radio-info {
   max-width: 560px;
 }
 .algolia-pro-cta .algolia-pro-button {
-  background-color: #003dff;
+  background-color: var(--algolia-blue);
   border-bottom: 0;
   border-radius: 4px;
-  color: #fff;
+  color: var(--algolia-white);
   cursor: pointer;
   display: inline-block;
   font-size: 24px;
@@ -109,7 +109,7 @@ form .radio-info {
   text-decoration: none;
 }
 .algolia-pro-cta .algolia-pro-button:hover {
-  background-color: #0077ff;
+  background-color: var(--algolia-blue-lighten);
 }
 .algolia-pro-cta .algolia-pro-more {
   display: block;
@@ -119,7 +119,7 @@ form .radio-info {
   text-align: center;
 }
 .algolia-pro-cta .algolia-pro-more a {
-  color: #003dff;
+  color: var(--algolia-blue);
   display: inline-block;
   font-size: 14px;
   font-style: italic;
@@ -127,7 +127,7 @@ form .radio-info {
   text-decoration: none;
 }
 .algolia-pro-cta .algolia-pro-more a:hover {
-  color: #0077ff;
+  color: var(--algolia-blue-lighten);
 }
 .algolia-pro-cta .algolia-pro-features {
   display: flex;
