@@ -27,15 +27,6 @@
   cursor: pointer;
 }
 
-/* Logs page */
-.log-details {
-  background-color: #32373c;
-  color: #fff;
-  padding: 30px;
-  border-radius: 3px;
-  display: none;
-}
-
 /* Native search page */
 form .input-radio label {
   font-weight: bold;
