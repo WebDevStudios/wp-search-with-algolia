@@ -46,6 +46,40 @@ if ( ! defined( 'ABSPATH' ) ) {
 				</div>
 			</div>
 		</div>
+
+		<div class="algolia-premium-support-block algolia-pro-block">
+			<h2>WP Search with Algolia Pro</h2>
+			<div class="algolia-pro-flex-wrap">
+				<div class="algolia-pro-flex-item">
+					<h3>Multisite Indexing</h3>
+					<ul class="algolia-pro-features">
+						<li>Multisite indexing into a single network index to provide a global Algolia-powered search experience.</li>
+					</ul>
+				</div>
+				<div class="algolia-pro-flex-item">
+					<h3>WooCommerce</h3>
+					<ul class="algolia-pro-features">
+						<li>Index product SKUs, prices, short descriptions and product dimensions/weight for display.</li>
+						<li>Index product total sales ratings for relevance.</li>
+						<li>Index product total and average ratings for relevance.</li>
+						<li>Control whether or not sold out products are indexed</li>
+						<li>Control whether or not "shop only" or "hidden" products are indexed.</li>
+						<li>Amend indexing to only include WooCommerce products.</li>
+					</ul>
+				</div>
+				<div class="algolia-pro-flex-item">
+					<h3>Search Engine Optimization</h3>
+					<ul class="algolia-pro-features">
+						<li>Fine tune indexing on selected pieces of content</li>
+						<li>Yoast SEO</li>
+						<li>All in One SEO</li>
+						<li>Rank Math SEO</li>
+						<li>SEOPress</li>
+						<li>and The SEO Framework Support</li>
+					</ul>
+				</div>
+			</div>
+		</div>
 	</div>
 
 </div>

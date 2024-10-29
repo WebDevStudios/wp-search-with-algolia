@@ -156,6 +156,9 @@ form .radio-info {
 .algolia-premium-support-block {
   text-align: center;
 }
+.algolia-premium-support-block.algolia-pro-block {
+  text-align: left;
+}
 .wds-premium {
   background: var(--algolia-blue);
   color: var(--algolia-white);
@@ -174,4 +177,27 @@ form .radio-info {
 }
 .algolia-flex-item {
   padding: 5px 10px;
+}
+.algolia-pro-block {
+
+}
+.algolia-pro-flex-wrap {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-content: space-between;
+  gap: 10px;
+}
+.algolia-pro-flex-item {
+  border: solid blue 1px;
+  border-radius: 15px;
+  flex: 1;
+  padding: 10px;
+  width: 33%;
+}
+.algolia-pro-features {
+  padding-left: 15px;
+}
+.algolia-pro-features li {
+  list-style: disc;
 }
