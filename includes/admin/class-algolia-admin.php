@@ -123,6 +123,15 @@ class Algolia_Admin {
 				'pushBtnAlert' => esc_html__( 'Warning: Pushing settings will override the settings in the Algolia dashboard. Do you want to continue?', 'wp-search-with-algolia' ),
 			)
 		);
+
+		wp_localize_script(
+			'algolia-admin-push-reindex-button',
+			'algoliaPushReindexButton',
+			array(
+				'reindexAbort' => esc_html__( 'If you leave now, re-indexing tasks in progress will be aborted', 'wp-search-with-algolia' ),
+				'noDataindex' => esc_html__( 'Clicked button has no "data-index" set.', 'wp-search-with-algolia' ),
+			)
+		);
 	}
 
 	/**
