@@ -1,90 +1,92 @@
-(function($) {
-
-	$(
-		function() {
-			var $reindexButtons = $( '.algolia-reindex-button' );
-			$reindexButtons.on( 'click', handleReindexButtonClick );
+'use strict';
+((window) => {
+	window.addEventListener('load', function () {
+		const reindexButtons = document.querySelectorAll('.algolia-reindex-button');
+		if (reindexButtons) {
+			Array.from(reindexButtons).forEach((button) => {
+				button.addEventListener('click', handleReindexButtonClick);
+			});
 		}
-	);
 
-	var ongoing = 0;
+		let ongoing = 0;
 
-	$( window ).on(
-		'beforeunload', function() {
-			if (ongoing > 0) {
-				return 'If you leave now, re-indexing tasks in progress will be aborted';
+		window.addEventListener('beforeunload', () => {
+			if ( ongoing > 0 ) {
+				return algoliaPushReindexButton.reindexAbort;
 			}
-		}
-	);
+		});
 
-	function handleReindexButtonClick(e) {
+		function handleReindexButtonClick(e) {
+			const clickedBtn = e.currentTarget;
+			const index = clickedBtn.dataset.index;
 
-		$clickedButton = $( e.currentTarget );
-		var index      = $clickedButton.data( 'index' );
-		if ( ! index) {
-			throw new Error( 'Clicked button has no "data-index" set.' );
-		}
-
-		ongoing++;
-
-		$clickedButton.attr( 'disabled', 'disabled' );
-		$clickedButton.data( 'originalText', $clickedButton.text() );
-		updateIndexingPourcentage( $clickedButton, 0 );
-
-		reIndex( $clickedButton, index );
-	}
-
-	function updateIndexingPourcentage($clickedButton, amount) {
-		$clickedButton.text( 'Processing, please be patient ... ' + amount + '%' );
-	}
-
-	function reIndex($clickedButton, index, currentPage) {
-		if ( ! currentPage) {
-			currentPage = 1;
-		}
-
-		var data = {
-			'action': 'algolia_re_index',
-			'index_id': index,
-			'p': currentPage
-		};
-
-		$.post(
-			ajaxurl, data, function(response) {
-				if (typeof response.totalPagesCount === 'undefined') {
-					alert( 'An error occurred' );
-					resetButton( $clickedButton );
-					return;
-				}
-
-				if (response.totalPagesCount === 0) {
-					$clickedButton.parents( '.error' ).fadeOut();
-					resetButton( $clickedButton );
-					return;
-				}
-				progress = Math.round( (currentPage / response.totalPagesCount) * 100 );
-				updateIndexingPourcentage( $clickedButton, progress );
-
-				if (response.finished !== true) {
-					reIndex( $clickedButton, index, ++currentPage );
-				} else {
-					$clickedButton.parents( '.error' ).fadeOut();
-					resetButton( $clickedButton );
-				}
+			if (!index) {
+				throw new Error(algoliaPushReindexButton.noDataindex);
 			}
-		).fail(
-			function(response) {
-				alert( 'An error occurred: ' + response.responseText );
-				resetButton( $clickedButton );
+
+			ongoing++;
+
+			clickedBtn.disabled = true;
+			clickedBtn.dataset.originalText = clickedBtn.innerHTML.trim();
+			updateIndexingPourcentage(clickedBtn,0);
+
+			reIndex( clickedBtn, index )
+		}
+
+		function updateIndexingPourcentage(clickedBtn, amount) {
+			// @todo Localize this string.
+			clickedBtn.innerHTML = 'Processing, please be patient ... ' + amount + '%';
+		}
+
+		function resetButton(clickedBtn) {
+			ongoing--;
+			clickedBtn.innerHTML = clickedBtn.dataset.originalText;
+			clickedBtn.disabled = false;
+			clickedBtn.dataset.currentPage = 1;
+		}
+
+		function reIndex(clickedBtn, index, currentPage) {
+			if (!currentPage) {
+				currentPage = 1;
 			}
-		);
-	}
 
-	function resetButton($clickedButton) {
-		ongoing--;
-		$clickedButton.text( $clickedButton.data( 'originalText' ) );
-		$clickedButton.removeAttr( 'disabled' );
-		$clickedButton.data( 'currentPage', 1 );
-	}
+			const data = new FormData();
+			data.append('action', 'algolia_re_index');
+			data.append('index_id', index);
+			data.append('p', currentPage);
 
-})( jQuery );
+			fetch(window.ajaxurl, options = {
+				method: 'POST',
+				body  : data,
+			})
+				.then((response) => response.json())
+				.then((response) => {
+					if (typeof response.totalPagesCount === 'undefined') {
+						alert('An error occurred');
+						resetButton(clickedBtn);
+						return;
+					}
+
+					if (response.totalPagesCount === 0) {
+clickedBtn.parents('.error').fadeOut();
+						resetButton(clickedBtn);
+						return;
+					}
+					let progress = Math.round((currentPage / response.totalPagesCount) * 100);
+					updateIndexingPourcentage(clickedBtn, progress);
+
+					if (response.finished !== true) {
+						reIndex(clickedBtn, index, ++currentPage);
+					} else {
+clickedBtn.parents('.error').fadeOut();
+						resetButton(clickedBtn);
+					}
+				})
+				.catch((error) => {
+					// @todo test this out.
+					alert('An error occurred: ' + error.responseText);
+					resetButton($clickedButton);
+				});
+		}
+	});
+})(window);
