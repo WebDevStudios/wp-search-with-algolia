@@ -524,8 +524,8 @@ class Algolia_Admin_Page_Settings {
 					],
 				]
 			) . '</p>';
-		echo '<p>' . esc_html__( 'Once you provide your Algolia Application ID and API key, this plugin will be able to securely communicate with Algolia servers.', 'wp-search-with-algolia' ) . ' ' . esc_html__( 'We ensure your information is correct by testing them against the Algolia servers upon save.', 'wp-search-with-algolia' ) . '</p>';
+		echo '<p>' . esc_html__( 'Once you provide your Algolia Application ID and API key, this plugin will be able to securely communicate with Algolia servers.', 'wp-search-with-algolia' ) . '<br/>' . esc_html__( 'We ensure your information is correct by testing them against the Algolia servers upon save.', 'wp-search-with-algolia' ) . '</p>';
 		// translators: the placeholder contains the URL to Algolia's website.
-		echo '<p>' . wp_kses_post( sprintf( __( 'No Algolia account yet? <a href="%s">Follow this link</a> to create one for free in a couple of minutes!', 'wp-search-with-algolia' ), 'https://www.algolia.com/users/sign_up' ) ) . '</p>';
+		echo '<p>' . wp_kses_post( sprintf( __( 'No Algolia account yet? <a href="%s">Follow this link</a> to create one for free in a couple of minutes!', 'wp-search-with-algolia' ), 'https://dashboard.algolia.com/users/sign_up' ) ) . '</p>';
 	}
 }
