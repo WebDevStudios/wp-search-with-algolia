@@ -35,49 +35,48 @@ if ( ! defined( 'ABSPATH' ) ) {
 		</div>
 
 		<div class="algolia-premium-support-block">
-			<h2>Ready to work with us?</h2>
+			<h2><?php esc_html_e( 'Ready to work with us?', 'wp-search-with-algolia' ); ?></h2>
 			<div class="algolia-flex">
 				<div class="algolia-flex-item">
-					<p><a class="wds-premium" href="https://webdevstudios.com/contact/" target="_blank" rel="noopener">Contact WebDevStudios</a>
+					<p><a class="wds-premium" href="https://webdevstudios.com/contact/" target="_blank" rel="noopener"><?php esc_html_e( 'Contact WebDevStudios', 'wp-search-with-algolia' ); ?></a>
 					</p>
 				</div>
 			</div>
 		</div>
 
 		<div class="algolia-premium-support-block algolia-pro-block">
-			<h2><a href="https://pluginize.com/plugins/wp-search-with-algolia-pro/" target="_blank">WP Search with Algolia Pro</a></h2>
+			<h2><a href="https://pluginize.com/plugins/wp-search-with-algolia-pro/" target="_blank"><?php esc_html_e( 'WP Search with Algolia Pro', 'wp-search-with-algolia' ); ?></a></h2>
 			<div class="algolia-pro-flex-wrap">
 				<div class="algolia-pro-flex-item">
-					<h3>Multisite Indexing</h3>
+					<h3><?php esc_html_e( 'Multisite Indexing', 'wp-search-with-algolia' ); ?></h3>
 					<ul class="algolia-pro-features">
-						<li>Multisite network indexing into a single search index to provide a global Algolia-powered search experience.</li>
-						<li>Easily search all sites in your Multisite network with a single search experience!</li>
+						<li><?php esc_html_e( 'Multisite network indexing into a single search index to provide a global Algolia-powered search experience.', 'wp-search-with-algolia' ); ?></li>
+						<li><?php esc_html_e( 'Easily search all sites in your Multisite network with a single search experience!', 'wp-search-with-algolia' ); ?></li>
 					</ul>
 				</div>
 				<div class="algolia-pro-flex-item">
-					<h3>WooCommerce Support</h3>
+					<h3><?php esc_html_e( 'WooCommerce Support', 'wp-search-with-algolia' ); ?></h3>
 					<ul class="algolia-pro-features">
-						<li>Index product SKUs, prices, short descriptions and product dimensions/weight for display.</li>
-						<li>Index product total sales ratings for relevance.</li>
-						<li>Index product total and average ratings for relevance.</li>
-						<li>Control whether or not sold out products are indexed</li>
-						<li>Control whether or not "shop only" or "hidden" products are indexed.</li>
-						<li>Amend indexing to only include WooCommerce products.</li>
+						<li><?php esc_html_e( 'Index product SKUs, prices, short descriptions and product dimensions/weight for display.', 'wp-search-with-algolia' ); ?>'</li>
+						<li><?php esc_html_e( 'Index product total sales ratings for relevance.', 'wp-search-with-algolia' ); ?></li>
+						<li><?php esc_html_e( 'Index product total and average ratings for relevance.', 'wp-search-with-algolia' ); ?></li>
+						<li><?php esc_html_e( 'Control whether or not sold out products are indexed.', 'wp-search-with-algolia' ); ?></li>
+						<li><?php esc_html_e( 'Control whether or not "shop only" or "hidden" products are indexed.', 'wp-search-with-algolia' ); ?></li>
+						<li><?php esc_html_e( 'Amend indexing to only include WooCommerce products.', 'wp-search-with-algolia' ); ?></li>
 					</ul>
 				</div>
 				<div class="algolia-pro-flex-item">
-					<h3>Search Engine Optimization</h3>
+					<h3><?php esc_html_e( 'Search Engine Optimization', 'wp-search-with-algolia' ); ?></h3>
 					<ul class="algolia-pro-features">
-						<li>Fine tune indexing on selected pieces of content</li>
-						<li>Yoast SEO</li>
-						<li>All in One SEO</li>
-						<li>Rank Math SEO</li>
-						<li>SEOPress</li>
-						<li>and The SEO Framework Support</li>
+						<li><?php esc_html_e( 'Fine tune indexing on selected pieces of content', 'wp-search-with-algolia' ); ?></li>
+						<li><?php esc_html_e( 'Yoast SEO', 'wp-search-with-algolia' ); ?></li>
+						<li><?php esc_html_e( 'All in One SEO', 'wp-search-with-algolia' ); ?></li>
+						<li><?php esc_html_e( 'Rank Math SEO', 'wp-search-with-algolia' ); ?></li>
+						<li><?php esc_html_e( 'SEOPress', 'wp-search-with-algolia' ); ?></li>
+						<li><?php esc_html_e( 'The SEO Framework Support', 'wp-search-with-algolia' ); ?></li>
 					</ul>
 				</div>
 			</div>
 		</div>
 	</div>
-
 </div>
