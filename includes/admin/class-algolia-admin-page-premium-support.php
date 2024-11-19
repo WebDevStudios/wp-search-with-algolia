@@ -83,12 +83,9 @@ class Algolia_Admin_Page_Premium_Support {
 	 */
 	public function add_page() {
 		$api = $this->plugin->get_api();
-		if ( ! $api->is_reachable() ) {
-			return;
-		}
-
+		$parent_slug = ! $api->is_reachable() ? 'algolia-account-settings' : 'algolia';
 		add_submenu_page(
-			'algolia',
+			$parent_slug,
 			esc_html__( 'Premium Support from WebDevStudios', 'wp-search-with-algolia' ),
 			esc_html__( 'Premium Support', 'wp-search-with-algolia' ),
 			$this->capability,
