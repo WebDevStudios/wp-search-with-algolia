@@ -19,7 +19,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	<div class="algolia-premium-wrap-block">
 		<div class="algolia-premium-support-block">
 			<p>
-				<?php esc_html_e( 'Thank you for using Algolia and WP Search with Algolia to enhance your website\'s search experience. We are happy to have you as a user.', 'wp-search-with-algolia' ); ?>
+				<?php esc_html_e( 'Thank you for using WP Search with Algolia to enhance your website\'s search experience. We are happy to have you as a user.', 'wp-search-with-algolia' ); ?>
 			</p>
 			<div class="cptui-badge"></div>
 		</div>
@@ -27,10 +27,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 		<div class="algolia-premium-support-block">
 			<h2><?php esc_html_e( 'Seeking help?', 'wp-search-with-algolia' ); ?></h2>
 			<p>
-				<?php esc_html_e( 'Are you struggling to get Algolia and WP Search with Algolia working like you\'ve envisioned, and wanting some help?', 'wp-search-with-algolia' ); ?>
+				<?php esc_html_e( 'Our premium support and integration services ensure a seamless implementation of Algolia into your WordPress site. Whether you’re running a blog, eCommerce platform, or enterprise-level application, we’ll handle every detail—from setup and configuration to advanced customizations that match your unique needs.', 'wp-search-with-algolia' ); ?>
 			</p>
 			<p>
-				<?php esc_html_e( 'WebDevStudios, the folks behind WP Search with Algolia and WP Search with Algolia Pro would love to be in touch to see if we can work together to get your site to where it needs to be.', 'wp-search-with-algolia' ); ?>
+				<?php esc_html_e( 'At WebDevStudios, we’re not just delivering tools—we’re empowering you with a scalable, high-performing search experience. Ready to elevate your WordPress website? Let’s make it happen!', 'wp-search-with-algolia' ); ?>
 			</p>
 		</div>
 
@@ -41,23 +41,21 @@ if ( ! defined( 'ABSPATH' ) ) {
 					<p><a class="wds-premium" href="https://webdevstudios.com/contact/" target="_blank" rel="noopener">Contact WebDevStudios</a>
 					</p>
 				</div>
-				<div class="algolia-flex-item">
-					<p>If this sounds like you, please reach out and lets get a discussion going!</p>
-				</div>
 			</div>
 		</div>
 
 		<div class="algolia-premium-support-block algolia-pro-block">
-			<h2>WP Search with Algolia Pro</h2>
+			<h2><a href="https://pluginize.com/plugins/wp-search-with-algolia-pro/" target="_blank">WP Search with Algolia Pro</a></h2>
 			<div class="algolia-pro-flex-wrap">
 				<div class="algolia-pro-flex-item">
 					<h3>Multisite Indexing</h3>
 					<ul class="algolia-pro-features">
-						<li>Multisite indexing into a single network index to provide a global Algolia-powered search experience.</li>
+						<li>Multisite network indexing into a single search index to provide a global Algolia-powered search experience.</li>
+						<li>Easily search all sites in your Multisite network with a single search experience!</li>
 					</ul>
 				</div>
 				<div class="algolia-pro-flex-item">
-					<h3>WooCommerce</h3>
+					<h3>WooCommerce Support</h3>
 					<ul class="algolia-pro-features">
 						<li>Index product SKUs, prices, short descriptions and product dimensions/weight for display.</li>
 						<li>Index product total sales ratings for relevance.</li>

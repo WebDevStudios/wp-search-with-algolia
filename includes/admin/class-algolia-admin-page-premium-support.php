@@ -89,7 +89,7 @@ class Algolia_Admin_Page_Premium_Support {
 
 		add_submenu_page(
 			'algolia',
-			esc_html__( 'Premium Support', 'wp-search-with-algolia' ),
+			esc_html__( 'Premium Support from WebDevStudios', 'wp-search-with-algolia' ),
 			esc_html__( 'Premium Support', 'wp-search-with-algolia' ),
 			$this->capability,
 			$this->slug,
