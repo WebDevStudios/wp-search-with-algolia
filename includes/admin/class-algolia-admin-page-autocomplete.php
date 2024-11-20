@@ -262,7 +262,7 @@ class Algolia_Admin_Page_Autocomplete {
 	 * @since  1.0.0
 	 */
 	public function print_section_settings() {
-		echo '<p>' . esc_html__( 'Autocomplete adds a find-as-you-type dropdown to your search field(s).', 'wp-search-with-algolia' ) . '</p>';
+		echo '<p>' . esc_html__( 'Autocomplete adds a search-as-you-type dropdown to your search field(s).', 'wp-search-with-algolia' ) . '</p>';
 
 		echo '<p>' . esc_html__( 'Enabling Autocomplete adds the functionality to your site\'s frontend search. Indexing and settings pushes can be done regardless of enabled status.', 'wp-search-with-algolia' ) . '</p>';
 	}
