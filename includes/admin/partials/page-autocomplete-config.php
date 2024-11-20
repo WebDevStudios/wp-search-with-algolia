@@ -29,7 +29,9 @@
 		</tr>
 	</thead>
 	<tbody>
-		<?php foreach ( $indices as $index ) : // phpcs:ignore -- This is an admin partial.  ?>
+		<?php
+		$prefix = $this->settings->get_index_name_prefix();
+		foreach ( $indices as $index ) : // phpcs:ignore -- This is an admin partial.  ?>
 		<tr>
 			<td>
 				<span class="dashicons dashicons-move"></span>
@@ -40,11 +42,21 @@
 			</td>
 			<td>
 				<?php echo esc_html( $index['admin_name'] ); ?><br>
-				<small style="color: #999">
+				<small>
 					<?php
 					printf(
 						// translators: placeholder is the name of an Algolia search index.
 						esc_html__( 'Index name: %s', 'wp-search-with-algolia' ),
+						esc_html( $index['index_id'] )
+					);
+					?>
+				</small><br/>
+				<small>
+					<?php
+					printf(
+					// translators: placeholder is the name of an Algolia search index.
+						esc_html__( 'Prefixed: %s%s', 'wp-search-with-algolia' ),
+						esc_html( $prefix ),
 						esc_html( $index['index_id'] )
 					);
 					?>
