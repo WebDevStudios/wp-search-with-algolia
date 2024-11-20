@@ -20,7 +20,7 @@
 		<?php
 		echo wp_kses(
 			__(
-				'Do not use Algolia for searching at all. This option disables the plugin completely',
+				'Do not use Algolia for any search. This option disables the search integration completely.',
 				'wp-search-with-algolia'
 			),
 			[
