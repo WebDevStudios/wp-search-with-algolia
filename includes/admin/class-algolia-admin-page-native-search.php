@@ -225,7 +225,7 @@ class Algolia_Admin_Page_Native_Search {
 	 * @since  1.0.0
 	 */
 	public function print_section_settings() {
-		echo '<p>' . esc_html__( 'By enabling this plugin to override the native WordPress search, your search results will be powered by Algolia\'s typo-tolerant & relevant search algorithms.', 'wp-search-with-algolia' ) . '</p>';
+		echo '<p>' . esc_html__( 'By enabling these settings to override the native WordPress search, your search results will be powered by Algolia\'s typo-tolerant & relevant search algorithms.', 'wp-search-with-algolia' ) . '</p>';
 
 		echo '<p>' . sprintf(
 			'<b>%1$s</b> - %2$s',
