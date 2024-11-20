@@ -250,7 +250,7 @@ class Algolia_Admin_Page_Native_Search {
 
 		if ( empty( $indices ) ) {
 			echo '<div class="error-message"><p>' .
-					esc_html( __( 'You have no index containing only posts yet. Please index some content on the `Indexing` page.', 'wp-search-with-algolia' ) ) .
+					esc_html( __( 'You have no index containing only posts yet. Please index some content with the "Re-index All Content" button above.', 'wp-search-with-algolia' ) ) .
 					'</p></div>';
 		}
 	}
