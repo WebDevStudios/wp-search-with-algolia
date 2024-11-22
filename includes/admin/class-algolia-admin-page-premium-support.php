@@ -1,16 +1,16 @@
 <?php
 /**
- * Algolia_Admin_Page_WooCommerce class file.
+ * Algolia_Admin_Page_Premiun_Support class file.
  *
  * @author  WebDevStudios <contact@webdevstudios.com>
- * @since   2.5.0
+ * @since   2.8.2
  * @package WebDevStudios\WPSWA
  */
 
 /**
  * Class Algolia_Admin_Page_WooCommerce
  *
- * @since 2.5.0
+ * @since 2.8.2
  */
 class Algolia_Admin_Page_Premium_Support {
 
@@ -18,7 +18,7 @@ class Algolia_Admin_Page_Premium_Support {
 	 * Admin page slug.
 	 *
 	 * @author WebDevStudios <contact@webdevstudios.com>
-	 * @since  2.5.0
+	 * @since  2.8.2
 	 * @var string
 	 */
 	private $slug = 'algolia-account-premium-support';
@@ -27,7 +27,7 @@ class Algolia_Admin_Page_Premium_Support {
 	 * Admin page capabilities.
 	 *
 	 * @author WebDevStudios <contact@webdevstudios.com>
-	 * @since  2.5.0
+	 * @since  2.8.2
 	 * @var string
 	 */
 	private $capability = 'manage_options';
@@ -36,7 +36,7 @@ class Algolia_Admin_Page_Premium_Support {
 	 * Admin page section.
 	 *
 	 * @author WebDevStudios <contact@webdevstudios.com>
-	 * @since  2.5.0
+	 * @since  2.8.2
 	 * @var string
 	 */
 	private $section = 'algolia_section_premium_support';
@@ -45,7 +45,7 @@ class Algolia_Admin_Page_Premium_Support {
 	 * Admin page option group.
 	 *
 	 * @author WebDevStudios <contact@webdevstudios.com>
-	 * @since  2.5.0
+	 * @since  2.8.2
 	 * @var string
 	 */
 	private $option_group = 'algolia_settings';
@@ -54,7 +54,7 @@ class Algolia_Admin_Page_Premium_Support {
 	 * The Algolia_Plugin instance.
 	 *
 	 * @author WebDevStudios <contact@webdevstudios.com>
-	 * @since  2.5.0
+	 * @since  2.8.2
 	 * @var Algolia_Plugin
 	 */
 	private $plugin;
@@ -64,7 +64,7 @@ class Algolia_Admin_Page_Premium_Support {
 	 *
 	 * @param Algolia_Plugin $plugin The Algolia_Plugin instance.
 	 *
-	 * @since  2.5.0
+	 * @since  2.8.2
 	 * @author WebDevStudios <contact@webdevstudios.com>
 	 */
 	public function __construct( Algolia_Plugin $plugin ) {
@@ -78,7 +78,7 @@ class Algolia_Admin_Page_Premium_Support {
 	 * Add admin menu page.
 	 *
 	 * @return string|void The resulting page's hook_suffix.
-	 * @since  2.5.0
+	 * @since  2.8.2
 	 * @author WebDevStudios <contact@webdevstudios.com>
 	 */
 	public function add_page() {
@@ -98,7 +98,7 @@ class Algolia_Admin_Page_Premium_Support {
 	 * Add settings.
 	 *
 	 * @author WebDevStudios <contact@webdevstudios.com>
-	 * @since  2.5.0
+	 * @since  2.8.2
 	 */
 	public function add_settings() {
 		add_settings_section(
@@ -113,7 +113,7 @@ class Algolia_Admin_Page_Premium_Support {
 	 * Display the page.
 	 *
 	 * @author WebDevStudios <contact@webdevstudios.com>
-	 * @since  2.5.0
+	 * @since  2.8.2
 	 */
 	public function display_page() {
 		require_once dirname( __FILE__ ) . '/partials/form-options-premium-support.php';
@@ -123,7 +123,7 @@ class Algolia_Admin_Page_Premium_Support {
 	 * Print the settings section.
 	 *
 	 * @author WebDevStudios <contact@webdevstudios.com>
-	 * @since  2.5.0
+	 * @since  2.8.2
 	 */
 	public function print_section_settings() {
 
