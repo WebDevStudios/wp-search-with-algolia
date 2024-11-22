@@ -8,7 +8,7 @@
  */
 
 /**
- * Class Algolia_Admin_Page_WooCommerce
+ * Class Algolia_Admin_Page_Premium_Support
  *
  * @since 2.8.2
  */
@@ -60,7 +60,7 @@ class Algolia_Admin_Page_Premium_Support {
 	private $plugin;
 
 	/**
-	 * Algolia_Admin_Page_WooCommerce constructor.
+	 * Algolia_Admin_Page_Premium_Support constructor.
 	 *
 	 * @param Algolia_Plugin $plugin The Algolia_Plugin instance.
 	 *
@@ -77,9 +77,11 @@ class Algolia_Admin_Page_Premium_Support {
 	/**
 	 * Add admin menu page.
 	 *
-	 * @return string|void The resulting page's hook_suffix.
 	 * @since  2.8.2
+	 *
 	 * @author WebDevStudios <contact@webdevstudios.com>
+	 *
+	 * @return string|void The resulting page's hook_suffix.
 	 */
 	public function add_page() {
 		$api = $this->plugin->get_api();
