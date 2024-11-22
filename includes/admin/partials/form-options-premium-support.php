@@ -21,7 +21,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 			<p>
 				<?php esc_html_e( 'Thank you for using WP Search with Algolia to enhance your website\'s search experience. We are happy to have you as a user.', 'wp-search-with-algolia' ); ?>
 			</p>
-			<div class="cptui-badge"></div>
 		</div>
 
 		<div class="algolia-premium-support-block">
