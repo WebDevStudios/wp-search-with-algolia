@@ -59,6 +59,7 @@ class Algolia_Admin {
 
 		new Algolia_Admin_Page_WooCommerce( $plugin );
 		new Algolia_Admin_Page_SEO( $plugin );
+		new Algolia_Admin_Page_Premium_Support( $plugin );
 
 		add_action( 'admin_notices', array( $this, 'display_unmet_requirements_notices' ) );
 
@@ -351,11 +352,11 @@ class Algolia_Admin {
 			'<a href="https://pluginize.com/plugins/wp-search-with-algolia-pro/" target="_blank" rel="noopener"><strong>%s</strong></a>',
 			esc_attr__( 'Go Pro', 'wp-search-with-algolia' )
 		) . ' - ' .
-		esc_attr__( 'Follow on Twitter:', 'wp-search-with-algolia' ) .
+		esc_attr__( 'Follow on X:', 'wp-search-with-algolia' ) .
 		sprintf(
 			// translators: Placeholders are just for HTML markup that doesn't need translated.
 			' %s',
-			'<a href="https://twitter.com/webdevstudios" target="_blank" rel="noopener">WebDevStudios</a>'
+			'<a href="https://x.com/webdevstudios" target="_blank" rel="noopener">WebDevStudios</a>'
 		);
 	}
 
