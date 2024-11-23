@@ -129,7 +129,7 @@ All development is handled on [GitHub](https://github.com/WebDevStudios/wp-searc
 Follow along with the changelog on [Github](https://github.com/WebDevStudios/wp-search-with-algolia/releases).
 
 = 2.8.2 =
-* Updated: Wording and UI details around the settings page for better and more accurate reflection.
+* Updated: Wording and UI details around the settings pages for better and more accurate reflection.
 * Updated: Confirmed compatibility with WP 6.7.x
 * Added: New page regarding Premium support from WebDevStudios. Let's work together.
 
