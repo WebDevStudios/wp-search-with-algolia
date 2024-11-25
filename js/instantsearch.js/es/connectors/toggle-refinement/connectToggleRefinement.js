@@ -277,7 +277,7 @@ var connectToggleRefinement = function connectToggleRefinement(renderFn) {
           process.env.NODE_ENV === 'development' ? warning(false, "ToggleRefinement: Attribute \"".concat(attribute, "\" is already used by another widget of a different type.\nAs this is not supported, please make sure to remove this other widget or this ToggleRefinement widget will not work at all.")) : void 0;
           return searchParameters;
         }
-        var withFacetConfiguration = searchParameters.clearRefinements(attribute).addDisjunctiveFacet(attribute);
+        var withFacetConfiguration = searchParameters.addDisjunctiveFacet(attribute).removeDisjunctiveFacetRefinement(attribute);
         var isRefined = Boolean(uiState.toggle && uiState.toggle[attribute]);
         if (isRefined) {
           if (on) {

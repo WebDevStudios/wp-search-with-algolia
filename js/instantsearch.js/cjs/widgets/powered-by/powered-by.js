@@ -4,7 +4,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
-var _uiComponentsShared = require("@algolia/ui-components-shared");
+var _instantsearchUiComponents = require("instantsearch-ui-components");
 var _preact = require("preact");
 var _PoweredBy = _interopRequireDefault(require("../../components/PoweredBy/PoweredBy"));
 var _connectPoweredBy = _interopRequireDefault(require("../../connectors/powered-by/connectPoweredBy"));
@@ -51,13 +51,13 @@ var poweredBy = function poweredBy(widgetParams) {
   }
   var containerNode = (0, _utils.getContainerNode)(container);
   var cssClasses = {
-    root: (0, _uiComponentsShared.cx)(suit(), suit({
+    root: (0, _instantsearchUiComponents.cx)(suit(), suit({
       modifierName: theme === 'dark' ? 'dark' : 'light'
     }), userCssClasses.root),
-    link: (0, _uiComponentsShared.cx)(suit({
+    link: (0, _instantsearchUiComponents.cx)(suit({
       descendantName: 'link'
     }), userCssClasses.link),
-    logo: (0, _uiComponentsShared.cx)(suit({
+    logo: (0, _instantsearchUiComponents.cx)(suit({
       descendantName: 'logo'
     }), userCssClasses.logo)
   };

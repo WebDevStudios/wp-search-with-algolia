@@ -4,7 +4,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
-var _uiComponentsShared = require("@algolia/ui-components-shared");
+var _instantsearchUiComponents = require("instantsearch-ui-components");
 var _preact = require("preact");
 var _Answers = _interopRequireDefault(require("../../components/Answers/Answers"));
 var _connectAnswers = _interopRequireDefault(require("../../connectors/answers/connectAnswers"));
@@ -48,6 +48,9 @@ var renderer = function renderer(_ref) {
     }), containerNode);
   };
 };
+/**
+ * @deprecated the answers service is no longer offered, and this widget will be removed in InstantSearch.js v5
+ */
 var answersWidget = function answersWidget(widgetParams) {
   var _ref3 = widgetParams || {},
     container = _ref3.container,
@@ -67,20 +70,20 @@ var answersWidget = function answersWidget(widgetParams) {
   }
   var containerNode = (0, _utils.getContainerNode)(container);
   var cssClasses = {
-    root: (0, _uiComponentsShared.cx)(suit(), userCssClasses.root),
-    emptyRoot: (0, _uiComponentsShared.cx)(suit({
+    root: (0, _instantsearchUiComponents.cx)(suit(), userCssClasses.root),
+    emptyRoot: (0, _instantsearchUiComponents.cx)(suit({
       modifierName: 'empty'
     }), userCssClasses.emptyRoot),
-    header: (0, _uiComponentsShared.cx)(suit({
+    header: (0, _instantsearchUiComponents.cx)(suit({
       descendantName: 'header'
     }), userCssClasses.header),
-    loader: (0, _uiComponentsShared.cx)(suit({
+    loader: (0, _instantsearchUiComponents.cx)(suit({
       descendantName: 'loader'
     }), userCssClasses.loader),
-    list: (0, _uiComponentsShared.cx)(suit({
+    list: (0, _instantsearchUiComponents.cx)(suit({
       descendantName: 'list'
     }), userCssClasses.list),
-    item: (0, _uiComponentsShared.cx)(suit({
+    item: (0, _instantsearchUiComponents.cx)(suit({
       descendantName: 'item'
     }), userCssClasses.item)
   };
@@ -105,5 +108,5 @@ var answersWidget = function answersWidget(widgetParams) {
     $$widgetType: 'ais.answers'
   });
 };
-var _default = answersWidget;
+var _default = (0, _utils.deprecate)(answersWidget, 'The answers widget is deprecated and will be removed in InstantSearch.js 5.0');
 exports.default = _default;

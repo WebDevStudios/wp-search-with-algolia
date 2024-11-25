@@ -4,7 +4,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
-var _uiComponentsShared = require("@algolia/ui-components-shared");
+var _instantsearchUiComponents = require("instantsearch-ui-components");
 var _preact = require("preact");
 var _RelevantSort = _interopRequireDefault(require("../../components/RelevantSort/RelevantSort"));
 var _connectRelevantSort = _interopRequireDefault(require("../../connectors/relevant-sort/connectRelevantSort"));
@@ -50,11 +50,11 @@ var relevantSort = function relevantSort(widgetParams) {
   }
   var containerNode = (0, _utils.getContainerNode)(container);
   var cssClasses = {
-    root: (0, _uiComponentsShared.cx)(suit(), userCssClasses.root),
-    text: (0, _uiComponentsShared.cx)(suit({
+    root: (0, _instantsearchUiComponents.cx)(suit(), userCssClasses.root),
+    text: (0, _instantsearchUiComponents.cx)(suit({
       descendantName: 'text'
     }), userCssClasses.text),
-    button: (0, _uiComponentsShared.cx)(suit({
+    button: (0, _instantsearchUiComponents.cx)(suit({
       descendantName: 'button'
     }), userCssClasses.button)
   };

@@ -4,7 +4,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
-var _uiComponentsShared = require("@algolia/ui-components-shared");
+var _instantsearchUiComponents = require("instantsearch-ui-components");
 var _preact = require("preact");
 var _ClearRefinements = _interopRequireDefault(require("../../components/ClearRefinements/ClearRefinements"));
 var _connectClearRefinements = _interopRequireDefault(require("../../connectors/clear-refinements/connectClearRefinements"));
@@ -63,11 +63,11 @@ var clearRefinements = function clearRefinements(widgetParams) {
   }
   var containerNode = (0, _utils.getContainerNode)(container);
   var cssClasses = {
-    root: (0, _uiComponentsShared.cx)(suit(), userCssClasses.root),
-    button: (0, _uiComponentsShared.cx)(suit({
+    root: (0, _instantsearchUiComponents.cx)(suit(), userCssClasses.root),
+    button: (0, _instantsearchUiComponents.cx)(suit({
       descendantName: 'button'
     }), userCssClasses.button),
-    disabledButton: (0, _uiComponentsShared.cx)(suit({
+    disabledButton: (0, _instantsearchUiComponents.cx)(suit({
       descendantName: 'button',
       modifierName: 'disabled'
     }), userCssClasses.disabledButton)

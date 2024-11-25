@@ -155,7 +155,9 @@ var connectGeoSearch = function connectGeoSearch(renderFn) {
         if (!sendEvent) {
           sendEvent = (0, _utils.createSendEventForHits)({
             instantSearchInstance: instantSearchInstance,
-            index: helper.getIndex(),
+            getIndex: function getIndex() {
+              return helper.getIndex();
+            },
             widgetType: $$type
           });
         }
@@ -174,7 +176,9 @@ var connectGeoSearch = function connectGeoSearch(renderFn) {
           widgetParams: widgetParams
         };
       },
-      getRenderState: function getRenderState(renderState, renderOptions) {
+      getRenderState: function getRenderState(renderState, renderOptions
+      // Type is explicitly redefined, to avoid having the TWidgetParams type in the definition
+      ) {
         return _objectSpread(_objectSpread({}, renderState), {}, {
           geoSearch: this.getWidgetRenderState(renderOptions)
         });
@@ -206,5 +210,4 @@ var connectGeoSearch = function connectGeoSearch(renderFn) {
     };
   };
 };
-var _default = connectGeoSearch;
-exports.default = _default;
+exports.default = connectGeoSearch;

@@ -5,7 +5,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
-var _uiComponentsShared = require("@algolia/ui-components-shared");
+var _instantsearchUiComponents = require("instantsearch-ui-components");
 var _preact = require("preact");
 var _utils = require("../../lib/utils");
 var _Template = _interopRequireDefault(require("../Template/Template"));
@@ -22,7 +22,7 @@ var Answers = function Answers(_ref) {
     cssClasses = _ref.cssClasses,
     templateProps = _ref.templateProps;
   return (0, _preact.h)("div", {
-    className: (0, _uiComponentsShared.cx)(cssClasses.root, hits.length === 0 && cssClasses.emptyRoot)
+    className: (0, _instantsearchUiComponents.cx)(cssClasses.root, hits.length === 0 && cssClasses.emptyRoot)
   }, (0, _preact.h)(_Template.default, _extends({}, templateProps, {
     templateKey: "header",
     rootProps: {

@@ -4,7 +4,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
-var _uiComponentsShared = require("@algolia/ui-components-shared");
+var _instantsearchUiComponents = require("instantsearch-ui-components");
 var _preact = require("preact");
 var _InfiniteHits = _interopRequireDefault(require("../../components/InfiniteHits/InfiniteHits"));
 var _connectInfiniteHits = _interopRequireDefault(require("../../connectors/infinite-hits/connectInfiniteHits"));
@@ -31,7 +31,7 @@ var renderer = function renderer(_ref) {
     templates = _ref.templates,
     hasShowPrevious = _ref.showPrevious;
   return function (_ref2, isFirstRendering) {
-    var hits = _ref2.hits,
+    var items = _ref2.items,
       results = _ref2.results,
       showMore = _ref2.showMore,
       showPrevious = _ref2.showPrevious,
@@ -40,7 +40,8 @@ var renderer = function renderer(_ref) {
       instantSearchInstance = _ref2.instantSearchInstance,
       insights = _ref2.insights,
       bindEvent = _ref2.bindEvent,
-      sendEvent = _ref2.sendEvent;
+      sendEvent = _ref2.sendEvent,
+      banner = _ref2.banner;
     if (isFirstRendering) {
       renderState.templateProps = (0, _templating.prepareTemplateProps)({
         defaultTemplates: _defaultTemplates.default,
@@ -51,7 +52,7 @@ var renderer = function renderer(_ref) {
     }
     (0, _preact.render)((0, _preact.h)(_InfiniteHits.default, {
       cssClasses: cssClasses,
-      hits: hits,
+      hits: items,
       results: results,
       hasShowPrevious: hasShowPrevious,
       showPrevious: showPrevious,
@@ -61,7 +62,8 @@ var renderer = function renderer(_ref) {
       isLastPage: isLastPage,
       insights: insights,
       sendEvent: sendEvent,
-      bindEvent: bindEvent
+      bindEvent: bindEvent,
+      banner: banner
     }), containerNode);
   };
 };
@@ -81,30 +83,39 @@ var infiniteHits = function infiniteHits(widgetParams) {
   }
   var containerNode = (0, _utils.getContainerNode)(container);
   var cssClasses = {
-    root: (0, _uiComponentsShared.cx)(suit(), userCssClasses.root),
-    emptyRoot: (0, _uiComponentsShared.cx)(suit({
+    root: (0, _instantsearchUiComponents.cx)(suit(), userCssClasses.root),
+    emptyRoot: (0, _instantsearchUiComponents.cx)(suit({
       modifierName: 'empty'
     }), userCssClasses.emptyRoot),
-    item: (0, _uiComponentsShared.cx)(suit({
+    item: (0, _instantsearchUiComponents.cx)(suit({
       descendantName: 'item'
     }), userCssClasses.item),
-    list: (0, _uiComponentsShared.cx)(suit({
+    list: (0, _instantsearchUiComponents.cx)(suit({
       descendantName: 'list'
     }), userCssClasses.list),
-    loadPrevious: (0, _uiComponentsShared.cx)(suit({
+    loadPrevious: (0, _instantsearchUiComponents.cx)(suit({
       descendantName: 'loadPrevious'
     }), userCssClasses.loadPrevious),
-    disabledLoadPrevious: (0, _uiComponentsShared.cx)(suit({
+    disabledLoadPrevious: (0, _instantsearchUiComponents.cx)(suit({
       descendantName: 'loadPrevious',
       modifierName: 'disabled'
     }), userCssClasses.disabledLoadPrevious),
-    loadMore: (0, _uiComponentsShared.cx)(suit({
+    loadMore: (0, _instantsearchUiComponents.cx)(suit({
       descendantName: 'loadMore'
     }), userCssClasses.loadMore),
-    disabledLoadMore: (0, _uiComponentsShared.cx)(suit({
+    disabledLoadMore: (0, _instantsearchUiComponents.cx)(suit({
       descendantName: 'loadMore',
       modifierName: 'disabled'
-    }), userCssClasses.disabledLoadMore)
+    }), userCssClasses.disabledLoadMore),
+    bannerRoot: (0, _instantsearchUiComponents.cx)(suit({
+      descendantName: 'banner'
+    }), userCssClasses.bannerRoot),
+    bannerImage: (0, _instantsearchUiComponents.cx)(suit({
+      descendantName: 'banner-image'
+    }), userCssClasses.bannerImage),
+    bannerLink: (0, _instantsearchUiComponents.cx)(suit({
+      descendantName: 'banner-link'
+    }), userCssClasses.bannerLink)
   };
   var specializedRenderer = renderer({
     containerNode: containerNode,
@@ -125,5 +136,4 @@ var infiniteHits = function infiniteHits(widgetParams) {
     $$widgetType: 'ais.infiniteHits'
   });
 };
-var _default = infiniteHits;
-exports.default = _default;
+exports.default = infiniteHits;

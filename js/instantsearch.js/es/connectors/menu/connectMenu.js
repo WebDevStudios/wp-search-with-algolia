@@ -171,12 +171,9 @@ var connectMenu = function connectMenu(renderFn) {
         var _searchParameters$get = searchParameters.getHierarchicalFacetBreadcrumb(attribute),
           _searchParameters$get2 = _slicedToArray(_searchParameters$get, 1),
           value = _searchParameters$get2[0];
-        if (!value) {
-          return uiState;
-        }
-        return _objectSpread(_objectSpread({}, uiState), {}, {
+        return removeEmptyRefinementsFromUiState(_objectSpread(_objectSpread({}, uiState), {}, {
           menu: _objectSpread(_objectSpread({}, uiState.menu), {}, _defineProperty({}, attribute, value))
-        });
+        }), attribute);
       },
       getWidgetSearchParameters: function getWidgetSearchParameters(searchParameters, _ref5) {
         var uiState = _ref5.uiState;
@@ -202,4 +199,16 @@ var connectMenu = function connectMenu(renderFn) {
     };
   };
 };
+function removeEmptyRefinementsFromUiState(indexUiState, attribute) {
+  if (!indexUiState.menu) {
+    return indexUiState;
+  }
+  if (indexUiState.menu[attribute] === undefined) {
+    delete indexUiState.menu[attribute];
+  }
+  if (Object.keys(indexUiState.menu).length === 0) {
+    delete indexUiState.menu;
+  }
+  return indexUiState;
+}
 export default connectMenu;

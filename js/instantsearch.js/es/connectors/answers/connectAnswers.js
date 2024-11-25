@@ -12,6 +12,9 @@ var withUsage = createDocumentationMessageGenerator({
   name: 'answers',
   connector: true
 });
+/**
+ * @deprecated the answers service is no longer offered, and this widget will be removed in InstantSearch.js v5
+ */
 var connectAnswers = function connectAnswers(renderFn) {
   var unmountFn = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : noop;
   checkRendering(renderFn, withUsage());

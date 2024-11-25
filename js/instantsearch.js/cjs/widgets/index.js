@@ -47,6 +47,12 @@ Object.defineProperty(exports, "dynamicWidgets", {
     return _dynamicWidgets.default;
   }
 });
+Object.defineProperty(exports, "frequentlyBoughtTogether", {
+  enumerable: true,
+  get: function get() {
+    return _frequentlyBoughtTogether.default;
+  }
+});
 Object.defineProperty(exports, "geoSearch", {
   enumerable: true,
   get: function get() {
@@ -81,6 +87,12 @@ Object.defineProperty(exports, "infiniteHits", {
   enumerable: true,
   get: function get() {
     return _infiniteHits.default;
+  }
+});
+Object.defineProperty(exports, "lookingSimilar", {
+  enumerable: true,
+  get: function get() {
+    return _lookingSimilar.default;
   }
 });
 Object.defineProperty(exports, "menu", {
@@ -161,6 +173,12 @@ Object.defineProperty(exports, "refinementList", {
     return _refinementList.default;
   }
 });
+Object.defineProperty(exports, "relatedProducts", {
+  enumerable: true,
+  get: function get() {
+    return _relatedProducts.default;
+  }
+});
 Object.defineProperty(exports, "relevantSort", {
   enumerable: true,
   get: function get() {
@@ -189,6 +207,12 @@ Object.defineProperty(exports, "toggleRefinement", {
   enumerable: true,
   get: function get() {
     return _toggleRefinement.default;
+  }
+});
+Object.defineProperty(exports, "trendingItems", {
+  enumerable: true,
+  get: function get() {
+    return _trendingItems.default;
   }
 });
 Object.defineProperty(exports, "voiceSearch", {
@@ -221,6 +245,7 @@ var _places = _interopRequireDefault(require("./places/places"));
 var _poweredBy = _interopRequireDefault(require("./powered-by/powered-by"));
 var _queryRuleContext = _interopRequireDefault(require("./query-rule-context/query-rule-context"));
 var _queryRuleCustomData = _interopRequireDefault(require("./query-rule-custom-data/query-rule-custom-data"));
+var _relatedProducts = _interopRequireDefault(require("./related-products/related-products"));
 var _rangeInput = _interopRequireDefault(require("./range-input/range-input"));
 var _rangeSlider = _interopRequireDefault(require("./range-slider/range-slider"));
 var _ratingMenu = _interopRequireDefault(require("./rating-menu/rating-menu"));
@@ -230,7 +255,10 @@ var _searchBox = _interopRequireDefault(require("./search-box/search-box"));
 var _sortBy = _interopRequireDefault(require("./sort-by/sort-by"));
 var _stats = _interopRequireDefault(require("./stats/stats"));
 var _toggleRefinement = _interopRequireDefault(require("./toggle-refinement/toggle-refinement"));
+var _trendingItems = _interopRequireDefault(require("./trending-items/trending-items"));
 var _voiceSearch = _interopRequireDefault(require("./voice-search/voice-search"));
+var _frequentlyBoughtTogether = _interopRequireDefault(require("./frequently-bought-together/frequently-bought-together"));
+var _lookingSimilar = _interopRequireDefault(require("./looking-similar/looking-similar"));
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 /** @deprecated answers is no longer supported */
 var EXPERIMENTAL_answers = (0, _utils.deprecate)(_answers.default, 'answers is no longer supported');

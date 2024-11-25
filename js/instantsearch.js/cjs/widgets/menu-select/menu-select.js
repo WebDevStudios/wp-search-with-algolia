@@ -4,7 +4,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
-var _uiComponentsShared = require("@algolia/ui-components-shared");
+var _instantsearchUiComponents = require("instantsearch-ui-components");
 var _preact = require("preact");
 var _MenuSelect = _interopRequireDefault(require("../../components/MenuSelect/MenuSelect"));
 var _connectMenu = _interopRequireDefault(require("../../connectors/menu/connectMenu"));
@@ -66,14 +66,14 @@ var menuSelect = function menuSelect(widgetParams) {
   }
   var containerNode = (0, _utils.getContainerNode)(container);
   var cssClasses = {
-    root: (0, _uiComponentsShared.cx)(suit(), userCssClasses.root),
-    noRefinementRoot: (0, _uiComponentsShared.cx)(suit({
+    root: (0, _instantsearchUiComponents.cx)(suit(), userCssClasses.root),
+    noRefinementRoot: (0, _instantsearchUiComponents.cx)(suit({
       modifierName: 'noRefinement'
     }), userCssClasses.noRefinementRoot),
-    select: (0, _uiComponentsShared.cx)(suit({
+    select: (0, _instantsearchUiComponents.cx)(suit({
       descendantName: 'select'
     }), userCssClasses.select),
-    option: (0, _uiComponentsShared.cx)(suit({
+    option: (0, _instantsearchUiComponents.cx)(suit({
       descendantName: 'option'
     }), userCssClasses.option)
   };

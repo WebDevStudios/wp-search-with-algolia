@@ -4,7 +4,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
-var _uiComponentsShared = require("@algolia/ui-components-shared");
+var _instantsearchUiComponents = require("instantsearch-ui-components");
 var _preact = require("preact");
 var _Template = _interopRequireDefault(require("../Template/Template"));
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
@@ -20,7 +20,7 @@ var ClearRefinements = function ClearRefinements(_ref) {
     templateKey: "resetLabel",
     rootTagName: "button",
     rootProps: {
-      className: (0, _uiComponentsShared.cx)(cssClasses.button, !hasRefinements && cssClasses.disabledButton),
+      className: (0, _instantsearchUiComponents.cx)(cssClasses.button, !hasRefinements && cssClasses.disabledButton),
       onClick: refine,
       disabled: !hasRefinements
     },

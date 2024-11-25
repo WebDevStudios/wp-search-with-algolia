@@ -1,53 +1,22 @@
 {
-  "_from": "algoliasearch@^4.18.0",
-  "_id": "algoliasearch@4.18.0",
-  "_inBundle": false,
-  "_integrity": "sha512-pCuVxC1SVcpc08ENH32T4sLKSyzoU7TkRIDBMwSLfIiW+fq4znOmWDkAygHZ6pRcO9I1UJdqlfgnV7TRj+MXrA==",
-  "_location": "/algoliasearch",
-  "_phantomChildren": {},
-  "_requested": {
-    "type": "range",
-    "registry": true,
-    "raw": "algoliasearch@^4.18.0",
-    "name": "algoliasearch",
-    "escapedName": "algoliasearch",
-    "rawSpec": "^4.18.0",
-    "saveSpec": null,
-    "fetchSpec": "^4.18.0"
+  "name": "algoliasearch",
+  "version": "4.24.0",
+  "private": false,
+  "description": "A fully-featured and blazing-fast JavaScript API client to interact with Algolia API.",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/algolia/algoliasearch-client-javascript.git"
   },
-  "_requiredBy": [
-    "#USER"
-  ],
-  "_resolved": "https://registry.npmjs.org/algoliasearch/-/algoliasearch-4.18.0.tgz",
-  "_shasum": "1183ad0384a5b2c14f381c3a361da611acc8edb3",
-  "_spec": "algoliasearch@^4.18.0",
-  "_where": "/Users/asharirfan/code/wp-algolia/app/public/wp-content/plugins/wp-search-with-algolia-dev",
+  "license": "MIT",
+  "sideEffects": false,
+  "main": "index.js",
+  "jsdelivr": "./dist/algoliasearch.umd.js",
+  "unpkg": "./dist/algoliasearch.umd.js",
   "browser": {
     "./index.js": "./dist/algoliasearch.umd.js",
     "./lite.js": "./dist/algoliasearch-lite.umd.js"
   },
-  "bugs": {
-    "url": "https://github.com/algolia/algoliasearch-client-javascript/issues"
-  },
-  "bundleDependencies": false,
-  "dependencies": {
-    "@algolia/cache-browser-local-storage": "4.18.0",
-    "@algolia/cache-common": "4.18.0",
-    "@algolia/cache-in-memory": "4.18.0",
-    "@algolia/client-account": "4.18.0",
-    "@algolia/client-analytics": "4.18.0",
-    "@algolia/client-common": "4.18.0",
-    "@algolia/client-personalization": "4.18.0",
-    "@algolia/client-search": "4.18.0",
-    "@algolia/logger-common": "4.18.0",
-    "@algolia/logger-console": "4.18.0",
-    "@algolia/requester-browser-xhr": "4.18.0",
-    "@algolia/requester-common": "4.18.0",
-    "@algolia/requester-node-http": "4.18.0",
-    "@algolia/transporter": "4.18.0"
-  },
-  "deprecated": false,
-  "description": "A fully-featured and blazing-fast JavaScript API client to interact with Algolia API.",
+  "types": "index.d.ts",
   "files": [
     "dist",
     "index.js",
@@ -55,18 +24,24 @@
     "lite.js",
     "lite.d.ts"
   ],
-  "homepage": "https://github.com/algolia/algoliasearch-client-javascript#readme",
-  "jsdelivr": "./dist/algoliasearch.umd.js",
-  "license": "MIT",
-  "main": "index.js",
-  "name": "algoliasearch",
-  "private": false,
-  "repository": {
-    "type": "git",
-    "url": "git://github.com/algolia/algoliasearch-client-javascript.git"
+  "scripts": {
+    "test:exports": "node --experimental-modules test/module/is-es-module.mjs && node test/module/is-cjs-module.cjs"
   },
-  "sideEffects": false,
-  "types": "index.d.ts",
-  "unpkg": "./dist/algoliasearch.umd.js",
-  "version": "4.18.0"
+  "dependencies": {
+    "@algolia/cache-browser-local-storage": "4.24.0",
+    "@algolia/cache-common": "4.24.0",
+    "@algolia/cache-in-memory": "4.24.0",
+    "@algolia/client-account": "4.24.0",
+    "@algolia/client-analytics": "4.24.0",
+    "@algolia/client-common": "4.24.0",
+    "@algolia/client-personalization": "4.24.0",
+    "@algolia/client-search": "4.24.0",
+    "@algolia/logger-common": "4.24.0",
+    "@algolia/logger-console": "4.24.0",
+    "@algolia/recommend": "4.24.0",
+    "@algolia/requester-browser-xhr": "4.24.0",
+    "@algolia/requester-common": "4.24.0",
+    "@algolia/requester-node-http": "4.24.0",
+    "@algolia/transporter": "4.24.0"
+  }
 }

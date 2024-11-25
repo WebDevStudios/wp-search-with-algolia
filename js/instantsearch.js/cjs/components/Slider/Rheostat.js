@@ -19,7 +19,11 @@ function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.g
 function _defineProperty(obj, key, value) { key = _toPropertyKey(key); if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 function _toPropertyKey(arg) { var key = _toPrimitive(arg, "string"); return _typeof(key) === "symbol" ? key : String(key); }
 function _toPrimitive(input, hint) { if (_typeof(input) !== "object" || input === null) return input; var prim = input[Symbol.toPrimitive]; if (prim !== undefined) { var res = prim.call(input, hint || "default"); if (_typeof(res) !== "object") return res; throw new TypeError("@@toPrimitive must return a primitive value."); } return (hint === "string" ? String : Number)(input); }
-function _extends() { _extends = Object.assign ? Object.assign.bind() : function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; return _extends.apply(this, arguments); }
+function _extends() { _extends = Object.assign ? Object.assign.bind() : function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; return _extends.apply(this, arguments); } /**
+                                                                                                                                                                                                                                                                                                                                                     * This is a fork of Rheostat for Preact X.
+                                                                                                                                                                                                                                                                                                                                                     *
+                                                                                                                                                                                                                                                                                                                                                     * @see https://github.com/airbnb/rheostat
+                                                                                                                                                                                                                                                                                                                                                     */
 var KEYS = {
   DOWN: 40,
   END: 35,
@@ -394,6 +398,8 @@ var Rheostat = /*#__PURE__*/function (_Component) {
       }
       killEvent(ev);
     });
+    // Make sure the proposed position respects the bounds and
+    // does not collide with other handles too much.
     _defineProperty(_assertThisInitialized(_this), "validatePosition", function (idx, proposedPosition) {
       var _this$state4 = _this.state,
         handlePos = _this$state4.handlePos,

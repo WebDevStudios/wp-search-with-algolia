@@ -9,7 +9,7 @@ var withUsage = createDocumentationMessageGenerator({
   name: 'hits',
   connector: true
 });
-var connectHits = function connectHits(renderFn) {
+export default (function connectHits(renderFn) {
   var unmountFn = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : noop;
   checkRendering(renderFn, withUsage());
   return function (widgetParams) {
@@ -34,27 +34,34 @@ var connectHits = function connectHits(renderFn) {
         renderFn(_objectSpread(_objectSpread({}, renderState), {}, {
           instantSearchInstance: renderOptions.instantSearchInstance
         }), false);
-        renderState.sendEvent('view:internal', renderState.hits);
+        renderState.sendEvent('view:internal', renderState.items);
       },
-      getRenderState: function getRenderState(renderState, renderOptions) {
+      getRenderState: function getRenderState(renderState, renderOptions
+      // Type is explicitly redefined, to avoid having the TWidgetParams type in the definition
+      ) {
         return _objectSpread(_objectSpread({}, renderState), {}, {
           hits: this.getWidgetRenderState(renderOptions)
         });
       },
       getWidgetRenderState: function getWidgetRenderState(_ref2) {
+        var _results$renderingCon, _results$renderingCon2, _results$renderingCon3;
         var results = _ref2.results,
           helper = _ref2.helper,
           instantSearchInstance = _ref2.instantSearchInstance;
         if (!sendEvent) {
           sendEvent = createSendEventForHits({
             instantSearchInstance: instantSearchInstance,
-            index: helper.getIndex(),
+            getIndex: function getIndex() {
+              return helper.getIndex();
+            },
             widgetType: this.$$type
           });
         }
         if (!bindEvent) {
           bindEvent = createBindEventForHits({
-            index: helper.getIndex(),
+            getIndex: function getIndex() {
+              return helper.getIndex();
+            },
             widgetType: this.$$type,
             instantSearchInstance: instantSearchInstance
           });
@@ -62,7 +69,9 @@ var connectHits = function connectHits(renderFn) {
         if (!results) {
           return {
             hits: [],
+            items: [],
             results: undefined,
+            banner: undefined,
             sendEvent: sendEvent,
             bindEvent: bindEvent,
             widgetParams: widgetParams
@@ -73,12 +82,15 @@ var connectHits = function connectHits(renderFn) {
         }
         var hitsWithAbsolutePosition = addAbsolutePosition(results.hits, results.page, results.hitsPerPage);
         var hitsWithAbsolutePositionAndQueryID = addQueryID(hitsWithAbsolutePosition, results.queryID);
-        var transformedHits = transformItems(hitsWithAbsolutePositionAndQueryID, {
+        var items = transformItems(hitsWithAbsolutePositionAndQueryID, {
           results: results
         });
+        var banner = (_results$renderingCon = results.renderingContent) === null || _results$renderingCon === void 0 ? void 0 : (_results$renderingCon2 = _results$renderingCon.widgets) === null || _results$renderingCon2 === void 0 ? void 0 : (_results$renderingCon3 = _results$renderingCon2.banners) === null || _results$renderingCon3 === void 0 ? void 0 : _results$renderingCon3[0];
         return {
-          hits: transformedHits,
+          hits: items,
+          items: items,
           results: results,
+          banner: banner,
           sendEvent: sendEvent,
           bindEvent: bindEvent,
           widgetParams: widgetParams
@@ -94,13 +106,14 @@ var connectHits = function connectHits(renderFn) {
           return _objectSpread(_objectSpread({}, acc), {}, _defineProperty({}, key, undefined));
         }, {}));
       },
-      getWidgetSearchParameters: function getWidgetSearchParameters(state) {
+      getWidgetSearchParameters: function getWidgetSearchParameters(state, _uiState) {
         if (!escapeHTML) {
           return state;
         }
+
+        // @MAJOR: set this globally, not in the Hits widget to allow Hits to be conditionally used
         return state.setQueryParameters(TAG_PLACEHOLDER);
       }
     };
   };
-};
-export default connectHits;
+});

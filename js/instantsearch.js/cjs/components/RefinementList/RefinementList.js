@@ -4,7 +4,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
-var _uiComponentsShared = require("@algolia/ui-components-shared");
+var _instantsearchUiComponents = require("instantsearch-ui-components");
 var _preact = require("preact");
 var _utils = require("../../lib/utils");
 var _SearchBox = _interopRequireDefault(require("../SearchBox/SearchBox"));
@@ -31,6 +31,8 @@ function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.g
 function _defineProperty(obj, key, value) { key = _toPropertyKey(key); if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 function _toPropertyKey(arg) { var key = _toPrimitive(arg, "string"); return _typeof(key) === "symbol" ? key : String(key); }
 function _toPrimitive(input, hint) { if (_typeof(input) !== "object" || input === null) return input; var prim = input[Symbol.toPrimitive]; if (prim !== undefined) { var res = prim.call(input, hint || "default"); if (_typeof(res) !== "object") return res; throw new TypeError("@@toPrimitive must return a primitive value."); } return (hint === "string" ? String : Number)(input); }
+// CSS types
+
 var defaultProps = {
   cssClasses: {},
   depth: 0
@@ -79,7 +81,7 @@ var RefinementList = /*#__PURE__*/function (_Component) {
       if (facetValue.count !== undefined) {
         key += "/".concat(facetValue.count);
       }
-      var refinementListItemClassName = (0, _uiComponentsShared.cx)(_this.props.cssClasses.item, facetValue.isRefined && _this.props.cssClasses.selectedItem, !facetValue.count && _this.props.cssClasses.disabledItem, Boolean(isHierarchicalMenuItem(facetValue) && Array.isArray(facetValue.data) && facetValue.data.length > 0) && _this.props.cssClasses.parentItem);
+      var refinementListItemClassName = (0, _instantsearchUiComponents.cx)(_this.props.cssClasses.item, facetValue.isRefined && _this.props.cssClasses.selectedItem, !facetValue.count && _this.props.cssClasses.disabledItem, Boolean(isHierarchicalMenuItem(facetValue) && Array.isArray(facetValue.data) && facetValue.data.length > 0) && _this.props.cssClasses.parentItem);
       return (0, _preact.h)(_RefinementListItem.default, {
         templateKey: "item",
         key: key,
@@ -92,6 +94,21 @@ var RefinementList = /*#__PURE__*/function (_Component) {
         templateProps: _this.props.templateProps
       });
     });
+    // Click events on DOM tree like LABEL > INPUT will result in two click events
+    // instead of one.
+    // No matter the framework, see https://www.google.com/search?q=click+label+twice
+    //
+    // Thus making it hard to distinguish activation from deactivation because both click events
+    // are very close. Debounce is a solution but hacky.
+    //
+    // So the code here checks if the click was done on or in a LABEL. If this LABEL
+    // has a checkbox inside, we ignore the first click event because we will get another one.
+    //
+    // We also check if the click was done inside a link and then e.preventDefault() because we already
+    // handle the url
+    //
+    // Finally, we always stop propagation of the event to avoid multiple levels RefinementLists to fail: click
+    // on child would click on parent also
     _defineProperty(_assertThisInitialized(_this), "handleItemClick", function (_ref) {
       var facetValueToRefine = _ref.facetValueToRefine,
         isRefined = _ref.isRefined,
@@ -101,18 +118,18 @@ var RefinementList = /*#__PURE__*/function (_Component) {
         // if one special key is down
         return;
       }
-      if (!(originalEvent.target instanceof HTMLElement) || !(originalEvent.target.parentNode instanceof HTMLElement)) {
+      var parent = originalEvent.target;
+      if (parent === null || parent.parentNode === null) {
         return;
       }
-      if (isRefined && originalEvent.target.parentNode.querySelector('input[type="radio"]:checked')) {
+      if (isRefined && parent.parentNode.querySelector('input[type="radio"]:checked')) {
         // Prevent refinement for being reset if the user clicks on an already checked radio button
         return;
       }
-      if (originalEvent.target.tagName === 'INPUT') {
+      if (parent.tagName === 'INPUT') {
         _this.refine(facetValueToRefine);
         return;
       }
-      var parent = originalEvent.target;
       while (parent !== originalEvent.currentTarget) {
         if (parent.tagName === 'LABEL' && (parent.querySelector('input[type="checkbox"]') || parent.querySelector('input[type="radio"]'))) {
           return;
@@ -158,7 +175,7 @@ var RefinementList = /*#__PURE__*/function (_Component) {
     key: "render",
     value: function render() {
       var _this2 = this;
-      var showMoreButtonClassName = (0, _uiComponentsShared.cx)(this.props.cssClasses.showMore, !(this.props.showMore === true && this.props.canToggleShowMore) && this.props.cssClasses.disabledShowMore);
+      var showMoreButtonClassName = (0, _instantsearchUiComponents.cx)(this.props.cssClasses.showMore, !(this.props.showMore === true && this.props.canToggleShowMore) && this.props.cssClasses.disabledShowMore);
       var showMoreButton = this.props.showMore === true && (0, _preact.h)(_Template.default, _extends({}, this.props.templateProps, {
         templateKey: "showMoreText",
         rootTagName: "button",
@@ -192,7 +209,8 @@ var RefinementList = /*#__PURE__*/function (_Component) {
         // This sets the search box to a controlled state because
         // we don't rely on the `refine` prop but on `onChange`.
         ,
-        searchAsYouType: false
+        searchAsYouType: false,
+        ariaLabel: "Search for filters"
       }));
       var facetValues = this.props.facetValues && this.props.facetValues.length > 0 && (0, _preact.h)("ul", {
         className: this.props.cssClasses.list
@@ -203,7 +221,7 @@ var RefinementList = /*#__PURE__*/function (_Component) {
           className: this.props.cssClasses.noResults
         }
       }));
-      var rootClassName = (0, _uiComponentsShared.cx)(this.props.cssClasses.root, (!this.props.facetValues || this.props.facetValues.length === 0) && this.props.cssClasses.noRefinementRoot, this.props.className);
+      var rootClassName = (0, _instantsearchUiComponents.cx)(this.props.cssClasses.root, (!this.props.facetValues || this.props.facetValues.length === 0) && this.props.cssClasses.noRefinementRoot, this.props.className);
       return (0, _preact.h)("div", {
         className: rootClassName
       }, this.props.children, searchBox, facetValues, noResults, showMoreButton);

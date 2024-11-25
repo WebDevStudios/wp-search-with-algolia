@@ -16,8 +16,10 @@ type SearchBoxProps = {
     refine?: (value: string) => void;
     autofocus?: boolean;
     searchAsYouType?: boolean;
+    ignoreCompositionEvents?: boolean;
     isSearchStalled?: boolean;
     disabled?: boolean;
+    ariaLabel?: string;
     onChange?: (event: Event) => void;
     onSubmit?: (event: Event) => void;
     onReset?: (event: Event) => void;
@@ -29,8 +31,10 @@ declare const defaultProps: {
     showLoadingIndicator: boolean;
     autofocus: boolean;
     searchAsYouType: boolean;
+    ignoreCompositionEvents: boolean;
     isSearchStalled: boolean;
     disabled: boolean;
+    ariaLabel: string;
     onChange: typeof noop;
     onSubmit: typeof noop;
     onReset: typeof noop;
@@ -49,8 +53,10 @@ declare class SearchBox extends Component<SearchBoxPropsWithDefaultProps, Search
         showLoadingIndicator: boolean;
         autofocus: boolean;
         searchAsYouType: boolean;
+        ignoreCompositionEvents: boolean;
         isSearchStalled: boolean;
         disabled: boolean;
+        ariaLabel: string;
         onChange: typeof noop;
         onSubmit: typeof noop;
         onReset: typeof noop;

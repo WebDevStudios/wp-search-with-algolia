@@ -4,7 +4,7 @@ import { FindAnswersResponse } from '@algolia/client-search';
 import { MultipleQueriesOptions } from '@algolia/client-search';
 import { MultipleQueriesQuery } from '@algolia/client-search';
 import { MultipleQueriesResponse } from '@algolia/client-search';
-import { Request } from '@algolia/transporter';
+import { Request as Request_2 } from '@algolia/transporter';
 import { RequestOptions } from '@algolia/transporter';
 import { SearchClient as SearchClient_2 } from '@algolia/client-search';
 import { SearchClientOptions } from '@algolia/client-search';
@@ -13,6 +13,7 @@ import { SearchForFacetValuesResponse } from '@algolia/client-search';
 import { SearchIndex as SearchIndex_2 } from '@algolia/client-search';
 import { SearchOptions } from '@algolia/client-search';
 import { SearchResponse } from '@algolia/client-search';
+import { WithRecommendMethods } from '@algolia/recommend';
 
 declare function algoliasearch(appId: string, apiKey: string, options?: AlgoliaSearchOptions): SearchClient;
 
@@ -35,7 +36,8 @@ export declare type SearchClient = SearchClient_2 & {
         readonly indexName: string;
         readonly params: SearchForFacetValuesQueryParams & SearchOptions;
     }>, requestOptions?: RequestOptions) => Readonly<Promise<readonly SearchForFacetValuesResponse[]>>;
-    readonly customRequest: <TResponse>(request: Request, requestOptions?: RequestOptions) => Readonly<Promise<TResponse>>;
+    readonly customRequest: <TResponse>(request: Request_2, requestOptions?: RequestOptions) => Readonly<Promise<TResponse>>;
+    readonly getRecommendations: WithRecommendMethods<SearchClient_2>['getRecommendations'];
 };
 
 export declare type SearchIndex = SearchIndex_2 & {

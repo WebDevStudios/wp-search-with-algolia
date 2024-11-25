@@ -4,7 +4,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
-var _uiComponentsShared = require("@algolia/ui-components-shared");
+var _instantsearchUiComponents = require("instantsearch-ui-components");
 var _preact = require("preact");
 var _utils = require("../../lib/utils");
 var _Pit = _interopRequireDefault(require("./Pit"));
@@ -55,9 +55,11 @@ var Slider = /*#__PURE__*/function (_Component) {
         // have to cast as a string, as the value given to the prop is a number, but becomes a string when read
         parseFloat(props['aria-valuenow']) * 100) / 100;
         var value = _typeof(tooltips) === 'object' && tooltips.format ? tooltips.format(roundedValue) : roundedValue;
-        var className = (0, _uiComponentsShared.cx)(props.className, props['data-handle-key'] === 0 && 'rheostat-handle-lower', props['data-handle-key'] === 1 && 'rheostat-handle-upper');
+        var className = (0, _instantsearchUiComponents.cx)(props.className, props['data-handle-key'] === 0 && 'rheostat-handle-lower', props['data-handle-key'] === 1 && 'rheostat-handle-upper');
+        var ariaLabel = props['data-handle-key'] === 0 ? 'Minimum Filter Handle' : 'Maximum Filter Handle';
         return (0, _preact.h)("div", _extends({}, props, {
-          className: className
+          className: className,
+          "aria-label": ariaLabel
         }), tooltips && (0, _preact.h)("div", {
           className: "rheostat-tooltip"
         }, value));
@@ -129,7 +131,7 @@ var Slider = /*#__PURE__*/function (_Component) {
         max: max
       });
       return (0, _preact.h)("div", {
-        className: (0, _uiComponentsShared.cx)(cssClasses.root, this.isDisabled && cssClasses.disabledRoot)
+        className: (0, _instantsearchUiComponents.cx)(cssClasses.root, this.isDisabled && cssClasses.disabledRoot)
       }, (0, _preact.h)(_Rheostat.default, {
         handle: this.createHandleComponent(tooltips),
         onChange: this.handleChange,

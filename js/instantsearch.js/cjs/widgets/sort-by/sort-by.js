@@ -4,7 +4,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
-var _uiComponentsShared = require("@algolia/ui-components-shared");
+var _instantsearchUiComponents = require("instantsearch-ui-components");
 var _preact = require("preact");
 var _Selector = _interopRequireDefault(require("../../components/Selector/Selector"));
 var _connectSortBy = _interopRequireDefault(require("../../connectors/sort-by/connectSortBy"));
@@ -37,7 +37,8 @@ var renderer = function renderer(_ref) {
       cssClasses: cssClasses,
       currentValue: currentRefinement,
       options: options,
-      setValue: refine
+      setValue: refine,
+      ariaLabel: "Sort results by"
     })), containerNode);
   };
 };
@@ -58,11 +59,11 @@ var sortBy = function sortBy(widgetParams) {
   }
   var containerNode = (0, _utils.getContainerNode)(container);
   var cssClasses = {
-    root: (0, _uiComponentsShared.cx)(suit(), userCssClasses.root),
-    select: (0, _uiComponentsShared.cx)(suit({
+    root: (0, _instantsearchUiComponents.cx)(suit(), userCssClasses.root),
+    select: (0, _instantsearchUiComponents.cx)(suit({
       descendantName: 'select'
     }), userCssClasses.select),
-    option: (0, _uiComponentsShared.cx)(suit({
+    option: (0, _instantsearchUiComponents.cx)(suit({
       descendantName: 'option'
     }), userCssClasses.option)
   };

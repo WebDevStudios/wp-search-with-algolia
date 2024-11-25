@@ -6,6 +6,12 @@ function _toPropertyKey(arg) { var key = _toPrimitive(arg, "string"); return _ty
 function _toPrimitive(input, hint) { if (_typeof(input) !== "object" || input === null) return input; var prim = input[Symbol.toPrimitive]; if (prim !== undefined) { var res = prim.call(input, hint || "default"); if (_typeof(res) !== "object") return res; throw new TypeError("@@toPrimitive must return a primitive value."); } return (hint === "string" ? String : Number)(input); }
 import connectConfigure from "../../connectors/configure/connectConfigure.js";
 import { noop } from "../../lib/utils/index.js";
+
+/**
+ * A list of [search parameters](https://www.algolia.com/doc/api-reference/search-api-parameters/)
+ * to enable when the widget mounts.
+ */
+
 var configure = function configure(widgetParams) {
   // This is a renderless widget that falls back to the connector's
   // noop render and unmount functions.

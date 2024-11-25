@@ -4,7 +4,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
-var _uiComponentsShared = require("@algolia/ui-components-shared");
+var _instantsearchUiComponents = require("instantsearch-ui-components");
 var _preact = require("preact");
 var _Breadcrumb = _interopRequireDefault(require("../../components/Breadcrumb/Breadcrumb"));
 var _connectBreadcrumb = _interopRequireDefault(require("../../connectors/breadcrumb/connectBreadcrumb"));
@@ -68,24 +68,24 @@ var breadcrumb = function breadcrumb(widgetParams) {
   }
   var containerNode = (0, _utils.getContainerNode)(container);
   var cssClasses = {
-    root: (0, _uiComponentsShared.cx)(suit(), userCssClasses.root),
-    noRefinementRoot: (0, _uiComponentsShared.cx)(suit({
+    root: (0, _instantsearchUiComponents.cx)(suit(), userCssClasses.root),
+    noRefinementRoot: (0, _instantsearchUiComponents.cx)(suit({
       modifierName: 'noRefinement'
     }), userCssClasses.noRefinementRoot),
-    list: (0, _uiComponentsShared.cx)(suit({
+    list: (0, _instantsearchUiComponents.cx)(suit({
       descendantName: 'list'
     }), userCssClasses.list),
-    item: (0, _uiComponentsShared.cx)(suit({
+    item: (0, _instantsearchUiComponents.cx)(suit({
       descendantName: 'item'
     }), userCssClasses.item),
-    selectedItem: (0, _uiComponentsShared.cx)(suit({
+    selectedItem: (0, _instantsearchUiComponents.cx)(suit({
       descendantName: 'item',
       modifierName: 'selected'
     }), userCssClasses.selectedItem),
-    separator: (0, _uiComponentsShared.cx)(suit({
+    separator: (0, _instantsearchUiComponents.cx)(suit({
       descendantName: 'separator'
     }), userCssClasses.separator),
-    link: (0, _uiComponentsShared.cx)(suit({
+    link: (0, _instantsearchUiComponents.cx)(suit({
       descendantName: 'link'
     }), userCssClasses.link)
   };

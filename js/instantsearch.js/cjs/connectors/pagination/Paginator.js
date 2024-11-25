@@ -63,12 +63,12 @@ var Paginator = /*#__PURE__*/function () {
   }, {
     key: "isLastPage",
     value: function isLastPage() {
-      return this.currentPage === this.total - 1 || this.total === 0;
+      return this.currentPage >= this.total - 1;
     }
   }, {
     key: "isFirstPage",
     value: function isFirstPage() {
-      return this.currentPage === 0;
+      return this.currentPage <= 0;
     }
   }]);
   return Paginator;

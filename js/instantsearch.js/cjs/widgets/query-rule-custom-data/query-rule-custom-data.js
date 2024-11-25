@@ -4,7 +4,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.defaultTemplates = exports.default = void 0;
-var _uiComponentsShared = require("@algolia/ui-components-shared");
+var _instantsearchUiComponents = require("instantsearch-ui-components");
 var _preact = require("preact");
 var _QueryRuleCustomData = _interopRequireDefault(require("../../components/QueryRuleCustomData/QueryRuleCustomData"));
 var _connectQueryRules = _interopRequireDefault(require("../../connectors/query-rules/connectQueryRules"));
@@ -56,7 +56,7 @@ var queryRuleCustomData = function queryRuleCustomData(widgetParams) {
     throw new Error(withUsage('The `container` option is required.'));
   }
   var cssClasses = {
-    root: (0, _uiComponentsShared.cx)(suit(), userCssClasses.root)
+    root: (0, _instantsearchUiComponents.cx)(suit(), userCssClasses.root)
   };
   var containerNode = (0, _utils.getContainerNode)(container);
   var templates = _objectSpread(_objectSpread({}, defaultTemplates), userTemplates);

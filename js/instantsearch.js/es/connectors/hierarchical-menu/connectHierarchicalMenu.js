@@ -199,12 +199,9 @@ var connectHierarchicalMenu = function connectHierarchicalMenu(renderFn) {
       getWidgetUiState: function getWidgetUiState(uiState, _ref5) {
         var searchParameters = _ref5.searchParameters;
         var path = searchParameters.getHierarchicalFacetBreadcrumb(hierarchicalFacetName);
-        if (!path.length) {
-          return uiState;
-        }
-        return _objectSpread(_objectSpread({}, uiState), {}, {
+        return removeEmptyRefinementsFromUiState(_objectSpread(_objectSpread({}, uiState), {}, {
           hierarchicalMenu: _objectSpread(_objectSpread({}, uiState.hierarchicalMenu), {}, _defineProperty({}, hierarchicalFacetName, path))
-        });
+        }), hierarchicalFacetName);
       },
       getWidgetSearchParameters: function getWidgetSearchParameters(searchParameters, _ref6) {
         var uiState = _ref6.uiState;
@@ -237,4 +234,16 @@ var connectHierarchicalMenu = function connectHierarchicalMenu(renderFn) {
     };
   };
 };
+function removeEmptyRefinementsFromUiState(indexUiState, attribute) {
+  if (!indexUiState.hierarchicalMenu) {
+    return indexUiState;
+  }
+  if (!indexUiState.hierarchicalMenu[attribute] || indexUiState.hierarchicalMenu[attribute].length === 0) {
+    delete indexUiState.hierarchicalMenu[attribute];
+  }
+  if (Object.keys(indexUiState.hierarchicalMenu).length === 0) {
+    delete indexUiState.hierarchicalMenu;
+  }
+  return indexUiState;
+}
 export default connectHierarchicalMenu;

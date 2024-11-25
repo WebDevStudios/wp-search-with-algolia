@@ -64,9 +64,6 @@ function extractHitsFromCachedHits(cachedHits) {
 var connectInfiniteHits = function connectInfiniteHits(renderFn) {
   var unmountFn = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : _utils.noop;
   (0, _utils.checkRendering)(renderFn, withUsage());
-
-  // @TODO: this should be a generic, but a Connector can not yet be generic itself
-
   return function (widgetParams) {
     var _ref5 = widgetParams || {},
       _ref5$escapeHTML = _ref5.escapeHTML,
@@ -134,12 +131,15 @@ var connectInfiniteHits = function connectInfiniteHits(renderFn) {
         }), false);
         sendEvent('view:internal', widgetRenderState.currentPageHits);
       },
-      getRenderState: function getRenderState(renderState, renderOptions) {
+      getRenderState: function getRenderState(renderState, renderOptions
+      // Type is explicitly redefined, to avoid having the TWidgetParams type in the definition
+      ) {
         return _objectSpread(_objectSpread({}, renderState), {}, {
           infiniteHits: this.getWidgetRenderState(renderOptions)
         });
       },
       getWidgetRenderState: function getWidgetRenderState(_ref6) {
+        var _results$renderingCon, _results$renderingCon2, _results$renderingCon3;
         var results = _ref6.results,
           helper = _ref6.helper,
           parent = _ref6.parent,
@@ -156,16 +156,21 @@ var connectInfiniteHits = function connectInfiniteHits(renderFn) {
         var cachedHits = cache.read({
           state: normalizeState(state)
         }) || {};
+        var banner = results === null || results === void 0 ? void 0 : (_results$renderingCon = results.renderingContent) === null || _results$renderingCon === void 0 ? void 0 : (_results$renderingCon2 = _results$renderingCon.widgets) === null || _results$renderingCon2 === void 0 ? void 0 : (_results$renderingCon3 = _results$renderingCon2.banners) === null || _results$renderingCon3 === void 0 ? void 0 : _results$renderingCon3[0];
         if (!results) {
           showPrevious = getShowPrevious(helper);
           showMore = getShowMore(helper);
           sendEvent = (0, _utils.createSendEventForHits)({
             instantSearchInstance: instantSearchInstance,
-            index: helper.getIndex(),
+            getIndex: function getIndex() {
+              return helper.getIndex();
+            },
             widgetType: this.$$type
           });
           bindEvent = (0, _utils.createBindEventForHits)({
-            index: helper.getIndex(),
+            getIndex: function getIndex() {
+              return helper.getIndex();
+            },
             widgetType: this.$$type,
             instantSearchInstance: instantSearchInstance
           });
@@ -208,13 +213,15 @@ var connectInfiniteHits = function connectInfiniteHits(renderFn) {
           currentPageHits = transformedHits;
           isFirstPage = getFirstReceivedPage(state, cachedHits) === 0;
         }
-        var hits = extractHitsFromCachedHits(cachedHits);
+        var items = extractHitsFromCachedHits(cachedHits);
         var isLastPage = results ? results.nbPages <= getLastReceivedPage(state, cachedHits) + 1 : true;
         return {
-          hits: hits,
+          hits: items,
+          items: items,
           currentPageHits: currentPageHits,
           sendEvent: sendEvent,
           bindEvent: bindEvent,
+          banner: banner,
           results: results,
           showPrevious: showPrevious,
           showMore: showMore,
@@ -252,6 +259,7 @@ var connectInfiniteHits = function connectInfiniteHits(renderFn) {
         var uiState = _ref10.uiState;
         var widgetSearchParameters = searchParameters;
         if (escapeHTML) {
+          // @MAJOR: set this globally, not in the InfiniteHits widget to allow InfiniteHits to be conditionally used
           widgetSearchParameters = searchParameters.setQueryParameters(_utils.TAG_PLACEHOLDER);
         }
 
@@ -263,5 +271,4 @@ var connectInfiniteHits = function connectInfiniteHits(renderFn) {
     };
   };
 };
-var _default = connectInfiniteHits;
-exports.default = _default;
+exports.default = connectInfiniteHits;

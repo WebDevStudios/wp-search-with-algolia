@@ -5,7 +5,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
-var _uiComponentsShared = require("@algolia/ui-components-shared");
+var _instantsearchUiComponents = require("instantsearch-ui-components");
 var _preact = require("preact");
 var _listener = require("../../lib/insights/listener");
 var _utils = require("../../lib/utils");
@@ -17,32 +17,65 @@ function _defineProperty(obj, key, value) { key = _toPropertyKey(key); if (key i
 function _toPropertyKey(arg) { var key = _toPrimitive(arg, "string"); return _typeof(key) === "symbol" ? key : String(key); }
 function _toPrimitive(input, hint) { if (_typeof(input) !== "object" || input === null) return input; var prim = input[Symbol.toPrimitive]; if (prim !== undefined) { var res = prim.call(input, hint || "default"); if (_typeof(res) !== "object") return res; throw new TypeError("@@toPrimitive must return a primitive value."); } return (hint === "string" ? String : Number)(input); }
 function _extends() { _extends = Object.assign ? Object.assign.bind() : function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; return _extends.apply(this, arguments); }
-var InfiniteHits = function InfiniteHits(_ref) {
-  var results = _ref.results,
-    hits = _ref.hits,
-    insights = _ref.insights,
-    bindEvent = _ref.bindEvent,
-    sendEvent = _ref.sendEvent,
-    hasShowPrevious = _ref.hasShowPrevious,
-    showPrevious = _ref.showPrevious,
-    showMore = _ref.showMore,
-    isFirstPage = _ref.isFirstPage,
-    isLastPage = _ref.isLastPage,
-    cssClasses = _ref.cssClasses,
-    templateProps = _ref.templateProps;
+var DefaultBanner = function DefaultBanner(_ref) {
+  var banner = _ref.banner,
+    classNames = _ref.classNames;
+  if (!banner.image.urls[0].url) {
+    return null;
+  }
+  return (0, _preact.h)("aside", {
+    className: (0, _instantsearchUiComponents.cx)(classNames.bannerRoot)
+  }, banner.link ? (0, _preact.h)("a", {
+    className: (0, _instantsearchUiComponents.cx)(classNames.bannerLink),
+    href: banner.link.url,
+    target: banner.link.target
+  }, (0, _preact.h)("img", {
+    className: (0, _instantsearchUiComponents.cx)(classNames.bannerImage),
+    src: banner.image.urls[0].url,
+    alt: banner.image.title
+  })) : (0, _preact.h)("img", {
+    className: (0, _instantsearchUiComponents.cx)(classNames.bannerImage),
+    src: banner.image.urls[0].url,
+    alt: banner.image.title
+  }));
+};
+var InfiniteHits = function InfiniteHits(_ref2) {
+  var results = _ref2.results,
+    hits = _ref2.hits,
+    insights = _ref2.insights,
+    bindEvent = _ref2.bindEvent,
+    sendEvent = _ref2.sendEvent,
+    hasShowPrevious = _ref2.hasShowPrevious,
+    showPrevious = _ref2.showPrevious,
+    showMore = _ref2.showMore,
+    isFirstPage = _ref2.isFirstPage,
+    isLastPage = _ref2.isLastPage,
+    cssClasses = _ref2.cssClasses,
+    templateProps = _ref2.templateProps,
+    banner = _ref2.banner;
   var handleInsightsClick = (0, _listener.createInsightsEventHandler)({
     insights: insights,
     sendEvent: sendEvent
   });
   if (results.hits.length === 0) {
-    return (0, _preact.h)(_Template.default, _extends({}, templateProps, {
+    return (0, _preact.h)("div", {
+      className: (0, _instantsearchUiComponents.cx)(cssClasses.root, cssClasses.emptyRoot),
+      onClick: handleInsightsClick
+    }, banner && (templateProps.templates.banner ? (0, _preact.h)(_Template.default, _extends({}, templateProps, {
+      templateKey: "banner",
+      rootTagName: "fragment",
+      data: {
+        banner: banner,
+        className: cssClasses.bannerRoot
+      }
+    })) : (0, _preact.h)(DefaultBanner, {
+      banner: banner,
+      classNames: cssClasses
+    })), (0, _preact.h)(_Template.default, _extends({}, templateProps, {
       templateKey: "empty",
-      rootProps: {
-        className: (0, _uiComponentsShared.cx)(cssClasses.root, cssClasses.emptyRoot),
-        onClick: handleInsightsClick
-      },
+      rootTagName: "fragment",
       data: results
-    }));
+    })));
   }
   return (0, _preact.h)("div", {
     className: cssClasses.root
@@ -50,10 +83,20 @@ var InfiniteHits = function InfiniteHits(_ref) {
     templateKey: "showPreviousText",
     rootTagName: "button",
     rootProps: {
-      className: (0, _uiComponentsShared.cx)(cssClasses.loadPrevious, isFirstPage && cssClasses.disabledLoadPrevious),
+      className: (0, _instantsearchUiComponents.cx)(cssClasses.loadPrevious, isFirstPage && cssClasses.disabledLoadPrevious),
       disabled: isFirstPage,
       onClick: showPrevious
     }
+  })), banner && (templateProps.templates.banner ? (0, _preact.h)(_Template.default, _extends({}, templateProps, {
+    templateKey: "banner",
+    rootTagName: "fragment",
+    data: {
+      banner: banner,
+      className: cssClasses.bannerRoot
+    }
+  })) : (0, _preact.h)(DefaultBanner, {
+    banner: banner,
+    classNames: cssClasses
   })), (0, _preact.h)("ol", {
     className: cssClasses.list
   }, hits.map(function (hit, index) {
@@ -85,7 +128,7 @@ var InfiniteHits = function InfiniteHits(_ref) {
     templateKey: "showMoreText",
     rootTagName: "button",
     rootProps: {
-      className: (0, _uiComponentsShared.cx)(cssClasses.loadMore, isLastPage && cssClasses.disabledLoadMore),
+      className: (0, _instantsearchUiComponents.cx)(cssClasses.loadMore, isLastPage && cssClasses.disabledLoadMore),
       disabled: isLastPage,
       onClick: showMore
     }

@@ -81,7 +81,7 @@ var connectBreadcrumb = function connectBreadcrumb(renderFn) {
         function getItems() {
           // The hierarchicalFacets condition is required for flavors
           // that render immediately with empty results, without relying
-          // on init() (like React InstantSearch Hooks).
+          // on init() (like React InstantSearch).
           if (!results || state.hierarchicalFacets.length === 0) {
             return [];
           }
@@ -121,12 +121,9 @@ var connectBreadcrumb = function connectBreadcrumb(renderFn) {
       getWidgetUiState: function getWidgetUiState(uiState, _ref3) {
         var searchParameters = _ref3.searchParameters;
         var path = searchParameters.getHierarchicalFacetBreadcrumb(hierarchicalFacetName);
-        if (!path.length) {
-          return uiState;
-        }
-        return _objectSpread(_objectSpread({}, uiState), {}, {
+        return removeEmptyRefinementsFromUiState(_objectSpread(_objectSpread({}, uiState), {}, {
           hierarchicalMenu: _objectSpread(_objectSpread({}, uiState.hierarchicalMenu), {}, _defineProperty({}, hierarchicalFacetName, path))
-        });
+        }), hierarchicalFacetName);
       },
       getWidgetSearchParameters: function getWidgetSearchParameters(searchParameters, _ref4) {
         var uiState = _ref4.uiState;
@@ -176,6 +173,18 @@ function shiftItemsValues(array) {
       value: idx + 1 === array.length ? null : array[idx + 1].value
     };
   });
+}
+function removeEmptyRefinementsFromUiState(indexUiState, attribute) {
+  if (!indexUiState.hierarchicalMenu) {
+    return indexUiState;
+  }
+  if (!indexUiState.hierarchicalMenu[attribute] || !indexUiState.hierarchicalMenu[attribute].length) {
+    delete indexUiState.hierarchicalMenu[attribute];
+  }
+  if (Object.keys(indexUiState.hierarchicalMenu).length === 0) {
+    delete indexUiState.hierarchicalMenu;
+  }
+  return indexUiState;
 }
 var _default = connectBreadcrumb;
 exports.default = _default;

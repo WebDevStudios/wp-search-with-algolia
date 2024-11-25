@@ -256,18 +256,14 @@ var connectRatingMenu = function connectRatingMenu(renderFn) {
       getWidgetUiState: function getWidgetUiState(uiState, _ref7) {
         var searchParameters = _ref7.searchParameters;
         var value = _getRefinedStar(searchParameters);
-        if (typeof value !== 'number') {
-          return uiState;
-        }
-        return _objectSpread(_objectSpread({}, uiState), {}, {
-          ratingMenu: _objectSpread(_objectSpread({}, uiState.ratingMenu), {}, _defineProperty({}, attribute, value))
-        });
+        return removeEmptyRefinementsFromUiState(_objectSpread(_objectSpread({}, uiState), {}, {
+          ratingMenu: _objectSpread(_objectSpread({}, uiState.ratingMenu), {}, _defineProperty({}, attribute, typeof value === 'number' ? value : undefined))
+        }), attribute);
       },
       getWidgetSearchParameters: function getWidgetSearchParameters(searchParameters, _ref8) {
         var uiState = _ref8.uiState;
         var value = uiState.ratingMenu && uiState.ratingMenu[attribute];
-        var withoutRefinements = searchParameters.clearRefinements(attribute);
-        var withDisjunctiveFacet = withoutRefinements.addDisjunctiveFacet(attribute);
+        var withDisjunctiveFacet = searchParameters.addDisjunctiveFacet(attribute).removeNumericRefinement(attribute).removeDisjunctiveFacetRefinement(attribute);
         if (!value) {
           return withDisjunctiveFacet.setQueryParameters({
             numericRefinements: _objectSpread(_objectSpread({}, withDisjunctiveFacet.numericRefinements), {}, _defineProperty({}, attribute, {}))
@@ -278,4 +274,16 @@ var connectRatingMenu = function connectRatingMenu(renderFn) {
     };
   };
 };
+function removeEmptyRefinementsFromUiState(indexUiState, attribute) {
+  if (!indexUiState.ratingMenu) {
+    return indexUiState;
+  }
+  if (typeof indexUiState.ratingMenu[attribute] !== 'number') {
+    delete indexUiState.ratingMenu[attribute];
+  }
+  if (Object.keys(indexUiState.ratingMenu).length === 0) {
+    delete indexUiState.ratingMenu;
+  }
+  return indexUiState;
+}
 export default connectRatingMenu;

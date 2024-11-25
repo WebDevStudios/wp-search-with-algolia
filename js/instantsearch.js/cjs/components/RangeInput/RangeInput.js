@@ -4,7 +4,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
-var _uiComponentsShared = require("@algolia/ui-components-shared");
+var _instantsearchUiComponents = require("instantsearch-ui-components");
 var _preact = require("preact");
 var _Template = _interopRequireDefault(require("../Template/Template"));
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
@@ -83,7 +83,7 @@ var RangeInput = /*#__PURE__*/function (_Component) {
         templateProps = _this$props.templateProps;
       var isDisabled = min && max ? min >= max : false;
       var hasRefinements = Boolean(minValue || maxValue);
-      var rootClassNames = (0, _uiComponentsShared.cx)(cssClasses.root, !hasRefinements && cssClasses.noRefinement);
+      var rootClassNames = (0, _instantsearchUiComponents.cx)(cssClasses.root, !hasRefinements && cssClasses.noRefinement);
       return (0, _preact.h)("div", {
         className: rootClassNames
       }, (0, _preact.h)("form", {
@@ -92,7 +92,7 @@ var RangeInput = /*#__PURE__*/function (_Component) {
       }, (0, _preact.h)("label", {
         className: cssClasses.label
       }, (0, _preact.h)("input", {
-        className: (0, _uiComponentsShared.cx)(cssClasses.input, cssClasses.inputMin),
+        className: (0, _instantsearchUiComponents.cx)(cssClasses.input, cssClasses.inputMin),
         type: "number",
         min: min,
         max: max,
@@ -110,7 +110,7 @@ var RangeInput = /*#__PURE__*/function (_Component) {
       })), (0, _preact.h)("label", {
         className: cssClasses.label
       }, (0, _preact.h)("input", {
-        className: (0, _uiComponentsShared.cx)(cssClasses.input, cssClasses.inputMax),
+        className: (0, _instantsearchUiComponents.cx)(cssClasses.input, cssClasses.inputMax),
         type: "number",
         min: min,
         max: max,

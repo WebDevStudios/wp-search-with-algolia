@@ -22,6 +22,3 @@ export * from "./widget.js";
 export * from "./ui-state.js";
 export * from "./render-state.js";
 export * from "./templates.js";
-
-// from specific widgets
-export {};

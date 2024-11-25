@@ -2,7 +2,7 @@ import type { Highlight, ReverseHighlight, ReverseSnippet, Snippet } from '../he
 import type { BuiltInBindEventForHits, CustomBindEventForHits, SendEventForHits } from '../lib/utils';
 import type { html } from 'htm/preact';
 import type { VNode } from 'preact';
-export type Template<TTemplateData = void> = string | ((data: TTemplateData, params: TemplateParams) => VNode | VNode[] | string);
+export type Template<TTemplateData = void> = string | ((data: TTemplateData, params: TemplateParams) => VNode | VNode[] | string | null);
 export type TemplateParams = {
     html: typeof html;
     components: {

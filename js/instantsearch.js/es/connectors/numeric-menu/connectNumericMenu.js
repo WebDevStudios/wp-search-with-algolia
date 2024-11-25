@@ -82,7 +82,7 @@ var connectNumericMenu = function connectNumericMenu(renderFn) {
       dispose: function dispose(_ref4) {
         var state = _ref4.state;
         unmountFn();
-        return state.clearRefinements(attribute);
+        return state.removeNumericRefinement(attribute);
       },
       getWidgetUiState: function getWidgetUiState(uiState, _ref5) {
         var searchParameters = _ref5.searchParameters;
@@ -95,21 +95,18 @@ var connectNumericMenu = function connectNumericMenu(renderFn) {
         }
         var min = values['>='] && values['>='][0] || '';
         var max = values['<='] && values['<='][0] || '';
-        if (min === '' && max === '') {
-          return uiState;
-        }
-        return _objectSpread(_objectSpread({}, uiState), {}, {
+        return removeEmptyRefinementsFromUiState(_objectSpread(_objectSpread({}, uiState), {}, {
           numericMenu: _objectSpread(_objectSpread({}, uiState.numericMenu), {}, _defineProperty({}, attribute, "".concat(min, ":").concat(max)))
-        });
+        }), attribute);
       },
       getWidgetSearchParameters: function getWidgetSearchParameters(searchParameters, _ref6) {
         var uiState = _ref6.uiState;
         var value = uiState.numericMenu && uiState.numericMenu[attribute];
-        var withoutRefinements = searchParameters.clearRefinements(attribute);
+        var withoutRefinements = searchParameters.setQueryParameters({
+          numericRefinements: _objectSpread(_objectSpread({}, searchParameters.numericRefinements), {}, _defineProperty({}, attribute, {}))
+        });
         if (!value) {
-          return withoutRefinements.setQueryParameters({
-            numericRefinements: _objectSpread(_objectSpread({}, withoutRefinements.numericRefinements), {}, _defineProperty({}, attribute, {}))
-          });
+          return withoutRefinements;
         }
         var isExact = value.indexOf(':') === -1;
         if (isExact) {
@@ -261,5 +258,17 @@ function getRefinedState(state, attribute, facetValue) {
 }
 function hasNumericRefinement(currentRefinements, operator, value) {
   return currentRefinements[operator] !== undefined && currentRefinements[operator].includes(value);
+}
+function removeEmptyRefinementsFromUiState(indexUiState, attribute) {
+  if (!indexUiState.numericMenu) {
+    return indexUiState;
+  }
+  if (indexUiState.numericMenu[attribute] === ':') {
+    delete indexUiState.numericMenu[attribute];
+  }
+  if (Object.keys(indexUiState.numericMenu).length === 0) {
+    delete indexUiState.numericMenu;
+  }
+  return indexUiState;
 }
 export default connectNumericMenu;

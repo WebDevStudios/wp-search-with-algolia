@@ -4,7 +4,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
-var _uiComponentsShared = require("@algolia/ui-components-shared");
+var _instantsearchUiComponents = require("instantsearch-ui-components");
 var _preact = require("preact");
 var _RefinementList = _interopRequireDefault(require("../../components/RefinementList/RefinementList"));
 var _connectRatingMenu = _interopRequireDefault(require("../../connectors/rating-menu/connectRatingMenu"));
@@ -111,42 +111,42 @@ var ratingMenu = function ratingMenu(widgetParams) {
   }
   var containerNode = (0, _utils.getContainerNode)(container);
   var cssClasses = {
-    root: (0, _uiComponentsShared.cx)(suit(), userCssClasses.root),
-    noRefinementRoot: (0, _uiComponentsShared.cx)(suit({
+    root: (0, _instantsearchUiComponents.cx)(suit(), userCssClasses.root),
+    noRefinementRoot: (0, _instantsearchUiComponents.cx)(suit({
       modifierName: 'noRefinement'
     }), userCssClasses.noRefinementRoot),
-    list: (0, _uiComponentsShared.cx)(suit({
+    list: (0, _instantsearchUiComponents.cx)(suit({
       descendantName: 'list'
     }), userCssClasses.list),
-    item: (0, _uiComponentsShared.cx)(suit({
+    item: (0, _instantsearchUiComponents.cx)(suit({
       descendantName: 'item'
     }), userCssClasses.item),
-    selectedItem: (0, _uiComponentsShared.cx)(suit({
+    selectedItem: (0, _instantsearchUiComponents.cx)(suit({
       descendantName: 'item',
       modifierName: 'selected'
     }), userCssClasses.selectedItem),
-    disabledItem: (0, _uiComponentsShared.cx)(suit({
+    disabledItem: (0, _instantsearchUiComponents.cx)(suit({
       descendantName: 'item',
       modifierName: 'disabled'
     }), userCssClasses.disabledItem),
-    link: (0, _uiComponentsShared.cx)(suit({
+    link: (0, _instantsearchUiComponents.cx)(suit({
       descendantName: 'link'
     }), userCssClasses.link),
-    starIcon: (0, _uiComponentsShared.cx)(suit({
+    starIcon: (0, _instantsearchUiComponents.cx)(suit({
       descendantName: 'starIcon'
     }), userCssClasses.starIcon),
-    fullStarIcon: (0, _uiComponentsShared.cx)(suit({
+    fullStarIcon: (0, _instantsearchUiComponents.cx)(suit({
       descendantName: 'starIcon',
       modifierName: 'full'
     }), userCssClasses.fullStarIcon),
-    emptyStarIcon: (0, _uiComponentsShared.cx)(suit({
+    emptyStarIcon: (0, _instantsearchUiComponents.cx)(suit({
       descendantName: 'starIcon',
       modifierName: 'empty'
     }), userCssClasses.emptyStarIcon),
-    label: (0, _uiComponentsShared.cx)(suit({
+    label: (0, _instantsearchUiComponents.cx)(suit({
       descendantName: 'label'
     }), userCssClasses.label),
-    count: (0, _uiComponentsShared.cx)(suit({
+    count: (0, _instantsearchUiComponents.cx)(suit({
       descendantName: 'count'
     }), userCssClasses.count)
   };

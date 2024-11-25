@@ -14,7 +14,7 @@ declare const defaultProps: {
 export type TemplateProps = {
     data?: Record<string, any>;
     rootProps?: Record<string, any>;
-    rootTagName?: keyof JSX.IntrinsicElements;
+    rootTagName: keyof JSX.IntrinsicElements | 'fragment';
     templateKey: string;
     bindEvent?: BindEventForHits;
     sendEvent?: SendEventForHits;

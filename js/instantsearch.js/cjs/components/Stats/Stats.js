@@ -5,7 +5,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
-var _uiComponentsShared = require("@algolia/ui-components-shared");
+var _instantsearchUiComponents = require("instantsearch-ui-components");
 var _preact = require("preact");
 var _Template = _interopRequireDefault(require("../Template/Template"));
 var _excluded = ["nbHits", "nbSortedHits", "cssClasses", "templateProps"];
@@ -25,7 +25,7 @@ var Stats = function Stats(_ref) {
     templateProps = _ref.templateProps,
     rest = _objectWithoutProperties(_ref, _excluded);
   return (0, _preact.h)("div", {
-    className: (0, _uiComponentsShared.cx)(cssClasses.root)
+    className: (0, _instantsearchUiComponents.cx)(cssClasses.root)
   }, (0, _preact.h)(_Template.default, _extends({}, templateProps, {
     templateKey: "text",
     rootTagName: "span",

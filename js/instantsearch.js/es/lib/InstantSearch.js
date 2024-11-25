@@ -19,9 +19,9 @@ import algoliasearchHelper from 'algoliasearch-helper';
 import { createInsightsMiddleware } from "../middlewares/createInsightsMiddleware.js";
 import { createMetadataMiddleware, isMetadataEnabled } from "../middlewares/createMetadataMiddleware.js";
 import { createRouterMiddleware } from "../middlewares/createRouterMiddleware.js";
-import index from "../widgets/index/index.js";
+import { index } from "../widgets/index.js";
 import createHelpers from "./createHelpers.js";
-import { createDocumentationMessageGenerator, createDocumentationLink, defer, noop, warning, setIndexHelperState, isIndexWidget } from "./utils/index.js";
+import { createDocumentationMessageGenerator, createDocumentationLink, defer, hydrateRecommendCache, hydrateSearchClient, noop, warning, setIndexHelperState, isIndexWidget } from "./utils/index.js";
 import version from "./version.js";
 var withUsage = createDocumentationMessageGenerator({
   name: 'instantsearch'
@@ -34,6 +34,14 @@ function defaultCreateURL() {
 // as it's used for a default parameter for example
 // source: https://github.com/Microsoft/TypeScript/issues/14829#issuecomment-504042546
 /**
+ * Global options for an InstantSearch instance.
+ */
+export var INSTANTSEARCH_FUTURE_DEFAULTS = {
+  preserveSharedStateOnUnmount: false,
+  persistHierarchicalRootCount: false
+};
+
+/**
  * The actual implementation of the InstantSearch. This is
  * created using the `instantsearch` factory function.
  * It emits the 'render' event every time a search is done
@@ -42,6 +50,7 @@ var InstantSearch = /*#__PURE__*/function (_EventEmitter) {
   _inherits(InstantSearch, _EventEmitter);
   var _super = _createSuper(InstantSearch);
   function InstantSearch(options) {
+    var _options$future2;
     var _this;
     _classCallCheck(this, InstantSearch);
     _this = _super.call(this);
@@ -51,6 +60,7 @@ var InstantSearch = /*#__PURE__*/function (_EventEmitter) {
     _defineProperty(_assertThisInitialized(_this), "indexName", void 0);
     _defineProperty(_assertThisInitialized(_this), "insightsClient", void 0);
     _defineProperty(_assertThisInitialized(_this), "onStateChange", null);
+    _defineProperty(_assertThisInitialized(_this), "future", void 0);
     _defineProperty(_assertThisInitialized(_this), "helper", void 0);
     _defineProperty(_assertThisInitialized(_this), "mainHelper", void 0);
     _defineProperty(_assertThisInitialized(_this), "mainIndex", void 0);
@@ -64,9 +74,19 @@ var InstantSearch = /*#__PURE__*/function (_EventEmitter) {
     _defineProperty(_assertThisInitialized(_this), "_createURL", void 0);
     _defineProperty(_assertThisInitialized(_this), "_searchFunction", void 0);
     _defineProperty(_assertThisInitialized(_this), "_mainHelperSearch", void 0);
+    _defineProperty(_assertThisInitialized(_this), "_hasSearchWidget", false);
+    _defineProperty(_assertThisInitialized(_this), "_hasRecommendWidget", false);
+    _defineProperty(_assertThisInitialized(_this), "_insights", void 0);
     _defineProperty(_assertThisInitialized(_this), "middleware", []);
     _defineProperty(_assertThisInitialized(_this), "sendEventToInsights", void 0);
+    /**
+     * The status of the search. Can be "idle", "loading", "stalled", or "error".
+     */
     _defineProperty(_assertThisInitialized(_this), "status", 'idle');
+    /**
+     * The last returned error from the Search API.
+     * The error gets cleared when the next valid search response is rendered.
+     */
     _defineProperty(_assertThisInitialized(_this), "error", undefined);
     _defineProperty(_assertThisInitialized(_this), "scheduleSearch", defer(function () {
       if (_this.started) {
@@ -107,7 +127,7 @@ var InstantSearch = /*#__PURE__*/function (_EventEmitter) {
       _options$routing = options.routing,
       routing = _options$routing === void 0 ? null : _options$routing,
       _options$insights = options.insights,
-      insights = _options$insights === void 0 ? false : _options$insights,
+      insights = _options$insights === void 0 ? undefined : _options$insights,
       searchFunction = options.searchFunction,
       _options$stalledSearc = options.stalledSearchDelay,
       stalledSearchDelay = _options$stalledSearc === void 0 ? 200 : _options$stalledSearc,
@@ -116,7 +136,9 @@ var InstantSearch = /*#__PURE__*/function (_EventEmitter) {
       _options$insightsClie = options.insightsClient,
       insightsClient = _options$insightsClie === void 0 ? null : _options$insightsClie,
       _options$onStateChang = options.onStateChange,
-      onStateChange = _options$onStateChang === void 0 ? null : _options$onStateChang;
+      onStateChange = _options$onStateChang === void 0 ? null : _options$onStateChang,
+      _options$future = options.future,
+      future = _options$future === void 0 ? _objectSpread(_objectSpread({}, INSTANTSEARCH_FUTURE_DEFAULTS), options.future || {}) : _options$future;
     if (searchClient === null) {
       throw new Error(withUsage('The `searchClient` option is required.'));
     }
@@ -133,7 +155,14 @@ var InstantSearch = /*#__PURE__*/function (_EventEmitter) {
     process.env.NODE_ENV === 'development' ? warning(!options.searchParameters, "The `searchParameters` option is deprecated and will not be supported in InstantSearch.js 4.x.\n\nYou can replace it with the `configure` widget:\n\n```\nsearch.addWidgets([\n  configure(".concat(JSON.stringify(options.searchParameters, null, 2), ")\n]);\n```\n\nSee ").concat(createDocumentationLink({
       name: 'configure'
     }))) : void 0;
+    if (process.env.NODE_ENV === 'development' && ((_options$future2 = options.future) === null || _options$future2 === void 0 ? void 0 : _options$future2.preserveSharedStateOnUnmount) === undefined) {
+      // eslint-disable-next-line no-console
+      console.info("Starting from the next major version, InstantSearch will change how widgets state is preserved when they are removed. InstantSearch will keep the state of unmounted widgets to be usable by other widgets with the same attribute.\n\nWe recommend setting `future.preserveSharedStateOnUnmount` to true to adopt this change today.\nTo stay with the current behaviour and remove this warning, set the option to false.\n\nSee documentation: ".concat(createDocumentationLink({
+        name: 'instantsearch'
+      }), "#widget-param-future\n          "));
+    }
     _this.client = searchClient;
+    _this.future = future;
     _this.insightsClient = insightsClient;
     _this.indexName = indexName;
     _this.helper = null;
@@ -154,6 +183,7 @@ var InstantSearch = /*#__PURE__*/function (_EventEmitter) {
     _this._createURL = defaultCreateURL;
     _this._initialUiState = initialUiState;
     _this._initialResults = null;
+    _this._insights = insights;
     if (searchFunction) {
       process.env.NODE_ENV === 'development' ? warning(false, "The `searchFunction` option is deprecated. Use `onStateChange` instead.") : void 0;
       _this._searchFunction = searchFunction;
@@ -165,8 +195,9 @@ var InstantSearch = /*#__PURE__*/function (_EventEmitter) {
       _this.use(createRouterMiddleware(routerOptions));
     }
 
-    // This is the default middleware,
-    // any user-provided middleware will be added later and override this one.
+    // This is the default Insights middleware,
+    // added when `insights` is set to true by the user.
+    // Any user-provided middleware will be added later and override this one.
     if (insights) {
       var insightsOptions = typeof insights === 'boolean' ? {} : insights;
       insightsOptions.$$internal = true;
@@ -186,15 +217,6 @@ var InstantSearch = /*#__PURE__*/function (_EventEmitter) {
   _createClass(InstantSearch, [{
     key: "_isSearchStalled",
     get:
-    /**
-     * The status of the search. Can be "idle", "loading", "stalled", or "error".
-     */
-
-    /**
-     * The last returned error from the Search API.
-     * The error gets cleared when the next valid search response is rendered.
-     */
-
     /**
      * @deprecated use `status === 'stalled'` instead
      */
@@ -337,9 +359,7 @@ var InstantSearch = /*#__PURE__*/function (_EventEmitter) {
 
     /**
      * Ends the initialization of InstantSearch.js and triggers the
-     * first search. This method should be called after all widgets have been added
-     * to the instance of InstantSearch.js. InstantSearch.js also supports adding and removing
-     * widgets after the start as an **EXPERIMENTAL** feature.
+     * first search.
      */
   }, {
     key: "start",
@@ -354,7 +374,9 @@ var InstantSearch = /*#__PURE__*/function (_EventEmitter) {
       // DerivedHelper scoped into the `index` widgets.
       // In Vue InstantSearch' hydrate, a main helper gets set before start, so
       // we need to respect this helper as a way to keep all listeners correct.
-      var mainHelper = this.mainHelper || algoliasearchHelper(this.client, this.indexName);
+      var mainHelper = this.mainHelper || algoliasearchHelper(this.client, this.indexName, undefined, {
+        persistHierarchicalRootCount: this.future.persistHierarchicalRootCount
+      });
       mainHelper.search = function () {
         _this3.status = 'loading';
         _this3.scheduleRender(false);
@@ -364,7 +386,13 @@ var InstantSearch = /*#__PURE__*/function (_EventEmitter) {
         // under the hood, we have a different implementation. It should be
         // completely transparent for the rest of the codebase. Only this module
         // is impacted.
-        return mainHelper.searchOnlyWithDerivedHelpers();
+        if (_this3._hasSearchWidget) {
+          mainHelper.searchOnlyWithDerivedHelpers();
+        }
+        if (_this3._hasRecommendWidget) {
+          mainHelper.recommend();
+        }
+        return mainHelper;
       };
       if (this._searchFunction) {
         // this client isn't used to actually search, but required for the helper
@@ -430,6 +458,8 @@ var InstantSearch = /*#__PURE__*/function (_EventEmitter) {
         uiState: this._initialUiState
       });
       if (this._initialResults) {
+        hydrateSearchClient(this.client, this._initialResults);
+        hydrateRecommendCache(this.mainHelper, this._initialResults);
         var originalScheduleSearch = this.scheduleSearch;
         // We don't schedule a first search when initial results are provided
         // because we already have the results to render. This skips the initial
@@ -467,12 +497,28 @@ var InstantSearch = /*#__PURE__*/function (_EventEmitter) {
         var instance = _ref6.instance;
         instance.started();
       });
+
+      // This is the automatic Insights middleware,
+      // added when `insights` is unset and the initial results possess `queryID`.
+      // Any user-provided middleware will be added later and override this one.
+      if (typeof this._insights === 'undefined') {
+        mainHelper.derivedHelpers[0].once('result', function () {
+          var hasAutomaticInsights = _this3.mainIndex.getScopedResults().some(function (_ref7) {
+            var results = _ref7.results;
+            return results === null || results === void 0 ? void 0 : results._automaticInsights;
+          });
+          if (hasAutomaticInsights) {
+            _this3.use(createInsightsMiddleware({
+              $$internal: true,
+              $$automatic: true
+            }));
+          }
+        });
+      }
     }
 
     /**
-     * Removes all widgets without triggering a search afterwards. This is an **EXPERIMENTAL** feature,
-     * if you find an issue with it, please
-     * [open an issue](https://github.com/algolia/instantsearch.js/issues/new?title=Problem%20with%20dispose).
+     * Removes all widgets without triggering a search afterwards.
      * @return {undefined} This method does not return anything
      */
   }, {
@@ -496,8 +542,8 @@ var InstantSearch = /*#__PURE__*/function (_EventEmitter) {
       (_this$mainHelper2 = this.mainHelper) === null || _this$mainHelper2 === void 0 ? void 0 : _this$mainHelper2.removeAllListeners();
       this.mainHelper = null;
       this.helper = null;
-      this.middleware.forEach(function (_ref7) {
-        var instance = _ref7.instance;
+      this.middleware.forEach(function (_ref8) {
+        var instance = _ref8.instance;
         instance.unsubscribe();
       });
     }

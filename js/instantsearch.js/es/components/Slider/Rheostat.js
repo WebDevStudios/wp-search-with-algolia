@@ -392,6 +392,8 @@ var Rheostat = /*#__PURE__*/function (_Component) {
       }
       killEvent(ev);
     });
+    // Make sure the proposed position respects the bounds and
+    // does not collide with other handles too much.
     _defineProperty(_assertThisInitialized(_this), "validatePosition", function (idx, proposedPosition) {
       var _this$state4 = _this.state,
         handlePos = _this$state4.handlePos,

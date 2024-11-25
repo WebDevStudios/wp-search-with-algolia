@@ -4,7 +4,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
-var _uiComponentsShared = require("@algolia/ui-components-shared");
+var _instantsearchUiComponents = require("instantsearch-ui-components");
 var _preact = require("preact");
 var _CurrentRefinements = _interopRequireDefault(require("../../components/CurrentRefinements/CurrentRefinements"));
 var _connectCurrentRefinements = _interopRequireDefault(require("../../connectors/current-refinements/connectCurrentRefinements"));
@@ -50,26 +50,26 @@ var currentRefinements = function currentRefinements(widgetParams) {
   }
   var containerNode = (0, _utils.getContainerNode)(container);
   var cssClasses = {
-    root: (0, _uiComponentsShared.cx)(suit(), userCssClasses.root),
-    noRefinementRoot: (0, _uiComponentsShared.cx)(suit({
+    root: (0, _instantsearchUiComponents.cx)(suit(), userCssClasses.root),
+    noRefinementRoot: (0, _instantsearchUiComponents.cx)(suit({
       modifierName: 'noRefinement'
     }), userCssClasses.noRefinementRoot),
-    list: (0, _uiComponentsShared.cx)(suit({
+    list: (0, _instantsearchUiComponents.cx)(suit({
       descendantName: 'list'
     }), userCssClasses.list),
-    item: (0, _uiComponentsShared.cx)(suit({
+    item: (0, _instantsearchUiComponents.cx)(suit({
       descendantName: 'item'
     }), userCssClasses.item),
-    label: (0, _uiComponentsShared.cx)(suit({
+    label: (0, _instantsearchUiComponents.cx)(suit({
       descendantName: 'label'
     }), userCssClasses.label),
-    category: (0, _uiComponentsShared.cx)(suit({
+    category: (0, _instantsearchUiComponents.cx)(suit({
       descendantName: 'category'
     }), userCssClasses.category),
-    categoryLabel: (0, _uiComponentsShared.cx)(suit({
+    categoryLabel: (0, _instantsearchUiComponents.cx)(suit({
       descendantName: 'categoryLabel'
     }), userCssClasses.categoryLabel),
-    delete: (0, _uiComponentsShared.cx)(suit({
+    delete: (0, _instantsearchUiComponents.cx)(suit({
       descendantName: 'delete'
     }), userCssClasses.delete)
   };
