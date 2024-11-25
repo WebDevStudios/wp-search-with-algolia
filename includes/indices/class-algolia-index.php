@@ -729,9 +729,12 @@ abstract class Algolia_Index {
 	 * @author WebDevStudios <contact@webdevstudios.com>
 	 * @since  1.0.0
 	 *
-	 * @return array
+	 * @return array Autocomplete config.
 	 */
 	public function get_default_autocomplete_config() {
+		$plugin_settings = new \Algolia_Settings();
+		$debounce        = $plugin_settings->get_autocomplete_debounce();
+
 		return array(
 			'index_id'        => $this->get_id(),
 			'index_name'      => $this->get_name(),
@@ -739,6 +742,7 @@ abstract class Algolia_Index {
 			'admin_name'      => $this->get_admin_name(),
 			'position'        => 10,
 			'max_suggestions' => 5,
+			'debounce'        => $debounce,
 			'tmpl_suggestion' => 'autocomplete-post-suggestion',
 		);
 	}
