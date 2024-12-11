@@ -123,6 +123,8 @@ class Algolia_CLI {
 			$index->clear();
 			// translators: the placeholder will contain the name of the index.
 			WP_CLI::success( sprintf( __( 'Correctly cleared index "%s".', 'wp-search-with-algolia' ), $index->get_name() ) );
+		} else {
+			add_filter( 'algolia_clear_index_if_existing', '__return_false' );
 		}
 
 		$total_pages = $index->get_re_index_max_num_pages() - ( $from_batch - 1 );
