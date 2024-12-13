@@ -403,7 +403,9 @@ final class Algolia_Posts_Index extends Algolia_Index {
 			 * @return bool
 			 */
 			$should_wait = (bool) apply_filters( 'algolia_should_wait_on_delete_item', false, $post, $records );
-			$this->delete_item( $post, $should_wait );
+			if ( false === $this->reindexing ) {
+				$this->delete_item( $post, $should_wait );
+			}
 		}
 
 		parent::update_records( $post, $records );
