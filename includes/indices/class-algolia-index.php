@@ -344,7 +344,7 @@ abstract class Algolia_Index {
 	 */
 	protected function update_records( $item, array $records ) {
 
-		if ( empty( $records ) ) {
+		if ( empty( $records ) && ! $this->already_cleared ) {
 			$this->delete_item( $item );
 			return;
 		}
