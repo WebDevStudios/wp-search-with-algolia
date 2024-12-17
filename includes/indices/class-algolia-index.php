@@ -69,6 +69,17 @@ abstract class Algolia_Index {
 	 */
 	protected $reindexing = false;
 
+
+	/**
+	 * Remove unnecessary deletions from the cleaned index.
+	 *
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 * @since  2.8.3
+	 *
+	 * @var bool
+	 */
+	protected $already_cleared = false;
+
 	/**
 	 * Get the admin name for this index.
 	 *
@@ -435,6 +446,12 @@ abstract class Algolia_Index {
 		if ( 1 === $page ) {
 			$this->create_index_if_not_existing();
 		}
+
+		$this->already_cleared = empty( $specific_ids ) && (bool) apply_filters(
+			'algolia_clear_index_if_existing',
+			true,
+			$this->get_id()
+		);
 
 		$batch_size = (int) $this->get_re_index_batch_size();
 
