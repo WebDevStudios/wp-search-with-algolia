@@ -306,8 +306,11 @@ class Algolia_Post_Changes_Watcher implements Algolia_Changes_Watcher {
 			// Majority of the time, this if statement will hit
 			// for iterations where we will bundle up a re-index request.
 			if ( $current_total_posts === self::$pmxi_batch_size ) {
+				// Prevent clearing out our existing index.
+				add_filter( 'algolia_clear_index_if_existing', '__return_false' );
+
 				// Push up our current batch, clear out the queue, and increment our current page.
-				$this->index->re_index( 1, $this->posts_updated, false ); // Reindex but don't clear the index
+				$this->index->re_index( 1, $this->posts_updated );
 				$this->posts_updated = [];
 				$current_page++;
 
@@ -328,8 +331,11 @@ class Algolia_Post_Changes_Watcher implements Algolia_Changes_Watcher {
 
 				// We have finally collected them all.
 				if ( $current_remainder === $total_remainder ) {
+					// Still prevent clearing out our existing index.
+					add_filter( 'algolia_clear_index_if_existing', '__return_false' );
+
 					// Push up our final batch, clear out the queue just in case.
-					$this->index->re_index( 1, $this->posts_updated, false ); // Reindex but don't clear the index
+					$this->index->re_index( 1, $this->posts_updated );
 					$this->posts_updated = [];
 
 					// Clear out for next import run.
