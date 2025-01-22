@@ -3,13 +3,8 @@
  * Plugin Name:       WP Search with Algolia
  * Plugin URI:        https://github.com/WebDevStudios/wp-search-with-algolia
  * Description:       Integrate the powerful Algolia search service with WordPress
-<<<<<<< HEAD
- * Version:           2.8.3
- * Requires at least: 5.3
-=======
  * Version:           2.9.0
- * Requires at least: 5.0
->>>>>>> ddc3d54 (update main php file version)
+ * Requires at least: 5.3
  * Requires PHP:      7.4
  * Author:            WebDevStudios
  * Author URI:        https://webdevstudios.com
