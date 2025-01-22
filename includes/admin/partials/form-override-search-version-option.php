@@ -39,7 +39,7 @@
 		<?php
 		echo wp_kses(
 			__(
-				'Uses Javascript string literals and more in line with Algolia documentation.',
+				'Uses Javascript template string literals and is more in line with Algolia documentation.',
 				'wp-search-with-algolia'
 			),
 			[
