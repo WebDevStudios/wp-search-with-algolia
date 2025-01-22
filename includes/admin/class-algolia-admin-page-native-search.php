@@ -121,7 +121,17 @@ class Algolia_Admin_Page_Native_Search {
 			$this->section
 		);
 
+		add_settings_field(
+			'algolia_search_template_version',
+			esc_html__( 'Template version', 'wp-search-with-algolia' ),
+			[ $this, 'search_template_version' ],
+			$this->slug,
+			$this->section
+		);
+
 		register_setting( $this->option_group, 'algolia_override_native_search', array( $this, 'sanitize_override_native_search' ) );
+
+		register_setting( $this->option_group, 'algolia_search_template_version', [ $this, 'sanitize_override_native_search' ] );
 	}
 
 	/**
@@ -134,6 +144,17 @@ class Algolia_Admin_Page_Native_Search {
 		$value = $this->plugin->get_settings()->get_override_native_search();
 
 		require_once dirname( __FILE__ ) . '/partials/form-override-search-option.php';
+	}
+
+	/**
+	 * Override native search callback.
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 * @since  1.0.0
+	 */
+	public function search_template_version() {
+		$value = $this->plugin->get_settings()->get_search_template_version();
+
+		require_once dirname( __FILE__ ) . '/partials/form-override-search-version-option.php';
 	}
 
 	/**
