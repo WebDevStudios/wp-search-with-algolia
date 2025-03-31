@@ -272,7 +272,9 @@ class Algolia_Admin {
 
 			wp_send_json( $response );
 		} catch ( Exception $exception ) {
-			echo esc_html( $exception->getMessage() );
+			wp_send_json( [
+				'responseText' => $exception->getMessage()
+			] );
 			throw $exception;
 		}
 	}
@@ -307,7 +309,9 @@ class Algolia_Admin {
 			);
 			wp_send_json( $response );
 		} catch ( Exception $exception ) {
-			echo esc_html( $exception->getMessage() );
+			wp_send_json( [
+				'responseText' => $exception->getMessage()
+			] );
 			throw $exception;
 		}
 	}
