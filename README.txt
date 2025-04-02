@@ -1,10 +1,10 @@
 === WP Search with Algolia ===
 Contributors: WebDevStudios, williamsba1, tw2113, mrasharirfan, scottbasgaard, gregrickaby, richaber
 Tags: search, algolia, autocomplete, instantsearch, relevance search, faceted search, find-as-you-type search, ecommerce, seo, woocommerce, advanced search
-Requires at least: 5.0
-Tested up to: 6.7
+Requires at least: 5.3
+Tested up to: 6.7.2
 Requires PHP: 7.4
-Stable tag: 2.8.2
+Stable tag: 2.8.3
 License: GNU General Public License v2.0, MIT License
 
 Use the power of Algolia to enhance your website's search. Enable Autocomplete and Instantsearch for fast and accurate results and relevance.
@@ -32,9 +32,9 @@ Introducing **WP Search with Algolia Pro**, our new premium version of WP Search
 * Multisite Network-wide support!
 	* Create a global search for content across all the sites in your network all in one Algolia index.
 * WooCommerce support
-  * Indexing Product data including SKU, pricing (standard and variable), sales, and short descriptions.
+  * Indexing Product data including SKU, pricing (standard and variable), short descriptions, dimensions, and more.
   * Total sales and total ratings indexed for popularity
-* Advanced SEO support with Yoast SEO, All in One SEO, Rank Math SEO, and SEOPress
+* Advanced SEO support with Yoast SEO, All in One SEO, Rank Math SEO, SEOPress, and The SEO Framework.
   * Content level settings to exclude individual content from the search index
   * Set Algolia’s indexing to match with existing search engine “noindex” settings
 
@@ -127,6 +127,9 @@ All development is handled on [GitHub](https://github.com/WebDevStudios/wp-searc
 == Changelog ==
 
 Follow along with the changelog on [Github](https://github.com/WebDevStudios/wp-search-with-algolia/releases).
+
+= 2.8.3 =
+* Fixed: "Function _load_textdomain_just_in_time was called incorrectly" notices.
 
 = 2.8.2 =
 * Updated: Wording and UI details around the settings pages for better and more accurate reflection.

@@ -1,3 +1,14 @@
+## 2.8.3
+* Fixed: "Function _load_textdomain_just_in_time was called incorrectly" notices.
+
+## 2.8.2
+* Updated: Wording and UI details around the settings pages for better and more accurate reflection.
+* Updated: Confirmed compatibility with WP 6.7.x
+* Added: New page regarding Premium support from WebDevStudios. Let's work together.
+
+## 2.8.1
+* Updated: WP Search with Algolia Pro features list for version 1.4.0
+
 ## 2.8.0
 * Added: Filter to customize Algolia SearchClient configuration with connect/read/write timeouts.
 * Updated: Prevent table content from being concatenated. Thanks @rodrigo-arias

@@ -25,7 +25,7 @@ apply_filters_deprecated(
 	[ true ],
 	'2.3.2',
 	'',
-	esc_html__( 'The "algolia_should_require_search_client" filter is deprecated and no longer has any effect.', 'wp-search-with-algolia' )
+	'The "algolia_should_require_search_client" filter is deprecated and no longer has any effect.',
 );
 
 // Autoload vendor dependencies, that have been prefixed to prevent namespace collision.
