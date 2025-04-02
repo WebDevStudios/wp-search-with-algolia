@@ -25,7 +25,7 @@ class Algolia_CLI {
 	 *
 	 * @var Algolia_Plugin
 	 */
-	private $plugin;
+	private Algolia_Plugin $plugin;
 
 	/**
 	 * Algolia_CLI constructor.
@@ -71,7 +71,7 @@ class Algolia_CLI {
 			WP_CLI::error( 'The configuration for this website does not allow to contact the Algolia API.' );
 		}
 
-		$index_id   = isset( $args[0] ) ? $args[0] : null;
+		$index_id   = $args[0] ?? null;
 		$clear      = WP_CLI\Utils\get_flag_value( $assoc_args, 'clear' );
 		$all        = WP_CLI\Utils\get_flag_value( $assoc_args, 'all' );
 		$from_batch = intval( WP_CLI\Utils\get_flag_value( $assoc_args, 'from_batch', 1 ) );
