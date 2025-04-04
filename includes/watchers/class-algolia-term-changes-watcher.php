@@ -86,6 +86,22 @@ class Algolia_Term_Changes_Watcher implements Algolia_Changes_Watcher {
 		if ( ! $term || ! $this->index->supports( $term ) ) {
 			return;
 		}
+
+		/**
+		 * Filters whether or not to update posts with the edited term.
+		 *
+		 * @since NEXT
+		 *
+		 * @param bool   $value    Whether or not to sync posts with this term.
+		 * @param int    $term_id  The current term to be updated.
+		 * @param int    $tt_id    The term taxonomy ID.
+		 * @param string $taxonomy The taxonomy slug.
+		 */
+		$should_sync_term_posts = apply_filters( 'algolia_should_sync_term_posts', true, $term_id, $tt_id, $taxonomy );
+		if ( ! $should_sync_term_posts ) {
+			return;
+		}
+
 		$args = [
 			'posts_per_page' => -1,
 			'tax_query'      => [
