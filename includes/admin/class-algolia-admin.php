@@ -125,12 +125,12 @@ class Algolia_Admin {
 		);
 
 		wp_localize_script(
-			'algolia-admin-push-reindex-button',
+			'algolia-admin-reindex-button',
 			'algoliaPushReindexButton',
-			array(
+			[
 				'reindexAbort' => esc_html__( 'If you leave now, re-indexing tasks in progress will be aborted', 'wp-search-with-algolia' ),
 				'noDataindex' => esc_html__( 'Clicked button has no "data-index" set.', 'wp-search-with-algolia' ),
-			)
+			]
 		);
 	}
 
