@@ -149,16 +149,15 @@ class Algolia_Settings {
 		$excluded = (array) apply_filters( 'algolia_excluded_post_types', $excluded );
 
 		// Native WordPress.
-		$excluded[] = 'revision';
-		$excluded[] = 'custom_css';
-		$excluded[] = 'customize_changeset';
-		$excluded[] = 'oembed_cache';
-		$excluded[] = 'user_request';
-		$excluded[] = 'wp_block';
-		$excluded[] = 'wp_global_styles';
-		$excluded[] = 'wp_navigation';
-		$excluded[] = 'wp_template';
-		$excluded[] = 'wp_template_part';
+		$builtin = get_post_types( [ '_builtin' => true ] );
+		// Preserve posts, pages, and attachments
+		unset( $builtin['post'] );
+		unset( $builtin['page'] );
+		unset( $builtin['attachment'] );
+
+		foreach( $builtin as $type ) {
+			$excluded[] = $type;
+		}
 
 		// Native to WordPress VIP platform.
 		$excluded[] = 'kr_request_token';
