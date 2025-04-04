@@ -17,7 +17,7 @@
 		});
 
 		function handleReindexButtonClick(e) {
-			const clickedBtn = e.currentTarget;
+			let clickedBtn = e.currentTarget;
 			const index = clickedBtn.dataset.index;
 
 			if (!index) {
@@ -55,7 +55,7 @@
 			data.append('index_id', index);
 			data.append('p', currentPage);
 
-			fetch(window.ajaxurl, options = {
+			fetch(window.ajaxurl, {
 				method: 'POST',
 				body  : data,
 			})
