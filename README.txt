@@ -128,7 +128,10 @@ All development is handled on [GitHub](https://github.com/WebDevStudios/wp-searc
 
 Follow along with the changelog on [Github](https://github.com/WebDevStudios/wp-search-with-algolia/releases).
 
-<<<<<<< HEAD
+= 2.9.0 =
+* Updated: MAJOR TEMPLATES UPDATE! Removed hogan.js/string-based templates in the Instantsearch.php template file. We're not removing the dependencies of wp-util and underscores libraries yet, for users with customized instantsearch.php that's still using the original style, but may in the future.
+* Added: ability to customize Default Headers for Algolia Search Client configuration.
+
 = 2.8.3 =
 * Fixed: "Function _load_textdomain_just_in_time was called incorrectly" notices.
 
@@ -136,11 +139,6 @@ Follow along with the changelog on [Github](https://github.com/WebDevStudios/wp-
 * Updated: Wording and UI details around the settings pages for better and more accurate reflection.
 * Updated: Confirmed compatibility with WP 6.7.x
 * Added: New page regarding Premium support from WebDevStudios. Let's work together.
-=======
-= 2.9.0 =
-* Updated: MAJOR TEMPLATES UPDATE! Removed hogan.js/string-based templates in the Instantsearch.php template file. We're not removing the dependencies of wp-util and underscores libraries yet, for users with customized instantsearch.php that's still using the original style, but may in the future.
-* Added: ability to customize Default Headers for Algolia Search Client configuration.
->>>>>>> 276faf9 (version bumps for the branch, changelog)
 
 = 2.8.1 =
 * Updated: WP Search with Algolia Pro features list for version 1.4.0

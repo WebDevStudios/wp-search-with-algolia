@@ -29,6 +29,7 @@ class Algolia_Settings {
 		add_option( 'algolia_autocomplete_enabled', 'no' );
 		add_option( 'algolia_autocomplete_config', array() );
 		add_option( 'algolia_override_native_search', 'native' );
+		add_option( 'algolia_instantsearch_template_version', 'legacy' );
 		add_option( 'algolia_index_name_prefix', 'wp_' );
 		add_option( 'algolia_api_is_reachable', 'no' );
 		add_option( 'algolia_powered_by_enabled', 'yes' );
@@ -494,5 +495,31 @@ class Algolia_Settings {
 	 */
 	public function disable_powered_by() {
 		update_option( 'algolia_powered_by_enabled', 'no' );
+	}
+
+	/**
+	 * Return the version keyword for Instantsearch version to use.
+	 *
+	 * @since 2.9.0
+	 *
+	 * @return mixed|null
+	 */
+	public function get_instantsearch_template_version() {
+		$chosen = get_option( 'algolia_instantsearch_template_version', 'legacy' );
+
+		return apply_filters( 'algolia_instantsearch_template_version', $chosen );
+	}
+
+	/**
+	 * Return whether or not the keyword version is set to 'modern' or 'legacy'.
+	 *
+	 * @since 2.9.0
+	 *
+	 * @return bool
+	 */
+	public function should_use_instantsearch_modern() {
+		$version = $this->get_instantsearch_template_version();
+
+		return $version === 'modern';
 	}
 }
