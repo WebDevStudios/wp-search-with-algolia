@@ -498,9 +498,11 @@ class Algolia_Settings {
 	}
 
 	/**
-	 * Return the version keyword for Autocomplete version to use.
+	 * Return the version keyword for Instantsearch version to use.
+	 *
+	 * @since 2.9.0
+	 *
 	 * @return mixed|null
-	 * @since NEXT
 	 */
 	public function get_instantsearch_template_version() {
 		$chosen = get_option( 'algolia_instantsearch_template_version', 'legacy' );
@@ -510,8 +512,10 @@ class Algolia_Settings {
 
 	/**
 	 * Return whether or not the keyword version is set to 'modern' or 'legacy'.
+	 *
+	 * @since 2.9.0
+	 *
 	 * @return bool
-	 * @since NEXT
 	 */
 	public function should_use_instantsearch_modern() {
 		$version = $this->get_instantsearch_template_version();

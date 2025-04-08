@@ -3,7 +3,7 @@
  * Form override search option admin template partial.
  *
  * @author  WebDevStudios <contact@webdevstudios.com>
- * @since   1.0.0
+ * @since   2.9.0
  *
  * @package WebDevStudios\WPSWA
  */

@@ -147,9 +147,10 @@ class Algolia_Admin_Page_Native_Search {
 	}
 
 	/**
-	 * Override native search callback.
+	 * Get Instantsearch template version
+	 *
 	 * @author WebDevStudios <contact@webdevstudios.com>
-	 * @since  1.0.0
+	 * @since  2.9.0
 	 */
 	public function instantsearch_template_version() {
 		$value = $this->plugin->get_settings()->get_instantsearch_template_version();
