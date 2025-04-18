@@ -131,6 +131,8 @@ Follow along with the changelog on [Github](https://github.com/WebDevStudios/wp-
 = 2.9.0 =
 * Updated: MAJOR TEMPLATES UPDATE! Removed hogan.js/string-based templates in the Instantsearch.php template file. We're not removing the dependencies of wp-util and underscores libraries yet, for users with customized instantsearch.php that's still using the original style, but may in the future.
 * Added: ability to customize Default Headers for Algolia Search Client configuration.
+* Updated: Sync'd up `get_items()` methods to allow for specifying specific IDs for posts, terms, and users.
+* Updated: Instantsearch templates now use "Posts per page", setting from WordPress Reading settings by default
 
 = 2.8.3 =
 * Fixed: "Function _load_textdomain_just_in_time was called incorrectly" notices.
