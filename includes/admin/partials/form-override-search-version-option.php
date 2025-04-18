@@ -13,7 +13,7 @@
 <div class="input-radio">
 	<label>
 		<input type="radio" value="legacy"
-			name="algolia_search_template_version" <?php checked( $value, 'legacy' ); ?>>
+			name="algolia_instantsearch_template_version" <?php checked( $value, 'legacy' ); ?>>
 		<?php esc_html_e( 'Legacy', 'wp-search-with-algolia' ); ?>
 	</label>
 	<div class="radio-info">
@@ -32,7 +32,7 @@
 
 	<label>
 		<input type="radio" value="modern"
-			name="algolia_search_template_version" <?php checked( $value, 'modern' ); ?>>
+			name="algolia_instantsearch_template_version" <?php checked( $value, 'modern' ); ?>>
 		<?php esc_html_e( 'Modern', 'wp-search-with-algolia' ); ?>
 	</label>
 	<div class="radio-info">
