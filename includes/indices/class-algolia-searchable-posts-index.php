@@ -459,7 +459,7 @@ final class Algolia_Searchable_Posts_Index extends Algolia_Index {
 			'update_post_term_cache' => false,
 		];
 		if ( ! empty( $specific_ids ) && is_array( $specific_ids ) ) {
-			$args['post__in'] = (array) $specific_ids;
+			$args['post__in'] = $specific_ids;
 		}
 		$query = new WP_Query( $args );
 
