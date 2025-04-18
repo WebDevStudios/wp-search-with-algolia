@@ -129,10 +129,11 @@ All development is handled on [GitHub](https://github.com/WebDevStudios/wp-searc
 Follow along with the changelog on [Github](https://github.com/WebDevStudios/wp-search-with-algolia/releases).
 
 = 2.9.0 =
-* Updated: MAJOR TEMPLATES UPDATE! Removed hogan.js/string-based templates in the Instantsearch.php template file. We're not removing the dependencies of wp-util and underscores libraries yet, for users with customized instantsearch.php that's still using the original style, but may in the future.
-* Added: ability to customize Default Headers for Algolia Search Client configuration.
+* Added: Instantsearch Template options. Choose between "Legacy" hogan.js/WP Utils templates and "Modern" Javascript string literals. "Modern" is more in line with Algolia Documentation.
+* Added: ability to customize default Headers for Algolia Search Client configuration.
 * Updated: Sync'd up `get_items()` methods to allow for specifying specific IDs for posts, terms, and users.
-* Updated: Instantsearch templates now use "Posts per page", setting from WordPress Reading settings by default
+* Updated: Instantsearch templates use "Posts per page" amount by default, from WordPress Reading settings.
+* Updated: Amended Autocomplete settings page to remove more builtin post types that don't need to be available.
 
 = 2.8.3 =
 * Fixed: "Function _load_textdomain_just_in_time was called incorrectly" notices.
