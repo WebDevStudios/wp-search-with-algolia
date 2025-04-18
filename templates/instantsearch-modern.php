@@ -108,7 +108,7 @@ get_header();
 					// Configure widget
 					// https://www.algolia.com/doc/api-reference/widgets/configure/js/
 					instantsearch.widgets.configure({
-						hitsPerPage: 10,
+						hitsPerPage: algolia.search_hits_per_page,
 					}),
 
 					// Hits widget
