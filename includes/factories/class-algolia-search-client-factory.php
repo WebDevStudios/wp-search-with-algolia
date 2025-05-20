@@ -70,6 +70,32 @@ class Algolia_Search_Client_Factory {
 			[]
 		);
 
+		/**
+		 * Allows for customizing an Algolia secured API key.
+		 * @see https://www.algolia.com/doc/api-reference/api-methods/generate-secured-api-key/
+		 *
+		 * @param array $value Array of secured API key arguments. Default empty array.
+		 */
+		$custom_secured_key_config = apply_filters(
+			'algolia_custom_secured_key',
+			[]
+		);
+
+		if ( ! empty( $custom_secured_key_config ) && is_array( $custom_secured_key_config ) ) {
+			$custom_secured_key_config = wp_parse_args(
+				$custom_secured_key_config,
+				[
+					'filters'           => '',
+					'validUntil'        => '',
+					'restrictIndices'   => [],
+					'restrictSources'   => '',
+					'userToken'         => '',
+				]
+			);
+
+			$api_key = SearchClient::generateSecuredApiKey( $api_key, $custom_secured_key_config );
+		}
+
 		if ( ! empty( $custom_config ) && is_array( $custom_config ) ) {
 			$config = SearchConfig::create( $app_id, $api_key );
 
@@ -82,6 +108,11 @@ class Algolia_Search_Client_Factory {
 			if ( ! empty( $custom_config['writeTimeout'] ) ) {
 				$config->setWriteTimeout( (int) $custom_config['writeTimeout'] );
 			}
+
+			if ( is_array( $custom_config['DefaultHeaders'] ) && ! empty( $custom_config['DefaultHeaders'] ) ) {
+				$config->setDefaultHeaders( $custom_config['DefaultHeaders'] );
+			}
+
 			return SearchClient::createWithConfig( $config );
 		}
 

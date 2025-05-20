@@ -2,9 +2,9 @@
 Contributors: WebDevStudios, williamsba1, tw2113, mrasharirfan, scottbasgaard, gregrickaby, richaber
 Tags: search, algolia, autocomplete, instantsearch, relevance search, faceted search, find-as-you-type search, ecommerce, seo, woocommerce, advanced search
 Requires at least: 5.3
-Tested up to: 6.7.2
+Tested up to: 6.8.1
 Requires PHP: 7.4
-Stable tag: 2.8.3
+Stable tag: 2.9.0
 License: GNU General Public License v2.0, MIT License
 
 Use the power of Algolia to enhance your website's search. Enable Autocomplete and Instantsearch for fast and accurate results and relevance.
@@ -127,6 +127,14 @@ All development is handled on [GitHub](https://github.com/WebDevStudios/wp-searc
 == Changelog ==
 
 Follow along with the changelog on [Github](https://github.com/WebDevStudios/wp-search-with-algolia/releases).
+
+= 2.9.0 =
+* Added: Instantsearch Template options. Choose between "Legacy" hogan.js/WP Utils templates and "Modern" Javascript string literals. "Modern" is more in line with Algolia Documentation.
+* Added: ability to customize default Headers for Algolia Search Client configuration.
+* Added: Initial support for programmatic Secured API key creation.
+* Updated: Sync'd up `get_items()` methods to allow for specifying specific IDs for posts, terms, and users.
+* Updated: Instantsearch templates use "Posts per page" amount by default, from WordPress Reading settings.
+* Updated: Amended Autocomplete settings page to remove more builtin post types that don't need to be available.
 
 = 2.8.3 =
 * Fixed: "Function _load_textdomain_just_in_time was called incorrectly" notices.

@@ -185,20 +185,25 @@ final class Algolia_Users_Index extends Algolia_Index {
 	 * @author WebDevStudios <contact@webdevstudios.com>
 	 * @since  1.0.0
 	 *
-	 * @param int $page       The page.
-	 * @param int $batch_size The batch size.
+	 * @param int   $page         The page.
+	 * @param int   $batch_size   The batch size.
+	 * @param array $specific_ids Array of user to retrieve and index.
 	 *
 	 * @return array
 	 */
-	protected function get_items( $page, $batch_size ) {
+	protected function get_items( $page, $batch_size, $specific_ids = [] ) {
 		$offset = $batch_size * ( $page - 1 );
 
-		$args = array(
+		$args = [
 			'order'   => 'ASC',
 			'orderby' => 'ID',
 			'offset'  => $offset,
 			'number'  => $batch_size,
-		);
+		];
+
+		if ( ! empty( $specific_ids ) && is_array( $specific_ids ) ) {
+			$args['include'] = $specific_ids;
+		}
 
 		// We use prior to 4.5 syntax for BC purposes, no `paged` arg.
 		return get_users( $args );

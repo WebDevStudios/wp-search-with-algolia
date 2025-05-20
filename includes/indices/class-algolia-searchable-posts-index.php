@@ -441,7 +441,7 @@ final class Algolia_Searchable_Posts_Index extends Algolia_Index {
 	 *
 	 * @param int   $page         The page.
 	 * @param int   $batch_size   The batch size.
-	 * @param array $specific_ids Array of IDs to specifically fetch and index.
+	 * @param array $specific_ids Array of post IDs to retrieve and index.
 	 *
 	 * @return array
 	 */
@@ -458,8 +458,8 @@ final class Algolia_Searchable_Posts_Index extends Algolia_Index {
 			'lazy_load_term_meta'    => false,
 			'update_post_term_cache' => false,
 		];
-		if ( ! empty( $specific_ids ) ) {
-			$args['post__in'] = (array) $specific_ids;
+		if ( ! empty( $specific_ids ) && is_array( $specific_ids ) ) {
+			$args['post__in'] = $specific_ids;
 		}
 		$query = new WP_Query( $args );
 

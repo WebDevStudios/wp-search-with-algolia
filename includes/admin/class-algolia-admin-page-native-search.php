@@ -121,7 +121,21 @@ class Algolia_Admin_Page_Native_Search {
 			$this->section
 		);
 
+		add_settings_field(
+			'algolia_instantsearch_template_version',
+			esc_html__( 'Instantsearch Template version', 'wp-search-with-algolia' ),
+			[ $this, 'instantsearch_template_version' ],
+			$this->slug,
+			$this->section
+		);
+
 		register_setting( $this->option_group, 'algolia_override_native_search', array( $this, 'sanitize_override_native_search' ) );
+
+		register_setting( $this->option_group, 'algolia_instantsearch_template_version', [
+			'type'              => 'string',
+			'sanitize_callback' => 'sanitize_text_field',
+			'default'           => 'legacy'
+		] );
 	}
 
 	/**
@@ -134,6 +148,18 @@ class Algolia_Admin_Page_Native_Search {
 		$value = $this->plugin->get_settings()->get_override_native_search();
 
 		require_once dirname( __FILE__ ) . '/partials/form-override-search-option.php';
+	}
+
+	/**
+	 * Get Instantsearch template version
+	 *
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 * @since  2.9.0
+	 */
+	public function instantsearch_template_version() {
+		$value = $this->plugin->get_settings()->get_instantsearch_template_version();
+
+		require_once dirname( __FILE__ ) . '/partials/form-override-search-version-option.php';
 	}
 
 	/**

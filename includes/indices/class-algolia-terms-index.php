@@ -195,24 +195,29 @@ final class Algolia_Terms_Index extends Algolia_Index {
 	 * @author WebDevStudios <contact@webdevstudios.com>
 	 * @since  1.0.0
 	 *
-	 * @param int $page       The page.
-	 * @param int $batch_size The batch size.
+	 * @param int   $page         The page.
+	 * @param int   $batch_size   The batch size.
+	 * @param array $specific_ids Array of terms to retrieve and index.
 	 *
 	 * @return array
 	 */
-	protected function get_items( $page, $batch_size ) {
+	protected function get_items( $page, $batch_size, $specific_ids = [] ) {
 		$offset = $batch_size * ( $page - 1 );
 
-		$args = array(
+		$args = [
+			'taxonomy'   => $this->taxonomy,
 			'order'      => 'ASC',
 			'orderby'    => 'id',
 			'offset'     => $offset,
 			'number'     => $batch_size,
 			'hide_empty' => false, // Let users choose what to index.
-		);
+		];
 
-		// We use prior to 4.5 syntax for BC purposes.
-		return get_terms( $this->taxonomy, $args );
+		if ( ! empty( $specific_ids ) && is_array( $specific_ids ) ) {
+			$args['include'] = $specific_ids;
+		}
+
+		return get_terms( $args );
 	}
 
 	/**

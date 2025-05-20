@@ -716,12 +716,13 @@ abstract class Algolia_Index {
 	 * @author WebDevStudios <contact@webdevstudios.com>
 	 * @since  1.0.0
 	 *
-	 * @param int $page       The page.
-	 * @param int $batch_size The batch size.
+	 * @param int   $page         The page.
+	 * @param int   $batch_size   The batch size.
+	 * @param array $specific_ids Array of IDs to retrieve and index.
 	 *
 	 * @return array
 	 */
-	abstract protected function get_items( $page, $batch_size );
+	abstract protected function get_items( $page, $batch_size, $specific_ids = [] );
 
 	/**
 	 * Get default autocomplete config.
