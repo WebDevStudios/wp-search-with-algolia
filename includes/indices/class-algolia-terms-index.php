@@ -205,7 +205,7 @@ final class Algolia_Terms_Index extends Algolia_Index {
 		$offset = $batch_size * ( $page - 1 );
 
 		$args = [
-			'taxonomy' => $this->taxonomy,
+			'taxonomy'   => $this->taxonomy,
 			'order'      => 'ASC',
 			'orderby'    => 'id',
 			'offset'     => $offset,
