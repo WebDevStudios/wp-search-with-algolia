@@ -135,12 +135,6 @@ get_header();
 									content_snippet = html`<span class="suggestion-post-content ais-hits--content-snippet">${components.Snippet({hit, attribute: 'content'})}</span>`;
 								}
 
-								let extras = '';
-
-								<?php
-								do_action( 'algolia_instantsearch_after_hit' );
-								?>
-
 								return html`
 									<article itemtype="https://schema.org/Article">
 										${thumbnail}
@@ -151,7 +145,6 @@ get_header();
 											</div>
 										</div>
 										<div class="ais-clearfix"></div>
-										${extras}
 									</article>`;
 							}
 						},
