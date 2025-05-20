@@ -131,6 +131,7 @@ Follow along with the changelog on [Github](https://github.com/WebDevStudios/wp-
 = 2.9.0 =
 * Added: Instantsearch Template options. Choose between "Legacy" hogan.js/WP Utils templates and "Modern" Javascript string literals. "Modern" is more in line with Algolia Documentation.
 * Added: ability to customize default Headers for Algolia Search Client configuration.
+* Added: Initial support for programmatic Secured API key creation.
 * Updated: Sync'd up `get_items()` methods to allow for specifying specific IDs for posts, terms, and users.
 * Updated: Instantsearch templates use "Posts per page" amount by default, from WordPress Reading settings.
 * Updated: Amended Autocomplete settings page to remove more builtin post types that don't need to be available.
