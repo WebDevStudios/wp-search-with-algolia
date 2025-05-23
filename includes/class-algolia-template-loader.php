@@ -35,6 +35,11 @@ class Algolia_Template_Loader {
 	public function __construct( Algolia_Plugin $plugin ) {
 		$this->plugin = $plugin;
 
+		$settings = $this->plugin->get_settings();
+		if ( ! $this->should_load_autocomplete() && ! $settings->should_override_search_with_instantsearch() ) {
+			return;
+		}
+
 		$in_footer = Algolia_Utils::get_scripts_in_footer_argument();
 
 		// Inject Algolia configuration in a JavaScript variable.
