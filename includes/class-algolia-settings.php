@@ -284,7 +284,7 @@ class Algolia_Settings {
 	 * 0 will disable the feature (default).
 	 *
 	 * @author  WebDevStudios <contact@webdevstudios.com>
-	 * @since   next
+	 * @since   2.10.0
 	 *
 	 * @return int Debounce value in milliseconds.
 	 */
@@ -294,7 +294,7 @@ class Algolia_Settings {
 		/**
 		 * Filters the autocomplete debounce option for algolia autocomplete.
 		 *
-		 * @since NEXT
+		 * @since 2.10.0
 		 *
 		 * @param int Debounce value in milliseconds.
 		 */

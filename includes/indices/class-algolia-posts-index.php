@@ -70,7 +70,7 @@ final class Algolia_Posts_Index extends Algolia_Index {
 	 * Get default autocomplete config.
 	 *
 	 * @author WebDevStudios <contact@webdevstudios.com>
-	 * @since  NEXT
+	 * @since  2.10.0
 	 *
 	 * @return array Autocomplete config.
 	 */
@@ -81,7 +81,7 @@ final class Algolia_Posts_Index extends Algolia_Index {
 		/**
 		 * Filters the autocomplete debounce option for this index.
 		 *
-		 * @since NEXT
+		 * @since 2.10.0
 		 *
 		 * @param int Debounce value in milliseconds.
 		 */

@@ -257,7 +257,7 @@ final class Algolia_Terms_Index extends Algolia_Index {
 		/**
 		 * Filters the autocomplete debounce option for this index.
 		 *
-		 * @since NEXT
+		 * @since 2.10.0
 		 *
 		 * @param int Debounce value in milliseconds.
 		 */

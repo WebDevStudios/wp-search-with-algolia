@@ -182,7 +182,7 @@ class Algolia_Admin_Page_Autocomplete {
 	 * Callback to print the autocomplete debounce value.
 	 *
 	 * @author WebDevStudios <contact@webdevstudios.com>
-	 * @since NEXT
+	 * @since 2.10.0
 	 */
 	public function autocomplete_debounce_callback() {
 		$value    = $this->settings->get_autocomplete_debounce();
@@ -223,7 +223,7 @@ class Algolia_Admin_Page_Autocomplete {
 	 * Sanitize the Autocomplete debounce setting.
 	 *
 	 * @author WebDevStudios <contact@webdevstudios.com>
-	 * @since  NEXT
+	 * @since  2.10.0
 	 *
 	 * @param int $value The original value.
 	 *
