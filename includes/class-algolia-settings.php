@@ -28,7 +28,7 @@ class Algolia_Settings {
 		add_option( 'algolia_synced_indices_ids', array() );
 		add_option( 'algolia_autocomplete_enabled', 'no' );
 		add_option( 'algolia_autocomplete_config', array() );
-		add_option( 'algolia_autocomplete_version', 'legacy' );
+		add_option( 'algolia_autocomplete_template_version', 'legacy' );
 		add_option( 'algolia_override_native_search', 'native' );
 		add_option( 'algolia_instantsearch_template_version', 'legacy' );
 		add_option( 'algolia_index_name_prefix', 'wp_' );
@@ -505,10 +505,10 @@ class Algolia_Settings {
 	 *
 	 * @return mixed|null
 	 */
-	public function get_autocomplete_version() {
-		$chosen = get_option( 'algolia_autocomplete_version', 'legacy' );
+	public function get_autocomplete_template_version() {
+		$chosen = get_option( 'algolia_autocomplete_template_version', 'legacy' );
 
-		return apply_filters( 'algolia_autocomplete_version', $chosen );
+		return apply_filters( 'algolia_autocomplete_template_version', $chosen );
   }
   
   /**
@@ -532,8 +532,8 @@ class Algolia_Settings {
 	 * @return bool
 	 */
 	public function should_use_autocomplete_modern() {
-		$version = $this->get_autocomplete_version();
-    
+		$version = $this->get_autocomplete_template_version();
+
     return $version === 'modern';
   }
   

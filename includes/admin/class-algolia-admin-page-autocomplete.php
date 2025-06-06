@@ -142,7 +142,7 @@ class Algolia_Admin_Page_Autocomplete {
 		);
 
 		add_settings_field(
-			'algolia_autocomplete_version',
+			'algolia_autocomplete_template_version',
 			esc_html__( 'Autocomplete version', 'wp-search-with-algolia' ),
 			[ $this, 'autocomplete_version_callback' ],
 			$this->slug,
@@ -158,7 +158,7 @@ class Algolia_Admin_Page_Autocomplete {
 		);
 
 		register_setting( $this->option_group, 'algolia_autocomplete_enabled', [ $this, 'sanitize_autocomplete_enabled' ] );
-		register_setting( $this->option_group, 'algolia_autocomplete_version', [ $this, 'sanitize_autocomplete_version' ] );
+		register_setting( $this->option_group, 'algolia_autocomplete_template_version', [ $this, 'sanitize_autocomplete_version' ] );
 		register_setting( $this->option_group, 'algolia_autocomplete_config', [ $this, 'sanitize_autocomplete_config' ] );
 	}
 
@@ -210,10 +210,10 @@ class Algolia_Admin_Page_Autocomplete {
 		$value = $this->settings->get_autocomplete_version();
 		$indices = $this->autocomplete_config->get_form_data();
 		?>
-			<input type="radio" id="legacy" name="algolia_autocomplete_version" value="legacy"<?php checked( 'legacy', $value ); disabled( empty( $indices ), true ); ?> />
+			<input type="radio" id="legacy" name="algolia_autocomplete_template_version" value="legacy"<?php checked( 'legacy', $value ); disabled( empty( $indices ), true ); ?> />
 			<label for="legacy"><?php esc_html_e( 'Legacy', 'wp-search-with-algolia' ); ?></label>
 
-			<input type="radio" id="modern" name="algolia_autocomplete_version" value="modern"<?php checked( 'modern', $value ); disabled( empty( $indices ), true ); ?> />
+			<input type="radio" id="modern" name="algolia_autocomplete_template_version" value="modern"<?php checked( 'modern', $value ); disabled( empty( $indices ), true ); ?> />
 			<label for="modern"><?php esc_html_e( 'Modern', 'wp-search-with-algolia' ); ?></label>
 		<?php
 	}
