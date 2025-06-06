@@ -42,6 +42,7 @@ class Algolia_Template_Utils {
 		'autocomplete.php',
 		'autocomplete-modern.php',
 		'instantsearch.php',
+		'instantsearch-modern.php',
 	];
 
 	/**

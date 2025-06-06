@@ -2,6 +2,19 @@
  * All of the CSS for your admin-specific functionality should be
  * included in this file.
  */
+
+/*
+ * https://algolia.frontify.com/document/1?#/basics/colors
+ */
+:root {
+  --algolia-white: #fff;
+  --algolia-gray: #f5f5fa;
+  --algolia-blue: #003dff;
+  --algolia-blue-lighten: #07f;
+  --algolia-dark-blue: #003;
+  --algolia-neon: #ceff00;
+}
+
 .form-table .table-autocomplete th {
   padding: 8px 10px !important;
 }
@@ -12,15 +25,6 @@
 
 .table-autocomplete .dashicons-move {
   cursor: pointer;
-}
-
-/* Logs page */
-.log-details {
-  background-color: #32373c;
-  color: #fff;
-  padding: 30px;
-  border-radius: 3px;
-  display: none;
 }
 
 /* Native search page */
@@ -48,23 +52,23 @@ form .radio-info {
 }
 
 #toplevel_page_algolia .algolia-pro-indicator {
-  background-color: #003dff;
+  background-color: var(--algolia-blue);
   border-radius: 3px;
-  color: #f5f5fa;
+  color: var(--algolia-white);
   font-size: 10px;
   padding: 2px 3px;
   vertical-align: text-top;
 }
 .algolia-menu-highlight {
-  color: #fff;
+  color: var(--algolia-white);
 }
 #toplevel_page_algolia .algolia-submenu-highlight {
-  background-color: #003dff;
+  background-color: var(--algolia-blue);
   font-weight: bold;
 }
 
 .algolia-pro-cta {
-  background-color: #fff;
+  background-color: var(--algolia-white);
   left: 50%;
   margin-top: 0;
   max-width: 850px;
@@ -92,10 +96,10 @@ form .radio-info {
   max-width: 560px;
 }
 .algolia-pro-cta .algolia-pro-button {
-  background-color: #003dff;
+  background-color: var(--algolia-blue);
   border-bottom: 0;
   border-radius: 4px;
-  color: #fff;
+  color: var(--algolia-white);
   cursor: pointer;
   display: inline-block;
   font-size: 24px;
@@ -105,7 +109,7 @@ form .radio-info {
   text-decoration: none;
 }
 .algolia-pro-cta .algolia-pro-button:hover {
-  background-color: #0077ff;
+  background-color: var(--algolia-blue-lighten);
 }
 .algolia-pro-cta .algolia-pro-more {
   display: block;
@@ -115,7 +119,7 @@ form .radio-info {
   text-align: center;
 }
 .algolia-pro-cta .algolia-pro-more a {
-  color: #003dff;
+  color: var(--algolia-blue);
   display: inline-block;
   font-size: 14px;
   font-style: italic;
@@ -123,7 +127,7 @@ form .radio-info {
   text-decoration: none;
 }
 .algolia-pro-cta .algolia-pro-more a:hover {
-  color: #0077ff;
+  color: var(--algolia-blue-lighten);
 }
 .algolia-pro-cta .algolia-pro-features {
   display: flex;
@@ -142,4 +146,58 @@ form .radio-info {
 }
 .algolia-pro-cta .algolia-pro-feature svg {
   padding-right: 4px;
+}
+.algolia-premium-wrap-block {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  justify-content: space-between;
+}
+.algolia-premium-support-block {
+  text-align: center;
+}
+.algolia-premium-support-block.algolia-pro-block {
+  text-align: left;
+}
+.wds-premium {
+  background: var(--algolia-blue);
+  color: var(--algolia-white);
+  padding: 10px;
+  border-radius: 9999px;
+  text-decoration: none;
+}
+.wds-premium:hover {
+  color: var(--algolia-white);
+}
+.algolia-flex {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.algolia-flex-item {
+  padding: 5px 10px;
+}
+.algolia-pro-block {
+
+}
+.algolia-pro-flex-wrap {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-content: space-between;
+  gap: 10px;
+}
+.algolia-pro-flex-item {
+  border: solid blue 1px;
+  border-radius: 15px;
+  flex: 1;
+  padding: 10px;
+  width: 33%;
+}
+.algolia-pro-features {
+  padding-left: 15px;
+}
+.algolia-pro-features li {
+  list-style: disc;
 }

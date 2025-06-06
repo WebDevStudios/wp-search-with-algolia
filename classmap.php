@@ -25,7 +25,7 @@ apply_filters_deprecated(
 	[ true ],
 	'2.3.2',
 	'',
-	esc_html__( 'The "algolia_should_require_search_client" filter is deprecated and no longer has any effect.', 'wp-search-with-algolia' )
+	'The "algolia_should_require_search_client" filter is deprecated and no longer has any effect.',
 );
 
 // Autoload vendor dependencies, that have been prefixed to prevent namespace collision.
@@ -69,7 +69,7 @@ if ( is_admin() ) {
 	require_once ALGOLIA_PATH . 'includes/admin/class-algolia-admin-page-autocomplete.php';
 	require_once ALGOLIA_PATH . 'includes/admin/class-algolia-admin-page-native-search.php';
 	require_once ALGOLIA_PATH . 'includes/admin/class-algolia-admin-page-woocommerce.php';
+	require_once ALGOLIA_PATH . 'includes/admin/class-algolia-admin-page-premium-support.php';
 	require_once ALGOLIA_PATH . 'includes/admin/class-algolia-admin-page-seo.php';
 	require_once ALGOLIA_PATH . 'includes/admin/class-algolia-admin-template-notices.php';
-
 }

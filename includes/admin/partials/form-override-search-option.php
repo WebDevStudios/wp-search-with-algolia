@@ -20,7 +20,7 @@
 		<?php
 		echo wp_kses(
 			__(
-				'Do not use Algolia for searching at all. This option disables the plugin completely',
+				'Do not use Algolia for any search. This option disables the search integration completely.',
 				'wp-search-with-algolia'
 			),
 			[
@@ -39,7 +39,7 @@
 		<?php
 		echo wp_kses(
 			__(
-				'Search results will be powered by Algolia and will use the standard WordPress search template for displaying the results.<br/>This option has the advantage to play nicely with any theme but does not support filtering and displaying instant search results.',
+				'Search results will be powered by Algolia and will use the standard WordPress search template for displaying the results.<br/>This option has the advantage to play nicely with any theme but does not support filtering and displaying InstantSearch results.',
 				'wp-search-with-algolia'
 			),
 			[
@@ -59,7 +59,7 @@
 		<?php
 		echo wp_kses(
 			__(
-				'This will replace the WordPress search page with an instant search experience powered by Algolia.<br/>By default you will be able to filter by post type, categories, tags and authors.',
+				'This will replace the WordPress search page with an InstantSearch experience powered by Algolia.<br/>By default you will be able to filter by post type, categories, tags and authors.',
 				'wp-search-with-algolia'
 			),
 			[

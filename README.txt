@@ -1,13 +1,13 @@
 === WP Search with Algolia ===
 Contributors: WebDevStudios, williamsba1, tw2113, mrasharirfan, scottbasgaard, gregrickaby, richaber
 Tags: search, algolia, autocomplete, instantsearch, relevance search, faceted search, find-as-you-type search, ecommerce, seo, woocommerce, advanced search
-Requires at least: 5.0
-Tested up to: 6.3.1
+Requires at least: 5.3
+Tested up to: 6.8.1
 Requires PHP: 7.4
-Stable tag: 2.6.1
+Stable tag: 2.9.0
 License: GNU General Public License v2.0, MIT License
 
-Use the power of Algolia to enhance your website's search. Enable Autocomplete and Instantsearch for fast and accurate results. Control the look, feel, and relevance.
+Use the power of Algolia to enhance your website's search. Enable Autocomplete and Instantsearch for fast and accurate results and relevance.
 
 == Description ==
 
@@ -26,15 +26,17 @@ Enable Autocomplete and Instantsearch to immediately provide a more robust searc
 
 This plugin requires API keys from [Algolia](https://www.algolia.com/). API keys are free for small personal projects and non-commercial use. Learn more about [commercial use pricing](https://www.algolia.com/pricing/).
 
+=== WP Search with Algolia Pro ===
 Introducing **WP Search with Algolia Pro**, our new premium version of WP Search with Algolia! Pro features include:
 
+* Multisite Network-wide support!
+	* Create a global search for content across all the sites in your network all in one Algolia index.
 * WooCommerce support
-  * Indexing Product data including SKU, pricing (standard and variable), sales, and short descriptions.
+  * Indexing Product data including SKU, pricing (standard and variable), short descriptions, dimensions, and more.
   * Total sales and total ratings indexed for popularity
-* Advanced SEO support with Yoast SEO and All in One SEO
+* Advanced SEO support with Yoast SEO, All in One SEO, Rank Math SEO, SEOPress, and The SEO Framework.
   * Content level settings to exclude individual content from the search index
   * Set Algolia’s indexing to match with existing search engine “noindex” settings
-* Multisite Network-wide support coming soon!
 
 Are you ready to go Pro? Check out [WP Search with Algolia Pro on Pluginize](https://pluginize.com/plugins/wp-search-with-algolia-pro/)!
 
@@ -44,6 +46,7 @@ Are you ready to go Pro? Check out [WP Search with Algolia Pro on Pluginize](htt
 * [Documentation](https://github.com/WebDevStudios/wp-search-with-algolia/wiki)
 * [Support](https://wordpress.org/support/plugin/wp-search-with-algolia/)
 * [Feature requests and bugs](https://github.com/WebDevStudios/wp-search-with-algolia/issues)
+* [WP Search with Algolia Snippet Library](https://github.com/WebDevStudios/algolia-snippet-library)
 
 *This plugin is a derivative work of the code from the [Search by Algolia – Instant & Relevant results](https://wordpress.org/plugins/search-by-algolia-instant-relevant-results/) plugin for WordPress, which is licensed under the GPLv2.*
 
@@ -124,6 +127,41 @@ All development is handled on [GitHub](https://github.com/WebDevStudios/wp-searc
 == Changelog ==
 
 Follow along with the changelog on [Github](https://github.com/WebDevStudios/wp-search-with-algolia/releases).
+
+= 2.9.0 =
+* Added: Instantsearch Template options. Choose between "Legacy" hogan.js/WP Utils templates and "Modern" Javascript string literals. "Modern" is more in line with Algolia Documentation.
+* Added: ability to customize default Headers for Algolia Search Client configuration.
+* Added: Initial support for programmatic Secured API key creation.
+* Updated: Sync'd up `get_items()` methods to allow for specifying specific IDs for posts, terms, and users.
+* Updated: Instantsearch templates use "Posts per page" amount by default, from WordPress Reading settings.
+* Updated: Amended Autocomplete settings page to remove more builtin post types that don't need to be available.
+
+= 2.8.3 =
+* Fixed: "Function _load_textdomain_just_in_time was called incorrectly" notices.
+
+= 2.8.2 =
+* Updated: Wording and UI details around the settings pages for better and more accurate reflection.
+* Updated: Confirmed compatibility with WP 6.7.x
+* Added: New page regarding Premium support from WebDevStudios. Let's work together.
+
+= 2.8.1 =
+* Updated: WP Search with Algolia Pro features list for version 1.4.0
+
+= 2.8.0 =
+* Added: Filter to customize Algolia SearchClient configuration with connect/read/write timeouts.
+* Updated: Prevent table content from being concatenated. Thanks @rodrigo-arias
+* Updated: Pass `$post_id` to `algolia_get_post_images` filter.
+* Updated: Confirmed compatibility with WP 6.5
+
+= 2.7.1 =
+* Fixed: Instantsearch.php template file. "Powered By Algolia" Instantsearch widget wrapped in a check for if the "Remove powered by" option is checked. This should match already working behavior with Autocomplete dropdown.
+
+= 2.7.0 =
+* Updated: Moved post sync action from `save_post` to `wp_after_insert_post`. This allows for the sync to wait until after post meta and terms have been updated. Removes need to click save twice to sync everything.
+* Updated: WP Search with Algolia feature list.
+
+= 2.6.2 =
+* Fixed: More performance updates and resolutions around WP All Import.
 
 = 2.6.1 =
 * Fixed: Performance issues related to delete operations.

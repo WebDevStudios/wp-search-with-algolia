@@ -137,7 +137,20 @@ class Algolia_Utils {
 			}
 		}
 
-		return (array) apply_filters( 'algolia_get_post_images', $images );
+		/**
+		 * Filters the final array of images and image data.
+		 *
+		 * Parameter will be an array keyed by image size, and has
+		 * URL, width and height details for each image.
+		 *
+		 * @since 1.0.0
+		 * @since 2.8.0 Added `$post_id` as second parameter
+		 *
+		 * @param array  $images  Array of images data.
+		 * @param int    $post_id Current post ID being indexed.
+		 * @return array $images  Final array of images data.
+		 */
+		return (array) apply_filters( 'algolia_get_post_images', $images, $post_id );
 	}
 
 	/**
@@ -199,6 +212,9 @@ class Algolia_Utils {
 		}
 
 		$content = str_replace( '&nbsp;', ' ', $content );
+
+		// Prevent table content from being concatenated.
+		$content = str_replace( [ '</td>', '</th>' ], ' ', $content );
 
 		return html_entity_decode( $content );
 	}
@@ -283,26 +299,47 @@ class Algolia_Utils {
 			</h3>
 			<div class="algolia-pro-features">
 				<div>
+					<?php $svg = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#0077ff" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>'; ?>
 					<h4><?php esc_html_e( 'WooCommerce Support', 'wp-search-with-algolia' ); ?></h4>
 					<span class="algolia-pro-feature">
-						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#0077ff" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
-						<span><?php esc_html_e( 'Index product SKUs, prices and short descriptions for display', 'wp-search-with-algolia' ); ?></span>
+						<?php echo $svg; ?>
+						<span><?php esc_html_e( 'Index product SKUs, prices, short descriptions and product dimensions/weight for display.', 'wp-search-with-algolia' ); ?></span>
 					</span>
 					<span class="algolia-pro-feature">
-						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#0077ff" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
-						<span><?php esc_html_e( 'Index product total sales ratings for relevance', 'wp-search-with-algolia' ); ?></span>
+						<?php echo $svg; ?>
+						<span><?php esc_html_e( 'Index product total sales ratings for relevance.', 'wp-search-with-algolia' ); ?></span>
+					</span>
+					<span class="algolia-pro-feature">
+						<?php echo $svg; ?>
+						<span><?php esc_html_e( 'Index product total and average ratings for relevance.', 'wp-search-with-algolia' ); ?></span>
+					</span>
+					<span class="algolia-pro-feature">
+						<?php echo $svg; ?>
+						<span><?php esc_html_e( 'Control whether or not sold out products are indexed', 'wp-search-with-algolia' ); ?></span>
+					</span>
+					<span class="algolia-pro-feature">
+						<?php echo $svg; ?>
+						<span><?php esc_html_e( 'Control whether or not "shop only" or "hidden" products are indexed.', 'wp-search-with-algolia' ); ?></span>
+					</span>
+					<span class="algolia-pro-feature">
+						<?php echo $svg; ?>
+						<span><?php esc_html_e( 'Amend indexing to only include WooCommerce products.', 'wp-search-with-algolia' ); ?></span>
 					</span>
 				</div>
 				<div>
 					<h4><?php esc_html_e( 'Additional Features', 'wp-search-with-algolia' ); ?></h4>
 					<span class="algolia-pro-feature">
-					<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#0077ff" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
-					<span><?php esc_html_e( 'Fine tune indexing on selected pieces of content', 'wp-search-with-algolia' ); ?></span>
-				</span>
+						<?php echo $svg; ?>
+						<span><?php esc_html_e( 'Multisite indexing into a single network index to provide a global Algolia-powered search experience.', 'wp-search-with-algolia' ); ?></span>
+					</span>
 					<span class="algolia-pro-feature">
-					<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#0077ff" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
-					<span><?php esc_html_e( 'Yoast SEO and All in One SEO Support', 'wp-search-with-algolia' ); ?></span>
-				</span>
+						<?php echo $svg; ?>
+						<span><?php esc_html_e( 'Fine tune indexing on selected pieces of content', 'wp-search-with-algolia' ); ?></span>
+					</span>
+					<span class="algolia-pro-feature">
+						<?php echo $svg; ?>
+						<span><?php esc_html_e( 'Yoast SEO, All in One SEO, Rank Math SEO, SEOPress, and The SEO Framework Support', 'wp-search-with-algolia' ); ?></span>
+					</span>
 				</div>
 			</div>
 			<div>

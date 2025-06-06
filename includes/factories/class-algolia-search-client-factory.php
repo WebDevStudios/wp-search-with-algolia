@@ -6,6 +6,7 @@
  * @package WebDevStudios\WPSWA
  */
 
+use WebDevStudios\WPSWA\Algolia\AlgoliaSearch\Config\SearchConfig;
 use WebDevStudios\WPSWA\Algolia\AlgoliaSearch\Algolia;
 use WebDevStudios\WPSWA\Algolia\AlgoliaSearch\SearchClient;
 use WebDevStudios\WPSWA\Algolia\AlgoliaSearch\Support\UserAgent;
@@ -55,6 +56,65 @@ class Algolia_Search_Client_Factory {
 		$http_client = Algolia_Http_Client_Interface_Factory::create();
 
 		Algolia::setHttpClient( $http_client );
+
+		/**
+		 * Allows for providing custom configuration arguments for Algolia Search Client.
+		 *
+		 * @see https://www.algolia.com/doc/api-reference/api-methods/configuring-timeouts/
+		 * @since 2.8.0
+		 *
+		 * @param array $value Array of values for Algolia Config. Default empty array.
+		 */
+		$custom_config = apply_filters(
+			'algolia_custom_search_config',
+			[]
+		);
+
+		/**
+		 * Allows for customizing an Algolia secured API key.
+		 * @see https://www.algolia.com/doc/api-reference/api-methods/generate-secured-api-key/
+		 *
+		 * @param array $value Array of secured API key arguments. Default empty array.
+		 */
+		$custom_secured_key_config = apply_filters(
+			'algolia_custom_secured_key',
+			[]
+		);
+
+		if ( ! empty( $custom_secured_key_config ) && is_array( $custom_secured_key_config ) ) {
+			$custom_secured_key_config = wp_parse_args(
+				$custom_secured_key_config,
+				[
+					'filters'           => '',
+					'validUntil'        => '',
+					'restrictIndices'   => [],
+					'restrictSources'   => '',
+					'userToken'         => '',
+				]
+			);
+
+			$api_key = SearchClient::generateSecuredApiKey( $api_key, $custom_secured_key_config );
+		}
+
+		if ( ! empty( $custom_config ) && is_array( $custom_config ) ) {
+			$config = SearchConfig::create( $app_id, $api_key );
+
+			if ( ! empty( $custom_config['connectTimeout'] ) ) {
+				$config->setConnectTimeout( (int) $custom_config['connectTimeout'] );
+			}
+			if ( ! empty( $custom_config['readTimeout'] ) ) {
+				$config->setReadTimeout( (int) $custom_config['readTimeout'] );
+			}
+			if ( ! empty( $custom_config['writeTimeout'] ) ) {
+				$config->setWriteTimeout( (int) $custom_config['writeTimeout'] );
+			}
+
+			if ( is_array( $custom_config['DefaultHeaders'] ) && ! empty( $custom_config['DefaultHeaders'] ) ) {
+				$config->setDefaultHeaders( $custom_config['DefaultHeaders'] );
+			}
+
+			return SearchClient::createWithConfig( $config );
+		}
 
 		return SearchClient::create(
 			(string) $app_id,

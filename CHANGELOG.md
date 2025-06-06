@@ -1,6 +1,33 @@
-## 2.6.1
+## 2.8.3
+* Fixed: "Function _load_textdomain_just_in_time was called incorrectly" notices.
 
+## 2.8.2
+* Updated: Wording and UI details around the settings pages for better and more accurate reflection.
+* Updated: Confirmed compatibility with WP 6.7.x
+* Added: New page regarding Premium support from WebDevStudios. Let's work together.
+
+## 2.8.1
+* Updated: WP Search with Algolia Pro features list for version 1.4.0
+
+## 2.8.0
+* Added: Filter to customize Algolia SearchClient configuration with connect/read/write timeouts.
+* Updated: Prevent table content from being concatenated. Thanks @rodrigo-arias
+* Updated: Pass `$post_id` to `algolia_get_post_images` filter.
+* Updated: Confirmed compatibility with WP 6.5
+
+## 2.7.1
+* Fixed: Instantsearch.php template file. "Powered By Algolia" Instantsearch widget wrapped in a check for if the "Remove powered by" option is checked. This should match already working behavior with Autocomplete dropdown.
+
+## 2.7.0
+* Updated: Moved post sync action from `save_post` to `wp_after_insert_post`. This allows for the sync to wait until after post meta and terms have been updated. Removes need to click save twice to sync everything.
+* Updated: WP Search with Algolia feature list.
+
+## 2.6.2
+* Fixed: More performance updates and resolutions around WP All Import.
+
+## 2.6.1
 * Fixed: Performance issues related to delete operations.
+
 * Fixed: Performance issues around WP All Import.
 
 ## 2.6.0
