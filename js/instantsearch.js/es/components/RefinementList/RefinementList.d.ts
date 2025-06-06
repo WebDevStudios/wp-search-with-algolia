@@ -53,12 +53,20 @@ declare class RefinementList<TTemplates extends Templates> extends Component<Ref
         cssClasses: {};
         depth: number;
     };
+    private listRef;
     private searchBox;
+    private lastRefinedValue;
     shouldComponentUpdate(nextProps: RefinementListPropsWithDefaultProps<TTemplates>): boolean;
     private refine;
     private _generateFacetItem;
     private handleItemClick;
     componentWillReceiveProps(nextProps: RefinementListPropsWithDefaultProps<TTemplates>): void;
+    /**
+     * This sets focus on the last refined input element after a render
+     * because Preact does not perform it automatically.
+     * @see https://github.com/preactjs/preact/issues/3242
+     */
+    componentDidUpdate(): void;
     private refineFirstValue;
     render(): h.JSX.Element;
 }

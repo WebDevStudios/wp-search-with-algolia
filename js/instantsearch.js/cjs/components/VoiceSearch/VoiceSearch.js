@@ -61,5 +61,4 @@ var VoiceSearch = function VoiceSearch(_ref) {
     templates: templates
   }));
 };
-var _default = VoiceSearch;
-exports.default = _default;
+var _default = exports.default = VoiceSearch;

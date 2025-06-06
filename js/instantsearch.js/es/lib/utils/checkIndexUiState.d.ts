@@ -1,5 +1,4 @@
-import type { IndexUiState } from '../../types';
-import type { IndexWidget } from '../../widgets/index/index';
+import type { IndexUiState, IndexWidget } from '../../types';
 type CheckIndexUiStateParams = {
     index: IndexWidget;
     indexUiState: IndexUiState;

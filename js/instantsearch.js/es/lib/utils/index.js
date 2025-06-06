@@ -1,3 +1,4 @@
+export * from "./addWidgetId.js";
 export * from "./capitalize.js";
 export * from "./checkIndexUiState.js";
 export * from "./checkRendering.js";
@@ -27,6 +28,8 @@ export * from "./getRefinements.js";
 export * from "./getWidgetAttribute.js";
 export * from "./hits-absolute-position.js";
 export * from "./hits-query-id.js";
+export * from "./hydrateRecommendCache.js";
+export * from "./hydrateSearchClient.js";
 export * from "./isDomElement.js";
 export * from "./isEqual.js";
 export * from "./isFacetRefined.js";

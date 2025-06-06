@@ -43,5 +43,4 @@ var RelevantSort = function RelevantSort(_ref) {
     }
   }))) : null;
 };
-var _default = RelevantSort;
-exports.default = _default;
+var _default = exports.default = RelevantSort;

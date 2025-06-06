@@ -13,5 +13,4 @@ var defaultTemplates = {
     return isRelevantSorted ? 'See all results' : 'See relevant results';
   }
 };
-var _default = defaultTemplates;
-exports.default = _default;
+var _default = exports.default = defaultTemplates;

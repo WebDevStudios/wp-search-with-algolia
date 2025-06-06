@@ -14,13 +14,15 @@ function getStateWithoutPage(state) {
     rest = _objectWithoutProperties(_ref, _excluded);
   return rest;
 }
-var KEY = 'ais.infiniteHits';
 function createInfiniteHitsSessionStorageCache() {
+  var _ref2 = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
+    key = _ref2.key;
+  var KEY = ['ais.infiniteHits', key].filter(Boolean).join(':');
   return {
-    read: function read(_ref2) {
-      var state = _ref2.state;
-      var sessionStorage = (0, _utils.safelyRunOnBrowser)(function (_ref3) {
-        var window = _ref3.window;
+    read: function read(_ref3) {
+      var state = _ref3.state;
+      var sessionStorage = (0, _utils.safelyRunOnBrowser)(function (_ref4) {
+        var window = _ref4.window;
         return window.sessionStorage;
       });
       if (!sessionStorage) {
@@ -42,11 +44,11 @@ function createInfiniteHitsSessionStorageCache() {
         return null;
       }
     },
-    write: function write(_ref4) {
-      var state = _ref4.state,
-        hits = _ref4.hits;
-      var sessionStorage = (0, _utils.safelyRunOnBrowser)(function (_ref5) {
-        var window = _ref5.window;
+    write: function write(_ref5) {
+      var state = _ref5.state,
+        hits = _ref5.hits;
+      var sessionStorage = (0, _utils.safelyRunOnBrowser)(function (_ref6) {
+        var window = _ref6.window;
         return window.sessionStorage;
       });
       if (!sessionStorage) {

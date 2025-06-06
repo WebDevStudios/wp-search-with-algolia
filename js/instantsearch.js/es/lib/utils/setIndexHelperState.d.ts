@@ -1,3 +1,2 @@
-import type { UiState } from '../../types';
-import type { IndexWidget } from '../../widgets/index/index';
+import type { UiState, IndexWidget } from '../../types';
 export declare function setIndexHelperState<TUiState extends UiState>(finalUiState: TUiState, indexWidget: IndexWidget): void;

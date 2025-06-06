@@ -1,12 +1,13 @@
-import type { IndexWidget } from '../widgets/index/index';
+import type { IndexWidget } from '../widgets';
+import type { RecommendResponse } from './algoliasearch';
 import type { InstantSearch } from './instantsearch';
 import type { IndexRenderState, WidgetRenderState } from './render-state';
 import type { IndexUiState, UiState } from './ui-state';
 import type { Expand, RequiredKeys } from './utils';
-import type { AlgoliaSearchHelper as Helper, SearchParameters, SearchResults } from 'algoliasearch-helper';
+import type { AlgoliaSearchHelper as Helper, SearchParameters, SearchResults, RecommendParameters } from 'algoliasearch-helper';
 export type ScopedResult = {
     indexId: string;
-    results: SearchResults;
+    results: SearchResults | null;
     helper: Helper;
 };
 type SharedRenderOptions = {
@@ -30,16 +31,20 @@ export type InitOptions = SharedRenderOptions & {
     uiState: UiState;
     results?: undefined;
 };
+export type ShouldRenderOptions = {
+    instantSearchInstance: InstantSearch;
+};
 export type RenderOptions = SharedRenderOptions & {
-    results: SearchResults;
+    results: SearchResults | null;
 };
 export type DisposeOptions = {
     helper: Helper;
     state: SearchParameters;
+    recommendState: RecommendParameters;
     parent: IndexWidget;
 };
-export type BuiltinTypes = 'ais.analytics' | 'ais.answers' | 'ais.autocomplete' | 'ais.breadcrumb' | 'ais.clearRefinements' | 'ais.configure' | 'ais.configureRelatedItems' | 'ais.currentRefinements' | 'ais.dynamicWidgets' | 'ais.geoSearch' | 'ais.hierarchicalMenu' | 'ais.hits' | 'ais.hitsPerPage' | 'ais.index' | 'ais.infiniteHits' | 'ais.menu' | 'ais.numericMenu' | 'ais.pagination' | 'ais.places' | 'ais.poweredBy' | 'ais.queryRules' | 'ais.range' | 'ais.rangeSlider' | 'ais.rangeInput' | 'ais.ratingMenu' | 'ais.refinementList' | 'ais.searchBox' | 'ais.relevantSort' | 'ais.sortBy' | 'ais.stats' | 'ais.toggleRefinement' | 'ais.voiceSearch';
-export type BuiltinWidgetTypes = 'ais.analytics' | 'ais.answers' | 'ais.autocomplete' | 'ais.breadcrumb' | 'ais.clearRefinements' | 'ais.configure' | 'ais.configureRelatedItems' | 'ais.currentRefinements' | 'ais.dynamicWidgets' | 'ais.geoSearch' | 'ais.hierarchicalMenu' | 'ais.hits' | 'ais.hitsPerPage' | 'ais.index' | 'ais.infiniteHits' | 'ais.menu' | 'ais.menuSelect' | 'ais.numericMenu' | 'ais.pagination' | 'ais.places' | 'ais.poweredBy' | 'ais.queryRuleCustomData' | 'ais.queryRuleContext' | 'ais.rangeInput' | 'ais.rangeSlider' | 'ais.ratingMenu' | 'ais.refinementList' | 'ais.searchBox' | 'ais.relevantSort' | 'ais.sortBy' | 'ais.stats' | 'ais.toggleRefinement' | 'ais.voiceSearch';
+export type BuiltinTypes = 'ais.analytics' | 'ais.answers' | 'ais.autocomplete' | 'ais.breadcrumb' | 'ais.clearRefinements' | 'ais.configure' | 'ais.configureRelatedItems' | 'ais.currentRefinements' | 'ais.dynamicWidgets' | 'ais.frequentlyBoughtTogether' | 'ais.geoSearch' | 'ais.hierarchicalMenu' | 'ais.hits' | 'ais.hitsPerPage' | 'ais.index' | 'ais.infiniteHits' | 'ais.lookingSimilar' | 'ais.menu' | 'ais.numericMenu' | 'ais.pagination' | 'ais.places' | 'ais.poweredBy' | 'ais.queryRules' | 'ais.range' | 'ais.rangeSlider' | 'ais.rangeInput' | 'ais.ratingMenu' | 'ais.refinementList' | 'ais.relatedProducts' | 'ais.searchBox' | 'ais.relevantSort' | 'ais.sortBy' | 'ais.stats' | 'ais.toggleRefinement' | 'ais.trendingItems' | 'ais.voiceSearch';
+export type BuiltinWidgetTypes = 'ais.analytics' | 'ais.answers' | 'ais.autocomplete' | 'ais.breadcrumb' | 'ais.clearRefinements' | 'ais.configure' | 'ais.configureRelatedItems' | 'ais.currentRefinements' | 'ais.dynamicWidgets' | 'ais.frequentlyBoughtTogether' | 'ais.geoSearch' | 'ais.hierarchicalMenu' | 'ais.hits' | 'ais.hitsPerPage' | 'ais.index' | 'ais.infiniteHits' | 'ais.lookingSimilar' | 'ais.menu' | 'ais.menuSelect' | 'ais.numericMenu' | 'ais.pagination' | 'ais.places' | 'ais.poweredBy' | 'ais.queryRuleCustomData' | 'ais.queryRuleContext' | 'ais.rangeInput' | 'ais.rangeSlider' | 'ais.ratingMenu' | 'ais.refinementList' | 'ais.relatedProducts' | 'ais.searchBox' | 'ais.relevantSort' | 'ais.sortBy' | 'ais.stats' | 'ais.toggleRefinement' | 'ais.trendingItems' | 'ais.voiceSearch';
 export type UnknownWidgetParams = NonNullable<object>;
 export type WidgetParams = {
     widgetParams?: UnknownWidgetParams;
@@ -51,6 +56,24 @@ export type WidgetDescription = {
     indexRenderState?: Record<string, unknown>;
     indexUiState?: Record<string, unknown>;
 };
+type SearchWidget<TWidgetDescription extends WidgetDescription> = {
+    dependsOn?: 'search';
+    getWidgetParameters?: (state: SearchParameters, widgetParametersOptions: {
+        uiState: Expand<Partial<TWidgetDescription['indexUiState'] & IndexUiState>>;
+    }) => SearchParameters;
+};
+type RecommendRenderOptions = SharedRenderOptions & {
+    results: RecommendResponse<any>;
+};
+type RecommendWidget<TWidgetDescription extends WidgetDescription & WidgetParams> = {
+    dependsOn: 'recommend';
+    $$id?: number;
+    getWidgetParameters: (state: RecommendParameters, widgetParametersOptions: {
+        uiState: Expand<Partial<TWidgetDescription['indexUiState'] & IndexUiState>>;
+    }) => RecommendParameters;
+    getRenderState: (renderState: Expand<IndexRenderState & Partial<TWidgetDescription['indexRenderState']>>, renderOptions: InitOptions | RecommendRenderOptions) => IndexRenderState & TWidgetDescription['indexRenderState'];
+    getWidgetRenderState: (renderOptions: InitOptions | RecommendRenderOptions) => Expand<WidgetRenderState<TWidgetDescription['renderState'], TWidgetDescription['widgetParams']>>;
+};
 type RequiredWidgetLifeCycle<TWidgetDescription extends WidgetDescription> = {
     /**
      * Identifier for connectors and widgets.
@@ -61,6 +84,10 @@ type RequiredWidgetLifeCycle<TWidgetDescription extends WidgetDescription> = {
      */
     init?: (options: InitOptions) => void;
     /**
+     * Whether `render` should be called
+     */
+    shouldRender?: (options: ShouldRenderOptions) => boolean;
+    /**
      * Called after each search response has been received.
      */
     render?: (options: RenderOptions) => void;
@@ -68,7 +95,7 @@ type RequiredWidgetLifeCycle<TWidgetDescription extends WidgetDescription> = {
      * Called when this widget is unmounted. Used to remove refinements set by
      * during this widget's initialization and life time.
      */
-    dispose?: (options: DisposeOptions) => SearchParameters | void;
+    dispose?: (options: DisposeOptions) => SearchParameters | RecommendParameters | void;
 };
 type RequiredWidgetType<TWidgetDescription extends WidgetDescription> = {
     /**
@@ -132,9 +159,10 @@ type RequiredRenderStateLifeCycle<TWidgetDescription extends WidgetDescription &
 type RenderStateLifeCycle<TWidgetDescription extends WidgetDescription & WidgetParams> = TWidgetDescription extends RequiredKeys<WidgetDescription, 'renderState' | 'indexRenderState'> & WidgetParams ? RequiredRenderStateLifeCycle<TWidgetDescription> : Partial<RequiredRenderStateLifeCycle<TWidgetDescription>>;
 export type Widget<TWidgetDescription extends WidgetDescription & WidgetParams = {
     $$type: string;
-}> = Expand<RequiredWidgetLifeCycle<TWidgetDescription> & WidgetType<TWidgetDescription> & UiStateLifeCycle<TWidgetDescription> & RenderStateLifeCycle<TWidgetDescription>>;
+}> = Expand<RequiredWidgetLifeCycle<TWidgetDescription> & WidgetType<TWidgetDescription> & UiStateLifeCycle<TWidgetDescription> & RenderStateLifeCycle<TWidgetDescription>> & (SearchWidget<TWidgetDescription> | RecommendWidget<TWidgetDescription>);
+export type { IndexWidget } from '../widgets';
 export type TransformItemsMetadata = {
-    results?: SearchResults;
+    results: SearchResults | undefined | null;
 };
 /**
  * Transforms the given items.
@@ -149,4 +177,3 @@ export type SortBy<TItem> = ((a: TItem, b: TItem) => number) | Array<SortByDirec
  * Creates the URL for the given value.
  */
 export type CreateURL<TValue> = (value: TValue) => string;
-export {};

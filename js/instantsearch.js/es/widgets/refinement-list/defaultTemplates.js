@@ -1,4 +1,4 @@
-import { cx } from '@algolia/ui-components-shared';
+import { cx } from 'instantsearch-ui-components';
 import { h } from 'preact';
 import { formatNumber } from "../../lib/formatNumber.js";
 var defaultTemplates = {

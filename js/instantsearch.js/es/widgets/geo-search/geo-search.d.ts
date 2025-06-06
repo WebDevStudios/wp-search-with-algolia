@@ -1,5 +1,3 @@
-/// <reference types="google.maps" />
-/// <reference types="googlemaps" />
 import type { GeoSearchConnectorParams, GeoSearchWidgetDescription, GeoHit } from '../../connectors/geo-search/connectGeoSearch';
 import type { GeoLoc, Template, WidgetFactory } from '../../types';
 import type { HTMLMarkerArguments } from './createHTMLMarker';
@@ -7,9 +5,9 @@ export type CreateMarker = (args: {
     item: GeoHit;
     map: google.maps.Map;
 }) => google.maps.OverlayView | google.maps.Marker;
-export type GeoSearchTemplates = Partial<{
+export type GeoSearchTemplates<THit extends GeoHit = GeoHit> = Partial<{
     /** Template to use for the marker. */
-    HTMLMarker: Template<GeoHit>;
+    HTMLMarker: Template<THit>;
     /** Template for the reset button. */
     reset: Template;
     /** Template for the toggle label. */
@@ -38,13 +36,13 @@ export type GeoSearchCSSClasses = Partial<{
     /** The reset refinement button. */
     reset: string | string[];
 }>;
-export type GeoSearchMarker<TOptions> = {
+export type GeoSearchMarker<TOptions, THit extends GeoHit = GeoHit> = {
     /**
      * Function used to create the options passed to the Google Maps marker.
      * See the documentation for more information:
      * https://developers.google.com/maps/documentation/javascript/reference/3/#MarkerOptions
      */
-    createOptions?: (item: GeoHit) => TOptions;
+    createOptions?: (item: THit) => TOptions;
     /**
      * Object that takes an event type (ex: `click`, `mouseover`) as key and a
      * listener as value. The listener is provided with an object that contains:
@@ -59,7 +57,7 @@ export type GeoSearchMarker<TOptions> = {
         }) => void;
     };
 };
-export type GeoSearchWidgetParams = {
+export type GeoSearchWidgetParams<THit extends GeoHit = GeoHit> = {
     /**
      * By default the map will set the zoom accordingly to the markers displayed on it.
      * When we refine it may happen that the results are empty. For those situations we
@@ -76,7 +74,7 @@ export type GeoSearchWidgetParams = {
      */
     initialPosition?: GeoLoc;
     /** Templates to use for the widget. */
-    templates?: GeoSearchTemplates;
+    templates?: GeoSearchTemplates<THit>;
     /** CSS classes to add to the wrapping elements. */
     cssClasses?: GeoSearchCSSClasses;
     /**
@@ -138,5 +136,243 @@ export type GeoSearchWidget = WidgetFactory<GeoSearchWidgetDescription & {
  *
  * Don't forget to explicitly set the `height` of the map container (default class `.ais-geo-search--map`), otherwise it won't be shown (it's a requirement of Google Maps).
  */
-declare const geoSearch: GeoSearchWidget;
-export default geoSearch;
+declare const _default: <THit extends GeoHit = GeoHit>(widgetParams: GeoSearchWidgetParams<THit> & GeoSearchConnectorParams<THit>) => {
+    $$widgetType: "ais.geoSearch";
+    $$type: "ais.geoSearch";
+    init(initArgs: import("../../types").InitOptions): void;
+    render(renderArgs: import("../../types").RenderOptions): void;
+    getWidgetRenderState(renderOptions: import("../../types").InitOptions | import("../../types").RenderOptions): {
+        items: GeoHit<THit>[];
+        position: {
+            lat: number;
+            lng: number;
+        } | undefined;
+        currentRefinement: {
+            northEast: {
+                lat: number;
+                lng: number;
+            };
+            southWest: {
+                lat: number;
+                lng: number;
+            };
+        } | undefined;
+        refine: ({ northEast: ne, southWest: sw }: {
+            northEast: GeoLoc;
+            southWest: GeoLoc;
+        }) => void;
+        sendEvent: import("../../lib/utils").SendEventForHits;
+        clearMapRefinement: () => void;
+        isRefinedWithMap: () => boolean;
+        toggleRefineOnMapMove: () => void;
+        isRefineOnMapMove: () => boolean;
+        setMapMoveSinceLastRefine: () => void;
+        hasMapMoveSinceLastRefine: () => boolean;
+        widgetParams: {
+            renderState: {
+                templateProps?: import("../../lib/templating").PreparedTemplateProps<GeoSearchTemplates>;
+                isUserInteraction?: boolean;
+                isPendingRefine?: boolean;
+                markers?: any[];
+            };
+            container: HTMLElement;
+            googleReference: GeoSearchWidgetParams["googleReference"];
+            initialZoom: GeoSearchWidgetParams["initialZoom"];
+            initialPosition: GeoSearchWidgetParams["initialPosition"];
+            templates: Partial<{
+                /** Template to use for the marker. */
+                HTMLMarker: Template<GeoHit>;
+                /** Template for the reset button. */
+                reset: Template;
+                /** Template for the toggle label. */
+                toggle: Template;
+                /** Template for the redo button. */
+                redo: Template;
+            }>;
+            cssClasses: import("../../types").ComponentCSSClasses<Partial<{
+                /** The root div of the widget. */
+                root: string | string[];
+                /** The map container of the widget. */
+                map: string | string[];
+                /** The control element of the widget. */
+                control: string | string[];
+                /** The label of the control element. */
+                label: string | string[];
+                /** The selected label of the control element. */
+                selectedLabel: string | string[];
+                /** The input of the control element. */
+                input: string | string[];
+                /** The redo search button. */
+                redo: string | string[];
+                /** The disabled redo search button. */
+                disabledRedo: string | string[];
+                /** The reset refinement button. */
+                reset: string | string[];
+            }> | undefined>;
+            createMarker: CreateMarker;
+            markerOptions: GeoSearchMarker<google.maps.MarkerOptions | Partial<HTMLMarkerArguments>>;
+            enableRefine: GeoSearchWidgetParams["enableRefine"];
+            enableClearMapRefinement: GeoSearchWidgetParams["enableClearMapRefinement"];
+            enableRefineControl: GeoSearchWidgetParams["enableRefineControl"];
+        } & GeoSearchConnectorParams<THit>;
+    };
+    getRenderState(renderState: {
+        answers?: import("../../types").WidgetRenderState<import("../../connectors/answers/connectAnswers").AnswersRenderState, import("../../connectors/answers/connectAnswers").AnswersConnectorParams> | undefined;
+        autocomplete?: import("../../types").WidgetRenderState<import("../../connectors/autocomplete/connectAutocomplete").AutocompleteRenderState, import("../../connectors/autocomplete/connectAutocomplete").AutocompleteConnectorParams> | undefined;
+        breadcrumb?: {
+            [rootAttribute: string]: import("../../types").WidgetRenderState<import("../../connectors/breadcrumb/connectBreadcrumb").BreadcrumbRenderState, import("../../connectors/breadcrumb/connectBreadcrumb").BreadcrumbConnectorParams>;
+        } | undefined;
+        clearRefinements?: import("../../types").WidgetRenderState<import("../../connectors/clear-refinements/connectClearRefinements").ClearRefinementsRenderState, import("../../connectors/clear-refinements/connectClearRefinements").ClearRefinementsConnectorParams> | undefined;
+        configure?: import("../../types").WidgetRenderState<import("../../connectors/configure/connectConfigure").ConfigureRenderState, import("../../connectors/configure/connectConfigure").ConfigureConnectorParams> | undefined;
+        currentRefinements?: import("../../types").WidgetRenderState<import("../../connectors/current-refinements/connectCurrentRefinements").CurrentRefinementsRenderState, import("../../connectors/current-refinements/connectCurrentRefinements").CurrentRefinementsConnectorParams> | undefined;
+        geoSearch?: import("../../types").WidgetRenderState<import("../../connectors/geo-search/connectGeoSearch").GeoSearchRenderState<GeoHit>, GeoSearchConnectorParams<GeoHit>> | undefined;
+        hierarchicalMenu?: {
+            [rootAttribute: string]: import("../../types").WidgetRenderState<import("../../connectors/hierarchical-menu/connectHierarchicalMenu").HierarchicalMenuRenderState, import("../../connectors/hierarchical-menu/connectHierarchicalMenu").HierarchicalMenuConnectorParams>;
+        } | undefined;
+        hits?: import("../../types").WidgetRenderState<import("../../connectors/hits/connectHits").HitsRenderState<import("../../types").BaseHit>, import("../../connectors/hits/connectHits").HitsConnectorParams<import("../../types").BaseHit>> | undefined;
+        hitsPerPage?: import("../../types").WidgetRenderState<import("../../connectors/hits-per-page/connectHitsPerPage").HitsPerPageRenderState, import("../../connectors/hits-per-page/connectHitsPerPage").HitsPerPageConnectorParams> | undefined;
+        infiniteHits?: import("../../types").WidgetRenderState<import("../../connectors/infinite-hits/connectInfiniteHits").InfiniteHitsRenderState<import("../../types").BaseHit>, import("../../connectors/infinite-hits/connectInfiniteHits").InfiniteHitsConnectorParams<import("../../types").BaseHit>> | undefined;
+        menu?: {
+            [attribute: string]: import("../../types").WidgetRenderState<import("../../connectors/menu/connectMenu").MenuRenderState, import("../../connectors/menu/connectMenu").MenuConnectorParams>;
+        } | undefined;
+        numericMenu?: {
+            [attribute: string]: import("../../types").WidgetRenderState<import("../../connectors/numeric-menu/connectNumericMenu").NumericMenuRenderState, import("../../connectors/numeric-menu/connectNumericMenu").NumericMenuConnectorParams>;
+        } | undefined;
+        pagination?: import("../../types").WidgetRenderState<import("../../connectors/pagination/connectPagination").PaginationRenderState, import("../../connectors/pagination/connectPagination").PaginationConnectorParams> | undefined;
+        poweredBy?: import("../../types").WidgetRenderState<import("../../connectors/powered-by/connectPoweredBy").PoweredByRenderState, import("../../connectors/powered-by/connectPoweredBy").PoweredByConnectorParams> | undefined;
+        queryRules?: import("../../types").WidgetRenderState<import("../../connectors/query-rules/connectQueryRules").QueryRulesRenderState, import("../../connectors/query-rules/connectQueryRules").QueryRulesConnectorParams> | undefined;
+        range?: {
+            [attribute: string]: import("../../types").WidgetRenderState<import("../../connectors/range/connectRange").RangeRenderState, import("../../connectors/range/connectRange").RangeConnectorParams>;
+        } | undefined;
+        ratingMenu?: {
+            [attribute: string]: import("../../types").WidgetRenderState<import("../../connectors/rating-menu/connectRatingMenu").RatingMenuRenderState, import("../../connectors/rating-menu/connectRatingMenu").RatingMenuConnectorParams>;
+        } | undefined;
+        refinementList?: {
+            [attribute: string]: import("../../types").WidgetRenderState<import("../../connectors/refinement-list/connectRefinementList").RefinementListRenderState, import("../../connectors/refinement-list/connectRefinementList").RefinementListConnectorParams>;
+        } | undefined;
+        relevantSort?: import("../../types").WidgetRenderState<import("../../connectors/relevant-sort/connectRelevantSort").RelevantSortRenderState, import("../../connectors/relevant-sort/connectRelevantSort").RelevantSortConnectorParams> | undefined;
+        searchBox?: import("../../types").WidgetRenderState<import("../../connectors/search-box/connectSearchBox").SearchBoxRenderState, import("../../connectors/search-box/connectSearchBox").SearchBoxConnectorParams> | undefined;
+        sortBy?: import("../../types").WidgetRenderState<import("../../connectors/sort-by/connectSortBy").SortByRenderState, import("../../connectors/sort-by/connectSortBy").SortByConnectorParams> | undefined;
+        stats?: import("../../types").WidgetRenderState<import("../../connectors/stats/connectStats").StatsRenderState, import("../../connectors/stats/connectStats").StatsConnectorParams> | undefined;
+        toggleRefinement?: {
+            [attribute: string]: import("../../types").WidgetRenderState<import("../../connectors/toggle-refinement/connectToggleRefinement").ToggleRefinementRenderState, import("../../connectors/toggle-refinement/connectToggleRefinement").ToggleRefinementConnectorParams>;
+        } | undefined;
+        voiceSearch?: import("../../types").WidgetRenderState<import("../../connectors/voice-search/connectVoiceSearch").VoiceSearchRenderState, import("../../connectors/voice-search/connectVoiceSearch").VoiceSearchConnectorParams> | undefined;
+        analytics?: import("../../types").WidgetRenderState<Record<string, unknown>, import("../analytics/analytics").AnalyticsWidgetParams> | undefined;
+        places?: import("../../types").WidgetRenderState<Record<string, unknown>, import("../places/places").PlacesWidgetParams> | undefined;
+    }, renderOptions: import("../../types").InitOptions | import("../../types").RenderOptions): import("../../types").IndexRenderState & GeoSearchWidgetDescription["indexRenderState"];
+    dispose({ state }: import("../../types").DisposeOptions): import("algoliasearch-helper").SearchParameters;
+    getWidgetUiState(uiState: {
+        geoSearch?: {
+            boundingBox: string;
+        } | undefined;
+        query?: string | undefined;
+        configure?: import("algoliasearch-helper").PlainSearchParameters | undefined;
+        hierarchicalMenu?: {
+            [rootAttribute: string]: string[];
+        } | undefined;
+        hitsPerPage?: number | undefined;
+        page?: number | undefined;
+        menu?: {
+            [attribute: string]: string;
+        } | undefined;
+        numericMenu?: {
+            [attribute: string]: string;
+        } | undefined;
+        range?: {
+            [attribute: string]: string;
+        } | undefined;
+        ratingMenu?: {
+            [attribute: string]: number | undefined;
+        } | undefined;
+        refinementList?: {
+            [attribute: string]: string[];
+        } | undefined;
+        relevantSort?: number | undefined;
+        sortBy?: string | undefined;
+        toggle?: {
+            [attribute: string]: boolean;
+        } | undefined;
+        places?: {
+            query: string;
+            position: string;
+        } | undefined;
+    }, { searchParameters }: {
+        searchParameters: import("algoliasearch-helper").SearchParameters;
+        helper: import("algoliasearch-helper").AlgoliaSearchHelper;
+    }): {
+        geoSearch?: {
+            boundingBox: string;
+        } | undefined;
+        query?: string | undefined;
+        configure?: import("algoliasearch-helper").PlainSearchParameters | undefined;
+        hierarchicalMenu?: {
+            [rootAttribute: string]: string[];
+        } | undefined;
+        hitsPerPage?: number | undefined;
+        page?: number | undefined;
+        menu?: {
+            [attribute: string]: string;
+        } | undefined;
+        numericMenu?: {
+            [attribute: string]: string;
+        } | undefined;
+        range?: {
+            [attribute: string]: string;
+        } | undefined;
+        ratingMenu?: {
+            [attribute: string]: number | undefined;
+        } | undefined;
+        refinementList?: {
+            [attribute: string]: string[];
+        } | undefined;
+        relevantSort?: number | undefined;
+        sortBy?: string | undefined;
+        toggle?: {
+            [attribute: string]: boolean;
+        } | undefined;
+        places?: {
+            query: string;
+            position: string;
+        } | undefined;
+    };
+    getWidgetSearchParameters(searchParameters: import("algoliasearch-helper").SearchParameters, { uiState }: {
+        uiState: {
+            geoSearch?: {
+                boundingBox: string;
+            } | undefined;
+            query?: string | undefined;
+            configure?: import("algoliasearch-helper").PlainSearchParameters | undefined;
+            hierarchicalMenu?: {
+                [rootAttribute: string]: string[];
+            } | undefined;
+            hitsPerPage?: number | undefined;
+            page?: number | undefined;
+            menu?: {
+                [attribute: string]: string;
+            } | undefined;
+            numericMenu?: {
+                [attribute: string]: string;
+            } | undefined;
+            range?: {
+                [attribute: string]: string;
+            } | undefined;
+            ratingMenu?: {
+                [attribute: string]: number | undefined;
+            } | undefined;
+            refinementList?: {
+                [attribute: string]: string[];
+            } | undefined;
+            relevantSort?: number | undefined;
+            sortBy?: string | undefined;
+            toggle?: {
+                [attribute: string]: boolean;
+            } | undefined;
+            places?: {
+                query: string;
+                position: string;
+            } | undefined;
+        };
+    }): import("algoliasearch-helper").SearchParameters;
+};
+export default _default;

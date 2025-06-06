@@ -8,7 +8,7 @@ exports.default = withInsightsListener;
 var _preact = require("preact");
 var _insights = require("../../helpers/insights");
 var _utils = require("../utils");
-var createInsightsEventHandler = function createInsightsEventHandler(_ref) {
+var createInsightsEventHandler = exports.createInsightsEventHandler = function createInsightsEventHandler(_ref) {
   var insights = _ref.insights,
     sendEvent = _ref.sendEvent;
   return function (event) {
@@ -35,7 +35,6 @@ var createInsightsEventHandler = function createInsightsEventHandler(_ref) {
     }
   };
 };
-exports.createInsightsEventHandler = createInsightsEventHandler;
 function findInsightsTarget(startElement, endElement, validator) {
   var element = startElement;
   while (element && !validator(element)) {

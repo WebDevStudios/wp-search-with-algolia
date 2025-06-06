@@ -1,4 +1,4 @@
-import type { InstantSearch, UiState, IndexUiState, Widget, ScopedResult } from '../../types';
+import type { InstantSearch, UiState, IndexUiState, Widget, ScopedResult, RecommendResponse } from '../../types';
 import type { AlgoliaSearchHelper as Helper, SearchParameters, SearchResults } from 'algoliasearch-helper';
 export type IndexWidgetParams = {
     indexName: string;
@@ -23,6 +23,7 @@ export type IndexWidget<TUiState extends UiState = UiState> = Omit<Widget<IndexW
     getIndexId: () => string;
     getHelper: () => Helper | null;
     getResults: () => SearchResults | null;
+    getResultsForWidget: (widget: IndexWidget | Widget) => SearchResults | RecommendResponse<any> | null;
     getPreviousState: () => SearchParameters | null;
     getScopedResults: () => ScopedResult[];
     getParent: () => IndexWidget | null;

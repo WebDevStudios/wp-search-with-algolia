@@ -5,4 +5,4 @@ export type MaybePromise<TResolution> = Readonly<Promise<TResolution>> | Promise
  * This is useful to prevent older promises to resolve after a newer promise,
  * otherwise resulting in stale resolved values.
  */
-export declare function createConcurrentSafePromise<TValue>(): (promise: MaybePromise<TValue>) => Promise<NonNullable<TValue> | Awaited<TValue>>;
+export declare function createConcurrentSafePromise<TValue>(): (promise: MaybePromise<TValue>) => Promise<Awaited<TValue> | NonNullable<TValue>>;

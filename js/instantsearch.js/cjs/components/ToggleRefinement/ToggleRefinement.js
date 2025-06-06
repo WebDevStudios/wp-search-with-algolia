@@ -35,5 +35,4 @@ var ToggleRefinement = function ToggleRefinement(_ref) {
     data: currentRefinement
   }))));
 };
-var _default = ToggleRefinement;
-exports.default = _default;
+var _default = exports.default = ToggleRefinement;

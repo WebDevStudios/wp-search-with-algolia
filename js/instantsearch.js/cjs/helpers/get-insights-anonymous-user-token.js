@@ -7,9 +7,8 @@ exports.ANONYMOUS_TOKEN_COOKIE_KEY = void 0;
 exports.default = getInsightsAnonymousUserToken;
 exports.getInsightsAnonymousUserTokenInternal = getInsightsAnonymousUserTokenInternal;
 var _utils = require("../lib/utils");
-function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
-var ANONYMOUS_TOKEN_COOKIE_KEY = '_ALGOLIA';
-exports.ANONYMOUS_TOKEN_COOKIE_KEY = ANONYMOUS_TOKEN_COOKIE_KEY;
+function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
+var ANONYMOUS_TOKEN_COOKIE_KEY = exports.ANONYMOUS_TOKEN_COOKIE_KEY = '_ALGOLIA';
 function getCookie(name) {
   if ((typeof document === "undefined" ? "undefined" : _typeof(document)) !== 'object' || typeof document.cookie !== 'string') {
     return undefined;
