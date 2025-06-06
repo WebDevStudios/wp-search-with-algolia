@@ -3,6 +3,17 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+var _addWidgetId = require("./addWidgetId");
+Object.keys(_addWidgetId).forEach(function (key) {
+  if (key === "default" || key === "__esModule") return;
+  if (key in exports && exports[key] === _addWidgetId[key]) return;
+  Object.defineProperty(exports, key, {
+    enumerable: true,
+    get: function get() {
+      return _addWidgetId[key];
+    }
+  });
+});
 var _capitalize = require("./capitalize");
 Object.keys(_capitalize).forEach(function (key) {
   if (key === "default" || key === "__esModule") return;
@@ -319,6 +330,28 @@ Object.keys(_hitsQueryId).forEach(function (key) {
     enumerable: true,
     get: function get() {
       return _hitsQueryId[key];
+    }
+  });
+});
+var _hydrateRecommendCache = require("./hydrateRecommendCache");
+Object.keys(_hydrateRecommendCache).forEach(function (key) {
+  if (key === "default" || key === "__esModule") return;
+  if (key in exports && exports[key] === _hydrateRecommendCache[key]) return;
+  Object.defineProperty(exports, key, {
+    enumerable: true,
+    get: function get() {
+      return _hydrateRecommendCache[key];
+    }
+  });
+});
+var _hydrateSearchClient = require("./hydrateSearchClient");
+Object.keys(_hydrateSearchClient).forEach(function (key) {
+  if (key === "default" || key === "__esModule") return;
+  if (key in exports && exports[key] === _hydrateSearchClient[key]) return;
+  Object.defineProperty(exports, key, {
+    enumerable: true,
+    get: function get() {
+      return _hydrateSearchClient[key];
     }
   });
 });

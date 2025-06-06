@@ -21,7 +21,7 @@ export default function snippet(_ref) {
     _ref2$value = _ref2.value,
     attributeValue = _ref2$value === void 0 ? '' : _ref2$value;
 
-  // cx is not used, since it would be bundled as a dependency for Vue & Angular
+  // cx is not used, since it would be bundled as a dependency for Vue
   var className = suit({
     descendantName: 'highlighted'
   }) + (cssClasses.highlighted ? " ".concat(cssClasses.highlighted) : '');

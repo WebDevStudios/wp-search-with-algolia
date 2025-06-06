@@ -1,4 +1,4 @@
-function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
+function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, _toPropertyKey(descriptor.key), descriptor); } }
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
@@ -10,8 +10,8 @@ function _assertThisInitialized(self) { if (self === void 0) { throw new Referen
 function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
 function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
 function _defineProperty(obj, key, value) { key = _toPropertyKey(key); if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-function _toPropertyKey(arg) { var key = _toPrimitive(arg, "string"); return _typeof(key) === "symbol" ? key : String(key); }
-function _toPrimitive(input, hint) { if (_typeof(input) !== "object" || input === null) return input; var prim = input[Symbol.toPrimitive]; if (prim !== undefined) { var res = prim.call(input, hint || "default"); if (_typeof(res) !== "object") return res; throw new TypeError("@@toPrimitive must return a primitive value."); } return (hint === "string" ? String : Number)(input); }
+function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" == _typeof(i) ? i : String(i); }
+function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != _typeof(i)) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
 import { h, createRef, Component } from 'preact';
 import { noop } from "../../lib/utils/index.js";
 import Template from "../Template/Template.js";
@@ -22,8 +22,10 @@ var defaultProps = {
   showLoadingIndicator: true,
   autofocus: false,
   searchAsYouType: true,
+  ignoreCompositionEvents: false,
   isSearchStalled: false,
   disabled: false,
+  ariaLabel: 'Search',
   onChange: noop,
   onSubmit: noop,
   onReset: noop,
@@ -50,13 +52,15 @@ var SearchBox = /*#__PURE__*/function (_Component) {
         refine = _this$props.refine,
         onChange = _this$props.onChange;
       var query = event.target.value;
-      if (searchAsYouType) {
-        refine(query);
+      if (!(_this.props.ignoreCompositionEvents && event.isComposing)) {
+        if (searchAsYouType) {
+          refine(query);
+        }
+        _this.setState({
+          query: query
+        });
+        onChange(event);
       }
-      _this.setState({
-        query: query
-      });
-      onChange(event);
     });
     _defineProperty(_assertThisInitialized(_this), "onSubmit", function (event) {
       var _this$props2 = _this.props,
@@ -121,7 +125,7 @@ var SearchBox = /*#__PURE__*/function (_Component) {
       /**
        * when the user is typing, we don't want to replace the query typed
        * by the user (state.query) with the query exposed by the connector (props.query)
-       * see: https://github.com/algolia/instantsearch.js/issues/4141
+       * see: https://github.com/algolia/instantsearch/issues/4141
        */
       if (!this.state.focused && nextProps.query !== this.state.query) {
         this.setState({
@@ -140,7 +144,8 @@ var SearchBox = /*#__PURE__*/function (_Component) {
         showReset = _this$props4.showReset,
         showLoadingIndicator = _this$props4.showLoadingIndicator,
         templates = _this$props4.templates,
-        isSearchStalled = _this$props4.isSearchStalled;
+        isSearchStalled = _this$props4.isSearchStalled,
+        ariaLabel = _this$props4.ariaLabel;
       return h("div", {
         className: cssClasses.root
       }, h("form", {
@@ -165,16 +170,21 @@ var SearchBox = /*#__PURE__*/function (_Component) {
         ,
         spellCheck: "false",
         maxLength: 512,
-        onInput: this.onInput,
+        onInput: this.onInput
+        // see: https://github.com/preactjs/preact/issues/1978
+        // eslint-disable-next-line react/no-unknown-property
+        ,
+        oncompositionend: this.onInput,
         onBlur: this.onBlur,
-        onFocus: this.onFocus
+        onFocus: this.onFocus,
+        "aria-label": ariaLabel
       }), h(Template, {
         templateKey: "submit",
         rootTagName: "button",
         rootProps: {
           className: cssClasses.submit,
           type: 'submit',
-          title: 'Submit the search query.',
+          title: 'Submit the search query',
           hidden: !showSubmit
         },
         templates: templates,
@@ -187,7 +197,7 @@ var SearchBox = /*#__PURE__*/function (_Component) {
         rootProps: {
           className: cssClasses.reset,
           type: 'reset',
-          title: 'Clear the search query.',
+          title: 'Clear the search query',
           hidden: !(showReset && this.state.query.trim() && !isSearchStalled)
         },
         templates: templates,

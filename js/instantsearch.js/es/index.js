@@ -39,5 +39,10 @@ Object.defineProperty(instantsearch, 'connectors', {
     throw new ReferenceError("\"instantsearch.connectors\" are not available from the ES build.\n\nTo import the connectors:\n\nimport { connectSearchBox } from 'instantsearch.js/es/connectors'");
   }
 });
+Object.defineProperty(instantsearch, 'templates', {
+  get: function get() {
+    throw new ReferenceError("\"instantsearch.templates\" are not available from the ES build.\n\nTo import the templates:\n\nimport { carousel } from 'instantsearch.js/es/templates'");
+  }
+});
 export default instantsearch;
 export * from "./types/index.js";

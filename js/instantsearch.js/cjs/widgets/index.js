@@ -3,14 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.EXPERIMENTAL_answers = void 0;
-Object.defineProperty(exports, "EXPERIMENTAL_configureRelatedItems", {
-  enumerable: true,
-  get: function get() {
-    return _configureRelatedItems.default;
-  }
-});
-exports.EXPERIMENTAL_dynamicWidgets = void 0;
+exports.EXPERIMENTAL_dynamicWidgets = exports.EXPERIMENTAL_configureRelatedItems = exports.EXPERIMENTAL_answers = void 0;
 Object.defineProperty(exports, "analytics", {
   enumerable: true,
   get: function get() {
@@ -47,6 +40,12 @@ Object.defineProperty(exports, "dynamicWidgets", {
     return _dynamicWidgets.default;
   }
 });
+Object.defineProperty(exports, "frequentlyBoughtTogether", {
+  enumerable: true,
+  get: function get() {
+    return _frequentlyBoughtTogether.default;
+  }
+});
 Object.defineProperty(exports, "geoSearch", {
   enumerable: true,
   get: function get() {
@@ -81,6 +80,12 @@ Object.defineProperty(exports, "infiniteHits", {
   enumerable: true,
   get: function get() {
     return _infiniteHits.default;
+  }
+});
+Object.defineProperty(exports, "lookingSimilar", {
+  enumerable: true,
+  get: function get() {
+    return _lookingSimilar.default;
   }
 });
 Object.defineProperty(exports, "menu", {
@@ -161,6 +166,12 @@ Object.defineProperty(exports, "refinementList", {
     return _refinementList.default;
   }
 });
+Object.defineProperty(exports, "relatedProducts", {
+  enumerable: true,
+  get: function get() {
+    return _relatedProducts.default;
+  }
+});
 Object.defineProperty(exports, "relevantSort", {
   enumerable: true,
   get: function get() {
@@ -191,6 +202,12 @@ Object.defineProperty(exports, "toggleRefinement", {
     return _toggleRefinement.default;
   }
 });
+Object.defineProperty(exports, "trendingItems", {
+  enumerable: true,
+  get: function get() {
+    return _trendingItems.default;
+  }
+});
 Object.defineProperty(exports, "voiceSearch", {
   enumerable: true,
   get: function get() {
@@ -199,13 +216,13 @@ Object.defineProperty(exports, "voiceSearch", {
 });
 var _utils = require("../lib/utils");
 var _answers = _interopRequireDefault(require("./answers/answers"));
+var _configureRelatedItems = _interopRequireDefault(require("./configure-related-items/configure-related-items"));
 var _dynamicWidgets = _interopRequireDefault(require("./dynamic-widgets/dynamic-widgets"));
 var _analytics = _interopRequireDefault(require("./analytics/analytics"));
 var _breadcrumb = _interopRequireDefault(require("./breadcrumb/breadcrumb"));
 var _clearRefinements = _interopRequireDefault(require("./clear-refinements/clear-refinements"));
 var _configure = _interopRequireDefault(require("./configure/configure"));
 var _currentRefinements = _interopRequireDefault(require("./current-refinements/current-refinements"));
-var _configureRelatedItems = _interopRequireDefault(require("./configure-related-items/configure-related-items"));
 var _geoSearch = _interopRequireDefault(require("./geo-search/geo-search"));
 var _hierarchicalMenu = _interopRequireDefault(require("./hierarchical-menu/hierarchical-menu"));
 var _hits = _interopRequireDefault(require("./hits/hits"));
@@ -221,6 +238,7 @@ var _places = _interopRequireDefault(require("./places/places"));
 var _poweredBy = _interopRequireDefault(require("./powered-by/powered-by"));
 var _queryRuleContext = _interopRequireDefault(require("./query-rule-context/query-rule-context"));
 var _queryRuleCustomData = _interopRequireDefault(require("./query-rule-custom-data/query-rule-custom-data"));
+var _relatedProducts = _interopRequireDefault(require("./related-products/related-products"));
 var _rangeInput = _interopRequireDefault(require("./range-input/range-input"));
 var _rangeSlider = _interopRequireDefault(require("./range-slider/range-slider"));
 var _ratingMenu = _interopRequireDefault(require("./rating-menu/rating-menu"));
@@ -230,12 +248,16 @@ var _searchBox = _interopRequireDefault(require("./search-box/search-box"));
 var _sortBy = _interopRequireDefault(require("./sort-by/sort-by"));
 var _stats = _interopRequireDefault(require("./stats/stats"));
 var _toggleRefinement = _interopRequireDefault(require("./toggle-refinement/toggle-refinement"));
+var _trendingItems = _interopRequireDefault(require("./trending-items/trending-items"));
 var _voiceSearch = _interopRequireDefault(require("./voice-search/voice-search"));
+var _frequentlyBoughtTogether = _interopRequireDefault(require("./frequently-bought-together/frequently-bought-together"));
+var _lookingSimilar = _interopRequireDefault(require("./looking-similar/looking-similar"));
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 /** @deprecated answers is no longer supported */
-var EXPERIMENTAL_answers = (0, _utils.deprecate)(_answers.default, 'answers is no longer supported');
+var EXPERIMENTAL_answers = exports.EXPERIMENTAL_answers = (0, _utils.deprecate)(_answers.default, 'answers is no longer supported');
+
+/** @deprecated use relatedItems instead */
+var EXPERIMENTAL_configureRelatedItems = exports.EXPERIMENTAL_configureRelatedItems = (0, _utils.deprecate)(_configureRelatedItems.default, 'EXPERIMENTAL_configureRelatedItems is deprecated and will be removed in a next minor version of InstantSearch. Please use relatedItems instead.');
 
 /** @deprecated use dynamicWidgets */
-exports.EXPERIMENTAL_answers = EXPERIMENTAL_answers;
-var EXPERIMENTAL_dynamicWidgets = (0, _utils.deprecate)(_dynamicWidgets.default, 'use dynamicWidgets');
-exports.EXPERIMENTAL_dynamicWidgets = EXPERIMENTAL_dynamicWidgets;
+var EXPERIMENTAL_dynamicWidgets = exports.EXPERIMENTAL_dynamicWidgets = (0, _utils.deprecate)(_dynamicWidgets.default, 'use dynamicWidgets');

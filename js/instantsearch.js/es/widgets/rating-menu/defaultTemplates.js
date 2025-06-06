@@ -1,4 +1,4 @@
-import { cx } from '@algolia/ui-components-shared';
+import { cx } from 'instantsearch-ui-components';
 import { h } from 'preact';
 import { formatNumber } from "../../lib/formatNumber.js";
 function ItemWrapper(_ref) {
@@ -43,6 +43,7 @@ var defaultTemplates = {
         xlinkHref: isFull ? '#ais-RatingMenu-starSymbol' : '#ais-RatingMenu-starEmptySymbol'
       }));
     }), h("span", {
+      "aria-hidden": "true",
       className: cx(cssClasses.label)
     }, "& Up"), count && h("span", {
       className: cx(cssClasses.count)

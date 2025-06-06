@@ -15,5 +15,4 @@ var defaultTemplates = {
     return JSON.stringify(_item);
   }
 };
-var _default = defaultTemplates;
-exports.default = _default;
+var _default = exports.default = defaultTemplates;

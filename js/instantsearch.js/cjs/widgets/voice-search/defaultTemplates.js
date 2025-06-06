@@ -83,5 +83,4 @@ var defaultTemplates = {
     return (0, _preact.h)("p", null, transcript);
   }
 };
-var _default = defaultTemplates;
-exports.default = _default;
+var _default = exports.default = defaultTemplates;

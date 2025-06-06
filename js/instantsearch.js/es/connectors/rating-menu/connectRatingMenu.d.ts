@@ -75,7 +75,7 @@ export type RatingMenuWidgetDescription = {
     };
     indexUiState: {
         ratingMenu: {
-            [attribute: string]: number;
+            [attribute: string]: number | undefined;
         };
     };
 };

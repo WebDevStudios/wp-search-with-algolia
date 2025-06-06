@@ -1,6 +1,7 @@
 function _extends() { _extends = Object.assign ? Object.assign.bind() : function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; return _extends.apply(this, arguments); }
-import { cx } from '@algolia/ui-components-shared';
+import { cx } from 'instantsearch-ui-components';
 import { h } from 'preact';
+import { isSpecialClick } from "../../lib/utils/index.js";
 import Template from "../Template/Template.js";
 var Breadcrumb = function Breadcrumb(_ref) {
   var items = _ref.items,
@@ -21,6 +22,9 @@ var Breadcrumb = function Breadcrumb(_ref) {
       className: cssClasses.link,
       href: createURL(null),
       onClick: function onClick(event) {
+        if (isSpecialClick(event)) {
+          return;
+        }
         event.preventDefault();
         refine(null);
       }
@@ -41,6 +45,9 @@ var Breadcrumb = function Breadcrumb(_ref) {
       className: cssClasses.link,
       href: createURL(item.value),
       onClick: function onClick(event) {
+        if (isSpecialClick(event)) {
+          return;
+        }
         event.preventDefault();
         refine(item.value);
       }
