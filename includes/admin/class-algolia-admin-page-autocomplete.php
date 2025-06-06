@@ -204,7 +204,7 @@ class Algolia_Admin_Page_Autocomplete {
 	 * Callback to print the autocomplete version radio button.
 	 *
 	 * @author WebDevStudios <contact@webdevstudios.com>
-	 * @since  NEXT
+	 * @since  2.11.0
 	 */
 	public function autocomplete_version_callback() {
 		$value = $this->settings->get_autocomplete_version();
@@ -222,7 +222,7 @@ class Algolia_Admin_Page_Autocomplete {
 	 * Sanitize the Autocomplete version setting.
 	 *
 	 * @author WebDevStudios <contact@webdevstudios.com>
-	 * @since NEXT
+	 * @since 2.11.0
 	 *
 	 * @param string $values The original value.
 	 * @return string
