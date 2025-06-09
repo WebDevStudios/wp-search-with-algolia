@@ -128,6 +128,14 @@ All development is handled on [GitHub](https://github.com/WebDevStudios/wp-searc
 
 Follow along with the changelog on [Github](https://github.com/WebDevStudios/wp-search-with-algolia/releases).
 
+= 2.10.0 =
+* Added: Debounce option for Autocomplete.
+* Updated: Instantsearch to version 4.78.3
+* Updated: Prevent loading of API credentials on frontend when not using Autocomplete or Instantsearch.
+* Updated: Removed WooCommerce internal post types and taxonomies from Autocomplete list.
+* Updated: Prevent errors with Yoast SEO function checks.
+* Updated: Sync'd up internal code for get_re_index_items_count()
+
 = 2.9.0 =
 * Added: Instantsearch Template options. Choose between "Legacy" hogan.js/WP Utils templates and "Modern" Javascript string literals. "Modern" is more in line with Algolia Documentation.
 * Added: ability to customize default Headers for Algolia Search Client configuration.
