@@ -8,6 +8,9 @@
  * @package WebDevStudios\WPSWA
  */
 
+use Yoast\WP\SEO\Memoizers\Meta_Tags_Context_Memoizer;
+use Yoast\WP\SEO\Surfaces\Helpers_Surface;
+
 /**
  * Class Algolia_Compatibility
  *
@@ -47,8 +50,18 @@ class Algolia_Compatibility {
 	 * @since  1.0.0
 	 */
 	public function enable_yoast_frontend() {
-		if ( class_exists( 'WPSEO_Frontend' ) && method_exists( 'WPSEO_Frontend', 'get_instance' ) ) {
-			WPSEO_Frontend::get_instance();
+		if ( ! function_exists( 'YoastSEO' ) ) {
+			return;
+		}
+
+		if (
+			class_exists( 'Meta_Tags_Context_Memoizer' ) &&
+			class_exists( 'WPSEO_Replace_Vars' ) &&
+			class_exists( 'Helpers_Surface' )
+		) {
+			YoastSEO()->classes->get( Meta_Tags_Context_Memoizer::class );
+			YoastSEO()->classes->get( WPSEO_Replace_Vars::class );
+			YoastSEO()->classes->get( Helpers_Surface::class );
 		}
 	}
 
