@@ -6,4 +6,5 @@ export type ConfigureRelatedItemsWidget = WidgetFactory<ConfigureRelatedItemsWid
 }, ConfigureRelatedItemsConnectorParams, ConfigureRelatedItemsWidgetParams>;
 export type ConfigureRelatedItemsWidgetParams = PlainSearchParameters;
 declare const configureRelatedItems: ConfigureRelatedItemsWidget;
+/** @deprecated use relatedItems instead */
 export default configureRelatedItems;

@@ -1,5 +1,5 @@
 
-import type { ToggleRefinementConnectorParams, ToggleRefinementWidgetDescription, ToggleRefinementValue } from '../../connectors/toggle-refinement/connectToggleRefinement';
+import type { ToggleRefinementConnectorParams, ToggleRefinementWidgetDescription, ToggleRefinementRenderState } from '../../connectors/toggle-refinement/connectToggleRefinement';
 import type { Template, WidgetFactory } from '../../types';
 export type ToggleRefinementCSSClasses = Partial<{
     /**
@@ -23,9 +23,7 @@ export type ToggleRefinementTemplates = Partial<{
     /**
      * the text that describes the toggle action
      */
-    labelText: Template<ToggleRefinementValue & {
-        name: string;
-    }>;
+    labelText: Template<ToggleRefinementRenderState['value']>;
 }>;
 export type ToggleRefinementWidgetParams = {
     /**

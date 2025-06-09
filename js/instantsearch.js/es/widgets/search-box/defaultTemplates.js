@@ -7,12 +7,12 @@ var _ref4 = h("path", {
 });
 var _ref6 = h("g", {
   fill: "none",
-  fillRule: "evenodd"
+  "fill-rule": "evenodd"
 }, h("g", {
   transform: "translate(1 1)",
-  strokeWidth: "2"
+  "stroke-width": "2"
 }, h("circle", {
-  strokeOpacity: ".5",
+  "stroke-opacity": ".5",
   cx: "18",
   cy: "18",
   r: "18"
@@ -49,7 +49,12 @@ var defaultTemplate = {
   },
   loadingIndicator: function loadingIndicator(_ref5) {
     var cssClasses = _ref5.cssClasses;
+    /* eslint-disable react/no-unknown-property */
+    // Preact supports kebab case attributes, and using camel case would
+    // require using `preact/compat`.
+    // @TODO: reconsider using the `react` ESLint preset
     return h("svg", {
+      "aria-label": "Results are loading",
       className: cssClasses.loadingIcon,
       width: "16",
       height: "16",
@@ -57,6 +62,7 @@ var defaultTemplate = {
       stroke: "#444",
       "aria-hidden": "true"
     }, _ref6);
+    /* eslint-enable react/no-unknown-property */
   }
 };
 export default defaultTemplate;

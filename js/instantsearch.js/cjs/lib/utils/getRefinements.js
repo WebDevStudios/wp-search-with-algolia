@@ -46,8 +46,9 @@ function getRefinement(state, type, attribute, name) {
   }
   return res;
 }
-function getRefinements(results, state) {
+function getRefinements(_results, state) {
   var includesQuery = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
+  var results = _results || {};
   var refinements = [];
   var _state$facetsRefineme = state.facetsRefinements,
     facetsRefinements = _state$facetsRefineme === void 0 ? {} : _state$facetsRefineme,

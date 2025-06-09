@@ -20,5 +20,4 @@ var GeoSearchToggle = function GeoSearchToggle(_ref) {
     onChange: onToggle
   }), children);
 };
-var _default = GeoSearchToggle;
-exports.default = _default;
+var _default = exports.default = GeoSearchToggle;

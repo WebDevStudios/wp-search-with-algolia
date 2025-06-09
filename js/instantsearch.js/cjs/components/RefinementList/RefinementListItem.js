@@ -31,5 +31,4 @@ function RefinementListItem(_ref) {
     data: templateData
   })), subItems);
 }
-var _default = RefinementListItem;
-exports.default = _default;
+var _default = exports.default = RefinementListItem;

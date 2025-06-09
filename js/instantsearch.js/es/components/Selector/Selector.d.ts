@@ -14,6 +14,7 @@ export type SelectorProps = {
     currentValue?: string | number;
     options: SelectorOption[];
     setValue: (value: string) => void;
+    ariaLabel?: string;
 };
-declare function Selector({ currentValue, options, cssClasses, setValue, }: SelectorProps): h.JSX.Element;
+declare function Selector({ currentValue, options, cssClasses, setValue, ariaLabel, }: SelectorProps): h.JSX.Element;
 export default Selector;

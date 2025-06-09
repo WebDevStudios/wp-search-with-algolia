@@ -12,4 +12,3 @@ export * from './widget';
 export * from './ui-state';
 export * from './render-state';
 export * from './templates';
-export type { IndexWidget } from '../widgets/index/index';

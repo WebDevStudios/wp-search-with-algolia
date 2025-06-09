@@ -1,1 +1,1 @@
-export declare const InternalHighlight: ({ parts, highlightedTagName, nonHighlightedTagName, separator, className, classNames, ...props }: import("@algolia/ui-components-highlight-vdom").HighlightProps) => JSX.Element;
+export declare const InternalHighlight: (userProps: import("instantsearch-ui-components").HighlightProps) => JSX.Element;
