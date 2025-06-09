@@ -134,7 +134,7 @@ Follow along with the changelog on [Github](https://github.com/WebDevStudios/wp-
 * Updated: Prevent loading of API credentials on frontend when not using Autocomplete or Instantsearch.
 * Updated: Removed WooCommerce internal post types and taxonomies from Autocomplete list.
 * Updated: Prevent errors with Yoast SEO function checks.
-* Updated: Sync'd up internal code for get_re_index_items_count()
+* Updated: Sync'd up internal code for `get_re_index_items_count()`
 
 = 2.9.0 =
 * Added: Instantsearch Template options. Choose between "Legacy" hogan.js/WP Utils templates and "Modern" Javascript string literals. "Modern" is more in line with Algolia Documentation.
