@@ -27,6 +27,7 @@ class Algolia_Settings {
 		add_option( 'algolia_api_key', '' );
 		add_option( 'algolia_synced_indices_ids', array() );
 		add_option( 'algolia_autocomplete_enabled', 'no' );
+		add_option( 'algolia_autocomplete_debounce', 0 );
 		add_option( 'algolia_autocomplete_config', array() );
 		add_option( 'algolia_override_native_search', 'native' );
 		add_option( 'algolia_instantsearch_template_version', 'legacy' );
@@ -276,6 +277,28 @@ class Algolia_Settings {
 		 * @param string $enabled Can be 'yes' or 'no'.
 		 */
 		return apply_filters( 'algolia_should_override_autocomplete', $enabled );
+	}
+
+	/**
+	 * Get the autocomplete debounce timeout settings value in milliseconds.
+	 * 0 will disable the feature (default).
+	 *
+	 * @author  WebDevStudios <contact@webdevstudios.com>
+	 * @since   2.10.0
+	 *
+	 * @return int Debounce value in milliseconds.
+	 */
+	public function get_autocomplete_debounce() {
+		$debounce = (int) get_option( 'algolia_autocomplete_debounce', 0 );
+
+		/**
+		 * Filters the autocomplete debounce option for algolia autocomplete.
+		 *
+		 * @since 2.10.0
+		 *
+		 * @param int Debounce value in milliseconds.
+		 */
+		return (int) apply_filters( 'algolia_autocomplete_debounce', $debounce );
 	}
 
 	/**

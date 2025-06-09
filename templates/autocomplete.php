@@ -114,6 +114,7 @@
 					highlightPreTag: '__ais-highlight__',
 					highlightPostTag: '__/ais-highlight__'
 				} ),
+				debounce: config['debounce'],
 				templates: {
 					header: function () {
 						return wp.template( 'autocomplete-header' )( {
