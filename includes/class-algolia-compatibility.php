@@ -36,6 +36,8 @@ class Algolia_Compatibility {
 		add_action( 'algolia_before_get_records', array( $this, 'enable_yoast_frontend' ) );
 		add_action( 'algolia_before_get_records', array( $this, 'wpml_switch_language' ) );
 		add_action( 'algolia_after_get_records', array( $this, 'wpml_switch_back_language' ) );
+		add_action( 'algolia_excluded_post_types', [ $this, 'woocommerce_post_types' ] );
+		add_action( 'algolia_excluded_taxonomies', [ $this, 'woocommerce_internal_taxonomies' ] );
 	}
 
 	/**
@@ -119,5 +121,44 @@ class Algolia_Compatibility {
 	 */
 	private function is_wpml_enabled() {
 		return function_exists( 'icl_object_id' ) && ! class_exists( 'Polylang' );
+	}
+
+	/**
+	 * Add internal WooCommerce post types to our excluded list on Autocomplete page.
+	 *
+	 * @since 2.10.0
+	 *
+	 * @param array $post_types Array of post types to exclude from listing.
+	 * @return array
+	 */
+	public function woocommerce_post_types( array $post_types ) {
+		if ( ! defined( 'WC_PLUGIN_FILE' ) ) {
+			return $post_types;
+		}
+
+		$post_types[] = 'patterns_ai_data';
+		$post_types[] = 'shop_order';
+		$post_types[] = 'shop_order_placehold';
+		$post_types[] = 'shop_order_refund';
+		return $post_types;
+	}
+
+	/**
+	 * Add internal WooCommerce taxonomies to our excluded list on Autocomplete page.
+	 *
+	 * @since 2.10.0
+	 *
+	 * @param array $taxonomies Array of taxonomies to exclude from listing.
+	 * @return array
+	 */
+	public function woocommerce_internal_taxonomies( array $taxonomies ) {
+		if ( ! defined( 'WC_PLUGIN_FILE' ) ) {
+			return $taxonomies;
+		}
+
+		$taxonomies[] = 'product_visibility';
+		$taxonomies[] = 'product_shipping_class';
+
+		return $taxonomies;
 	}
 }
