@@ -86,6 +86,9 @@ class Algolia_Template_Loader {
 			'autocomplete'         => [
 				'sources'        => $autocomplete_config->get_config(),
 				'input_selector' => (string) apply_filters( 'algolia_autocomplete_input_selector', "input[name='s']:not(.no-autocomplete):not(#adminbar-search)" ),
+				'input_selector_modern' => (string) apply_filters(
+					'algolia_autocomplete_input_selector', '#autocomplete'
+				),
 			],
 		];
 
@@ -212,7 +215,9 @@ class Algolia_Template_Loader {
 	 * @since   1.0.0
 	 */
 	public function load_autocomplete_template() {
-		require Algolia_Template_Utils::locate_template( 'autocomplete.php' );
+		$autocomplete_is_modern = $this->plugin->get_settings()->should_use_autocomplete_modern();
+		$chosen_file = ( $autocomplete_is_modern ) ? 'autocomplete-modern.php' : 'autocomplete.php';
+		require Algolia_Template_Utils::locate_template( $chosen_file );
 	}
 
 	/**

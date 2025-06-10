@@ -33,12 +33,31 @@ class Algolia_Styles {
 	 */
 	public function register_styles() {
 
-		wp_register_style(
-			'algolia-autocomplete',
-			ALGOLIA_PLUGIN_URL . 'css/algolia-autocomplete.css',
-			[],
-			ALGOLIA_VERSION
-		);
+		$suffix                 = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ? '' : '.min';
+		$algolia = Algolia_Plugin_Factory::create();
+		$autocomplete_is_modern = $algolia->get_settings()->should_use_autocomplete_modern();
+
+		if ( $autocomplete_is_modern ) {
+			wp_register_style(
+				'algolia-autocomplete-theme-classic',
+				ALGOLIA_PLUGIN_URL . 'assets/autocomplete-theme-classic/dist/theme' . $suffix . '.css',
+				[],
+				ALGOLIA_VERSION
+			);
+			wp_register_style(
+				'algolia-autocomplete',
+				ALGOLIA_PLUGIN_URL . 'css/algolia-autocomplete-modern.css',
+				['algolia-autocomplete-theme-classic'],
+				ALGOLIA_VERSION
+			);
+		} else {
+			wp_register_style(
+				'algolia-autocomplete',
+				ALGOLIA_PLUGIN_URL . 'css/algolia-autocomplete.css',
+				[],
+				ALGOLIA_VERSION
+			);
+		}
 
 		wp_register_style(
 			'algolia-instantsearch',

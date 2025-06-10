@@ -129,14 +129,22 @@ class Algolia_Admin_Page_Autocomplete {
 		add_settings_section(
 			$this->section,
 			null,
-			array( $this, 'print_section_settings' ),
+			[ $this, 'print_section_settings' ],
 			$this->slug
 		);
 
 		add_settings_field(
 			'algolia_autocomplete_enabled',
 			esc_html__( 'Enable Autocomplete', 'wp-search-with-algolia' ),
-			array( $this, 'autocomplete_enabled_callback' ),
+			[ $this, 'autocomplete_enabled_callback' ],
+			$this->slug,
+			$this->section
+		);
+
+		add_settings_field(
+			'algolia_autocomplete_template_version',
+			esc_html__( 'Autocomplete version', 'wp-search-with-algolia' ),
+			[ $this, 'autocomplete_version_callback' ],
 			$this->slug,
 			$this->section
 		);
@@ -144,13 +152,14 @@ class Algolia_Admin_Page_Autocomplete {
 		add_settings_field(
 			'algolia_autocomplete_config',
 			esc_html__( 'Autocomplete Config', 'wp-search-with-algolia' ),
-			array( $this, 'autocomplete_config_callback' ),
+			[ $this, 'autocomplete_config_callback' ],
 			$this->slug,
 			$this->section
 		);
 
-		register_setting( $this->option_group, 'algolia_autocomplete_enabled', array( $this, 'sanitize_autocomplete_enabled' ) );
-		register_setting( $this->option_group, 'algolia_autocomplete_config', array( $this, 'sanitize_autocomplete_config' ) );
+		register_setting( $this->option_group, 'algolia_autocomplete_enabled', [ $this, 'sanitize_autocomplete_enabled' ] );
+		register_setting( $this->option_group, 'algolia_autocomplete_template_version', [ $this, 'sanitize_autocomplete_version' ] );
+		register_setting( $this->option_group, 'algolia_autocomplete_config', [ $this, 'sanitize_autocomplete_config' ] );
 	}
 
 	/**
@@ -189,6 +198,37 @@ class Algolia_Admin_Page_Autocomplete {
 		);
 
 		return 'yes' === $value ? 'yes' : 'no';
+	}
+
+	/**
+	 * Callback to print the autocomplete version radio button.
+	 *
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 * @since  2.11.0
+	 */
+	public function autocomplete_version_callback() {
+		$value = $this->settings->get_autocomplete_template_version();
+		$indices = $this->autocomplete_config->get_form_data();
+		?>
+			<input type="radio" id="legacy" name="algolia_autocomplete_template_version" value="legacy"<?php checked( 'legacy', $value ); disabled( empty( $indices ), true ); ?> />
+			<label for="legacy"><?php esc_html_e( 'Legacy', 'wp-search-with-algolia' ); ?></label>
+
+			<input type="radio" id="modern" name="algolia_autocomplete_template_version" value="modern"<?php checked( 'modern', $value ); disabled( empty( $indices ), true ); ?> />
+			<label for="modern"><?php esc_html_e( 'Modern', 'wp-search-with-algolia' ); ?></label>
+		<?php
+	}
+
+	/**
+	 * Sanitize the Autocomplete version setting.
+	 *
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 * @since 2.11.0
+	 *
+	 * @param string $values The original value.
+	 * @return string
+	 */
+	public function sanitize_autocomplete_version( $values ) {
+		return sanitize_text_field( $values );
 	}
 
 	/**
