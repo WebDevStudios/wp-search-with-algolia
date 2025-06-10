@@ -207,7 +207,7 @@ class Algolia_Admin_Page_Autocomplete {
 	 * @since  2.11.0
 	 */
 	public function autocomplete_version_callback() {
-		$value = $this->settings->get_autocomplete_version();
+		$value = $this->settings->get_autocomplete_template_version();
 		$indices = $this->autocomplete_config->get_form_data();
 		?>
 			<input type="radio" id="legacy" name="algolia_autocomplete_template_version" value="legacy"<?php checked( 'legacy', $value ); disabled( empty( $indices ), true ); ?> />
