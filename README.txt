@@ -1,10 +1,10 @@
 === WP Search with Algolia ===
-Contributors: WebDevStudios, williamsba1, tw2113, mrasharirfan, scottbasgaard, gregrickaby, richaber
+Contributors: WebDevStudios, williamsba1, tw2113, mrasharirfan, scottbasgaard, gregrickaby, richaber, daveromsey
 Tags: search, algolia, autocomplete, instantsearch, relevance search, faceted search, find-as-you-type search, ecommerce, seo, woocommerce, advanced search
 Requires at least: 5.3
 Tested up to: 6.8.1
 Requires PHP: 7.4
-Stable tag: 2.9.0
+Stable tag: 2.10.0
 License: GNU General Public License v2.0, MIT License
 
 Use the power of Algolia to enhance your website's search. Enable Autocomplete and Instantsearch for fast and accurate results and relevance.
@@ -127,6 +127,15 @@ All development is handled on [GitHub](https://github.com/WebDevStudios/wp-searc
 == Changelog ==
 
 Follow along with the changelog on [Github](https://github.com/WebDevStudios/wp-search-with-algolia/releases).
+
+= 2.10.0 =
+* Added: Debounce option for Autocomplete.
+* Added: Initial integration with Health Panel.
+* Updated: Instantsearch to version 4.78.3
+* Updated: Prevent loading of API credentials on frontend when not using Autocomplete or Instantsearch.
+* Updated: Removed WooCommerce internal post types and taxonomies from Autocomplete list.
+* Updated: Prevent errors with Yoast SEO function checks.
+* Updated: Sync'd up internal code for `get_re_index_items_count()`
 
 = 2.9.0 =
 * Added: Instantsearch Template options. Choose between "Legacy" hogan.js/WP Utils templates and "Modern" Javascript string literals. "Modern" is more in line with Algolia Documentation.

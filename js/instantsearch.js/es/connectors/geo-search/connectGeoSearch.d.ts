@@ -1,6 +1,7 @@
 import type { SendEventForHits } from '../../lib/utils';
-import type { BaseHit, Connector, GeoLoc, Hit, TransformItems, WidgetRenderState } from '../../types';
-export type GeoHit<THit extends BaseHit = Record<string, any>> = Hit<THit> & Required<Pick<Hit, '_geoloc'>>;
+import type { BaseHit, Connector, GeoHit, GeoLoc, IndexRenderState, InitOptions, Renderer, RenderOptions, TransformItems, UnknownWidgetParams, Unmounter, WidgetRenderState } from '../../types';
+import type { AlgoliaSearchHelper, SearchParameters } from 'algoliasearch-helper';
+export type { GeoHit } from '../../types';
 type Bounds = {
     /**
      * The top right corner of the map view.
@@ -11,7 +12,7 @@ type Bounds = {
      */
     southWest: GeoLoc;
 };
-export type GeoSearchRenderState<THit extends BaseHit = Record<string, any>> = {
+export type GeoSearchRenderState<THit extends NonNullable<object> = BaseHit> = {
     /**
      * Reset the current bounding box refinement.
      */
@@ -59,7 +60,7 @@ export type GeoSearchRenderState<THit extends BaseHit = Record<string, any>> = {
      */
     toggleRefineOnMapMove: () => void;
 };
-export type GeoSearchConnectorParams<THit extends BaseHit = Record<string, any>> = {
+export type GeoSearchConnectorParams<THit extends GeoHit = GeoHit> = {
     /**
      * If true, refine will be triggered as you move the map.
      * @default true
@@ -71,7 +72,7 @@ export type GeoSearchConnectorParams<THit extends BaseHit = Record<string, any>>
      */
     transformItems?: TransformItems<GeoHit<THit>>;
 };
-export type GeoSearchWidgetDescription<THit extends BaseHit = Record<string, any>> = {
+export type GeoSearchWidgetDescription<THit extends GeoHit = GeoHit> = {
     $$type: 'ais.geoSearch';
     renderState: GeoSearchRenderState<THit>;
     indexRenderState: {
@@ -90,7 +91,7 @@ export type GeoSearchWidgetDescription<THit extends BaseHit = Record<string, any
         };
     };
 };
-export type GeoSearchConnector<THit extends BaseHit = Record<string, any>> = Connector<GeoSearchWidgetDescription<THit>, GeoSearchConnectorParams<THit>>;
+export type GeoSearchConnector<THit extends GeoHit = GeoHit> = Connector<GeoSearchWidgetDescription<THit>, GeoSearchConnectorParams<THit>>;
 /**
  * The **GeoSearch** connector provides the logic to build a widget that will display the results on a map. It also provides a way to search for results based on their position. The connector provides functions to manage the search experience (search on map interaction or control the interaction for example).
  *
@@ -100,5 +101,214 @@ export type GeoSearchConnector<THit extends BaseHit = Record<string, any>> = Con
  *
  * Currently, the feature is not compatible with multiple values in the _geoloc attribute.
  */
-declare const connectGeoSearch: GeoSearchConnector;
-export default connectGeoSearch;
+declare const _default: <TWidgetParams extends UnknownWidgetParams>(renderFn: Renderer<GeoSearchRenderState, TWidgetParams & GeoSearchConnectorParams>, unmountFn?: Unmounter) => <THit extends GeoHit = GeoHit>(widgetParams: TWidgetParams & GeoSearchConnectorParams<THit>) => {
+    $$type: "ais.geoSearch";
+    init(initArgs: InitOptions): void;
+    render(renderArgs: RenderOptions): void;
+    getWidgetRenderState(renderOptions: InitOptions | RenderOptions): {
+        items: GeoHit<THit>[];
+        position: {
+            lat: number;
+            lng: number;
+        } | undefined;
+        currentRefinement: {
+            northEast: {
+                lat: number;
+                lng: number;
+            };
+            southWest: {
+                lat: number;
+                lng: number;
+            };
+        } | undefined;
+        refine: ({ northEast: ne, southWest: sw }: Bounds) => void;
+        sendEvent: SendEventForHits;
+        clearMapRefinement: () => void;
+        isRefinedWithMap: () => boolean;
+        toggleRefineOnMapMove: () => void;
+        isRefineOnMapMove: () => boolean;
+        setMapMoveSinceLastRefine: () => void;
+        hasMapMoveSinceLastRefine: () => boolean;
+        widgetParams: TWidgetParams & GeoSearchConnectorParams<THit>;
+    };
+    getRenderState(renderState: {
+        answers?: WidgetRenderState<import("../answers/connectAnswers").AnswersRenderState, import("../answers/connectAnswers").AnswersConnectorParams> | undefined;
+        autocomplete?: WidgetRenderState<import("../autocomplete/connectAutocomplete").AutocompleteRenderState, import("../autocomplete/connectAutocomplete").AutocompleteConnectorParams> | undefined;
+        breadcrumb?: {
+            [rootAttribute: string]: WidgetRenderState<import("../breadcrumb/connectBreadcrumb").BreadcrumbRenderState, import("../breadcrumb/connectBreadcrumb").BreadcrumbConnectorParams>;
+        } | undefined;
+        clearRefinements?: WidgetRenderState<import("../clear-refinements/connectClearRefinements").ClearRefinementsRenderState, import("../clear-refinements/connectClearRefinements").ClearRefinementsConnectorParams> | undefined;
+        configure?: WidgetRenderState<import("../configure/connectConfigure").ConfigureRenderState, import("../configure/connectConfigure").ConfigureConnectorParams> | undefined;
+        currentRefinements?: WidgetRenderState<import("../current-refinements/connectCurrentRefinements").CurrentRefinementsRenderState, import("../current-refinements/connectCurrentRefinements").CurrentRefinementsConnectorParams> | undefined;
+        geoSearch?: WidgetRenderState<GeoSearchRenderState<GeoHit>, GeoSearchConnectorParams<GeoHit>> | undefined;
+        hierarchicalMenu?: {
+            [rootAttribute: string]: WidgetRenderState<import("../hierarchical-menu/connectHierarchicalMenu").HierarchicalMenuRenderState, import("../hierarchical-menu/connectHierarchicalMenu").HierarchicalMenuConnectorParams>;
+        } | undefined;
+        hits?: WidgetRenderState<import("../hits/connectHits").HitsRenderState<BaseHit>, import("../hits/connectHits").HitsConnectorParams<BaseHit>> | undefined;
+        hitsPerPage?: WidgetRenderState<import("../hits-per-page/connectHitsPerPage").HitsPerPageRenderState, import("../hits-per-page/connectHitsPerPage").HitsPerPageConnectorParams> | undefined;
+        infiniteHits?: WidgetRenderState<import("../infinite-hits/connectInfiniteHits").InfiniteHitsRenderState<BaseHit>, import("../infinite-hits/connectInfiniteHits").InfiniteHitsConnectorParams<BaseHit>> | undefined;
+        menu?: {
+            [attribute: string]: WidgetRenderState<import("../menu/connectMenu").MenuRenderState, import("../menu/connectMenu").MenuConnectorParams>;
+        } | undefined;
+        numericMenu?: {
+            [attribute: string]: WidgetRenderState<import("../numeric-menu/connectNumericMenu").NumericMenuRenderState, import("../numeric-menu/connectNumericMenu").NumericMenuConnectorParams>;
+        } | undefined;
+        pagination?: WidgetRenderState<import("../pagination/connectPagination").PaginationRenderState, import("../pagination/connectPagination").PaginationConnectorParams> | undefined;
+        poweredBy?: WidgetRenderState<import("../powered-by/connectPoweredBy").PoweredByRenderState, import("../powered-by/connectPoweredBy").PoweredByConnectorParams> | undefined;
+        queryRules?: WidgetRenderState<import("../query-rules/connectQueryRules").QueryRulesRenderState, import("../query-rules/connectQueryRules").QueryRulesConnectorParams> | undefined;
+        range?: {
+            [attribute: string]: WidgetRenderState<import("../range/connectRange").RangeRenderState, import("../range/connectRange").RangeConnectorParams>;
+        } | undefined;
+        ratingMenu?: {
+            [attribute: string]: WidgetRenderState<import("../rating-menu/connectRatingMenu").RatingMenuRenderState, import("../rating-menu/connectRatingMenu").RatingMenuConnectorParams>;
+        } | undefined;
+        refinementList?: {
+            [attribute: string]: WidgetRenderState<import("../refinement-list/connectRefinementList").RefinementListRenderState, import("../refinement-list/connectRefinementList").RefinementListConnectorParams>;
+        } | undefined;
+        relevantSort?: WidgetRenderState<import("../relevant-sort/connectRelevantSort").RelevantSortRenderState, import("../relevant-sort/connectRelevantSort").RelevantSortConnectorParams> | undefined;
+        searchBox?: WidgetRenderState<import("../search-box/connectSearchBox").SearchBoxRenderState, import("../search-box/connectSearchBox").SearchBoxConnectorParams> | undefined;
+        sortBy?: WidgetRenderState<import("../sort-by/connectSortBy").SortByRenderState, import("../sort-by/connectSortBy").SortByConnectorParams> | undefined;
+        stats?: WidgetRenderState<import("../stats/connectStats").StatsRenderState, import("../stats/connectStats").StatsConnectorParams> | undefined;
+        toggleRefinement?: {
+            [attribute: string]: WidgetRenderState<import("../toggle-refinement/connectToggleRefinement").ToggleRefinementRenderState, import("../toggle-refinement/connectToggleRefinement").ToggleRefinementConnectorParams>;
+        } | undefined;
+        voiceSearch?: WidgetRenderState<import("../voice-search/connectVoiceSearch").VoiceSearchRenderState, import("../voice-search/connectVoiceSearch").VoiceSearchConnectorParams> | undefined;
+        analytics?: WidgetRenderState<Record<string, unknown>, import("../../widgets/analytics/analytics").AnalyticsWidgetParams> | undefined;
+        places?: WidgetRenderState<Record<string, unknown>, import("../../widgets/places/places").PlacesWidgetParams> | undefined;
+    }, renderOptions: InitOptions | RenderOptions): IndexRenderState & GeoSearchWidgetDescription["indexRenderState"];
+    dispose({ state }: import("../../types").DisposeOptions): SearchParameters;
+    getWidgetUiState(uiState: {
+        geoSearch?: {
+            /**
+             * The rectangular area in geo coordinates.
+             * The rectangle is defined by two diagonally opposite points,
+             * hence by 4 floats separated by commas.
+             *
+             * @example '47.3165,4.9665,47.3424,5.0201'
+             */
+            boundingBox: string;
+        } | undefined;
+        query?: string | undefined;
+        configure?: import("algoliasearch-helper").PlainSearchParameters | undefined;
+        hierarchicalMenu?: {
+            [rootAttribute: string]: string[];
+        } | undefined;
+        hitsPerPage?: number | undefined;
+        page?: number | undefined;
+        menu?: {
+            [attribute: string]: string;
+        } | undefined;
+        numericMenu?: {
+            [attribute: string]: string;
+        } | undefined;
+        range?: {
+            [attribute: string]: string;
+        } | undefined;
+        ratingMenu?: {
+            [attribute: string]: number | undefined;
+        } | undefined;
+        refinementList?: {
+            [attribute: string]: string[];
+        } | undefined;
+        relevantSort?: number | undefined;
+        sortBy?: string | undefined;
+        toggle?: {
+            [attribute: string]: boolean;
+        } | undefined;
+        places?: {
+            query: string;
+            position: string;
+        } | undefined;
+    }, { searchParameters }: {
+        searchParameters: SearchParameters;
+        helper: AlgoliaSearchHelper;
+    }): {
+        geoSearch?: {
+            /**
+             * The rectangular area in geo coordinates.
+             * The rectangle is defined by two diagonally opposite points,
+             * hence by 4 floats separated by commas.
+             *
+             * @example '47.3165,4.9665,47.3424,5.0201'
+             */
+            boundingBox: string;
+        } | undefined;
+        query?: string | undefined;
+        configure?: import("algoliasearch-helper").PlainSearchParameters | undefined;
+        hierarchicalMenu?: {
+            [rootAttribute: string]: string[];
+        } | undefined;
+        hitsPerPage?: number | undefined;
+        page?: number | undefined;
+        menu?: {
+            [attribute: string]: string;
+        } | undefined;
+        numericMenu?: {
+            [attribute: string]: string;
+        } | undefined;
+        range?: {
+            [attribute: string]: string;
+        } | undefined;
+        ratingMenu?: {
+            [attribute: string]: number | undefined;
+        } | undefined;
+        refinementList?: {
+            [attribute: string]: string[];
+        } | undefined;
+        relevantSort?: number | undefined;
+        sortBy?: string | undefined;
+        toggle?: {
+            [attribute: string]: boolean;
+        } | undefined;
+        places?: {
+            query: string;
+            position: string;
+        } | undefined;
+    };
+    getWidgetSearchParameters(searchParameters: SearchParameters, { uiState }: {
+        uiState: {
+            geoSearch?: {
+                /**
+                 * The rectangular area in geo coordinates.
+                 * The rectangle is defined by two diagonally opposite points,
+                 * hence by 4 floats separated by commas.
+                 *
+                 * @example '47.3165,4.9665,47.3424,5.0201'
+                 */
+                boundingBox: string;
+            } | undefined;
+            query?: string | undefined;
+            configure?: import("algoliasearch-helper").PlainSearchParameters | undefined;
+            hierarchicalMenu?: {
+                [rootAttribute: string]: string[];
+            } | undefined;
+            hitsPerPage?: number | undefined;
+            page?: number | undefined;
+            menu?: {
+                [attribute: string]: string;
+            } | undefined;
+            numericMenu?: {
+                [attribute: string]: string;
+            } | undefined;
+            range?: {
+                [attribute: string]: string;
+            } | undefined;
+            ratingMenu?: {
+                [attribute: string]: number | undefined;
+            } | undefined;
+            refinementList?: {
+                [attribute: string]: string[];
+            } | undefined;
+            relevantSort?: number | undefined;
+            sortBy?: string | undefined;
+            toggle?: {
+                [attribute: string]: boolean;
+            } | undefined;
+            places?: {
+                query: string;
+                position: string;
+            } | undefined;
+        };
+    }): SearchParameters;
+};
+export default _default;

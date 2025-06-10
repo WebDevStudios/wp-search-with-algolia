@@ -4,7 +4,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
-var _uiComponentsShared = require("@algolia/ui-components-shared");
+var _instantsearchUiComponents = require("instantsearch-ui-components");
 var _preact = require("preact");
 var _SearchBox = _interopRequireDefault(require("../../components/SearchBox/SearchBox"));
 var _connectSearchBox = _interopRequireDefault(require("../../connectors/search-box/connectSearchBox"));
@@ -12,12 +12,12 @@ var _suit = require("../../lib/suit");
 var _utils = require("../../lib/utils");
 var _defaultTemplates = _interopRequireDefault(require("./defaultTemplates"));
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
-function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
+function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
+function ownKeys(e, r) { var t = Object.keys(e); if (Object.getOwnPropertySymbols) { var o = Object.getOwnPropertySymbols(e); r && (o = o.filter(function (r) { return Object.getOwnPropertyDescriptor(e, r).enumerable; })), t.push.apply(t, o); } return t; }
+function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t = null != arguments[r] ? arguments[r] : {}; r % 2 ? ownKeys(Object(t), !0).forEach(function (r) { _defineProperty(e, r, t[r]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(t)) : ownKeys(Object(t)).forEach(function (r) { Object.defineProperty(e, r, Object.getOwnPropertyDescriptor(t, r)); }); } return e; }
 function _defineProperty(obj, key, value) { key = _toPropertyKey(key); if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-function _toPropertyKey(arg) { var key = _toPrimitive(arg, "string"); return _typeof(key) === "symbol" ? key : String(key); }
-function _toPrimitive(input, hint) { if (_typeof(input) !== "object" || input === null) return input; var prim = input[Symbol.toPrimitive]; if (prim !== undefined) { var res = prim.call(input, hint || "default"); if (_typeof(res) !== "object") return res; throw new TypeError("@@toPrimitive must return a primitive value."); } return (hint === "string" ? String : Number)(input); }
+function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" == _typeof(i) ? i : String(i); }
+function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != _typeof(i)) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
 var withUsage = (0, _utils.createDocumentationMessageGenerator)({
   name: 'search-box'
 });
@@ -29,6 +29,7 @@ var renderer = function renderer(_ref) {
     templates = _ref.templates,
     autofocus = _ref.autofocus,
     searchAsYouType = _ref.searchAsYouType,
+    ignoreCompositionEvents = _ref.ignoreCompositionEvents,
     showReset = _ref.showReset,
     showSubmit = _ref.showSubmit,
     showLoadingIndicator = _ref.showLoadingIndicator;
@@ -42,6 +43,7 @@ var renderer = function renderer(_ref) {
       autofocus: autofocus,
       refine: refine,
       searchAsYouType: searchAsYouType,
+      ignoreCompositionEvents: ignoreCompositionEvents,
       templates: templates,
       showSubmit: showSubmit,
       showReset: showReset,
@@ -72,6 +74,8 @@ var searchBox = function searchBox(widgetParams) {
     autofocus = _ref3$autofocus === void 0 ? false : _ref3$autofocus,
     _ref3$searchAsYouType = _ref3.searchAsYouType,
     searchAsYouType = _ref3$searchAsYouType === void 0 ? true : _ref3$searchAsYouType,
+    _ref3$ignoreCompositi = _ref3.ignoreCompositionEvents,
+    ignoreCompositionEvents = _ref3$ignoreCompositi === void 0 ? false : _ref3$ignoreCompositi,
     _ref3$showReset = _ref3.showReset,
     showReset = _ref3$showReset === void 0 ? true : _ref3$showReset,
     _ref3$showSubmit = _ref3.showSubmit,
@@ -86,29 +90,29 @@ var searchBox = function searchBox(widgetParams) {
   }
   var containerNode = (0, _utils.getContainerNode)(container);
   var cssClasses = {
-    root: (0, _uiComponentsShared.cx)(suit(), userCssClasses.root),
-    form: (0, _uiComponentsShared.cx)(suit({
+    root: (0, _instantsearchUiComponents.cx)(suit(), userCssClasses.root),
+    form: (0, _instantsearchUiComponents.cx)(suit({
       descendantName: 'form'
     }), userCssClasses.form),
-    input: (0, _uiComponentsShared.cx)(suit({
+    input: (0, _instantsearchUiComponents.cx)(suit({
       descendantName: 'input'
     }), userCssClasses.input),
-    submit: (0, _uiComponentsShared.cx)(suit({
+    submit: (0, _instantsearchUiComponents.cx)(suit({
       descendantName: 'submit'
     }), userCssClasses.submit),
-    submitIcon: (0, _uiComponentsShared.cx)(suit({
+    submitIcon: (0, _instantsearchUiComponents.cx)(suit({
       descendantName: 'submitIcon'
     }), userCssClasses.submitIcon),
-    reset: (0, _uiComponentsShared.cx)(suit({
+    reset: (0, _instantsearchUiComponents.cx)(suit({
       descendantName: 'reset'
     }), userCssClasses.reset),
-    resetIcon: (0, _uiComponentsShared.cx)(suit({
+    resetIcon: (0, _instantsearchUiComponents.cx)(suit({
       descendantName: 'resetIcon'
     }), userCssClasses.resetIcon),
-    loadingIndicator: (0, _uiComponentsShared.cx)(suit({
+    loadingIndicator: (0, _instantsearchUiComponents.cx)(suit({
       descendantName: 'loadingIndicator'
     }), userCssClasses.loadingIndicator),
-    loadingIcon: (0, _uiComponentsShared.cx)(suit({
+    loadingIcon: (0, _instantsearchUiComponents.cx)(suit({
       descendantName: 'loadingIcon'
     }), userCssClasses.loadingIcon)
   };
@@ -120,6 +124,7 @@ var searchBox = function searchBox(widgetParams) {
     templates: templates,
     autofocus: autofocus,
     searchAsYouType: searchAsYouType,
+    ignoreCompositionEvents: ignoreCompositionEvents,
     showReset: showReset,
     showSubmit: showSubmit,
     showLoadingIndicator: showLoadingIndicator
@@ -133,5 +138,4 @@ var searchBox = function searchBox(widgetParams) {
     $$widgetType: 'ais.searchBox'
   });
 };
-var _default = searchBox;
-exports.default = _default;
+var _default = exports.default = searchBox;

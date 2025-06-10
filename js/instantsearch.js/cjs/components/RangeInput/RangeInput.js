@@ -4,11 +4,11 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
-var _uiComponentsShared = require("@algolia/ui-components-shared");
+var _instantsearchUiComponents = require("instantsearch-ui-components");
 var _preact = require("preact");
 var _Template = _interopRequireDefault(require("../Template/Template"));
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
+function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
 function _extends() { _extends = Object.assign ? Object.assign.bind() : function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; return _extends.apply(this, arguments); }
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, _toPropertyKey(descriptor.key), descriptor); } }
@@ -21,8 +21,8 @@ function _assertThisInitialized(self) { if (self === void 0) { throw new Referen
 function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
 function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
 function _defineProperty(obj, key, value) { key = _toPropertyKey(key); if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-function _toPropertyKey(arg) { var key = _toPrimitive(arg, "string"); return _typeof(key) === "symbol" ? key : String(key); }
-function _toPrimitive(input, hint) { if (_typeof(input) !== "object" || input === null) return input; var prim = input[Symbol.toPrimitive]; if (prim !== undefined) { var res = prim.call(input, hint || "default"); if (_typeof(res) !== "object") return res; throw new TypeError("@@toPrimitive must return a primitive value."); } return (hint === "string" ? String : Number)(input); }
+function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" == _typeof(i) ? i : String(i); }
+function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != _typeof(i)) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
 // Strips leading `0` from a positive number value
 function stripLeadingZeroFromInput(value) {
   return value.replace(/^(0+)\d/, function (part) {
@@ -83,7 +83,7 @@ var RangeInput = /*#__PURE__*/function (_Component) {
         templateProps = _this$props.templateProps;
       var isDisabled = min && max ? min >= max : false;
       var hasRefinements = Boolean(minValue || maxValue);
-      var rootClassNames = (0, _uiComponentsShared.cx)(cssClasses.root, !hasRefinements && cssClasses.noRefinement);
+      var rootClassNames = (0, _instantsearchUiComponents.cx)(cssClasses.root, !hasRefinements && cssClasses.noRefinement);
       return (0, _preact.h)("div", {
         className: rootClassNames
       }, (0, _preact.h)("form", {
@@ -92,7 +92,7 @@ var RangeInput = /*#__PURE__*/function (_Component) {
       }, (0, _preact.h)("label", {
         className: cssClasses.label
       }, (0, _preact.h)("input", {
-        className: (0, _uiComponentsShared.cx)(cssClasses.input, cssClasses.inputMin),
+        className: (0, _instantsearchUiComponents.cx)(cssClasses.input, cssClasses.inputMin),
         type: "number",
         min: min,
         max: max,
@@ -110,7 +110,7 @@ var RangeInput = /*#__PURE__*/function (_Component) {
       })), (0, _preact.h)("label", {
         className: cssClasses.label
       }, (0, _preact.h)("input", {
-        className: (0, _uiComponentsShared.cx)(cssClasses.input, cssClasses.inputMax),
+        className: (0, _instantsearchUiComponents.cx)(cssClasses.input, cssClasses.inputMax),
         type: "number",
         min: min,
         max: max,
@@ -132,5 +132,4 @@ var RangeInput = /*#__PURE__*/function (_Component) {
   }]);
   return RangeInput;
 }(_preact.Component);
-var _default = RangeInput;
-exports.default = _default;
+var _default = exports.default = RangeInput;

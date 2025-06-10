@@ -248,16 +248,32 @@ final class Algolia_Terms_Index extends Algolia_Index {
 	 * @author WebDevStudios <contact@webdevstudios.com>
 	 * @since  1.0.0
 	 *
-	 * @return array
+	 * @return array Autocomplete config.
 	 */
 	public function get_default_autocomplete_config() {
+		$default_config = parent::get_default_autocomplete_config();
+		$index_name     = $this->get_name();
+
+		/**
+		 * Filters the autocomplete debounce option for this index.
+		 *
+		 * @since 2.10.0
+		 *
+		 * @param int Debounce value in milliseconds.
+		 */
+		$debounce = apply_filters(
+			"algolia_autocomplete_debounce_{$index_name}",
+			$default_config['debounce']
+		);
+
 		$config = array(
 			'position'        => 20,
 			'max_suggestions' => 3,
+			'debounce'        => $debounce,
 			'tmpl_suggestion' => 'autocomplete-term-suggestion',
 		);
 
-		return array_merge( parent::get_default_autocomplete_config(), $config );
+		return array_merge( $default_config, $config );
 	}
 
 	/**

@@ -10,5 +10,4 @@ var defaultTemplates = {
     return name;
   }
 };
-var _default = defaultTemplates;
-exports.default = _default;
+var _default = exports.default = defaultTemplates;

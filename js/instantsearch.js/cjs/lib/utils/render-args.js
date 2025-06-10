@@ -24,8 +24,8 @@ function createInitArgs(instantSearchInstance, parent, uiState) {
     error: instantSearchInstance.error
   };
 }
-function createRenderArgs(instantSearchInstance, parent) {
-  var results = parent.getResults();
+function createRenderArgs(instantSearchInstance, parent, widget) {
+  var results = parent.getResultsForWidget(widget);
   var helper = parent.getHelper();
   return {
     helper: helper,
@@ -33,7 +33,7 @@ function createRenderArgs(instantSearchInstance, parent) {
     instantSearchInstance: instantSearchInstance,
     results: results,
     scopedResults: parent.getScopedResults(),
-    state: results ? results._state : helper.state,
+    state: results && '_state' in results ? results._state : helper.state,
     renderState: instantSearchInstance.renderState,
     templatesConfig: instantSearchInstance.templatesConfig,
     createURL: parent.createURL,

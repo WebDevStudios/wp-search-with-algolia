@@ -1,7 +1,7 @@
 var _excluded = ["root"];
-function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
-function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
+function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
+function ownKeys(e, r) { var t = Object.keys(e); if (Object.getOwnPropertySymbols) { var o = Object.getOwnPropertySymbols(e); r && (o = o.filter(function (r) { return Object.getOwnPropertyDescriptor(e, r).enumerable; })), t.push.apply(t, o); } return t; }
+function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t = null != arguments[r] ? arguments[r] : {}; r % 2 ? ownKeys(Object(t), !0).forEach(function (r) { _defineProperty(e, r, t[r]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(t)) : ownKeys(Object(t)).forEach(function (r) { Object.defineProperty(e, r, Object.getOwnPropertyDescriptor(t, r)); }); } return e; }
 function _extends() { _extends = Object.assign ? Object.assign.bind() : function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; return _extends.apply(this, arguments); }
 function _objectWithoutProperties(source, excluded) { if (source == null) return {}; var target = _objectWithoutPropertiesLoose(source, excluded); var key, i; if (Object.getOwnPropertySymbols) { var sourceSymbolKeys = Object.getOwnPropertySymbols(source); for (i = 0; i < sourceSymbolKeys.length; i++) { key = sourceSymbolKeys[i]; if (excluded.indexOf(key) >= 0) continue; if (!Object.prototype.propertyIsEnumerable.call(source, key)) continue; target[key] = source[key]; } } return target; }
 function _objectWithoutPropertiesLoose(source, excluded) { if (source == null) return {}; var target = {}; var sourceKeys = Object.keys(source); var key, i; for (i = 0; i < sourceKeys.length; i++) { key = sourceKeys[i]; if (excluded.indexOf(key) >= 0) continue; target[key] = source[key]; } return target; }
@@ -16,14 +16,17 @@ function _assertThisInitialized(self) { if (self === void 0) { throw new Referen
 function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
 function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
 function _defineProperty(obj, key, value) { key = _toPropertyKey(key); if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-function _toPropertyKey(arg) { var key = _toPrimitive(arg, "string"); return _typeof(key) === "symbol" ? key : String(key); }
-function _toPrimitive(input, hint) { if (_typeof(input) !== "object" || input === null) return input; var prim = input[Symbol.toPrimitive]; if (prim !== undefined) { var res = prim.call(input, hint || "default"); if (_typeof(res) !== "object") return res; throw new TypeError("@@toPrimitive must return a primitive value."); } return (hint === "string" ? String : Number)(input); }
-import { cx } from '@algolia/ui-components-shared';
+function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" == _typeof(i) ? i : String(i); }
+function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != _typeof(i)) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
+import { cx } from 'instantsearch-ui-components';
 import { h, createRef, Component } from 'preact';
 import { isSpecialClick, isEqual } from "../../lib/utils/index.js";
 import SearchBox from "../SearchBox/SearchBox.js";
 import Template from "../Template/Template.js";
 import RefinementListItem from "./RefinementListItem.js";
+
+// CSS types
+
 var defaultProps = {
   cssClasses: {},
   depth: 0
@@ -41,7 +44,9 @@ var RefinementList = /*#__PURE__*/function (_Component) {
       args[_key] = arguments[_key];
     }
     _this = _super.call.apply(_super, [this].concat(args));
+    _defineProperty(_assertThisInitialized(_this), "listRef", createRef());
     _defineProperty(_assertThisInitialized(_this), "searchBox", createRef());
+    _defineProperty(_assertThisInitialized(_this), "lastRefinedValue", undefined);
     _defineProperty(_assertThisInitialized(_this), "_generateFacetItem", function (facetValue) {
       var subItems;
       if (isHierarchicalMenuItem(facetValue) && Array.isArray(facetValue.data) && facetValue.data.length > 0) {
@@ -85,6 +90,21 @@ var RefinementList = /*#__PURE__*/function (_Component) {
         templateProps: _this.props.templateProps
       });
     });
+    // Click events on DOM tree like LABEL > INPUT will result in two click events
+    // instead of one.
+    // No matter the framework, see https://www.google.com/search?q=click+label+twice
+    //
+    // Thus making it hard to distinguish activation from deactivation because both click events
+    // are very close. Debounce is a solution but hacky.
+    //
+    // So the code here checks if the click was done on or in a LABEL. If this LABEL
+    // has a checkbox inside, we ignore the first click event because we will get another one.
+    //
+    // We also check if the click was done inside a link and then e.preventDefault() because we already
+    // handle the url
+    //
+    // Finally, we always stop propagation of the event to avoid multiple levels RefinementLists to fail: click
+    // on child would click on parent also
     _defineProperty(_assertThisInitialized(_this), "handleItemClick", function (_ref) {
       var facetValueToRefine = _ref.facetValueToRefine,
         isRefined = _ref.isRefined,
@@ -94,18 +114,18 @@ var RefinementList = /*#__PURE__*/function (_Component) {
         // if one special key is down
         return;
       }
-      if (!(originalEvent.target instanceof HTMLElement) || !(originalEvent.target.parentNode instanceof HTMLElement)) {
+      var parent = originalEvent.target;
+      if (parent === null || parent.parentNode === null) {
         return;
       }
-      if (isRefined && originalEvent.target.parentNode.querySelector('input[type="radio"]:checked')) {
+      if (isRefined && parent.parentNode.querySelector('input[type="radio"]:checked')) {
         // Prevent refinement for being reset if the user clicks on an already checked radio button
         return;
       }
-      if (originalEvent.target.tagName === 'INPUT') {
+      if (parent.tagName === 'INPUT') {
         _this.refine(facetValueToRefine);
         return;
       }
-      var parent = originalEvent.target;
       while (parent !== originalEvent.currentTarget) {
         if (parent.tagName === 'LABEL' && (parent.querySelector('input[type="checkbox"]') || parent.querySelector('input[type="radio"]'))) {
           return;
@@ -129,6 +149,7 @@ var RefinementList = /*#__PURE__*/function (_Component) {
   }, {
     key: "refine",
     value: function refine(facetValueToRefine) {
+      this.lastRefinedValue = facetValueToRefine;
       this.props.toggleRefinement(facetValueToRefine);
     }
   }, {
@@ -137,6 +158,19 @@ var RefinementList = /*#__PURE__*/function (_Component) {
       if (this.searchBox.current && !nextProps.isFromSearch) {
         this.searchBox.current.resetInput();
       }
+    }
+
+    /**
+     * This sets focus on the last refined input element after a render
+     * because Preact does not perform it automatically.
+     * @see https://github.com/preactjs/preact/issues/3242
+     */
+  }, {
+    key: "componentDidUpdate",
+    value: function componentDidUpdate() {
+      var _this$listRef$current, _this$listRef$current2, _this$lastRefinedValu;
+      (_this$listRef$current = this.listRef.current) === null || _this$listRef$current === void 0 ? void 0 : (_this$listRef$current2 = _this$listRef$current.querySelector("input[value=\"".concat((_this$lastRefinedValu = this.lastRefinedValue) === null || _this$lastRefinedValu === void 0 ? void 0 : _this$lastRefinedValu.replace('"', '\\"'), "\"]"))) === null || _this$listRef$current2 === void 0 ? void 0 : _this$listRef$current2.focus();
+      this.lastRefinedValue = undefined;
     }
   }, {
     key: "refineFirstValue",
@@ -185,9 +219,11 @@ var RefinementList = /*#__PURE__*/function (_Component) {
         // This sets the search box to a controlled state because
         // we don't rely on the `refine` prop but on `onChange`.
         ,
-        searchAsYouType: false
+        searchAsYouType: false,
+        ariaLabel: "Search for filters"
       }));
       var facetValues = this.props.facetValues && this.props.facetValues.length > 0 && h("ul", {
+        ref: this.listRef,
         className: this.props.cssClasses.list
       }, this.props.facetValues.map(this._generateFacetItem, this));
       var noResults = this.props.searchFacetValues && this.props.isFromSearch && (!this.props.facetValues || this.props.facetValues.length === 0) && h(Template, _extends({}, this.props.templateProps, {

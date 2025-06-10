@@ -18,6 +18,13 @@ export type BrowserHistoryArgs<TRouteState> = {
     start?: (onUpdate: () => void) => void;
     dispose?: () => void;
     push?: (url: string) => void;
+    /**
+     * Whether the URL should be cleaned up when the router is disposed.
+     * This can be useful when closing a modal containing InstantSearch, to
+     * remove active refinements from the URL.
+     * @default true
+     */
+    cleanUrlOnDispose?: boolean;
 };
 declare class BrowserHistory<TRouteState> implements Router<TRouteState> {
     $$type: string;
@@ -57,7 +64,7 @@ declare class BrowserHistory<TRouteState> implements Router<TRouteState> {
     /**
      * Indicates whether the history router is disposed or not.
      */
-    private isDisposed;
+    protected isDisposed: boolean;
     /**
      * Indicates the window.history.length before the last call to
      * window.history.pushState (called in `write`).
@@ -68,11 +75,12 @@ declare class BrowserHistory<TRouteState> implements Router<TRouteState> {
     private _start?;
     private _dispose?;
     private _push?;
+    private _cleanUrlOnDispose;
     /**
      * Initializes a new storage provider that syncs the search state to the URL
      * using web APIs (`window.location.pushState` and `onpopstate` event).
      */
-    constructor({ windowTitle, writeDelay, createURL, parseURL, getLocation, start, dispose, push, }: BrowserHistoryArgs<TRouteState>);
+    constructor({ windowTitle, writeDelay, createURL, parseURL, getLocation, start, dispose, push, cleanUrlOnDispose, }: BrowserHistoryArgs<TRouteState>);
     /**
      * Reads the URL and returns a syncable UI search state.
      */
@@ -91,7 +99,7 @@ declare class BrowserHistory<TRouteState> implements Router<TRouteState> {
      *
      * It always generates the full URL, not a relative one.
      * This allows to handle cases like using a <base href>.
-     * See: https://github.com/algolia/instantsearch.js/issues/790
+     * See: https://github.com/algolia/instantsearch/issues/790
      */
     createURL(routeState: TRouteState): string;
     /**
@@ -101,5 +109,5 @@ declare class BrowserHistory<TRouteState> implements Router<TRouteState> {
     start(): void;
     private shouldWrite;
 }
-export default function historyRouter<TRouteState = UiState>({ createURL, parseURL, writeDelay, windowTitle, getLocation, start, dispose, push, }?: Partial<BrowserHistoryArgs<TRouteState>>): BrowserHistory<TRouteState>;
+export default function historyRouter<TRouteState = UiState>({ createURL, parseURL, writeDelay, windowTitle, getLocation, start, dispose, push, cleanUrlOnDispose, }?: Partial<BrowserHistoryArgs<TRouteState>>): BrowserHistory<TRouteState>;
 export {};

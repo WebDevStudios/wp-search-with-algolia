@@ -128,6 +128,15 @@ class Algolia_Plugin {
 	private $compatibility;
 
 	/**
+	 * Instance of Algoolia_Health_Panel
+	 *
+	 * @since 2.10.0
+	 *
+	 * @var Algolia_Health_Panel
+	 */
+	private $health;
+
+	/**
 	 * Get the singleton instance of Algolia_Plugin.
 	 *
 	 * @author     WebDevStudios <contact@webdevstudios.com>
@@ -175,7 +184,8 @@ class Algolia_Plugin {
 
 		// Load admin or public part of the plugin.
 		if ( is_admin() ) {
-			$this->admin = new Algolia_Admin( $this );
+			$this->admin  = new Algolia_Admin( $this );
+			$this->health = new Algolia_Health_Panel( $this );
 		}
 	}
 

@@ -36,4 +36,4 @@ export type FacetExcludeRefinement = {
     exhaustive?: boolean;
 };
 export type Refinement = FacetRefinement | QueryRefinement | NumericRefinement | FacetExcludeRefinement | TagRefinement;
-export declare function getRefinements(results: SearchResults | Record<string, never>, state: SearchParameters, includesQuery?: boolean): Refinement[];
+export declare function getRefinements(_results: SearchResults | Record<string, never> | null, state: SearchParameters, includesQuery?: boolean): Refinement[];

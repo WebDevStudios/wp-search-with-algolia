@@ -22,5 +22,4 @@ var QueryRuleCustomData = function QueryRuleCustomData(_ref) {
     }
   });
 };
-var _default = QueryRuleCustomData;
-exports.default = _default;
+var _default = exports.default = QueryRuleCustomData;

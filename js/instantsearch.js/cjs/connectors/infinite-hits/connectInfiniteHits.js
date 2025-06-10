@@ -1,6 +1,6 @@
 "use strict";
 
-function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
+function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
@@ -8,11 +8,11 @@ exports.default = void 0;
 var _utils = require("../../lib/utils");
 var _excluded = ["page"],
   _excluded2 = ["clickAnalytics", "userToken"];
-function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
+function ownKeys(e, r) { var t = Object.keys(e); if (Object.getOwnPropertySymbols) { var o = Object.getOwnPropertySymbols(e); r && (o = o.filter(function (r) { return Object.getOwnPropertyDescriptor(e, r).enumerable; })), t.push.apply(t, o); } return t; }
+function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t = null != arguments[r] ? arguments[r] : {}; r % 2 ? ownKeys(Object(t), !0).forEach(function (r) { _defineProperty(e, r, t[r]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(t)) : ownKeys(Object(t)).forEach(function (r) { Object.defineProperty(e, r, Object.getOwnPropertyDescriptor(t, r)); }); } return e; }
 function _defineProperty(obj, key, value) { key = _toPropertyKey(key); if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-function _toPropertyKey(arg) { var key = _toPrimitive(arg, "string"); return _typeof(key) === "symbol" ? key : String(key); }
-function _toPrimitive(input, hint) { if (_typeof(input) !== "object" || input === null) return input; var prim = input[Symbol.toPrimitive]; if (prim !== undefined) { var res = prim.call(input, hint || "default"); if (_typeof(res) !== "object") return res; throw new TypeError("@@toPrimitive must return a primitive value."); } return (hint === "string" ? String : Number)(input); }
+function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" == _typeof(i) ? i : String(i); }
+function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != _typeof(i)) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
 function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread(); }
 function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
 function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
@@ -61,12 +61,9 @@ function extractHitsFromCachedHits(cachedHits) {
     return acc.concat(cachedHits[page]);
   }, []);
 }
-var connectInfiniteHits = function connectInfiniteHits(renderFn) {
+var connectInfiniteHits = exports.default = function connectInfiniteHits(renderFn) {
   var unmountFn = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : _utils.noop;
   (0, _utils.checkRendering)(renderFn, withUsage());
-
-  // @TODO: this should be a generic, but a Connector can not yet be generic itself
-
   return function (widgetParams) {
     var _ref5 = widgetParams || {},
       _ref5$escapeHTML = _ref5.escapeHTML,
@@ -134,12 +131,15 @@ var connectInfiniteHits = function connectInfiniteHits(renderFn) {
         }), false);
         sendEvent('view:internal', widgetRenderState.currentPageHits);
       },
-      getRenderState: function getRenderState(renderState, renderOptions) {
+      getRenderState: function getRenderState(renderState, renderOptions
+      // Type is explicitly redefined, to avoid having the TWidgetParams type in the definition
+      ) {
         return _objectSpread(_objectSpread({}, renderState), {}, {
           infiniteHits: this.getWidgetRenderState(renderOptions)
         });
       },
       getWidgetRenderState: function getWidgetRenderState(_ref6) {
+        var _results$renderingCon, _results$renderingCon2, _results$renderingCon3;
         var results = _ref6.results,
           helper = _ref6.helper,
           parent = _ref6.parent,
@@ -156,16 +156,17 @@ var connectInfiniteHits = function connectInfiniteHits(renderFn) {
         var cachedHits = cache.read({
           state: normalizeState(state)
         }) || {};
+        var banner = results === null || results === void 0 ? void 0 : (_results$renderingCon = results.renderingContent) === null || _results$renderingCon === void 0 ? void 0 : (_results$renderingCon2 = _results$renderingCon.widgets) === null || _results$renderingCon2 === void 0 ? void 0 : (_results$renderingCon3 = _results$renderingCon2.banners) === null || _results$renderingCon3 === void 0 ? void 0 : _results$renderingCon3[0];
         if (!results) {
           showPrevious = getShowPrevious(helper);
           showMore = getShowMore(helper);
           sendEvent = (0, _utils.createSendEventForHits)({
             instantSearchInstance: instantSearchInstance,
-            index: helper.getIndex(),
+            helper: helper,
             widgetType: this.$$type
           });
           bindEvent = (0, _utils.createBindEventForHits)({
-            index: helper.getIndex(),
+            helper: helper,
             widgetType: this.$$type,
             instantSearchInstance: instantSearchInstance
           });
@@ -208,14 +209,16 @@ var connectInfiniteHits = function connectInfiniteHits(renderFn) {
           currentPageHits = transformedHits;
           isFirstPage = getFirstReceivedPage(state, cachedHits) === 0;
         }
-        var hits = extractHitsFromCachedHits(cachedHits);
+        var items = extractHitsFromCachedHits(cachedHits);
         var isLastPage = results ? results.nbPages <= getLastReceivedPage(state, cachedHits) + 1 : true;
         return {
-          hits: hits,
+          hits: items,
+          items: items,
           currentPageHits: currentPageHits,
           sendEvent: sendEvent,
           bindEvent: bindEvent,
-          results: results,
+          banner: banner,
+          results: results || undefined,
           showPrevious: showPrevious,
           showMore: showMore,
           isFirstPage: isFirstPage,
@@ -252,6 +255,7 @@ var connectInfiniteHits = function connectInfiniteHits(renderFn) {
         var uiState = _ref10.uiState;
         var widgetSearchParameters = searchParameters;
         if (escapeHTML) {
+          // @MAJOR: set this globally, not in the InfiniteHits widget to allow InfiniteHits to be conditionally used
           widgetSearchParameters = searchParameters.setQueryParameters(_utils.TAG_PLACEHOLDER);
         }
 
@@ -263,5 +267,3 @@ var connectInfiniteHits = function connectInfiniteHits(renderFn) {
     };
   };
 };
-var _default = connectInfiniteHits;
-exports.default = _default;

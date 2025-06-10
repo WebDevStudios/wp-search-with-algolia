@@ -1,2 +1,2 @@
 import type { Renderer } from '../../types/connector';
-export declare function checkRendering<TRenderOptions, TWidgetParams>(rendering: Renderer<TRenderOptions, TWidgetParams>, usage: string): void;
+export declare function checkRendering(rendering: any, usage: string): asserts rendering is Renderer<any, any>;
