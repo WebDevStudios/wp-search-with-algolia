@@ -130,6 +130,7 @@ Follow along with the changelog on [Github](https://github.com/WebDevStudios/wp-
 
 = 2.10.0 =
 * Added: Debounce option for Autocomplete.
+* Added: Initial integration with Health Panel.
 * Updated: Instantsearch to version 4.78.3
 * Updated: Prevent loading of API credentials on frontend when not using Autocomplete or Instantsearch.
 * Updated: Removed WooCommerce internal post types and taxonomies from Autocomplete list.
