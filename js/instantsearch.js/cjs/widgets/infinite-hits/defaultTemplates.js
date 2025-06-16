@@ -19,5 +19,4 @@ var defaultTemplates = {
     return JSON.stringify((0, _utils.omit)(data, ['__hitIndex']), null, 2);
   }
 };
-var _default = defaultTemplates;
-exports.default = _default;
+var _default = exports.default = defaultTemplates;

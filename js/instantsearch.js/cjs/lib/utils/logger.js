@@ -8,7 +8,7 @@ var _noop = require("./noop");
 /**
  * Logs a warning when this function is called, in development environment only.
  */
-var deprecate = function deprecate(fn, message) {
+var deprecate = exports.deprecate = function deprecate(fn, message) {
   return fn;
 };
 
@@ -16,16 +16,13 @@ var deprecate = function deprecate(fn, message) {
  * Logs a warning
  * This is used to log issues in development environment only.
  */
-exports.deprecate = deprecate;
-var warn = _noop.noop;
+var warn = exports.warn = _noop.noop;
 
 /**
  * Logs a warning if the condition is not met.
  * This is used to log issues in development environment only.
  */
-exports.warn = warn;
-var _warning = _noop.noop;
-exports.warning = _warning;
+var _warning = exports.warning = _noop.noop;
 if (process.env.NODE_ENV === 'development') {
   exports.warn = warn = function warn(message) {
     // eslint-disable-next-line no-console

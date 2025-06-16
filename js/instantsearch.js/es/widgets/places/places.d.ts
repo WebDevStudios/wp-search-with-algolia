@@ -31,9 +31,5 @@ export type PlacesWidgetDescription = {
     };
 };
 export type PlacesWidget = WidgetFactory<PlacesWidgetDescription, PlacesWidgetParams, PlacesWidgetParams>;
-/**
- * This widget sets the geolocation value for the search based on the selected
- * result in the Algolia Places autocomplete.
- */
-declare const placesWidget: PlacesWidget;
-export default placesWidget;
+declare const _default: PlacesWidget;
+export default _default;

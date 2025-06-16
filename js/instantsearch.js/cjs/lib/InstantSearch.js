@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.default = void 0;
+exports.default = exports.INSTANTSEARCH_FUTURE_DEFAULTS = void 0;
 var _events = _interopRequireDefault(require("@algolia/events"));
 var _algoliasearchHelper = _interopRequireDefault(require("algoliasearch-helper"));
 var _createInsightsMiddleware = require("../middlewares/createInsightsMiddleware");
@@ -14,9 +14,9 @@ var _createHelpers = _interopRequireDefault(require("./createHelpers"));
 var _utils = require("./utils");
 var _version = _interopRequireDefault(require("./version"));
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
-function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
+function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
+function ownKeys(e, r) { var t = Object.keys(e); if (Object.getOwnPropertySymbols) { var o = Object.getOwnPropertySymbols(e); r && (o = o.filter(function (r) { return Object.getOwnPropertyDescriptor(e, r).enumerable; })), t.push.apply(t, o); } return t; }
+function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t = null != arguments[r] ? arguments[r] : {}; r % 2 ? ownKeys(Object(t), !0).forEach(function (r) { _defineProperty(e, r, t[r]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(t)) : ownKeys(Object(t)).forEach(function (r) { Object.defineProperty(e, r, Object.getOwnPropertyDescriptor(t, r)); }); } return e; }
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, _toPropertyKey(descriptor.key), descriptor); } }
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
@@ -28,8 +28,8 @@ function _assertThisInitialized(self) { if (self === void 0) { throw new Referen
 function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
 function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
 function _defineProperty(obj, key, value) { key = _toPropertyKey(key); if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-function _toPropertyKey(arg) { var key = _toPrimitive(arg, "string"); return _typeof(key) === "symbol" ? key : String(key); }
-function _toPrimitive(input, hint) { if (_typeof(input) !== "object" || input === null) return input; var prim = input[Symbol.toPrimitive]; if (prim !== undefined) { var res = prim.call(input, hint || "default"); if (_typeof(res) !== "object") return res; throw new TypeError("@@toPrimitive must return a primitive value."); } return (hint === "string" ? String : Number)(input); }
+function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" == _typeof(i) ? i : String(i); }
+function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != _typeof(i)) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
 var withUsage = (0, _utils.createDocumentationMessageGenerator)({
   name: 'instantsearch'
 });
@@ -40,6 +40,16 @@ function defaultCreateURL() {
 // this purposely breaks typescript's type inference to ensure it's not used
 // as it's used for a default parameter for example
 // source: https://github.com/Microsoft/TypeScript/issues/14829#issuecomment-504042546
+
+/**
+ * Global options for an InstantSearch instance.
+ */
+
+var INSTANTSEARCH_FUTURE_DEFAULTS = exports.INSTANTSEARCH_FUTURE_DEFAULTS = {
+  preserveSharedStateOnUnmount: false,
+  persistHierarchicalRootCount: false
+};
+
 /**
  * The actual implementation of the InstantSearch. This is
  * created using the `instantsearch` factory function.
@@ -49,6 +59,7 @@ var InstantSearch = /*#__PURE__*/function (_EventEmitter) {
   _inherits(InstantSearch, _EventEmitter);
   var _super = _createSuper(InstantSearch);
   function InstantSearch(options) {
+    var _options$future2;
     var _this;
     _classCallCheck(this, InstantSearch);
     _this = _super.call(this);
@@ -56,8 +67,10 @@ var InstantSearch = /*#__PURE__*/function (_EventEmitter) {
     // prevent `render` event listening from causing a warning
     _defineProperty(_assertThisInitialized(_this), "client", void 0);
     _defineProperty(_assertThisInitialized(_this), "indexName", void 0);
+    _defineProperty(_assertThisInitialized(_this), "compositionID", void 0);
     _defineProperty(_assertThisInitialized(_this), "insightsClient", void 0);
     _defineProperty(_assertThisInitialized(_this), "onStateChange", null);
+    _defineProperty(_assertThisInitialized(_this), "future", void 0);
     _defineProperty(_assertThisInitialized(_this), "helper", void 0);
     _defineProperty(_assertThisInitialized(_this), "mainHelper", void 0);
     _defineProperty(_assertThisInitialized(_this), "mainIndex", void 0);
@@ -71,9 +84,19 @@ var InstantSearch = /*#__PURE__*/function (_EventEmitter) {
     _defineProperty(_assertThisInitialized(_this), "_createURL", void 0);
     _defineProperty(_assertThisInitialized(_this), "_searchFunction", void 0);
     _defineProperty(_assertThisInitialized(_this), "_mainHelperSearch", void 0);
+    _defineProperty(_assertThisInitialized(_this), "_hasSearchWidget", false);
+    _defineProperty(_assertThisInitialized(_this), "_hasRecommendWidget", false);
+    _defineProperty(_assertThisInitialized(_this), "_insights", void 0);
     _defineProperty(_assertThisInitialized(_this), "middleware", []);
     _defineProperty(_assertThisInitialized(_this), "sendEventToInsights", void 0);
+    /**
+     * The status of the search. Can be "idle", "loading", "stalled", or "error".
+     */
     _defineProperty(_assertThisInitialized(_this), "status", 'idle');
+    /**
+     * The last returned error from the Search API.
+     * The error gets cleared when the next valid search response is rendered.
+     */
     _defineProperty(_assertThisInitialized(_this), "error", undefined);
     _defineProperty(_assertThisInitialized(_this), "scheduleSearch", (0, _utils.defer)(function () {
       if (_this.started) {
@@ -108,13 +131,14 @@ var InstantSearch = /*#__PURE__*/function (_EventEmitter) {
     _this.setMaxListeners(100);
     var _options$indexName = options.indexName,
       indexName = _options$indexName === void 0 ? '' : _options$indexName,
+      compositionID = options.compositionID,
       numberLocale = options.numberLocale,
       _options$initialUiSta = options.initialUiState,
       initialUiState = _options$initialUiSta === void 0 ? {} : _options$initialUiSta,
       _options$routing = options.routing,
       routing = _options$routing === void 0 ? null : _options$routing,
       _options$insights = options.insights,
-      insights = _options$insights === void 0 ? false : _options$insights,
+      insights = _options$insights === void 0 ? undefined : _options$insights,
       searchFunction = options.searchFunction,
       _options$stalledSearc = options.stalledSearchDelay,
       stalledSearchDelay = _options$stalledSearc === void 0 ? 200 : _options$stalledSearc,
@@ -123,7 +147,9 @@ var InstantSearch = /*#__PURE__*/function (_EventEmitter) {
       _options$insightsClie = options.insightsClient,
       insightsClient = _options$insightsClie === void 0 ? null : _options$insightsClie,
       _options$onStateChang = options.onStateChange,
-      onStateChange = _options$onStateChang === void 0 ? null : _options$onStateChang;
+      onStateChange = _options$onStateChang === void 0 ? null : _options$onStateChang,
+      _options$future = options.future,
+      future = _options$future === void 0 ? _objectSpread(_objectSpread({}, INSTANTSEARCH_FUTURE_DEFAULTS), options.future || {}) : _options$future;
     if (searchClient === null) {
       throw new Error(withUsage('The `searchClient` option is required.'));
     }
@@ -140,13 +166,23 @@ var InstantSearch = /*#__PURE__*/function (_EventEmitter) {
     process.env.NODE_ENV === 'development' ? (0, _utils.warning)(!options.searchParameters, "The `searchParameters` option is deprecated and will not be supported in InstantSearch.js 4.x.\n\nYou can replace it with the `configure` widget:\n\n```\nsearch.addWidgets([\n  configure(".concat(JSON.stringify(options.searchParameters, null, 2), ")\n]);\n```\n\nSee ").concat((0, _utils.createDocumentationLink)({
       name: 'configure'
     }))) : void 0;
+    if (process.env.NODE_ENV === 'development' && ((_options$future2 = options.future) === null || _options$future2 === void 0 ? void 0 : _options$future2.preserveSharedStateOnUnmount) === undefined) {
+      // eslint-disable-next-line no-console
+      console.info("Starting from the next major version, InstantSearch will change how widgets state is preserved when they are removed. InstantSearch will keep the state of unmounted widgets to be usable by other widgets with the same attribute.\n\nWe recommend setting `future.preserveSharedStateOnUnmount` to true to adopt this change today.\nTo stay with the current behaviour and remove this warning, set the option to false.\n\nSee documentation: ".concat((0, _utils.createDocumentationLink)({
+        name: 'instantsearch'
+      }), "#widget-param-future\n          "));
+    }
     _this.client = searchClient;
+    _this.future = future;
     _this.insightsClient = insightsClient;
     _this.indexName = indexName;
+    _this.compositionID = compositionID;
     _this.helper = null;
     _this.mainHelper = null;
     _this.mainIndex = (0, _index.default)({
-      indexName: indexName
+      // we use an index widget to render compositions
+      // this only works because there's only one composition index allow for now
+      indexName: _this.compositionID || _this.indexName
     });
     _this.onStateChange = onStateChange;
     _this.started = false;
@@ -161,6 +197,7 @@ var InstantSearch = /*#__PURE__*/function (_EventEmitter) {
     _this._createURL = defaultCreateURL;
     _this._initialUiState = initialUiState;
     _this._initialResults = null;
+    _this._insights = insights;
     if (searchFunction) {
       process.env.NODE_ENV === 'development' ? (0, _utils.warning)(false, "The `searchFunction` option is deprecated. Use `onStateChange` instead.") : void 0;
       _this._searchFunction = searchFunction;
@@ -172,8 +209,9 @@ var InstantSearch = /*#__PURE__*/function (_EventEmitter) {
       _this.use((0, _createRouterMiddleware.createRouterMiddleware)(routerOptions));
     }
 
-    // This is the default middleware,
-    // any user-provided middleware will be added later and override this one.
+    // This is the default Insights middleware,
+    // added when `insights` is set to true by the user.
+    // Any user-provided middleware will be added later and override this one.
     if (insights) {
       var insightsOptions = typeof insights === 'boolean' ? {} : insights;
       insightsOptions.$$internal = true;
@@ -193,15 +231,6 @@ var InstantSearch = /*#__PURE__*/function (_EventEmitter) {
   _createClass(InstantSearch, [{
     key: "_isSearchStalled",
     get:
-    /**
-     * The status of the search. Can be "idle", "loading", "stalled", or "error".
-     */
-
-    /**
-     * The last returned error from the Search API.
-     * The error gets cleared when the next valid search response is rendered.
-     */
-
     /**
      * @deprecated use `status === 'stalled'` instead
      */
@@ -303,6 +332,9 @@ var InstantSearch = /*#__PURE__*/function (_EventEmitter) {
       })) {
         throw new Error(withUsage('The widget definition expects a `render` and/or an `init` method.'));
       }
+      if (this.compositionID && widgets.some(_utils.isIndexWidget)) {
+        throw new Error(withUsage('The `index` widget cannot be used with a composition-based InstantSearch implementation.'));
+      }
       this.mainIndex.addWidgets(widgets);
       return this;
     }
@@ -344,9 +376,7 @@ var InstantSearch = /*#__PURE__*/function (_EventEmitter) {
 
     /**
      * Ends the initialization of InstantSearch.js and triggers the
-     * first search. This method should be called after all widgets have been added
-     * to the instance of InstantSearch.js. InstantSearch.js also supports adding and removing
-     * widgets after the start as an **EXPERIMENTAL** feature.
+     * first search.
      */
   }, {
     key: "start",
@@ -361,17 +391,32 @@ var InstantSearch = /*#__PURE__*/function (_EventEmitter) {
       // DerivedHelper scoped into the `index` widgets.
       // In Vue InstantSearch' hydrate, a main helper gets set before start, so
       // we need to respect this helper as a way to keep all listeners correct.
-      var mainHelper = this.mainHelper || (0, _algoliasearchHelper.default)(this.client, this.indexName);
+      var mainHelper = this.mainHelper || (0, _algoliasearchHelper.default)(this.client, this.indexName, undefined, {
+        persistHierarchicalRootCount: this.future.persistHierarchicalRootCount
+      });
+      if (this.compositionID) {
+        mainHelper.searchForFacetValues = mainHelper.searchForCompositionFacetValues.bind(mainHelper);
+      }
       mainHelper.search = function () {
         _this3.status = 'loading';
         _this3.scheduleRender(false);
-        process.env.NODE_ENV === 'development' ? (0, _utils.warning)(Boolean(_this3.indexName) || _this3.mainIndex.getWidgets().some(_utils.isIndexWidget), 'No indexName provided, nor an explicit index widget in the widgets tree. This is required to be able to display results.') : void 0;
+        process.env.NODE_ENV === 'development' ? (0, _utils.warning)(Boolean(_this3.indexName) || Boolean(_this3.compositionID) || _this3.mainIndex.getWidgets().some(_utils.isIndexWidget), 'No indexName provided, nor an explicit index widget in the widgets tree. This is required to be able to display results.') : void 0;
 
         // This solution allows us to keep the exact same API for the users but
         // under the hood, we have a different implementation. It should be
         // completely transparent for the rest of the codebase. Only this module
         // is impacted.
-        return mainHelper.searchOnlyWithDerivedHelpers();
+        if (_this3._hasSearchWidget) {
+          if (_this3.compositionID) {
+            mainHelper.searchWithComposition();
+          } else {
+            mainHelper.searchOnlyWithDerivedHelpers();
+          }
+        }
+        if (_this3._hasRecommendWidget) {
+          mainHelper.recommend();
+        }
+        return mainHelper;
       };
       if (this._searchFunction) {
         // this client isn't used to actually search, but required for the helper
@@ -437,6 +482,8 @@ var InstantSearch = /*#__PURE__*/function (_EventEmitter) {
         uiState: this._initialUiState
       });
       if (this._initialResults) {
+        (0, _utils.hydrateSearchClient)(this.client, this._initialResults);
+        (0, _utils.hydrateRecommendCache)(this.mainHelper, this._initialResults);
         var originalScheduleSearch = this.scheduleSearch;
         // We don't schedule a first search when initial results are provided
         // because we already have the results to render. This skips the initial
@@ -474,12 +521,28 @@ var InstantSearch = /*#__PURE__*/function (_EventEmitter) {
         var instance = _ref6.instance;
         instance.started();
       });
+
+      // This is the automatic Insights middleware,
+      // added when `insights` is unset and the initial results possess `queryID`.
+      // Any user-provided middleware will be added later and override this one.
+      if (typeof this._insights === 'undefined') {
+        mainHelper.derivedHelpers[0].once('result', function () {
+          var hasAutomaticInsights = _this3.mainIndex.getScopedResults().some(function (_ref7) {
+            var results = _ref7.results;
+            return results === null || results === void 0 ? void 0 : results._automaticInsights;
+          });
+          if (hasAutomaticInsights) {
+            _this3.use((0, _createInsightsMiddleware.createInsightsMiddleware)({
+              $$internal: true,
+              $$automatic: true
+            }));
+          }
+        });
+      }
     }
 
     /**
-     * Removes all widgets without triggering a search afterwards. This is an **EXPERIMENTAL** feature,
-     * if you find an issue with it, please
-     * [open an issue](https://github.com/algolia/instantsearch.js/issues/new?title=Problem%20with%20dispose).
+     * Removes all widgets without triggering a search afterwards.
      * @return {undefined} This method does not return anything
      */
   }, {
@@ -503,8 +566,8 @@ var InstantSearch = /*#__PURE__*/function (_EventEmitter) {
       (_this$mainHelper2 = this.mainHelper) === null || _this$mainHelper2 === void 0 ? void 0 : _this$mainHelper2.removeAllListeners();
       this.mainHelper = null;
       this.helper = null;
-      this.middleware.forEach(function (_ref7) {
-        var instance = _ref7.instance;
+      this.middleware.forEach(function (_ref8) {
+        var instance = _ref8.instance;
         instance.unsubscribe();
       });
     }
@@ -582,5 +645,4 @@ var InstantSearch = /*#__PURE__*/function (_EventEmitter) {
   }]);
   return InstantSearch;
 }(_events.default);
-var _default = InstantSearch;
-exports.default = _default;
+var _default = exports.default = InstantSearch;

@@ -79,6 +79,12 @@ export type SearchBoxWidgetParams = {
      */
     searchAsYouType?: boolean;
     /**
+     * Whether to update the search state in the middle of a
+     * composition session.
+     * @default false
+     */
+    ignoreCompositionEvents?: boolean;
+    /**
      * Whether to show the reset button
      */
     showReset?: boolean;

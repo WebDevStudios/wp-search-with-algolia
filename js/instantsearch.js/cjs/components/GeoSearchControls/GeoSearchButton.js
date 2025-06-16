@@ -17,5 +17,4 @@ var GeoSearchButton = function GeoSearchButton(_ref) {
     disabled: disabled
   }, children);
 };
-var _default = GeoSearchButton;
-exports.default = _default;
+var _default = exports.default = GeoSearchButton;

@@ -67,6 +67,37 @@ final class Algolia_Searchable_Posts_Index extends Algolia_Index {
 	}
 
 	/**
+	 * Get default autocomplete config.
+	 *
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 * @since  2.10.0
+	 *
+	 * @return array Autocomplete config.
+	 */
+	public function get_default_autocomplete_config() {
+		$default_config = parent::get_default_autocomplete_config();
+		$index_name     = $this->get_name();
+
+		/**
+		 * Filters the autocomplete debounce value for this index.
+		 *
+		 * @since 2.10.0
+		 *
+		 * @param int Debounce value in milliseconds.
+		 */
+		$debounce = apply_filters(
+			"algolia_autocomplete_debounce_{$index_name}",
+			$default_config['debounce']
+		);
+
+		$config = array(
+			'debounce' => $debounce,
+		);
+
+		return array_merge( $default_config, $config );
+	}
+
+	/**
 	 * Get the admin name for this index.
 	 *
 	 * @author WebDevStudios <contact@webdevstudios.com>
@@ -419,14 +450,13 @@ final class Algolia_Searchable_Posts_Index extends Algolia_Index {
 	 */
 	protected function get_re_index_items_count() {
 		$query = new WP_Query(
-			array(
+			[
 				'post_type'              => $this->post_types,
 				'post_status'            => 'any', // Let the `should_index` take care of the filtering.
 				'suppress_filters'       => true,
 				'cache_results'          => false,
-				'lazy_load_term_meta'    => false,
 				'update_post_term_cache' => false,
-			)
+			]
 		);
 
 		return (int) $query->found_posts;

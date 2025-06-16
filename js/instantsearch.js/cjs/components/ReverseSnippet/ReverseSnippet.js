@@ -4,7 +4,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.ReverseSnippet = ReverseSnippet;
-var _uiComponentsShared = require("@algolia/ui-components-shared");
+var _instantsearchUiComponents = require("instantsearch-ui-components");
 var _preact = require("preact");
 var _InternalHighlight = require("../InternalHighlight/InternalHighlight");
 var _excluded = ["classNames"];
@@ -17,10 +17,10 @@ function ReverseSnippet(_ref) {
     props = _objectWithoutProperties(_ref, _excluded);
   return (0, _preact.h)(_InternalHighlight.InternalHighlight, _extends({
     classNames: {
-      root: (0, _uiComponentsShared.cx)('ais-ReverseSnippet', classNames.root),
-      highlighted: (0, _uiComponentsShared.cx)('ais-ReverseSnippet-highlighted', classNames.highlighted),
-      nonHighlighted: (0, _uiComponentsShared.cx)('ais-ReverseSnippet-nonHighlighted', classNames.nonHighlighted),
-      separator: (0, _uiComponentsShared.cx)('ais-ReverseSnippet-separator', classNames.separator)
+      root: (0, _instantsearchUiComponents.cx)('ais-ReverseSnippet', classNames.root),
+      highlighted: (0, _instantsearchUiComponents.cx)('ais-ReverseSnippet-highlighted', classNames.highlighted),
+      nonHighlighted: (0, _instantsearchUiComponents.cx)('ais-ReverseSnippet-nonHighlighted', classNames.nonHighlighted),
+      separator: (0, _instantsearchUiComponents.cx)('ais-ReverseSnippet-separator', classNames.separator)
     }
   }, props));
 }

@@ -32,4 +32,5 @@ export type ConfigureRelatedItemsWidgetDescription = {
 } & Omit<ConfigureWidgetDescription, '$$type'>;
 export type ConfigureRelatedItemsConnector = Connector<ConfigureRelatedItemsWidgetDescription, ConfigureRelatedItemsConnectorParams>;
 declare const connectConfigureRelatedItems: ConfigureRelatedItemsConnector;
+/** @deprecated use connectRelatedItems instead */
 export default connectConfigureRelatedItems;

@@ -5,7 +5,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.component = void 0;
 var NAMESPACE = 'ais';
-var component = function component(componentName) {
+var component = exports.component = function component(componentName) {
   return function () {
     var _ref = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
       descendantName = _ref.descendantName,
@@ -15,4 +15,3 @@ var component = function component(componentName) {
     return "".concat(NAMESPACE, "-").concat(componentName).concat(descendent).concat(modifier);
   };
 };
-exports.component = component;

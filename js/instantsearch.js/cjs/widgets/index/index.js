@@ -1,19 +1,21 @@
 "use strict";
 
-function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
+function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
 var _algoliasearchHelper = _interopRequireDefault(require("algoliasearch-helper"));
 var _utils = require("../../lib/utils");
-var _excluded = ["initialSearchParameters"];
+var _addWidgetId = require("../../lib/utils/addWidgetId");
+var _excluded = ["initialSearchParameters"],
+  _excluded2 = ["initialRecommendParameters"];
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
+function ownKeys(e, r) { var t = Object.keys(e); if (Object.getOwnPropertySymbols) { var o = Object.getOwnPropertySymbols(e); r && (o = o.filter(function (r) { return Object.getOwnPropertyDescriptor(e, r).enumerable; })), t.push.apply(t, o); } return t; }
+function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t = null != arguments[r] ? arguments[r] : {}; r % 2 ? ownKeys(Object(t), !0).forEach(function (r) { _defineProperty(e, r, t[r]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(t)) : ownKeys(Object(t)).forEach(function (r) { Object.defineProperty(e, r, Object.getOwnPropertyDescriptor(t, r)); }); } return e; }
 function _defineProperty(obj, key, value) { key = _toPropertyKey(key); if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-function _toPropertyKey(arg) { var key = _toPrimitive(arg, "string"); return _typeof(key) === "symbol" ? key : String(key); }
-function _toPrimitive(input, hint) { if (_typeof(input) !== "object" || input === null) return input; var prim = input[Symbol.toPrimitive]; if (prim !== undefined) { var res = prim.call(input, hint || "default"); if (_typeof(res) !== "object") return res; throw new TypeError("@@toPrimitive must return a primitive value."); } return (hint === "string" ? String : Number)(input); }
+function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" == _typeof(i) ? i : String(i); }
+function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != _typeof(i)) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
 function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread(); }
 function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
 function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
@@ -32,6 +34,7 @@ var withUsage = (0, _utils.createDocumentationMessageGenerator)({
  */
 function privateHelperSetState(helper, _ref) {
   var state = _ref.state,
+    recommendState = _ref.recommendState,
     isPageReset = _ref.isPageReset,
     _uiState = _ref._uiState;
   if (state !== helper.state) {
@@ -42,6 +45,12 @@ function privateHelperSetState(helper, _ref) {
       isPageReset: isPageReset,
       _uiState: _uiState
     });
+  }
+  if (recommendState !== helper.recommendState) {
+    helper.recommendState = recommendState;
+
+    // eslint-disable-next-line no-warning-comments
+    // TODO: emit "change" event when events for Recommend are implemented
   }
 }
 function getLocalWidgetsUiState(widgets, widgetStateOptions) {
@@ -62,14 +71,25 @@ function getLocalWidgetsUiState(widgets, widgetStateOptions) {
 function getLocalWidgetsSearchParameters(widgets, widgetSearchParametersOptions) {
   var initialSearchParameters = widgetSearchParametersOptions.initialSearchParameters,
     rest = _objectWithoutProperties(widgetSearchParametersOptions, _excluded);
-  return widgets.filter(function (widget) {
-    return !(0, _utils.isIndexWidget)(widget);
-  }).reduce(function (state, widget) {
-    if (!widget.getWidgetSearchParameters) {
+  return widgets.reduce(function (state, widget) {
+    if (!widget.getWidgetSearchParameters || (0, _utils.isIndexWidget)(widget)) {
       return state;
+    }
+    if (widget.dependsOn === 'search' && widget.getWidgetParameters) {
+      return widget.getWidgetParameters(state, rest);
     }
     return widget.getWidgetSearchParameters(state, rest);
   }, initialSearchParameters);
+}
+function getLocalWidgetsRecommendParameters(widgets, widgetRecommendParametersOptions) {
+  var initialRecommendParameters = widgetRecommendParametersOptions.initialRecommendParameters,
+    rest = _objectWithoutProperties(widgetRecommendParametersOptions, _excluded2);
+  return widgets.reduce(function (state, widget) {
+    if (!(0, _utils.isIndexWidget)(widget) && widget.dependsOn === 'recommend' && widget.getWidgetParameters) {
+      return widget.getWidgetParameters(state, rest);
+    }
+    return state;
+  }, initialRecommendParameters);
 }
 function resetPageFromWidgets(widgets) {
   var indexWidgets = widgets.filter(_utils.isIndexWidget);
@@ -80,6 +100,7 @@ function resetPageFromWidgets(widgets) {
     var widgetHelper = widget.getHelper();
     privateHelperSetState(widgetHelper, {
       state: widgetHelper.state.resetPage(),
+      recommendState: widgetHelper.recommendState,
       isPageReset: true
     });
     resetPageFromWidgets(widget.getWidgets());
@@ -109,6 +130,8 @@ var index = function index(widgetParams) {
   var helper = null;
   var derivedHelper = null;
   var lastValidSearchParameters = null;
+  var hasRecommendWidget = false;
+  var hasSearchWidget = false;
   return {
     $$type: 'ais.index',
     $$widgetType: 'ais.index',
@@ -133,14 +156,33 @@ var index = function index(widgetParams) {
       derivedHelper.lastResults._state = helper.state;
       return derivedHelper.lastResults;
     },
+    getResultsForWidget: function getResultsForWidget(widget) {
+      var _helper;
+      if (widget.dependsOn !== 'recommend' || (0, _utils.isIndexWidget)(widget) || widget.$$id === undefined) {
+        return this.getResults();
+      }
+      if (!((_helper = helper) !== null && _helper !== void 0 && _helper.lastRecommendResults)) {
+        return null;
+      }
+      return helper.lastRecommendResults[widget.$$id];
+    },
     getPreviousState: function getPreviousState() {
       return lastValidSearchParameters;
     },
     getScopedResults: function getScopedResults() {
       var widgetParent = this.getParent();
-
-      // If the widget is the root, we consider itself as the only sibling.
-      var widgetSiblings = widgetParent ? widgetParent.getWidgets() : [this];
+      var widgetSiblings;
+      if (widgetParent) {
+        widgetSiblings = widgetParent.getWidgets();
+      } else if (indexName.length === 0) {
+        // The widget is the root but has no index name:
+        // we resolve results from its children index widgets
+        widgetSiblings = this.getWidgets();
+      } else {
+        // The widget is the root and has an index name:
+        // we consider itself as the only sibling
+        widgetSiblings = [this];
+      }
       return resolveScopedResultsFromWidgets(widgetSiblings);
     },
     getParent: function getParent() {
@@ -168,12 +210,31 @@ var index = function index(widgetParams) {
       })) {
         throw new Error(withUsage('The widget definition expects a `render` and/or an `init` method.'));
       }
+      widgets.forEach(function (widget) {
+        if ((0, _utils.isIndexWidget)(widget)) {
+          return;
+        }
+        if (localInstantSearchInstance && widget.dependsOn === 'recommend') {
+          localInstantSearchInstance._hasRecommendWidget = true;
+        } else if (localInstantSearchInstance) {
+          localInstantSearchInstance._hasSearchWidget = true;
+        } else if (widget.dependsOn === 'recommend') {
+          hasRecommendWidget = true;
+        } else {
+          hasSearchWidget = true;
+        }
+        (0, _addWidgetId.addWidgetId)(widget);
+      });
       localWidgets = localWidgets.concat(widgets);
       if (localInstantSearchInstance && Boolean(widgets.length)) {
         privateHelperSetState(helper, {
           state: getLocalWidgetsSearchParameters(localWidgets, {
             uiState: localUiState,
             initialSearchParameters: helper.state
+          }),
+          recommendState: getLocalWidgetsRecommendParameters(localWidgets, {
+            uiState: localUiState,
+            initialRecommendParameters: helper.recommendState
           }),
           _uiState: localUiState
         });
@@ -213,24 +274,59 @@ var index = function index(widgetParams) {
       localWidgets = localWidgets.filter(function (widget) {
         return widgets.indexOf(widget) === -1;
       });
+      localWidgets.forEach(function (widget) {
+        if ((0, _utils.isIndexWidget)(widget)) {
+          return;
+        }
+        if (localInstantSearchInstance && widget.dependsOn === 'recommend') {
+          localInstantSearchInstance._hasRecommendWidget = true;
+        } else if (localInstantSearchInstance) {
+          localInstantSearchInstance._hasSearchWidget = true;
+        } else if (widget.dependsOn === 'recommend') {
+          hasRecommendWidget = true;
+        } else {
+          hasSearchWidget = true;
+        }
+      });
       if (localInstantSearchInstance && Boolean(widgets.length)) {
-        var _nextState = widgets.reduce(function (state, widget) {
-          // the `dispose` method exists at this point we already assert it
-          var next = widget.dispose({
-            helper: helper,
-            state: state,
-            parent: _this2
-          });
-          return next || state;
-        }, helper.state);
+        var _widgets$reduce = widgets.reduce(function (states, widget) {
+            // the `dispose` method exists at this point we already assert it
+            var next = widget.dispose({
+              helper: helper,
+              state: states.cleanedSearchState,
+              recommendState: states.cleanedRecommendState,
+              parent: _this2
+            });
+            if (next instanceof _algoliasearchHelper.default.RecommendParameters) {
+              states.cleanedRecommendState = next;
+            } else if (next) {
+              states.cleanedSearchState = next;
+            }
+            return states;
+          }, {
+            cleanedSearchState: helper.state,
+            cleanedRecommendState: helper.recommendState
+          }),
+          cleanedSearchState = _widgets$reduce.cleanedSearchState,
+          cleanedRecommendState = _widgets$reduce.cleanedRecommendState;
+        var newState = localInstantSearchInstance.future.preserveSharedStateOnUnmount ? getLocalWidgetsSearchParameters(localWidgets, {
+          uiState: localUiState,
+          initialSearchParameters: new _algoliasearchHelper.default.SearchParameters({
+            index: this.getIndexName()
+          })
+        }) : getLocalWidgetsSearchParameters(localWidgets, {
+          uiState: getLocalWidgetsUiState(localWidgets, {
+            searchParameters: cleanedSearchState,
+            helper: helper
+          }),
+          initialSearchParameters: cleanedSearchState
+        });
         localUiState = getLocalWidgetsUiState(localWidgets, {
-          searchParameters: _nextState,
+          searchParameters: newState,
           helper: helper
         });
-        helper.setState(getLocalWidgetsSearchParameters(localWidgets, {
-          uiState: localUiState,
-          initialSearchParameters: _nextState
-        }));
+        helper.setState(newState);
+        helper.recommendState = cleanedRecommendState;
         if (localWidgets.length) {
           localInstantSearchInstance.scheduleSearch();
         }
@@ -262,11 +358,16 @@ var index = function index(widgetParams) {
           index: indexName
         })
       });
+      var recommendParameters = getLocalWidgetsRecommendParameters(localWidgets, {
+        uiState: localUiState,
+        initialRecommendParameters: new _algoliasearchHelper.default.RecommendParameters()
+      });
 
       // This Helper is only used for state management we do not care about the
       // `searchClient`. Only the "main" Helper created at the `InstantSearch`
       // level is aware of the client.
       helper = (0, _algoliasearchHelper.default)({}, parameters.index, parameters);
+      helper.recommendState = recommendParameters;
 
       // We forward the call to `search` to the "main" instance of the Helper
       // which is responsible for managing the queries (it's the only one that is
@@ -296,15 +397,24 @@ var index = function index(widgetParams) {
         return mainHelper.searchForFacetValues(facetName, facetValue, maxFacetHits, state);
       };
       derivedHelper = mainHelper.derive(function () {
-        return _utils.mergeSearchParameters.apply(void 0, _toConsumableArray((0, _utils.resolveSearchParameters)(_this3)));
+        return _utils.mergeSearchParameters.apply(void 0, [mainHelper.state].concat(_toConsumableArray((0, _utils.resolveSearchParameters)(_this3))));
+      }, function () {
+        return _this3.getHelper().recommendState;
       });
       var indexInitialResults = (_instantSearchInstanc = instantSearchInstance._initialResults) === null || _instantSearchInstanc === void 0 ? void 0 : _instantSearchInstanc[this.getIndexId()];
-      if (indexInitialResults) {
+      if (indexInitialResults !== null && indexInitialResults !== void 0 && indexInitialResults.results) {
         // We restore the shape of the results provided to the instance to respect
         // the helper's structure.
         var results = new _algoliasearchHelper.default.SearchResults(new _algoliasearchHelper.default.SearchParameters(indexInitialResults.state), indexInitialResults.results);
         derivedHelper.lastResults = results;
         helper.lastResults = results;
+      }
+      if (indexInitialResults !== null && indexInitialResults !== void 0 && indexInitialResults.recommendResults) {
+        var recommendResults = new _algoliasearchHelper.default.RecommendResults(new _algoliasearchHelper.default.RecommendParameters({
+          params: indexInitialResults.recommendResults.params
+        }), indexInitialResults.recommendResults.results);
+        derivedHelper.lastRecommendResults = recommendResults;
+        helper.lastRecommendResults = recommendResults;
       }
 
       // Subscribe to the Helper state changes for the page before widgets
@@ -345,6 +455,21 @@ var index = function index(widgetParams) {
         lastValidSearchParameters = results === null || results === void 0 ? void 0 : results._state;
       });
 
+      // eslint-disable-next-line no-warning-comments
+      // TODO: listen to "result" event when events for Recommend are implemented
+      derivedHelper.on('recommend:result', function (_ref5) {
+        var recommend = _ref5.recommend;
+        // The index does not render the results it schedules a new render
+        // to let all the other indices emit their own results. It allows us to
+        // run the render process in one pass.
+        instantSearchInstance.scheduleRender();
+
+        // the derived helper is the one which actually searches, but the helper
+        // which is exposed e.g. via instance.helper, doesn't search, and thus
+        // does not have access to lastRecommendResults.
+        helper.lastRecommendResults = recommend.results;
+      });
+
       // We compute the render state before calling `init` in a separate loop
       // to construct the whole render state object that is then passed to
       // `init`.
@@ -373,7 +498,7 @@ var index = function index(widgetParams) {
       // configuration step. This is mainly for backward compatibility with custom
       // widgets. When the subscription happens before the `init` step, the (static)
       // configuration of the widget is pushed in the URL. That's what we want to avoid.
-      // https://github.com/algolia/instantsearch.js/pull/994/commits/4a672ae3fd78809e213de0368549ef12e9dc9454
+      // https://github.com/algolia/instantsearch/pull/994/commits/4a672ae3fd78809e213de0368549ef12e9dc9454
       helper.on('change', function (event) {
         var state = event.state;
         var _uiState = event._uiState;
@@ -394,10 +519,17 @@ var index = function index(widgetParams) {
         // schedule a render that will render the results injected on the helper.
         instantSearchInstance.scheduleRender();
       }
+      if (hasRecommendWidget) {
+        instantSearchInstance._hasRecommendWidget = true;
+      }
+      if (hasSearchWidget) {
+        instantSearchInstance._hasSearchWidget = true;
+      }
     },
-    render: function render(_ref5) {
-      var _this4 = this;
-      var instantSearchInstance = _ref5.instantSearchInstance;
+    render: function render(_ref6) {
+      var _derivedHelper2,
+        _this4 = this;
+      var instantSearchInstance = _ref6.instantSearchInstance;
       // we can't attach a listener to the error event of search, as the error
       // then would no longer be thrown for global handlers.
       if (instantSearchInstance.status === 'error' && !instantSearchInstance.mainHelper.hasPendingRequests() && lastValidSearchParameters) {
@@ -406,10 +538,18 @@ var index = function index(widgetParams) {
 
       // We only render index widgets if there are no results.
       // This makes sure `render` is never called with `results` being `null`.
-      var widgetsToRender = this.getResults() ? localWidgets : localWidgets.filter(_utils.isIndexWidget);
+      var widgetsToRender = this.getResults() || (_derivedHelper2 = derivedHelper) !== null && _derivedHelper2 !== void 0 && _derivedHelper2.lastRecommendResults ? localWidgets : localWidgets.filter(_utils.isIndexWidget);
+      widgetsToRender = widgetsToRender.filter(function (widget) {
+        if (!widget.shouldRender) {
+          return true;
+        }
+        return widget.shouldRender({
+          instantSearchInstance: instantSearchInstance
+        });
+      });
       widgetsToRender.forEach(function (widget) {
         if (widget.getRenderState) {
-          var renderState = widget.getRenderState(instantSearchInstance.renderState[_this4.getIndexId()] || {}, (0, _utils.createRenderArgs)(instantSearchInstance, _this4));
+          var renderState = widget.getRenderState(instantSearchInstance.renderState[_this4.getIndexId()] || {}, (0, _utils.createRenderArgs)(instantSearchInstance, _this4, widget));
           storeRenderState({
             renderState: renderState,
             instantSearchInstance: instantSearchInstance,
@@ -426,16 +566,16 @@ var index = function index(widgetParams) {
         // not have results yet.
 
         if (widget.render) {
-          widget.render((0, _utils.createRenderArgs)(instantSearchInstance, _this4));
+          widget.render((0, _utils.createRenderArgs)(instantSearchInstance, _this4, widget));
         }
       });
     },
     dispose: function dispose() {
       var _this5 = this,
-        _helper,
-        _derivedHelper2;
+        _helper2,
+        _derivedHelper3;
       localWidgets.forEach(function (widget) {
-        if (widget.dispose) {
+        if (widget.dispose && helper) {
           // The dispose function is always called once the instance is started
           // (it's an effect of `removeWidgets`). The index is initialized and
           // the Helper is available. We don't care about the return value of
@@ -445,15 +585,16 @@ var index = function index(widgetParams) {
           widget.dispose({
             helper: helper,
             state: helper.state,
+            recommendState: helper.recommendState,
             parent: _this5
           });
         }
       });
       localInstantSearchInstance = null;
       localParent = null;
-      (_helper = helper) === null || _helper === void 0 ? void 0 : _helper.removeAllListeners();
+      (_helper2 = helper) === null || _helper2 === void 0 ? void 0 : _helper2.removeAllListeners();
       helper = null;
-      (_derivedHelper2 = derivedHelper) === null || _derivedHelper2 === void 0 ? void 0 : _derivedHelper2.detach();
+      (_derivedHelper3 = derivedHelper) === null || _derivedHelper3 === void 0 ? void 0 : _derivedHelper3.detach();
       derivedHelper = null;
     },
     getWidgetUiState: function getWidgetUiState(uiState) {
@@ -465,8 +606,8 @@ var index = function index(widgetParams) {
       process.env.NODE_ENV === 'development' ? (0, _utils.warning)(false, 'The `getWidgetState` method is renamed `getWidgetUiState` and will no longer exist under that name in InstantSearch.js 5.x. Please use `getWidgetUiState` instead.') : void 0;
       return this.getWidgetUiState(uiState);
     },
-    getWidgetSearchParameters: function getWidgetSearchParameters(searchParameters, _ref6) {
-      var uiState = _ref6.uiState;
+    getWidgetSearchParameters: function getWidgetSearchParameters(searchParameters, _ref7) {
+      var uiState = _ref7.uiState;
       return getLocalWidgetsSearchParameters(localWidgets, {
         uiState: uiState,
         initialSearchParameters: searchParameters
@@ -486,12 +627,11 @@ var index = function index(widgetParams) {
     }
   };
 };
-var _default = index;
-exports.default = _default;
-function storeRenderState(_ref7) {
-  var renderState = _ref7.renderState,
-    instantSearchInstance = _ref7.instantSearchInstance,
-    parent = _ref7.parent;
+var _default = exports.default = index;
+function storeRenderState(_ref8) {
+  var renderState = _ref8.renderState,
+    instantSearchInstance = _ref8.instantSearchInstance,
+    parent = _ref8.parent;
   var parentIndexName = parent ? parent.getIndexId() : instantSearchInstance.mainIndex.getIndexId();
   instantSearchInstance.renderState = _objectSpread(_objectSpread({}, instantSearchInstance.renderState), {}, _defineProperty({}, parentIndexName, _objectSpread(_objectSpread({}, instantSearchInstance.renderState[parentIndexName]), renderState)));
 }

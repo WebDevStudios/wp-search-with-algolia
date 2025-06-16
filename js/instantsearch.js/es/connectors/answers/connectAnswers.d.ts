@@ -56,5 +56,8 @@ export type AnswersWidgetDescription = {
     };
 };
 export type AnswersConnector = Connector<AnswersWidgetDescription, AnswersConnectorParams>;
+/**
+ * @deprecated the answers service is no longer offered, and this widget will be removed in InstantSearch.js v5
+ */
 declare const connectAnswers: AnswersConnector;
 export default connectAnswers;

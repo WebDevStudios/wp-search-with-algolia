@@ -1,3 +1,37 @@
+## 2.10.0
+
+* Added an option to set the debounce timeout value which applies to all indexes by default, but can be customized for
+  each index with a filter:
+
+Dynamic filter name: `algolia_autocomplete_debounce_{$index_name}_{$index_type}`
+
+Where `$index_name` is defined by the Index name prefix set on the WP Search with Algolia settings page and
+`$index_type` is the type of index.
+
+Assuming `wp_` is the Index name prefix, the debounce timeout filters would be:
+
+```
+algolia_autocomplete_debounce_wp_searchable_posts
+algolia_autocomplete_debounce_wp_post
+algolia_autocomplete_debounce_wp_page
+algolia_autocomplete_debounce_wp_my_custom_post_type
+algolia_autocomplete_debounce_wp_users
+algolia_autocomplete_debounce_wp_terms_category
+algolia_autocomplete_debounce_wp_terms_post_tag
+algolia_autocomplete_debounce_wp_terms_my_custom_taxonomy
+```
+
+Note that the Algolia Autocomplete settings must be saved after creating one of the above filters.
+
+## 2.9.0
+
+* Added: Instantsearch Template options. Choose between “Legacy” hogan.js/WP Utils templates and “Modern” Javascript string literals. “Modern” is more in line with Algolia Documentation.
+* Added: ability to customize default Headers for Algolia Search Client configuration.
+* Added: Initial support for programmatic Secured API key creation.
+* Updated: Sync’d up get_items() methods to allow for specifying specific IDs for posts, terms, and users.
+* Updated: Instantsearch templates use “Posts per page” amount by default, from WordPress Reading settings.
+* Updated: Amended Autocomplete settings page to remove more builtin post types that don’t need to be available.
+
 ## 2.8.3
 * Fixed: "Function _load_textdomain_just_in_time was called incorrectly" notices.
 

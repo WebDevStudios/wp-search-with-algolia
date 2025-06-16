@@ -4,7 +4,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.ReverseHighlight = ReverseHighlight;
-var _uiComponentsShared = require("@algolia/ui-components-shared");
+var _instantsearchUiComponents = require("instantsearch-ui-components");
 var _preact = require("preact");
 var _InternalHighlight = require("../InternalHighlight/InternalHighlight");
 var _excluded = ["classNames"];
@@ -17,10 +17,10 @@ function ReverseHighlight(_ref) {
     props = _objectWithoutProperties(_ref, _excluded);
   return (0, _preact.h)(_InternalHighlight.InternalHighlight, _extends({
     classNames: {
-      root: (0, _uiComponentsShared.cx)('ais-ReverseHighlight', classNames.root),
-      highlighted: (0, _uiComponentsShared.cx)('ais-ReverseHighlight-highlighted', classNames.highlighted),
-      nonHighlighted: (0, _uiComponentsShared.cx)('ais-ReverseHighlight-nonHighlighted', classNames.nonHighlighted),
-      separator: (0, _uiComponentsShared.cx)('ais-ReverseHighlight-separator', classNames.separator)
+      root: (0, _instantsearchUiComponents.cx)('ais-ReverseHighlight', classNames.root),
+      highlighted: (0, _instantsearchUiComponents.cx)('ais-ReverseHighlight-highlighted', classNames.highlighted),
+      nonHighlighted: (0, _instantsearchUiComponents.cx)('ais-ReverseHighlight-nonHighlighted', classNames.nonHighlighted),
+      separator: (0, _instantsearchUiComponents.cx)('ais-ReverseHighlight-separator', classNames.separator)
     }
   }, props));
 }

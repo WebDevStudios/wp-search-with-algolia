@@ -1,25 +1,37 @@
-/// <reference types="google.maps" />
-/// <reference types="googlemaps" />
-
-import type { AlgoliaSearchHelper } from 'algoliasearch-helper';
+import { AlgoliaSearchHelper } from 'algoliasearch-helper';
+import { Banner } from 'algoliasearch-helper';
+import type { CarouselProps } from 'instantsearch-ui-components';
+import { CompositionClient } from 'algoliasearch-helper/types/algoliasearch.js';
 import EventEmitter from '@algolia/events';
 import { FindAnswersOptions } from 'algoliasearch-helper/types/algoliasearch.js';
+import type { FrequentlyBoughtTogetherProps } from 'instantsearch-ui-components';
 import { h } from 'preact';
-import type { HighlightClassNames as HighlightClassNames_2 } from '@algolia/ui-components-highlight-vdom';
-import type { HighlightProps as HighlightProps_3 } from '@algolia/ui-components-highlight-vdom';
+import type { HighlightClassNames as HighlightClassNames_2 } from 'instantsearch-ui-components';
+import type { HighlightProps as HighlightProps_3 } from 'instantsearch-ui-components';
+import type { HitsClassNames } from 'instantsearch-ui-components';
 import type { HoganOptions } from 'hogan.js';
-import type { html } from 'htm/preact';
+import { html } from 'htm/preact';
 import type { InsightsClient as InsightsClient_2 } from 'search-insights';
 import type { InsightsMethodMap as InsightsMethodMap_2 } from 'search-insights';
+import type { LookingSimilarProps } from 'instantsearch-ui-components';
 import type * as Places from 'places.js';
-import type { PlainSearchParameters } from 'algoliasearch-helper';
+import { PlainSearchParameters } from 'algoliasearch-helper';
 import { default as qs_2 } from 'qs';
+import type { RecommendClassNames } from 'instantsearch-ui-components';
+import { RecommendParameters } from 'algoliasearch-helper';
+import type { RecommendParametersOptions } from 'algoliasearch-helper';
+import { RecommendResponse } from 'algoliasearch-helper/types/algoliasearch.js';
+import type { RecommendResults } from 'algoliasearch-helper';
+import type { RelatedProductsProps } from 'instantsearch-ui-components';
 import { SearchClient } from 'algoliasearch-helper/types/algoliasearch.js';
-import type { SearchParameters } from 'algoliasearch-helper';
-import type { SearchResults } from 'algoliasearch-helper';
+import { SearchOptions } from 'algoliasearch-helper/types/algoliasearch.js';
+import { SearchParameters } from 'algoliasearch-helper';
+import { SearchResults } from 'algoliasearch-helper';
+import type { TrendingItemsProps } from 'instantsearch-ui-components';
 import { VNode } from 'preact';
+import type { VNode as VNode_2 } from 'instantsearch-ui-components';
 
-declare type AlgoliaHit<THit extends BaseHit = Record<string, any>> = {
+declare type AlgoliaHit<THit extends NonNullable<object> = Record<string, any>> = {
     objectID: string;
     _highlightResult?: HitHighlightResult;
     _snippetResult?: HitSnippetResult;
@@ -240,7 +252,7 @@ declare type AtLeastOne<TTarget, TMapped = {
     [Key in keyof TTarget]: Pick<TTarget, Key>;
 }> = Partial<TTarget> & TMapped[keyof TMapped];
 
-declare type AugmentedWidget<TWidgetFactory extends AnyWidgetFactory, TOverriddenKeys extends keyof Widget = 'init' | 'render' | 'dispose'> = Omit<ReturnType<TWidgetFactory>, TOverriddenKeys> & Pick<Required<Widget>, TOverriddenKeys>;
+declare type AugmentedWidget<TWidgetFactory extends AnyWidgetFactory, TOverriddenKeys extends keyof Widget = 'init' | 'render' | 'dispose'> = Omit<ReturnType<TWidgetFactory>, TOverriddenKeys | 'dependsOn' | 'getWidgetParameters'> & Pick<Required<Widget>, TOverriddenKeys>;
 
 declare type AutocompleteConnector = Connector<AutocompleteWidgetDescription, AutocompleteConnectorParams>;
 
@@ -266,6 +278,10 @@ declare type AutocompleteRenderState = {
          * The name of the index
          */
         indexName: string;
+        /**
+         * The id of the index
+         */
+        indexId: string;
         /**
          * The resolved hits from the index matching the query.
          */
@@ -296,7 +312,7 @@ declare type AutocompleteWidgetDescription = {
     };
 };
 
-declare type BaseHit = Record<string, unknown>;
+declare type BaseHit = Record<string, any>;
 
 declare type BindEventForHits = BuiltInBindEventForHits & CustomBindEventForHits;
 
@@ -475,7 +491,7 @@ declare class BrowserHistory<TRouteState> implements Router<TRouteState> {
     /**
      * Indicates whether the history router is disposed or not.
      */
-    private isDisposed;
+    protected isDisposed: boolean;
     /**
      * Indicates the window.history.length before the last call to
      * window.history.pushState (called in `write`).
@@ -486,11 +502,12 @@ declare class BrowserHistory<TRouteState> implements Router<TRouteState> {
     private _start?;
     private _dispose?;
     private _push?;
+    private _cleanUrlOnDispose;
     /**
      * Initializes a new storage provider that syncs the search state to the URL
      * using web APIs (`window.location.pushState` and `onpopstate` event).
      */
-    constructor({ windowTitle, writeDelay, createURL, parseURL, getLocation, start, dispose, push, }: BrowserHistoryArgs<TRouteState>);
+    constructor({ windowTitle, writeDelay, createURL, parseURL, getLocation, start, dispose, push, cleanUrlOnDispose, }: BrowserHistoryArgs<TRouteState>);
     /**
      * Reads the URL and returns a syncable UI search state.
      */
@@ -509,7 +526,7 @@ declare class BrowserHistory<TRouteState> implements Router<TRouteState> {
      *
      * It always generates the full URL, not a relative one.
      * This allows to handle cases like using a <base href>.
-     * See: https://github.com/algolia/instantsearch.js/issues/790
+     * See: https://github.com/algolia/instantsearch/issues/790
      */
     createURL(routeState: TRouteState): string;
     /**
@@ -529,15 +546,33 @@ declare type BrowserHistoryArgs<TRouteState> = {
     start?: (onUpdate: () => void) => void;
     dispose?: () => void;
     push?: (url: string) => void;
+    /**
+     * Whether the URL should be cleaned up when the router is disposed.
+     * This can be useful when closing a modal containing InstantSearch, to
+     * remove active refinements from the URL.
+     * @default true
+     */
+    cleanUrlOnDispose?: boolean;
 };
 
-declare type BuiltInBindEventForHits = (eventType: string, hits: Hit | Hit[], eventName?: string) => string;
+declare type BuiltInBindEventForHits = (eventType: string, hits: Hit | Hit[], eventName?: string, additionalData?: Record<string, any>) => string;
 
-declare type BuiltInSendEventForFacet = (eventType: string, facetValue: string, eventName?: string) => void;
+declare type BuiltInSendEventForFacet = (eventType: string, facetValue: string, eventName?: string, additionalData?: Record<string, any>) => void;
 
-declare type BuiltInSendEventForHits = (eventType: string, hits: Hit | Hit[], eventName?: string) => void;
+declare type BuiltInSendEventForHits = (eventType: string, hits: Hit | Hit[], eventName?: string, additionalData?: Record<string, any>) => void;
 
 declare type BuiltInSendEventForToggle = (eventType: string, isRefined: boolean, eventName?: string) => void;
+
+declare function carousel<TObject extends Record<string, unknown>>({ cssClasses, templates, }?: CreateCarouselTemplateProps<TObject>): ({ items, templates: widgetTemplates, cssClasses: widgetCssClasses, sendEvent, }: CarouselTemplateProps<TObject>) => h.JSX.Element;
+
+declare type CarouselTemplateProps<TObject extends Record<string, unknown>> = Pick<CarouselProps<TObject>, 'items'> & {
+    templates: {
+        item?: CarouselProps<TObject>['itemComponent'];
+    };
+    cssClasses?: Partial<CarouselProps<TObject>['classNames']>;
+} & {
+    sendEvent?: CarouselProps<TObject>['sendEvent'];
+};
 
 declare const clearRefinements: ClearRefinementsWidget;
 
@@ -645,8 +680,6 @@ declare type ConfigureConnectorParams = {
     searchParameters: PlainSearchParameters;
 };
 
-declare const configureRelatedItems: ConfigureRelatedItemsWidget;
-
 declare type ConfigureRelatedItemsConnector = Connector<ConfigureRelatedItemsWidgetDescription, ConfigureRelatedItemsConnectorParams>;
 
 declare type ConfigureRelatedItemsConnectorParams = {
@@ -712,22 +745,9 @@ declare const connectClearRefinements: ClearRefinementsConnector;
 
 declare const connectConfigure: ConfigureConnector;
 
-declare const connectConfigureRelatedItems: ConfigureRelatedItemsConnector;
-
 declare const connectCurrentRefinements: CurrentRefinementsConnector;
 
 declare const connectDynamicWidgets: DynamicWidgetsConnector;
-
-/**
- * The **GeoSearch** connector provides the logic to build a widget that will display the results on a map. It also provides a way to search for results based on their position. The connector provides functions to manage the search experience (search on map interaction or control the interaction for example).
- *
- * @requirements
- *
- * Note that the GeoSearch connector uses the [geosearch](https://www.algolia.com/doc/guides/searching/geo-search) capabilities of Algolia. Your hits **must** have a `_geoloc` attribute in order to be passed to the rendering function.
- *
- * Currently, the feature is not compatible with multiple values in the _geoloc attribute.
- */
-declare const connectGeoSearch: GeoSearchConnector;
 
 /**
  * **HierarchicalMenu** connector provides the logic to build a custom widget
@@ -744,15 +764,292 @@ declare const connectGeoSearch: GeoSearchConnector;
  */
 declare const connectHierarchicalMenu: HierarchicalMenuConnector;
 
-declare const connectHits: HitsConnector;
-
 declare const connectHitsPerPage: HitsPerPageConnector;
 
-declare const connectHitsWithInsights: HitsConnector<BaseHit>;
+declare const connectHitsWithInsights: <TWidgetParams>(renderFn: Renderer<HitsRenderState, TWidgetParams & HitsConnectorParams>, unmountFn?: Unmounter) => <THit extends NonNullable<object> = BaseHit>(widgetParams: TWidgetParams & HitsConnectorParams<THit>) => {
+    $$type: "ais.hits";
+    init(initOptions: InitOptions): void;
+    render(renderOptions: RenderOptions): void;
+    getRenderState(renderState: {
+        answers?: WidgetRenderState<AnswersRenderState, AnswersConnectorParams> | undefined;
+        autocomplete?: WidgetRenderState<AutocompleteRenderState, AutocompleteConnectorParams> | undefined;
+        breadcrumb?: {
+            [rootAttribute: string]: WidgetRenderState<BreadcrumbRenderState, BreadcrumbConnectorParams>;
+        } | undefined;
+        clearRefinements?: WidgetRenderState<ClearRefinementsRenderState, ClearRefinementsConnectorParams> | undefined;
+        configure?: WidgetRenderState<ConfigureRenderState, ConfigureConnectorParams> | undefined;
+        currentRefinements?: WidgetRenderState<CurrentRefinementsRenderState, CurrentRefinementsConnectorParams> | undefined;
+        geoSearch?: WidgetRenderState<GeoSearchRenderState<GeoHit>, GeoSearchConnectorParams<GeoHit>> | undefined;
+        hierarchicalMenu?: {
+            [rootAttribute: string]: WidgetRenderState<HierarchicalMenuRenderState, HierarchicalMenuConnectorParams>;
+        } | undefined;
+        hits?: WidgetRenderState<HitsRenderState<BaseHit>, HitsConnectorParams<BaseHit>> | undefined;
+        hitsPerPage?: WidgetRenderState<HitsPerPageRenderState, HitsPerPageConnectorParams> | undefined;
+        infiniteHits?: WidgetRenderState<InfiniteHitsRenderState<BaseHit>, InfiniteHitsConnectorParams<BaseHit>> | undefined;
+        menu?: {
+            [attribute: string]: WidgetRenderState<MenuRenderState, MenuConnectorParams>;
+        } | undefined;
+        numericMenu?: {
+            [attribute: string]: WidgetRenderState<NumericMenuRenderState, NumericMenuConnectorParams>;
+        } | undefined;
+        pagination?: WidgetRenderState<PaginationRenderState, PaginationConnectorParams> | undefined;
+        poweredBy?: WidgetRenderState<PoweredByRenderState, PoweredByConnectorParams> | undefined;
+        queryRules?: WidgetRenderState<QueryRulesRenderState, QueryRulesConnectorParams> | undefined;
+        range?: {
+            [attribute: string]: WidgetRenderState<RangeRenderState, RangeConnectorParams>;
+        } | undefined;
+        ratingMenu?: {
+            [attribute: string]: WidgetRenderState<RatingMenuRenderState, RatingMenuConnectorParams>;
+        } | undefined;
+        refinementList?: {
+            [attribute: string]: WidgetRenderState<RefinementListRenderState, RefinementListConnectorParams>;
+        } | undefined;
+        relevantSort?: WidgetRenderState<RelevantSortRenderState, RelevantSortConnectorParams> | undefined;
+        searchBox?: WidgetRenderState<SearchBoxRenderState, SearchBoxConnectorParams> | undefined;
+        sortBy?: WidgetRenderState<SortByRenderState, SortByConnectorParams> | undefined;
+        stats?: WidgetRenderState<StatsRenderState, StatsConnectorParams> | undefined;
+        toggleRefinement?: {
+            [attribute: string]: WidgetRenderState<ToggleRefinementRenderState, ToggleRefinementConnectorParams>;
+        } | undefined;
+        voiceSearch?: WidgetRenderState<VoiceSearchRenderState, VoiceSearchConnectorParams> | undefined;
+        analytics?: WidgetRenderState<Record<string, unknown>, AnalyticsWidgetParams> | undefined;
+        places?: WidgetRenderState<Record<string, unknown>, PlacesWidgetParams> | undefined;
+    }, renderOptions: InitOptions | RenderOptions): IndexRenderState & HitsWidgetDescription["indexRenderState"];
+    getWidgetRenderState({ results, helper, instantSearchInstance }: InitOptions | RenderOptions): {
+        hits: never[];
+        items: never[];
+        results: undefined;
+        banner: undefined;
+        sendEvent: SendEventForHits;
+        bindEvent: BindEventForHits;
+        widgetParams: TWidgetParams & HitsConnectorParams<THit>;
+    } | {
+        hits: Hit<BaseHit>[] | Hit<THit>[];
+        items: Hit<BaseHit>[] | Hit<THit>[];
+        results: SearchResults<any>;
+        banner: Banner | undefined;
+        sendEvent: SendEventForHits;
+        bindEvent: BindEventForHits;
+        widgetParams: TWidgetParams & HitsConnectorParams<THit>;
+    };
+    dispose({ state }: DisposeOptions): SearchParameters;
+    getWidgetSearchParameters(state: SearchParameters, _uiState: {
+        uiState: {
+            query?: string | undefined;
+            configure?: PlainSearchParameters | undefined;
+            geoSearch?: {
+                boundingBox: string;
+            } | undefined;
+            hierarchicalMenu?: {
+                [rootAttribute: string]: string[];
+            } | undefined;
+            hitsPerPage?: number | undefined;
+            page?: number | undefined;
+            menu?: {
+                [attribute: string]: string;
+            } | undefined;
+            numericMenu?: {
+                [attribute: string]: string;
+            } | undefined;
+            range?: {
+                [attribute: string]: string;
+            } | undefined;
+            ratingMenu?: {
+                [attribute: string]: number | undefined;
+            } | undefined;
+            refinementList?: {
+                [attribute: string]: string[];
+            } | undefined;
+            relevantSort?: number | undefined;
+            sortBy?: string | undefined;
+            toggle?: {
+                [attribute: string]: boolean;
+            } | undefined;
+            places?: {
+                query: string;
+                position: string;
+            } | undefined;
+        };
+    }): SearchParameters;
+};
 
-declare const connectInfiniteHits: InfiniteHitsConnector;
-
-declare const connectInfiniteHitsWithInsights: InfiniteHitsConnector<BaseHit>;
+declare const connectInfiniteHitsWithInsights: <TWidgetParams extends UnknownWidgetParams>(renderFn: Renderer<InfiniteHitsRenderState, TWidgetParams>, unmountFn?: Unmounter) => <THit extends NonNullable<object> = BaseHit>(widgetParams: TWidgetParams & InfiniteHitsConnectorParams<THit>) => {
+    $$type: "ais.infiniteHits";
+    init(initOptions: InitOptions): void;
+    render(renderOptions: RenderOptions): void;
+    getRenderState(renderState: {
+        answers?: WidgetRenderState<AnswersRenderState, AnswersConnectorParams> | undefined;
+        autocomplete?: WidgetRenderState<AutocompleteRenderState, AutocompleteConnectorParams> | undefined;
+        breadcrumb?: {
+            [rootAttribute: string]: WidgetRenderState<BreadcrumbRenderState, BreadcrumbConnectorParams>;
+        } | undefined;
+        clearRefinements?: WidgetRenderState<ClearRefinementsRenderState, ClearRefinementsConnectorParams> | undefined;
+        configure?: WidgetRenderState<ConfigureRenderState, ConfigureConnectorParams> | undefined;
+        currentRefinements?: WidgetRenderState<CurrentRefinementsRenderState, CurrentRefinementsConnectorParams> | undefined;
+        geoSearch?: WidgetRenderState<GeoSearchRenderState<GeoHit>, GeoSearchConnectorParams<GeoHit>> | undefined;
+        hierarchicalMenu?: {
+            [rootAttribute: string]: WidgetRenderState<HierarchicalMenuRenderState, HierarchicalMenuConnectorParams>;
+        } | undefined;
+        hits?: WidgetRenderState<HitsRenderState<BaseHit>, HitsConnectorParams<BaseHit>> | undefined;
+        hitsPerPage?: WidgetRenderState<HitsPerPageRenderState, HitsPerPageConnectorParams> | undefined;
+        infiniteHits?: WidgetRenderState<InfiniteHitsRenderState<BaseHit>, InfiniteHitsConnectorParams<BaseHit>> | undefined;
+        menu?: {
+            [attribute: string]: WidgetRenderState<MenuRenderState, MenuConnectorParams>;
+        } | undefined;
+        numericMenu?: {
+            [attribute: string]: WidgetRenderState<NumericMenuRenderState, NumericMenuConnectorParams>;
+        } | undefined;
+        pagination?: WidgetRenderState<PaginationRenderState, PaginationConnectorParams> | undefined;
+        poweredBy?: WidgetRenderState<PoweredByRenderState, PoweredByConnectorParams> | undefined;
+        queryRules?: WidgetRenderState<QueryRulesRenderState, QueryRulesConnectorParams> | undefined;
+        range?: {
+            [attribute: string]: WidgetRenderState<RangeRenderState, RangeConnectorParams>;
+        } | undefined;
+        ratingMenu?: {
+            [attribute: string]: WidgetRenderState<RatingMenuRenderState, RatingMenuConnectorParams>;
+        } | undefined;
+        refinementList?: {
+            [attribute: string]: WidgetRenderState<RefinementListRenderState, RefinementListConnectorParams>;
+        } | undefined;
+        relevantSort?: WidgetRenderState<RelevantSortRenderState, RelevantSortConnectorParams> | undefined;
+        searchBox?: WidgetRenderState<SearchBoxRenderState, SearchBoxConnectorParams> | undefined;
+        sortBy?: WidgetRenderState<SortByRenderState, SortByConnectorParams> | undefined;
+        stats?: WidgetRenderState<StatsRenderState, StatsConnectorParams> | undefined;
+        toggleRefinement?: {
+            [attribute: string]: WidgetRenderState<ToggleRefinementRenderState, ToggleRefinementConnectorParams>;
+        } | undefined;
+        voiceSearch?: WidgetRenderState<VoiceSearchRenderState, VoiceSearchConnectorParams> | undefined;
+        analytics?: WidgetRenderState<Record<string, unknown>, AnalyticsWidgetParams> | undefined;
+        places?: WidgetRenderState<Record<string, unknown>, PlacesWidgetParams> | undefined;
+    }, renderOptions: InitOptions | RenderOptions): IndexRenderState & InfiniteHitsWidgetDescription["indexRenderState"];
+    getWidgetRenderState({ results, helper, parent, state: existingState, instantSearchInstance, }: InitOptions | RenderOptions): {
+        hits: Hit<THit>[];
+        items: Hit<THit>[];
+        currentPageHits: Hit<THit>[];
+        sendEvent: SendEventForHits;
+        bindEvent: BindEventForHits;
+        banner: Banner | undefined;
+        results: SearchResults<any> | undefined;
+        showPrevious: () => void;
+        showMore: () => void;
+        isFirstPage: boolean;
+        isLastPage: boolean;
+        widgetParams: TWidgetParams & InfiniteHitsConnectorParams<THit>;
+    };
+    dispose({ state }: DisposeOptions): SearchParameters;
+    getWidgetUiState(uiState: {
+        page?: number | undefined;
+        query?: string | undefined;
+        configure?: PlainSearchParameters | undefined;
+        geoSearch?: {
+            boundingBox: string;
+        } | undefined;
+        hierarchicalMenu?: {
+            [rootAttribute: string]: string[];
+        } | undefined;
+        hitsPerPage?: number | undefined;
+        menu?: {
+            [attribute: string]: string;
+        } | undefined;
+        numericMenu?: {
+            [attribute: string]: string;
+        } | undefined;
+        range?: {
+            [attribute: string]: string;
+        } | undefined;
+        ratingMenu?: {
+            [attribute: string]: number | undefined;
+        } | undefined;
+        refinementList?: {
+            [attribute: string]: string[];
+        } | undefined;
+        relevantSort?: number | undefined;
+        sortBy?: string | undefined;
+        toggle?: {
+            [attribute: string]: boolean;
+        } | undefined;
+        places?: {
+            query: string;
+            position: string;
+        } | undefined;
+    }, { searchParameters }: {
+        searchParameters: SearchParameters;
+        helper: AlgoliaSearchHelper;
+    }): {
+        page?: number | undefined;
+        query?: string | undefined;
+        configure?: PlainSearchParameters | undefined;
+        geoSearch?: {
+            boundingBox: string;
+        } | undefined;
+        hierarchicalMenu?: {
+            [rootAttribute: string]: string[];
+        } | undefined;
+        hitsPerPage?: number | undefined;
+        menu?: {
+            [attribute: string]: string;
+        } | undefined;
+        numericMenu?: {
+            [attribute: string]: string;
+        } | undefined;
+        range?: {
+            [attribute: string]: string;
+        } | undefined;
+        ratingMenu?: {
+            [attribute: string]: number | undefined;
+        } | undefined;
+        refinementList?: {
+            [attribute: string]: string[];
+        } | undefined;
+        relevantSort?: number | undefined;
+        sortBy?: string | undefined;
+        toggle?: {
+            [attribute: string]: boolean;
+        } | undefined;
+        places?: {
+            query: string;
+            position: string;
+        } | undefined;
+    };
+    getWidgetSearchParameters(searchParameters: SearchParameters, { uiState }: {
+        uiState: {
+            page?: number | undefined;
+            query?: string | undefined;
+            configure?: PlainSearchParameters | undefined;
+            geoSearch?: {
+                boundingBox: string;
+            } | undefined;
+            hierarchicalMenu?: {
+                [rootAttribute: string]: string[];
+            } | undefined;
+            hitsPerPage?: number | undefined;
+            menu?: {
+                [attribute: string]: string;
+            } | undefined;
+            numericMenu?: {
+                [attribute: string]: string;
+            } | undefined;
+            range?: {
+                [attribute: string]: string;
+            } | undefined;
+            ratingMenu?: {
+                [attribute: string]: number | undefined;
+            } | undefined;
+            refinementList?: {
+                [attribute: string]: string[];
+            } | undefined;
+            relevantSort?: number | undefined;
+            sortBy?: string | undefined;
+            toggle?: {
+                [attribute: string]: boolean;
+            } | undefined;
+            places?: {
+                query: string;
+                position: string;
+            } | undefined;
+        };
+    }): SearchParameters;
+};
 
 /**
  * **Menu** connector provides the logic to build a widget that will give the user the ability to choose a single value for a specific facet. The typical usage of menu is for navigation in categories.
@@ -788,35 +1085,39 @@ declare type ConnectorRenderStates = AnswersWidgetDescription['indexRenderState'
 declare namespace connectors {
     export {
         EXPERIMENTAL_connectAnswers,
+        EXPERIMENTAL_connectConfigureRelatedItems,
         EXPERIMENTAL_connectDynamicWidgets,
         connectDynamicWidgets,
         connectClearRefinements,
         connectCurrentRefinements,
         connectHierarchicalMenu,
-        connectHits,
+        _default as connectHits,
         connectHitsWithInsights,
         connectHitsPerPage,
-        connectInfiniteHits,
+        _default_2 as connectInfiniteHits,
         connectInfiniteHitsWithInsights,
         connectMenu,
         connectNumericMenu,
         connectPagination,
         connectRange,
         connectRefinementList,
+        _default_3 as connectRelatedProducts,
         connectSearchBox,
         connectSortBy,
         connectRatingMenu,
         connectStats,
         connectToggleRefinement,
+        _default_4 as connectTrendingItems,
         connectBreadcrumb,
-        connectGeoSearch,
+        _default_5 as connectGeoSearch,
         connectPoweredBy,
         connectConfigure,
-        connectConfigureRelatedItems as EXPERIMENTAL_connectConfigureRelatedItems,
         connectAutocomplete,
         connectQueryRules,
         connectVoiceSearch,
-        connectRelevantSort
+        connectRelevantSort,
+        _default_6 as connectFrequentlyBoughtTogether,
+        _default_7 as connectLookingSimilar
     }
 }
 
@@ -898,11 +1199,30 @@ declare const connectToggleRefinement: ToggleRefinementConnector;
 
 declare const connectVoiceSearch: VoiceSearchConnector;
 
-declare function createInfiniteHitsSessionStorageCache(): InfiniteHitsCache;
+declare type CreateCarouselTemplateProps<TObject extends Record<string, unknown>> = {
+    templates?: Partial<{
+        previous: Exclude<Template_2, string>;
+        next: Exclude<Template_2, string>;
+    }>;
+    cssClasses?: Partial<CarouselProps<TObject>['classNames']>;
+};
+
+declare function createInfiniteHitsSessionStorageCache({ key, }?: {
+    /**
+     * If you display multiple instances of infiniteHits on the same page,
+     * you must provide a unique key for each instance.
+     */
+    key?: string;
+}): InfiniteHitsCache;
 
 declare type CreateInsightsMiddleware = typeof createInsightsMiddleware;
 
 declare function createInsightsMiddleware<TInsightsClient extends ProvidedInsightsClient>(props?: InsightsProps<TInsightsClient>): InternalMiddleware;
+
+declare type CreateMarker = (args: {
+    item: GeoHit;
+    map: google.maps.Map;
+}) => google.maps.OverlayView | google.maps.Marker;
 
 /**
  * Exposes the metadata of mounted widgets in a custom
@@ -1098,9 +1418,2293 @@ declare type CustomSendEventForHits = (customPayload: any) => void;
 
 declare type CustomSendEventForToggle = (customPayload: any) => void;
 
+declare const _default: <TWidgetParams>(renderFn: Renderer<HitsRenderState, TWidgetParams & HitsConnectorParams>, unmountFn?: Unmounter) => <THit extends NonNullable<object> = BaseHit>(widgetParams: TWidgetParams & HitsConnectorParams<THit>) => {
+    $$type: "ais.hits";
+    init(initOptions: InitOptions): void;
+    render(renderOptions: RenderOptions): void;
+    getRenderState(renderState: {
+        answers?: WidgetRenderState<AnswersRenderState, AnswersConnectorParams> | undefined;
+        autocomplete?: WidgetRenderState<AutocompleteRenderState, AutocompleteConnectorParams> | undefined;
+        breadcrumb?: {
+            [rootAttribute: string]: WidgetRenderState<BreadcrumbRenderState, BreadcrumbConnectorParams>;
+        } | undefined;
+        clearRefinements?: WidgetRenderState<ClearRefinementsRenderState, ClearRefinementsConnectorParams> | undefined;
+        configure?: WidgetRenderState<ConfigureRenderState, ConfigureConnectorParams> | undefined;
+        currentRefinements?: WidgetRenderState<CurrentRefinementsRenderState, CurrentRefinementsConnectorParams> | undefined;
+        geoSearch?: WidgetRenderState<GeoSearchRenderState<GeoHit>, GeoSearchConnectorParams<GeoHit>> | undefined;
+        hierarchicalMenu?: {
+            [rootAttribute: string]: WidgetRenderState<HierarchicalMenuRenderState, HierarchicalMenuConnectorParams>;
+        } | undefined;
+        hits?: WidgetRenderState<HitsRenderState<BaseHit>, HitsConnectorParams<BaseHit>> | undefined;
+        hitsPerPage?: WidgetRenderState<HitsPerPageRenderState, HitsPerPageConnectorParams> | undefined;
+        infiniteHits?: WidgetRenderState<InfiniteHitsRenderState<BaseHit>, InfiniteHitsConnectorParams<BaseHit>> | undefined;
+        menu?: {
+            [attribute: string]: WidgetRenderState<MenuRenderState, MenuConnectorParams>;
+        } | undefined;
+        numericMenu?: {
+            [attribute: string]: WidgetRenderState<NumericMenuRenderState, NumericMenuConnectorParams>;
+        } | undefined;
+        pagination?: WidgetRenderState<PaginationRenderState, PaginationConnectorParams> | undefined;
+        poweredBy?: WidgetRenderState<PoweredByRenderState, PoweredByConnectorParams> | undefined;
+        queryRules?: WidgetRenderState<QueryRulesRenderState, QueryRulesConnectorParams> | undefined;
+        range?: {
+            [attribute: string]: WidgetRenderState<RangeRenderState, RangeConnectorParams>;
+        } | undefined;
+        ratingMenu?: {
+            [attribute: string]: WidgetRenderState<RatingMenuRenderState, RatingMenuConnectorParams>;
+        } | undefined;
+        refinementList?: {
+            [attribute: string]: WidgetRenderState<RefinementListRenderState, RefinementListConnectorParams>;
+        } | undefined;
+        relevantSort?: WidgetRenderState<RelevantSortRenderState, RelevantSortConnectorParams> | undefined;
+        searchBox?: WidgetRenderState<SearchBoxRenderState, SearchBoxConnectorParams> | undefined;
+        sortBy?: WidgetRenderState<SortByRenderState, SortByConnectorParams> | undefined;
+        stats?: WidgetRenderState<StatsRenderState, StatsConnectorParams> | undefined;
+        toggleRefinement?: {
+            [attribute: string]: WidgetRenderState<ToggleRefinementRenderState, ToggleRefinementConnectorParams>;
+        } | undefined;
+        voiceSearch?: WidgetRenderState<VoiceSearchRenderState, VoiceSearchConnectorParams> | undefined;
+        analytics?: WidgetRenderState<Record<string, unknown>, AnalyticsWidgetParams> | undefined;
+        places?: WidgetRenderState<Record<string, unknown>, PlacesWidgetParams> | undefined;
+    }, renderOptions: InitOptions | RenderOptions): IndexRenderState & HitsWidgetDescription["indexRenderState"];
+    getWidgetRenderState({ results, helper, instantSearchInstance }: InitOptions | RenderOptions): {
+        hits: never[];
+        items: never[];
+        results: undefined;
+        banner: undefined;
+        sendEvent: SendEventForHits;
+        bindEvent: BindEventForHits;
+        widgetParams: TWidgetParams & HitsConnectorParams<THit>;
+    } | {
+        hits: Hit<BaseHit>[] | Hit<THit>[];
+        items: Hit<BaseHit>[] | Hit<THit>[];
+        results: SearchResults<any>;
+        banner: Banner | undefined;
+        sendEvent: SendEventForHits;
+        bindEvent: BindEventForHits;
+        widgetParams: TWidgetParams & HitsConnectorParams<THit>;
+    };
+    dispose({ state }: DisposeOptions): SearchParameters;
+    getWidgetSearchParameters(state: SearchParameters, _uiState: {
+        uiState: {
+            query?: string | undefined;
+            configure?: PlainSearchParameters | undefined;
+            geoSearch?: {
+                boundingBox: string;
+            } | undefined;
+            hierarchicalMenu?: {
+                [rootAttribute: string]: string[];
+            } | undefined;
+            hitsPerPage?: number | undefined;
+            page?: number | undefined;
+            menu?: {
+                [attribute: string]: string;
+            } | undefined;
+            numericMenu?: {
+                [attribute: string]: string;
+            } | undefined;
+            range?: {
+                [attribute: string]: string;
+            } | undefined;
+            ratingMenu?: {
+                [attribute: string]: number | undefined;
+            } | undefined;
+            refinementList?: {
+                [attribute: string]: string[];
+            } | undefined;
+            relevantSort?: number | undefined;
+            sortBy?: string | undefined;
+            toggle?: {
+                [attribute: string]: boolean;
+            } | undefined;
+            places?: {
+                query: string;
+                position: string;
+            } | undefined;
+        };
+    }): SearchParameters;
+};
+
+declare const _default_10: <THit extends NonNullable<object> = BaseHit>(widgetParams: InfiniteHitsWidgetParams<THit> & InfiniteHitsConnectorParams<THit>) => {
+    $$widgetType: "ais.infiniteHits";
+    $$type: "ais.infiniteHits";
+    init(initOptions: InitOptions): void;
+    render(renderOptions: RenderOptions): void;
+    getRenderState(renderState: {
+        answers?: WidgetRenderState<AnswersRenderState, AnswersConnectorParams> | undefined;
+        autocomplete?: WidgetRenderState<AutocompleteRenderState, AutocompleteConnectorParams> | undefined;
+        breadcrumb?: {
+            [rootAttribute: string]: WidgetRenderState<BreadcrumbRenderState, BreadcrumbConnectorParams>;
+        } | undefined;
+        clearRefinements?: WidgetRenderState<ClearRefinementsRenderState, ClearRefinementsConnectorParams> | undefined;
+        configure?: WidgetRenderState<ConfigureRenderState, ConfigureConnectorParams> | undefined;
+        currentRefinements?: WidgetRenderState<CurrentRefinementsRenderState, CurrentRefinementsConnectorParams> | undefined;
+        geoSearch?: WidgetRenderState<GeoSearchRenderState<GeoHit>, GeoSearchConnectorParams<GeoHit>> | undefined;
+        hierarchicalMenu?: {
+            [rootAttribute: string]: WidgetRenderState<HierarchicalMenuRenderState, HierarchicalMenuConnectorParams>;
+        } | undefined;
+        hits?: WidgetRenderState<HitsRenderState<BaseHit>, HitsConnectorParams<BaseHit>> | undefined;
+        hitsPerPage?: WidgetRenderState<HitsPerPageRenderState, HitsPerPageConnectorParams> | undefined;
+        infiniteHits?: WidgetRenderState<InfiniteHitsRenderState<BaseHit>, InfiniteHitsConnectorParams<BaseHit>> | undefined;
+        menu?: {
+            [attribute: string]: WidgetRenderState<MenuRenderState, MenuConnectorParams>;
+        } | undefined;
+        numericMenu?: {
+            [attribute: string]: WidgetRenderState<NumericMenuRenderState, NumericMenuConnectorParams>;
+        } | undefined;
+        pagination?: WidgetRenderState<PaginationRenderState, PaginationConnectorParams> | undefined;
+        poweredBy?: WidgetRenderState<PoweredByRenderState, PoweredByConnectorParams> | undefined;
+        queryRules?: WidgetRenderState<QueryRulesRenderState, QueryRulesConnectorParams> | undefined;
+        range?: {
+            [attribute: string]: WidgetRenderState<RangeRenderState, RangeConnectorParams>;
+        } | undefined;
+        ratingMenu?: {
+            [attribute: string]: WidgetRenderState<RatingMenuRenderState, RatingMenuConnectorParams>;
+        } | undefined;
+        refinementList?: {
+            [attribute: string]: WidgetRenderState<RefinementListRenderState, RefinementListConnectorParams>;
+        } | undefined;
+        relevantSort?: WidgetRenderState<RelevantSortRenderState, RelevantSortConnectorParams> | undefined;
+        searchBox?: WidgetRenderState<SearchBoxRenderState, SearchBoxConnectorParams> | undefined;
+        sortBy?: WidgetRenderState<SortByRenderState, SortByConnectorParams> | undefined;
+        stats?: WidgetRenderState<StatsRenderState, StatsConnectorParams> | undefined;
+        toggleRefinement?: {
+            [attribute: string]: WidgetRenderState<ToggleRefinementRenderState, ToggleRefinementConnectorParams>;
+        } | undefined;
+        voiceSearch?: WidgetRenderState<VoiceSearchRenderState, VoiceSearchConnectorParams> | undefined;
+        analytics?: WidgetRenderState<Record<string, unknown>, AnalyticsWidgetParams> | undefined;
+        places?: WidgetRenderState<Record<string, unknown>, PlacesWidgetParams> | undefined;
+    }, renderOptions: InitOptions | RenderOptions): IndexRenderState & InfiniteHitsWidgetDescription["indexRenderState"];
+    getWidgetRenderState({ results, helper, parent, state: existingState, instantSearchInstance, }: InitOptions | RenderOptions): {
+        hits: Hit<THit>[];
+        items: Hit<THit>[];
+        currentPageHits: Hit<THit>[];
+        sendEvent: SendEventForHits;
+        bindEvent: BindEventForHits;
+        banner: Banner | undefined;
+        results: SearchResults<any> | undefined;
+        showPrevious: () => void;
+        showMore: () => void;
+        isFirstPage: boolean;
+        isLastPage: boolean;
+        widgetParams: Partial<InfiniteHitsWidgetParams<BaseHit>> & InfiniteHitsConnectorParams<THit>;
+    };
+    dispose({ state }: DisposeOptions): SearchParameters;
+    getWidgetUiState(uiState: {
+        page?: number | undefined;
+        query?: string | undefined;
+        configure?: PlainSearchParameters | undefined;
+        geoSearch?: {
+            boundingBox: string;
+        } | undefined;
+        hierarchicalMenu?: {
+            [rootAttribute: string]: string[];
+        } | undefined;
+        hitsPerPage?: number | undefined;
+        menu?: {
+            [attribute: string]: string;
+        } | undefined;
+        numericMenu?: {
+            [attribute: string]: string;
+        } | undefined;
+        range?: {
+            [attribute: string]: string;
+        } | undefined;
+        ratingMenu?: {
+            [attribute: string]: number | undefined;
+        } | undefined;
+        refinementList?: {
+            [attribute: string]: string[];
+        } | undefined;
+        relevantSort?: number | undefined;
+        sortBy?: string | undefined;
+        toggle?: {
+            [attribute: string]: boolean;
+        } | undefined;
+        places?: {
+            query: string;
+            position: string;
+        } | undefined;
+    }, { searchParameters }: {
+        searchParameters: SearchParameters;
+        helper: AlgoliaSearchHelper;
+    }): {
+        page?: number | undefined;
+        query?: string | undefined;
+        configure?: PlainSearchParameters | undefined;
+        geoSearch?: {
+            boundingBox: string;
+        } | undefined;
+        hierarchicalMenu?: {
+            [rootAttribute: string]: string[];
+        } | undefined;
+        hitsPerPage?: number | undefined;
+        menu?: {
+            [attribute: string]: string;
+        } | undefined;
+        numericMenu?: {
+            [attribute: string]: string;
+        } | undefined;
+        range?: {
+            [attribute: string]: string;
+        } | undefined;
+        ratingMenu?: {
+            [attribute: string]: number | undefined;
+        } | undefined;
+        refinementList?: {
+            [attribute: string]: string[];
+        } | undefined;
+        relevantSort?: number | undefined;
+        sortBy?: string | undefined;
+        toggle?: {
+            [attribute: string]: boolean;
+        } | undefined;
+        places?: {
+            query: string;
+            position: string;
+        } | undefined;
+    };
+    getWidgetSearchParameters(searchParameters: SearchParameters, { uiState }: {
+        uiState: {
+            page?: number | undefined;
+            query?: string | undefined;
+            configure?: PlainSearchParameters | undefined;
+            geoSearch?: {
+                boundingBox: string;
+            } | undefined;
+            hierarchicalMenu?: {
+                [rootAttribute: string]: string[];
+            } | undefined;
+            hitsPerPage?: number | undefined;
+            menu?: {
+                [attribute: string]: string;
+            } | undefined;
+            numericMenu?: {
+                [attribute: string]: string;
+            } | undefined;
+            range?: {
+                [attribute: string]: string;
+            } | undefined;
+            ratingMenu?: {
+                [attribute: string]: number | undefined;
+            } | undefined;
+            refinementList?: {
+                [attribute: string]: string[];
+            } | undefined;
+            relevantSort?: number | undefined;
+            sortBy?: string | undefined;
+            toggle?: {
+                [attribute: string]: boolean;
+            } | undefined;
+            places?: {
+                query: string;
+                position: string;
+            } | undefined;
+        };
+    }): SearchParameters;
+};
+
+declare const _default_11: PlacesWidget;
+
+declare const _default_12: <THit extends NonNullable<object> = BaseHit>(widgetParams: RelatedProductsWidgetParams<THit> & RelatedProductsConnectorParams<THit>) => {
+    $$widgetType: "ais.relatedProducts";
+    dependsOn: "recommend";
+    $$type: "ais.relatedProducts";
+    init(initOptions: InitOptions): void;
+    render(renderOptions: RenderOptions): void;
+    getRenderState(renderState: {
+        answers?: WidgetRenderState<AnswersRenderState, AnswersConnectorParams> | undefined;
+        autocomplete?: WidgetRenderState<AutocompleteRenderState, AutocompleteConnectorParams> | undefined;
+        breadcrumb?: {
+            [rootAttribute: string]: WidgetRenderState<BreadcrumbRenderState, BreadcrumbConnectorParams>;
+        } | undefined;
+        clearRefinements?: WidgetRenderState<ClearRefinementsRenderState, ClearRefinementsConnectorParams> | undefined;
+        configure?: WidgetRenderState<ConfigureRenderState, ConfigureConnectorParams> | undefined;
+        currentRefinements?: WidgetRenderState<CurrentRefinementsRenderState, CurrentRefinementsConnectorParams> | undefined;
+        geoSearch?: WidgetRenderState<GeoSearchRenderState<GeoHit>, GeoSearchConnectorParams<GeoHit>> | undefined;
+        hierarchicalMenu?: {
+            [rootAttribute: string]: WidgetRenderState<HierarchicalMenuRenderState, HierarchicalMenuConnectorParams>;
+        } | undefined;
+        hits?: WidgetRenderState<HitsRenderState<BaseHit>, HitsConnectorParams<BaseHit>> | undefined;
+        hitsPerPage?: WidgetRenderState<HitsPerPageRenderState, HitsPerPageConnectorParams> | undefined;
+        infiniteHits?: WidgetRenderState<InfiniteHitsRenderState<BaseHit>, InfiniteHitsConnectorParams<BaseHit>> | undefined;
+        menu?: {
+            [attribute: string]: WidgetRenderState<MenuRenderState, MenuConnectorParams>;
+        } | undefined;
+        numericMenu?: {
+            [attribute: string]: WidgetRenderState<NumericMenuRenderState, NumericMenuConnectorParams>;
+        } | undefined;
+        pagination?: WidgetRenderState<PaginationRenderState, PaginationConnectorParams> | undefined;
+        poweredBy?: WidgetRenderState<PoweredByRenderState, PoweredByConnectorParams> | undefined;
+        queryRules?: WidgetRenderState<QueryRulesRenderState, QueryRulesConnectorParams> | undefined;
+        range?: {
+            [attribute: string]: WidgetRenderState<RangeRenderState, RangeConnectorParams>;
+        } | undefined;
+        ratingMenu?: {
+            [attribute: string]: WidgetRenderState<RatingMenuRenderState, RatingMenuConnectorParams>;
+        } | undefined;
+        refinementList?: {
+            [attribute: string]: WidgetRenderState<RefinementListRenderState, RefinementListConnectorParams>;
+        } | undefined;
+        relevantSort?: WidgetRenderState<RelevantSortRenderState, RelevantSortConnectorParams> | undefined;
+        searchBox?: WidgetRenderState<SearchBoxRenderState, SearchBoxConnectorParams> | undefined;
+        sortBy?: WidgetRenderState<SortByRenderState, SortByConnectorParams> | undefined;
+        stats?: WidgetRenderState<StatsRenderState, StatsConnectorParams> | undefined;
+        toggleRefinement?: {
+            [attribute: string]: WidgetRenderState<ToggleRefinementRenderState, ToggleRefinementConnectorParams>;
+        } | undefined;
+        voiceSearch?: WidgetRenderState<VoiceSearchRenderState, VoiceSearchConnectorParams> | undefined;
+        analytics?: WidgetRenderState<Record<string, unknown>, AnalyticsWidgetParams> | undefined;
+        places?: WidgetRenderState<Record<string, unknown>, PlacesWidgetParams> | undefined;
+    }): {
+        answers?: WidgetRenderState<AnswersRenderState, AnswersConnectorParams> | undefined;
+        autocomplete?: WidgetRenderState<AutocompleteRenderState, AutocompleteConnectorParams> | undefined;
+        breadcrumb?: {
+            [rootAttribute: string]: WidgetRenderState<BreadcrumbRenderState, BreadcrumbConnectorParams>;
+        } | undefined;
+        clearRefinements?: WidgetRenderState<ClearRefinementsRenderState, ClearRefinementsConnectorParams> | undefined;
+        configure?: WidgetRenderState<ConfigureRenderState, ConfigureConnectorParams> | undefined;
+        currentRefinements?: WidgetRenderState<CurrentRefinementsRenderState, CurrentRefinementsConnectorParams> | undefined;
+        geoSearch?: WidgetRenderState<GeoSearchRenderState<GeoHit>, GeoSearchConnectorParams<GeoHit>> | undefined;
+        hierarchicalMenu?: {
+            [rootAttribute: string]: WidgetRenderState<HierarchicalMenuRenderState, HierarchicalMenuConnectorParams>;
+        } | undefined;
+        hits?: WidgetRenderState<HitsRenderState<BaseHit>, HitsConnectorParams<BaseHit>> | undefined;
+        hitsPerPage?: WidgetRenderState<HitsPerPageRenderState, HitsPerPageConnectorParams> | undefined;
+        infiniteHits?: WidgetRenderState<InfiniteHitsRenderState<BaseHit>, InfiniteHitsConnectorParams<BaseHit>> | undefined;
+        menu?: {
+            [attribute: string]: WidgetRenderState<MenuRenderState, MenuConnectorParams>;
+        } | undefined;
+        numericMenu?: {
+            [attribute: string]: WidgetRenderState<NumericMenuRenderState, NumericMenuConnectorParams>;
+        } | undefined;
+        pagination?: WidgetRenderState<PaginationRenderState, PaginationConnectorParams> | undefined;
+        poweredBy?: WidgetRenderState<PoweredByRenderState, PoweredByConnectorParams> | undefined;
+        queryRules?: WidgetRenderState<QueryRulesRenderState, QueryRulesConnectorParams> | undefined;
+        range?: {
+            [attribute: string]: WidgetRenderState<RangeRenderState, RangeConnectorParams>;
+        } | undefined;
+        ratingMenu?: {
+            [attribute: string]: WidgetRenderState<RatingMenuRenderState, RatingMenuConnectorParams>;
+        } | undefined;
+        refinementList?: {
+            [attribute: string]: WidgetRenderState<RefinementListRenderState, RefinementListConnectorParams>;
+        } | undefined;
+        relevantSort?: WidgetRenderState<RelevantSortRenderState, RelevantSortConnectorParams> | undefined;
+        searchBox?: WidgetRenderState<SearchBoxRenderState, SearchBoxConnectorParams> | undefined;
+        sortBy?: WidgetRenderState<SortByRenderState, SortByConnectorParams> | undefined;
+        stats?: WidgetRenderState<StatsRenderState, StatsConnectorParams> | undefined;
+        toggleRefinement?: {
+            [attribute: string]: WidgetRenderState<ToggleRefinementRenderState, ToggleRefinementConnectorParams>;
+        } | undefined;
+        voiceSearch?: WidgetRenderState<VoiceSearchRenderState, VoiceSearchConnectorParams> | undefined;
+        analytics?: WidgetRenderState<Record<string, unknown>, AnalyticsWidgetParams> | undefined;
+        places?: WidgetRenderState<Record<string, unknown>, PlacesWidgetParams> | undefined;
+    };
+    getWidgetRenderState({ results, helper, instantSearchInstance }: InitOptions | RenderOptions | ({
+        instantSearchInstance: InstantSearch;
+        parent: IndexWidget;
+        templatesConfig: Record<string, unknown>;
+        scopedResults: ScopedResult[];
+        state: SearchParameters;
+        renderState: Partial<{
+            answers: WidgetRenderState<AnswersRenderState, AnswersConnectorParams>;
+        } & {
+            autocomplete: WidgetRenderState<AutocompleteRenderState, AutocompleteConnectorParams>;
+        } & {
+            breadcrumb: {
+                [rootAttribute: string]: WidgetRenderState<BreadcrumbRenderState, BreadcrumbConnectorParams>;
+            };
+        } & {
+            clearRefinements: WidgetRenderState<ClearRefinementsRenderState, ClearRefinementsConnectorParams>;
+        } & {
+            configure: WidgetRenderState<ConfigureRenderState, ConfigureConnectorParams>;
+        } & {
+            currentRefinements: WidgetRenderState<CurrentRefinementsRenderState, CurrentRefinementsConnectorParams>;
+        } & {
+            geoSearch: WidgetRenderState<GeoSearchRenderState<GeoHit>, GeoSearchConnectorParams<GeoHit>>;
+        } & {
+            hierarchicalMenu: {
+                [rootAttribute: string]: WidgetRenderState<HierarchicalMenuRenderState, HierarchicalMenuConnectorParams>;
+            };
+        } & {
+            hits: WidgetRenderState<HitsRenderState<BaseHit>, HitsConnectorParams<BaseHit>>;
+        } & {
+            hitsPerPage: WidgetRenderState<HitsPerPageRenderState, HitsPerPageConnectorParams>;
+        } & {
+            infiniteHits: WidgetRenderState<InfiniteHitsRenderState<BaseHit>, InfiniteHitsConnectorParams<BaseHit>>;
+        } & {
+            menu: {
+                [attribute: string]: WidgetRenderState<MenuRenderState, MenuConnectorParams>;
+            };
+        } & {
+            numericMenu: {
+                [attribute: string]: WidgetRenderState<NumericMenuRenderState, NumericMenuConnectorParams>;
+            };
+        } & {
+            pagination: WidgetRenderState<PaginationRenderState, PaginationConnectorParams>;
+        } & {
+            poweredBy: WidgetRenderState<PoweredByRenderState, PoweredByConnectorParams>;
+        } & {
+            queryRules: WidgetRenderState<QueryRulesRenderState, QueryRulesConnectorParams>;
+        } & {
+            range: {
+                [attribute: string]: WidgetRenderState<RangeRenderState, RangeConnectorParams>;
+            };
+        } & {
+            ratingMenu: {
+                [attribute: string]: WidgetRenderState<RatingMenuRenderState, RatingMenuConnectorParams>;
+            };
+        } & {
+            refinementList: {
+                [attribute: string]: WidgetRenderState<RefinementListRenderState, RefinementListConnectorParams>;
+            };
+        } & {
+            relevantSort: WidgetRenderState<RelevantSortRenderState, RelevantSortConnectorParams>;
+        } & {
+            searchBox: WidgetRenderState<SearchBoxRenderState, SearchBoxConnectorParams>;
+        } & {
+            sortBy: WidgetRenderState<SortByRenderState, SortByConnectorParams>;
+        } & {
+            stats: WidgetRenderState<StatsRenderState, StatsConnectorParams>;
+        } & {
+            toggleRefinement: {
+                [attribute: string]: WidgetRenderState<ToggleRefinementRenderState, ToggleRefinementConnectorParams>;
+            };
+        } & {
+            voiceSearch: WidgetRenderState<VoiceSearchRenderState, VoiceSearchConnectorParams>;
+        } & {
+            analytics: WidgetRenderState<Record<string, unknown>, AnalyticsWidgetParams>;
+        } & {
+            places: WidgetRenderState<Record<string, unknown>, PlacesWidgetParams>;
+        }>;
+        helper: AlgoliaSearchHelper;
+        searchMetadata: {
+            isSearchStalled: boolean;
+        };
+        status: InstantSearch["status"];
+        error: InstantSearch["error"];
+        createURL: (nextState: SearchParameters | ((state: IndexUiState) => IndexUiState)) => string;
+    } & {
+        results: RecommendResponse<any>;
+    })): {
+        items: Hit<BaseHit>[] | Hit<THit>[];
+        widgetParams: Partial<RelatedProductsWidgetParams<BaseHit>> & RelatedProductsConnectorParams<THit>;
+        sendEvent: SendEventForHits;
+    };
+    dispose({ recommendState }: DisposeOptions): RecommendParameters;
+    getWidgetParameters(state: RecommendParameters): RecommendParameters;
+};
+
+declare const _default_13: <THit extends NonNullable<object> = BaseHit>(widgetParams: TrendingItemsWidgetParams<THit> & TrendingItemsConnectorParams<THit>) => {
+    $$widgetType: "ais.trendingItems";
+    dependsOn: "recommend";
+    $$type: "ais.trendingItems";
+    init(initOptions: InitOptions): void;
+    render(renderOptions: RenderOptions): void;
+    getRenderState(renderState: {
+        answers?: WidgetRenderState<AnswersRenderState, AnswersConnectorParams> | undefined;
+        autocomplete?: WidgetRenderState<AutocompleteRenderState, AutocompleteConnectorParams> | undefined;
+        breadcrumb?: {
+            [rootAttribute: string]: WidgetRenderState<BreadcrumbRenderState, BreadcrumbConnectorParams>;
+        } | undefined;
+        clearRefinements?: WidgetRenderState<ClearRefinementsRenderState, ClearRefinementsConnectorParams> | undefined;
+        configure?: WidgetRenderState<ConfigureRenderState, ConfigureConnectorParams> | undefined;
+        currentRefinements?: WidgetRenderState<CurrentRefinementsRenderState, CurrentRefinementsConnectorParams> | undefined;
+        geoSearch?: WidgetRenderState<GeoSearchRenderState<GeoHit>, GeoSearchConnectorParams<GeoHit>> | undefined;
+        hierarchicalMenu?: {
+            [rootAttribute: string]: WidgetRenderState<HierarchicalMenuRenderState, HierarchicalMenuConnectorParams>;
+        } | undefined;
+        hits?: WidgetRenderState<HitsRenderState<BaseHit>, HitsConnectorParams<BaseHit>> | undefined;
+        hitsPerPage?: WidgetRenderState<HitsPerPageRenderState, HitsPerPageConnectorParams> | undefined;
+        infiniteHits?: WidgetRenderState<InfiniteHitsRenderState<BaseHit>, InfiniteHitsConnectorParams<BaseHit>> | undefined;
+        menu?: {
+            [attribute: string]: WidgetRenderState<MenuRenderState, MenuConnectorParams>;
+        } | undefined;
+        numericMenu?: {
+            [attribute: string]: WidgetRenderState<NumericMenuRenderState, NumericMenuConnectorParams>;
+        } | undefined;
+        pagination?: WidgetRenderState<PaginationRenderState, PaginationConnectorParams> | undefined;
+        poweredBy?: WidgetRenderState<PoweredByRenderState, PoweredByConnectorParams> | undefined;
+        queryRules?: WidgetRenderState<QueryRulesRenderState, QueryRulesConnectorParams> | undefined;
+        range?: {
+            [attribute: string]: WidgetRenderState<RangeRenderState, RangeConnectorParams>;
+        } | undefined;
+        ratingMenu?: {
+            [attribute: string]: WidgetRenderState<RatingMenuRenderState, RatingMenuConnectorParams>;
+        } | undefined;
+        refinementList?: {
+            [attribute: string]: WidgetRenderState<RefinementListRenderState, RefinementListConnectorParams>;
+        } | undefined;
+        relevantSort?: WidgetRenderState<RelevantSortRenderState, RelevantSortConnectorParams> | undefined;
+        searchBox?: WidgetRenderState<SearchBoxRenderState, SearchBoxConnectorParams> | undefined;
+        sortBy?: WidgetRenderState<SortByRenderState, SortByConnectorParams> | undefined;
+        stats?: WidgetRenderState<StatsRenderState, StatsConnectorParams> | undefined;
+        toggleRefinement?: {
+            [attribute: string]: WidgetRenderState<ToggleRefinementRenderState, ToggleRefinementConnectorParams>;
+        } | undefined;
+        voiceSearch?: WidgetRenderState<VoiceSearchRenderState, VoiceSearchConnectorParams> | undefined;
+        analytics?: WidgetRenderState<Record<string, unknown>, AnalyticsWidgetParams> | undefined;
+        places?: WidgetRenderState<Record<string, unknown>, PlacesWidgetParams> | undefined;
+    }): {
+        answers?: WidgetRenderState<AnswersRenderState, AnswersConnectorParams> | undefined;
+        autocomplete?: WidgetRenderState<AutocompleteRenderState, AutocompleteConnectorParams> | undefined;
+        breadcrumb?: {
+            [rootAttribute: string]: WidgetRenderState<BreadcrumbRenderState, BreadcrumbConnectorParams>;
+        } | undefined;
+        clearRefinements?: WidgetRenderState<ClearRefinementsRenderState, ClearRefinementsConnectorParams> | undefined;
+        configure?: WidgetRenderState<ConfigureRenderState, ConfigureConnectorParams> | undefined;
+        currentRefinements?: WidgetRenderState<CurrentRefinementsRenderState, CurrentRefinementsConnectorParams> | undefined;
+        geoSearch?: WidgetRenderState<GeoSearchRenderState<GeoHit>, GeoSearchConnectorParams<GeoHit>> | undefined;
+        hierarchicalMenu?: {
+            [rootAttribute: string]: WidgetRenderState<HierarchicalMenuRenderState, HierarchicalMenuConnectorParams>;
+        } | undefined;
+        hits?: WidgetRenderState<HitsRenderState<BaseHit>, HitsConnectorParams<BaseHit>> | undefined;
+        hitsPerPage?: WidgetRenderState<HitsPerPageRenderState, HitsPerPageConnectorParams> | undefined;
+        infiniteHits?: WidgetRenderState<InfiniteHitsRenderState<BaseHit>, InfiniteHitsConnectorParams<BaseHit>> | undefined;
+        menu?: {
+            [attribute: string]: WidgetRenderState<MenuRenderState, MenuConnectorParams>;
+        } | undefined;
+        numericMenu?: {
+            [attribute: string]: WidgetRenderState<NumericMenuRenderState, NumericMenuConnectorParams>;
+        } | undefined;
+        pagination?: WidgetRenderState<PaginationRenderState, PaginationConnectorParams> | undefined;
+        poweredBy?: WidgetRenderState<PoweredByRenderState, PoweredByConnectorParams> | undefined;
+        queryRules?: WidgetRenderState<QueryRulesRenderState, QueryRulesConnectorParams> | undefined;
+        range?: {
+            [attribute: string]: WidgetRenderState<RangeRenderState, RangeConnectorParams>;
+        } | undefined;
+        ratingMenu?: {
+            [attribute: string]: WidgetRenderState<RatingMenuRenderState, RatingMenuConnectorParams>;
+        } | undefined;
+        refinementList?: {
+            [attribute: string]: WidgetRenderState<RefinementListRenderState, RefinementListConnectorParams>;
+        } | undefined;
+        relevantSort?: WidgetRenderState<RelevantSortRenderState, RelevantSortConnectorParams> | undefined;
+        searchBox?: WidgetRenderState<SearchBoxRenderState, SearchBoxConnectorParams> | undefined;
+        sortBy?: WidgetRenderState<SortByRenderState, SortByConnectorParams> | undefined;
+        stats?: WidgetRenderState<StatsRenderState, StatsConnectorParams> | undefined;
+        toggleRefinement?: {
+            [attribute: string]: WidgetRenderState<ToggleRefinementRenderState, ToggleRefinementConnectorParams>;
+        } | undefined;
+        voiceSearch?: WidgetRenderState<VoiceSearchRenderState, VoiceSearchConnectorParams> | undefined;
+        analytics?: WidgetRenderState<Record<string, unknown>, AnalyticsWidgetParams> | undefined;
+        places?: WidgetRenderState<Record<string, unknown>, PlacesWidgetParams> | undefined;
+    };
+    getWidgetRenderState({ results, helper, instantSearchInstance }: InitOptions | RenderOptions | ({
+        instantSearchInstance: InstantSearch;
+        parent: IndexWidget;
+        templatesConfig: Record<string, unknown>;
+        scopedResults: ScopedResult[];
+        state: SearchParameters;
+        renderState: Partial<{
+            answers: WidgetRenderState<AnswersRenderState, AnswersConnectorParams>;
+        } & {
+            autocomplete: WidgetRenderState<AutocompleteRenderState, AutocompleteConnectorParams>;
+        } & {
+            breadcrumb: {
+                [rootAttribute: string]: WidgetRenderState<BreadcrumbRenderState, BreadcrumbConnectorParams>;
+            };
+        } & {
+            clearRefinements: WidgetRenderState<ClearRefinementsRenderState, ClearRefinementsConnectorParams>;
+        } & {
+            configure: WidgetRenderState<ConfigureRenderState, ConfigureConnectorParams>;
+        } & {
+            currentRefinements: WidgetRenderState<CurrentRefinementsRenderState, CurrentRefinementsConnectorParams>;
+        } & {
+            geoSearch: WidgetRenderState<GeoSearchRenderState<GeoHit>, GeoSearchConnectorParams<GeoHit>>;
+        } & {
+            hierarchicalMenu: {
+                [rootAttribute: string]: WidgetRenderState<HierarchicalMenuRenderState, HierarchicalMenuConnectorParams>;
+            };
+        } & {
+            hits: WidgetRenderState<HitsRenderState<BaseHit>, HitsConnectorParams<BaseHit>>;
+        } & {
+            hitsPerPage: WidgetRenderState<HitsPerPageRenderState, HitsPerPageConnectorParams>;
+        } & {
+            infiniteHits: WidgetRenderState<InfiniteHitsRenderState<BaseHit>, InfiniteHitsConnectorParams<BaseHit>>;
+        } & {
+            menu: {
+                [attribute: string]: WidgetRenderState<MenuRenderState, MenuConnectorParams>;
+            };
+        } & {
+            numericMenu: {
+                [attribute: string]: WidgetRenderState<NumericMenuRenderState, NumericMenuConnectorParams>;
+            };
+        } & {
+            pagination: WidgetRenderState<PaginationRenderState, PaginationConnectorParams>;
+        } & {
+            poweredBy: WidgetRenderState<PoweredByRenderState, PoweredByConnectorParams>;
+        } & {
+            queryRules: WidgetRenderState<QueryRulesRenderState, QueryRulesConnectorParams>;
+        } & {
+            range: {
+                [attribute: string]: WidgetRenderState<RangeRenderState, RangeConnectorParams>;
+            };
+        } & {
+            ratingMenu: {
+                [attribute: string]: WidgetRenderState<RatingMenuRenderState, RatingMenuConnectorParams>;
+            };
+        } & {
+            refinementList: {
+                [attribute: string]: WidgetRenderState<RefinementListRenderState, RefinementListConnectorParams>;
+            };
+        } & {
+            relevantSort: WidgetRenderState<RelevantSortRenderState, RelevantSortConnectorParams>;
+        } & {
+            searchBox: WidgetRenderState<SearchBoxRenderState, SearchBoxConnectorParams>;
+        } & {
+            sortBy: WidgetRenderState<SortByRenderState, SortByConnectorParams>;
+        } & {
+            stats: WidgetRenderState<StatsRenderState, StatsConnectorParams>;
+        } & {
+            toggleRefinement: {
+                [attribute: string]: WidgetRenderState<ToggleRefinementRenderState, ToggleRefinementConnectorParams>;
+            };
+        } & {
+            voiceSearch: WidgetRenderState<VoiceSearchRenderState, VoiceSearchConnectorParams>;
+        } & {
+            analytics: WidgetRenderState<Record<string, unknown>, AnalyticsWidgetParams>;
+        } & {
+            places: WidgetRenderState<Record<string, unknown>, PlacesWidgetParams>;
+        }>;
+        helper: AlgoliaSearchHelper;
+        searchMetadata: {
+            isSearchStalled: boolean;
+        };
+        status: InstantSearch["status"];
+        error: InstantSearch["error"];
+        createURL: (nextState: SearchParameters | ((state: IndexUiState) => IndexUiState)) => string;
+    } & {
+        results: RecommendResponse<any>;
+    })): {
+        items: Hit<THit>[];
+        widgetParams: Partial<TrendingItemsWidgetParams<BaseHit>> & TrendingItemsConnectorParams<THit>;
+        sendEvent: SendEventForHits;
+    };
+    dispose({ recommendState }: DisposeOptions): RecommendParameters;
+    getWidgetParameters(state: RecommendParameters): RecommendParameters;
+};
+
+declare const _default_14: <THit extends NonNullable<object> = BaseHit>(widgetParams: FrequentlyBoughtTogetherWidgetParams<THit> & FrequentlyBoughtTogetherConnectorParams<THit>) => {
+    $$widgetType: "ais.frequentlyBoughtTogether";
+    dependsOn: "recommend";
+    $$type: "ais.frequentlyBoughtTogether";
+    init(initOptions: InitOptions): void;
+    render(renderOptions: RenderOptions): void;
+    getRenderState(renderState: {
+        answers?: WidgetRenderState<AnswersRenderState, AnswersConnectorParams> | undefined;
+        autocomplete?: WidgetRenderState<AutocompleteRenderState, AutocompleteConnectorParams> | undefined;
+        breadcrumb?: {
+            [rootAttribute: string]: WidgetRenderState<BreadcrumbRenderState, BreadcrumbConnectorParams>;
+        } | undefined;
+        clearRefinements?: WidgetRenderState<ClearRefinementsRenderState, ClearRefinementsConnectorParams> | undefined;
+        configure?: WidgetRenderState<ConfigureRenderState, ConfigureConnectorParams> | undefined;
+        currentRefinements?: WidgetRenderState<CurrentRefinementsRenderState, CurrentRefinementsConnectorParams> | undefined;
+        geoSearch?: WidgetRenderState<GeoSearchRenderState<GeoHit>, GeoSearchConnectorParams<GeoHit>> | undefined;
+        hierarchicalMenu?: {
+            [rootAttribute: string]: WidgetRenderState<HierarchicalMenuRenderState, HierarchicalMenuConnectorParams>;
+        } | undefined;
+        hits?: WidgetRenderState<HitsRenderState<BaseHit>, HitsConnectorParams<BaseHit>> | undefined;
+        hitsPerPage?: WidgetRenderState<HitsPerPageRenderState, HitsPerPageConnectorParams> | undefined;
+        infiniteHits?: WidgetRenderState<InfiniteHitsRenderState<BaseHit>, InfiniteHitsConnectorParams<BaseHit>> | undefined;
+        menu?: {
+            [attribute: string]: WidgetRenderState<MenuRenderState, MenuConnectorParams>;
+        } | undefined;
+        numericMenu?: {
+            [attribute: string]: WidgetRenderState<NumericMenuRenderState, NumericMenuConnectorParams>;
+        } | undefined;
+        pagination?: WidgetRenderState<PaginationRenderState, PaginationConnectorParams> | undefined;
+        poweredBy?: WidgetRenderState<PoweredByRenderState, PoweredByConnectorParams> | undefined;
+        queryRules?: WidgetRenderState<QueryRulesRenderState, QueryRulesConnectorParams> | undefined;
+        range?: {
+            [attribute: string]: WidgetRenderState<RangeRenderState, RangeConnectorParams>;
+        } | undefined;
+        ratingMenu?: {
+            [attribute: string]: WidgetRenderState<RatingMenuRenderState, RatingMenuConnectorParams>;
+        } | undefined;
+        refinementList?: {
+            [attribute: string]: WidgetRenderState<RefinementListRenderState, RefinementListConnectorParams>;
+        } | undefined;
+        relevantSort?: WidgetRenderState<RelevantSortRenderState, RelevantSortConnectorParams> | undefined;
+        searchBox?: WidgetRenderState<SearchBoxRenderState, SearchBoxConnectorParams> | undefined;
+        sortBy?: WidgetRenderState<SortByRenderState, SortByConnectorParams> | undefined;
+        stats?: WidgetRenderState<StatsRenderState, StatsConnectorParams> | undefined;
+        toggleRefinement?: {
+            [attribute: string]: WidgetRenderState<ToggleRefinementRenderState, ToggleRefinementConnectorParams>;
+        } | undefined;
+        voiceSearch?: WidgetRenderState<VoiceSearchRenderState, VoiceSearchConnectorParams> | undefined;
+        analytics?: WidgetRenderState<Record<string, unknown>, AnalyticsWidgetParams> | undefined;
+        places?: WidgetRenderState<Record<string, unknown>, PlacesWidgetParams> | undefined;
+    }): {
+        answers?: WidgetRenderState<AnswersRenderState, AnswersConnectorParams> | undefined;
+        autocomplete?: WidgetRenderState<AutocompleteRenderState, AutocompleteConnectorParams> | undefined;
+        breadcrumb?: {
+            [rootAttribute: string]: WidgetRenderState<BreadcrumbRenderState, BreadcrumbConnectorParams>;
+        } | undefined;
+        clearRefinements?: WidgetRenderState<ClearRefinementsRenderState, ClearRefinementsConnectorParams> | undefined;
+        configure?: WidgetRenderState<ConfigureRenderState, ConfigureConnectorParams> | undefined;
+        currentRefinements?: WidgetRenderState<CurrentRefinementsRenderState, CurrentRefinementsConnectorParams> | undefined;
+        geoSearch?: WidgetRenderState<GeoSearchRenderState<GeoHit>, GeoSearchConnectorParams<GeoHit>> | undefined;
+        hierarchicalMenu?: {
+            [rootAttribute: string]: WidgetRenderState<HierarchicalMenuRenderState, HierarchicalMenuConnectorParams>;
+        } | undefined;
+        hits?: WidgetRenderState<HitsRenderState<BaseHit>, HitsConnectorParams<BaseHit>> | undefined;
+        hitsPerPage?: WidgetRenderState<HitsPerPageRenderState, HitsPerPageConnectorParams> | undefined;
+        infiniteHits?: WidgetRenderState<InfiniteHitsRenderState<BaseHit>, InfiniteHitsConnectorParams<BaseHit>> | undefined;
+        menu?: {
+            [attribute: string]: WidgetRenderState<MenuRenderState, MenuConnectorParams>;
+        } | undefined;
+        numericMenu?: {
+            [attribute: string]: WidgetRenderState<NumericMenuRenderState, NumericMenuConnectorParams>;
+        } | undefined;
+        pagination?: WidgetRenderState<PaginationRenderState, PaginationConnectorParams> | undefined;
+        poweredBy?: WidgetRenderState<PoweredByRenderState, PoweredByConnectorParams> | undefined;
+        queryRules?: WidgetRenderState<QueryRulesRenderState, QueryRulesConnectorParams> | undefined;
+        range?: {
+            [attribute: string]: WidgetRenderState<RangeRenderState, RangeConnectorParams>;
+        } | undefined;
+        ratingMenu?: {
+            [attribute: string]: WidgetRenderState<RatingMenuRenderState, RatingMenuConnectorParams>;
+        } | undefined;
+        refinementList?: {
+            [attribute: string]: WidgetRenderState<RefinementListRenderState, RefinementListConnectorParams>;
+        } | undefined;
+        relevantSort?: WidgetRenderState<RelevantSortRenderState, RelevantSortConnectorParams> | undefined;
+        searchBox?: WidgetRenderState<SearchBoxRenderState, SearchBoxConnectorParams> | undefined;
+        sortBy?: WidgetRenderState<SortByRenderState, SortByConnectorParams> | undefined;
+        stats?: WidgetRenderState<StatsRenderState, StatsConnectorParams> | undefined;
+        toggleRefinement?: {
+            [attribute: string]: WidgetRenderState<ToggleRefinementRenderState, ToggleRefinementConnectorParams>;
+        } | undefined;
+        voiceSearch?: WidgetRenderState<VoiceSearchRenderState, VoiceSearchConnectorParams> | undefined;
+        analytics?: WidgetRenderState<Record<string, unknown>, AnalyticsWidgetParams> | undefined;
+        places?: WidgetRenderState<Record<string, unknown>, PlacesWidgetParams> | undefined;
+    };
+    getWidgetRenderState({ results, helper, instantSearchInstance }: InitOptions | RenderOptions | ({
+        instantSearchInstance: InstantSearch;
+        parent: IndexWidget;
+        templatesConfig: Record<string, unknown>;
+        scopedResults: ScopedResult[];
+        state: SearchParameters;
+        renderState: Partial<{
+            answers: WidgetRenderState<AnswersRenderState, AnswersConnectorParams>;
+        } & {
+            autocomplete: WidgetRenderState<AutocompleteRenderState, AutocompleteConnectorParams>;
+        } & {
+            breadcrumb: {
+                [rootAttribute: string]: WidgetRenderState<BreadcrumbRenderState, BreadcrumbConnectorParams>;
+            };
+        } & {
+            clearRefinements: WidgetRenderState<ClearRefinementsRenderState, ClearRefinementsConnectorParams>;
+        } & {
+            configure: WidgetRenderState<ConfigureRenderState, ConfigureConnectorParams>;
+        } & {
+            currentRefinements: WidgetRenderState<CurrentRefinementsRenderState, CurrentRefinementsConnectorParams>;
+        } & {
+            geoSearch: WidgetRenderState<GeoSearchRenderState<GeoHit>, GeoSearchConnectorParams<GeoHit>>;
+        } & {
+            hierarchicalMenu: {
+                [rootAttribute: string]: WidgetRenderState<HierarchicalMenuRenderState, HierarchicalMenuConnectorParams>;
+            };
+        } & {
+            hits: WidgetRenderState<HitsRenderState<BaseHit>, HitsConnectorParams<BaseHit>>;
+        } & {
+            hitsPerPage: WidgetRenderState<HitsPerPageRenderState, HitsPerPageConnectorParams>;
+        } & {
+            infiniteHits: WidgetRenderState<InfiniteHitsRenderState<BaseHit>, InfiniteHitsConnectorParams<BaseHit>>;
+        } & {
+            menu: {
+                [attribute: string]: WidgetRenderState<MenuRenderState, MenuConnectorParams>;
+            };
+        } & {
+            numericMenu: {
+                [attribute: string]: WidgetRenderState<NumericMenuRenderState, NumericMenuConnectorParams>;
+            };
+        } & {
+            pagination: WidgetRenderState<PaginationRenderState, PaginationConnectorParams>;
+        } & {
+            poweredBy: WidgetRenderState<PoweredByRenderState, PoweredByConnectorParams>;
+        } & {
+            queryRules: WidgetRenderState<QueryRulesRenderState, QueryRulesConnectorParams>;
+        } & {
+            range: {
+                [attribute: string]: WidgetRenderState<RangeRenderState, RangeConnectorParams>;
+            };
+        } & {
+            ratingMenu: {
+                [attribute: string]: WidgetRenderState<RatingMenuRenderState, RatingMenuConnectorParams>;
+            };
+        } & {
+            refinementList: {
+                [attribute: string]: WidgetRenderState<RefinementListRenderState, RefinementListConnectorParams>;
+            };
+        } & {
+            relevantSort: WidgetRenderState<RelevantSortRenderState, RelevantSortConnectorParams>;
+        } & {
+            searchBox: WidgetRenderState<SearchBoxRenderState, SearchBoxConnectorParams>;
+        } & {
+            sortBy: WidgetRenderState<SortByRenderState, SortByConnectorParams>;
+        } & {
+            stats: WidgetRenderState<StatsRenderState, StatsConnectorParams>;
+        } & {
+            toggleRefinement: {
+                [attribute: string]: WidgetRenderState<ToggleRefinementRenderState, ToggleRefinementConnectorParams>;
+            };
+        } & {
+            voiceSearch: WidgetRenderState<VoiceSearchRenderState, VoiceSearchConnectorParams>;
+        } & {
+            analytics: WidgetRenderState<Record<string, unknown>, AnalyticsWidgetParams>;
+        } & {
+            places: WidgetRenderState<Record<string, unknown>, PlacesWidgetParams>;
+        }>;
+        helper: AlgoliaSearchHelper;
+        searchMetadata: {
+            isSearchStalled: boolean;
+        };
+        status: InstantSearch["status"];
+        error: InstantSearch["error"];
+        createURL: (nextState: SearchParameters | ((state: IndexUiState) => IndexUiState)) => string;
+    } & {
+        results: RecommendResponse<any>;
+    })): {
+        items: Hit<THit>[];
+        widgetParams: Partial<FrequentlyBoughtTogetherWidgetParams<BaseHit>> & FrequentlyBoughtTogetherConnectorParams<THit>;
+        sendEvent: SendEventForHits;
+    };
+    dispose({ recommendState }: DisposeOptions): RecommendParameters;
+    getWidgetParameters(state: RecommendParameters): RecommendParameters;
+};
+
+declare const _default_15: <THit extends NonNullable<object> = BaseHit>(widgetParams: LookingSimilarWidgetParams<THit> & LookingSimilarConnectorParams<THit>) => {
+    $$widgetType: "ais.lookingSimilar";
+    dependsOn: "recommend";
+    $$type: "ais.lookingSimilar";
+    init(initOptions: InitOptions): void;
+    render(renderOptions: RenderOptions): void;
+    getRenderState(renderState: {
+        answers?: WidgetRenderState<AnswersRenderState, AnswersConnectorParams> | undefined;
+        autocomplete?: WidgetRenderState<AutocompleteRenderState, AutocompleteConnectorParams> | undefined;
+        breadcrumb?: {
+            [rootAttribute: string]: WidgetRenderState<BreadcrumbRenderState, BreadcrumbConnectorParams>;
+        } | undefined;
+        clearRefinements?: WidgetRenderState<ClearRefinementsRenderState, ClearRefinementsConnectorParams> | undefined;
+        configure?: WidgetRenderState<ConfigureRenderState, ConfigureConnectorParams> | undefined;
+        currentRefinements?: WidgetRenderState<CurrentRefinementsRenderState, CurrentRefinementsConnectorParams> | undefined;
+        geoSearch?: WidgetRenderState<GeoSearchRenderState<GeoHit>, GeoSearchConnectorParams<GeoHit>> | undefined;
+        hierarchicalMenu?: {
+            [rootAttribute: string]: WidgetRenderState<HierarchicalMenuRenderState, HierarchicalMenuConnectorParams>;
+        } | undefined;
+        hits?: WidgetRenderState<HitsRenderState<BaseHit>, HitsConnectorParams<BaseHit>> | undefined;
+        hitsPerPage?: WidgetRenderState<HitsPerPageRenderState, HitsPerPageConnectorParams> | undefined;
+        infiniteHits?: WidgetRenderState<InfiniteHitsRenderState<BaseHit>, InfiniteHitsConnectorParams<BaseHit>> | undefined;
+        menu?: {
+            [attribute: string]: WidgetRenderState<MenuRenderState, MenuConnectorParams>;
+        } | undefined;
+        numericMenu?: {
+            [attribute: string]: WidgetRenderState<NumericMenuRenderState, NumericMenuConnectorParams>;
+        } | undefined;
+        pagination?: WidgetRenderState<PaginationRenderState, PaginationConnectorParams> | undefined;
+        poweredBy?: WidgetRenderState<PoweredByRenderState, PoweredByConnectorParams> | undefined;
+        queryRules?: WidgetRenderState<QueryRulesRenderState, QueryRulesConnectorParams> | undefined;
+        range?: {
+            [attribute: string]: WidgetRenderState<RangeRenderState, RangeConnectorParams>;
+        } | undefined;
+        ratingMenu?: {
+            [attribute: string]: WidgetRenderState<RatingMenuRenderState, RatingMenuConnectorParams>;
+        } | undefined;
+        refinementList?: {
+            [attribute: string]: WidgetRenderState<RefinementListRenderState, RefinementListConnectorParams>;
+        } | undefined;
+        relevantSort?: WidgetRenderState<RelevantSortRenderState, RelevantSortConnectorParams> | undefined;
+        searchBox?: WidgetRenderState<SearchBoxRenderState, SearchBoxConnectorParams> | undefined;
+        sortBy?: WidgetRenderState<SortByRenderState, SortByConnectorParams> | undefined;
+        stats?: WidgetRenderState<StatsRenderState, StatsConnectorParams> | undefined;
+        toggleRefinement?: {
+            [attribute: string]: WidgetRenderState<ToggleRefinementRenderState, ToggleRefinementConnectorParams>;
+        } | undefined;
+        voiceSearch?: WidgetRenderState<VoiceSearchRenderState, VoiceSearchConnectorParams> | undefined;
+        analytics?: WidgetRenderState<Record<string, unknown>, AnalyticsWidgetParams> | undefined;
+        places?: WidgetRenderState<Record<string, unknown>, PlacesWidgetParams> | undefined;
+    }): {
+        answers?: WidgetRenderState<AnswersRenderState, AnswersConnectorParams> | undefined;
+        autocomplete?: WidgetRenderState<AutocompleteRenderState, AutocompleteConnectorParams> | undefined;
+        breadcrumb?: {
+            [rootAttribute: string]: WidgetRenderState<BreadcrumbRenderState, BreadcrumbConnectorParams>;
+        } | undefined;
+        clearRefinements?: WidgetRenderState<ClearRefinementsRenderState, ClearRefinementsConnectorParams> | undefined;
+        configure?: WidgetRenderState<ConfigureRenderState, ConfigureConnectorParams> | undefined;
+        currentRefinements?: WidgetRenderState<CurrentRefinementsRenderState, CurrentRefinementsConnectorParams> | undefined;
+        geoSearch?: WidgetRenderState<GeoSearchRenderState<GeoHit>, GeoSearchConnectorParams<GeoHit>> | undefined;
+        hierarchicalMenu?: {
+            [rootAttribute: string]: WidgetRenderState<HierarchicalMenuRenderState, HierarchicalMenuConnectorParams>;
+        } | undefined;
+        hits?: WidgetRenderState<HitsRenderState<BaseHit>, HitsConnectorParams<BaseHit>> | undefined;
+        hitsPerPage?: WidgetRenderState<HitsPerPageRenderState, HitsPerPageConnectorParams> | undefined;
+        infiniteHits?: WidgetRenderState<InfiniteHitsRenderState<BaseHit>, InfiniteHitsConnectorParams<BaseHit>> | undefined;
+        menu?: {
+            [attribute: string]: WidgetRenderState<MenuRenderState, MenuConnectorParams>;
+        } | undefined;
+        numericMenu?: {
+            [attribute: string]: WidgetRenderState<NumericMenuRenderState, NumericMenuConnectorParams>;
+        } | undefined;
+        pagination?: WidgetRenderState<PaginationRenderState, PaginationConnectorParams> | undefined;
+        poweredBy?: WidgetRenderState<PoweredByRenderState, PoweredByConnectorParams> | undefined;
+        queryRules?: WidgetRenderState<QueryRulesRenderState, QueryRulesConnectorParams> | undefined;
+        range?: {
+            [attribute: string]: WidgetRenderState<RangeRenderState, RangeConnectorParams>;
+        } | undefined;
+        ratingMenu?: {
+            [attribute: string]: WidgetRenderState<RatingMenuRenderState, RatingMenuConnectorParams>;
+        } | undefined;
+        refinementList?: {
+            [attribute: string]: WidgetRenderState<RefinementListRenderState, RefinementListConnectorParams>;
+        } | undefined;
+        relevantSort?: WidgetRenderState<RelevantSortRenderState, RelevantSortConnectorParams> | undefined;
+        searchBox?: WidgetRenderState<SearchBoxRenderState, SearchBoxConnectorParams> | undefined;
+        sortBy?: WidgetRenderState<SortByRenderState, SortByConnectorParams> | undefined;
+        stats?: WidgetRenderState<StatsRenderState, StatsConnectorParams> | undefined;
+        toggleRefinement?: {
+            [attribute: string]: WidgetRenderState<ToggleRefinementRenderState, ToggleRefinementConnectorParams>;
+        } | undefined;
+        voiceSearch?: WidgetRenderState<VoiceSearchRenderState, VoiceSearchConnectorParams> | undefined;
+        analytics?: WidgetRenderState<Record<string, unknown>, AnalyticsWidgetParams> | undefined;
+        places?: WidgetRenderState<Record<string, unknown>, PlacesWidgetParams> | undefined;
+    };
+    getWidgetRenderState({ results, helper, instantSearchInstance }: InitOptions | RenderOptions | ({
+        instantSearchInstance: InstantSearch;
+        parent: IndexWidget;
+        templatesConfig: Record<string, unknown>;
+        scopedResults: ScopedResult[];
+        state: SearchParameters;
+        renderState: Partial<{
+            answers: WidgetRenderState<AnswersRenderState, AnswersConnectorParams>;
+        } & {
+            autocomplete: WidgetRenderState<AutocompleteRenderState, AutocompleteConnectorParams>;
+        } & {
+            breadcrumb: {
+                [rootAttribute: string]: WidgetRenderState<BreadcrumbRenderState, BreadcrumbConnectorParams>;
+            };
+        } & {
+            clearRefinements: WidgetRenderState<ClearRefinementsRenderState, ClearRefinementsConnectorParams>;
+        } & {
+            configure: WidgetRenderState<ConfigureRenderState, ConfigureConnectorParams>;
+        } & {
+            currentRefinements: WidgetRenderState<CurrentRefinementsRenderState, CurrentRefinementsConnectorParams>;
+        } & {
+            geoSearch: WidgetRenderState<GeoSearchRenderState<GeoHit>, GeoSearchConnectorParams<GeoHit>>;
+        } & {
+            hierarchicalMenu: {
+                [rootAttribute: string]: WidgetRenderState<HierarchicalMenuRenderState, HierarchicalMenuConnectorParams>;
+            };
+        } & {
+            hits: WidgetRenderState<HitsRenderState<BaseHit>, HitsConnectorParams<BaseHit>>;
+        } & {
+            hitsPerPage: WidgetRenderState<HitsPerPageRenderState, HitsPerPageConnectorParams>;
+        } & {
+            infiniteHits: WidgetRenderState<InfiniteHitsRenderState<BaseHit>, InfiniteHitsConnectorParams<BaseHit>>;
+        } & {
+            menu: {
+                [attribute: string]: WidgetRenderState<MenuRenderState, MenuConnectorParams>;
+            };
+        } & {
+            numericMenu: {
+                [attribute: string]: WidgetRenderState<NumericMenuRenderState, NumericMenuConnectorParams>;
+            };
+        } & {
+            pagination: WidgetRenderState<PaginationRenderState, PaginationConnectorParams>;
+        } & {
+            poweredBy: WidgetRenderState<PoweredByRenderState, PoweredByConnectorParams>;
+        } & {
+            queryRules: WidgetRenderState<QueryRulesRenderState, QueryRulesConnectorParams>;
+        } & {
+            range: {
+                [attribute: string]: WidgetRenderState<RangeRenderState, RangeConnectorParams>;
+            };
+        } & {
+            ratingMenu: {
+                [attribute: string]: WidgetRenderState<RatingMenuRenderState, RatingMenuConnectorParams>;
+            };
+        } & {
+            refinementList: {
+                [attribute: string]: WidgetRenderState<RefinementListRenderState, RefinementListConnectorParams>;
+            };
+        } & {
+            relevantSort: WidgetRenderState<RelevantSortRenderState, RelevantSortConnectorParams>;
+        } & {
+            searchBox: WidgetRenderState<SearchBoxRenderState, SearchBoxConnectorParams>;
+        } & {
+            sortBy: WidgetRenderState<SortByRenderState, SortByConnectorParams>;
+        } & {
+            stats: WidgetRenderState<StatsRenderState, StatsConnectorParams>;
+        } & {
+            toggleRefinement: {
+                [attribute: string]: WidgetRenderState<ToggleRefinementRenderState, ToggleRefinementConnectorParams>;
+            };
+        } & {
+            voiceSearch: WidgetRenderState<VoiceSearchRenderState, VoiceSearchConnectorParams>;
+        } & {
+            analytics: WidgetRenderState<Record<string, unknown>, AnalyticsWidgetParams>;
+        } & {
+            places: WidgetRenderState<Record<string, unknown>, PlacesWidgetParams>;
+        }>;
+        helper: AlgoliaSearchHelper;
+        searchMetadata: {
+            isSearchStalled: boolean;
+        };
+        status: InstantSearch["status"];
+        error: InstantSearch["error"];
+        createURL: (nextState: SearchParameters | ((state: IndexUiState) => IndexUiState)) => string;
+    } & {
+        results: RecommendResponse<any>;
+    })): {
+        items: Hit<THit>[];
+        widgetParams: Partial<LookingSimilarWidgetParams<BaseHit>> & LookingSimilarConnectorParams<THit>;
+        sendEvent: SendEventForHits;
+    };
+    dispose({ recommendState }: DisposeOptions): RecommendParameters;
+    getWidgetParameters(state: RecommendParameters): RecommendParameters;
+};
+
+declare const _default_2: <TWidgetParams extends UnknownWidgetParams>(renderFn: Renderer<InfiniteHitsRenderState, TWidgetParams>, unmountFn?: Unmounter) => <THit extends NonNullable<object> = BaseHit>(widgetParams: TWidgetParams & InfiniteHitsConnectorParams<THit>) => {
+    $$type: "ais.infiniteHits";
+    init(initOptions: InitOptions): void;
+    render(renderOptions: RenderOptions): void;
+    getRenderState(renderState: {
+        answers?: WidgetRenderState<AnswersRenderState, AnswersConnectorParams> | undefined;
+        autocomplete?: WidgetRenderState<AutocompleteRenderState, AutocompleteConnectorParams> | undefined;
+        breadcrumb?: {
+            [rootAttribute: string]: WidgetRenderState<BreadcrumbRenderState, BreadcrumbConnectorParams>;
+        } | undefined;
+        clearRefinements?: WidgetRenderState<ClearRefinementsRenderState, ClearRefinementsConnectorParams> | undefined;
+        configure?: WidgetRenderState<ConfigureRenderState, ConfigureConnectorParams> | undefined;
+        currentRefinements?: WidgetRenderState<CurrentRefinementsRenderState, CurrentRefinementsConnectorParams> | undefined;
+        geoSearch?: WidgetRenderState<GeoSearchRenderState<GeoHit>, GeoSearchConnectorParams<GeoHit>> | undefined;
+        hierarchicalMenu?: {
+            [rootAttribute: string]: WidgetRenderState<HierarchicalMenuRenderState, HierarchicalMenuConnectorParams>;
+        } | undefined;
+        hits?: WidgetRenderState<HitsRenderState<BaseHit>, HitsConnectorParams<BaseHit>> | undefined;
+        hitsPerPage?: WidgetRenderState<HitsPerPageRenderState, HitsPerPageConnectorParams> | undefined;
+        infiniteHits?: WidgetRenderState<InfiniteHitsRenderState<BaseHit>, InfiniteHitsConnectorParams<BaseHit>> | undefined;
+        menu?: {
+            [attribute: string]: WidgetRenderState<MenuRenderState, MenuConnectorParams>;
+        } | undefined;
+        numericMenu?: {
+            [attribute: string]: WidgetRenderState<NumericMenuRenderState, NumericMenuConnectorParams>;
+        } | undefined;
+        pagination?: WidgetRenderState<PaginationRenderState, PaginationConnectorParams> | undefined;
+        poweredBy?: WidgetRenderState<PoweredByRenderState, PoweredByConnectorParams> | undefined;
+        queryRules?: WidgetRenderState<QueryRulesRenderState, QueryRulesConnectorParams> | undefined;
+        range?: {
+            [attribute: string]: WidgetRenderState<RangeRenderState, RangeConnectorParams>;
+        } | undefined;
+        ratingMenu?: {
+            [attribute: string]: WidgetRenderState<RatingMenuRenderState, RatingMenuConnectorParams>;
+        } | undefined;
+        refinementList?: {
+            [attribute: string]: WidgetRenderState<RefinementListRenderState, RefinementListConnectorParams>;
+        } | undefined;
+        relevantSort?: WidgetRenderState<RelevantSortRenderState, RelevantSortConnectorParams> | undefined;
+        searchBox?: WidgetRenderState<SearchBoxRenderState, SearchBoxConnectorParams> | undefined;
+        sortBy?: WidgetRenderState<SortByRenderState, SortByConnectorParams> | undefined;
+        stats?: WidgetRenderState<StatsRenderState, StatsConnectorParams> | undefined;
+        toggleRefinement?: {
+            [attribute: string]: WidgetRenderState<ToggleRefinementRenderState, ToggleRefinementConnectorParams>;
+        } | undefined;
+        voiceSearch?: WidgetRenderState<VoiceSearchRenderState, VoiceSearchConnectorParams> | undefined;
+        analytics?: WidgetRenderState<Record<string, unknown>, AnalyticsWidgetParams> | undefined;
+        places?: WidgetRenderState<Record<string, unknown>, PlacesWidgetParams> | undefined;
+    }, renderOptions: InitOptions | RenderOptions): IndexRenderState & InfiniteHitsWidgetDescription["indexRenderState"];
+    getWidgetRenderState({ results, helper, parent, state: existingState, instantSearchInstance, }: InitOptions | RenderOptions): {
+        hits: Hit<THit>[];
+        items: Hit<THit>[];
+        currentPageHits: Hit<THit>[];
+        sendEvent: SendEventForHits;
+        bindEvent: BindEventForHits;
+        banner: Banner | undefined;
+        results: SearchResults<any> | undefined;
+        showPrevious: () => void;
+        showMore: () => void;
+        isFirstPage: boolean;
+        isLastPage: boolean;
+        widgetParams: TWidgetParams & InfiniteHitsConnectorParams<THit>;
+    };
+    dispose({ state }: DisposeOptions): SearchParameters;
+    getWidgetUiState(uiState: {
+        page?: number | undefined;
+        query?: string | undefined;
+        configure?: PlainSearchParameters | undefined;
+        geoSearch?: {
+            boundingBox: string;
+        } | undefined;
+        hierarchicalMenu?: {
+            [rootAttribute: string]: string[];
+        } | undefined;
+        hitsPerPage?: number | undefined;
+        menu?: {
+            [attribute: string]: string;
+        } | undefined;
+        numericMenu?: {
+            [attribute: string]: string;
+        } | undefined;
+        range?: {
+            [attribute: string]: string;
+        } | undefined;
+        ratingMenu?: {
+            [attribute: string]: number | undefined;
+        } | undefined;
+        refinementList?: {
+            [attribute: string]: string[];
+        } | undefined;
+        relevantSort?: number | undefined;
+        sortBy?: string | undefined;
+        toggle?: {
+            [attribute: string]: boolean;
+        } | undefined;
+        places?: {
+            query: string;
+            position: string;
+        } | undefined;
+    }, { searchParameters }: {
+        searchParameters: SearchParameters;
+        helper: AlgoliaSearchHelper;
+    }): {
+        page?: number | undefined;
+        query?: string | undefined;
+        configure?: PlainSearchParameters | undefined;
+        geoSearch?: {
+            boundingBox: string;
+        } | undefined;
+        hierarchicalMenu?: {
+            [rootAttribute: string]: string[];
+        } | undefined;
+        hitsPerPage?: number | undefined;
+        menu?: {
+            [attribute: string]: string;
+        } | undefined;
+        numericMenu?: {
+            [attribute: string]: string;
+        } | undefined;
+        range?: {
+            [attribute: string]: string;
+        } | undefined;
+        ratingMenu?: {
+            [attribute: string]: number | undefined;
+        } | undefined;
+        refinementList?: {
+            [attribute: string]: string[];
+        } | undefined;
+        relevantSort?: number | undefined;
+        sortBy?: string | undefined;
+        toggle?: {
+            [attribute: string]: boolean;
+        } | undefined;
+        places?: {
+            query: string;
+            position: string;
+        } | undefined;
+    };
+    getWidgetSearchParameters(searchParameters: SearchParameters, { uiState }: {
+        uiState: {
+            page?: number | undefined;
+            query?: string | undefined;
+            configure?: PlainSearchParameters | undefined;
+            geoSearch?: {
+                boundingBox: string;
+            } | undefined;
+            hierarchicalMenu?: {
+                [rootAttribute: string]: string[];
+            } | undefined;
+            hitsPerPage?: number | undefined;
+            menu?: {
+                [attribute: string]: string;
+            } | undefined;
+            numericMenu?: {
+                [attribute: string]: string;
+            } | undefined;
+            range?: {
+                [attribute: string]: string;
+            } | undefined;
+            ratingMenu?: {
+                [attribute: string]: number | undefined;
+            } | undefined;
+            refinementList?: {
+                [attribute: string]: string[];
+            } | undefined;
+            relevantSort?: number | undefined;
+            sortBy?: string | undefined;
+            toggle?: {
+                [attribute: string]: boolean;
+            } | undefined;
+            places?: {
+                query: string;
+                position: string;
+            } | undefined;
+        };
+    }): SearchParameters;
+};
+
+declare const _default_3: <TWidgetParams extends UnknownWidgetParams>(renderFn: Renderer<RelatedProductsRenderState, RelatedProductsConnectorParams & TWidgetParams>, unmountFn?: Unmounter) => <THit extends NonNullable<object> = BaseHit>(widgetParams: TWidgetParams & RelatedProductsConnectorParams<THit>) => {
+    dependsOn: "recommend";
+    $$type: "ais.relatedProducts";
+    init(initOptions: InitOptions): void;
+    render(renderOptions: RenderOptions): void;
+    getRenderState(renderState: {
+        answers?: WidgetRenderState<AnswersRenderState, AnswersConnectorParams> | undefined;
+        autocomplete?: WidgetRenderState<AutocompleteRenderState, AutocompleteConnectorParams> | undefined;
+        breadcrumb?: {
+            [rootAttribute: string]: WidgetRenderState<BreadcrumbRenderState, BreadcrumbConnectorParams>;
+        } | undefined;
+        clearRefinements?: WidgetRenderState<ClearRefinementsRenderState, ClearRefinementsConnectorParams> | undefined;
+        configure?: WidgetRenderState<ConfigureRenderState, ConfigureConnectorParams> | undefined;
+        currentRefinements?: WidgetRenderState<CurrentRefinementsRenderState, CurrentRefinementsConnectorParams> | undefined;
+        geoSearch?: WidgetRenderState<GeoSearchRenderState<GeoHit>, GeoSearchConnectorParams<GeoHit>> | undefined;
+        hierarchicalMenu?: {
+            [rootAttribute: string]: WidgetRenderState<HierarchicalMenuRenderState, HierarchicalMenuConnectorParams>;
+        } | undefined;
+        hits?: WidgetRenderState<HitsRenderState<BaseHit>, HitsConnectorParams<BaseHit>> | undefined;
+        hitsPerPage?: WidgetRenderState<HitsPerPageRenderState, HitsPerPageConnectorParams> | undefined;
+        infiniteHits?: WidgetRenderState<InfiniteHitsRenderState<BaseHit>, InfiniteHitsConnectorParams<BaseHit>> | undefined;
+        menu?: {
+            [attribute: string]: WidgetRenderState<MenuRenderState, MenuConnectorParams>;
+        } | undefined;
+        numericMenu?: {
+            [attribute: string]: WidgetRenderState<NumericMenuRenderState, NumericMenuConnectorParams>;
+        } | undefined;
+        pagination?: WidgetRenderState<PaginationRenderState, PaginationConnectorParams> | undefined;
+        poweredBy?: WidgetRenderState<PoweredByRenderState, PoweredByConnectorParams> | undefined;
+        queryRules?: WidgetRenderState<QueryRulesRenderState, QueryRulesConnectorParams> | undefined;
+        range?: {
+            [attribute: string]: WidgetRenderState<RangeRenderState, RangeConnectorParams>;
+        } | undefined;
+        ratingMenu?: {
+            [attribute: string]: WidgetRenderState<RatingMenuRenderState, RatingMenuConnectorParams>;
+        } | undefined;
+        refinementList?: {
+            [attribute: string]: WidgetRenderState<RefinementListRenderState, RefinementListConnectorParams>;
+        } | undefined;
+        relevantSort?: WidgetRenderState<RelevantSortRenderState, RelevantSortConnectorParams> | undefined;
+        searchBox?: WidgetRenderState<SearchBoxRenderState, SearchBoxConnectorParams> | undefined;
+        sortBy?: WidgetRenderState<SortByRenderState, SortByConnectorParams> | undefined;
+        stats?: WidgetRenderState<StatsRenderState, StatsConnectorParams> | undefined;
+        toggleRefinement?: {
+            [attribute: string]: WidgetRenderState<ToggleRefinementRenderState, ToggleRefinementConnectorParams>;
+        } | undefined;
+        voiceSearch?: WidgetRenderState<VoiceSearchRenderState, VoiceSearchConnectorParams> | undefined;
+        analytics?: WidgetRenderState<Record<string, unknown>, AnalyticsWidgetParams> | undefined;
+        places?: WidgetRenderState<Record<string, unknown>, PlacesWidgetParams> | undefined;
+    }): {
+        answers?: WidgetRenderState<AnswersRenderState, AnswersConnectorParams> | undefined;
+        autocomplete?: WidgetRenderState<AutocompleteRenderState, AutocompleteConnectorParams> | undefined;
+        breadcrumb?: {
+            [rootAttribute: string]: WidgetRenderState<BreadcrumbRenderState, BreadcrumbConnectorParams>;
+        } | undefined;
+        clearRefinements?: WidgetRenderState<ClearRefinementsRenderState, ClearRefinementsConnectorParams> | undefined;
+        configure?: WidgetRenderState<ConfigureRenderState, ConfigureConnectorParams> | undefined;
+        currentRefinements?: WidgetRenderState<CurrentRefinementsRenderState, CurrentRefinementsConnectorParams> | undefined;
+        geoSearch?: WidgetRenderState<GeoSearchRenderState<GeoHit>, GeoSearchConnectorParams<GeoHit>> | undefined;
+        hierarchicalMenu?: {
+            [rootAttribute: string]: WidgetRenderState<HierarchicalMenuRenderState, HierarchicalMenuConnectorParams>;
+        } | undefined;
+        hits?: WidgetRenderState<HitsRenderState<BaseHit>, HitsConnectorParams<BaseHit>> | undefined;
+        hitsPerPage?: WidgetRenderState<HitsPerPageRenderState, HitsPerPageConnectorParams> | undefined;
+        infiniteHits?: WidgetRenderState<InfiniteHitsRenderState<BaseHit>, InfiniteHitsConnectorParams<BaseHit>> | undefined;
+        menu?: {
+            [attribute: string]: WidgetRenderState<MenuRenderState, MenuConnectorParams>;
+        } | undefined;
+        numericMenu?: {
+            [attribute: string]: WidgetRenderState<NumericMenuRenderState, NumericMenuConnectorParams>;
+        } | undefined;
+        pagination?: WidgetRenderState<PaginationRenderState, PaginationConnectorParams> | undefined;
+        poweredBy?: WidgetRenderState<PoweredByRenderState, PoweredByConnectorParams> | undefined;
+        queryRules?: WidgetRenderState<QueryRulesRenderState, QueryRulesConnectorParams> | undefined;
+        range?: {
+            [attribute: string]: WidgetRenderState<RangeRenderState, RangeConnectorParams>;
+        } | undefined;
+        ratingMenu?: {
+            [attribute: string]: WidgetRenderState<RatingMenuRenderState, RatingMenuConnectorParams>;
+        } | undefined;
+        refinementList?: {
+            [attribute: string]: WidgetRenderState<RefinementListRenderState, RefinementListConnectorParams>;
+        } | undefined;
+        relevantSort?: WidgetRenderState<RelevantSortRenderState, RelevantSortConnectorParams> | undefined;
+        searchBox?: WidgetRenderState<SearchBoxRenderState, SearchBoxConnectorParams> | undefined;
+        sortBy?: WidgetRenderState<SortByRenderState, SortByConnectorParams> | undefined;
+        stats?: WidgetRenderState<StatsRenderState, StatsConnectorParams> | undefined;
+        toggleRefinement?: {
+            [attribute: string]: WidgetRenderState<ToggleRefinementRenderState, ToggleRefinementConnectorParams>;
+        } | undefined;
+        voiceSearch?: WidgetRenderState<VoiceSearchRenderState, VoiceSearchConnectorParams> | undefined;
+        analytics?: WidgetRenderState<Record<string, unknown>, AnalyticsWidgetParams> | undefined;
+        places?: WidgetRenderState<Record<string, unknown>, PlacesWidgetParams> | undefined;
+    };
+    getWidgetRenderState({ results, helper, instantSearchInstance }: InitOptions | RenderOptions | ({
+        instantSearchInstance: InstantSearch;
+        parent: IndexWidget;
+        templatesConfig: Record<string, unknown>;
+        scopedResults: ScopedResult[];
+        state: SearchParameters;
+        renderState: IndexRenderState;
+        helper: AlgoliaSearchHelper;
+        searchMetadata: {
+            isSearchStalled: boolean;
+        };
+        status: InstantSearch["status"];
+        error: InstantSearch["error"];
+        createURL: (nextState: SearchParameters | ((state: IndexUiState) => IndexUiState)) => string;
+    } & {
+        results: RecommendResponse<any>;
+    })): {
+        items: Hit<BaseHit>[] | Hit<THit>[];
+        widgetParams: TWidgetParams & RelatedProductsConnectorParams<THit>;
+        sendEvent: SendEventForHits;
+    };
+    dispose({ recommendState }: DisposeOptions): RecommendParameters;
+    getWidgetParameters(state: RecommendParameters): RecommendParameters;
+};
+
+declare const _default_4: <TWidgetParams extends UnknownWidgetParams>(renderFn: Renderer<TrendingItemsRenderState, TWidgetParams & TrendingItemsConnectorParams>, unmountFn?: Unmounter) => <THit extends NonNullable<object> = BaseHit>(widgetParams: TWidgetParams & TrendingItemsConnectorParams<THit>) => {
+    dependsOn: "recommend";
+    $$type: "ais.trendingItems";
+    init(initOptions: InitOptions): void;
+    render(renderOptions: RenderOptions): void;
+    getRenderState(renderState: {
+        answers?: WidgetRenderState<AnswersRenderState, AnswersConnectorParams> | undefined;
+        autocomplete?: WidgetRenderState<AutocompleteRenderState, AutocompleteConnectorParams> | undefined;
+        breadcrumb?: {
+            [rootAttribute: string]: WidgetRenderState<BreadcrumbRenderState, BreadcrumbConnectorParams>;
+        } | undefined;
+        clearRefinements?: WidgetRenderState<ClearRefinementsRenderState, ClearRefinementsConnectorParams> | undefined;
+        configure?: WidgetRenderState<ConfigureRenderState, ConfigureConnectorParams> | undefined;
+        currentRefinements?: WidgetRenderState<CurrentRefinementsRenderState, CurrentRefinementsConnectorParams> | undefined;
+        geoSearch?: WidgetRenderState<GeoSearchRenderState<GeoHit>, GeoSearchConnectorParams<GeoHit>> | undefined;
+        hierarchicalMenu?: {
+            [rootAttribute: string]: WidgetRenderState<HierarchicalMenuRenderState, HierarchicalMenuConnectorParams>;
+        } | undefined;
+        hits?: WidgetRenderState<HitsRenderState<BaseHit>, HitsConnectorParams<BaseHit>> | undefined;
+        hitsPerPage?: WidgetRenderState<HitsPerPageRenderState, HitsPerPageConnectorParams> | undefined;
+        infiniteHits?: WidgetRenderState<InfiniteHitsRenderState<BaseHit>, InfiniteHitsConnectorParams<BaseHit>> | undefined;
+        menu?: {
+            [attribute: string]: WidgetRenderState<MenuRenderState, MenuConnectorParams>;
+        } | undefined;
+        numericMenu?: {
+            [attribute: string]: WidgetRenderState<NumericMenuRenderState, NumericMenuConnectorParams>;
+        } | undefined;
+        pagination?: WidgetRenderState<PaginationRenderState, PaginationConnectorParams> | undefined;
+        poweredBy?: WidgetRenderState<PoweredByRenderState, PoweredByConnectorParams> | undefined;
+        queryRules?: WidgetRenderState<QueryRulesRenderState, QueryRulesConnectorParams> | undefined;
+        range?: {
+            [attribute: string]: WidgetRenderState<RangeRenderState, RangeConnectorParams>;
+        } | undefined;
+        ratingMenu?: {
+            [attribute: string]: WidgetRenderState<RatingMenuRenderState, RatingMenuConnectorParams>;
+        } | undefined;
+        refinementList?: {
+            [attribute: string]: WidgetRenderState<RefinementListRenderState, RefinementListConnectorParams>;
+        } | undefined;
+        relevantSort?: WidgetRenderState<RelevantSortRenderState, RelevantSortConnectorParams> | undefined;
+        searchBox?: WidgetRenderState<SearchBoxRenderState, SearchBoxConnectorParams> | undefined;
+        sortBy?: WidgetRenderState<SortByRenderState, SortByConnectorParams> | undefined;
+        stats?: WidgetRenderState<StatsRenderState, StatsConnectorParams> | undefined;
+        toggleRefinement?: {
+            [attribute: string]: WidgetRenderState<ToggleRefinementRenderState, ToggleRefinementConnectorParams>;
+        } | undefined;
+        voiceSearch?: WidgetRenderState<VoiceSearchRenderState, VoiceSearchConnectorParams> | undefined;
+        analytics?: WidgetRenderState<Record<string, unknown>, AnalyticsWidgetParams> | undefined;
+        places?: WidgetRenderState<Record<string, unknown>, PlacesWidgetParams> | undefined;
+    }): {
+        answers?: WidgetRenderState<AnswersRenderState, AnswersConnectorParams> | undefined;
+        autocomplete?: WidgetRenderState<AutocompleteRenderState, AutocompleteConnectorParams> | undefined;
+        breadcrumb?: {
+            [rootAttribute: string]: WidgetRenderState<BreadcrumbRenderState, BreadcrumbConnectorParams>;
+        } | undefined;
+        clearRefinements?: WidgetRenderState<ClearRefinementsRenderState, ClearRefinementsConnectorParams> | undefined;
+        configure?: WidgetRenderState<ConfigureRenderState, ConfigureConnectorParams> | undefined;
+        currentRefinements?: WidgetRenderState<CurrentRefinementsRenderState, CurrentRefinementsConnectorParams> | undefined;
+        geoSearch?: WidgetRenderState<GeoSearchRenderState<GeoHit>, GeoSearchConnectorParams<GeoHit>> | undefined;
+        hierarchicalMenu?: {
+            [rootAttribute: string]: WidgetRenderState<HierarchicalMenuRenderState, HierarchicalMenuConnectorParams>;
+        } | undefined;
+        hits?: WidgetRenderState<HitsRenderState<BaseHit>, HitsConnectorParams<BaseHit>> | undefined;
+        hitsPerPage?: WidgetRenderState<HitsPerPageRenderState, HitsPerPageConnectorParams> | undefined;
+        infiniteHits?: WidgetRenderState<InfiniteHitsRenderState<BaseHit>, InfiniteHitsConnectorParams<BaseHit>> | undefined;
+        menu?: {
+            [attribute: string]: WidgetRenderState<MenuRenderState, MenuConnectorParams>;
+        } | undefined;
+        numericMenu?: {
+            [attribute: string]: WidgetRenderState<NumericMenuRenderState, NumericMenuConnectorParams>;
+        } | undefined;
+        pagination?: WidgetRenderState<PaginationRenderState, PaginationConnectorParams> | undefined;
+        poweredBy?: WidgetRenderState<PoweredByRenderState, PoweredByConnectorParams> | undefined;
+        queryRules?: WidgetRenderState<QueryRulesRenderState, QueryRulesConnectorParams> | undefined;
+        range?: {
+            [attribute: string]: WidgetRenderState<RangeRenderState, RangeConnectorParams>;
+        } | undefined;
+        ratingMenu?: {
+            [attribute: string]: WidgetRenderState<RatingMenuRenderState, RatingMenuConnectorParams>;
+        } | undefined;
+        refinementList?: {
+            [attribute: string]: WidgetRenderState<RefinementListRenderState, RefinementListConnectorParams>;
+        } | undefined;
+        relevantSort?: WidgetRenderState<RelevantSortRenderState, RelevantSortConnectorParams> | undefined;
+        searchBox?: WidgetRenderState<SearchBoxRenderState, SearchBoxConnectorParams> | undefined;
+        sortBy?: WidgetRenderState<SortByRenderState, SortByConnectorParams> | undefined;
+        stats?: WidgetRenderState<StatsRenderState, StatsConnectorParams> | undefined;
+        toggleRefinement?: {
+            [attribute: string]: WidgetRenderState<ToggleRefinementRenderState, ToggleRefinementConnectorParams>;
+        } | undefined;
+        voiceSearch?: WidgetRenderState<VoiceSearchRenderState, VoiceSearchConnectorParams> | undefined;
+        analytics?: WidgetRenderState<Record<string, unknown>, AnalyticsWidgetParams> | undefined;
+        places?: WidgetRenderState<Record<string, unknown>, PlacesWidgetParams> | undefined;
+    };
+    getWidgetRenderState({ results, helper, instantSearchInstance }: InitOptions | RenderOptions | ({
+        instantSearchInstance: InstantSearch;
+        parent: IndexWidget;
+        templatesConfig: Record<string, unknown>;
+        scopedResults: ScopedResult[];
+        state: SearchParameters;
+        renderState: IndexRenderState;
+        helper: AlgoliaSearchHelper;
+        searchMetadata: {
+            isSearchStalled: boolean;
+        };
+        status: InstantSearch["status"];
+        error: InstantSearch["error"];
+        createURL: (nextState: SearchParameters | ((state: IndexUiState) => IndexUiState)) => string;
+    } & {
+        results: RecommendResponse<any>;
+    })): {
+        items: Hit<THit>[];
+        widgetParams: TWidgetParams & TrendingItemsConnectorParams<THit>;
+        sendEvent: SendEventForHits;
+    };
+    dispose({ recommendState }: DisposeOptions): RecommendParameters;
+    getWidgetParameters(state: RecommendParameters): RecommendParameters;
+};
+
+/**
+ * The **GeoSearch** connector provides the logic to build a widget that will display the results on a map. It also provides a way to search for results based on their position. The connector provides functions to manage the search experience (search on map interaction or control the interaction for example).
+ *
+ * @requirements
+ *
+ * Note that the GeoSearch connector uses the [geosearch](https://www.algolia.com/doc/guides/searching/geo-search) capabilities of Algolia. Your hits **must** have a `_geoloc` attribute in order to be passed to the rendering function.
+ *
+ * Currently, the feature is not compatible with multiple values in the _geoloc attribute.
+ */
+declare const _default_5: <TWidgetParams extends UnknownWidgetParams>(renderFn: Renderer<GeoSearchRenderState, TWidgetParams & GeoSearchConnectorParams>, unmountFn?: Unmounter) => <THit extends GeoHit = GeoHit>(widgetParams: TWidgetParams & GeoSearchConnectorParams<THit>) => {
+    $$type: "ais.geoSearch";
+    init(initArgs: InitOptions): void;
+    render(renderArgs: RenderOptions): void;
+    getWidgetRenderState(renderOptions: InitOptions | RenderOptions): {
+        items: GeoHit<THit>[];
+        position: {
+            lat: number;
+            lng: number;
+        } | undefined;
+        currentRefinement: {
+            northEast: {
+                lat: number;
+                lng: number;
+            };
+            southWest: {
+                lat: number;
+                lng: number;
+            };
+        } | undefined;
+        refine: ({ northEast: ne, southWest: sw }: Bounds) => void;
+        sendEvent: SendEventForHits;
+        clearMapRefinement: () => void;
+        isRefinedWithMap: () => boolean;
+        toggleRefineOnMapMove: () => void;
+        isRefineOnMapMove: () => boolean;
+        setMapMoveSinceLastRefine: () => void;
+        hasMapMoveSinceLastRefine: () => boolean;
+        widgetParams: TWidgetParams & GeoSearchConnectorParams<THit>;
+    };
+    getRenderState(renderState: {
+        answers?: WidgetRenderState<AnswersRenderState, AnswersConnectorParams> | undefined;
+        autocomplete?: WidgetRenderState<AutocompleteRenderState, AutocompleteConnectorParams> | undefined;
+        breadcrumb?: {
+            [rootAttribute: string]: WidgetRenderState<BreadcrumbRenderState, BreadcrumbConnectorParams>;
+        } | undefined;
+        clearRefinements?: WidgetRenderState<ClearRefinementsRenderState, ClearRefinementsConnectorParams> | undefined;
+        configure?: WidgetRenderState<ConfigureRenderState, ConfigureConnectorParams> | undefined;
+        currentRefinements?: WidgetRenderState<CurrentRefinementsRenderState, CurrentRefinementsConnectorParams> | undefined;
+        geoSearch?: WidgetRenderState<GeoSearchRenderState<GeoHit>, GeoSearchConnectorParams<GeoHit>> | undefined;
+        hierarchicalMenu?: {
+            [rootAttribute: string]: WidgetRenderState<HierarchicalMenuRenderState, HierarchicalMenuConnectorParams>;
+        } | undefined;
+        hits?: WidgetRenderState<HitsRenderState<BaseHit>, HitsConnectorParams<BaseHit>> | undefined;
+        hitsPerPage?: WidgetRenderState<HitsPerPageRenderState, HitsPerPageConnectorParams> | undefined;
+        infiniteHits?: WidgetRenderState<InfiniteHitsRenderState<BaseHit>, InfiniteHitsConnectorParams<BaseHit>> | undefined;
+        menu?: {
+            [attribute: string]: WidgetRenderState<MenuRenderState, MenuConnectorParams>;
+        } | undefined;
+        numericMenu?: {
+            [attribute: string]: WidgetRenderState<NumericMenuRenderState, NumericMenuConnectorParams>;
+        } | undefined;
+        pagination?: WidgetRenderState<PaginationRenderState, PaginationConnectorParams> | undefined;
+        poweredBy?: WidgetRenderState<PoweredByRenderState, PoweredByConnectorParams> | undefined;
+        queryRules?: WidgetRenderState<QueryRulesRenderState, QueryRulesConnectorParams> | undefined;
+        range?: {
+            [attribute: string]: WidgetRenderState<RangeRenderState, RangeConnectorParams>;
+        } | undefined;
+        ratingMenu?: {
+            [attribute: string]: WidgetRenderState<RatingMenuRenderState, RatingMenuConnectorParams>;
+        } | undefined;
+        refinementList?: {
+            [attribute: string]: WidgetRenderState<RefinementListRenderState, RefinementListConnectorParams>;
+        } | undefined;
+        relevantSort?: WidgetRenderState<RelevantSortRenderState, RelevantSortConnectorParams> | undefined;
+        searchBox?: WidgetRenderState<SearchBoxRenderState, SearchBoxConnectorParams> | undefined;
+        sortBy?: WidgetRenderState<SortByRenderState, SortByConnectorParams> | undefined;
+        stats?: WidgetRenderState<StatsRenderState, StatsConnectorParams> | undefined;
+        toggleRefinement?: {
+            [attribute: string]: WidgetRenderState<ToggleRefinementRenderState, ToggleRefinementConnectorParams>;
+        } | undefined;
+        voiceSearch?: WidgetRenderState<VoiceSearchRenderState, VoiceSearchConnectorParams> | undefined;
+        analytics?: WidgetRenderState<Record<string, unknown>, AnalyticsWidgetParams> | undefined;
+        places?: WidgetRenderState<Record<string, unknown>, PlacesWidgetParams> | undefined;
+    }, renderOptions: InitOptions | RenderOptions): IndexRenderState & GeoSearchWidgetDescription["indexRenderState"];
+    dispose({ state }: DisposeOptions): SearchParameters;
+    getWidgetUiState(uiState: {
+        geoSearch?: {
+            /**
+             * The rectangular area in geo coordinates.
+             * The rectangle is defined by two diagonally opposite points,
+             * hence by 4 floats separated by commas.
+             *
+             * @example '47.3165,4.9665,47.3424,5.0201'
+             */
+            boundingBox: string;
+        } | undefined;
+        query?: string | undefined;
+        configure?: PlainSearchParameters | undefined;
+        hierarchicalMenu?: {
+            [rootAttribute: string]: string[];
+        } | undefined;
+        hitsPerPage?: number | undefined;
+        page?: number | undefined;
+        menu?: {
+            [attribute: string]: string;
+        } | undefined;
+        numericMenu?: {
+            [attribute: string]: string;
+        } | undefined;
+        range?: {
+            [attribute: string]: string;
+        } | undefined;
+        ratingMenu?: {
+            [attribute: string]: number | undefined;
+        } | undefined;
+        refinementList?: {
+            [attribute: string]: string[];
+        } | undefined;
+        relevantSort?: number | undefined;
+        sortBy?: string | undefined;
+        toggle?: {
+            [attribute: string]: boolean;
+        } | undefined;
+        places?: {
+            query: string;
+            position: string;
+        } | undefined;
+    }, { searchParameters }: {
+        searchParameters: SearchParameters;
+        helper: AlgoliaSearchHelper;
+    }): {
+        geoSearch?: {
+            /**
+             * The rectangular area in geo coordinates.
+             * The rectangle is defined by two diagonally opposite points,
+             * hence by 4 floats separated by commas.
+             *
+             * @example '47.3165,4.9665,47.3424,5.0201'
+             */
+            boundingBox: string;
+        } | undefined;
+        query?: string | undefined;
+        configure?: PlainSearchParameters | undefined;
+        hierarchicalMenu?: {
+            [rootAttribute: string]: string[];
+        } | undefined;
+        hitsPerPage?: number | undefined;
+        page?: number | undefined;
+        menu?: {
+            [attribute: string]: string;
+        } | undefined;
+        numericMenu?: {
+            [attribute: string]: string;
+        } | undefined;
+        range?: {
+            [attribute: string]: string;
+        } | undefined;
+        ratingMenu?: {
+            [attribute: string]: number | undefined;
+        } | undefined;
+        refinementList?: {
+            [attribute: string]: string[];
+        } | undefined;
+        relevantSort?: number | undefined;
+        sortBy?: string | undefined;
+        toggle?: {
+            [attribute: string]: boolean;
+        } | undefined;
+        places?: {
+            query: string;
+            position: string;
+        } | undefined;
+    };
+    getWidgetSearchParameters(searchParameters: SearchParameters, { uiState }: {
+        uiState: {
+            geoSearch?: {
+                /**
+                 * The rectangular area in geo coordinates.
+                 * The rectangle is defined by two diagonally opposite points,
+                 * hence by 4 floats separated by commas.
+                 *
+                 * @example '47.3165,4.9665,47.3424,5.0201'
+                 */
+                boundingBox: string;
+            } | undefined;
+            query?: string | undefined;
+            configure?: PlainSearchParameters | undefined;
+            hierarchicalMenu?: {
+                [rootAttribute: string]: string[];
+            } | undefined;
+            hitsPerPage?: number | undefined;
+            page?: number | undefined;
+            menu?: {
+                [attribute: string]: string;
+            } | undefined;
+            numericMenu?: {
+                [attribute: string]: string;
+            } | undefined;
+            range?: {
+                [attribute: string]: string;
+            } | undefined;
+            ratingMenu?: {
+                [attribute: string]: number | undefined;
+            } | undefined;
+            refinementList?: {
+                [attribute: string]: string[];
+            } | undefined;
+            relevantSort?: number | undefined;
+            sortBy?: string | undefined;
+            toggle?: {
+                [attribute: string]: boolean;
+            } | undefined;
+            places?: {
+                query: string;
+                position: string;
+            } | undefined;
+        };
+    }): SearchParameters;
+};
+
+declare const _default_6: <TWidgetParams extends UnknownWidgetParams>(renderFn: Renderer<FrequentlyBoughtTogetherRenderState, TWidgetParams & FrequentlyBoughtTogetherConnectorParams>, unmountFn?: Unmounter) => <THit extends NonNullable<object> = BaseHit>(widgetParams: TWidgetParams & FrequentlyBoughtTogetherConnectorParams<THit>) => {
+    dependsOn: "recommend";
+    $$type: "ais.frequentlyBoughtTogether";
+    init(initOptions: InitOptions): void;
+    render(renderOptions: RenderOptions): void;
+    getRenderState(renderState: {
+        answers?: WidgetRenderState<AnswersRenderState, AnswersConnectorParams> | undefined;
+        autocomplete?: WidgetRenderState<AutocompleteRenderState, AutocompleteConnectorParams> | undefined;
+        breadcrumb?: {
+            [rootAttribute: string]: WidgetRenderState<BreadcrumbRenderState, BreadcrumbConnectorParams>;
+        } | undefined;
+        clearRefinements?: WidgetRenderState<ClearRefinementsRenderState, ClearRefinementsConnectorParams> | undefined;
+        configure?: WidgetRenderState<ConfigureRenderState, ConfigureConnectorParams> | undefined;
+        currentRefinements?: WidgetRenderState<CurrentRefinementsRenderState, CurrentRefinementsConnectorParams> | undefined;
+        geoSearch?: WidgetRenderState<GeoSearchRenderState<GeoHit>, GeoSearchConnectorParams<GeoHit>> | undefined;
+        hierarchicalMenu?: {
+            [rootAttribute: string]: WidgetRenderState<HierarchicalMenuRenderState, HierarchicalMenuConnectorParams>;
+        } | undefined;
+        hits?: WidgetRenderState<HitsRenderState<BaseHit>, HitsConnectorParams<BaseHit>> | undefined;
+        hitsPerPage?: WidgetRenderState<HitsPerPageRenderState, HitsPerPageConnectorParams> | undefined;
+        infiniteHits?: WidgetRenderState<InfiniteHitsRenderState<BaseHit>, InfiniteHitsConnectorParams<BaseHit>> | undefined;
+        menu?: {
+            [attribute: string]: WidgetRenderState<MenuRenderState, MenuConnectorParams>;
+        } | undefined;
+        numericMenu?: {
+            [attribute: string]: WidgetRenderState<NumericMenuRenderState, NumericMenuConnectorParams>;
+        } | undefined;
+        pagination?: WidgetRenderState<PaginationRenderState, PaginationConnectorParams> | undefined;
+        poweredBy?: WidgetRenderState<PoweredByRenderState, PoweredByConnectorParams> | undefined;
+        queryRules?: WidgetRenderState<QueryRulesRenderState, QueryRulesConnectorParams> | undefined;
+        range?: {
+            [attribute: string]: WidgetRenderState<RangeRenderState, RangeConnectorParams>;
+        } | undefined;
+        ratingMenu?: {
+            [attribute: string]: WidgetRenderState<RatingMenuRenderState, RatingMenuConnectorParams>;
+        } | undefined;
+        refinementList?: {
+            [attribute: string]: WidgetRenderState<RefinementListRenderState, RefinementListConnectorParams>;
+        } | undefined;
+        relevantSort?: WidgetRenderState<RelevantSortRenderState, RelevantSortConnectorParams> | undefined;
+        searchBox?: WidgetRenderState<SearchBoxRenderState, SearchBoxConnectorParams> | undefined;
+        sortBy?: WidgetRenderState<SortByRenderState, SortByConnectorParams> | undefined;
+        stats?: WidgetRenderState<StatsRenderState, StatsConnectorParams> | undefined;
+        toggleRefinement?: {
+            [attribute: string]: WidgetRenderState<ToggleRefinementRenderState, ToggleRefinementConnectorParams>;
+        } | undefined;
+        voiceSearch?: WidgetRenderState<VoiceSearchRenderState, VoiceSearchConnectorParams> | undefined;
+        analytics?: WidgetRenderState<Record<string, unknown>, AnalyticsWidgetParams> | undefined;
+        places?: WidgetRenderState<Record<string, unknown>, PlacesWidgetParams> | undefined;
+    }): {
+        answers?: WidgetRenderState<AnswersRenderState, AnswersConnectorParams> | undefined;
+        autocomplete?: WidgetRenderState<AutocompleteRenderState, AutocompleteConnectorParams> | undefined;
+        breadcrumb?: {
+            [rootAttribute: string]: WidgetRenderState<BreadcrumbRenderState, BreadcrumbConnectorParams>;
+        } | undefined;
+        clearRefinements?: WidgetRenderState<ClearRefinementsRenderState, ClearRefinementsConnectorParams> | undefined;
+        configure?: WidgetRenderState<ConfigureRenderState, ConfigureConnectorParams> | undefined;
+        currentRefinements?: WidgetRenderState<CurrentRefinementsRenderState, CurrentRefinementsConnectorParams> | undefined;
+        geoSearch?: WidgetRenderState<GeoSearchRenderState<GeoHit>, GeoSearchConnectorParams<GeoHit>> | undefined;
+        hierarchicalMenu?: {
+            [rootAttribute: string]: WidgetRenderState<HierarchicalMenuRenderState, HierarchicalMenuConnectorParams>;
+        } | undefined;
+        hits?: WidgetRenderState<HitsRenderState<BaseHit>, HitsConnectorParams<BaseHit>> | undefined;
+        hitsPerPage?: WidgetRenderState<HitsPerPageRenderState, HitsPerPageConnectorParams> | undefined;
+        infiniteHits?: WidgetRenderState<InfiniteHitsRenderState<BaseHit>, InfiniteHitsConnectorParams<BaseHit>> | undefined;
+        menu?: {
+            [attribute: string]: WidgetRenderState<MenuRenderState, MenuConnectorParams>;
+        } | undefined;
+        numericMenu?: {
+            [attribute: string]: WidgetRenderState<NumericMenuRenderState, NumericMenuConnectorParams>;
+        } | undefined;
+        pagination?: WidgetRenderState<PaginationRenderState, PaginationConnectorParams> | undefined;
+        poweredBy?: WidgetRenderState<PoweredByRenderState, PoweredByConnectorParams> | undefined;
+        queryRules?: WidgetRenderState<QueryRulesRenderState, QueryRulesConnectorParams> | undefined;
+        range?: {
+            [attribute: string]: WidgetRenderState<RangeRenderState, RangeConnectorParams>;
+        } | undefined;
+        ratingMenu?: {
+            [attribute: string]: WidgetRenderState<RatingMenuRenderState, RatingMenuConnectorParams>;
+        } | undefined;
+        refinementList?: {
+            [attribute: string]: WidgetRenderState<RefinementListRenderState, RefinementListConnectorParams>;
+        } | undefined;
+        relevantSort?: WidgetRenderState<RelevantSortRenderState, RelevantSortConnectorParams> | undefined;
+        searchBox?: WidgetRenderState<SearchBoxRenderState, SearchBoxConnectorParams> | undefined;
+        sortBy?: WidgetRenderState<SortByRenderState, SortByConnectorParams> | undefined;
+        stats?: WidgetRenderState<StatsRenderState, StatsConnectorParams> | undefined;
+        toggleRefinement?: {
+            [attribute: string]: WidgetRenderState<ToggleRefinementRenderState, ToggleRefinementConnectorParams>;
+        } | undefined;
+        voiceSearch?: WidgetRenderState<VoiceSearchRenderState, VoiceSearchConnectorParams> | undefined;
+        analytics?: WidgetRenderState<Record<string, unknown>, AnalyticsWidgetParams> | undefined;
+        places?: WidgetRenderState<Record<string, unknown>, PlacesWidgetParams> | undefined;
+    };
+    getWidgetRenderState({ results, helper, instantSearchInstance }: InitOptions | RenderOptions | ({
+        instantSearchInstance: InstantSearch;
+        parent: IndexWidget;
+        templatesConfig: Record<string, unknown>;
+        scopedResults: ScopedResult[];
+        state: SearchParameters;
+        renderState: IndexRenderState;
+        helper: AlgoliaSearchHelper;
+        searchMetadata: {
+            isSearchStalled: boolean;
+        };
+        status: InstantSearch["status"];
+        error: InstantSearch["error"];
+        createURL: (nextState: SearchParameters | ((state: IndexUiState) => IndexUiState)) => string;
+    } & {
+        results: RecommendResponse<any>;
+    })): {
+        items: Hit<THit>[];
+        widgetParams: TWidgetParams & FrequentlyBoughtTogetherConnectorParams<THit>;
+        sendEvent: SendEventForHits;
+    };
+    dispose({ recommendState }: DisposeOptions): RecommendParameters;
+    getWidgetParameters(state: RecommendParameters): RecommendParameters;
+};
+
+declare const _default_7: <TWidgetParams extends UnknownWidgetParams>(renderFn: Renderer<LookingSimilarRenderState, TWidgetParams & LookingSimilarConnectorParams>, unmountFn?: Unmounter) => <THit extends NonNullable<object> = BaseHit>(widgetParams: TWidgetParams & LookingSimilarConnectorParams<THit>) => {
+    dependsOn: "recommend";
+    $$type: "ais.lookingSimilar";
+    init(initOptions: InitOptions): void;
+    render(renderOptions: RenderOptions): void;
+    getRenderState(renderState: {
+        answers?: WidgetRenderState<AnswersRenderState, AnswersConnectorParams> | undefined;
+        autocomplete?: WidgetRenderState<AutocompleteRenderState, AutocompleteConnectorParams> | undefined;
+        breadcrumb?: {
+            [rootAttribute: string]: WidgetRenderState<BreadcrumbRenderState, BreadcrumbConnectorParams>;
+        } | undefined;
+        clearRefinements?: WidgetRenderState<ClearRefinementsRenderState, ClearRefinementsConnectorParams> | undefined;
+        configure?: WidgetRenderState<ConfigureRenderState, ConfigureConnectorParams> | undefined;
+        currentRefinements?: WidgetRenderState<CurrentRefinementsRenderState, CurrentRefinementsConnectorParams> | undefined;
+        geoSearch?: WidgetRenderState<GeoSearchRenderState<GeoHit>, GeoSearchConnectorParams<GeoHit>> | undefined;
+        hierarchicalMenu?: {
+            [rootAttribute: string]: WidgetRenderState<HierarchicalMenuRenderState, HierarchicalMenuConnectorParams>;
+        } | undefined;
+        hits?: WidgetRenderState<HitsRenderState<BaseHit>, HitsConnectorParams<BaseHit>> | undefined;
+        hitsPerPage?: WidgetRenderState<HitsPerPageRenderState, HitsPerPageConnectorParams> | undefined;
+        infiniteHits?: WidgetRenderState<InfiniteHitsRenderState<BaseHit>, InfiniteHitsConnectorParams<BaseHit>> | undefined;
+        menu?: {
+            [attribute: string]: WidgetRenderState<MenuRenderState, MenuConnectorParams>;
+        } | undefined;
+        numericMenu?: {
+            [attribute: string]: WidgetRenderState<NumericMenuRenderState, NumericMenuConnectorParams>;
+        } | undefined;
+        pagination?: WidgetRenderState<PaginationRenderState, PaginationConnectorParams> | undefined;
+        poweredBy?: WidgetRenderState<PoweredByRenderState, PoweredByConnectorParams> | undefined;
+        queryRules?: WidgetRenderState<QueryRulesRenderState, QueryRulesConnectorParams> | undefined;
+        range?: {
+            [attribute: string]: WidgetRenderState<RangeRenderState, RangeConnectorParams>;
+        } | undefined;
+        ratingMenu?: {
+            [attribute: string]: WidgetRenderState<RatingMenuRenderState, RatingMenuConnectorParams>;
+        } | undefined;
+        refinementList?: {
+            [attribute: string]: WidgetRenderState<RefinementListRenderState, RefinementListConnectorParams>;
+        } | undefined;
+        relevantSort?: WidgetRenderState<RelevantSortRenderState, RelevantSortConnectorParams> | undefined;
+        searchBox?: WidgetRenderState<SearchBoxRenderState, SearchBoxConnectorParams> | undefined;
+        sortBy?: WidgetRenderState<SortByRenderState, SortByConnectorParams> | undefined;
+        stats?: WidgetRenderState<StatsRenderState, StatsConnectorParams> | undefined;
+        toggleRefinement?: {
+            [attribute: string]: WidgetRenderState<ToggleRefinementRenderState, ToggleRefinementConnectorParams>;
+        } | undefined;
+        voiceSearch?: WidgetRenderState<VoiceSearchRenderState, VoiceSearchConnectorParams> | undefined;
+        analytics?: WidgetRenderState<Record<string, unknown>, AnalyticsWidgetParams> | undefined;
+        places?: WidgetRenderState<Record<string, unknown>, PlacesWidgetParams> | undefined;
+    }): {
+        answers?: WidgetRenderState<AnswersRenderState, AnswersConnectorParams> | undefined;
+        autocomplete?: WidgetRenderState<AutocompleteRenderState, AutocompleteConnectorParams> | undefined;
+        breadcrumb?: {
+            [rootAttribute: string]: WidgetRenderState<BreadcrumbRenderState, BreadcrumbConnectorParams>;
+        } | undefined;
+        clearRefinements?: WidgetRenderState<ClearRefinementsRenderState, ClearRefinementsConnectorParams> | undefined;
+        configure?: WidgetRenderState<ConfigureRenderState, ConfigureConnectorParams> | undefined;
+        currentRefinements?: WidgetRenderState<CurrentRefinementsRenderState, CurrentRefinementsConnectorParams> | undefined;
+        geoSearch?: WidgetRenderState<GeoSearchRenderState<GeoHit>, GeoSearchConnectorParams<GeoHit>> | undefined;
+        hierarchicalMenu?: {
+            [rootAttribute: string]: WidgetRenderState<HierarchicalMenuRenderState, HierarchicalMenuConnectorParams>;
+        } | undefined;
+        hits?: WidgetRenderState<HitsRenderState<BaseHit>, HitsConnectorParams<BaseHit>> | undefined;
+        hitsPerPage?: WidgetRenderState<HitsPerPageRenderState, HitsPerPageConnectorParams> | undefined;
+        infiniteHits?: WidgetRenderState<InfiniteHitsRenderState<BaseHit>, InfiniteHitsConnectorParams<BaseHit>> | undefined;
+        menu?: {
+            [attribute: string]: WidgetRenderState<MenuRenderState, MenuConnectorParams>;
+        } | undefined;
+        numericMenu?: {
+            [attribute: string]: WidgetRenderState<NumericMenuRenderState, NumericMenuConnectorParams>;
+        } | undefined;
+        pagination?: WidgetRenderState<PaginationRenderState, PaginationConnectorParams> | undefined;
+        poweredBy?: WidgetRenderState<PoweredByRenderState, PoweredByConnectorParams> | undefined;
+        queryRules?: WidgetRenderState<QueryRulesRenderState, QueryRulesConnectorParams> | undefined;
+        range?: {
+            [attribute: string]: WidgetRenderState<RangeRenderState, RangeConnectorParams>;
+        } | undefined;
+        ratingMenu?: {
+            [attribute: string]: WidgetRenderState<RatingMenuRenderState, RatingMenuConnectorParams>;
+        } | undefined;
+        refinementList?: {
+            [attribute: string]: WidgetRenderState<RefinementListRenderState, RefinementListConnectorParams>;
+        } | undefined;
+        relevantSort?: WidgetRenderState<RelevantSortRenderState, RelevantSortConnectorParams> | undefined;
+        searchBox?: WidgetRenderState<SearchBoxRenderState, SearchBoxConnectorParams> | undefined;
+        sortBy?: WidgetRenderState<SortByRenderState, SortByConnectorParams> | undefined;
+        stats?: WidgetRenderState<StatsRenderState, StatsConnectorParams> | undefined;
+        toggleRefinement?: {
+            [attribute: string]: WidgetRenderState<ToggleRefinementRenderState, ToggleRefinementConnectorParams>;
+        } | undefined;
+        voiceSearch?: WidgetRenderState<VoiceSearchRenderState, VoiceSearchConnectorParams> | undefined;
+        analytics?: WidgetRenderState<Record<string, unknown>, AnalyticsWidgetParams> | undefined;
+        places?: WidgetRenderState<Record<string, unknown>, PlacesWidgetParams> | undefined;
+    };
+    getWidgetRenderState({ results, helper, instantSearchInstance }: InitOptions | RenderOptions | ({
+        instantSearchInstance: InstantSearch;
+        parent: IndexWidget;
+        templatesConfig: Record<string, unknown>;
+        scopedResults: ScopedResult[];
+        state: SearchParameters;
+        renderState: IndexRenderState;
+        helper: AlgoliaSearchHelper;
+        searchMetadata: {
+            isSearchStalled: boolean;
+        };
+        status: InstantSearch["status"];
+        error: InstantSearch["error"];
+        createURL: (nextState: SearchParameters | ((state: IndexUiState) => IndexUiState)) => string;
+    } & {
+        results: RecommendResponse<any>;
+    })): {
+        items: Hit<THit>[];
+        widgetParams: TWidgetParams & LookingSimilarConnectorParams<THit>;
+        sendEvent: SendEventForHits;
+    };
+    dispose({ recommendState }: DisposeOptions): RecommendParameters;
+    getWidgetParameters(state: RecommendParameters): RecommendParameters;
+};
+
+/**
+ * The **GeoSearch** widget displays the list of results from the search on a Google Maps. It also provides a way to search for results based on their position. The widget also provide some of the common GeoSearch patterns like search on map interaction.
+ *
+ * @requirements
+ *
+ * Note that the GeoSearch widget uses the [geosearch](https://www.algolia.com/doc/guides/searching/geo-search) capabilities of Algolia. Your hits **must** have a `_geoloc` attribute in order to be displayed on the map.
+ *
+ * Currently, the feature is not compatible with multiple values in the _geoloc attribute.
+ *
+ * You are also responsible for loading the Google Maps library, it's not shipped with InstantSearch. You need to load the Google Maps library and pass a reference to the widget. You can find more information about how to install the library in [the Google Maps documentation](https://developers.google.com/maps/documentation/javascript/tutorial).
+ *
+ * Don't forget to explicitly set the `height` of the map container (default class `.ais-geo-search--map`), otherwise it won't be shown (it's a requirement of Google Maps).
+ */
+declare const _default_8: <THit extends GeoHit = GeoHit>(widgetParams: GeoSearchWidgetParams<THit> & GeoSearchConnectorParams<THit>) => {
+    $$widgetType: "ais.geoSearch";
+    $$type: "ais.geoSearch";
+    init(initArgs: InitOptions): void;
+    render(renderArgs: RenderOptions): void;
+    getWidgetRenderState(renderOptions: InitOptions | RenderOptions): {
+        items: GeoHit<THit>[];
+        position: {
+            lat: number;
+            lng: number;
+        } | undefined;
+        currentRefinement: {
+            northEast: {
+                lat: number;
+                lng: number;
+            };
+            southWest: {
+                lat: number;
+                lng: number;
+            };
+        } | undefined;
+        refine: ({ northEast: ne, southWest: sw }: {
+            northEast: GeoLoc;
+            southWest: GeoLoc;
+        }) => void;
+        sendEvent: SendEventForHits;
+        clearMapRefinement: () => void;
+        isRefinedWithMap: () => boolean;
+        toggleRefineOnMapMove: () => void;
+        isRefineOnMapMove: () => boolean;
+        setMapMoveSinceLastRefine: () => void;
+        hasMapMoveSinceLastRefine: () => boolean;
+        widgetParams: {
+            renderState: {
+                templateProps?: PreparedTemplateProps<GeoSearchTemplates>;
+                isUserInteraction?: boolean;
+                isPendingRefine?: boolean;
+                markers?: any[];
+            };
+            container: HTMLElement;
+            googleReference: GeoSearchWidgetParams["googleReference"];
+            initialZoom: GeoSearchWidgetParams["initialZoom"];
+            initialPosition: GeoSearchWidgetParams["initialPosition"];
+            templates: Partial<{
+                /** Template to use for the marker. */
+                HTMLMarker: Template<GeoHit>;
+                /** Template for the reset button. */
+                reset: Template;
+                /** Template for the toggle label. */
+                toggle: Template;
+                /** Template for the redo button. */
+                redo: Template;
+            }>;
+            cssClasses: ComponentCSSClasses<Partial<{
+            /** The root div of the widget. */
+            root: string | string[];
+            /** The map container of the widget. */
+            map: string | string[];
+            /** The control element of the widget. */
+            control: string | string[];
+            /** The label of the control element. */
+            label: string | string[];
+            /** The selected label of the control element. */
+            selectedLabel: string | string[];
+            /** The input of the control element. */
+            input: string | string[];
+            /** The redo search button. */
+            redo: string | string[];
+            /** The disabled redo search button. */
+            disabledRedo: string | string[];
+            /** The reset refinement button. */
+            reset: string | string[];
+            }> | undefined>;
+            createMarker: CreateMarker;
+            markerOptions: GeoSearchMarker<google.maps.MarkerOptions | Partial<HTMLMarkerArguments>>;
+            enableRefine: GeoSearchWidgetParams["enableRefine"];
+            enableClearMapRefinement: GeoSearchWidgetParams["enableClearMapRefinement"];
+            enableRefineControl: GeoSearchWidgetParams["enableRefineControl"];
+        } & GeoSearchConnectorParams<THit>;
+    };
+    getRenderState(renderState: {
+        answers?: WidgetRenderState<AnswersRenderState, AnswersConnectorParams> | undefined;
+        autocomplete?: WidgetRenderState<AutocompleteRenderState, AutocompleteConnectorParams> | undefined;
+        breadcrumb?: {
+            [rootAttribute: string]: WidgetRenderState<BreadcrumbRenderState, BreadcrumbConnectorParams>;
+        } | undefined;
+        clearRefinements?: WidgetRenderState<ClearRefinementsRenderState, ClearRefinementsConnectorParams> | undefined;
+        configure?: WidgetRenderState<ConfigureRenderState, ConfigureConnectorParams> | undefined;
+        currentRefinements?: WidgetRenderState<CurrentRefinementsRenderState, CurrentRefinementsConnectorParams> | undefined;
+        geoSearch?: WidgetRenderState<GeoSearchRenderState<GeoHit>, GeoSearchConnectorParams<GeoHit>> | undefined;
+        hierarchicalMenu?: {
+            [rootAttribute: string]: WidgetRenderState<HierarchicalMenuRenderState, HierarchicalMenuConnectorParams>;
+        } | undefined;
+        hits?: WidgetRenderState<HitsRenderState<BaseHit>, HitsConnectorParams<BaseHit>> | undefined;
+        hitsPerPage?: WidgetRenderState<HitsPerPageRenderState, HitsPerPageConnectorParams> | undefined;
+        infiniteHits?: WidgetRenderState<InfiniteHitsRenderState<BaseHit>, InfiniteHitsConnectorParams<BaseHit>> | undefined;
+        menu?: {
+            [attribute: string]: WidgetRenderState<MenuRenderState, MenuConnectorParams>;
+        } | undefined;
+        numericMenu?: {
+            [attribute: string]: WidgetRenderState<NumericMenuRenderState, NumericMenuConnectorParams>;
+        } | undefined;
+        pagination?: WidgetRenderState<PaginationRenderState, PaginationConnectorParams> | undefined;
+        poweredBy?: WidgetRenderState<PoweredByRenderState, PoweredByConnectorParams> | undefined;
+        queryRules?: WidgetRenderState<QueryRulesRenderState, QueryRulesConnectorParams> | undefined;
+        range?: {
+            [attribute: string]: WidgetRenderState<RangeRenderState, RangeConnectorParams>;
+        } | undefined;
+        ratingMenu?: {
+            [attribute: string]: WidgetRenderState<RatingMenuRenderState, RatingMenuConnectorParams>;
+        } | undefined;
+        refinementList?: {
+            [attribute: string]: WidgetRenderState<RefinementListRenderState, RefinementListConnectorParams>;
+        } | undefined;
+        relevantSort?: WidgetRenderState<RelevantSortRenderState, RelevantSortConnectorParams> | undefined;
+        searchBox?: WidgetRenderState<SearchBoxRenderState, SearchBoxConnectorParams> | undefined;
+        sortBy?: WidgetRenderState<SortByRenderState, SortByConnectorParams> | undefined;
+        stats?: WidgetRenderState<StatsRenderState, StatsConnectorParams> | undefined;
+        toggleRefinement?: {
+            [attribute: string]: WidgetRenderState<ToggleRefinementRenderState, ToggleRefinementConnectorParams>;
+        } | undefined;
+        voiceSearch?: WidgetRenderState<VoiceSearchRenderState, VoiceSearchConnectorParams> | undefined;
+        analytics?: WidgetRenderState<Record<string, unknown>, AnalyticsWidgetParams> | undefined;
+        places?: WidgetRenderState<Record<string, unknown>, PlacesWidgetParams> | undefined;
+    }, renderOptions: InitOptions | RenderOptions): IndexRenderState & GeoSearchWidgetDescription["indexRenderState"];
+    dispose({ state }: DisposeOptions): SearchParameters;
+    getWidgetUiState(uiState: {
+        geoSearch?: {
+            boundingBox: string;
+        } | undefined;
+        query?: string | undefined;
+        configure?: PlainSearchParameters | undefined;
+        hierarchicalMenu?: {
+            [rootAttribute: string]: string[];
+        } | undefined;
+        hitsPerPage?: number | undefined;
+        page?: number | undefined;
+        menu?: {
+            [attribute: string]: string;
+        } | undefined;
+        numericMenu?: {
+            [attribute: string]: string;
+        } | undefined;
+        range?: {
+            [attribute: string]: string;
+        } | undefined;
+        ratingMenu?: {
+            [attribute: string]: number | undefined;
+        } | undefined;
+        refinementList?: {
+            [attribute: string]: string[];
+        } | undefined;
+        relevantSort?: number | undefined;
+        sortBy?: string | undefined;
+        toggle?: {
+            [attribute: string]: boolean;
+        } | undefined;
+        places?: {
+            query: string;
+            position: string;
+        } | undefined;
+    }, { searchParameters }: {
+        searchParameters: SearchParameters;
+        helper: AlgoliaSearchHelper;
+    }): {
+        geoSearch?: {
+            boundingBox: string;
+        } | undefined;
+        query?: string | undefined;
+        configure?: PlainSearchParameters | undefined;
+        hierarchicalMenu?: {
+            [rootAttribute: string]: string[];
+        } | undefined;
+        hitsPerPage?: number | undefined;
+        page?: number | undefined;
+        menu?: {
+            [attribute: string]: string;
+        } | undefined;
+        numericMenu?: {
+            [attribute: string]: string;
+        } | undefined;
+        range?: {
+            [attribute: string]: string;
+        } | undefined;
+        ratingMenu?: {
+            [attribute: string]: number | undefined;
+        } | undefined;
+        refinementList?: {
+            [attribute: string]: string[];
+        } | undefined;
+        relevantSort?: number | undefined;
+        sortBy?: string | undefined;
+        toggle?: {
+            [attribute: string]: boolean;
+        } | undefined;
+        places?: {
+            query: string;
+            position: string;
+        } | undefined;
+    };
+    getWidgetSearchParameters(searchParameters: SearchParameters, { uiState }: {
+        uiState: {
+            geoSearch?: {
+                boundingBox: string;
+            } | undefined;
+            query?: string | undefined;
+            configure?: PlainSearchParameters | undefined;
+            hierarchicalMenu?: {
+                [rootAttribute: string]: string[];
+            } | undefined;
+            hitsPerPage?: number | undefined;
+            page?: number | undefined;
+            menu?: {
+                [attribute: string]: string;
+            } | undefined;
+            numericMenu?: {
+                [attribute: string]: string;
+            } | undefined;
+            range?: {
+                [attribute: string]: string;
+            } | undefined;
+            ratingMenu?: {
+                [attribute: string]: number | undefined;
+            } | undefined;
+            refinementList?: {
+                [attribute: string]: string[];
+            } | undefined;
+            relevantSort?: number | undefined;
+            sortBy?: string | undefined;
+            toggle?: {
+                [attribute: string]: boolean;
+            } | undefined;
+            places?: {
+                query: string;
+                position: string;
+            } | undefined;
+        };
+    }): SearchParameters;
+};
+
+declare const _default_9: <THit extends NonNullable<object> = BaseHit>(widgetParams: HitsWidgetParams<THit> & HitsConnectorParams<THit>) => {
+    $$widgetType: "ais.hits";
+    $$type: "ais.hits";
+    init(initOptions: InitOptions): void;
+    render(renderOptions: RenderOptions): void;
+    getRenderState(renderState: {
+        answers?: WidgetRenderState<AnswersRenderState, AnswersConnectorParams> | undefined;
+        autocomplete?: WidgetRenderState<AutocompleteRenderState, AutocompleteConnectorParams> | undefined;
+        breadcrumb?: {
+            [rootAttribute: string]: WidgetRenderState<BreadcrumbRenderState, BreadcrumbConnectorParams>;
+        } | undefined;
+        clearRefinements?: WidgetRenderState<ClearRefinementsRenderState, ClearRefinementsConnectorParams> | undefined;
+        configure?: WidgetRenderState<ConfigureRenderState, ConfigureConnectorParams> | undefined;
+        currentRefinements?: WidgetRenderState<CurrentRefinementsRenderState, CurrentRefinementsConnectorParams> | undefined;
+        geoSearch?: WidgetRenderState<GeoSearchRenderState<GeoHit>, GeoSearchConnectorParams<GeoHit>> | undefined;
+        hierarchicalMenu?: {
+            [rootAttribute: string]: WidgetRenderState<HierarchicalMenuRenderState, HierarchicalMenuConnectorParams>;
+        } | undefined;
+        hits?: WidgetRenderState<HitsRenderState<BaseHit>, HitsConnectorParams<BaseHit>> | undefined;
+        hitsPerPage?: WidgetRenderState<HitsPerPageRenderState, HitsPerPageConnectorParams> | undefined;
+        infiniteHits?: WidgetRenderState<InfiniteHitsRenderState<BaseHit>, InfiniteHitsConnectorParams<BaseHit>> | undefined;
+        menu?: {
+            [attribute: string]: WidgetRenderState<MenuRenderState, MenuConnectorParams>;
+        } | undefined;
+        numericMenu?: {
+            [attribute: string]: WidgetRenderState<NumericMenuRenderState, NumericMenuConnectorParams>;
+        } | undefined;
+        pagination?: WidgetRenderState<PaginationRenderState, PaginationConnectorParams> | undefined;
+        poweredBy?: WidgetRenderState<PoweredByRenderState, PoweredByConnectorParams> | undefined;
+        queryRules?: WidgetRenderState<QueryRulesRenderState, QueryRulesConnectorParams> | undefined;
+        range?: {
+            [attribute: string]: WidgetRenderState<RangeRenderState, RangeConnectorParams>;
+        } | undefined;
+        ratingMenu?: {
+            [attribute: string]: WidgetRenderState<RatingMenuRenderState, RatingMenuConnectorParams>;
+        } | undefined;
+        refinementList?: {
+            [attribute: string]: WidgetRenderState<RefinementListRenderState, RefinementListConnectorParams>;
+        } | undefined;
+        relevantSort?: WidgetRenderState<RelevantSortRenderState, RelevantSortConnectorParams> | undefined;
+        searchBox?: WidgetRenderState<SearchBoxRenderState, SearchBoxConnectorParams> | undefined;
+        sortBy?: WidgetRenderState<SortByRenderState, SortByConnectorParams> | undefined;
+        stats?: WidgetRenderState<StatsRenderState, StatsConnectorParams> | undefined;
+        toggleRefinement?: {
+            [attribute: string]: WidgetRenderState<ToggleRefinementRenderState, ToggleRefinementConnectorParams>;
+        } | undefined;
+        voiceSearch?: WidgetRenderState<VoiceSearchRenderState, VoiceSearchConnectorParams> | undefined;
+        analytics?: WidgetRenderState<Record<string, unknown>, AnalyticsWidgetParams> | undefined;
+        places?: WidgetRenderState<Record<string, unknown>, PlacesWidgetParams> | undefined;
+    }, renderOptions: InitOptions | RenderOptions): IndexRenderState & HitsWidgetDescription["indexRenderState"];
+    getWidgetRenderState({ results, helper, instantSearchInstance }: InitOptions | RenderOptions): {
+        hits: never[];
+        items: never[];
+        results: undefined;
+        banner: undefined;
+        sendEvent: SendEventForHits;
+        bindEvent: BindEventForHits;
+        widgetParams: Partial<HitsWidgetParams<BaseHit>> & HitsConnectorParams<THit>;
+    } | {
+        hits: Hit<BaseHit>[] | Hit<THit>[];
+        items: Hit<BaseHit>[] | Hit<THit>[];
+        results: SearchResults<any>;
+        banner: Banner | undefined;
+        sendEvent: SendEventForHits;
+        bindEvent: BindEventForHits;
+        widgetParams: Partial<HitsWidgetParams<BaseHit>> & HitsConnectorParams<THit>;
+    };
+    dispose({ state }: DisposeOptions): SearchParameters;
+    getWidgetSearchParameters(state: SearchParameters, _uiState: {
+        uiState: {
+            query?: string | undefined;
+            configure?: PlainSearchParameters | undefined;
+            geoSearch?: {
+                boundingBox: string;
+            } | undefined;
+            hierarchicalMenu?: {
+                [rootAttribute: string]: string[];
+            } | undefined;
+            hitsPerPage?: number | undefined;
+            page?: number | undefined;
+            menu?: {
+                [attribute: string]: string;
+            } | undefined;
+            numericMenu?: {
+                [attribute: string]: string;
+            } | undefined;
+            range?: {
+                [attribute: string]: string;
+            } | undefined;
+            ratingMenu?: {
+                [attribute: string]: number | undefined;
+            } | undefined;
+            refinementList?: {
+                [attribute: string]: string[];
+            } | undefined;
+            relevantSort?: number | undefined;
+            sortBy?: string | undefined;
+            toggle?: {
+                [attribute: string]: boolean;
+            } | undefined;
+            places?: {
+                query: string;
+                position: string;
+            } | undefined;
+        };
+    }): SearchParameters;
+};
+
 declare type DisposeOptions = {
     helper: AlgoliaSearchHelper;
     state: SearchParameters;
+    recommendState: RecommendParameters;
     parent: IndexWidget;
 };
 
@@ -1130,11 +3734,21 @@ declare type DynamicWidgetsConnectorParams = {
     }>;
     /**
      * To prevent unneeded extra network requests when widgets mount or unmount,
-     * we request all facet values.
+     * we request all facet values by default. If you want to only request the
+     * facet values that are needed, you can set this option to the list of
+     * attributes you want to display.
+     *
+     * If `facets` is set to `['*']`, we request all facet values.
+     *
+     * Any facets that are requested due to the `facetOrdering` result are always
+     * requested by the widget that mounted itself.
+     *
+     * Setting `facets` to a value other than `['*']` will only prevent extra
+     * requests if all potential facets are listed.
      *
      * @default ['*']
      */
-    facets?: ['*'] | never[];
+    facets?: ['*'] | string[];
     /**
      * If you have more than 20 facet values pinned, you need to increase the
      * maxValuesPerFacet to at least that value.
@@ -1189,8 +3803,14 @@ declare type Expand<T> = T extends infer O ? {
 /** @deprecated answers is no longer supported */
 declare const EXPERIMENTAL_answers: AnswersWidget;
 
+/** @deprecated use relatedItems instead */
+declare const EXPERIMENTAL_configureRelatedItems: ConfigureRelatedItemsWidget;
+
 /** @deprecated answers is no longer supported */
 declare const EXPERIMENTAL_connectAnswers: AnswersConnector;
+
+/** @deprecated use connectRelatedItems instead */
+declare const EXPERIMENTAL_connectConfigureRelatedItems: ConfigureRelatedItemsConnector;
 
 /** @deprecated use connectDynamicWidgets */
 declare const EXPERIMENTAL_connectDynamicWidgets: DynamicWidgetsConnector;
@@ -1200,31 +3820,99 @@ declare const EXPERIMENTAL_dynamicWidgets: DynamicWidgetsWidget;
 
 declare type FacetValue = string | boolean | number;
 
-declare type GeoHit<THit extends BaseHit = Record<string, any>> = Hit<THit> & Required<Pick<Hit, '_geoloc'>>;
+declare type FrequentlyBoughtTogetherConnectorParams<THit extends NonNullable<object> = BaseHit> = {
+    /**
+     * The objectIDs of the items to get the frequently bought together items for.
+     */
+    objectIDs: string[];
+    /**
+     * Threshold for the recommendations confidence score (between 0 and 100). Only recommendations with a greater score are returned.
+     */
+    threshold?: number;
+    /**
+     * The maximum number of recommendations to return.
+     */
+    limit?: number;
+    /**
+     * Parameters to pass to the request.
+     */
+    queryParameters?: Omit<PlainSearchParameters, 'page' | 'hitsPerPage' | 'offset' | 'length'>;
+    /**
+     * Whether to escape HTML tags from items string values.
+     *
+     * @default true
+     */
+    escapeHTML?: boolean;
+    /**
+     * Function to transform the items passed to the templates.
+     */
+    transformItems?: TransformItems<Hit<THit>, {
+        results: RecommendResponse<AlgoliaHit<THit>>;
+    }>;
+};
+
+declare type FrequentlyBoughtTogetherCSSClasses = Partial<RecommendClassNames>;
+
+declare type FrequentlyBoughtTogetherRenderState<THit extends NonNullable<object> = BaseHit> = {
+    /**
+     * The matched recommendations from Algolia API.
+     */
+    items: Array<Hit<THit>>;
+    /**
+     * Sends an event to the Insights middleware.
+     */
+    sendEvent: SendEventForHits;
+};
+
+declare type FrequentlyBoughtTogetherTemplates<THit extends NonNullable<object> = BaseHit> = Partial<{
+    /**
+     * Template to use when there are no results.
+     */
+    empty: Template<RecommendResponse<Hit<THit>>>;
+    /**
+     * Template to use for the header of the widget.
+     */
+    header: Template<Pick<Parameters<NonNullable<FrequentlyBoughtTogetherProps<Hit<THit>>['headerComponent']>>[0], 'items'> & {
+        cssClasses: RecommendClassNames;
+    }>;
+    /**
+     * Template to use for each result. This template will receive an object containing a single record.
+     */
+    item: TemplateWithBindEvent<Hit<THit>>;
+    /**
+     * Template to use to wrap all items.
+     */
+    layout: Template<Pick<Parameters<NonNullable<FrequentlyBoughtTogetherProps<Hit<THit>>['layout']>>[0], 'items'> & {
+        templates: {
+            item: FrequentlyBoughtTogetherProps<Hit<THit>>['itemComponent'];
+        };
+        cssClasses: Pick<FrequentlyBoughtTogetherCSSClasses, 'list' | 'item'>;
+    }>;
+}>;
+
+declare type FrequentlyBoughtTogetherWidgetParams<THit extends NonNullable<object> = BaseHit> = {
+    /**
+     * CSS Selector or HTMLElement to insert the widget.
+     */
+    container: string | HTMLElement;
+    /**
+     * Templates to use for the widget.
+     */
+    templates?: FrequentlyBoughtTogetherTemplates<THit>;
+    /**
+     * CSS classes to add.
+     */
+    cssClasses?: FrequentlyBoughtTogetherCSSClasses;
+};
+
+declare type GeoHit<THit extends NonNullable<object> = BaseHit> = Hit<THit> & Required<Pick<Hit, '_geoloc'>>;
 
 declare type GeoLoc = {
     lat: number;
     lng: number;
 };
 
-/**
- * The **GeoSearch** widget displays the list of results from the search on a Google Maps. It also provides a way to search for results based on their position. The widget also provide some of the common GeoSearch patterns like search on map interaction.
- *
- * @requirements
- *
- * Note that the GeoSearch widget uses the [geosearch](https://www.algolia.com/doc/guides/searching/geo-search) capabilities of Algolia. Your hits **must** have a `_geoloc` attribute in order to be displayed on the map.
- *
- * Currently, the feature is not compatible with multiple values in the _geoloc attribute.
- *
- * You are also responsible for loading the Google Maps library, it's not shipped with InstantSearch. You need to load the Google Maps library and pass a reference to the widget. You can find more information about how to install the library in [the Google Maps documentation](https://developers.google.com/maps/documentation/javascript/tutorial).
- *
- * Don't forget to explicitly set the `height` of the map container (default class `.ais-geo-search--map`), otherwise it won't be shown (it's a requirement of Google Maps).
- */
-declare const geoSearch: GeoSearchWidget;
-
-declare type GeoSearchConnector<THit extends BaseHit = Record<string, any>> = Connector<GeoSearchWidgetDescription<THit>, GeoSearchConnectorParams<THit>>;
-
-declare type GeoSearchConnectorParams<THit extends BaseHit = Record<string, any>> = {
+declare type GeoSearchConnectorParams<THit extends GeoHit = GeoHit> = {
     /**
      * If true, refine will be triggered as you move the map.
      * @default true
@@ -1258,13 +3946,13 @@ declare type GeoSearchCSSClasses = Partial<{
     reset: string | string[];
 }>;
 
-declare type GeoSearchMarker<TOptions> = {
+declare type GeoSearchMarker<TOptions, THit extends GeoHit = GeoHit> = {
     /**
      * Function used to create the options passed to the Google Maps marker.
      * See the documentation for more information:
      * https://developers.google.com/maps/documentation/javascript/reference/3/#MarkerOptions
      */
-    createOptions?: (item: GeoHit) => TOptions;
+    createOptions?: (item: THit) => TOptions;
     /**
      * Object that takes an event type (ex: `click`, `mouseover`) as key and a
      * listener as value. The listener is provided with an object that contains:
@@ -1280,7 +3968,7 @@ declare type GeoSearchMarker<TOptions> = {
     };
 };
 
-declare type GeoSearchRenderState<THit extends BaseHit = Record<string, any>> = {
+declare type GeoSearchRenderState<THit extends NonNullable<object> = BaseHit> = {
     /**
      * Reset the current bounding box refinement.
      */
@@ -1329,9 +4017,9 @@ declare type GeoSearchRenderState<THit extends BaseHit = Record<string, any>> = 
     toggleRefineOnMapMove: () => void;
 };
 
-declare type GeoSearchTemplates = Partial<{
+declare type GeoSearchTemplates<THit extends GeoHit = GeoHit> = Partial<{
     /** Template to use for the marker. */
-    HTMLMarker: Template<GeoHit>;
+    HTMLMarker: Template<THit>;
     /** Template for the reset button. */
     reset: Template;
     /** Template for the toggle label. */
@@ -1340,11 +4028,7 @@ declare type GeoSearchTemplates = Partial<{
     redo: Template;
 }>;
 
-declare type GeoSearchWidget = WidgetFactory<GeoSearchWidgetDescription & {
-    $$widgetType: 'ais.geoSearch';
-}, GeoSearchConnectorParams, GeoSearchWidgetParams>;
-
-declare type GeoSearchWidgetDescription<THit extends BaseHit = Record<string, any>> = {
+declare type GeoSearchWidgetDescription<THit extends GeoHit = GeoHit> = {
     $$type: 'ais.geoSearch';
     renderState: GeoSearchRenderState<THit>;
     indexRenderState: {
@@ -1364,7 +4048,7 @@ declare type GeoSearchWidgetDescription<THit extends BaseHit = Record<string, an
     };
 };
 
-declare type GeoSearchWidgetParams = {
+declare type GeoSearchWidgetParams<THit extends GeoHit = GeoHit> = {
     /**
      * By default the map will set the zoom accordingly to the markers displayed on it.
      * When we refine it may happen that the results are empty. For those situations we
@@ -1381,7 +4065,7 @@ declare type GeoSearchWidgetParams = {
      */
     initialPosition?: GeoLoc;
     /** Templates to use for the widget. */
-    templates?: GeoSearchTemplates;
+    templates?: GeoSearchTemplates<THit>;
     /** CSS classes to add to the wrapping elements. */
     cssClasses?: GeoSearchCSSClasses;
     /**
@@ -1775,12 +4459,12 @@ declare type HierarchicalMenuWidgetParams = {
     cssClasses?: HierarchicalMenuCSSClasses;
 };
 
-declare function Highlight<THit extends Hit<BaseHit>>({ hit, attribute, cssClasses, ...props }: HighlightProps<THit>): h.JSX.Element;
-
 /**
  * @deprecated use html tagged templates and the Highlight component instead
  */
 declare function highlight({ attribute, highlightedTagName, hit, cssClasses, }: HighlightOptions): string;
+
+declare function Highlight_2<THit extends Hit<BaseHit>>({ hit, attribute, cssClasses, ...props }: HighlightProps<THit>): h.JSX.Element;
 
 declare type HighlightClassNames = HighlightClassNames_2;
 
@@ -1803,9 +4487,9 @@ declare type HighlightProps_2 = Omit<HighlightProps_3, 'classNames'> & {
     classNames?: Partial<HighlightClassNames>;
 };
 
-declare function historyRouter<TRouteState = UiState>({ createURL, parseURL, writeDelay, windowTitle, getLocation, start, dispose, push, }?: Partial<BrowserHistoryArgs<TRouteState>>): BrowserHistory<TRouteState>;
+declare function historyRouter<TRouteState = UiState>({ createURL, parseURL, writeDelay, windowTitle, getLocation, start, dispose, push, cleanUrlOnDispose, }?: Partial<BrowserHistoryArgs<TRouteState>>): BrowserHistory<TRouteState>;
 
-declare type Hit<THit extends BaseHit = Record<string, any>> = {
+declare type Hit<THit extends NonNullable<object> = Record<string, any>> = {
     __position: number;
     __queryID?: string;
 } & AlgoliaHit<THit>;
@@ -1823,11 +4507,7 @@ declare type HitHighlightResult = {
     [attribute: string]: HitAttributeHighlightResult | HitAttributeHighlightResult[] | HitHighlightResult[] | HitHighlightResult;
 };
 
-declare const hits: HitsWidget;
-
-declare type HitsConnector<THit extends BaseHit = BaseHit> = Connector<HitsWidgetDescription<THit>, HitsConnectorParams<THit>>;
-
-declare type HitsConnectorParams<THit extends BaseHit = BaseHit> = {
+declare type HitsConnectorParams<THit extends NonNullable<object> = BaseHit> = {
     /**
      * Whether to escape HTML tags from hits string values.
      *
@@ -1840,24 +4520,7 @@ declare type HitsConnectorParams<THit extends BaseHit = BaseHit> = {
     transformItems?: TransformItems<Hit<THit>>;
 };
 
-declare type HitsCSSClasses = Partial<{
-    /**
-     * CSS class to add to the wrapping element.
-     */
-    root: string | string[];
-    /**
-     * CSS class to add to the wrapping element when no results.
-     */
-    emptyRoot: string | string[];
-    /**
-     * CSS class to add to the list of results.
-     */
-    list: string | string[];
-    /**
-     * CSS class to add to each result.
-     */
-    item: string | string[];
-}>;
+declare type HitsCSSClasses = Partial<HitsClassNames>;
 
 declare type HitSnippetResult = {
     [attribute: string]: HitAttributeSnippetResult[] | HitSnippetResult[] | HitAttributeSnippetResult | HitSnippetResult;
@@ -1975,15 +4638,24 @@ declare type HitsPerPageWidgetParams = {
     cssClasses?: HitsPerPageCSSClasses;
 };
 
-declare type HitsRenderState<THit extends BaseHit = BaseHit> = {
+declare type HitsRenderState<THit extends NonNullable<object> = BaseHit> = {
+    /**
+     * The matched hits from Algolia API.
+     * @deprecated use `items` instead
+     */
+    hits: Array<Hit<THit>>;
     /**
      * The matched hits from Algolia API.
      */
-    hits: Array<Hit<THit>>;
+    items: Array<Hit<THit>>;
     /**
      * The response from the Algolia API.
      */
     results?: SearchResults<Hit<THit>>;
+    /**
+     * The banner to display above the hits.
+     */
+    banner?: Banner;
     /**
      * Sends an event to the Insights middleware.
      */
@@ -1994,29 +4666,32 @@ declare type HitsRenderState<THit extends BaseHit = BaseHit> = {
     bindEvent: BindEventForHits;
 };
 
-declare type HitsTemplates = Partial<{
+declare type HitsTemplates<THit extends NonNullable<object> = BaseHit> = Partial<{
     /**
      * Template to use when there are no results.
      *
      * @default 'No Results'
      */
-    empty: Template<SearchResults>;
+    empty: Template<SearchResults<THit>>;
     /**
      * Template to use for each result. This template will receive an object containing a single record.
      *
      * @default ''
      */
-    item: TemplateWithBindEvent<Hit & {
+    item: TemplateWithBindEvent<Hit<THit> & {
         /** @deprecated the index in the hits array, use __position instead, which is the absolute position */
         __hitIndex: number;
     }>;
+    /**
+     * Template to use for the banner.
+     */
+    banner: Template<{
+        banner: Required<HitsRenderState['banner']>;
+        className: string;
+    }>;
 }>;
 
-declare type HitsWidget = WidgetFactory<HitsWidgetDescription & {
-    $$widgetType: 'ais.hits';
-}, HitsConnectorParams, HitsWidgetParams>;
-
-declare type HitsWidgetDescription<THit extends BaseHit = BaseHit> = {
+declare type HitsWidgetDescription<THit extends NonNullable<object> = BaseHit> = {
     $$type: 'ais.hits';
     renderState: HitsRenderState<THit>;
     indexRenderState: {
@@ -2024,7 +4699,7 @@ declare type HitsWidgetDescription<THit extends BaseHit = BaseHit> = {
     };
 };
 
-declare type HitsWidgetParams = {
+declare type HitsWidgetParams<THit extends NonNullable<object> = BaseHit> = {
     /**
      * CSS Selector or HTMLElement to insert the widget.
      */
@@ -2032,7 +4707,7 @@ declare type HitsWidgetParams = {
     /**
      * Templates to use for the widget.
      */
-    templates?: HitsTemplates;
+    templates?: HitsTemplates<THit>;
     /**
      * CSS classes to add.
      */
@@ -2077,6 +4752,7 @@ declare type IndexWidget<TUiState extends UiState = UiState> = Omit<Widget<Index
     getIndexId: () => string;
     getHelper: () => AlgoliaSearchHelper | null;
     getResults: () => SearchResults | null;
+    getResultsForWidget: (widget: IndexWidget | Widget) => SearchResults | RecommendResponse<any> | null;
     getPreviousState: () => SearchParameters | null;
     getScopedResults: () => ScopedResult[];
     getParent: () => IndexWidget | null;
@@ -2118,20 +4794,16 @@ declare type IndexWidgetParams = {
     indexId?: string;
 };
 
-declare const infiniteHits: InfiniteHitsWidget;
-
-declare type InfiniteHitsCache<THit extends BaseHit = BaseHit> = {
+declare type InfiniteHitsCache<THit extends NonNullable<object> = BaseHit> = {
     read: Read<THit>;
     write: Write<THit>;
 };
 
-declare type InfiniteHitsCachedHits<THit extends BaseHit> = {
+declare type InfiniteHitsCachedHits<THit extends NonNullable<object>> = {
     [page: number]: Array<Hit<THit>>;
 };
 
-declare type InfiniteHitsConnector<THit extends BaseHit = BaseHit> = Connector<InfiniteHitsWidgetDescription<THit>, InfiniteHitsConnectorParams<THit>>;
-
-declare type InfiniteHitsConnectorParams<THit extends BaseHit = BaseHit> = {
+declare type InfiniteHitsConnectorParams<THit extends NonNullable<object> = BaseHit> = {
     /**
      * Escapes HTML entities from hits string values.
      *
@@ -2190,9 +4862,21 @@ declare type InfiniteHitsCSSClasses = Partial<{
      * The disabled “Show more” button.
      */
     disabledLoadMore: string | string[];
+    /**
+     * Class names to apply to the banner element
+     */
+    bannerRoot: string | string[];
+    /**
+     * Class names to apply to the banner image element
+     */
+    bannerImage: string | string[];
+    /**
+     * Class names to apply to the banner link element
+     */
+    bannerLink: string | string[];
 }>;
 
-declare type InfiniteHitsRenderState<THit extends BaseHit = BaseHit> = {
+declare type InfiniteHitsRenderState<THit extends NonNullable<object> = BaseHit> = {
     /**
      * Loads the previous results.
      */
@@ -2223,19 +4907,28 @@ declare type InfiniteHitsRenderState<THit extends BaseHit = BaseHit> = {
     currentPageHits: Array<Hit<THit>>;
     /**
      * Hits for current and cached pages
+     * @deprecated use `items` instead
      */
     hits: Array<Hit<THit>>;
     /**
+     * Hits for current and cached pages
+     */
+    items: Array<Hit<THit>>;
+    /**
      * The response from the Algolia API.
      */
-    results?: SearchResults<Hit<THit>>;
+    results?: SearchResults<Hit<THit>> | null;
+    /**
+     * The banner to display above the hits.
+     */
+    banner?: Banner;
 };
 
-declare type InfiniteHitsTemplates = Partial<{
+declare type InfiniteHitsTemplates<THit extends NonNullable<object> = BaseHit> = Partial<{
     /**
      * The template to use when there are no results.
      */
-    empty: Template<SearchResults>;
+    empty: Template<SearchResults<THit>>;
     /**
      * The template to use for the “Show previous” label.
      */
@@ -2247,17 +4940,20 @@ declare type InfiniteHitsTemplates = Partial<{
     /**
      * The template to use for each result.
      */
-    item: TemplateWithBindEvent<Hit & {
+    item: TemplateWithBindEvent<Hit<THit> & {
         /** @deprecated the index in the hits array, use __position instead, which is the absolute position */
         __hitIndex: number;
     }>;
+    /**
+     * Template to use for the banner.
+     */
+    banner: Template<{
+        banner: Required<InfiniteHitsRenderState['banner']>;
+        className: string;
+    }>;
 }>;
 
-declare type InfiniteHitsWidget = WidgetFactory<InfiniteHitsWidgetDescription & {
-    $$widgetType: 'ais.infiniteHits';
-}, InfiniteHitsConnectorParams, InfiniteHitsWidgetParams>;
-
-declare type InfiniteHitsWidgetDescription<THit extends BaseHit = BaseHit> = {
+declare type InfiniteHitsWidgetDescription<THit extends NonNullable<object> = BaseHit> = {
     $$type: 'ais.infiniteHits';
     renderState: InfiniteHitsRenderState<THit>;
     indexRenderState: {
@@ -2268,7 +4964,7 @@ declare type InfiniteHitsWidgetDescription<THit extends BaseHit = BaseHit> = {
     };
 };
 
-declare type InfiniteHitsWidgetParams = {
+declare type InfiniteHitsWidgetParams<THit extends NonNullable<object> = BaseHit> = {
     /**
      * The CSS Selector or `HTMLElement` to insert the widget into.
      */
@@ -2280,7 +4976,7 @@ declare type InfiniteHitsWidgetParams = {
     /**
      * The templates to use for the widget.
      */
-    templates?: InfiniteHitsTemplates;
+    templates?: InfiniteHitsTemplates<THit>;
     /**
      * Reads and writes hits from/to cache.
      * When user comes back to the search page after leaving for product page,
@@ -2290,8 +4986,13 @@ declare type InfiniteHitsWidgetParams = {
 };
 
 declare type InitialResult = {
-    state: PlainSearchParameters;
-    results: SearchResults['_rawResults'];
+    state?: PlainSearchParameters;
+    results?: SearchResults['_rawResults'];
+    recommendResults?: {
+        params: NonNullable<RecommendParametersOptions['params']>;
+        results: RecommendResults['_rawResults'];
+    };
+    requestParams?: SearchOptions[];
 };
 
 declare type InitialResults = Record<string, InitialResult>;
@@ -2332,7 +5033,7 @@ declare type InsightsEvent<TMethod extends InsightsMethod = InsightsMethod> = In
  */
 declare type InsightsEvent_2<TMethod extends InsightsMethod = InsightsMethod> = {
     insightsMethod?: TMethod;
-    payload: InsightsMethodMap[TMethod][0];
+    payload: InsightsMethodMap[TMethod][0][0];
     widgetType: string;
     eventType: string;
     eventModifier?: string;
@@ -2349,13 +5050,7 @@ declare type InsightsMethodMap = InsightsMethodMap_2;
 
 declare type InsightsProps<TInsightsClient extends ProvidedInsightsClient = ProvidedInsightsClient> = {
     insightsClient?: TInsightsClient;
-    insightsInitParams?: {
-        userHasOptedOut?: boolean;
-        useCookie?: boolean;
-        anonymousUserToken?: boolean;
-        cookieDuration?: number;
-        region?: 'de' | 'us';
-    };
+    insightsInitParams?: Partial<InsightsMethodMap['init'][0][0]>;
     onEvent?: (event: InsightsEvent, insightsClient: TInsightsClient) => void;
 };
 
@@ -2367,8 +5062,10 @@ declare type InsightsProps<TInsightsClient extends ProvidedInsightsClient = Prov
 declare class InstantSearch<TUiState extends UiState = UiState, TRouteState = TUiState> extends EventEmitter {
     client: InstantSearchOptions['searchClient'];
     indexName: string;
+    compositionID?: string;
     insightsClient: InsightsClient | null;
     onStateChange: InstantSearchOptions<TUiState>['onStateChange'] | null;
+    future: NonNullable<InstantSearchOptions<TUiState>['future']>;
     helper: AlgoliaSearchHelper | null;
     mainHelper: AlgoliaSearchHelper | null;
     mainIndex: IndexWidget;
@@ -2382,6 +5079,9 @@ declare class InstantSearch<TUiState extends UiState = UiState, TRouteState = TU
     _createURL: CreateURL<TUiState>;
     _searchFunction?: InstantSearchOptions['searchFunction'];
     _mainHelperSearch?: AlgoliaSearchHelper['search'];
+    _hasSearchWidget: boolean;
+    _hasRecommendWidget: boolean;
+    _insights: InstantSearchOptions['insights'];
     middleware: Array<{
         creator: Middleware<TUiState>;
         instance: MiddlewareDefinition<TUiState>;
@@ -2441,15 +5141,11 @@ declare class InstantSearch<TUiState extends UiState = UiState, TRouteState = TU
     removeWidgets(widgets: Array<Widget | IndexWidget>): this;
     /**
      * Ends the initialization of InstantSearch.js and triggers the
-     * first search. This method should be called after all widgets have been added
-     * to the instance of InstantSearch.js. InstantSearch.js also supports adding and removing
-     * widgets after the start as an **EXPERIMENTAL** feature.
+     * first search.
      */
     start(): void;
     /**
-     * Removes all widgets without triggering a search afterwards. This is an **EXPERIMENTAL** feature,
-     * if you find an issue with it, please
-     * [open an issue](https://github.com/algolia/instantsearch.js/issues/new?title=Problem%20with%20dispose).
+     * Removes all widgets without triggering a search afterwards.
      * @return {undefined} This method does not return anything
      */
     dispose(): void;
@@ -2503,6 +5199,7 @@ declare type InstantSearchModule = {
     middlewares: typeof middlewares;
     routers: typeof routers;
     stateMappings: typeof stateMappings;
+    templates: typeof templates;
     createInfiniteHitsSessionStorageCache: typeof createInfiniteHitsSessionStorageCache;
     /** @deprecated use html tagged templates and the Highlight component instead */
     highlight: typeof helpers.highlight;
@@ -2527,6 +5224,12 @@ declare type InstantSearchOptions<TUiState extends UiState = UiState, TRouteStat
      * The name of the main index. If no indexName is provided, you have to manually add an index widget.
      */
     indexName?: string;
+    /**
+     * The objectID of the composition.
+     * If this is passed, the composition API will be used for search.
+     * Multi-index search is not supported with this option.
+     */
+    compositionID?: string;
     /**
      * The search client to plug to InstantSearch.js
      *
@@ -2554,7 +5257,7 @@ declare type InstantSearchOptions<TUiState extends UiState = UiState, TRouteStat
      * });
      * ```
      */
-    searchClient: SearchClient;
+    searchClient: SearchClient | CompositionClient;
     /**
      * The locale used to display numbers. This will be passed
      * to `Number.prototype.toLocaleString()`
@@ -2583,7 +5286,7 @@ declare type InstantSearchOptions<TUiState extends UiState = UiState, TRouteStat
      * for the first search. To unconditionally pass additional parameters to the
      * Algolia API, take a look at the `configure` widget.
      */
-    initialUiState?: NoInfer<TUiState>;
+    initialUiState?: NoInfer_2<TUiState>;
     /**
      * Time before a search is considered stalled. The default is 200ms
      */
@@ -2610,6 +5313,28 @@ declare type InstantSearchOptions<TUiState extends UiState = UiState, TRouteStat
      * @deprecated This property will be still supported in 4.x releases, but not further. It is replaced by the `insights` middleware. For more information, visit https://www.algolia.com/doc/guides/getting-insights-and-analytics/search-analytics/click-through-and-conversions/how-to/send-click-and-conversion-events-with-instantsearch/js/
      */
     insightsClient?: InsightsClient;
+    future?: {
+        /**
+         * Changes the way `dispose` is used in InstantSearch lifecycle.
+         *
+         * If `false` (by default), each widget unmounting will remove its state as well, even if there are multiple widgets reading that UI State.
+         *
+         * If `true`, each widget unmounting will only remove its own state if it's the last of its type. This allows for dynamically adding and removing widgets without losing their state.
+         *
+         * @default false
+         */
+        preserveSharedStateOnUnmount?: boolean;
+        /**
+         * Changes the way root levels of hierarchical facets have their count displayed.
+         *
+         * If `false` (by default), the count of the refined root level is updated to match the count of the actively refined parent level.
+         *
+         * If `true`, the count of the root level stays the same as the count of all children levels.
+         *
+         * @default false
+         */
+        persistHierarchicalRootCount?: boolean;
+    };
 };
 
 declare type InstantSearchStatus = 'idle' | 'loading' | 'stalled' | 'error';
@@ -2617,6 +5342,95 @@ declare type InstantSearchStatus = 'idle' | 'loading' | 'stalled' | 'error';
 declare type InternalMiddleware<TUiState extends UiState = UiState> = (options: MiddlewareOptions) => MiddlewareDefinition<TUiState>;
 
 declare function isMetadataEnabled(): boolean;
+
+declare type LookingSimilarConnectorParams<THit extends NonNullable<object> = BaseHit> = {
+    /**
+     * The `objectIDs` of the items to get similar looking products from.
+     */
+    objectIDs: string[];
+    /**
+     * The number of recommendations to retrieve.
+     */
+    limit?: number;
+    /**
+     * The threshold for the recommendations confidence score (between 0 and 100).
+     */
+    threshold?: number;
+    /**
+     * List of search parameters to send.
+     */
+    fallbackParameters?: Omit<PlainSearchParameters, 'page' | 'hitsPerPage' | 'offset' | 'length'>;
+    /**
+     * List of search parameters to send.
+     */
+    queryParameters?: Omit<PlainSearchParameters, 'page' | 'hitsPerPage' | 'offset' | 'length'>;
+    /**
+     * Whether to escape HTML tags from items string values.
+     *
+     * @default true
+     */
+    escapeHTML?: boolean;
+    /**
+     * Function to transform the items passed to the templates.
+     */
+    transformItems?: TransformItems<Hit<THit>, {
+        results: RecommendResponse<AlgoliaHit<THit>>;
+    }>;
+};
+
+declare type LookingSimilarCSSClasses = Partial<RecommendClassNames>;
+
+declare type LookingSimilarRenderState<THit extends NonNullable<object> = BaseHit> = {
+    /**
+     * The matched recommendations from the Algolia API.
+     */
+    items: Array<Hit<THit>>;
+    /**
+     * Sends an event to the Insights middleware.
+     */
+    sendEvent: SendEventForHits;
+};
+
+declare type LookingSimilarTemplates<THit extends NonNullable<object> = BaseHit> = Partial<{
+    /**
+     * Template to use when there are no results.
+     */
+    empty: Template<RecommendResponse<Hit<THit>>>;
+    /**
+     * Template to use for the header of the widget.
+     */
+    header: Template<Pick<Parameters<NonNullable<LookingSimilarProps<Hit<THit>>['headerComponent']>>[0], 'items'> & {
+        cssClasses: RecommendClassNames;
+    }>;
+    /**
+     * Template to use for each result. This template will receive an object containing a single record.
+     */
+    item: TemplateWithBindEvent<Hit<THit>>;
+    /**
+     * Template to use to wrap all items.
+     */
+    layout: Template<Pick<Parameters<NonNullable<LookingSimilarProps<Hit<THit>>['layout']>>[0], 'items'> & {
+        templates: {
+            item: LookingSimilarProps<Hit<THit>>['itemComponent'];
+        };
+        cssClasses: Pick<LookingSimilarCSSClasses, 'list' | 'item'>;
+    }>;
+}>;
+
+declare type LookingSimilarWidgetParams<THit extends NonNullable<object> = BaseHit> = {
+    /**
+     * CSS Selector or HTMLElement to insert the widget.
+     */
+    container: string | HTMLElement;
+    /**
+     * Templates to use for the widget.
+     */
+    templates?: LookingSimilarTemplates<THit>;
+    /**
+     * CSS classes to add.
+     */
+    cssClasses?: LookingSimilarCSSClasses;
+};
 
 declare type MatchingPatterns = {
     [attribute: string]: {
@@ -2917,7 +5731,7 @@ declare namespace middlewares {
     }
 }
 
-declare type NoInfer<T> = T extends infer S ? S : never;
+declare type NoInfer_2<T> = T extends infer S ? S : never;
 
 declare const numericMenu: NumericMenuWidget;
 
@@ -3393,12 +6207,6 @@ declare type PlacesInstance = Places.PlacesInstance;
 
 declare type PlacesWidget = WidgetFactory<PlacesWidgetDescription, PlacesWidgetParams, PlacesWidgetParams>;
 
-/**
- * This widget sets the geolocation value for the search based on the selected
- * result in the Algolia Places autocomplete.
- */
-declare const placesWidget: PlacesWidget;
-
 declare type PlacesWidgetDescription = {
     $$type: 'ais.places';
     $$widgetType: 'ais.places';
@@ -3484,6 +6292,14 @@ declare type PoweredByWidgetParams = {
     cssClasses?: PoweredByCSSClasses;
 };
 
+declare type PreparedTemplateProps<TTemplates extends Templates> = {
+    templatesConfig: TemplatesConfig;
+    templates: TTemplates;
+    useCustomCompileOptions: {
+        [TKey in keyof Partial<TTemplates>]: boolean;
+    };
+};
+
 declare type ProvidedInsightsClient = InsightsClient | null | undefined;
 
 declare const queryRuleContext: QueryRuleContextWidget;
@@ -3544,7 +6360,7 @@ declare type QueueItem = QueueItemMap[keyof QueueItemMap];
 declare type QueueItemMap = {
     [MethodName in keyof InsightsMethodMap]: [
     methodName: MethodName,
-    ...args: InsightsMethodMap[MethodName]
+    ...args: InsightsMethodMap[MethodName][0][0]
     ];
 };
 
@@ -3957,7 +6773,7 @@ declare type RatingMenuWidgetDescription = {
     };
     indexUiState: {
         ratingMenu: {
-            [attribute: string]: number;
+            [attribute: string]: number | undefined;
         };
     };
 };
@@ -3985,9 +6801,23 @@ declare type RatingMenuWidgetParams = {
     cssClasses?: RatingMenuCSSClasses;
 };
 
-declare type Read<THit extends BaseHit> = ({ state, }: {
+declare type Read<THit extends NonNullable<object>> = ({ state, }: {
     state: PlainSearchParameters;
 }) => InfiniteHitsCachedHits<THit> | null;
+
+declare type RecommendRenderOptions = SharedRenderOptions & {
+    results: RecommendResponse<any>;
+};
+
+declare type RecommendWidget<TWidgetDescription extends WidgetDescription & WidgetParams> = {
+    dependsOn: 'recommend';
+    $$id?: number;
+    getWidgetParameters: (state: RecommendParameters, widgetParametersOptions: {
+        uiState: Expand<Partial<TWidgetDescription['indexUiState'] & IndexUiState>>;
+    }) => RecommendParameters;
+    getRenderState: (renderState: Expand<IndexRenderState & Partial<TWidgetDescription['indexRenderState']>>, renderOptions: InitOptions | RecommendRenderOptions) => IndexRenderState & TWidgetDescription['indexRenderState'];
+    getWidgetRenderState: (renderOptions: InitOptions | RecommendRenderOptions) => Expand<WidgetRenderState<TWidgetDescription['renderState'], TWidgetDescription['widgetParams']>>;
+};
 
 declare type ReconfigurableOptions = Places.ReconfigurableOptions;
 
@@ -4225,6 +7055,8 @@ declare type RefinementListRenderState = {
     isFromSearch: boolean;
     /**
      * `true` if a refinement can be applied.
+     * @MAJOR: reconsider how `canRefine` is computed so it both accounts for the
+     * items returned in the main search and in SFFV.
      */
     canRefine: boolean;
     /**
@@ -4324,6 +7156,95 @@ declare type RefinementListWidgetParams = {
      * CSS classes to add to the wrapping elements.
      */
     cssClasses?: RefinementListCSSClasses;
+};
+
+declare type RelatedProductsConnectorParams<THit extends NonNullable<object> = BaseHit> = {
+    /**
+     * The `objectIDs` of the items to get related products from.
+     */
+    objectIDs: string[];
+    /**
+     * The number of recommendations to retrieve.
+     */
+    limit?: number;
+    /**
+     * The threshold for the recommendations confidence score (between 0 and 100).
+     */
+    threshold?: number;
+    /**
+     * List of search parameters to send.
+     */
+    fallbackParameters?: Omit<PlainSearchParameters, 'page' | 'hitsPerPage' | 'offset' | 'length'>;
+    /**
+     * List of search parameters to send.
+     */
+    queryParameters?: Omit<PlainSearchParameters, 'page' | 'hitsPerPage' | 'offset' | 'length'>;
+    /**
+     * Whether to escape HTML tags from items string values.
+     *
+     * @default true
+     */
+    escapeHTML?: boolean;
+    /**
+     * Function to transform the items passed to the templates.
+     */
+    transformItems?: TransformItems<Hit<THit>, {
+        results: RecommendResponse<AlgoliaHit<THit>>;
+    }>;
+};
+
+declare type RelatedProductsCSSClasses = Partial<RecommendClassNames>;
+
+declare type RelatedProductsRenderState<THit extends NonNullable<object> = BaseHit> = {
+    /**
+     * The matched recommendations from the Algolia API.
+     */
+    items: Array<Hit<THit>>;
+    /**
+     * Sends an event to the Insights middleware.
+     */
+    sendEvent: SendEventForHits;
+};
+
+declare type RelatedProductsTemplates<THit extends NonNullable<object> = BaseHit> = Partial<{
+    /**
+     * Template to use when there are no results.
+     */
+    empty: Template<RecommendResponse<Hit<THit>>>;
+    /**
+     * Template to use for the header of the widget.
+     */
+    header: Template<Pick<Parameters<NonNullable<RelatedProductsProps<Hit<THit>>['headerComponent']>>[0], 'items'> & {
+        cssClasses: RecommendClassNames;
+    }>;
+    /**
+     * Template to use for each result. This template will receive an object containing a single record.
+     */
+    item: TemplateWithBindEvent<Hit<THit>>;
+    /**
+     * Template to use to wrap all items.
+     */
+    layout: Template<Pick<Parameters<NonNullable<RelatedProductsProps<Hit<THit>>['layout']>>[0], 'items'> & {
+        templates: {
+            item: RelatedProductsProps<Hit<THit>>['itemComponent'];
+        };
+        cssClasses: Pick<RelatedProductsCSSClasses, 'list' | 'item'>;
+    }>;
+}>;
+
+declare type RelatedProductsWidgetParams<THit extends NonNullable<object> = BaseHit> = {
+    /**
+     * CSS selector or `HTMLElement` to insert the widget into.
+     */
+    container: string | HTMLElement;
+    /**
+     * Templates to customize the widget.
+     */
+    templates?: RelatedProductsTemplates<THit>;
+    /**
+     * CSS classes to add to the widget elements.
+     */
+    cssClasses?: RelatedProductsCSSClasses;
 };
 
 declare const relevantSort: RelevantSortWidget;
@@ -4430,7 +7351,7 @@ declare type RendererOptions<TWidgetParams> = {
 };
 
 declare type RenderOptions = SharedRenderOptions & {
-    results: SearchResults;
+    results: SearchResults | null;
 };
 
 declare type RenderState = {
@@ -4447,7 +7368,7 @@ declare function renderTemplate({ templates, templateKey, compileOptions, helper
     data?: Record<string, any>;
     bindEvent?: BindEventForHits;
     sendEvent?: SendEventForHits;
-}): string | VNode<    {}> | VNode<    {}>[];
+}): string | VNode<    {}> | VNode<    {}>[] | null;
 
 declare type RequiredKeys<TObject, TKeys extends keyof TObject> = Expand<Required<Pick<TObject, TKeys>> & Omit<TObject, TKeys>>;
 
@@ -4509,6 +7430,10 @@ declare type RequiredWidgetLifeCycle<TWidgetDescription extends WidgetDescriptio
      */
     init?: (options: InitOptions) => void;
     /**
+     * Whether `render` should be called
+     */
+    shouldRender?: (options: ShouldRenderOptions) => boolean;
+    /**
      * Called after each search response has been received.
      */
     render?: (options: RenderOptions) => void;
@@ -4516,7 +7441,7 @@ declare type RequiredWidgetLifeCycle<TWidgetDescription extends WidgetDescriptio
      * Called when this widget is unmounted. Used to remove refinements set by
      * during this widget's initialization and life time.
      */
-    dispose?: (options: DisposeOptions) => SearchParameters | void;
+    dispose?: (options: DisposeOptions) => SearchParameters | RecommendParameters | void;
 };
 
 declare type RequiredWidgetType<TWidgetDescription extends WidgetDescription> = {
@@ -4636,7 +7561,7 @@ declare namespace routers {
 
 declare type ScopedResult = {
     indexId: string;
-    results: SearchResults;
+    results: SearchResults | null;
     helper: AlgoliaSearchHelper;
 };
 
@@ -4789,6 +7714,12 @@ declare type SearchBoxWidgetParams = {
      */
     searchAsYouType?: boolean;
     /**
+     * Whether to update the search state in the middle of a
+     * composition session.
+     * @default false
+     */
+    ignoreCompositionEvents?: boolean;
+    /**
      * Whether to show the reset button
      */
     showReset?: boolean;
@@ -4817,6 +7748,13 @@ declare type SearchBoxWidgetParams = {
     queryHook?: (query: string, hook: (value: string) => void) => void;
 };
 
+declare type SearchWidget<TWidgetDescription extends WidgetDescription> = {
+    dependsOn?: 'search';
+    getWidgetParameters?: (state: SearchParameters, widgetParametersOptions: {
+        uiState: Expand<Partial<TWidgetDescription['indexUiState'] & IndexUiState>>;
+    }) => SearchParameters;
+};
+
 declare type SendEvent = (...args: [InsightsEvent] | [string, string, string?]) => void;
 
 declare type SendEventForFacet = BuiltInSendEventForFacet & CustomSendEventForFacet;
@@ -4841,6 +7779,10 @@ declare type SharedRenderOptions = {
     status: InstantSearch['status'];
     error: InstantSearch['error'];
     createURL: (nextState: SearchParameters | ((state: IndexUiState) => IndexUiState)) => string;
+};
+
+declare type ShouldRenderOptions = {
+    instantSearchInstance: InstantSearch;
 };
 
 declare function simpleStateMapping<TUiState extends UiState = UiState>(): StateMapping<TUiState, TUiState>;
@@ -5165,12 +8107,16 @@ declare type StatsWidgetParams = {
 
 declare type Status = 'initial' | 'askingPermission' | 'waiting' | 'recognizing' | 'finished' | 'error';
 
-declare type Template<TTemplateData = void> = string | ((data: TTemplateData, params: TemplateParams) => VNode | VNode[] | string);
+declare type Template<TTemplateData = void> = string | ((data: TTemplateData, params: TemplateParams) => VNode | VNode[] | string | null);
+
+declare type Template_2 = (params: {
+    html: typeof html;
+}) => VNode_2 | VNode_2[] | null;
 
 declare type TemplateParams = {
     html: typeof html;
     components: {
-        Highlight: typeof Highlight;
+        Highlight: typeof Highlight_2;
         ReverseHighlight: typeof ReverseHighlight;
         Snippet: typeof Snippet;
         ReverseSnippet: typeof ReverseSnippet;
@@ -5180,6 +8126,17 @@ declare type TemplateParams = {
 
 declare type Templates = {
     [key: string]: Template<any> | TemplateWithBindEvent<any> | undefined;
+};
+
+declare namespace templates {
+    export {
+        carousel
+    }
+}
+
+declare type TemplatesConfig = {
+    helpers?: HoganHelpers;
+    compileOptions?: HoganOptions;
 };
 
 declare type TemplateWithBindEvent<TTemplateData = void> = string | ((data: TTemplateData, params: TemplateWithBindEventParams) => VNode | VNode[] | string);
@@ -5300,9 +8257,7 @@ declare type ToggleRefinementTemplates = Partial<{
     /**
      * the text that describes the toggle action
      */
-    labelText: Template<ToggleRefinementValue & {
-        name: string;
-    }>;
+    labelText: Template<ToggleRefinementRenderState['value']>;
 }>;
 
 declare type ToggleRefinementValue = {
@@ -5358,10 +8313,107 @@ declare type TrackedFilterRefinement = string | number | boolean;
 declare type TransformItems<TItem, TMetadata = TransformItemsMetadata> = (items: TItem[], metadata: TMetadata) => TItem[];
 
 declare type TransformItemsMetadata = {
-    results?: SearchResults;
+    results: SearchResults | undefined | null;
 };
 
 declare type TransformSearchParameters = (searchParameters: SearchParameters) => PlainSearchParameters;
+
+declare type TrendingItemsConnectorParams<THit extends NonNullable<object> = BaseHit> = ({
+    /**
+     * The facet attribute to get recommendations for.
+     */
+    facetName: string;
+    /**
+     * The facet value to get recommendations for.
+     */
+    facetValue: string;
+} | {
+    facetName?: string;
+    facetValue?: string;
+}) & {
+    /**
+     * The number of recommendations to retrieve.
+     */
+    limit?: number;
+    /**
+     * The threshold for the recommendations confidence score (between 0 and 100).
+     */
+    threshold?: number;
+    /**
+     * List of search parameters to send.
+     */
+    fallbackParameters?: Omit<PlainSearchParameters, 'page' | 'hitsPerPage' | 'offset' | 'length'>;
+    /**
+     * List of search parameters to send.
+     */
+    queryParameters?: Omit<PlainSearchParameters, 'page' | 'hitsPerPage' | 'offset' | 'length'>;
+    /**
+     * Whether to escape HTML tags from items string values.
+     *
+     * @default true
+     */
+    escapeHTML?: boolean;
+    /**
+     * Function to transform the items passed to the templates.
+     */
+    transformItems?: TransformItems<Hit<THit>, {
+        results: RecommendResponse<AlgoliaHit<THit>>;
+    }>;
+};
+
+declare type TrendingItemsCSSClasses = Partial<RecommendClassNames>;
+
+declare type TrendingItemsRenderState<THit extends NonNullable<object> = BaseHit> = {
+    /**
+     * The matched recommendations from the Algolia API.
+     */
+    items: Array<Hit<THit>>;
+    /**
+     * Sends an event to the Insights middleware.
+     */
+    sendEvent: SendEventForHits;
+};
+
+declare type TrendingItemsTemplates<THit extends NonNullable<object> = BaseHit> = Partial<{
+    /**
+     * Template to use when there are no results.
+     */
+    empty: Template<RecommendResponse<Hit<THit>>>;
+    /**
+     * Template to use for the header of the widget.
+     */
+    header: Template<Pick<Parameters<NonNullable<TrendingItemsProps<Hit<THit>>['headerComponent']>>[0], 'items'> & {
+        cssClasses: RecommendClassNames;
+    }>;
+    /**
+     * Template to use for each result. This template will receive an object containing a single record.
+     */
+    item: TemplateWithBindEvent<Hit<THit>>;
+    /**
+     * Template to use to wrap all items.
+     */
+    layout: Template<Pick<Parameters<NonNullable<TrendingItemsProps<Hit<THit>>['layout']>>[0], 'items'> & {
+        templates: {
+            item: TrendingItemsProps<Hit<THit>>['itemComponent'];
+        };
+        cssClasses: Pick<TrendingItemsCSSClasses, 'list' | 'item'>;
+    }>;
+}>;
+
+declare type TrendingItemsWidgetParams<THit extends NonNullable<object> = BaseHit> = {
+    /**
+     * CSS selector or `HTMLElement` to insert the widget into.
+     */
+    container: string | HTMLElement;
+    /**
+     * Templates to customize the widget.
+     */
+    templates?: TrendingItemsTemplates<THit>;
+    /**
+     * CSS classes to add to the widget elements.
+     */
+    cssClasses?: TrendingItemsCSSClasses;
+};
 
 declare type UiState = {
     [indexId: string]: IndexUiState;
@@ -5468,7 +8520,7 @@ declare type VoiceSearchWidgetParams = {
 
 declare type Widget<TWidgetDescription extends WidgetDescription & WidgetParams = {
     $$type: string;
-}> = Expand<RequiredWidgetLifeCycle<TWidgetDescription> & WidgetType<TWidgetDescription> & UiStateLifeCycle<TWidgetDescription> & RenderStateLifeCycle<TWidgetDescription>>;
+}> = Expand<RequiredWidgetLifeCycle<TWidgetDescription> & WidgetType<TWidgetDescription> & UiStateLifeCycle<TWidgetDescription> & RenderStateLifeCycle<TWidgetDescription>> & (SearchWidget<TWidgetDescription> | RecommendWidget<TWidgetDescription>);
 
 declare type WidgetDescription = {
     $$type: string;
@@ -5502,6 +8554,7 @@ declare type WidgetRenderStates = AnalyticsWidgetDescription['indexRenderState']
 declare namespace widgets {
     export {
         EXPERIMENTAL_answers,
+        EXPERIMENTAL_configureRelatedItems,
         EXPERIMENTAL_dynamicWidgets,
         dynamicWidgets,
         analytics,
@@ -5509,22 +8562,23 @@ declare namespace widgets {
         clearRefinements,
         configure,
         currentRefinements,
-        configureRelatedItems as EXPERIMENTAL_configureRelatedItems,
-        geoSearch,
+        _default_8 as geoSearch,
         hierarchicalMenu,
-        hits,
+        _default_9 as hits,
         hitsPerPage,
         index,
-        infiniteHits,
+        IndexWidget,
+        _default_10 as infiniteHits,
         menu,
         menuSelect,
         numericMenu,
         pagination,
         panel,
-        placesWidget as places,
+        _default_11 as places,
         poweredBy,
         queryRuleContext,
         queryRuleCustomData,
+        _default_12 as relatedProducts,
         rangeInput,
         rangeSlider,
         ratingMenu,
@@ -5534,7 +8588,10 @@ declare namespace widgets {
         sortBy,
         stats,
         toggleRefinement,
-        voiceSearch
+        _default_13 as trendingItems,
+        voiceSearch,
+        _default_14 as frequentlyBoughtTogether,
+        _default_15 as lookingSimilar
     }
 }
 
@@ -5547,7 +8604,7 @@ declare type WidgetType<TWidgetDescription extends WidgetDescription> = TWidgetD
 
 declare type WidgetUiStates = PlacesWidgetDescription['indexUiState'];
 
-declare type Write<THit extends BaseHit> = ({ state, hits, }: {
+declare type Write<THit extends NonNullable<object>> = ({ state, hits, }: {
     state: PlainSearchParameters;
     hits: InfiniteHitsCachedHits<THit>;
 }) => void;

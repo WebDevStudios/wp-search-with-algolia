@@ -4,7 +4,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
-var _uiComponentsShared = require("@algolia/ui-components-shared");
+var _instantsearchUiComponents = require("instantsearch-ui-components");
 var _preact = require("preact");
 var _RefinementList = _interopRequireDefault(require("../../components/RefinementList/RefinementList"));
 var _connectRefinementList = _interopRequireDefault(require("../../connectors/refinement-list/connectRefinementList"));
@@ -14,12 +14,12 @@ var _utils = require("../../lib/utils");
 var _defaultTemplates = _interopRequireDefault(require("../search-box/defaultTemplates"));
 var _defaultTemplates2 = _interopRequireDefault(require("./defaultTemplates"));
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
-function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
+function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
+function ownKeys(e, r) { var t = Object.keys(e); if (Object.getOwnPropertySymbols) { var o = Object.getOwnPropertySymbols(e); r && (o = o.filter(function (r) { return Object.getOwnPropertyDescriptor(e, r).enumerable; })), t.push.apply(t, o); } return t; }
+function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t = null != arguments[r] ? arguments[r] : {}; r % 2 ? ownKeys(Object(t), !0).forEach(function (r) { _defineProperty(e, r, t[r]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(t)) : ownKeys(Object(t)).forEach(function (r) { Object.defineProperty(e, r, Object.getOwnPropertyDescriptor(t, r)); }); } return e; }
 function _defineProperty(obj, key, value) { key = _toPropertyKey(key); if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-function _toPropertyKey(arg) { var key = _toPrimitive(arg, "string"); return _typeof(key) === "symbol" ? key : String(key); }
-function _toPrimitive(input, hint) { if (_typeof(input) !== "object" || input === null) return input; var prim = input[Symbol.toPrimitive]; if (prim !== undefined) { var res = prim.call(input, hint || "default"); if (_typeof(res) !== "object") return res; throw new TypeError("@@toPrimitive must return a primitive value."); } return (hint === "string" ? String : Number)(input); }
+function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" == _typeof(i) ? i : String(i); }
+function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != _typeof(i)) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
 var withUsage = (0, _utils.createDocumentationMessageGenerator)({
   name: 'refinement-list'
 });
@@ -125,69 +125,69 @@ var refinementList = function refinementList(widgetParams) {
   var escapeFacetValues = searchable ? Boolean(searchableEscapeFacetValues) : false;
   var containerNode = (0, _utils.getContainerNode)(container);
   var cssClasses = {
-    root: (0, _uiComponentsShared.cx)(suit(), userCssClasses.root),
-    noRefinementRoot: (0, _uiComponentsShared.cx)(suit({
+    root: (0, _instantsearchUiComponents.cx)(suit(), userCssClasses.root),
+    noRefinementRoot: (0, _instantsearchUiComponents.cx)(suit({
       modifierName: 'noRefinement'
     }), userCssClasses.noRefinementRoot),
-    list: (0, _uiComponentsShared.cx)(suit({
+    list: (0, _instantsearchUiComponents.cx)(suit({
       descendantName: 'list'
     }), userCssClasses.list),
-    item: (0, _uiComponentsShared.cx)(suit({
+    item: (0, _instantsearchUiComponents.cx)(suit({
       descendantName: 'item'
     }), userCssClasses.item),
-    selectedItem: (0, _uiComponentsShared.cx)(suit({
+    selectedItem: (0, _instantsearchUiComponents.cx)(suit({
       descendantName: 'item',
       modifierName: 'selected'
     }), userCssClasses.selectedItem),
-    searchBox: (0, _uiComponentsShared.cx)(suit({
+    searchBox: (0, _instantsearchUiComponents.cx)(suit({
       descendantName: 'searchBox'
     }), userCssClasses.searchBox),
-    label: (0, _uiComponentsShared.cx)(suit({
+    label: (0, _instantsearchUiComponents.cx)(suit({
       descendantName: 'label'
     }), userCssClasses.label),
-    checkbox: (0, _uiComponentsShared.cx)(suit({
+    checkbox: (0, _instantsearchUiComponents.cx)(suit({
       descendantName: 'checkbox'
     }), userCssClasses.checkbox),
-    labelText: (0, _uiComponentsShared.cx)(suit({
+    labelText: (0, _instantsearchUiComponents.cx)(suit({
       descendantName: 'labelText'
     }), userCssClasses.labelText),
-    count: (0, _uiComponentsShared.cx)(suit({
+    count: (0, _instantsearchUiComponents.cx)(suit({
       descendantName: 'count'
     }), userCssClasses.count),
-    noResults: (0, _uiComponentsShared.cx)(suit({
+    noResults: (0, _instantsearchUiComponents.cx)(suit({
       descendantName: 'noResults'
     }), userCssClasses.noResults),
-    showMore: (0, _uiComponentsShared.cx)(suit({
+    showMore: (0, _instantsearchUiComponents.cx)(suit({
       descendantName: 'showMore'
     }), userCssClasses.showMore),
-    disabledShowMore: (0, _uiComponentsShared.cx)(suit({
+    disabledShowMore: (0, _instantsearchUiComponents.cx)(suit({
       descendantName: 'showMore',
       modifierName: 'disabled'
     }), userCssClasses.disabledShowMore),
     searchable: {
-      root: (0, _uiComponentsShared.cx)(searchBoxSuit(), userCssClasses.searchableRoot),
-      form: (0, _uiComponentsShared.cx)(searchBoxSuit({
+      root: (0, _instantsearchUiComponents.cx)(searchBoxSuit(), userCssClasses.searchableRoot),
+      form: (0, _instantsearchUiComponents.cx)(searchBoxSuit({
         descendantName: 'form'
       }), userCssClasses.searchableForm),
-      input: (0, _uiComponentsShared.cx)(searchBoxSuit({
+      input: (0, _instantsearchUiComponents.cx)(searchBoxSuit({
         descendantName: 'input'
       }), userCssClasses.searchableInput),
-      submit: (0, _uiComponentsShared.cx)(searchBoxSuit({
+      submit: (0, _instantsearchUiComponents.cx)(searchBoxSuit({
         descendantName: 'submit'
       }), userCssClasses.searchableSubmit),
-      submitIcon: (0, _uiComponentsShared.cx)(searchBoxSuit({
+      submitIcon: (0, _instantsearchUiComponents.cx)(searchBoxSuit({
         descendantName: 'submitIcon'
       }), userCssClasses.searchableSubmitIcon),
-      reset: (0, _uiComponentsShared.cx)(searchBoxSuit({
+      reset: (0, _instantsearchUiComponents.cx)(searchBoxSuit({
         descendantName: 'reset'
       }), userCssClasses.searchableReset),
-      resetIcon: (0, _uiComponentsShared.cx)(searchBoxSuit({
+      resetIcon: (0, _instantsearchUiComponents.cx)(searchBoxSuit({
         descendantName: 'resetIcon'
       }), userCssClasses.searchableResetIcon),
-      loadingIndicator: (0, _uiComponentsShared.cx)(searchBoxSuit({
+      loadingIndicator: (0, _instantsearchUiComponents.cx)(searchBoxSuit({
         descendantName: 'loadingIndicator'
       }), userCssClasses.searchableLoadingIndicator),
-      loadingIcon: (0, _uiComponentsShared.cx)(searchBoxSuit({
+      loadingIcon: (0, _instantsearchUiComponents.cx)(searchBoxSuit({
         descendantName: 'loadingIcon'
       }), userCssClasses.searchableLoadingIcon)
     }
@@ -223,5 +223,4 @@ var refinementList = function refinementList(widgetParams) {
     $$widgetType: 'ais.refinementList'
   });
 };
-var _default = refinementList;
-exports.default = _default;
+var _default = exports.default = refinementList;
