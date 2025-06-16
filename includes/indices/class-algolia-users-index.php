@@ -255,7 +255,7 @@ final class Algolia_Users_Index extends Algolia_Index {
 		$config = array(
 			'position'        => 30,
 			'max_suggestions' => 3,
-			'debounce       ' => $debounce,
+			'debounce'        => $debounce,
 			'tmpl_suggestion' => 'autocomplete-user-suggestion',
 		);
 
