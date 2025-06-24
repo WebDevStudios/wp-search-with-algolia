@@ -128,6 +128,9 @@ All development is handled on [GitHub](https://github.com/WebDevStudios/wp-searc
 
 Follow along with the changelog on [Github](https://github.com/WebDevStudios/wp-search-with-algolia/releases).
 
+= 2.10.1 =
+* Fixed: Issues around admin notifications on the Autocomplete settings page, introduced in 2.10.0
+
 = 2.10.0 =
 * Added: Debounce option for Autocomplete.
 * Added: Initial integration with Health Panel.
