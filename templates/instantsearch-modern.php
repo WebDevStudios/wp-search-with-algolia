@@ -50,7 +50,7 @@ get_header();
 			// window.aa('setUserToken', 'some-user-id');
 			if ( document.getElementById("algolia-search-box") ) {
 				if ( algolia.indices.searchable_posts === undefined && document.getElementsByClassName("admin-bar").length > 0 ) {
-					alert('<?php esc_html_e( "It looks like you have not indexed the searchable posts index. Please head to the Indexing page of the Algolia Search plugin and index it.", 'wp-search-with-algolia' ); ?>');
+					alert('<?php esc_html_e( 'It looks like you have not indexed the searchable posts index. Please head to the Indexing page of the Algolia Search plugin and index it.', 'wp-search-with-algolia' ); ?>');
 				}
 
 				/* Instantiate instantsearch.js */
