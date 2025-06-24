@@ -4,7 +4,7 @@ Tags: search, algolia, autocomplete, instantsearch, relevance search, faceted se
 Requires at least: 5.3
 Tested up to: 6.8.1
 Requires PHP: 7.4
-Stable tag: 2.10.0
+Stable tag: 2.10.1
 License: GNU General Public License v2.0, MIT License
 
 Use the power of Algolia to enhance your website's search. Enable Autocomplete and Instantsearch for fast and accurate results and relevance.
@@ -127,6 +127,9 @@ All development is handled on [GitHub](https://github.com/WebDevStudios/wp-searc
 == Changelog ==
 
 Follow along with the changelog on [Github](https://github.com/WebDevStudios/wp-search-with-algolia/releases).
+
+= 2.10.1 =
+* Fixed: Issues around admin notifications on the Autocomplete settings page, introduced in 2.10.0
 
 = 2.10.0 =
 * Added: Debounce option for Autocomplete.

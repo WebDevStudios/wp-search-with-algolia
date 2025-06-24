@@ -1,6 +1,6 @@
 {
   "name": "webdevstudios/wp-search-with-algolia",
-  "version": "2.8.3",
+  "version": "2.10.1",
   "description": "Integrate the powerful Algolia search service with WordPress.",
   "authors": [
     {

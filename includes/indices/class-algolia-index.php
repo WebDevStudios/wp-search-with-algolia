@@ -733,8 +733,8 @@ abstract class Algolia_Index {
 	 * @return array Autocomplete config.
 	 */
 	public function get_default_autocomplete_config() {
-		$plugin_settings = new \Algolia_Settings();
-		$debounce        = $plugin_settings->get_autocomplete_debounce();
+		$plugin   = Algolia_Plugin_Factory::create();
+		$debounce = $plugin->get_settings()->get_autocomplete_debounce();
 
 		return array(
 			'index_id'        => $this->get_id(),
