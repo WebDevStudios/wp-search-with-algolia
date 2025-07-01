@@ -2,7 +2,7 @@
 /**
  * @license MIT
  *
- * Modified by WebDevStudios on 23-February-2023 using Strauss.
+ * Modified by WebDevStudios on 01-July-2025 using Strauss.
  * @see https://github.com/BrianHenryIE/strauss
  */
 
@@ -16,7 +16,7 @@ use WebDevStudios\WPSWA\Psr\SimpleCache\CacheInterface;
 
 final class Algolia
 {
-    const VERSION = '3.3.2';
+    const VERSION = '3.4.2';
 
     /**
      * Holds an instance of the simple cache repository (PSR-16).

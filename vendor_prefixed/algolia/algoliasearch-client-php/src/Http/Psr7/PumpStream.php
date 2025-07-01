@@ -2,7 +2,7 @@
 /**
  * @license MIT
  *
- * Modified by WebDevStudios on 23-February-2023 using Strauss.
+ * Modified by WebDevStudios on 01-July-2025 using Strauss.
  * @see https://github.com/BrianHenryIE/strauss
  */
 
@@ -57,7 +57,7 @@ class PumpStream implements StreamInterface
         $this->buffer = new BufferStream();
     }
 
-    public function __toString()
+    public function __toString(): string
     {
         try {
             return copy_to_string($this);
@@ -66,7 +66,7 @@ class PumpStream implements StreamInterface
         }
     }
 
-    public function close()
+    public function close(): void
     {
         $this->detach();
     }
@@ -77,52 +77,52 @@ class PumpStream implements StreamInterface
         $this->source = null;
     }
 
-    public function getSize()
+    public function getSize(): ?int
     {
         return $this->size;
     }
 
-    public function tell()
+    public function tell(): int
     {
         return $this->tellPos;
     }
 
-    public function eof()
+    public function eof(): bool
     {
         return !$this->source;
     }
 
-    public function isSeekable()
+    public function isSeekable(): bool
     {
         return false;
     }
 
-    public function rewind()
+    public function rewind(): void
     {
         $this->seek(0);
     }
 
-    public function seek($offset, $whence = SEEK_SET)
+    public function seek(int $offset, int $whence = SEEK_SET): void
     {
         throw new \RuntimeException('Cannot seek a PumpStream');
     }
 
-    public function isWritable()
+    public function isWritable(): bool
     {
         return false;
     }
 
-    public function write($string)
+    public function write(string $string): int
     {
         throw new \RuntimeException('Cannot write to a PumpStream');
     }
 
-    public function isReadable()
+    public function isReadable(): bool
     {
         return true;
     }
 
-    public function read($length)
+    public function read(int $length): string
     {
         $data = $this->buffer->read($length);
         $readLen = strlen($data);
@@ -138,7 +138,7 @@ class PumpStream implements StreamInterface
         return $data;
     }
 
-    public function getContents()
+    public function getContents(): string
     {
         $result = '';
         while (!$this->eof()) {
@@ -148,13 +148,13 @@ class PumpStream implements StreamInterface
         return $result;
     }
 
-    public function getMetadata($key = null)
+    public function getMetadata(?string $key = null)
     {
         if (!$key) {
             return $this->metadata;
         }
 
-        return isset($this->metadata[$key]) ? $this->metadata[$key] : null;
+        return $this->metadata[$key] ?? null;
     }
 
     private function pump($length)

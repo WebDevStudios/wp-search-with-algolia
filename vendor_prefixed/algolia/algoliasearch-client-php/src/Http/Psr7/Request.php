@@ -2,13 +2,14 @@
 /**
  * @license MIT
  *
- * Modified by WebDevStudios on 23-February-2023 using Strauss.
+ * Modified by WebDevStudios on 01-July-2025 using Strauss.
  * @see https://github.com/BrianHenryIE/strauss
  */
 
 namespace WebDevStudios\WPSWA\Algolia\AlgoliaSearch\Http\Psr7;
 
 use InvalidArgumentException;
+use WebDevStudios\WPSWA\Psr\Http\Message\MessageInterface;
 use WebDevStudios\WPSWA\Psr\Http\Message\RequestInterface;
 use WebDevStudios\WPSWA\Psr\Http\Message\StreamInterface;
 use WebDevStudios\WPSWA\Psr\Http\Message\UriInterface;
@@ -76,7 +77,7 @@ class Request implements RequestInterface
     /**
      * @return string|null
      */
-    public function getRequestTarget()
+    public function getRequestTarget(): string
     {
         if (null !== $this->requestTarget) {
             return $this->requestTarget;
@@ -96,7 +97,7 @@ class Request implements RequestInterface
     /**
      * @return Request
      */
-    public function withRequestTarget($requestTarget)
+    public function withRequestTarget($requestTarget): RequestInterface
     {
         if (preg_match('#\s#', $requestTarget)) {
             throw new InvalidArgumentException('Invalid request target provided; cannot contain whitespace');
@@ -108,10 +109,7 @@ class Request implements RequestInterface
         return $new;
     }
 
-    /**
-     * @return string
-     */
-    public function getMethod()
+    public function getMethod(): string
     {
         return $this->method;
     }
@@ -119,7 +117,7 @@ class Request implements RequestInterface
     /**
      * @return Request
      */
-    public function withMethod($method)
+    public function withMethod(string $method): RequestInterface
     {
         $new = clone $this;
         $new->method = strtoupper($method);
@@ -130,7 +128,7 @@ class Request implements RequestInterface
     /**
      * @return Uri|UriInterface|string
      */
-    public function getUri()
+    public function getUri(): UriInterface
     {
         return $this->uri;
     }
@@ -138,7 +136,7 @@ class Request implements RequestInterface
     /**
      * @return Request
      */
-    public function withUri(UriInterface $uri, $preserveHost = false)
+    public function withUri(UriInterface $uri, $preserveHost = false): RequestInterface
     {
         if ($uri === $this->uri) {
             return $this;
@@ -180,10 +178,7 @@ class Request implements RequestInterface
         $this->headers = [$header => [$host]] + $this->headers;
     }
 
-    /**
-     * @return string
-     */
-    public function getProtocolVersion()
+    public function getProtocolVersion(): string
     {
         return $this->protocol;
     }
@@ -191,7 +186,7 @@ class Request implements RequestInterface
     /**
      * @return Request
      */
-    public function withProtocolVersion($version)
+    public function withProtocolVersion(string $version): MessageInterface
     {
         if ($this->protocol === $version) {
             return $this;
@@ -202,60 +197,48 @@ class Request implements RequestInterface
         return $new;
     }
 
-    /**
-     * @return array
-     */
-    public function getHeaders()
+    public function getHeaders(): array
     {
         return $this->headers;
     }
 
-    /**
-     * @return bool
-     */
-    public function hasHeader($header)
+    public function hasHeader(string $name): bool
     {
-        return isset($this->headerNames[strtolower($header)]);
+        return isset($this->headerNames[strtolower($name)]);
     }
 
     /**
      * @return array|mixed
      */
-    public function getHeader($header)
+    public function getHeader(string $name): array
     {
-        $header = strtolower($header);
-        if (!isset($this->headerNames[$header])) {
+        $name = strtolower($name);
+        if (!isset($this->headerNames[$name])) {
             return [];
         }
-        $header = $this->headerNames[$header];
+        $name = $this->headerNames[$name];
 
-        return $this->headers[$header];
+        return $this->headers[$name];
     }
 
-    /**
-     * @return string
-     */
-    public function getHeaderLine($header)
+    public function getHeaderLine(string $name): string
     {
-        return implode(', ', $this->getHeader($header));
+        return implode(', ', $this->getHeader($name));
     }
 
-    /**
-     * @return Request
-     */
-    public function withHeader($header, $value)
+    public function withHeader(string $name, $value): MessageInterface
     {
         if (!is_array($value)) {
             $value = [$value];
         }
         $value = $this->trimHeaderValues($value);
-        $normalized = strtolower($header);
+        $normalized = strtolower($name);
         $new = clone $this;
         if (isset($new->headerNames[$normalized])) {
             unset($new->headers[$new->headerNames[$normalized]]);
         }
-        $new->headerNames[$normalized] = $header;
-        $new->headers[$header] = $value;
+        $new->headerNames[$normalized] = $name;
+        $new->headers[$name] = $value;
 
         return $new;
     }
@@ -263,20 +246,20 @@ class Request implements RequestInterface
     /**
      * @return Request
      */
-    public function withAddedHeader($header, $value)
+    public function withAddedHeader(string $name, $value): MessageInterface
     {
         if (!is_array($value)) {
             $value = [$value];
         }
         $value = $this->trimHeaderValues($value);
-        $normalized = strtolower($header);
+        $normalized = strtolower($name);
         $new = clone $this;
         if (isset($new->headerNames[$normalized])) {
-            $header = $this->headerNames[$normalized];
-            $new->headers[$header] = array_merge($this->headers[$header], $value);
+            $name = $this->headerNames[$normalized];
+            $new->headers[$name] = array_merge($this->headers[$name], $value);
         } else {
-            $new->headerNames[$normalized] = $header;
-            $new->headers[$header] = $value;
+            $new->headerNames[$normalized] = $name;
+            $new->headers[$name] = $value;
         }
 
         return $new;
@@ -285,15 +268,15 @@ class Request implements RequestInterface
     /**
      * @return Request
      */
-    public function withoutHeader($header)
+    public function withoutHeader(string $name): MessageInterface
     {
-        $normalized = strtolower($header);
+        $normalized = strtolower($name);
         if (!isset($this->headerNames[$normalized])) {
             return $this;
         }
-        $header = $this->headerNames[$normalized];
+        $name = $this->headerNames[$normalized];
         $new = clone $this;
-        unset($new->headers[$header], $new->headerNames[$normalized]);
+        unset($new->headers[$name], $new->headerNames[$normalized]);
 
         return $new;
     }
@@ -301,7 +284,7 @@ class Request implements RequestInterface
     /**
      * @return PumpStream|Stream|StreamInterface
      */
-    public function getBody()
+    public function getBody(): StreamInterface
     {
         if (!$this->stream) {
             $this->stream = stream_for('');
@@ -313,7 +296,7 @@ class Request implements RequestInterface
     /**
      * @return Request
      */
-    public function withBody(StreamInterface $body)
+    public function withBody(StreamInterface $body): MessageInterface
     {
         if ($body === $this->stream) {
             return $this;
