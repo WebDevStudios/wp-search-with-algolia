@@ -103,7 +103,7 @@ get_header();
 						}
 					},
 					// https://www.algolia.com/doc/guides/building-search-ui/events/js/
-					insights: algolia.events_enabled,
+					insights: algolia.insights_enabled,
 				});
 
 				search.addWidgets([
