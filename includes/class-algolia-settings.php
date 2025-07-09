@@ -521,6 +521,12 @@ class Algolia_Settings {
 		update_option( 'algolia_powered_by_enabled', 'no' );
 	}
 
+	/**
+	 * Determine if Insights is enabled.
+	 *
+	 * @since NEXT
+	 * @return bool
+	 */
 	public function is_insights_enabled() {
 		return 'yes' === get_option( 'algolia_insights_enabled', 'no' );
 	}
