@@ -34,6 +34,7 @@ class Algolia_Settings {
 		add_option( 'algolia_index_name_prefix', 'wp_' );
 		add_option( 'algolia_api_is_reachable', 'no' );
 		add_option( 'algolia_powered_by_enabled', 'yes' );
+		add_option( 'algolia_insights_enabled', 'no' );
 	}
 
 	/**
@@ -520,8 +521,8 @@ class Algolia_Settings {
 		update_option( 'algolia_powered_by_enabled', 'no' );
 	}
 
-	public function is_events_enabled() {
-		return 'yes' === get_option( 'algolia_events_enabled', 'no' );
+	public function is_insights_enabled() {
+		return 'yes' === get_option( 'algolia_insights_enabled', 'no' );
 	}
 
 	/**
