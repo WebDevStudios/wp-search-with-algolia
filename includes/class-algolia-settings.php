@@ -520,6 +520,10 @@ class Algolia_Settings {
 		update_option( 'algolia_powered_by_enabled', 'no' );
 	}
 
+	public function is_events_enabled() {
+		return 'yes' === get_option( 'algolia_events_enabled', 'no' );
+	}
+
 	/**
 	 * Return the version keyword for Instantsearch version to use.
 	 *
