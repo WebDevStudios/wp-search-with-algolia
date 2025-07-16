@@ -39,7 +39,7 @@ class Algolia_Template_Loader {
 		if (
 			! $this->should_load_autocomplete() &&
 			! $settings->should_override_search_with_instantsearch() &&
-			! apply_filters( 'algolia_is_fse_theme', false )
+			! apply_filters( 'algolia_is_block_theme', false )
 		) {
 			return;
 		}
