@@ -3,7 +3,7 @@
  * Debug admin template partial.
  *
  * @author  WebDevStudios <contact@webdevstudios.com>
- * @since   2.8.3
+ * @since   2.10.1
  * @package WebDevStudios\WPSWA
  */
 
