@@ -7,12 +7,61 @@
  * @package WebDevStudios\WPSWA
  */
 
+/**
+ * Algolia_Admin_Page_Debug class.
+ *
+ * @since 2.10.1
+ */
 class Algolia_Admin_Page_Debug {
 
+	/**
+	 * Admin page slug.
+	 *
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 * @since  2.10.1
+	 *
+	 * @var string
+	 */
 	private $slug = 'algolia-debug';
+
+	/**
+	 * Admin page capabilities.
+	 *
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 * @since  2.10.1
+	 *
+	 * @var string
+	 */
 	private $capability = 'manage_options';
+
+	/**
+	 * Admin page section.
+	 *
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 * @since  2.10.1
+	 *
+	 * @var string
+	 */
 	private $section = 'algolia_section_debug';
+
+	/**
+	 * Admin page option group.
+	 *
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 * @since  2.10.1
+	 *
+	 * @var string
+	 */
 	private $option_group = 'algolia_settings';
+
+	/**
+	 * Plugin instance.
+	 *
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 * @since  2.10.1
+	 *
+	 * @var Algolia_Plugin
+	 */
 	private $plugin;
 
 	/**
