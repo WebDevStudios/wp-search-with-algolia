@@ -466,20 +466,26 @@ abstract class Algolia_Index {
 			$records      = array_merge( $records, $item_records );
 			do_action( 'algolia_after_get_records', $item );
 
-			$this->update_records( $item, $item_records );
+			// Retry logic for update_records (rate limit handling)
+			$max_retries = 3;
+			$retry = 0;
+			while ( true ) {
+				try {
+					$this->update_records( $item, $item_records );
+					break; // Success
+				} catch ( \Exception $e ) {
+					if ( strpos( strtolower( $e->getMessage() ), 'rate limit' ) !== false && $retry < $max_retries ) {
+						$wait = pow( 2, $retry ); // 1, 2, 4 seconds
+						sleep( $wait );
+						$retry++;
+						continue;
+					}
+					throw $e;
+				}
+			}
 		}
 
 		if ( ! empty( $records ) ) {
-
-			/**
-			 * Filters the records to be reindexed.
-			 *
-			 * @since 2.1.0
-			 *
-			 * @param array  $records  Array of records to re-index.
-			 * @param int    $page     Page to re-index.
-			 * @param string $index_id The index ID without prefix.
-			 */
 			$records = apply_filters(
 				'algolia_re_index_records',
 				$records,
@@ -490,19 +496,28 @@ abstract class Algolia_Index {
 			try {
 				$sanitized_records = $this->sanitize_json_data( $records );
 			} catch ( \Throwable $throwable ) {
-				error_log( $throwable->getMessage() ); // phpcs:ignore -- Need a real logger.
+				error_log( $throwable->getMessage() );
 			}
 		}
 
 		// Don't saveObjects if sanitize_json_data failed.
 		if ( ! empty( $sanitized_records ) ) {
-
 			$index = $this->get_index();
-
-			try {
-				$index->saveObjects( $sanitized_records );
-			} catch ( \Throwable $throwable ) {
-				error_log( $throwable->getMessage() ); // phpcs:ignore -- Need a real logger.
+			$max_retries = 3;
+			$retry = 0;
+			while ( true ) {
+				try {
+					$index->saveObjects( $sanitized_records );
+					break; // Success
+				} catch ( \Exception $e ) {
+					if ( strpos( strtolower( $e->getMessage() ), 'rate limit' ) !== false && $retry < $max_retries ) {
+						$wait = pow( 2, $retry );
+						sleep( $wait );
+						$retry++;
+						continue;
+					}
+					throw $e;
+				}
 			}
 		}
 
@@ -510,6 +525,9 @@ abstract class Algolia_Index {
 		 * Set the reindexing bit back to false.
 		 */
 		$this->reindexing = false;
+
+		// Add a delay between batches to avoid rate limiting
+		sleep(5); // Gentle: 5 second delay
 
 		if ( $page === $max_num_pages ) {
 			do_action( 'algolia_re_indexed_items', $this->get_id() );
@@ -673,10 +691,9 @@ abstract class Algolia_Index {
 	 *
 	 * @return int
 	 */
-	public function get_re_index_batch_size() {
-		$batch_size = (int) apply_filters( 'algolia_indexing_batch_size', 100 );
+	protected function get_re_index_batch_size() {
+		$batch_size = (int) apply_filters( 'algolia_indexing_batch_size', 10 ); // Gentle: batch size 10
 		$batch_size = (int) apply_filters( 'algolia_' . $this->get_id() . '_indexing_batch_size', $batch_size );
-
 		return $batch_size;
 	}
 
@@ -716,13 +733,12 @@ abstract class Algolia_Index {
 	 * @author WebDevStudios <contact@webdevstudios.com>
 	 * @since  1.0.0
 	 *
-	 * @param int   $page         The page.
-	 * @param int   $batch_size   The batch size.
-	 * @param array $specific_ids Array of IDs to retrieve and index.
+	 * @param int $page       The page.
+	 * @param int $batch_size The batch size.
 	 *
 	 * @return array
 	 */
-	abstract protected function get_items( $page, $batch_size, $specific_ids = [] );
+	abstract protected function get_items( $page, $batch_size );
 
 	/**
 	 * Get default autocomplete config.
@@ -730,12 +746,9 @@ abstract class Algolia_Index {
 	 * @author WebDevStudios <contact@webdevstudios.com>
 	 * @since  1.0.0
 	 *
-	 * @return array Autocomplete config.
+	 * @return array
 	 */
 	public function get_default_autocomplete_config() {
-		$plugin   = Algolia_Plugin_Factory::create();
-		$debounce = $plugin->get_settings()->get_autocomplete_debounce();
-
 		return array(
 			'index_id'        => $this->get_id(),
 			'index_name'      => $this->get_name(),
@@ -743,7 +756,6 @@ abstract class Algolia_Index {
 			'admin_name'      => $this->get_admin_name(),
 			'position'        => 10,
 			'max_suggestions' => 5,
-			'debounce'        => $debounce,
 			'tmpl_suggestion' => 'autocomplete-post-suggestion',
 		);
 	}
