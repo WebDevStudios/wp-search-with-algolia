@@ -55,9 +55,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 			echo '<table class="widefat striped"><thead><tr><th>' . esc_html__( 'Index', 'wp-search-with-algolia' ) . '</th><th>' . esc_html__( 'Enabled', 'wp-search-with-algolia' ) . '</th><th>' . esc_html__( 'Exists in Algolia', 'wp-search-with-algolia' ) . '</th><th>' . esc_html__( 'Status', 'wp-search-with-algolia' ) . '</th></tr></thead><tbody>';
 			foreach ( $indices as $index ) {
 				$enabled = method_exists( $index, 'is_enabled' ) ? $index->is_enabled() : false;
-				$exists = method_exists( $index, 'exists' ) ? $index->exists() : false;
-				$name = method_exists( $index, 'get_admin_name' ) ? $index->get_admin_name() : ( method_exists( $index, 'get_id' ) ? $index->get_id() : 'Unknown' );
-				$status = $exists ? esc_html__( 'OK', 'wp-search-with-algolia' ) : '';
+				$exists  = method_exists( $index, 'exists' ) ? $index->exists() : false;
+				$name    = method_exists( $index, 'get_admin_name' ) ? $index->get_admin_name() : ( method_exists( $index, 'get_id' ) ? $index->get_id() : 'Unknown' );
+				$status  = $exists ? esc_html__( 'OK', 'wp-search-with-algolia' ) : '';
 				echo '<tr>';
 				echo '<td>' . esc_html( $name ) . '</td>';
 				echo '<td>' . ( $enabled ? esc_html__( 'Yes', 'wp-search-with-algolia' ) : esc_html__( 'No', 'wp-search-with-algolia' ) ) . '</td>';
@@ -141,15 +141,15 @@ if ( ! defined( 'ABSPATH' ) ) {
 	<?php
 	$debug_log_path = ABSPATH . 'wp-content/debug.log';
 	if ( file_exists( $debug_log_path ) && is_readable( $debug_log_path ) ) {
-		$lines = file( $debug_log_path );
+		$lines         = file( $debug_log_path );
 		// Filter for lines containing 'algolia' (case-insensitive).
 		$algolia_lines = array_filter( $lines, function( $line ) {
 			return stripos( $line, 'algolia' ) !== false;
 		} );
-		$line_count = count( $algolia_lines );
-		$max_lines = 50;
-		$start = max( 0, $line_count - $max_lines );
-		$recent_lines = array_slice( $algolia_lines, $start );
+		$line_count    = count( $algolia_lines );
+		$max_lines     = 50;
+		$start         = max( 0, $line_count - $max_lines );
+		$recent_lines  = array_slice( $algolia_lines, $start );
 		if ( $recent_lines ) {
 			?>
 			<b><?php esc_html_e( 'Recent Algolia Debug Log Entries', 'wp-search-with-algolia' ); ?></b>
