@@ -141,11 +141,14 @@ if ( ! defined( 'ABSPATH' ) ) {
 	<?php
 	$debug_log_path = ABSPATH . 'wp-content/debug.log';
 	if ( file_exists( $debug_log_path ) && is_readable( $debug_log_path ) ) {
-		$lines         = file( $debug_log_path );
+		$lines = file( $debug_log_path );
 		// Filter for lines containing 'algolia' (case-insensitive).
-		$algolia_lines = array_filter( $lines, function( $line ) {
-			return stripos( $line, 'algolia' ) !== false;
-		} );
+		$algolia_lines = array_filter(
+			$lines,
+			function( $line ) {
+				return stripos( $line, 'algolia' ) !== false;
+			}
+		);
 		$line_count    = count( $algolia_lines );
 		$max_lines     = 50;
 		$start         = max( 0, $line_count - $max_lines );

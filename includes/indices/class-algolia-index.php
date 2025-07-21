@@ -468,11 +468,11 @@ abstract class Algolia_Index {
 
 			// Retry logic for update_records (rate limit handling)
 			$max_retries = 3;
-			$retry = 0;
+			$retry       = 0;
 			while ( true ) {
 				try {
 					$this->update_records( $item, $item_records );
-					break; // Success
+					break; // Success.
 				} catch ( \Exception $e ) {
 					if ( strpos( strtolower( $e->getMessage() ), 'rate limit' ) !== false && $retry < $max_retries ) {
 						$wait = pow( 2, $retry ); // 1, 2, 4 seconds
@@ -502,13 +502,13 @@ abstract class Algolia_Index {
 
 		// Don't saveObjects if sanitize_json_data failed.
 		if ( ! empty( $sanitized_records ) ) {
-			$index = $this->get_index();
+			$index       = $this->get_index();
 			$max_retries = 3;
-			$retry = 0;
+			$retry       = 0;
 			while ( true ) {
 				try {
 					$index->saveObjects( $sanitized_records );
-					break; // Success
+					break; // Success.
 				} catch ( \Exception $e ) {
 					if ( strpos( strtolower( $e->getMessage() ), 'rate limit' ) !== false && $retry < $max_retries ) {
 						$wait = pow( 2, $retry );
@@ -527,7 +527,7 @@ abstract class Algolia_Index {
 		$this->reindexing = false;
 
 		// Add a delay between batches to avoid rate limiting
-		sleep(5); // Gentle: 5 second delay
+		sleep(5); // Gentle: 5 second delay.
 
 		if ( $page === $max_num_pages ) {
 			do_action( 'algolia_re_indexed_items', $this->get_id() );
