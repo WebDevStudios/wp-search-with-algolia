@@ -85,6 +85,7 @@ class Algolia_Template_Loader {
 			'application_id'       => $settings->get_application_id(),
 			'search_api_key'       => $settings->get_search_api_key(),
 			'powered_by_enabled'   => $settings->is_powered_by_enabled(),
+			'insights_enabled'     => $settings->is_insights_enabled(),
 			'search_hits_per_page' => get_option( 'posts_per_page' ),
 			'query'                => get_search_query(),
 			'indices'              => [],
