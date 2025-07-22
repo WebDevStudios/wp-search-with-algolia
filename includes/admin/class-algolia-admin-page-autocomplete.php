@@ -185,8 +185,8 @@ class Algolia_Admin_Page_Autocomplete {
 	 * @since 2.10.0
 	 */
 	public function autocomplete_debounce_callback() {
-		$value    = $this->settings->get_autocomplete_debounce();
-		$indices  = $this->autocomplete_config->get_form_data();
+		$value   = $this->settings->get_autocomplete_debounce();
+		$indices = $this->autocomplete_config->get_form_data();
 		?>
 		<input type="number" name="algolia_autocomplete_debounce" class="small-text" min="0" value="<?php echo esc_attr( $value ); ?>" <?php disabled( empty( $indices ) ); ?>/>
 		<p class="description" id="home-description">

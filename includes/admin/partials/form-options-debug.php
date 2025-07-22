@@ -37,17 +37,19 @@ if ( ! defined( 'ABSPATH' ) ) {
 			</tr>
 			<tr>
 				<th><?php esc_html_e( 'Environment', 'wp-search-with-algolia' ); ?></th>
-				<td><?php
-					if ( defined( 'VIP_GO_APP_ENVIRONMENT' ) ) {
-						echo esc_html( 'VIP (' . VIP_GO_APP_ENVIRONMENT . ')' );
-					} elseif ( defined( 'PANTHEON_ENVIRONMENT' ) ) {
-						echo esc_html( 'Pantheon (' . PANTHEON_ENVIRONMENT . ')' );
-					} elseif ( defined( 'WPE_ENV' ) ) {
-						echo esc_html( 'WPEngine (' . WPE_ENV . ')' );
-					} else {
-						echo esc_html( 'Local' );
-					}
-				?></td>
+				<td>
+				<?php
+				if ( defined( 'VIP_GO_APP_ENVIRONMENT' ) ) {
+					echo esc_html( 'VIP (' . VIP_GO_APP_ENVIRONMENT . ')' );
+				} elseif ( defined( 'PANTHEON_ENVIRONMENT' ) ) {
+					echo esc_html( 'Pantheon (' . PANTHEON_ENVIRONMENT . ')' );
+				} elseif ( defined( 'WPE_ENV' ) ) {
+					echo esc_html( 'WPEngine (' . WPE_ENV . ')' );
+				} else {
+					echo esc_html( 'Local' );
+				}
+				?>
+				</td>
 			</tr>
 			<tr>
 				<th><?php esc_html_e( 'Plugin Version', 'wp-search-with-algolia' ); ?></th>
@@ -67,31 +69,31 @@ if ( ! defined( 'ABSPATH' ) ) {
 	<h2><?php esc_html_e( 'Algolia Index Status', 'wp-search-with-algolia' ); ?></h2>
 	<?php
 	if ( isset( $this ) && property_exists( $this, 'plugin' ) ) {
-		$plugin = $this->plugin;
+		$wpswa_plugin = $this->plugin;
 	} elseif ( function_exists( 'Algolia_Plugin_Factory' ) ) {
-		$plugin = Algolia_Plugin_Factory::create();
+		$wpswa_plugin = Algolia_Plugin_Factory::create();
 	} elseif ( class_exists( 'Algolia_Plugin_Factory' ) ) {
-		$plugin = call_user_func( [ 'Algolia_Plugin_Factory', 'create' ] );
+		$wpswa_plugin = call_user_func( [ 'Algolia_Plugin_Factory', 'create' ] );
 	} else {
-		$plugin = null;
+		$wpswa_plugin = null;
 	}
-	if ( $plugin && method_exists( $plugin, 'get_indices' ) ) {
-		$indices = $plugin->get_indices();
-		if ( ! empty( $indices ) ) {
+	if ( $wpswa_plugin && method_exists( $wpswa_plugin, 'get_indices' ) ) {
+		$wpswa_indices = $wpswa_plugin->get_indices();
+		if ( ! empty( $wpswa_indices ) ) {
 			echo '<table class="widefat striped"><thead><tr><th>' . esc_html__( 'Index', 'wp-search-with-algolia' ) . '</th><th>' . esc_html__( 'Enabled', 'wp-search-with-algolia' ) . '</th><th>' . esc_html__( 'Exists in Algolia', 'wp-search-with-algolia' ) . '</th><th>' . esc_html__( 'Status', 'wp-search-with-algolia' ) . '</th></tr></thead><tbody>';
-			foreach ( $indices as $index ) {
-				$enabled = method_exists( $index, 'is_enabled' ) ? $index->is_enabled() : false;
-				$exists  = method_exists( $index, 'exists' ) ? $index->exists() : false;
-				$name    = method_exists( $index, 'get_admin_name' ) ? $index->get_admin_name() : ( method_exists( $index, 'get_id' ) ? $index->get_id() : 'Unknown' );
-				$status  = $exists ? esc_html__( 'OK', 'wp-search-with-algolia' ) : '';
+			foreach ( $wpswa_indices as $wpswa_index ) {
+				$wpswa_enabled = method_exists( $wpswa_index, 'is_enabled' ) ? $wpswa_index->is_enabled() : false;
+				$wpswa_exists  = method_exists( $wpswa_index, 'exists' ) ? $wpswa_index->exists() : false;
+				$wpswa_name    = method_exists( $wpswa_index, 'get_admin_name' ) ? $wpswa_index->get_admin_name() : ( method_exists( $wpswa_index, 'get_id' ) ? $wpswa_index->get_id() : 'Unknown' );
+				$wpswa_status  = $wpswa_exists ? esc_html__( 'OK', 'wp-search-with-algolia' ) : '';
 				echo '<tr>';
-				echo '<td>' . esc_html( $name ) . '</td>';
-				echo '<td>' . ( $enabled ? esc_html__( 'Yes', 'wp-search-with-algolia' ) : esc_html__( 'No', 'wp-search-with-algolia' ) ) . '</td>';
-				echo '<td>' . ( $exists ? esc_html__( 'Yes', 'wp-search-with-algolia' ) : esc_html__( 'No', 'wp-search-with-algolia' ) ) . '</td>';
-				if ( $exists ) {
+				echo '<td>' . esc_html( $wpswa_name ) . '</td>';
+				echo '<td>' . esc_html( $wpswa_enabled ? esc_html__( 'Yes', 'wp-search-with-algolia' ) : esc_html__( 'No', 'wp-search-with-algolia' ) ) . '</td>';
+				echo '<td>' . esc_html( $wpswa_exists ? esc_html__( 'Yes', 'wp-search-with-algolia' ) : esc_html__( 'No', 'wp-search-with-algolia' ) ) . '</td>';
+				if ( $wpswa_exists ) {
 					echo '<td>' . esc_html__( 'OK', 'wp-search-with-algolia' ) . '</td>';
 				} else {
-					echo '<td><button class="algolia-reindex-button button button-primary" data-index="' . esc_attr( method_exists( $index, 'get_id' ) ? $index->get_id() : '' ) . '">' . esc_html__( 'Reindex Now', 'wp-search-with-algolia' ) . '</button></td>';
+					echo '<td><button class="algolia-reindex-button button button-primary" data-index="' . esc_attr( method_exists( $wpswa_index, 'get_id' ) ? $wpswa_index->get_id() : '' ) . '">' . esc_html__( 'Reindex Now', 'wp-search-with-algolia' ) . '</button></td>';
 				}
 				echo '</tr>';
 			}
@@ -165,24 +167,24 @@ if ( ! defined( 'ABSPATH' ) ) {
 	<p><?php esc_html_e( 'To view debug logs, enable WP_DEBUG and WP_DEBUG_LOG in wp-config.php. Logs are written to wp-content/debug.log.', 'wp-search-with-algolia' ); ?></p>
 
 	<?php
-	$debug_log_path = ABSPATH . 'wp-content/debug.log';
-	if ( file_exists( $debug_log_path ) && is_readable( $debug_log_path ) ) {
-		$lines = file( $debug_log_path );
+	$wpswa_debug_log_path = ABSPATH . 'wp-content/debug.log';
+	if ( file_exists( $wpswa_debug_log_path ) && is_readable( $wpswa_debug_log_path ) ) {
+		$wpswa_lines = file( $wpswa_debug_log_path );
 		// Filter for lines containing 'algolia' (case-insensitive).
-		$algolia_lines = array_filter(
-			$lines,
+		$wpswa_algolia_lines = array_filter(
+			$wpswa_lines,
 			function( $line ) {
 				return stripos( $line, 'algolia' ) !== false;
 			}
 		);
-		$line_count    = count( $algolia_lines );
-		$max_lines     = 50;
-		$start         = max( 0, $line_count - $max_lines );
-		$recent_lines  = array_slice( $algolia_lines, $start );
-		if ( $recent_lines ) {
+		$wpswa_line_count    = count( $wpswa_algolia_lines );
+		$wpswa_max_lines     = 50;
+		$wpswa_start         = max( 0, $wpswa_line_count - $wpswa_max_lines );
+		$wpswa_recent_lines  = array_slice( $wpswa_algolia_lines, $wpswa_start );
+		if ( $wpswa_recent_lines ) {
 			?>
 			<b><?php esc_html_e( 'Recent Algolia Debug Log Entries', 'wp-search-with-algolia' ); ?></b>
-			<pre class="debug-log-output"><?php echo esc_html( implode( '', $recent_lines ) ); ?></pre>
+			<pre class="debug-log-output"><?php echo esc_html( implode( '', $wpswa_recent_lines ) ); ?></pre>
 			<?php
 		} else {
 			?>

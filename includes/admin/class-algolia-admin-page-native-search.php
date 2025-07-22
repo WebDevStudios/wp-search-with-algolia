@@ -131,11 +131,15 @@ class Algolia_Admin_Page_Native_Search {
 
 		register_setting( $this->option_group, 'algolia_override_native_search', array( $this, 'sanitize_override_native_search' ) );
 
-		register_setting( $this->option_group, 'algolia_instantsearch_template_version', [
-			'type'              => 'string',
-			'sanitize_callback' => 'sanitize_text_field',
-			'default'           => 'legacy'
-		] );
+		register_setting(
+			$this->option_group,
+			'algolia_instantsearch_template_version',
+			[
+				'type'              => 'string',
+				'sanitize_callback' => 'sanitize_text_field',
+				'default'           => 'legacy',
+			]
+		);
 	}
 
 	/**

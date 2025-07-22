@@ -1,6 +1,8 @@
 <?xml version="1.0"?>
 <ruleset name="WP Search With Algolia Coding Standards">
 
+	<exclude name="Squiz.Commenting.FunctionCommentThrowTag.WrongNumber"/>
+
 	<description>
 		Coding standards configuration for WP Search With Algolia.
 	</description>

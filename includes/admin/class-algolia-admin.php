@@ -8,6 +8,8 @@
  * @package WebDevStudios\WPSWA
  */
 
+ // phpcs:disable Squiz.Commenting.FunctionCommentThrowTag.WrongNumber -- We're using RuntimeException.
+
 /**
  * Class Algolia_Admin
  *
@@ -398,3 +400,5 @@ class Algolia_Admin {
 		}
 	}
 }
+
+// phpcs:enable Squiz.Commenting.FunctionCommentThrowTag.WrongNumber -- We're using RuntimeException.

@@ -8,6 +8,7 @@
  * @package WebDevStudios\WPSWA
  */
 
+// phpcs:disable Squiz.Commenting.FunctionCommentThrowTag.WrongNumber -- We're using RuntimeException.
 use WebDevStudios\WPSWA\Algolia\AlgoliaSearch\Exceptions\AlgoliaException;
 use WebDevStudios\WPSWA\Algolia\AlgoliaSearch\SearchClient;
 use WebDevStudios\WPSWA\Algolia\AlgoliaSearch\SearchIndex;
@@ -436,7 +437,7 @@ abstract class Algolia_Index {
 			$this->create_index_if_not_existing();
 		}
 
-		$batch_size = (int) $this->get_re_index_batch_size();
+		$batch_size = (int) $this->calculate_re_index_batch_size();
 
 		if ( $batch_size < 1 ) {
 			throw new InvalidArgumentException( 'Re-index batch size can not be lower than 1.' );
@@ -466,7 +467,7 @@ abstract class Algolia_Index {
 			$records      = array_merge( $records, $item_records );
 			do_action( 'algolia_after_get_records', $item );
 
-			// Retry logic for update_records (rate limit handling)
+			// Retry logic for update_records (rate limit handling).
 			$max_retries = 3;
 			$retry       = 0;
 			while ( true ) {
@@ -488,14 +489,14 @@ abstract class Algolia_Index {
 		if ( ! empty( $records ) ) {
 
 			/**
-			  * Filters the records to be reindexed.
-			  *
-			  * @since 2.1.0
-			  *
-			  * @param array  $records  Array of records to re-index.
-			  * @param int    $page     Page to re-index.
-			  * @param string $index_id The index ID without prefix.
-			  */
+			* Filters the records to be reindexed.
+			*
+			* @since 2.1.0
+			*
+			* @param array  $records  Array of records to re-index.
+			* @param int    $page     Page to re-index.
+			* @param string $index_id The index ID without prefix.
+			*/
 			$records = apply_filters(
 				'algolia_re_index_records',
 				$records,
@@ -537,7 +538,7 @@ abstract class Algolia_Index {
 		$this->reindexing = false;
 
 		// Add a delay between batches to avoid rate limiting.
-		sleep(5); // Gentle: 5 second delay.
+		sleep( 5 ); // Gentle: 5 second delay.
 
 		if ( $page === $max_num_pages ) {
 			do_action( 'algolia_re_indexed_items', $this->get_id() );
@@ -677,7 +678,7 @@ abstract class Algolia_Index {
 	public function get_re_index_max_num_pages() {
 		$items_count = $this->get_re_index_items_count();
 
-		return (int) ceil( $items_count / $this->get_re_index_batch_size() );
+		return (int) ceil( $items_count / $this->calculate_re_index_batch_size() );
 	}
 
 	/**
@@ -701,7 +702,7 @@ abstract class Algolia_Index {
 	 *
 	 * @return int
 	 */
-	protected function get_re_index_batch_size() {
+	protected function calculate_re_index_batch_size() {
 		$batch_size = (int) apply_filters( 'algolia_indexing_batch_size', 50 ); // Gentle: batch size 50.
 		$batch_size = (int) apply_filters( 'algolia_' . $this->get_id() . '_indexing_batch_size', $batch_size );
 		return $batch_size;
@@ -712,8 +713,8 @@ abstract class Algolia_Index {
 	 *
 	 * @return int
 	 */
-	public function getReIndexBatchSize() {
-		return $this->get_re_index_batch_size();
+	public function get_re_index_batch_size() {
+		return $this->calculate_re_index_batch_size();
 	}
 
 	/**
@@ -936,3 +937,5 @@ abstract class Algolia_Index {
 		$this->get_index()->clearObjects();
 	}
 }
+
+// phpcs:enable Squiz.Commenting.FunctionCommentThrowTag.WrongNumber -- We're using RuntimeException.
