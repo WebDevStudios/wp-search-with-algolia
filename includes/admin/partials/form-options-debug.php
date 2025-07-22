@@ -20,6 +20,26 @@ if ( ! defined( 'ABSPATH' ) ) {
 	<table class="widefat striped">
 		<tbody>
 			<tr>
+				<th><?php esc_html_e( 'Algolia API Key Present', 'wp-search-with-algolia' ); ?></th>
+				<td><?php echo esc_html( get_option( 'algolia_application_id' ) && get_option( 'algolia_search_api_key' ) ? 'Yes' : 'No' ); ?></td>
+			</tr>
+			<tr>
+				<th><?php esc_html_e( 'Application ID', 'wp-search-with-algolia' ); ?></th>
+				<td><?php echo esc_html( get_option( 'algolia_application_id' ) ? get_option( 'algolia_application_id' ) : 'N/A' ); ?></td>
+			</tr>
+			<tr>
+				<th><?php esc_html_e( 'Search API Key', 'wp-search-with-algolia' ); ?></th>
+				<td><?php echo esc_html( get_option( 'algolia_search_api_key' ) ? get_option( 'algolia_search_api_key' ) : 'N/A' ); ?></td>
+			</tr>
+			<tr>
+				<th><?php esc_html_e( 'Debug Mode', 'wp-search-with-algolia' ); ?></th>
+				<td><?php echo esc_html( defined( 'WP_DEBUG' ) && WP_DEBUG ? 'Enabled' : 'Disabled' ); ?></td>
+			</tr>
+			<tr>
+				<th><?php esc_html_e( 'Environment', 'wp-search-with-algolia' ); ?></th>
+				<td><?php echo esc_html( defined( 'VIP_GO_APP_ENVIRONMENT' ) ? 'VIP (' . VIP_GO_APP_ENVIRONMENT . ')' : 'Local' ); ?></td>
+			</tr>
+			<tr>
 				<th><?php esc_html_e( 'Plugin Version', 'wp-search-with-algolia' ); ?></th>
 				<td><?php echo esc_html( defined( 'ALGOLIA_VERSION' ) ? ALGOLIA_VERSION : 'N/A' ); ?></td>
 			</tr>
@@ -30,10 +50,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 			<tr>
 				<th><?php esc_html_e( 'WP Version', 'wp-search-with-algolia' ); ?></th>
 				<td><?php echo esc_html( get_bloginfo( 'version' ) ); ?></td>
-			</tr>
-			<tr>
-				<th><?php esc_html_e( 'Algolia API Key Present', 'wp-search-with-algolia' ); ?></th>
-				<td><?php echo esc_html( get_option( 'algolia_application_id' ) && get_option( 'algolia_search_api_key' ) ? 'Yes' : 'No' ); ?></td>
 			</tr>
 		</tbody>
 	</table>
