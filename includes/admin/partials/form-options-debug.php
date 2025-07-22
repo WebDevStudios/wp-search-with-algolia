@@ -37,7 +37,17 @@ if ( ! defined( 'ABSPATH' ) ) {
 			</tr>
 			<tr>
 				<th><?php esc_html_e( 'Environment', 'wp-search-with-algolia' ); ?></th>
-				<td><?php echo esc_html( defined( 'VIP_GO_APP_ENVIRONMENT' ) ? 'VIP (' . VIP_GO_APP_ENVIRONMENT . ')' : 'Local' ); ?></td>
+				<td><?php
+					if ( defined( 'VIP_GO_APP_ENVIRONMENT' ) ) {
+						echo esc_html( 'VIP (' . VIP_GO_APP_ENVIRONMENT . ')' );
+					} elseif ( defined( 'PANTHEON_ENVIRONMENT' ) ) {
+						echo esc_html( 'Pantheon (' . PANTHEON_ENVIRONMENT . ')' );
+					} elseif ( defined( 'WPE_ENV' ) ) {
+						echo esc_html( 'WPEngine (' . WPE_ENV . ')' );
+					} else {
+						echo esc_html( 'Local' );
+					}
+				?></td>
 			</tr>
 			<tr>
 				<th><?php esc_html_e( 'Plugin Version', 'wp-search-with-algolia' ); ?></th>
