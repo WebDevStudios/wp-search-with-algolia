@@ -73,11 +73,12 @@ class Algolia_Admin_Page_Debug {
 		$this->plugin = $plugin;
 
 		add_action( 'admin_menu', [ $this, 'add_page' ] );
+		add_action( 'network_admin_menu', [ $this, 'add_network_page' ] );
 		add_action( 'admin_init', [ $this, 'add_settings' ] );
 	}
 
 	/**
-	 * Add the page to the admin menu.
+	 * Add the page to the admin menu (single site).
 	 */
 	public function add_page() {
 		add_submenu_page(
@@ -85,6 +86,20 @@ class Algolia_Admin_Page_Debug {
 			esc_html__( 'Debug', 'wp-search-with-algolia' ),
 			esc_html__( 'Debug', 'wp-search-with-algolia' ),
 			$this->capability,
+			$this->slug,
+			[ $this, 'display_page' ]
+		);
+	}
+
+	/**
+	 * Add the page to the network admin menu (multisite).
+	 */
+	public function add_network_page() {
+		add_submenu_page(
+			'wpswa_pro_network',
+			esc_html__( 'Debug', 'wp-search-with-algolia' ),
+			esc_html__( 'Debug', 'wp-search-with-algolia' ),
+			'manage_network_options',
 			$this->slug,
 			[ $this, 'display_page' ]
 		);
