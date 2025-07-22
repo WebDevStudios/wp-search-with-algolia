@@ -486,6 +486,16 @@ abstract class Algolia_Index {
 		}
 
 		if ( ! empty( $records ) ) {
+
+			/**
+			  * Filters the records to be reindexed.
+			  *
+			  * @since 2.1.0
+			  *
+			  * @param array  $records  Array of records to re-index.
+			  * @param int    $page     Page to re-index.
+			  * @param string $index_id The index ID without prefix.
+			  */
 			$records = apply_filters(
 				'algolia_re_index_records',
 				$records,
@@ -496,7 +506,7 @@ abstract class Algolia_Index {
 			try {
 				$sanitized_records = $this->sanitize_json_data( $records );
 			} catch ( \Throwable $throwable ) {
-				error_log( $throwable->getMessage() );
+				error_log( $throwable->getMessage() ); // phpcs:ignore -- Need a real logger.
 			}
 		}
 
@@ -526,7 +536,7 @@ abstract class Algolia_Index {
 		 */
 		$this->reindexing = false;
 
-		// Add a delay between batches to avoid rate limiting
+		// Add a delay between batches to avoid rate limiting.
 		sleep(5); // Gentle: 5 second delay.
 
 		if ( $page === $max_num_pages ) {
@@ -692,9 +702,18 @@ abstract class Algolia_Index {
 	 * @return int
 	 */
 	protected function get_re_index_batch_size() {
-		$batch_size = (int) apply_filters( 'algolia_indexing_batch_size', 10 ); // Gentle: batch size 10
+		$batch_size = (int) apply_filters( 'algolia_indexing_batch_size', 50 ); // Gentle: batch size 50.
 		$batch_size = (int) apply_filters( 'algolia_' . $this->get_id() . '_indexing_batch_size', $batch_size );
 		return $batch_size;
+	}
+
+	/**
+	 * Public getter for re-index batch size.
+	 *
+	 * @return int
+	 */
+	public function getReIndexBatchSize() {
+		return $this->get_re_index_batch_size();
 	}
 
 	/**
@@ -746,9 +765,12 @@ abstract class Algolia_Index {
 	 * @author WebDevStudios <contact@webdevstudios.com>
 	 * @since  1.0.0
 	 *
-	 * @return array
+	 * @return array Autocomplete config.
 	 */
 	public function get_default_autocomplete_config() {
+		$plugin   = Algolia_Plugin_Factory::create();
+		$debounce = $plugin->get_settings()->get_autocomplete_debounce();
+
 		return array(
 			'index_id'        => $this->get_id(),
 			'index_name'      => $this->get_name(),
@@ -756,6 +778,7 @@ abstract class Algolia_Index {
 			'admin_name'      => $this->get_admin_name(),
 			'position'        => 10,
 			'max_suggestions' => 5,
+			'debounce'        => $debounce,
 			'tmpl_suggestion' => 'autocomplete-post-suggestion',
 		);
 	}
