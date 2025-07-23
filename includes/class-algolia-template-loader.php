@@ -207,7 +207,7 @@ class Algolia_Template_Loader {
 		);
 
 		$instantsearch_is_modern = $this->plugin->get_settings()->should_use_instantsearch_modern();
-		$chosen_file            = ( $instantsearch_is_modern ) ? 'instantsearch-modern.php' : 'instantsearch.php';
+		$chosen_file             = ( $instantsearch_is_modern ) ? 'instantsearch-modern.php' : 'instantsearch.php';
 		return Algolia_Template_Utils::locate_template( $chosen_file );
 	}
 

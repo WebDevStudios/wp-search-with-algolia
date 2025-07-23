@@ -84,7 +84,7 @@ class Algolia_Admin_Page_Premium_Support {
 	 * @return string|void The resulting page's hook_suffix.
 	 */
 	public function add_page() {
-		$api = $this->plugin->get_api();
+		$api         = $this->plugin->get_api();
 		$parent_slug = ! $api->is_reachable() ? 'algolia-account-settings' : 'algolia';
 		add_submenu_page(
 			$parent_slug,
