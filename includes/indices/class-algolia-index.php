@@ -703,7 +703,7 @@ abstract class Algolia_Index {
 	 * @return int
 	 */
 	protected function calculate_re_index_batch_size() {
-		$batch_size = (int) apply_filters( 'algolia_indexing_batch_size', 50 ); // Gentle: batch size 50.
+		$batch_size = (int) apply_filters( 'algolia_indexing_batch_size', 100 );
 		$batch_size = (int) apply_filters( 'algolia_' . $this->get_id() . '_indexing_batch_size', $batch_size );
 		return $batch_size;
 	}
@@ -753,12 +753,13 @@ abstract class Algolia_Index {
 	 * @author WebDevStudios <contact@webdevstudios.com>
 	 * @since  1.0.0
 	 *
-	 * @param int $page       The page.
-	 * @param int $batch_size The batch size.
+	 * @param int   $page         The page.
+	 * @param int   $batch_size   The batch size.
+	 * @param array $specific_ids Array of IDs to retrieve and index.
 	 *
 	 * @return array
 	 */
-	abstract protected function get_items( $page, $batch_size );
+	abstract protected function get_items( $page, $batch_size, $specific_ids = [] );
 
 	/**
 	 * Get default autocomplete config.
