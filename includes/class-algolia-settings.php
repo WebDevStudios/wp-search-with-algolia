@@ -524,7 +524,7 @@ class Algolia_Settings {
 	/**
 	 * Determine if Insights is enabled.
 	 *
-	 * @since NEXT
+	 * @since 2.10.2
 	 * @return bool
 	 */
 	public function is_insights_enabled() {
