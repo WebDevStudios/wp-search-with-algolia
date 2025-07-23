@@ -5,7 +5,7 @@
  * @author  WebDevStudios <contact@webdevstudios.com>
  * @since   1.0.0
  *
- * @version 2.10.0
+ * @version 2.10.2
  * @package WebDevStudios\WPSWA
  */
 
@@ -75,9 +75,9 @@ get_header();
 								return indexUiState;
 							}
 						}
-					}
+					},
 					// https://www.algolia.com/doc/guides/building-search-ui/events/js/
-					//insights: true,
+					insights: algolia.insights_enabled,
 					/*
 					insights: {
 						insightsInitParams: {

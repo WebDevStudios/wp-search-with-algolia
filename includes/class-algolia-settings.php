@@ -34,6 +34,7 @@ class Algolia_Settings {
 		add_option( 'algolia_index_name_prefix', 'wp_' );
 		add_option( 'algolia_api_is_reachable', 'no' );
 		add_option( 'algolia_powered_by_enabled', 'yes' );
+		add_option( 'algolia_insights_enabled', 'no' );
 	}
 
 	/**
@@ -518,6 +519,16 @@ class Algolia_Settings {
 	 */
 	public function disable_powered_by() {
 		update_option( 'algolia_powered_by_enabled', 'no' );
+	}
+
+	/**
+	 * Determine if Insights is enabled.
+	 *
+	 * @since 2.10.2
+	 * @return bool
+	 */
+	public function is_insights_enabled() {
+		return 'yes' === get_option( 'algolia_insights_enabled', 'no' );
 	}
 
 	/**
