@@ -78,17 +78,15 @@ if ( ! defined( 'ABSPATH' ) ) {
 		$wpswa_plugin = null;
 	}
 	if ( $wpswa_plugin && method_exists( $wpswa_plugin, 'get_indices' ) ) {
-		$wpswa_indices = $wpswa_plugin->get_indices();
+		$wpswa_indices = $wpswa_plugin->get_indices( array( 'enabled' => true ) );
 		if ( ! empty( $wpswa_indices ) ) {
-			echo '<table class="widefat striped"><thead><tr><th>' . esc_html__( 'Index', 'wp-search-with-algolia' ) . '</th><th>' . esc_html__( 'Enabled', 'wp-search-with-algolia' ) . '</th><th>' . esc_html__( 'Exists in Algolia', 'wp-search-with-algolia' ) . '</th><th>' . esc_html__( 'Status', 'wp-search-with-algolia' ) . '</th></tr></thead><tbody>';
+			echo '<table class="widefat striped"><thead><tr><th>' . esc_html__( 'Index', 'wp-search-with-algolia' ) . '</th><th>' . esc_html__( 'Exists in Algolia', 'wp-search-with-algolia' ) . '</th><th>' . esc_html__( 'Status', 'wp-search-with-algolia' ) . '</th></tr></thead><tbody>';
 			foreach ( $wpswa_indices as $wpswa_index ) {
-				$wpswa_enabled = method_exists( $wpswa_index, 'is_enabled' ) ? $wpswa_index->is_enabled() : false;
 				$wpswa_exists  = method_exists( $wpswa_index, 'exists' ) ? $wpswa_index->exists() : false;
 				$wpswa_name    = method_exists( $wpswa_index, 'get_admin_name' ) ? $wpswa_index->get_admin_name() : ( method_exists( $wpswa_index, 'get_id' ) ? $wpswa_index->get_id() : 'Unknown' );
 				$wpswa_status  = $wpswa_exists ? esc_html__( 'OK', 'wp-search-with-algolia' ) : '';
 				echo '<tr>';
 				echo '<td>' . esc_html( $wpswa_name ) . '</td>';
-				echo '<td>' . esc_html( $wpswa_enabled ? esc_html__( 'Yes', 'wp-search-with-algolia' ) : esc_html__( 'No', 'wp-search-with-algolia' ) ) . '</td>';
 				echo '<td>' . esc_html( $wpswa_exists ? esc_html__( 'Yes', 'wp-search-with-algolia' ) : esc_html__( 'No', 'wp-search-with-algolia' ) ) . '</td>';
 				if ( $wpswa_exists ) {
 					echo '<td>' . esc_html__( 'OK', 'wp-search-with-algolia' ) . '</td>';
