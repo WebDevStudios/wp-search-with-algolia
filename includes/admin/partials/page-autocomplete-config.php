@@ -61,6 +61,17 @@
 					);
 					?>
 				</small>
+				<?php if ( $index['debounce'] > 0 ) : ?>
+					<br /><small>
+						<?php
+						printf(
+							// translators: placeholder is the custom debounce value.
+							esc_html__( 'Custom debounce timing: %s ms', 'wp-search-with-algolia' ),
+							esc_html( $index['debounce'] )
+						);
+						?>
+					</small>
+				<?php endif; ?>
 			</td>
 			<td>
 				<input type="text" name="algolia_autocomplete_config[<?php echo esc_attr( $index['index_id'] ); ?>][label]"  value="<?php echo esc_attr( $index['label'] ); ?>" />
