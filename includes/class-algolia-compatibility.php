@@ -179,10 +179,15 @@ class Algolia_Compatibility {
 	/**
 	 * Return whether or not the current theme is block based.
 	 *
-	 * @since NEXT
+	 * @since 2.10.3
 	 * @return bool
 	 */
-	public function maybe_block_theme() {
+	public function maybe_block_theme( $maybe_block_theme ) {
+		// return early if it has already been determined.
+		if ( true === $maybe_block_theme ) {
+			return $maybe_block_theme;
+		}
+
 		return wp_is_block_theme();
 	}
 }
