@@ -297,7 +297,7 @@ class Algolia_Admin_Page_Settings {
 	/**
 	 * Insights enabled callback.
 	 *
-	 * @since NEXT
+	 * @since 2.10.2
 	 */
 	public function insights_enabled_callback() {
 		$insights_enabled = $this->plugin->get_settings()->is_insights_enabled();
@@ -507,7 +507,7 @@ class Algolia_Admin_Page_Settings {
 	/**
 	 * Sanitize the insights enabled setting.
 	 *
-	 * @since NEXT
+	 * @since 2.10.2
 	 *
 	 * @param string $value The value to sanitize.
 	 *
