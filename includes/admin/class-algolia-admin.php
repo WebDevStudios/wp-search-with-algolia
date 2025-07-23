@@ -8,6 +8,8 @@
  * @package WebDevStudios\WPSWA
  */
 
+// phpcs:disable Squiz.Commenting.FunctionCommentThrowTag.WrongNumber -- We're using RuntimeException.
+
 /**
  * Class Algolia_Admin
  *
@@ -272,8 +274,7 @@ class Algolia_Admin {
 
 			wp_send_json( $response );
 		} catch ( Exception $exception ) {
-			echo esc_html( $exception->getMessage() );
-			throw $exception;
+			wp_send_json_error( array( 'message' => $exception->getMessage() ) );
 		}
 	}
 
@@ -307,8 +308,7 @@ class Algolia_Admin {
 			);
 			wp_send_json( $response );
 		} catch ( Exception $exception ) {
-			echo esc_html( $exception->getMessage() );
-			throw $exception;
+			wp_send_json_error( array( 'message' => $exception->getMessage() ) );
 		}
 	}
 
@@ -399,3 +399,5 @@ class Algolia_Admin {
 		}
 	}
 }
+
+// phpcs:enable Squiz.Commenting.FunctionCommentThrowTag.WrongNumber -- We're using RuntimeException.
