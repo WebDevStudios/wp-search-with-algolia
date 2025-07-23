@@ -150,6 +150,14 @@ class Algolia_Admin_Page_Autocomplete {
 		);
 
 		add_settings_field(
+			'algolia_autocomplete_min_chars',
+			esc_html__( 'Minimum Characters', 'wp-search-with-algolia' ),
+			array( $this, 'autocomplete_min_chars_callback' ),
+			$this->slug,
+			$this->section
+		);
+
+		add_settings_field(
 			'algolia_autocomplete_config',
 			esc_html__( 'Autocomplete Config', 'wp-search-with-algolia' ),
 			array( $this, 'autocomplete_config_callback' ),
@@ -159,6 +167,7 @@ class Algolia_Admin_Page_Autocomplete {
 
 		register_setting( $this->option_group, 'algolia_autocomplete_enabled', array( $this, 'sanitize_autocomplete_enabled' ) );
 		register_setting( $this->option_group, 'algolia_autocomplete_debounce', array( $this, 'sanitize_autocomplete_debounce' ) );
+		register_setting( $this->option_group, 'algolia_autocomplete_min_chars', array( $this, 'sanitize_autocomplete_min_chars' ) );
 		register_setting( $this->option_group, 'algolia_autocomplete_config', array( $this, 'sanitize_autocomplete_config' ) );
 	}
 
@@ -197,6 +206,23 @@ class Algolia_Admin_Page_Autocomplete {
 	}
 
 	/**
+	 * Callback to print the autocomplete minimum characters value.
+	 *
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 * @since 2.10.1
+	 */
+	public function autocomplete_min_chars_callback() {
+		$value    = $this->settings->get_autocomplete_min_chars();
+		$indices  = $this->autocomplete_config->get_form_data();
+		?>
+		<input type="number" name="algolia_autocomplete_min_chars" class="small-text" min="1" max="10" value="<?php echo esc_attr( $value ); ?>" <?php disabled( empty( $indices ) ); ?>/>
+		<p class="description" id="min-chars-description">
+			<?php esc_html_e( 'Enter the minimum number of characters required before autocomplete starts searching. Default is 3. Higher values will reduce API calls.', 'wp-search-with-algolia' ); ?>
+		</p>
+		<?php
+	}
+
+	/**
 	 * Sanitize the Autocomplete enabled setting.
 	 *
 	 * @author WebDevStudios <contact@webdevstudios.com>
@@ -230,6 +256,22 @@ class Algolia_Admin_Page_Autocomplete {
 	 */
 	public function sanitize_autocomplete_debounce( $value ) {
 		return intval( $value );
+	}
+
+	/**
+	 * Sanitize the Autocomplete minimum characters setting.
+	 *
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 * @since  2.10.1
+	 *
+	 * @param int $value The original value.
+	 *
+	 * @return int The sanitized value.
+	 */
+	public function sanitize_autocomplete_min_chars( $value ) {
+		$value = intval( $value );
+		// Ensure minimum is 1 and maximum is 10
+		return max( 1, min( 10, $value ) );
 	}
 
 	/**
