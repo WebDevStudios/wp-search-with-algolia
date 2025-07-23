@@ -40,7 +40,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 				<td>
 				<?php
 				if ( defined( 'VIP_GO_APP_ENVIRONMENT' ) ) {
-					echo esc_html( 'VIP (' . VIP_GO_APP_ENVIRONMENT . ')' );
+					echo esc_html( 'WPVIP (' . VIP_GO_APP_ENVIRONMENT . ')' );
 				} elseif ( defined( 'PANTHEON_ENVIRONMENT' ) ) {
 					echo esc_html( 'Pantheon (' . PANTHEON_ENVIRONMENT . ')' );
 				} elseif ( defined( 'WPE_ENV' ) ) {
