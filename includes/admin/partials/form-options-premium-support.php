@@ -14,7 +14,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 <div class="wrap about-wrap">
 	<h1>
-		<?php echo get_admin_page_title(); ?>
+		<?php echo esc_html( get_admin_page_title() ); ?>
 	</h1>
 	<div class="algolia-premium-wrap-block">
 		<div class="algolia-premium-support-block">

@@ -30,7 +30,7 @@
 	</thead>
 	<tbody>
 		<?php
-		$prefix = $this->settings->get_index_name_prefix();
+		$prefix = $this->settings->get_index_name_prefix(); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
 		foreach ( $indices as $index ) : // phpcs:ignore -- This is an admin partial.  ?>
 		<tr>
 			<td>
@@ -55,7 +55,7 @@
 					<?php
 					printf(
 					// translators: placeholder is the name of an Algolia search index.
-						esc_html__( 'Prefixed: %s%s', 'wp-search-with-algolia' ),
+						esc_html__( 'Prefixed: %1$s%2$s', 'wp-search-with-algolia' ),
 						esc_html( $prefix ),
 						esc_html( $index['index_id'] )
 					);
