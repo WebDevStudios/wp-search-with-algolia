@@ -128,6 +128,10 @@ All development is handled on [GitHub](https://github.com/WebDevStudios/wp-searc
 
 Follow along with the changelog on [Github](https://github.com/WebDevStudios/wp-search-with-algolia/releases).
 
+= 2.10.3 =
+* Added: Filter to still output frontend config data when using Instantsearch and FSE Theme.
+* Added: Filtering of new filter to attempt auto-detection of a FSE theme being in use.
+
 = 2.10.2 =
 * Added: Checkbox option to enable insights in Instantsearch templates. Please review changes to those.
 
