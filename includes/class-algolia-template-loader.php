@@ -36,7 +36,11 @@ class Algolia_Template_Loader {
 		$this->plugin = $plugin;
 
 		$settings = $this->plugin->get_settings();
-		if ( ! $this->should_load_autocomplete() && ! $settings->should_override_search_with_instantsearch() ) {
+		if (
+			! $this->should_load_autocomplete() &&
+			! $settings->should_override_search_with_instantsearch() &&
+			! apply_filters( 'algolia_is_block_theme', false )
+		) {
 			return;
 		}
 
