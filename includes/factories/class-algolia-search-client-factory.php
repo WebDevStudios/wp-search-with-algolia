@@ -72,6 +72,7 @@ class Algolia_Search_Client_Factory {
 
 		/**
 		 * Allows for customizing an Algolia secured API key.
+		 *
 		 * @see https://www.algolia.com/doc/api-reference/api-methods/generate-secured-api-key/
 		 *
 		 * @param array $value Array of secured API key arguments. Default empty array.
@@ -85,11 +86,11 @@ class Algolia_Search_Client_Factory {
 			$custom_secured_key_config = wp_parse_args(
 				$custom_secured_key_config,
 				[
-					'filters'           => '',
-					'validUntil'        => '',
-					'restrictIndices'   => [],
-					'restrictSources'   => '',
-					'userToken'         => '',
+					'filters'         => '',
+					'validUntil'      => '',
+					'restrictIndices' => [],
+					'restrictSources' => '',
+					'userToken'       => '',
 				]
 			);
 
