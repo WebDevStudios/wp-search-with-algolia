@@ -4,7 +4,7 @@ Tags: search, algolia, autocomplete, instantsearch, relevance search, faceted se
 Requires at least: 5.3
 Tested up to: 6.8.2
 Requires PHP: 7.4
-Stable tag: 2.10.2
+Stable tag: 2.10.3
 License: GNU General Public License v2.0, MIT License
 
 Use the power of Algolia to enhance your website's search. Enable Autocomplete and Instantsearch for fast and accurate results and relevance.
