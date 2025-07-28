@@ -51,7 +51,7 @@ class Algolia_Health_Panel {
 		$debug_info['wp-search-with-algolia'] = [
 			'label'       => esc_html__( 'WP Search with Algolia', 'wp-search-with-algolia' ),
 			'description' => esc_html__( 'Debugging and troubleshooting information for support purposes', 'wp-search-with-algolia' ),
-			'fields'        => [
+			'fields'      => [
 				[
 					'label' => esc_html__( 'Constants', 'wp-search-with-algolia' ),
 					'value' => $set_constants,
