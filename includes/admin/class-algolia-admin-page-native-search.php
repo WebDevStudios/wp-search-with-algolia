@@ -137,7 +137,7 @@ class Algolia_Admin_Page_Native_Search {
 			[
 				'type'              => 'string',
 				'sanitize_callback' => 'sanitize_text_field',
-				'default'           => 'legacy'
+				'default'           => 'legacy',
 			]
 		);
 	}
