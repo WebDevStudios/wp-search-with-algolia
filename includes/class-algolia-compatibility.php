@@ -180,6 +180,8 @@ class Algolia_Compatibility {
 	 * Return whether or not the current theme is block based.
 	 *
 	 * @since 2.10.3
+	 *
+	 * @param bool $maybe_block_theme Whether or not a block theme is active.
 	 * @return bool
 	 */
 	public function maybe_block_theme( $maybe_block_theme ) {
