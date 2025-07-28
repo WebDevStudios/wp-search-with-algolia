@@ -41,6 +41,7 @@ class Algolia_Compatibility {
 		add_action( 'algolia_after_get_records', array( $this, 'wpml_switch_back_language' ) );
 		add_action( 'algolia_excluded_post_types', [ $this, 'woocommerce_post_types' ] );
 		add_action( 'algolia_excluded_taxonomies', [ $this, 'woocommerce_internal_taxonomies' ] );
+		add_filter( 'algolia_is_block_theme', [ $this, 'maybe_block_theme' ] );
 	}
 
 	/**
@@ -173,5 +174,22 @@ class Algolia_Compatibility {
 		$taxonomies[] = 'product_shipping_class';
 
 		return $taxonomies;
+	}
+
+	/**
+	 * Return whether or not the current theme is block based.
+	 *
+	 * @since 2.10.3
+	 *
+	 * @param bool $maybe_block_theme Whether or not a block theme is active.
+	 * @return bool
+	 */
+	public function maybe_block_theme( $maybe_block_theme ) {
+		// return early if it has already been determined.
+		if ( true === $maybe_block_theme ) {
+			return $maybe_block_theme;
+		}
+
+		return wp_is_block_theme();
 	}
 }

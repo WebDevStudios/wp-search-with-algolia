@@ -153,12 +153,12 @@ class Algolia_Settings {
 
 		// Native WordPress.
 		$builtin = get_post_types( [ '_builtin' => true ] );
-		// Preserve posts, pages, and attachments
+		// Preserve posts, pages, and attachments.
 		unset( $builtin['post'] );
 		unset( $builtin['page'] );
 		unset( $builtin['attachment'] );
 
-		foreach( $builtin as $type ) {
+		foreach ( $builtin as $type ) {
 			$excluded[] = $type;
 		}
 
@@ -554,6 +554,6 @@ class Algolia_Settings {
 	public function should_use_instantsearch_modern() {
 		$version = $this->get_instantsearch_template_version();
 
-		return $version === 'modern';
+		return 'modern' === $version;
 	}
 }

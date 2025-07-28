@@ -1,3 +1,16 @@
+## 2.10.3
+
+* Added: Filter to still output frontend config data when using Instantsearch and FSE Theme.
+* Added: Filtering of new filter to attempt auto-detection of a FSE theme being in use.
+
+## 2.10.2
+
+* Added: Checkbox option to enable insights in Instantsearch templates. Please review changes to those.
+
+## 2.10.1
+
+* Fixed: Issues around admin notifications on the Autocomplete settings page, introduced in 2.10.0
+
 ## 2.10.0
 
 * Added an option to set the debounce timeout value which applies to all indexes by default, but can be customized for

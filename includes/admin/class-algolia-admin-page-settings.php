@@ -301,12 +301,12 @@ class Algolia_Admin_Page_Settings {
 	 */
 	public function insights_enabled_callback() {
 		$insights_enabled = $this->plugin->get_settings()->is_insights_enabled();
-		$checked            = '';
+		$checked          = '';
 		if ( $insights_enabled ) {
 			$checked = ' checked';
 		}
 		echo "<input type='checkbox' name='algolia_insights_enabled' value='yes' " . esc_html( $checked ) . ' />' .
-		     '<p class="description" id="home-description">' . esc_html( __( 'This will enable insights and events tracking to help boost your Algolia results.', 'wp-search-with-algolia' ) ) . '</p>';
+			'<p class="description" id="home-description">' . esc_html( __( 'This will enable insights and events tracking to help boost your Algolia results.', 'wp-search-with-algolia' ) ) . '</p>';
 	}
 
 	/**
