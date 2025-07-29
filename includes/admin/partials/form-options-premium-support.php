@@ -60,7 +60,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 						<h3><?php esc_html_e( 'WooCommerce Support', 'wp-search-with-algolia' ); ?></h3>
 					</div>
 					<ul class="algolia-pro-features">
-						<li><?php esc_html_e( 'Index product SKUs, prices, short descriptions and product dimensions/weight for display.', 'wp-search-with-algolia' ); ?>'</li>
+						<li><?php esc_html_e( 'Begin sending user events to Algolia Insights for enhanced eCommerce data and AI integration.', 'wp-search-with-algolia' ); ?></li>
+						<li><?php esc_html_e( 'Index product SKUs, prices, short descriptions and product dimensions/weight for display.', 'wp-search-with-algolia' ); ?></li>
 						<li><?php esc_html_e( 'Index product total sales ratings for relevance.', 'wp-search-with-algolia' ); ?></li>
 						<li><?php esc_html_e( 'Index product total and average ratings for relevance.', 'wp-search-with-algolia' ); ?></li>
 						<li><?php esc_html_e( 'Control whether or not sold out products are indexed.', 'wp-search-with-algolia' ); ?></li>
