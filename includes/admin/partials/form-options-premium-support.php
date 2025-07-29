@@ -74,7 +74,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 						<h3><?php esc_html_e( 'SEO Plugins', 'wp-search-with-algolia' ); ?></h3>
 					</div>
 					<ul class="algolia-pro-features">
-						<li><?php esc_html_e( 'Fine tune indexing on selected pieces of content', 'wp-search-with-algolia' ); ?></li>
+						<li><?php esc_html_e( 'Fine tune indexing on selected pieces of content.', 'wp-search-with-algolia' ); ?></li>
 						<li><?php esc_html_e( 'Yoast SEO', 'wp-search-with-algolia' ); ?></li>
 						<li><?php esc_html_e( 'All in One SEO', 'wp-search-with-algolia' ); ?></li>
 						<li><?php esc_html_e( 'Rank Math SEO', 'wp-search-with-algolia' ); ?></li>
