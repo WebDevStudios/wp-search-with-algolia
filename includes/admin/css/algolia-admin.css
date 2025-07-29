@@ -147,7 +147,7 @@ form .radio-info {
 .algolia-pro-cta .algolia-pro-feature svg {
   padding-right: 4px;
 }
-.algolia-premium-wrap-block {
+.algolia-premium-support-wrap-block {
   display: flex;
   flex-direction: column;
   gap: 20px;
@@ -183,21 +183,44 @@ form .radio-info {
 }
 .algolia-pro-flex-wrap {
   display: flex;
+  flex-direction: row;
   flex-wrap: wrap;
   justify-content: space-between;
   align-content: space-between;
   gap: 10px;
 }
+
 .algolia-pro-flex-item {
-  border: solid blue 1px;
+  background-color: var(--algolia-white);
+  border: solid var(--algolia-blue) 2px;
   border-radius: 15px;
+  box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
   flex: 1;
-  padding: 10px;
+  overflow: hidden;
   width: 33%;
 }
+.algolia-pro-flex-item-heading {
+  background-color: var(--algolia-blue);
+  padding: 10px;
+}
+.algolia-pro-flex-item h3 {
+  color: var(--algolia-white);
+  margin: 0;
+}
 .algolia-pro-features {
-  padding-left: 15px;
+  margin: 15px;
+  padding: 15px;
 }
 .algolia-pro-features li {
   list-style: disc;
+}
+
+@media only screen and (max-width: 768px) {
+  .algolia-pro-flex-wrap {
+    flex-direction: column;
+  }
+
+  .algolia-pro-flex-item {
+    width: 100%;
+  }
 }
