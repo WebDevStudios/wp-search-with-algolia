@@ -47,14 +47,18 @@ if ( ! defined( 'ABSPATH' ) ) {
 			<h2><a href="https://pluginize.com/plugins/wp-search-with-algolia-pro/" target="_blank"><?php esc_html_e( 'WP Search with Algolia Pro', 'wp-search-with-algolia' ); ?></a></h2>
 			<div class="algolia-pro-flex-wrap">
 				<div class="algolia-pro-flex-item">
-					<h3><?php esc_html_e( 'Multisite Indexing', 'wp-search-with-algolia' ); ?></h3>
+					<div class="algolia-pro-flex-item-heading">
+						<h3><?php esc_html_e( 'Multisite Indexing', 'wp-search-with-algolia' ); ?></h3>
+					</div>
 					<ul class="algolia-pro-features">
 						<li><?php esc_html_e( 'Multisite network indexing into a single search index to provide a global Algolia-powered search experience.', 'wp-search-with-algolia' ); ?></li>
 						<li><?php esc_html_e( 'Easily search all sites in your Multisite network with a single search experience!', 'wp-search-with-algolia' ); ?></li>
 					</ul>
 				</div>
 				<div class="algolia-pro-flex-item">
-					<h3><?php esc_html_e( 'WooCommerce Support', 'wp-search-with-algolia' ); ?></h3>
+					<div class="algolia-pro-flex-item-heading">
+						<h3><?php esc_html_e( 'WooCommerce Support', 'wp-search-with-algolia' ); ?></h3>
+					</div>
 					<ul class="algolia-pro-features">
 						<li><?php esc_html_e( 'Index product SKUs, prices, short descriptions and product dimensions/weight for display.', 'wp-search-with-algolia' ); ?>'</li>
 						<li><?php esc_html_e( 'Index product total sales ratings for relevance.', 'wp-search-with-algolia' ); ?></li>
@@ -65,7 +69,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 					</ul>
 				</div>
 				<div class="algolia-pro-flex-item">
-					<h3><?php esc_html_e( 'Search Engine Optimization', 'wp-search-with-algolia' ); ?></h3>
+					<div class="algolia-pro-flex-item-heading">
+						<h3><?php esc_html_e( 'SEO Plugins', 'wp-search-with-algolia' ); ?></h3>
+					</div>
 					<ul class="algolia-pro-features">
 						<li><?php esc_html_e( 'Fine tune indexing on selected pieces of content', 'wp-search-with-algolia' ); ?></li>
 						<li><?php esc_html_e( 'Yoast SEO', 'wp-search-with-algolia' ); ?></li>
