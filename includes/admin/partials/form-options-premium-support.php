@@ -16,7 +16,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	<h1>
 		<?php echo esc_html( get_admin_page_title() ); ?>
 	</h1>
-	<div class="algolia-premium-wrap-block">
+	<div class="algolia-premium-support-wrap-block">
 		<div class="algolia-premium-support-block">
 			<p>
 				<?php esc_html_e( 'Thank you for using WP Search with Algolia to enhance your website\'s search experience. We are happy to have you as a user.', 'wp-search-with-algolia' ); ?>
