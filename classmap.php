@@ -73,4 +73,5 @@ if ( is_admin() ) {
 	require_once ALGOLIA_PATH . 'includes/admin/class-algolia-admin-page-premium-support.php';
 	require_once ALGOLIA_PATH . 'includes/admin/class-algolia-admin-page-seo.php';
 	require_once ALGOLIA_PATH . 'includes/admin/class-algolia-admin-template-notices.php';
+	require_once ALGOLIA_PATH . 'includes/admin/class-algolia-admin-page-debug.php';
 }
