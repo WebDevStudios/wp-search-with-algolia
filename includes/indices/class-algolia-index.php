@@ -11,6 +11,7 @@
 use WebDevStudios\WPSWA\Algolia\AlgoliaSearch\Exceptions\AlgoliaException;
 use WebDevStudios\WPSWA\Algolia\AlgoliaSearch\SearchClient;
 use WebDevStudios\WPSWA\Algolia\AlgoliaSearch\SearchIndex;
+use WebDevStudios\WPSWA\Algolia\AlgoliaSearch\Exceptions\NotFoundException;
 
 /**
  * Class Algolia_Index
@@ -18,6 +19,14 @@ use WebDevStudios\WPSWA\Algolia\AlgoliaSearch\SearchIndex;
  * @since 1.0.0
  */
 abstract class Algolia_Index {
+	const AC_INDEX_NOT_EXISTS_EXCEPTION_MSG = 'Index does not exist';
+
+	/**
+	 * Default index settings
+	 *
+	 * @var array
+	 */
+	protected array $default_settings = [];
 
 	/**
 	 * The SearchClient instance.
@@ -152,7 +161,7 @@ abstract class Algolia_Index {
 	 *
 	 * @throws LogicException If the SearchClient has not been set.
 	 */
-	final protected function get_client() {
+	public function get_client() {
 		if ( null === $this->client ) {
 			throw new LogicException( 'SearchClient has not been set.' );
 		}
@@ -581,8 +590,7 @@ abstract class Algolia_Index {
 		$index = $this->get_index();
 
 		// This will create the index if it does not exist.
-		$settings = $this->get_settings();
-		$index->setSettings( $settings );
+		( new Algolia_Primary_Index_Settings( $this ) )->push();
 
 		// Push synonyms.
 		$synonyms = $this->get_synonyms();
@@ -688,7 +696,29 @@ abstract class Algolia_Index {
 	 *
 	 * @return array
 	 */
-	abstract protected function get_settings();
+	public function get_default_settings() {
+		$settings = (array) apply_filters( 'algolia_' . $this->get_id() . '_index_settings', $this->default_settings );
+
+		/**
+		 * Replacing `attributesToIndex` with `searchableAttributes` as
+		 * it has been replaced by Algolia.
+		 *
+		 * @link  https://www.algolia.com/doc/api-reference/api-parameters/searchableAttributes/
+		 * @since 2.2.0
+		 */
+		if (
+			array_key_exists( 'attributesToIndex', $settings )
+			&& is_array( $settings['attributesToIndex'] )
+		) {
+			$settings['searchableAttributes'] = array_merge(
+				$settings['searchableAttributes'],
+				$settings['attributesToIndex']
+			);
+			unset( $settings['attributesToIndex'] );
+		}
+
+		return $settings;
+	}
 
 	/**
 	 * Get synonyms.
@@ -831,10 +861,7 @@ abstract class Algolia_Index {
 			)
 		);
 
-		$client = $this->get_client();
-
-		// Ensure we re-push the master index settings each time.
-		$settings = $this->get_settings();
+		$settings = new Algolia_Primary_Index_Settings( $this ); // TODO: maybe move a common place.
 
 		/**
 		 * Loop over the replicas.
@@ -845,10 +872,7 @@ abstract class Algolia_Index {
 		 * @var Algolia_Index_Replica $replica
 		 */
 		foreach ( $replicas as $replica ) {
-			$settings['ranking'] = $replica->get_ranking();
-			$replica_index_name  = $replica->get_replica_index_name( $this );
-			$index               = $client->initIndex( $replica_index_name );
-			$index->setSettings( $settings );
+			( new Algolia_Replica_Index_Settings( $settings, $replica ) );
 		}
 	}
 
@@ -865,27 +889,23 @@ abstract class Algolia_Index {
 	/**
 	 * Check if the index exists in Algolia.
 	 *
-	 * Returns true if the index exists in Algolia.
-	 * false otherwise.
+	 * Returns true if the index exists in Algolia, false otherwise.
 	 *
+	 * @throws \Exception various exceptions can be thrown by Algolia Client.
 	 * @author WebDevStudios <contact@webdevstudios.com>
 	 * @since  1.0.0
 	 *
 	 * @return bool
-	 *
-	 * @throws AlgoliaException If the index does not exist in Algolia.
 	 */
 	public function exists() {
 		try {
 			$this->get_index()->getSettings();
-		} catch ( AlgoliaException $exception ) {
-			if ( $exception->getMessage() === 'Index does not exist' ) {
+		} catch ( NotFoundException $exception ) {
+			if ( self::AC_INDEX_NOT_EXISTS_EXCEPTION_MSG === $exception->getMessage() ) {
 				return false;
 			}
 
-			error_log( $exception->getMessage() ); // phpcs:ignore -- Legacy.
-
-			return false;
+			throw $exception;
 		}
 
 		return true;
