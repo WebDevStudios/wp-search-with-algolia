@@ -172,6 +172,13 @@ class Algolia_Autocomplete_Config {
 			$entry['enabled']    = true;
 		}
 
+		/**
+		 * Filters the configuration settings for Autocomplete.
+		 *
+		 * @since 1.0.0
+		 *
+		 * @param array $config Array of configuration options to be used with Autocomplete javascript configuration.
+		 */
 		$config = (array) apply_filters( 'algolia_autocomplete_config', $config );
 
 		// Remove manually disabled indices.

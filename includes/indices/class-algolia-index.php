@@ -285,8 +285,24 @@ abstract class Algolia_Index {
 	public function sync( $item ) {
 		$this->assert_is_supported( $item );
 		if ( $this->should_index( $item ) ) {
+
+			/**
+			 * Fires before the sync of an item.
+			 *
+			 * @since 1.0.0
+			 *
+			 * @param mixed $item The item to sync.
+			 */
 			do_action( 'algolia_before_get_records', $item );
 			$records = $this->get_records( $item );
+
+			/**
+			 * Fires after the sync of an item.
+			 *
+			 * @since 1.0.0
+			 *
+			 * @param mixed $item The item that was sync'd.
+			 */
 			do_action( 'algolia_after_get_records', $item );
 
 			$this->update_records( $item, $records );
@@ -461,9 +477,24 @@ abstract class Algolia_Index {
 				continue;
 			}
 
+			/**
+			 * Fires before the retrieval of a record to be re-indexed.
+			 *
+			 * @since 1.0.0
+			 *
+			 * @param mixed $item The item to be re-indexed.
+			 */
 			do_action( 'algolia_before_get_records', $item );
 			$item_records = $this->get_records( $item );
 			$records      = array_merge( $records, $item_records );
+
+			/**
+			 * Fires after the retrieval of a record to be re-indexed.
+			 *
+			 * @since 1.0.0
+			 *
+			 * @param mixed $item The item to be re-indexed.
+			 */
 			do_action( 'algolia_after_get_records', $item );
 
 			$this->update_records( $item, $item_records );
@@ -512,6 +543,14 @@ abstract class Algolia_Index {
 		$this->reindexing = false;
 
 		if ( $page === $max_num_pages ) {
+
+			/**
+			 * Fires at the end of the re-index process when all items have been processed.
+			 *
+			 * @since 1.0.0
+			 *
+			 * @param string $value The ID of the index being re-indexed.
+			 */
 			do_action( 'algolia_re_indexed_items', $this->get_id() );
 		}
 	}
@@ -554,6 +593,15 @@ abstract class Algolia_Index {
 				$index->clearObjects();
 			}
 
+			/**
+			 * Filters whether or not to force through settings for an existing index.
+			 *
+			 * @since 1.0.0
+			 *
+			 * @param bool   $value    Whether or not to force through settings. Default false.
+			 * @param string $index_id The ID of the index being considered.
+			 * @return bool  $value    Whether or not to force through settings.
+			 */
 			$force_settings_update = (bool) apply_filters( 'algolia_should_force_settings_update', false, $this->get_id() );
 
 			/*
@@ -656,12 +704,20 @@ abstract class Algolia_Index {
 	 * De-index items.
 	 *
 	 * @author WebDevStudios <contact@webdevstudios.com>
+	 *
 	 * @since  1.0.0
 	 */
 	public function de_index_items() {
 		$index_name = $this->get_name();
 		$this->client->deleteIndex( $index_name );
 
+		/**
+		 * Fires inside the de_index_items method.
+		 *
+		 * @since 1.0.0
+		 *
+		 * @param string $value The ID of the index being de-indexed
+		 */
 		do_action( 'algolia_de_indexed_items', $this->get_id() );
 	}
 
@@ -674,7 +730,27 @@ abstract class Algolia_Index {
 	 * @return int
 	 */
 	public function get_re_index_batch_size() {
+
+		/**
+		 * Filters the batch size to use for reindexing.
+		 *
+		 * @since 1.0.0
+		 *
+		 * @param  int $value Amount of items per batch. Default 100.
+		 * @return int $value Amount of items per batch.
+		 */
 		$batch_size = (int) apply_filters( 'algolia_indexing_batch_size', 100 );
+
+		/**
+		 * Filters the batch size to use for re-indexing.
+		 *
+		 * This is a dynamic filter with `$this->get_id()` portion allowing to filter batch size for specific indexes.
+		 *
+		 * @since 1.0.0
+		 *
+		 * @param int $value      Amount of items per batch. Default 100.
+		 * @param int $batch_size Amount of items per batch.
+		 */
 		$batch_size = (int) apply_filters( 'algolia_' . $this->get_id() . '_indexing_batch_size', $batch_size );
 
 		return $batch_size;
@@ -783,7 +859,29 @@ abstract class Algolia_Index {
 	 * @return array
 	 */
 	public function get_replicas() {
+
+		/**
+		 * Filters the array of index replicas.
+		 *
+		 * @since 1.0.0
+		 *
+		 * @param  array  $value Array of replicas. Default empty array.
+		 * @param  object $this  Current class instance.
+		 * @return array  $value Array of replicas to use.
+		 */
 		$replicas = (array) apply_filters( 'algolia_index_replicas', array(), $this );
+
+		/**
+		 * Filters the array of index replicas
+		 *
+		 * This is a dynamic filter with the `$this->get_id()` portion allowing to filter replicas for specific indexes.
+		 *
+		 * @since 1.0.0
+		 *
+		 * @param  array  $value Array of replicas. Default empty array.
+		 * @param  object $this  Current class instance.
+		 * @return array  $value Array of replicas to use.
+		 */
 		$replicas = (array) apply_filters( 'algolia_' . $this->get_id() . '_index_replicas', $replicas, $this );
 
 		$filtered = array();

@@ -21,6 +21,14 @@
 			?>
 		</form>
 	<?php else : ?>
-		<?php do_action( 'wpswa_pro_override_settings_output' ); ?>
+		<?php
+		/**
+		 * Allows for custom output of settings page content.
+		 *
+		 * Most specifically used for WP Search with Algolia Pro
+		 *
+		 * @since 2.5.2
+		 */
+		do_action( 'wpswa_pro_override_settings_output' ); ?>
 	<?php endif; ?>
 </div>

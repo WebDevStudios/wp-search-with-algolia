@@ -197,6 +197,14 @@ class Algolia_Settings {
 			$ids[] = $this->get_native_search_index_id();
 		}
 
+		/**
+		 * Filters the indices IDs that will be synced.
+		 *
+		 * @since 1.0.0
+		 *
+		 * @param  array $ids   Array of IDs to sync.
+		 * @return array $value Filtered array of IDs.
+		 */
 		return (array) apply_filters( 'algolia_get_synced_indices_ids', $ids );
 	}
 
@@ -254,6 +262,14 @@ class Algolia_Settings {
 			'algolia_excluded_taxonomies'
 		);
 
+		/**
+		 * Filters the array of taxonomies to be excluded from syncing.
+		 *
+		 * @since 1.7.0
+		 *
+		 * @param  array $excluded Array of taxonomies to exclude.
+		 * @return array $value    Filtered array of taxonomies.
+		 */
 		$excluded = (array) apply_filters( 'algolia_excluded_taxonomies', $excluded );
 
 		return $excluded;
@@ -356,6 +372,14 @@ class Algolia_Settings {
 	public function should_override_search_with_instantsearch() {
 		$value = $this->get_override_native_search() === 'instantsearch';
 
+		/**
+		 * Filters whether or not we should override search with instantsearch.js
+		 *
+		 * @since 1.0.0
+		 *
+		 * @param  bool $value Whether or not we should override.
+		 * @return bool $value Filtered determination of override.
+		 */
 		return (bool) apply_filters( 'algolia_should_override_search_with_instantsearch', $value );
 	}
 
@@ -368,6 +392,15 @@ class Algolia_Settings {
 	 * @return string
 	 */
 	public function get_native_search_index_id() {
+
+		/**
+		 * Filters the native search index ID.
+		 *
+		 * @since 1.0.0
+		 *
+		 * @param  string $value The index ID for native search.
+		 * @return string $vaule The filtered index ID.
+		 */
 		return (string) apply_filters( 'algolia_native_search_index_id', 'searchable_posts' );
 	}
 
@@ -541,6 +574,14 @@ class Algolia_Settings {
 	public function get_instantsearch_template_version() {
 		$chosen = get_option( 'algolia_instantsearch_template_version', 'legacy' );
 
+		/**
+		 * Filters the chosen InstantSearch template version. Non-numerical.
+		 *
+		 * @since 2.9.0
+		 *
+		 * @param  string $chosen Current template version.
+		 * @return string $value  Final template version.
+		 */
 		return apply_filters( 'algolia_instantsearch_template_version', $chosen );
 	}
 
