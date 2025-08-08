@@ -39,6 +39,15 @@ class Algolia_Template_Loader {
 		if (
 			! $this->should_load_autocomplete() &&
 			! $settings->should_override_search_with_instantsearch() &&
+			/**
+			 * Filters whether or not the current theme is a block based theme.
+			 *
+			 * WP Search with Algolia will help automatically detect and use this filter.
+			 *
+			 * @since 2.10.3
+			 *
+			 * @param bool $value Whether or not the current theme is block based. Default false.
+			 */
 			! apply_filters( 'algolia_is_block_theme', false )
 		) {
 			return;
@@ -118,9 +127,9 @@ class Algolia_Template_Loader {
 			$config['indices'][ $index->get_id() ] = $index->to_array();
 		}
 
-		// Give developers a last chance to alter the configuration.
 		/**
 		 * Filters the final result of the algolia config object to be used.
+		 *
 		 * Gives developers one last change to alter the configuration.
 		 *
 		 * @since 1.0.0

@@ -574,6 +574,14 @@ class Algolia_Settings {
 	public function get_instantsearch_template_version() {
 		$chosen = get_option( 'algolia_instantsearch_template_version', 'legacy' );
 
+		/**
+		 * Filters the chosen InstantSearch template version. Non-numerical.
+		 *
+		 * @since 2.9.0
+		 *
+		 * @param  string $chosen Current template version.
+		 * @return string $value  Final template version.
+		 */
 		return apply_filters( 'algolia_instantsearch_template_version', $chosen );
 	}
 

@@ -49,7 +49,7 @@ class Algolia_Search_Client_Factory {
 		 *
 		 * @since 1.0.0
 		 *
-		 * @oaram  string $value Default: Current Algolia plugin version.
+		 * @param  string $value Default: Current Algolia plugin version.
 		 * @return string $value Custom UA integration version.
 		 */
 		$integration_version = (string) apply_filters(
@@ -77,6 +77,7 @@ class Algolia_Search_Client_Factory {
 		 * Allows for providing custom configuration arguments for Algolia Search Client.
 		 *
 		 * @see https://www.algolia.com/doc/api-reference/api-methods/configuring-timeouts/
+		 *
 		 * @since 2.8.0
 		 *
 		 * @param array $value Array of values for Algolia Config. Default empty array.
@@ -90,6 +91,8 @@ class Algolia_Search_Client_Factory {
 		 * Allows for customizing an Algolia secured API key.
 		 *
 		 * @see https://www.algolia.com/doc/api-reference/api-methods/generate-secured-api-key/
+		 *
+		 * @since 2.9.0
 		 *
 		 * @param array $value Array of secured API key arguments. Default empty array.
 		 */
