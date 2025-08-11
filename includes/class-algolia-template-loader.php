@@ -36,7 +36,11 @@ class Algolia_Template_Loader {
 		$this->plugin = $plugin;
 
 		$settings = $this->plugin->get_settings();
-		if ( ! $this->should_load_autocomplete() && ! $settings->should_override_search_with_instantsearch() ) {
+		if (
+			! $this->should_load_autocomplete() &&
+			! $settings->should_override_search_with_instantsearch() &&
+			! apply_filters( 'algolia_is_block_theme', false )
+		) {
 			return;
 		}
 
@@ -85,6 +89,7 @@ class Algolia_Template_Loader {
 			'application_id'       => $settings->get_application_id(),
 			'search_api_key'       => $settings->get_search_api_key(),
 			'powered_by_enabled'   => $settings->is_powered_by_enabled(),
+			'insights_enabled'     => $settings->is_insights_enabled(),
 			'search_hits_per_page' => get_option( 'posts_per_page' ),
 			'query'                => get_search_query(),
 			'indices'              => [],
@@ -206,7 +211,7 @@ class Algolia_Template_Loader {
 		);
 
 		$instantsearch_is_modern = $this->plugin->get_settings()->should_use_instantsearch_modern();
-		$chosen_file            = ( $instantsearch_is_modern ) ? 'instantsearch-modern.php' : 'instantsearch.php';
+		$chosen_file             = ( $instantsearch_is_modern ) ? 'instantsearch-modern.php' : 'instantsearch.php';
 		return Algolia_Template_Utils::locate_template( $chosen_file );
 	}
 

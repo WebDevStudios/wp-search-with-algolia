@@ -34,6 +34,7 @@ class Algolia_Settings {
 		add_option( 'algolia_index_name_prefix', 'wp_' );
 		add_option( 'algolia_api_is_reachable', 'no' );
 		add_option( 'algolia_powered_by_enabled', 'yes' );
+		add_option( 'algolia_insights_enabled', 'no' );
 	}
 
 	/**
@@ -152,12 +153,12 @@ class Algolia_Settings {
 
 		// Native WordPress.
 		$builtin = get_post_types( [ '_builtin' => true ] );
-		// Preserve posts, pages, and attachments
+		// Preserve posts, pages, and attachments.
 		unset( $builtin['post'] );
 		unset( $builtin['page'] );
 		unset( $builtin['attachment'] );
 
-		foreach( $builtin as $type ) {
+		foreach ( $builtin as $type ) {
 			$excluded[] = $type;
 		}
 
@@ -521,6 +522,16 @@ class Algolia_Settings {
 	}
 
 	/**
+	 * Determine if Insights is enabled.
+	 *
+	 * @since 2.10.2
+	 * @return bool
+	 */
+	public function is_insights_enabled() {
+		return 'yes' === get_option( 'algolia_insights_enabled', 'no' );
+	}
+
+	/**
 	 * Return the version keyword for Instantsearch version to use.
 	 *
 	 * @since 2.9.0
@@ -543,6 +554,6 @@ class Algolia_Settings {
 	public function should_use_instantsearch_modern() {
 		$version = $this->get_instantsearch_template_version();
 
-		return $version === 'modern';
+		return 'modern' === $version;
 	}
 }

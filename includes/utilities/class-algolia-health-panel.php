@@ -16,6 +16,7 @@ class Algolia_Health_Panel {
 
 	/**
 	 * The Algolia Plugin.
+	 *
 	 * @since   2.10.0
 	 * @var Algolia_Plugin
 	 */
@@ -24,7 +25,7 @@ class Algolia_Health_Panel {
 	/**
 	 * Constructor.
 	 *
-	 * @param Algolia_Plugin $plugin
+	 * @param Algolia_Plugin $plugin The Algolia Plugin instance.
 	 */
 	public function __construct( Algolia_Plugin $plugin ) {
 		$this->plugin = $plugin;
@@ -36,38 +37,38 @@ class Algolia_Health_Panel {
 	 * Add a Site Health panel for our plugin.
 	 *
 	 * @since 2.10.0
-	 * @param array $debug_info
+	 * @param array $debug_info The debug information array to filter.
 	 *
 	 * @return array
 	 */
 	public function health_panel( array $debug_info ) {
 
 		$set_constants = [];
-		foreach( $this->get_constants() as $constant ) {
+		foreach ( $this->get_constants() as $constant ) {
 			$set_constants[ $constant ] = defined( $constant ) ? 'constant' : 'db/default';
 		}
 
 		$debug_info['wp-search-with-algolia'] = [
 			'label'       => esc_html__( 'WP Search with Algolia', 'wp-search-with-algolia' ),
 			'description' => esc_html__( 'Debugging and troubleshooting information for support purposes', 'wp-search-with-algolia' ),
-			'fields' => [
+			'fields'      => [
 				[
 					'label' => esc_html__( 'Constants', 'wp-search-with-algolia' ),
 					'value' => $set_constants,
 				],
 				[
 					'label' => 'Reachable API',
-					'value' => $this->plugin->get_settings()->get_api_is_reachable() ? 'true' : 'false'
+					'value' => $this->plugin->get_settings()->get_api_is_reachable() ? 'true' : 'false',
 				],
 				[
 					'label' => 'Searchable Posts Index Enabled',
-					'value' => $this->plugin->get_index( 'searchable_posts' )->is_enabled() ? 'true' : 'false'
+					'value' => $this->plugin->get_index( 'searchable_posts' )->is_enabled() ? 'true' : 'false',
 				],
 				[
 					'label' => 'Autocomplete Enabled',
-					'value' => $this->plugin->get_settings()->get_autocomplete_enabled() ? 'true' : 'false'
+					'value' => $this->plugin->get_settings()->get_autocomplete_enabled() ? 'true' : 'false',
 				],
-			]
+			],
 		];
 
 		return $debug_info;
@@ -88,7 +89,7 @@ class Algolia_Health_Panel {
 			'ALGOLIA_APPLICATION_ID',
 			'ALGOLIA_SEARCH_API_KEY',
 			'ALGOLIA_API_KEY',
-			'ALGOLIA_INDEX_NAME_PREFIX'
+			'ALGOLIA_INDEX_NAME_PREFIX',
 		];
 	}
 }

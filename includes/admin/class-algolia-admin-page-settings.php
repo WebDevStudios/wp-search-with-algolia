@@ -190,11 +190,20 @@ class Algolia_Admin_Page_Settings {
 			$this->section
 		);
 
+		add_settings_field(
+			'algolia_insights_enabled',
+			esc_html__( 'Enable Insight events', 'wp-search-with-algolia' ),
+			array( $this, 'insights_enabled_callback' ),
+			$this->slug,
+			$this->section
+		);
+
 		register_setting( $this->option_group, 'algolia_application_id', array( $this, 'sanitize_application_id' ) );
 		register_setting( $this->option_group, 'algolia_search_api_key', array( $this, 'sanitize_search_api_key' ) );
 		register_setting( $this->option_group, 'algolia_api_key', array( $this, 'sanitize_api_key' ) );
 		register_setting( $this->option_group, 'algolia_index_name_prefix', array( $this, 'sanitize_index_name_prefix' ) );
 		register_setting( $this->option_group, 'algolia_powered_by_enabled', array( $this, 'sanitize_powered_by_enabled' ) );
+		register_setting( $this->option_group, 'algolia_insights_enabled', array( $this, 'sanitize_insights_enabled' ) );
 	}
 
 	/**
@@ -283,6 +292,21 @@ class Algolia_Admin_Page_Settings {
 		}
 		echo "<input type='checkbox' name='algolia_powered_by_enabled' value='no' " . esc_html( $checked ) . ' />' .
 			'<p class="description" id="home-description">' . esc_html( __( 'This will remove the Algolia logo from the autocomplete and the search page. Algolia requires that you keep the logo if you are using a free plan.', 'wp-search-with-algolia' ) ) . '</p>';
+	}
+
+	/**
+	 * Insights enabled callback.
+	 *
+	 * @since 2.10.2
+	 */
+	public function insights_enabled_callback() {
+		$insights_enabled = $this->plugin->get_settings()->is_insights_enabled();
+		$checked          = '';
+		if ( $insights_enabled ) {
+			$checked = ' checked';
+		}
+		echo "<input type='checkbox' name='algolia_insights_enabled' value='yes' " . esc_html( $checked ) . ' />' .
+			'<p class="description" id="home-description">' . esc_html( __( 'This will enable insights and events tracking to help boost your Algolia results.', 'wp-search-with-algolia' ) ) . '</p>';
 	}
 
 	/**
@@ -478,6 +502,19 @@ class Algolia_Admin_Page_Settings {
 	 */
 	public function sanitize_powered_by_enabled( $value ) {
 		return 'no' === $value ? 'no' : 'yes';
+	}
+
+	/**
+	 * Sanitize the insights enabled setting.
+	 *
+	 * @since 2.10.2
+	 *
+	 * @param string $value The value to sanitize.
+	 *
+	 * @return string
+	 */
+	public function sanitize_insights_enabled( $value ) {
+		return 'yes' === $value ? 'yes' : 'no';
 	}
 
 	/**
