@@ -48,5 +48,5 @@
 		);
 		?>
 	</div>
-	<p><strong><?php esc_html_e( 'Leave on current setting if you have InstantSearch customized via files in your active theme', 'wp-search-with-algolia' ); ?></strong></p>
+	<p><strong><?php esc_html_e( 'Leave on current setting if you have InstantSearch customized via files in your active theme.', 'wp-search-with-algolia' ); ?></strong></p>
 </div>
