@@ -68,6 +68,8 @@ class Algolia_Term_Changes_Watcher implements Algolia_Changes_Watcher {
 
 		// Fires after a term is deleted from the database and the cache is cleaned.
 		add_action( 'delete_term', array( $this, 'on_delete_term' ), 10, 4 );
+
+		add_action( 'admin_notices', [ $this, 'large_count_notice'] );
 	}
 
 	/**
@@ -275,5 +277,36 @@ class Algolia_Term_Changes_Watcher implements Algolia_Changes_Watcher {
 		}
 
 		$this->sync_item( $object_id );
+	}
+
+	public function large_count_notice() {
+		global $current_screen;
+
+		if ( ! $current_screen || 'term' !== $current_screen->base ) {
+			return;
+		}
+		if ( ! empty( $_GET['tag_ID'] ) && is_numeric( $_GET['tag_ID'] ) ) {
+			$termID = absint( $_GET['tag_ID'] );
+		}
+
+		$term = get_term( $termID );
+		if ( ! $term ) {
+			return;
+		}
+
+		$limit = apply_filters( 'algolia_term_update_post_limit', 50 );
+		if ( $term->count > absint( $limit ) ) {
+			wp_admin_notice(
+				sprintf(
+					esc_html__( 'Only the first %1$s posts with this term have been sync\'d to your Algolia indexes. Please run a bulk re-index to get the rest.', 'wp-search-with-algolia' ),
+					$limit
+				),
+				[
+					'id'                 => 'message',
+					'additional_classes' => array( 'updated' ),
+					'dismissible'        => true,
+				]
+			);
+		}
 	}
 }
