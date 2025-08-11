@@ -104,6 +104,13 @@ class Algolia_Term_Changes_Watcher implements Algolia_Changes_Watcher {
 			return;
 		}
 
+		/**
+		 * This filters a cap of how many posts to fetch for the updated term, to update their algolia records.
+		 *
+		 * @since NEXT
+		 *
+		 * @param int $value Amount of posts to update.
+		 */
 		$limit = apply_filters( 'algolia_term_update_post_limit', 50 );
 
 		$args = [
@@ -281,6 +288,12 @@ class Algolia_Term_Changes_Watcher implements Algolia_Changes_Watcher {
 		$this->sync_item( $object_id );
 	}
 
+	/**
+	 * Conditionally set an admin notice about maybe bulk re-indexing to update
+	 * Algolia post records that have this term.
+	 *
+	 * @since NEXT
+	 */
 	public function large_count_notice() {
 		global $current_screen;
 
@@ -296,6 +309,7 @@ class Algolia_Term_Changes_Watcher implements Algolia_Changes_Watcher {
 			return;
 		}
 
+		// This filter is documented in includes/watchers/class-algolia-term-changes-watcher.php
 		$limit = apply_filters( 'algolia_term_update_post_limit', 50 );
 		if ( $term->count > absint( $limit ) ) {
 			wp_admin_notice(
