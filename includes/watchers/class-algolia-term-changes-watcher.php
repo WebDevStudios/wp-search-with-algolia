@@ -104,8 +104,10 @@ class Algolia_Term_Changes_Watcher implements Algolia_Changes_Watcher {
 			return;
 		}
 
+		$limit = apply_filters( 'algolia_term_update_post_limit', 50 );
+
 		$args = [
-			'posts_per_page' => -1,
+			'posts_per_page' => $limit,
 			'tax_query'      => [
 				[
 					'taxonomy' => $taxonomy,
