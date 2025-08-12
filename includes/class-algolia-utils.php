@@ -122,6 +122,15 @@ class Algolia_Utils {
 		}
 
 		if ( $post_thumbnail_id ) {
+
+			/**
+			 * Filters the sizes to fetch image paths for.
+			 *
+			 * @since 1.0.0
+			 *
+			 * @param  array $value Array of image sizes to fetch. Default: thumbnail.
+			 * @return array $value Amended array of images sizes.
+			 */
 			$sizes = (array) apply_filters( 'algolia_post_images_sizes', array( 'thumbnail' ) );
 			foreach ( $sizes as $size ) {
 				$info = wp_get_attachment_image_src( $post_thumbnail_id, $size );
@@ -205,6 +214,14 @@ class Algolia_Utils {
 			$noise_patterns[] = '/\[\/?et_pb.*?\]/';
 		}
 
+		/**
+		 * Filters the "noise" patterns to run content through.
+		 *
+		 * @since 1.0.0
+		 *
+		 * @param  array $value Array of REGEX patterns to use.
+		 * @return array Amended array of patterns.
+		 */
 		$noise_patterns = (array) apply_filters( 'algolia_strip_patterns', $noise_patterns );
 
 		foreach ( $noise_patterns as $pattern ) {
@@ -269,6 +286,7 @@ class Algolia_Utils {
 	 * @return bool
 	 */
 	public static function get_scripts_in_footer_argument() {
+
 		/**
 		 * Filters the `$in_footer` argument to `wp_register_script()` for Algolia Scripts.
 		 *

@@ -2,7 +2,7 @@
 /**
  * @license MIT
  *
- * Modified by WebDevStudios on 23-February-2023 using Strauss.
+ * Modified by WebDevStudios on 01-July-2025 using Strauss.
  * @see https://github.com/BrianHenryIE/strauss
  */
 
@@ -20,7 +20,7 @@ final class GuzzleHttpClient implements HttpClientInterface
 {
     private $client;
 
-    public function __construct(GuzzleClient $client = null)
+    public function __construct(?GuzzleClient $client = null)
     {
         $this->client = $client ?: static::buildClient();
     }

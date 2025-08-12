@@ -2,9 +2,11 @@
 /**
  * @license MIT
  *
- * Modified by WebDevStudios on 23-February-2023 using Strauss.
+ * Modified by WebDevStudios on 01-July-2025 using Strauss.
  * @see https://github.com/BrianHenryIE/strauss
  */
+
+declare(strict_types=1);
 
 namespace WebDevStudios\WPSWA\Psr\Http\Message;
 
@@ -55,7 +57,7 @@ interface ResponseInterface extends MessageInterface
      * @return static
      * @throws \InvalidArgumentException For invalid status code arguments.
      */
-    public function withStatus($code, $reasonPhrase = '');
+    public function withStatus(int $code, string $reasonPhrase = '');
 
     /**
      * Gets the response reason phrase associated with the status code.

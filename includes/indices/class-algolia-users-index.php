@@ -54,6 +54,17 @@ final class Algolia_Users_Index extends Algolia_Index {
 			$should_index = (int) count_user_posts( $item->ID ) > 0;
 		}
 
+		/**
+		 * Filters whether or not to index a user.
+		 *
+		 * This filter is based on if the user has a published post.
+		 *
+		 * @since 1.0.0
+		 *
+		 * @param  bool  $should_index Whether or not the user should be indexed.
+		 * @param  mixed $item         The user object.
+		 * @return bool  $value        Filtered should index status.
+		 */
 		return (bool) apply_filters( 'algolia_should_index_user', $should_index, $item );
 	}
 
@@ -94,6 +105,15 @@ final class Algolia_Users_Index extends Algolia_Index {
 			$record['avatar_url'] = 'https://www.gravatar.com/avatar/' . $email_hash . '?s=' . $avatar_size;
 		}
 
+		/**
+		 * Filters the user information that will go into the Algolia object.
+		 *
+		 * @since 1.0.0
+		 *
+		 * @param  array $record Array of user information.
+		 * @param  mixed $item   The user object.
+		 * @return array $value  Filtered user information.
+		 */
 		$record = (array) apply_filters( 'algolia_user_record', $record, $item );
 
 		return array( $record );
@@ -131,6 +151,14 @@ final class Algolia_Users_Index extends Algolia_Index {
 			),
 		);
 
+		/**
+		 * Filters the settings for the users index settings.
+		 *
+		 * @since 1.0.0
+		 *
+		 * @param  array $settings Array of settings to use for the index.
+		 * @return array $value    Filtered index settings.
+		 */
 		$settings = (array) apply_filters( 'algolia_users_index_settings', $settings );
 
 		/**
@@ -163,6 +191,15 @@ final class Algolia_Users_Index extends Algolia_Index {
 	 * @return array
 	 */
 	protected function get_synonyms() {
+
+		/**
+		 * Filters the users index synonyms to use.
+		 *
+		 * @since 1.0.0
+		 *
+		 * @param  array $value Array of synonyms to use.
+		 * @return array $value Filtered array of synonyms.
+		 */
 		return (array) apply_filters( 'algolia_users_index_synonyms', array() );
 	}
 
