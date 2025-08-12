@@ -141,7 +141,24 @@ class Algolia_Search {
 			)
 		);
 
+		/**
+		 * Filters the order by clause for our backend search query.
+		 *
+		 * @since 1.0.0
+		 *
+		 * @param  null   $value Order by parameter. Default null.
+		 * @return string $value Filtered order by parameter.
+		 */
 		$order_by = apply_filters( 'algolia_search_order_by', null );
+
+		/**
+		 * Filters the order clause for our backend search query.
+		 *
+		 * @since 1.0.0
+		 *
+		 * @param  string $value Order parameter. Default 'desc'.
+		 * @return string $value Filtered order parameter.
+		 */
 		$order    = apply_filters( 'algolia_search_order', 'desc' );
 
 		try {
@@ -235,7 +252,7 @@ class Algolia_Search {
 	 * Output the bundled styles for highlighting search result matches, if enabled.
 	 *
 	 * @author WebDevStudios <contact@webdevstudios.com>
-	 * @since  1.0.0
+	 * @since  1.2.0
 	 *
 	 * @return void
 	 */
@@ -244,6 +261,14 @@ class Algolia_Search {
 			return;
 		}
 
+		/**
+		 * Filters whether or not to output styling for search highlight.
+		 *
+		 * @since 1.2.0
+		 *
+		 * @param  bool $value Whether or not to output styling CSS
+		 * @return bool $value Filtered determination.
+		 */
 		if ( ! apply_filters( 'algolia_search_highlighting_enable_bundled_styles', true ) ) {
 			return;
 		}
@@ -354,6 +379,15 @@ class Algolia_Search {
 	 * @return bool
 	 */
 	private function highlighting_enabled() : bool {
+
+		/**
+		 * Filters whether or not highlighting is enabled.
+		 *
+		 * @since 1.2.0
+		 *
+		 * @param  bool  $value Whether or not highlighting is enabled.
+		 * @return mixed $value Determined highlight enabled status.
+		 */
 		return apply_filters( 'algolia_search_highlighting_enabled', true );
 	}
 }

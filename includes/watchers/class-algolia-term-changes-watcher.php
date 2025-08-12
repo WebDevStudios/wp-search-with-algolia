@@ -240,7 +240,7 @@ class Algolia_Term_Changes_Watcher implements Algolia_Changes_Watcher {
 	 * Watch meta changes for item.
 	 *
 	 * @param string|array $meta_id    The meta ID.
-	 * @param int          $object_id  The post ID.
+	 * @param int          $object_id  The term ID.
 	 * @param string       $meta_key   The meta key.
 	 * @param mixed        $meta_value The meta value.
 	 *
@@ -252,6 +252,16 @@ class Algolia_Term_Changes_Watcher implements Algolia_Changes_Watcher {
 
 		// We will not listen for any specific key by default.
 		$keys = [];
+
+		/**
+		 * Filters the meta keys to watch for changes on for terms.
+		 *
+		 * @since 2.5.0
+		 *
+		 * @param  array $keys      Array of meta keys to listen to. Default: empty array.
+		 * @param  int   $object_id The term ID.
+		 * @return array $value     Array of meta keys to listen to changes on.
+		 */
 		$keys = (array) apply_filters( 'algolia_watch_term_meta_keys', $keys, $object_id );
 
 		if ( empty( $keys ) || ! in_array( $meta_key, $keys, true ) ) {
