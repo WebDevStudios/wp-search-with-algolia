@@ -160,7 +160,7 @@ class Algolia_Admin_Page_Settings {
 
 		add_settings_field(
 			'algolia_search_api_key',
-			esc_html__( 'Search-only API key', 'wp-search-with-algolia' ),
+			esc_html__( 'Search API key', 'wp-search-with-algolia' ),
 			array( $this, 'search_api_key_callback' ),
 			$this->slug,
 			$this->section
@@ -239,7 +239,7 @@ class Algolia_Admin_Page_Settings {
 		?>
 		<input type="text" name="algolia_search_api_key" class="regular-text" value="<?php echo esc_attr( $setting ); ?>" <?php echo esc_html( $disabled_html ); ?>/>
 		<p class="description" id="home-description">
-			<?php esc_html_e( 'Your Algolia Search-only API key (public).', 'wp-search-with-algolia' ); ?>
+			<?php esc_html_e( 'Your Algolia Search API key (public).', 'wp-search-with-algolia' ); ?>
 		</p>
 		<?php
 	}
@@ -357,7 +357,7 @@ class Algolia_Admin_Page_Settings {
 			add_settings_error(
 				$this->option_group,
 				'empty',
-				esc_html__( 'Search-only API key should not be empty.', 'wp-search-with-algolia' )
+				esc_html__( 'Search API key should not be empty.', 'wp-search-with-algolia' )
 			);
 		}
 
