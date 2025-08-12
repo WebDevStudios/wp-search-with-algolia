@@ -2,12 +2,13 @@
 /**
  * @license MIT
  *
- * Modified by WebDevStudios on 23-February-2023 using Strauss.
+ * Modified by WebDevStudios on 01-July-2025 using Strauss.
  * @see https://github.com/BrianHenryIE/strauss
  */
 
 namespace WebDevStudios\WPSWA\Algolia\AlgoliaSearch\Http\Psr7;
 
+use WebDevStudios\WPSWA\Psr\Http\Message\MessageInterface;
 use WebDevStudios\WPSWA\Psr\Http\Message\ResponseInterface;
 use WebDevStudios\WPSWA\Psr\Http\Message\StreamInterface;
 
@@ -131,18 +132,12 @@ class Response implements ResponseInterface
         $this->protocol = $version;
     }
 
-    /**
-     * @return int
-     */
-    public function getStatusCode()
+    public function getStatusCode(): int
     {
         return $this->statusCode;
     }
 
-    /**
-     * @return string
-     */
-    public function getReasonPhrase()
+    public function getReasonPhrase(): string
     {
         return $this->reasonPhrase;
     }
@@ -150,7 +145,7 @@ class Response implements ResponseInterface
     /**
      * @return static
      */
-    public function withStatus($code, $reasonPhrase = '')
+    public function withStatus(int $code, string $reasonPhrase = ''): ResponseInterface
     {
         $new = clone $this;
         $new->statusCode = (int) $code;
@@ -162,10 +157,7 @@ class Response implements ResponseInterface
         return $new;
     }
 
-    /**
-     * @return string
-     */
-    public function getProtocolVersion()
+    public function getProtocolVersion(): string
     {
         return $this->protocol;
     }
@@ -173,7 +165,7 @@ class Response implements ResponseInterface
     /**
      * @return static
      */
-    public function withProtocolVersion($version)
+    public function withProtocolVersion(string $version): MessageInterface
     {
         if ($this->protocol === $version) {
             return $this;
@@ -185,64 +177,52 @@ class Response implements ResponseInterface
         return $new;
     }
 
-    /**
-     * @return array
-     */
-    public function getHeaders()
+    public function getHeaders(): array
     {
         return $this->headers;
     }
 
-    /**
-     * @return bool
-     */
-    public function hasHeader($header)
+    public function hasHeader(string $name): bool
     {
-        return isset($this->headerNames[strtolower($header)]);
+        return isset($this->headerNames[strtolower($name)]);
     }
 
-    /**
-     * @return array
-     */
-    public function getHeader($header)
+    public function getHeader(string $name): array
     {
-        $header = strtolower($header);
+        $name = strtolower($name);
 
-        if (!isset($this->headerNames[$header])) {
+        if (!isset($this->headerNames[$name])) {
             return [];
         }
 
-        $header = $this->headerNames[$header];
+        $name = $this->headerNames[$name];
 
-        return $this->headers[$header];
+        return $this->headers[$name];
     }
 
-    /**
-     * @return string
-     */
-    public function getHeaderLine($header)
+    public function getHeaderLine(string $name): string
     {
-        return implode(', ', $this->getHeader($header));
+        return implode(', ', $this->getHeader($name));
     }
 
     /**
      * @return static
      */
-    public function withHeader($header, $value)
+    public function withHeader(string $name, $value): MessageInterface
     {
         if (!is_array($value)) {
             $value = [$value];
         }
 
         $value = $this->trimHeaderValues($value);
-        $normalized = strtolower($header);
+        $normalized = strtolower($name);
 
         $new = clone $this;
         if (isset($new->headerNames[$normalized])) {
             unset($new->headers[$new->headerNames[$normalized]]);
         }
-        $new->headerNames[$normalized] = $header;
-        $new->headers[$header] = $value;
+        $new->headerNames[$normalized] = $name;
+        $new->headers[$name] = $value;
 
         return $new;
     }
@@ -250,22 +230,22 @@ class Response implements ResponseInterface
     /**
      * @return static
      */
-    public function withAddedHeader($header, $value)
+    public function withAddedHeader(string $name, $value): MessageInterface
     {
         if (!is_array($value)) {
             $value = [$value];
         }
 
         $value = $this->trimHeaderValues($value);
-        $normalized = strtolower($header);
+        $normalized = strtolower($name);
 
         $new = clone $this;
         if (isset($new->headerNames[$normalized])) {
-            $header = $this->headerNames[$normalized];
-            $new->headers[$header] = array_merge($this->headers[$header], $value);
+            $name = $this->headerNames[$normalized];
+            $new->headers[$name] = array_merge($this->headers[$name], $value);
         } else {
-            $new->headerNames[$normalized] = $header;
-            $new->headers[$header] = $value;
+            $new->headerNames[$normalized] = $name;
+            $new->headers[$name] = $value;
         }
 
         return $new;
@@ -274,26 +254,23 @@ class Response implements ResponseInterface
     /**
      * @return static
      */
-    public function withoutHeader($header)
+    public function withoutHeader(string $name): MessageInterface
     {
-        $normalized = strtolower($header);
+        $normalized = strtolower($name);
 
         if (!isset($this->headerNames[$normalized])) {
             return $this;
         }
 
-        $header = $this->headerNames[$normalized];
+        $name = $this->headerNames[$normalized];
 
         $new = clone $this;
-        unset($new->headers[$header], $new->headerNames[$normalized]);
+        unset($new->headers[$name], $new->headerNames[$normalized]);
 
         return $new;
     }
 
-    /**
-     * @return \StreamInterface
-     */
-    public function getBody()
+    public function getBody(): StreamInterface
     {
         if (!$this->stream) {
             $this->stream = stream_for('');
@@ -305,7 +282,7 @@ class Response implements ResponseInterface
     /**
      * @return static
      */
-    public function withBody(StreamInterface $body)
+    public function withBody(StreamInterface $body): MessageInterface
     {
         if ($body === $this->stream) {
             return $this;
