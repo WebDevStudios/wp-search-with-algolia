@@ -2,9 +2,11 @@
 /**
  * @license MIT
  *
- * Modified by WebDevStudios on 23-February-2023 using Strauss.
+ * Modified by WebDevStudios on 01-July-2025 using Strauss.
  * @see https://github.com/BrianHenryIE/strauss
  */
+
+declare(strict_types=1);
 
 namespace WebDevStudios\WPSWA\Psr\Http\Message;
 
@@ -68,7 +70,7 @@ interface UploadedFileInterface
      * @throws \RuntimeException on any error during the move operation, or on
      *     the second or subsequent call to the method.
      */
-    public function moveTo($targetPath);
+    public function moveTo(string $targetPath);
     
     /**
      * Retrieve the file size.

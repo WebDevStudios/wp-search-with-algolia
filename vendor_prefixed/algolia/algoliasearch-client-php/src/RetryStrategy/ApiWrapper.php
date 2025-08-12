@@ -2,7 +2,7 @@
 /**
  * @license MIT
  *
- * Modified by WebDevStudios on 23-February-2023 using Strauss.
+ * Modified by WebDevStudios on 01-July-2025 using Strauss.
  * @see https://github.com/BrianHenryIE/strauss
  */
 
@@ -63,8 +63,8 @@ final class ApiWrapper implements ApiWrapperInterface
         HttpClientInterface $http,
         AbstractConfig $config,
         ClusterHosts $clusterHosts,
-        RequestOptionsFactory $RqstOptsFactory = null,
-        LoggerInterface $logger = null
+        ?RequestOptionsFactory $RqstOptsFactory = null,
+        ?LoggerInterface $logger = null
     ) {
         $this->http = $http;
         $this->config = $config;

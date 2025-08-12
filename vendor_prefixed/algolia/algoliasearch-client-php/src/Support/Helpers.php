@@ -2,7 +2,7 @@
 /**
  * @license MIT
  *
- * Modified by WebDevStudios on 23-February-2023 using Strauss.
+ * Modified by WebDevStudios on 01-July-2025 using Strauss.
  * @see https://github.com/BrianHenryIE/strauss
  */
 
@@ -115,7 +115,10 @@ final class Helpers
     {
         $data = \json_decode($json, $assoc, $depth);
         if (JSON_ERROR_NONE !== json_last_error()) {
-            throw new \InvalidArgumentException('json_decode error: '.json_last_error_msg());
+            throw new \InvalidArgumentException(sprintf(<<<'EXCEPTION'
+json_decode_error: %s
+input string: %s
+EXCEPTION, json_last_error_msg(), $json));
         }
 
         return $data;
