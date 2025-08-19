@@ -185,7 +185,7 @@ final class Algolia_Terms_Index extends Algolia_Index {
 	 * @return string
 	 */
 	public function get_id() {
-		return 'terms_' . $this->taxonomy;
+		return apply_filters( "algolia_terms_{$this->taxonomy}_index_id", 'terms_' . $this->taxonomy );
 	}
 
 
