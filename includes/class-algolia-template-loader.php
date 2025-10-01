@@ -36,10 +36,11 @@ class Algolia_Template_Loader {
 		$this->plugin = $plugin;
 
 		$settings = $this->plugin->get_settings();
+		$is_fse   = apply_filters( 'algolia_is_block_theme', false );
 		if (
 			! $this->should_load_autocomplete() &&
 			! $settings->should_override_search_with_instantsearch() &&
-			! apply_filters( 'algolia_is_block_theme', false )
+			! $is_fse
 		) {
 			return;
 		}
@@ -180,22 +181,20 @@ class Algolia_Template_Loader {
 	public function template_loader( $template ) {
 		$settings = $this->plugin->get_settings();
 		if ( is_search() && $settings->should_override_search_with_instantsearch() ) {
+			$is_fse = apply_filters( 'algolia_is_block_theme', false );
 
+			// Don't need a custom instantsearch template file.
+			if ( $is_fse ) {
+				$this->load_instantsearch_assets();
+				return $template;
+			}
 			return $this->load_instantsearch_template();
 		}
 
 		return $template;
 	}
 
-	/**
-	 * Load the instantsearch template.
-	 *
-	 * @author  WebDevStudios <contact@webdevstudios.com>
-	 * @since   1.0.0
-	 *
-	 * @return string
-	 */
-	public function load_instantsearch_template() {
+	public function load_instantsearch_assets() {
 		add_action(
 			'wp_enqueue_scripts',
 			function () {
@@ -209,6 +208,18 @@ class Algolia_Template_Loader {
 				do_action( 'algolia_instantsearch_scripts' );
 			}
 		);
+	}
+
+	/**
+	 * Load the instantsearch template.
+	 *
+	 * @author  WebDevStudios <contact@webdevstudios.com>
+	 * @since   1.0.0
+	 *
+	 * @return string
+	 */
+	public function load_instantsearch_template() {
+		$this->load_instantsearch_assets();
 
 		$instantsearch_is_modern = $this->plugin->get_settings()->should_use_instantsearch_modern();
 		$chosen_file             = ( $instantsearch_is_modern ) ? 'instantsearch-modern.php' : 'instantsearch.php';
