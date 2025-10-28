@@ -195,6 +195,11 @@ class Algolia_Template_Loader {
 		return $template;
 	}
 
+	/**
+	 * Load the InstantSearch assets.
+	 *
+	 * @since 2.10.4
+	 */
 	public function load_instantsearch_assets() {
 		add_action(
 			'wp_enqueue_scripts',
@@ -212,7 +217,7 @@ class Algolia_Template_Loader {
 	}
 
 	/**
-	 * Load the instantsearch template.
+	 * Load the InstantSearch template.
 	 *
 	 * @author  WebDevStudios <contact@webdevstudios.com>
 	 * @since   1.0.0
