@@ -183,11 +183,12 @@ class Algolia_Template_Loader {
 		if ( is_search() && $settings->should_override_search_with_instantsearch() ) {
 			$is_fse = apply_filters( 'algolia_is_block_theme', false );
 
-			// Don't need a custom instantsearch template file.
+			// Don't need a custom instantsearch template file, but still need assets.
 			if ( $is_fse ) {
 				$this->load_instantsearch_assets();
 				return $template;
 			}
+
 			return $this->load_instantsearch_template();
 		}
 
@@ -219,6 +220,7 @@ class Algolia_Template_Loader {
 	 * @return string
 	 */
 	public function load_instantsearch_template() {
+		// Need both assets and Instantsearch template.
 		$this->load_instantsearch_assets();
 
 		$instantsearch_is_modern = $this->plugin->get_settings()->should_use_instantsearch_modern();
