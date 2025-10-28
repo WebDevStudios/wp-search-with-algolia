@@ -7,7 +7,7 @@ Requires PHP: 7.4
 Stable tag: 2.10.4
 License: GNU General Public License v2.0, MIT License
 
-Use the power of Algolia to enhance your website's search. Enable Autocomplete and Instantsearch for fast and accurate results and relevance.
+Use the power of Algolia AI search to enhance your website's search. Enable AI-powered Autocomplete and InstantSearch for fast, accurate results and relevance.
 
 == Description ==
 
