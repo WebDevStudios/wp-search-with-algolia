@@ -2,7 +2,7 @@
 Contributors: WebDevStudios, williamsba1, tw2113, mrasharirfan, scottbasgaard, gregrickaby, richaber, daveromsey
 Tags: algolia, autocomplete, instantsearch, relevance search, ai search
 Requires at least: 5.3
-Tested up to: 6.8.2
+Tested up to: 6.8
 Requires PHP: 7.4
 Stable tag: 2.10.3
 License: GNU General Public License v2.0, MIT License
