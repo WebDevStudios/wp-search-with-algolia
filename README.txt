@@ -7,11 +7,11 @@ Requires PHP: 7.4
 Stable tag: 2.10.4
 License: GNU General Public License v2.0, MIT License
 
-Use the power of Algolia AI search to enhance your website's search. Enable AI-powered Autocomplete and InstantSearch for fast, accurate results and relevance.
+Use the power of Algolia AI Search & Discovery to enhance your website's search. Enable AI-powered Autocomplete and InstantSearch for fast, accurate results and relevance.
 
 == Description ==
 
-Easily integrate the powerful search tool Algolia directly into your WordPress website. Quickly index all of your website’s content and provide lightning fast and accurate search results within minutes!
+Easily integrate the powerful search tool Algolia AI Search & Discovery directly into your WordPress website. Quickly index all of your website’s content and provide lightning fast and accurate search results within minutes!
 
 Built and supported by WebDevStudios, the website agency behind Custom Post Type UI, WP Search with Algolia immediately improves search on your website. Your users will be impressed!
 
@@ -19,7 +19,7 @@ Enable Autocomplete and Instantsearch to immediately provide a more robust searc
 
 = Features =
 * One-click indexing of all content in WordPress
-* Relevant, faceted ready search results in milliseconds with native typo-tolerance from Algolia Search
+* Relevant, faceted ready search results in milliseconds with native typo-tolerance from Algolia AI Search & Discovery
 * Super granular control on search content relevancy and content positioning
 * Language-agnostic
 * WordPress hooks and filters available for easy customization of indexed content.
