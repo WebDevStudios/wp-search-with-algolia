@@ -1,17 +1,17 @@
 === WP Search with Algolia ===
 Contributors: WebDevStudios, williamsba1, tw2113, mrasharirfan, scottbasgaard, gregrickaby, richaber, daveromsey
-Tags: search, algolia, autocomplete, instantsearch, relevance search, faceted search, find-as-you-type search, ecommerce, seo, woocommerce, advanced search
+Tags: algolia, autocomplete, instantsearch, relevance search, ai search
 Requires at least: 5.3
-Tested up to: 6.8.2
+Tested up to: 6.8
 Requires PHP: 7.4
-Stable tag: 2.10.3
+Stable tag: 2.10.4
 License: GNU General Public License v2.0, MIT License
 
-Use the power of Algolia to enhance your website's search. Enable Autocomplete and Instantsearch for fast and accurate results and relevance.
+Use the power of Algolia AI Search & Discovery to enhance your website's search. Enable AI-powered Autocomplete and InstantSearch for fast, accurate results and relevance.
 
 == Description ==
 
-Easily integrate the powerful search tool Algolia directly into your WordPress website. Quickly index all of your website’s content and provide lightning fast and accurate search results within minutes!
+Easily integrate the powerful search tool Algolia AI Search & Discovery directly into your WordPress website. Quickly index all of your website’s content and provide lightning fast and accurate search results within minutes!
 
 Built and supported by WebDevStudios, the website agency behind Custom Post Type UI, WP Search with Algolia immediately improves search on your website. Your users will be impressed!
 
@@ -19,7 +19,7 @@ Enable Autocomplete and Instantsearch to immediately provide a more robust searc
 
 = Features =
 * One-click indexing of all content in WordPress
-* Relevant, faceted ready search results in milliseconds with native typo-tolerance from Algolia Search
+* Relevant, faceted ready search results in milliseconds with native typo-tolerance from Algolia AI Search & Discovery
 * Super granular control on search content relevancy and content positioning
 * Language-agnostic
 * WordPress hooks and filters available for easy customization of indexed content.
@@ -52,8 +52,6 @@ Are you ready to go Pro? Check out [WP Search with Algolia Pro on Pluginize](htt
 
 == Installation ==
 
-**If you have the *Search by Algolia – Instant & Relevant results* plugin installed, please deactivate it first.**
-
 From your WordPress dashboard:
 
 1. **Visit** Plugins > Add New
@@ -82,17 +80,9 @@ Yes. The Algolia Team **[no longer supports their original plugin](https://commu
 
 Yes. Because Algolia no longer supports their plugin, you will no longer receive updates. WebDevStudios uses Algolia on many of its projects, and is committed to maintaining this plugin.
 
-= How do I switch from the "Search by Algolia – Instant & Relevant results" plugin? =
-
-1. **Deactivate** the *Search by Algolia – Instant & Relevant results* plugin
-2. **Follow** the [installation instructions](https://wordpress.org/plugins/wp-search-with-algolia/#installation)
-3. **Activate** *WP Search with Algolia*
-4. **Check** for your API Keys. They should already be there, if not, enter them and then save settings
-5. **Delete** the *Search by Algolia – Instant & Relevant results* plugin
-
 = What are the minimum requirements? =
 
-* Requires WordPress 5.0+
+* Requires WordPress 5.3+
 * PHP version 7.4 or greater
 * MySQL version 5.0 or greater (MySQL 5.6 or greater is recommended)
 * cURL PHP extension
@@ -127,6 +117,10 @@ All development is handled on [GitHub](https://github.com/WebDevStudios/wp-searc
 == Changelog ==
 
 Follow along with the changelog on [Github](https://github.com/WebDevStudios/wp-search-with-algolia/releases).
+
+= 2.10.4 =
+* Fixed: revised asset loading for InstantSearch with Full Site Editing enabled.
+* Added: Striping styles for Autocomplete table list.
 
 = 2.10.3 =
 * Added: Filter to still output frontend config data when using Instantsearch and FSE Theme.
@@ -219,53 +213,3 @@ Follow along with the changelog on [Github](https://github.com/WebDevStudios/wp-
 * Updated bundled CSS to better match selectors for default used widgets in the templates.
 * Clarified some details around Autocomplete settings and what can be done in each setting state.
 * Updated admin menu icon to use Algolia logo when no settings configured.
-
-= 2.4.0 =
-* Increase minimum PHP version to PHP 7.4
-* Fixed PHP8 compatibility issues
-* Prefixed Algolia library to avoid potential conflicts with other code using the same libraries.
-* Revised copy and wording around the plugin for better clarity.
-* Deprecate the `algolia_should_require_search_client` filter in favor of prefixed Algolia PHP Client namespace
-
-= 2.3.1 =
-* Update autocomplete template to use addEventListener instead of onload function
-* Update Algolia InstantSearch.js to 4.49.1
-
-= 2.3.0 =
-* Add algolia_should_override_autocomplete filter to override enable/disable status of Autocomplete
-* Add from_batch argument to the re-index WP-CLI command
-* Update excluded custom post types and taxonomies to include Core WordPress' internal CPTs and taxonomies
-* Update Algolia logos to match the latest version
-* Remove jQuery usage and dependency from templates
-* Update Algolia JavaScript API Client to 4.14.2
-* Update Algolia InstantSearch.js to 4.49.0
-* Update Algolia PHP API Client to 3.3.2
-
-= 2.2.0 =
-* Add alert to Push Settings button on the Search Page.
-* Replace attributesToIndex index setting with searchableAttributes.
-* Replace outdated Instant Search widget class.
-* Improve drag and drop column description text on the Autocomplete page.
-* Remove inline CSS for Max. Suggestions input.
-* Update Algolia JavaScript API Client to 4.13.0
-* Update Algolia InstantSearch.js to 4.40.5
-* Update Algolia Autocomplete.js to 0.38.1
-* Update Algolia PHP API Client to 3.2.0
-
-= 2.1.0 =
-* Add algolia_update_records filter to allow inspection and filtering records during update operation.
-* Add algolia_re_index_records filter to allow inspection and filtering records during re-index operation.
-* Catch some Aloglia PHP Client exceptions that were previously uncaught during record updating and re-indexing.
-* Fix an issue where SearchIndex::saveObjects was called twice during re-index operations.
-* Update Algolia PHP API Client to 3.1.0
-
-= 2.0.1 =
-* Fix for users that enable intstantsearch but not autocomplete by adding algoliasearch client as direct dependency of both
-
-= 2.0.0 =
-* Breaking changes for users with customized autocomplete.php / instantsearch.php template in their theme.
-* Update autocomplete.php and instantsearch.php templates for compatibility with new JS libs.
-* Update Algolia JavaScript API Client to 4.10.3
-* Update Algolia InstantSearch.js to 4.25.2
-* Update Algolia Autocomplete.js to 0.38.0
-* Update Algolia PHP API Client to 3.0.2

@@ -17,7 +17,7 @@
 	<br />
 	<?php esc_html_e( 'Use drag and drop to control the order of the sections in the autocomplete search dropdown menu.', 'wp-search-with-algolia' ); ?>
 </p>
-<table class="widefat table-autocomplete">
+<table class="widefat table-autocomplete striped">
 	<thead>
 		<tr>
 			<th style="width: 20px;"></th>
