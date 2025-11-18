@@ -201,3 +201,17 @@ form .radio-info {
 .algolia-pro-features li {
   list-style: disc;
 }
+
+/* debug page */
+.algolia-search_page_algolia-debug h2 {
+	margin-top: 30px;
+}
+
+.debug-log-output {
+	background: #f5f5fa;
+	border: 1px solid #ccc;
+	max-height: 400px;
+	overflow: auto;
+	padding: 10px;
+	white-space: pre-wrap;
+}
