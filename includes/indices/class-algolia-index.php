@@ -733,8 +733,9 @@ abstract class Algolia_Index {
 	 * @return array Autocomplete config.
 	 */
 	public function get_default_autocomplete_config() {
-		$plugin   = Algolia_Plugin_Factory::create();
-		$debounce = $plugin->get_settings()->get_autocomplete_debounce();
+		$plugin    = Algolia_Plugin_Factory::create();
+		$debounce  = $plugin->get_settings()->get_autocomplete_debounce();
+		$min_chars = $plugin->get_settings()->get_autocomplete_min_chars();
 
 		return array(
 			'index_id'        => $this->get_id(),
@@ -744,6 +745,7 @@ abstract class Algolia_Index {
 			'position'        => 10,
 			'max_suggestions' => 5,
 			'debounce'        => $debounce,
+			'min_chars'       => $min_chars,
 			'tmpl_suggestion' => 'autocomplete-post-suggestion',
 		);
 	}
