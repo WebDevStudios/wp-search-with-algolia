@@ -63,8 +63,8 @@ final class ApiWrapper implements ApiWrapperInterface
         HttpClientInterface $http,
         AbstractConfig $config,
         ClusterHosts $clusterHosts,
-        RequestOptionsFactory $RqstOptsFactory = null,
-        LoggerInterface $logger = null
+        ?RequestOptionsFactory $RqstOptsFactory = null,
+        ?LoggerInterface $logger = null
     ) {
         $this->http = $http;
         $this->config = $config;
