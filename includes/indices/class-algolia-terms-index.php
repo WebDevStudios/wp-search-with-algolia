@@ -14,6 +14,15 @@
  * @since 1.0.0
  */
 final class Algolia_Terms_Index extends Algolia_Index {
+	protected array $default_settings = [
+		'searchableAttributes' => array(
+			'unordered(name)',
+			'unordered(description)',
+		),
+		'customRanking'        => array(
+			'desc(posts_count)',
+		),
+	];
 
 	/**
 	 * What this index contains.
@@ -129,39 +138,10 @@ final class Algolia_Terms_Index extends Algolia_Index {
 	 *
 	 * @return array
 	 */
-	protected function get_settings() {
-		$settings = array(
-			'searchableAttributes' => array(
-				'unordered(name)',
-				'unordered(description)',
-			),
-			'customRanking'        => array(
-				'desc(posts_count)',
-			),
-		);
-
-		$settings = (array) apply_filters( 'algolia_terms_index_settings', $settings, $this->taxonomy );
-		$settings = (array) apply_filters( 'algolia_terms_' . $this->taxonomy . '_index_settings', $settings );
-
-		/**
-		 * Replacing `attributesToIndex` with `searchableAttributes` as
-		 * it has been replaced by Algolia.
-		 *
-		 * @link  https://www.algolia.com/doc/api-reference/api-parameters/searchableAttributes/
-		 * @since 2.2.0
-		 */
-		if (
-			array_key_exists( 'attributesToIndex', $settings )
-			&& is_array( $settings['attributesToIndex'] )
-		) {
-			$settings['searchableAttributes'] = array_merge(
-				$settings['searchableAttributes'],
-				$settings['attributesToIndex']
-			);
-			unset( $settings['attributesToIndex'] );
-		}
-
-		return $settings;
+	public function get_default_settings() {
+		// override settings prop to have a custom WP filter hook for terms only
+		$this->default_settings = apply_filters( 'algolia_terms_index_settings', $this->default_settings, $this->taxonomy );
+		return parent::get_default_settings();
 	}
 
 	/**

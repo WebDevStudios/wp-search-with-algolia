@@ -14,6 +14,30 @@
  * @since 1.0.0
  */
 final class Algolia_Posts_Index extends Algolia_Index {
+	protected array $default_settings = [
+		'searchableAttributes'  => array(
+			'unordered(post_title)',
+			'unordered(taxonomies)',
+			'unordered(content)',
+		),
+		'customRanking'         => array(
+			'desc(is_sticky)',
+			'desc(post_date)',
+			'asc(record_index)',
+		),
+		'attributeForDistinct'  => 'post_id',
+		'distinct'              => true,
+		'attributesForFaceting' => array(
+			'taxonomies',
+			'taxonomies_hierarchical',
+			'post_author.display_name',
+		),
+		'attributesToSnippet'   => array(
+			'post_title:30',
+			'content:30',
+		),
+		'snippetEllipsisText'   => '…',
+	];
 
 	/**
 	 * The post type.
@@ -295,60 +319,16 @@ final class Algolia_Posts_Index extends Algolia_Index {
 
 	/**
 	 * Get settings.
+	 * Overridden to able to have "algolia_posts_index_settings" filter.
 	 *
 	 * @author WebDevStudios <contact@webdevstudios.com>
 	 * @since  1.0.0
 	 *
 	 * @return array
 	 */
-	protected function get_settings() {
-		$settings = array(
-			'searchableAttributes'  => array(
-				'unordered(post_title)',
-				'unordered(taxonomies)',
-				'unordered(content)',
-			),
-			'customRanking'         => array(
-				'desc(is_sticky)',
-				'desc(post_date)',
-				'asc(record_index)',
-			),
-			'attributeForDistinct'  => 'post_id',
-			'distinct'              => true,
-			'attributesForFaceting' => array(
-				'taxonomies',
-				'taxonomies_hierarchical',
-				'post_author.display_name',
-			),
-			'attributesToSnippet'   => array(
-				'post_title:30',
-				'content:30',
-			),
-			'snippetEllipsisText'   => '…',
-		);
-
-		$settings = (array) apply_filters( 'algolia_posts_index_settings', $settings, $this->post_type );
-		$settings = (array) apply_filters( 'algolia_posts_' . $this->post_type . '_index_settings', $settings );
-
-		/**
-		 * Replacing `attributesToIndex` with `searchableAttributes` as
-		 * it has been replaced by Algolia.
-		 *
-		 * @link  https://www.algolia.com/doc/api-reference/api-parameters/searchableAttributes/
-		 * @since 2.2.0
-		 */
-		if (
-			array_key_exists( 'attributesToIndex', $settings )
-			&& is_array( $settings['attributesToIndex'] )
-		) {
-			$settings['searchableAttributes'] = array_merge(
-				$settings['searchableAttributes'],
-				$settings['attributesToIndex']
-			);
-			unset( $settings['attributesToIndex'] );
-		}
-
-		return $settings;
+	public function get_default_settings() {
+		$this->default_settings = (array) apply_filters( 'algolia_posts_index_settings', $this->default_settings, $this->post_type );
+		return parent::get_default_settings();
 	}
 
 	/**
