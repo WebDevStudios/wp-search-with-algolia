@@ -175,7 +175,7 @@ final class Algolia_Users_Index extends Algolia_Index {
 	 * @return string
 	 */
 	public function get_id() {
-		return 'users';
+		return apply_filters( "algolia_users_index_id", 'users' );
 	}
 
 
