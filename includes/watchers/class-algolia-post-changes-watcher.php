@@ -242,6 +242,16 @@ class Algolia_Post_Changes_Watcher implements Algolia_Changes_Watcher {
 	 */
 	public function on_meta_change( $meta_id, $object_id, $meta_key, $meta_value ) {
 		$keys = array( '_thumbnail_id' );
+
+		/**
+		 * Filters the meta keys to watch for changes on for posts.
+		 *
+		 * @since 1.0.0
+		 *
+		 * @param array  $keys      Array of meta keys to listen to. Default: '_thumbnail_id'.
+		 * @param int    $object_id The post ID.
+		 * @return array $value     Array of keys to listen to changes on.
+		 */
 		$keys = (array) apply_filters( 'algolia_watch_post_meta_keys', $keys, $object_id );
 
 		if ( ! in_array( $meta_key, $keys, true ) ) {

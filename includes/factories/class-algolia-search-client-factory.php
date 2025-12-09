@@ -31,11 +31,27 @@ class Algolia_Search_Client_Factory {
 	 */
 	public static function create( string $app_id, string $api_key ): SearchClient {
 
+		/**
+		 * Filters the UA Integration name value.
+		 *
+		 * @since 1.0.0
+		 *
+		 * @param  string $value Default: "WP Search with Algolia"
+		 * @return string $value New UA integration name.
+		 */
 		$integration_name = (string) apply_filters(
 			'algolia_ua_integration_name',
 			'WP Search with Algolia'
 		);
 
+		/**
+		 * Filters the UA Integration version value.
+		 *
+		 * @since 1.0.0
+		 *
+		 * @param  string $value Default: Current Algolia plugin version.
+		 * @return string $value Custom UA integration version.
+		 */
 		$integration_version = (string) apply_filters(
 			'algolia_ua_integration_version',
 			ALGOLIA_VERSION
@@ -61,6 +77,7 @@ class Algolia_Search_Client_Factory {
 		 * Allows for providing custom configuration arguments for Algolia Search Client.
 		 *
 		 * @see https://www.algolia.com/doc/api-reference/api-methods/configuring-timeouts/
+		 *
 		 * @since 2.8.0
 		 *
 		 * @param array $value Array of values for Algolia Config. Default empty array.
@@ -74,6 +91,8 @@ class Algolia_Search_Client_Factory {
 		 * Allows for customizing an Algolia secured API key.
 		 *
 		 * @see https://www.algolia.com/doc/api-reference/api-methods/generate-secured-api-key/
+		 *
+		 * @since 2.9.0
 		 *
 		 * @param array $value Array of secured API key arguments. Default empty array.
 		 */

@@ -2,9 +2,11 @@
 /**
  * @license MIT
  *
- * Modified by WebDevStudios on 23-February-2023 using Strauss.
+ * Modified by WebDevStudios on 01-July-2025 using Strauss.
  * @see https://github.com/BrianHenryIE/strauss
  */
+
+declare(strict_types=1);
 
 namespace WebDevStudios\WPSWA\Psr\Http\Message;
 
@@ -90,7 +92,7 @@ interface StreamInterface
      *     SEEK_END: Set position to end-of-stream plus offset.
      * @throws \RuntimeException on failure.
      */
-    public function seek($offset, $whence = SEEK_SET);
+    public function seek(int $offset, int $whence = SEEK_SET);
 
     /**
      * Seek to the beginning of the stream.
@@ -118,7 +120,7 @@ interface StreamInterface
      * @return int Returns the number of bytes written to the stream.
      * @throws \RuntimeException on failure.
      */
-    public function write($string);
+    public function write(string $string);
 
     /**
      * Returns whether or not the stream is readable.
@@ -137,7 +139,7 @@ interface StreamInterface
      *     if no bytes are available.
      * @throws \RuntimeException if an error occurs.
      */
-    public function read($length);
+    public function read(int $length);
 
     /**
      * Returns the remaining contents in a string
@@ -155,10 +157,10 @@ interface StreamInterface
      * stream_get_meta_data() function.
      *
      * @link http://php.net/manual/en/function.stream-get-meta-data.php
-     * @param string $key Specific metadata to retrieve.
+     * @param string|null $key Specific metadata to retrieve.
      * @return array|mixed|null Returns an associative array if no key is
      *     provided. Returns a specific key value if a key is provided and the
      *     value is found, or null if the key is not found.
      */
-    public function getMetadata($key = null);
+    public function getMetadata(?string $key = null);
 }

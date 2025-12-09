@@ -2,7 +2,7 @@
 /**
  * @license MIT
  *
- * Modified by WebDevStudios on 23-February-2023 using Strauss.
+ * Modified by WebDevStudios on 01-July-2025 using Strauss.
  * @see https://github.com/BrianHenryIE/strauss
  */
 
@@ -87,7 +87,7 @@ class Uri implements UriInterface
         }
     }
 
-    public function __toString()
+    public function __toString(): string
     {
         return self::composeComponents(
             $this->scheme,
@@ -251,7 +251,7 @@ class Uri implements UriInterface
      *
      * @see https://tools.ietf.org/html/rfc3986#section-4.4
      */
-    public static function isSameDocumentReference(UriInterface $uri, UriInterface $base = null)
+    public static function isSameDocumentReference(UriInterface $uri, ?UriInterface $base = null)
     {
         if (null !== $base) {
             $uri = UriResolver::resolve($base, $uri);
@@ -390,18 +390,12 @@ class Uri implements UriInterface
         return $uri;
     }
 
-    /**
-     * @return string
-     */
-    public function getScheme()
+    public function getScheme(): string
     {
         return $this->scheme;
     }
 
-    /**
-     * @return string
-     */
-    public function getAuthority()
+    public function getAuthority(): string
     {
         $authority = $this->host;
         if ('' !== $this->userInfo) {
@@ -415,50 +409,32 @@ class Uri implements UriInterface
         return $authority;
     }
 
-    /**
-     * @return string
-     */
-    public function getUserInfo()
+    public function getUserInfo(): string
     {
         return $this->userInfo;
     }
 
-    /**
-     * @return string
-     */
-    public function getHost()
+    public function getHost(): string
     {
         return $this->host;
     }
 
-    /**
-     * @return int|null
-     */
-    public function getPort()
+    public function getPort(): ?int
     {
         return $this->port;
     }
 
-    /**
-     * @return string
-     */
-    public function getPath()
+    public function getPath(): string
     {
         return $this->path;
     }
 
-    /**
-     * @return string
-     */
-    public function getQuery()
+    public function getQuery(): string
     {
         return $this->query;
     }
 
-    /**
-     * @return string
-     */
-    public function getFragment()
+    public function getFragment(): string
     {
         return $this->fragment;
     }
@@ -466,7 +442,7 @@ class Uri implements UriInterface
     /**
      * @return Uri
      */
-    public function withScheme($scheme)
+    public function withScheme(string $scheme): UriInterface
     {
         $scheme = $this->filterScheme($scheme);
 
@@ -485,7 +461,7 @@ class Uri implements UriInterface
     /**
      * @return Uri
      */
-    public function withUserInfo($user, $password = null)
+    public function withUserInfo(string $user, ?string $password = null): UriInterface
     {
         $info = $user;
         if ('' != $password) {
@@ -506,7 +482,7 @@ class Uri implements UriInterface
     /**
      * @return Uri
      */
-    public function withHost($host)
+    public function withHost(string $host): UriInterface
     {
         $host = $this->filterHost($host);
 
@@ -524,7 +500,7 @@ class Uri implements UriInterface
     /**
      * @return Uri
      */
-    public function withPort($port)
+    public function withPort(?int $port): UriInterface
     {
         $port = $this->filterPort($port);
 
@@ -543,7 +519,7 @@ class Uri implements UriInterface
     /**
      * @return Uri
      */
-    public function withPath($path)
+    public function withPath(string $path): UriInterface
     {
         $path = $this->filterPath($path);
 
@@ -561,7 +537,7 @@ class Uri implements UriInterface
     /**
      * @return Uri
      */
-    public function withQuery($query)
+    public function withQuery(string $query): UriInterface
     {
         $query = $this->filterQueryAndFragment($query);
 
@@ -578,7 +554,7 @@ class Uri implements UriInterface
     /**
      * @return Uri
      */
-    public function withFragment($fragment)
+    public function withFragment(string $fragment): UriInterface
     {
         $fragment = $this->filterQueryAndFragment($fragment);
 

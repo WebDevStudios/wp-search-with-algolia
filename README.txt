@@ -2,9 +2,9 @@
 Contributors: WebDevStudios, williamsba1, tw2113, mrasharirfan, scottbasgaard, gregrickaby, richaber, daveromsey
 Tags: algolia, autocomplete, instantsearch, relevance search, ai search
 Requires at least: 5.3
-Tested up to: 6.8
+Tested up to: 6.9
 Requires PHP: 7.4
-Stable tag: 2.10.4
+Stable tag: 2.11.0
 License: GNU General Public License v2.0, MIT License
 
 Use the power of Algolia AI Search & Discovery to enhance your website's search. Enable AI-powered Autocomplete and InstantSearch for fast, accurate results and relevance.
@@ -117,6 +117,14 @@ All development is handled on [GitHub](https://github.com/WebDevStudios/wp-searc
 == Changelog ==
 
 Follow along with the changelog on [Github](https://github.com/WebDevStudios/wp-search-with-algolia/releases).
+
+= 2.11.0 =
+* Updated: Algolia PHP client (addresses PHP 8.4 compatibility notices)
+* Updated: UI wording to match Algolia references and Instantsearch notes.
+* Fixed: Return JSON error instead of echo exception message and continue to throw exception.
+* Added: Inline documentation for various custom filters and actions.
+* Added: Output custom debounce values in Autocomplete settings UI.
+
 
 = 2.10.4 =
 * Fixed: revised asset loading for InstantSearch with Full Site Editing enabled.
