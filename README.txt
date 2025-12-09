@@ -120,7 +120,7 @@ Follow along with the changelog on [Github](https://github.com/WebDevStudios/wp-
 
 = 2.11.0 =
 * Updated: Algolia PHP client (addresses PHP 8.4 compatibility notices)
-* Updated: UI wording to match Algolia references.
+* Updated: UI wording to match Algolia references and Instantsearch notes.
 * Fixed: Return JSON error instead of echo exception message and continue to throw exception.
 * Added: Inline documentation for various custom filters and actions.
 * Added: Output custom debounce values in Autocomplete settings UI.
