@@ -118,6 +118,14 @@ All development is handled on [GitHub](https://github.com/WebDevStudios/wp-searc
 
 Follow along with the changelog on [Github](https://github.com/WebDevStudios/wp-search-with-algolia/releases).
 
+= 2.11.0 =
+* Updated: Algolia PHP client (addresses PHP 8.4 compatibility notices)
+* Updated: UI wording to match Algolia references.
+* Fixed: Return JSON error instead of echo exception message and continue to throw exception.
+* Added: Inline documentation for various custom filters and actions.
+* Added: Output custom debounce values in Autocomplete settings UI.
+
+
 = 2.10.4 =
 * Fixed: revised asset loading for InstantSearch with Full Site Editing enabled.
 * Added: Striping styles for Autocomplete table list.
