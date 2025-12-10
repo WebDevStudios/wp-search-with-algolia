@@ -61,7 +61,7 @@
 					);
 					?>
 				</small>
-				<?php if ( $index['debounce'] > 0 ) : ?>
+				<?php if ( ! empty( $index['debounce'] ) && $index['debounce'] > 0 ) : ?>
 					<br /><small>
 						<?php
 						printf(

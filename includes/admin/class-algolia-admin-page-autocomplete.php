@@ -190,7 +190,7 @@ class Algolia_Admin_Page_Autocomplete {
 		?>
 		<input type="number" name="algolia_autocomplete_debounce" class="small-text" min="0" value="<?php echo esc_attr( $value ); ?>" <?php disabled( empty( $indices ) ); ?>/>
 		<p class="description" id="home-description">
-			<?php esc_html_e( 'Enter the debounce timeout value in miliseconds. Use 0 (default) to disable debounce.', 'wp-search-with-algolia' ); ?>
+			<?php esc_html_e( 'Enter the debounce timeout value in milliseconds. Use 0 (default) to disable debounce.', 'wp-search-with-algolia' ); ?>
 			<a href="https://www.algolia.com/doc/ui-libraries/autocomplete/guides/debouncing-sources/" target="_blank"><?php esc_html_e( 'Debouncing sources documentation', 'wp-search-with-algolia' ); ?></a>
 		</p>
 		<?php
