@@ -1,3 +1,19 @@
+## 2.11.1
+* Fixed: Fatal error if not able to retreive searchable posts index object.
+* Fixed: Fatal error potential for non-set debounce array index.
+
+## 2.11.0
+* Updated: Algolia PHP client (addresses PHP 8.4 compatibility notices)
+* Updated: UI wording to match Algolia references and Instantsearch notes.
+* Fixed: Return JSON error instead of echo exception message and continue to throw exception.
+* Added: Inline documentation for various custom filters and actions.
+* Added: Output custom debounce values in Autocomplete settings UI.
+
+## 2.10.4
+
+* Fixed: revised asset loading for InstantSearch with Full Site Editing enabled.
+* Added: Striping styles for Autocomplete table list.
+
 ## 2.10.3
 
 * Added: Filter to still output frontend config data when using Instantsearch and FSE Theme.
