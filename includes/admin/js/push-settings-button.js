@@ -5,8 +5,12 @@
 
 	$(
 		function() {
-			let $buttons = $( '.algolia-push-settings-button' );
-			$buttons.on( 'click', handleButtonClick );
+			let buttons = document.querySelectorAll('.algolia-push-settings-button');
+			if (buttons) {
+				Array.from(buttons).forEach((button) => {
+					button.addEventListener('click', handleButtonClick);
+				});
+			}
 		}
 	);
 
