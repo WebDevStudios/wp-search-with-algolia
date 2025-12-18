@@ -121,9 +121,27 @@ class Algolia_Admin {
 		wp_localize_script(
 			'algolia-admin-push-settings-button',
 			'algoliaPushSettingsButton',
-			array(
-				'pushBtnAlert' => esc_html__( 'Warning: Pushing settings will override the settings in the Algolia dashboard. Do you want to continue?', 'wp-search-with-algolia' ),
-			)
+			[
+				'noDataIndex'          => esc_html__( 'Clicked button has no "data-index" set.', 'wp-search-with-algolia' ),
+				'pushBtnAlert'         => esc_html__( 'Warning: Pushing settings will override the settings in the Algolia dashboard. Do you want to continue?', 'wp-search-with-algolia' ),
+				'correctlyPushed'      => esc_html__( 'Settings correctly pushed for index:', 'wp-search-with-algolia' ),
+				'errorPrefix'          => esc_html__( 'Error:', 'wp-search-with-algolia' ),
+				'exceptionErrorPrefix' => esc_html__( 'Exception error:', 'wp-search-with-algolia' ),
+				'genericError'         => esc_html__( 'Unknown error', 'wp-search-with-algolia' ),
+			]
+		);
+
+		wp_localize_script(
+			'algolia-admin-reindex-button',
+			'algoliaPushReindexButton',
+			[
+				'reindexAbort'         => esc_html__( 'If you leave now, re-indexing tasks in progress will be aborted', 'wp-search-with-algolia' ),
+				'noDataindex'          => esc_html__( 'Clicked button has no "data-index" set.', 'wp-search-with-algolia' ),
+				'processingPrefix'     => esc_html__( 'Processing, please be patient ...', 'wp-search-with-algolia' ),
+				'errorPrefix'          => esc_html__( 'Error:', 'wp-search-with-algolia' ),
+				'exceptionErrorPrefix' => esc_html__( 'Exception error:', 'wp-search-with-algolia' ),
+				'noPageCount'          => esc_html__( 'An error occurred. Unable to find a page count.', 'wp-search-with-algolia' ),
+			]
 		);
 	}
 
@@ -267,14 +285,15 @@ class Algolia_Admin {
 			}
 			ob_end_clean();
 
-			$response = array(
+			$response = [
+				'currentPage'     => $page,
 				'totalPagesCount' => $total_pages,
 				'finished'        => $page >= $total_pages,
-			);
+			];
 
-			wp_send_json( $response );
+			wp_send_json_success( $response, 200 );
 		} catch ( Exception $exception ) {
-			wp_send_json_error( array( 'message' => $exception->getMessage() ) );
+			wp_send_json_error( [ 'message' => $exception->getMessage() ], 500 );
 		}
 	}
 
@@ -303,12 +322,11 @@ class Algolia_Admin {
 
 			$index->push_settings();
 
-			$response = array(
-				'success' => true,
-			);
-			wp_send_json( $response );
+			$response = [];
+
+			wp_send_json_success( $response, 200 );
 		} catch ( Exception $exception ) {
-			wp_send_json_error( array( 'message' => $exception->getMessage() ) );
+			wp_send_json_error( array( 'message' => $exception->getMessage() ), 500 );
 		}
 	}
 

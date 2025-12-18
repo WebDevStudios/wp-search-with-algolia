@@ -1,41 +1,46 @@
+'use strict';
 (function($) {
 
 	$(
 		function() {
-			var $reindexButtons = $( '.algolia-reindex-button' );
-			$reindexButtons.on( 'click', handleReindexButtonClick );
+			const reindexButtons = document.querySelectorAll('.algolia-reindex-button');
+			if (reindexButtons) {
+				Array.from(reindexButtons).forEach((button) => {
+					button.addEventListener('click', handleReindexButtonClick);
+				});
+			}
 		}
 	);
 
-	var ongoing = 0;
+	let ongoing = 0;
 
 	$( window ).on(
 		'beforeunload', function() {
 			if (ongoing > 0) {
-				return 'If you leave now, re-indexing tasks in progress will be aborted';
+				return algoliaPushReindexButton.reindexAbort;
 			}
 		}
 	);
 
 	function handleReindexButtonClick(e) {
 
-		$clickedButton = $( e.currentTarget );
-		var index      = $clickedButton.data( 'index' );
-		if ( ! index) {
-			throw new Error( 'Clicked button has no "data-index" set.' );
+		let $clickedButton = $(e.currentTarget);
+		let index = $clickedButton.data('index');
+		if (!index) {
+			throw new Error(algoliaPushReindexButton.noDataindex);
 		}
 
 		ongoing++;
 
-		$clickedButton.attr( 'disabled', 'disabled' );
-		$clickedButton.data( 'originalText', $clickedButton.text() );
-		updateIndexingPourcentage( $clickedButton, 0 );
+		$clickedButton.attr('disabled', 'disabled');
+		$clickedButton.data('originalText', $clickedButton.text());
+		updateIndexingPourcentage($clickedButton, 0);
 
-		reIndex( $clickedButton, index );
+		reIndex($clickedButton, index);
 	}
 
 	function updateIndexingPourcentage($clickedButton, amount) {
-		$clickedButton.text( 'Processing, please be patient ... ' + amount + '%' );
+		$clickedButton.text(algoliaPushReindexButton.processingPrefix + ' ' + amount + '%');
 	}
 
 	function reIndex($clickedButton, index, currentPage) {
@@ -43,7 +48,7 @@
 			currentPage = 1;
 		}
 
-		var data = {
+		let data = {
 			'action': 'algolia_re_index',
 			'index_id': index,
 			'p': currentPage
@@ -51,21 +56,28 @@
 
 		$.post(
 			ajaxurl, data, function(response) {
-				if (typeof response.totalPagesCount === 'undefined') {
-					alert( 'An error occurred' );
+				if (typeofresponse.success !== 'undefined' && response.success === false) {
+					if (typeof response.data.message !== 'undefined') {
+						alert(algoliaPushReindexButton.errorPrefix + ' ' + response.data.message);
+						resetButton($clickedButton);
+						return;
+					}
+				}
+				if (typeof response.data.totalPagesCount === 'undefined') {
+					alert(algoliaPushReindexButton.noPageCount );
 					resetButton( $clickedButton );
 					return;
 				}
 
-				if (response.totalPagesCount === 0) {
+				if (response.data.totalPagesCount === 0) {
 					$clickedButton.parents( '.error' ).fadeOut();
 					resetButton( $clickedButton );
 					return;
 				}
-				progress = Math.round( (currentPage / response.totalPagesCount) * 100 );
+				let progress = Math.round( (currentPage / response.data.totalPagesCount) * 100 );
 				updateIndexingPourcentage( $clickedButton, progress );
 
-				if (response.finished !== true) {
+				if (response.data.finished !== true) {
 					reIndex( $clickedButton, index, ++currentPage );
 				} else {
 					$clickedButton.parents( '.error' ).fadeOut();
@@ -73,9 +85,9 @@
 				}
 			}
 		).fail(
-			function(response) {
-				alert( 'An error occurred: ' + response.responseText );
-				resetButton( $clickedButton );
+			function (response) {
+				alert(algoliaPushReindexButton.exceptionErrorPrefix + ' ' + response.responseJSON.data.message);
+				resetButton($clickedButton);
 			}
 		);
 	}
