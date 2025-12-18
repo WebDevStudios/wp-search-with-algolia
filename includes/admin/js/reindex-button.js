@@ -12,7 +12,7 @@
 	$( window ).on(
 		'beforeunload', function() {
 			if (ongoing > 0) {
-				return 'If you leave now, re-indexing tasks in progress will be aborted';
+				return algoliaPushReindexButton.reindexAbort;
 			}
 		}
 	);
@@ -22,7 +22,7 @@
 		$clickedButton = $( e.currentTarget );
 		var index      = $clickedButton.data( 'index' );
 		if ( ! index) {
-			throw new Error( 'Clicked button has no "data-index" set.' );
+			throw new Error( algoliaPushReindexButton.noDataindex );
 		}
 
 		ongoing++;
@@ -35,7 +35,7 @@
 	}
 
 	function updateIndexingPourcentage($clickedButton, amount) {
-		$clickedButton.text( 'Processing, please be patient ... ' + amount + '%' );
+		$clickedButton.text(algoliaPushReindexButton.processingPrefix + ' ' + amount + '%');
 	}
 
 	function reIndex($clickedButton, index, currentPage) {
@@ -73,9 +73,9 @@
 				}
 			}
 		).fail(
-			function(response) {
-				alert( 'An error occurred: ' + response.responseText );
-				resetButton( $clickedButton );
+			function (response) {
+				alert(algoliaPushReindexButton.exceptionErrorPrefix + ' ' + response.responseJSON.data.message);
+				resetButton($clickedButton);
 			}
 		);
 	}
