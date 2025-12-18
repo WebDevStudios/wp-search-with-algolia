@@ -280,14 +280,15 @@ class Algolia_Admin {
 			}
 			ob_end_clean();
 
-			$response = array(
+			$response = [
+				'currentPage'     => $page,
 				'totalPagesCount' => $total_pages,
 				'finished'        => $page >= $total_pages,
-			);
+			];
 
-			wp_send_json( $response );
+			wp_send_json_success( $response, 200 );
 		} catch ( Exception $exception ) {
-			wp_send_json_error( array( 'message' => $exception->getMessage() ) );
+			wp_send_json_error( [ 'message' => $exception->getMessage() ], 500 );
 		}
 	}
 

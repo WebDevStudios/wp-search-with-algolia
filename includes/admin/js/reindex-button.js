@@ -51,8 +51,15 @@
 
 		$.post(
 			ajaxurl, data, function(response) {
-				if (typeof response.totalPagesCount === 'undefined') {
-					alert( 'An error occurred' );
+				if (typeofresponse.success !== 'undefined' && response.success === false) {
+					if (typeof response.data.message !== 'undefined') {
+						alert(algoliaPushReindexButton.errorPrefix + ' ' + response.data.message);
+						resetButton($clickedButton);
+						return;
+					}
+				}
+				if (typeof response.data.totalPagesCount === 'undefined') {
+					alert(algoliaPushReindexButton.noPageCount );
 					resetButton( $clickedButton );
 					return;
 				}
