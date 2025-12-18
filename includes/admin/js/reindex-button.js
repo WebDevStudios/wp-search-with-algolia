@@ -3,8 +3,12 @@
 
 	$(
 		function() {
-			var $reindexButtons = $( '.algolia-reindex-button' );
-			$reindexButtons.on( 'click', handleReindexButtonClick );
+			const reindexButtons = document.querySelectorAll('.algolia-reindex-button');
+			if (reindexButtons) {
+				Array.from(reindexButtons).forEach((button) => {
+					button.addEventListener('click', handleReindexButtonClick);
+				});
+			}
 		}
 	);
 
