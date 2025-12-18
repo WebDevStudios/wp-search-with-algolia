@@ -122,7 +122,11 @@ class Algolia_Admin {
 			'algolia-admin-push-settings-button',
 			'algoliaPushSettingsButton',
 			[
-				'pushBtnAlert' => esc_html__( 'Warning: Pushing settings will override the settings in the Algolia dashboard. Do you want to continue?', 'wp-search-with-algolia' ),
+				'noDataIndex'          => esc_html__( 'Clicked button has no "data-index" set.', 'wp-search-with-algolia' ),
+				'pushBtnAlert'         => esc_html__( 'Warning: Pushing settings will override the settings in the Algolia dashboard. Do you want to continue?', 'wp-search-with-algolia' ),
+				'correctlyPushed'      => esc_html__( 'Settings correctly pushed for index:', 'wp-search-with-algolia' ),
+				'errorPrefix'          => esc_html__( 'Error:', 'wp-search-with-algolia' ),
+				'exceptionErrorPrefix' => esc_html__( 'Exception error:', 'wp-search-with-algolia' ),
 			]
 		);
 
