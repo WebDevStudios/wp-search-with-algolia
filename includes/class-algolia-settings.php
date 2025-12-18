@@ -319,6 +319,27 @@ class Algolia_Settings {
 	}
 
 	/**
+	 * Get the autocomplete minimum characters value.
+	 *
+	 * @author  WebDevStudios <contact@webdevstudios.com>
+	 * @since   2.10.1
+	 *
+	 * @return int Minimum characters value.
+	 */
+	public function get_autocomplete_min_chars() {
+		$min_chars = (int) get_option( 'algolia_autocomplete_min_chars', 3 );
+
+		/**
+		 * Filters the autocomplete minimum characters option for algolia autocomplete.
+		 *
+		 * @since 2.10.1
+		 *
+		 * @param int Minimum characters value.
+		 */
+		return (int) apply_filters( 'algolia_autocomplete_min_chars', $min_chars );
+	}
+
+	/**
 	 * Get the autocomplete config.
 	 *
 	 * @author  WebDevStudios <contact@webdevstudios.com>

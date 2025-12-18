@@ -161,6 +161,7 @@
 				hint: false,
 				openOnFocus: true,
 				appendTo: 'body',
+				minLength: algolia.autocomplete.min_chars || 3,
 				templates: {
 					empty: wp.template( 'autocomplete-empty' )
 				}
