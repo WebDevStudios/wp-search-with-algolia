@@ -127,6 +127,7 @@ class Algolia_Admin {
 				'correctlyPushed'      => esc_html__( 'Settings correctly pushed for index:', 'wp-search-with-algolia' ),
 				'errorPrefix'          => esc_html__( 'Error:', 'wp-search-with-algolia' ),
 				'exceptionErrorPrefix' => esc_html__( 'Exception error:', 'wp-search-with-algolia' ),
+				'genericError'         => esc_html__( 'Unknown error', 'wp-search-with-algolia' ),
 			]
 		);
 
@@ -321,9 +322,7 @@ class Algolia_Admin {
 
 			$index->push_settings();
 
-			$response = array(
-				'success' => true,
-			);
+			$response = [];
 
 			wp_send_json_success( $response, 200 );
 		} catch ( Exception $exception ) {
