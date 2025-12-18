@@ -1,10 +1,11 @@
+'use strict';
 (function($) {
 
 	/* global algoliaPushSettingsButton */
 
 	$(
 		function() {
-			var $buttons = $( '.algolia-push-settings-button' );
+			let $buttons = $( '.algolia-push-settings-button' );
 			$buttons.on( 'click', handleButtonClick );
 		}
 	);
@@ -16,13 +17,13 @@
 			throw new Error(algoliaPushSettingsButton.noDataIndex);
 		}
 
-		if ( ! window.confirm( algoliaPushSettingsButton.pushBtnAlert ) ) {
+		if (!window.confirm(algoliaPushSettingsButton.pushBtnAlert)) {
 			return;
 		}
 
-		disableButton( $clickedButton );
+		disableButton($clickedButton);
 
-		pushSettings( $clickedButton, index );
+		pushSettings($clickedButton, index);
 	}
 
 	function disableButton($button) {
@@ -35,7 +36,7 @@
 
 	function pushSettings($clickedButton, index) {
 
-		var data = {
+		let data = {
 			'action': 'algolia_push_settings',
 			'index_id': index
 		};
