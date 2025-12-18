@@ -1,3 +1,4 @@
+'use strict';
 (function($) {
 
 	$(
@@ -7,7 +8,7 @@
 		}
 	);
 
-	var ongoing = 0;
+	let ongoing = 0;
 
 	$( window ).on(
 		'beforeunload', function() {
@@ -19,19 +20,19 @@
 
 	function handleReindexButtonClick(e) {
 
-		$clickedButton = $( e.currentTarget );
-		var index      = $clickedButton.data( 'index' );
-		if ( ! index) {
-			throw new Error( algoliaPushReindexButton.noDataindex );
+		let $clickedButton = $(e.currentTarget);
+		let index = $clickedButton.data('index');
+		if (!index) {
+			throw new Error(algoliaPushReindexButton.noDataindex);
 		}
 
 		ongoing++;
 
-		$clickedButton.attr( 'disabled', 'disabled' );
-		$clickedButton.data( 'originalText', $clickedButton.text() );
-		updateIndexingPourcentage( $clickedButton, 0 );
+		$clickedButton.attr('disabled', 'disabled');
+		$clickedButton.data('originalText', $clickedButton.text());
+		updateIndexingPourcentage($clickedButton, 0);
 
-		reIndex( $clickedButton, index );
+		reIndex($clickedButton, index);
 	}
 
 	function updateIndexingPourcentage($clickedButton, amount) {
@@ -43,7 +44,7 @@
 			currentPage = 1;
 		}
 
-		var data = {
+		let data = {
 			'action': 'algolia_re_index',
 			'index_id': index,
 			'p': currentPage
@@ -64,15 +65,15 @@
 					return;
 				}
 
-				if (response.totalPagesCount === 0) {
+				if (response.data.totalPagesCount === 0) {
 					$clickedButton.parents( '.error' ).fadeOut();
 					resetButton( $clickedButton );
 					return;
 				}
-				progress = Math.round( (currentPage / response.totalPagesCount) * 100 );
+				let progress = Math.round( (currentPage / response.data.totalPagesCount) * 100 );
 				updateIndexingPourcentage( $clickedButton, progress );
 
-				if (response.finished !== true) {
+				if (response.data.finished !== true) {
 					reIndex( $clickedButton, index, ++currentPage );
 				} else {
 					$clickedButton.parents( '.error' ).fadeOut();
