@@ -10,10 +10,10 @@
 	);
 
 	function handleButtonClick(e) {
-		$clickedButton = $( e.currentTarget );
-		var index      = $clickedButton.data( 'index' );
-		if ( ! index) {
-			throw new Error( 'Clicked button has no "data-index" set.' );
+		let $clickedButton = $(e.currentTarget);
+		let index = $clickedButton.data('index');
+		if (!index) {
+			throw new Error(algoliaPushSettingsButton.noDataIndex);
 		}
 
 		if ( ! window.confirm( algoliaPushSettingsButton.pushBtnAlert ) ) {
@@ -48,12 +48,12 @@
 					return;
 				}
 
-				alert( 'Settings correctly pushed for index: ' + index );
+				alert(algoliaPushSettingsButton.correctlyPushed + ' ' + index );
 				enableButton( $clickedButton );
 			}
 		).fail(
 			function(response) {
-				alert( 'An error occurred: ' + response.responseText );
+				alert(algoliaPushReindexButton.exceptionErrorPrefix + ' ' + response.responseJSON.data.message );
 				enableButton( $clickedButton );
 			}
 		);
