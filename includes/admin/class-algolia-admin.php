@@ -324,9 +324,10 @@ class Algolia_Admin {
 			$response = array(
 				'success' => true,
 			);
-			wp_send_json( $response );
+
+			wp_send_json_success( $response, 200 );
 		} catch ( Exception $exception ) {
-			wp_send_json_error( array( 'message' => $exception->getMessage() ) );
+			wp_send_json_error( array( 'message' => $exception->getMessage() ), 500 );
 		}
 	}
 
