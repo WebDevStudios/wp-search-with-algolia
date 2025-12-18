@@ -43,10 +43,12 @@
 
 		$.post(
 			ajaxurl, data, function(response) {
-				if (typeof response.success === 'undefined') {
-					alert( 'An error occurred' );
-					enableButton( $clickedButton );
-					return;
+				if (typeof response.success !== 'undefined' && response.success === false) {
+					if (typeof response.data.message !== 'undefined') {
+						alert(algoliaPushReindexButton.errorPrefix + ' ' + response.data.message);
+						enableButton($clickedButton);
+						return;
+					}
 				}
 
 				alert(algoliaPushSettingsButton.correctlyPushed + ' ' + index );
