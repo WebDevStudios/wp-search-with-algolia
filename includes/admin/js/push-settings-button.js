@@ -49,7 +49,7 @@
 			ajaxurl, data, function(response) {
 				if (typeof response.success !== 'undefined' && response.success === false) {
 					if (typeof response.data.message !== 'undefined') {
-						alert(algoliaPushReindexButton.errorPrefix + ' ' + response.data.message);
+						alert(algoliaPushReindexButton.genericError);
 						enableButton($clickedButton);
 						return;
 					}
