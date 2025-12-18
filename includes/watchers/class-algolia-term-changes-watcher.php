@@ -68,6 +68,8 @@ class Algolia_Term_Changes_Watcher implements Algolia_Changes_Watcher {
 
 		// Fires after a term is deleted from the database and the cache is cleaned.
 		add_action( 'delete_term', array( $this, 'on_delete_term' ), 10, 4 );
+
+		add_action( 'admin_notices', [ $this, 'large_count_notice'] );
 	}
 
 	/**
@@ -86,8 +88,33 @@ class Algolia_Term_Changes_Watcher implements Algolia_Changes_Watcher {
 		if ( ! $term || ! $this->index->supports( $term ) ) {
 			return;
 		}
+
+		/**
+		 * Filters whether or not to update posts with the edited term.
+		 *
+		 * @since NEXT
+		 *
+		 * @param bool   $value    Whether or not to sync posts with this term.
+		 * @param int    $term_id  The current term to be updated.
+		 * @param int    $tt_id    The term taxonomy ID.
+		 * @param string $taxonomy The taxonomy slug.
+		 */
+		$should_sync_term_posts = apply_filters( 'algolia_should_sync_term_posts', true, $term_id, $tt_id, $taxonomy );
+		if ( ! $should_sync_term_posts ) {
+			return;
+		}
+
+		/**
+		 * This filters a cap of how many posts to fetch for the updated term, to update their algolia records.
+		 *
+		 * @since NEXT
+		 *
+		 * @param int $value Amount of posts to update.
+		 */
+		$limit = apply_filters( 'algolia_term_update_post_limit', 50 );
+
 		$args = [
-			'posts_per_page' => -1,
+			'posts_per_page' => $limit,
 			'tax_query'      => [
 				[
 					'taxonomy' => $taxonomy,
@@ -269,5 +296,43 @@ class Algolia_Term_Changes_Watcher implements Algolia_Changes_Watcher {
 		}
 
 		$this->sync_item( $object_id );
+	}
+
+	/**
+	 * Conditionally set an admin notice about maybe bulk re-indexing to update
+	 * Algolia post records that have this term.
+	 *
+	 * @since NEXT
+	 */
+	public function large_count_notice() {
+		global $current_screen;
+
+		if ( ! $current_screen || 'term' !== $current_screen->base ) {
+			return;
+		}
+		if ( ! empty( $_GET['tag_ID'] ) && is_numeric( $_GET['tag_ID'] ) ) {
+			$termID = absint( $_GET['tag_ID'] );
+		}
+
+		$term = get_term( $termID );
+		if ( ! $term ) {
+			return;
+		}
+
+		// This filter is documented in includes/watchers/class-algolia-term-changes-watcher.php
+		$limit = apply_filters( 'algolia_term_update_post_limit', 50 );
+		if ( $term->count > absint( $limit ) ) {
+			wp_admin_notice(
+				sprintf(
+					esc_html__( 'Only the first %1$s posts with this term have been sync\'d to your Algolia indexes. Please run a bulk re-index to get the rest.', 'wp-search-with-algolia' ),
+					$limit
+				),
+				[
+					'id'                 => 'message',
+					'additional_classes' => array( 'updated' ),
+					'dismissible'        => true,
+				]
+			);
+		}
 	}
 }
