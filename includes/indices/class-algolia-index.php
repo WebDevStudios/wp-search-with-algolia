@@ -436,12 +436,13 @@ abstract class Algolia_Index {
 	 * @since  1.0.0
 	 * @since  2.6.2 Added $specific_ids parameter
 	 *
-	 * @param int   $page         Page of the index.
-	 * @param array $specific_ids Array of IDs to specifically fetch and index.
+	 * @param int   $page                    Page of the index.
+	 * @param array $specific_ids            Array of IDs to specifically fetch and index.
+	 * @param bool  $clear_index_on_page_one Whether to clear the index or not if $page is set to 1.
 	 *
 	 * @throws InvalidArgumentException If the page is less than 1.
 	 */
-	public function re_index( $page, $specific_ids = [] ) {
+	public function re_index( $page, $specific_ids = [], $clear_index_on_page_one = true ) {
 		$page = (int) $page;
 
 		if ( $page < 1 ) {
@@ -449,7 +450,7 @@ abstract class Algolia_Index {
 		}
 
 		if ( 1 === $page ) {
-			$this->create_index_if_not_existing();
+			$this->create_index_if_not_existing( $clear_index_on_page_one );
 		}
 
 		$batch_size = (int) $this->get_re_index_batch_size();
