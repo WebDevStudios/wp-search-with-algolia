@@ -119,7 +119,7 @@ All development is handled on [GitHub](https://github.com/WebDevStudios/wp-searc
 Follow along with the changelog on [Github](https://github.com/WebDevStudios/wp-search-with-algolia/releases).
 
 = 2.11.2 =
-* TBD
+* Fixed: Valid Search key checks for new applications.
 
 = 2.11.1 =
 * Fixed: Fatal error if not able to retreive searchable posts index object.
