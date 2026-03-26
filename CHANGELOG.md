@@ -1,3 +1,6 @@
+## 2.11.2
+* Fixed: Valid Search key checks for new applications.
+
 ## 2.11.1
 * Fixed: Fatal error if not able to retreive searchable posts index object.
 * Fixed: Fatal error potential for non-set debounce array index.
