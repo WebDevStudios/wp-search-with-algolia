@@ -221,6 +221,10 @@ class Algolia_API {
 			unset( $scopes['listIndexes'] );
 		}
 
+		if ( isset( $scopes['browse'] ) ) {
+			unset( $scopes['browse'] );
+		}
+
 		// Short circuit ACL checks for local development.
 		if ( defined( 'WP_LOCAL_DEV' ) && WP_LOCAL_DEV ) {
 			return true;
