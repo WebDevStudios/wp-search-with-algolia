@@ -1,3 +1,9 @@
+## 2.11.3
+* Fixed: minimum requirement discrepancies in readme and defined constant.
+* Updated: cleaned out some unused CSS selectors from really old functionality.
+* Updated: make use of `.card` class from WP core for more consistant styling.
+* Updated: Admin notice around term updating when term is assigned to many posts.
+
 ## 2.11.2
 * Fixed: Valid Search key checks for new applications.
 
