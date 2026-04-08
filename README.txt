@@ -4,7 +4,7 @@ Tags: algolia, autocomplete, instantsearch, relevance search, ai search
 Requires at least: 6.7.2
 Tested up to: 6.9
 Requires PHP: 7.4
-Stable tag: 2.11.2
+Stable tag: 2.11.3
 License: GNU General Public License v2.0, MIT License
 
 Use the power of Algolia AI Search & Discovery to enhance your website's search. Enable AI-powered Autocomplete and InstantSearch for fast, accurate results and relevance.
