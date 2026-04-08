@@ -178,9 +178,6 @@ form .radio-info {
 .algolia-flex-item {
   padding: 5px 10px;
 }
-.algolia-pro-block {
-
-}
 .algolia-pro-flex-wrap {
   display: flex;
   flex-wrap: wrap;
@@ -189,10 +186,9 @@ form .radio-info {
   gap: 10px;
 }
 .algolia-pro-flex-item {
-  border: solid blue 1px;
+  border-color: var(--algolia-blue);
   border-radius: 15px;
   flex: 1;
-  padding: 10px;
   width: 33%;
 }
 .algolia-pro-features {
