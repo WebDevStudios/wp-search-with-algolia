@@ -92,7 +92,7 @@ class Algolia_Term_Changes_Watcher implements Algolia_Changes_Watcher {
 		/**
 		 * Filters whether or not to update posts with the edited term.
 		 *
-		 * @since NEXT
+		 * @since 2.11.3
 		 *
 		 * @param bool   $value    Whether or not to sync posts with this term.
 		 * @param int    $term_id  The current term to be updated.
@@ -107,7 +107,7 @@ class Algolia_Term_Changes_Watcher implements Algolia_Changes_Watcher {
 		/**
 		 * This filters a cap of how many posts to fetch for the updated term, to update their algolia records.
 		 *
-		 * @since NEXT
+		 * @since 2.11.3
 		 *
 		 * @param int $value Amount of posts to update.
 		 */
@@ -292,7 +292,7 @@ class Algolia_Term_Changes_Watcher implements Algolia_Changes_Watcher {
 	 * Conditionally set an admin notice about maybe bulk re-indexing to update
 	 * Algolia post records that have this term.
 	 *
-	 * @since NEXT
+	 * @since 2.11.3
 	 */
 	public function large_count_notice() {
 		global $current_screen;
