@@ -32,7 +32,7 @@ define( 'ALGOLIA_VERSION', '2.11.2' );
 define( 'ALGOLIA_MIN_PHP_VERSION', '7.4' );
 
 // The minimum required WordPress version.
-define( 'ALGOLIA_MIN_WP_VERSION', '5.3' );
+define( 'ALGOLIA_MIN_WP_VERSION', '6.7.2' );
 
 define( 'ALGOLIA_PLUGIN_BASENAME', plugin_basename( __FILE__ ) );
 
