@@ -302,6 +302,26 @@ class Algolia_Utils {
 	}
 
 	/**
+	 * Return whether or not to consider the site large.
+	 *
+	 * @since NEXT
+	 * @return bool
+	 */
+	public static function is_large_site() {
+		return (bool) apply_filters( 'algolia_is_large_site', false );
+	}
+
+	/**
+	 * Return a duration for sleep() calls.
+	 *
+	 * @since NEXT
+	 * @return int
+	 */
+	public static function get_large_site_sleep_duration() {
+		return (int) apply_filters( 'algolia_get_large_site_sleep_duration', 5 );
+	}
+
+	/**
 	 * Return markup for WP Search with Algolia Pro Call To Action.
 	 *
 	 * @since 2.5.0
