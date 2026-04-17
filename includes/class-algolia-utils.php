@@ -308,7 +308,7 @@ class Algolia_Utils {
 	 * @return bool
 	 */
 	public static function is_large_site() {
-		return (bool) apply_filters( 'algolia_is_large_site', false );
+		return (bool) apply_filters( 'algolia_is_large_site', false, get_current_blog_id() );
 	}
 
 	/**
