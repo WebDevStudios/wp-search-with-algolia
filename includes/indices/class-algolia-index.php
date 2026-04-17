@@ -545,12 +545,22 @@ abstract class Algolia_Index {
 		// Don't saveObjects if sanitize_json_data failed.
 		if ( ! empty( $sanitized_records ) ) {
 
-			$index = $this->get_index();
-
-			try {
-				$index->saveObjects( $sanitized_records );
-			} catch ( \Throwable $throwable ) {
-				error_log( $throwable->getMessage() ); // phpcs:ignore -- Need a real logger.
+			$index       = $this->get_index();
+			$max_retries = 3;
+			$retry       = 0;
+			while ( true ) {
+				try {
+					$index->saveObjects( $sanitized_records );
+					break; // Success.
+				} catch ( \Exception $e ) {
+					if ( strpos( strtolower( $e->getMessage() ), 'rate limit' ) !== false && $retry < $max_retries ) {
+						$wait = pow( 2, $retry );
+						sleep( $wait );
+						$retry++;
+						continue;
+					}
+					throw $e;
+				}
 			}
 		}
 
