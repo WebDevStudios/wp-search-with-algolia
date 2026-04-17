@@ -498,7 +498,23 @@ abstract class Algolia_Index {
 			 */
 			do_action( 'algolia_after_get_records', $item );
 
-			$this->update_records( $item, $item_records );
+			// Retry logic for update_records (rate limit handling).
+			$max_retries = 3;
+			$retry       = 0;
+			while ( true ) {
+				try {
+					$this->update_records( $item, $item_records );
+					break; // Success.
+				} catch ( \Exception $e ) {
+					if ( strpos( strtolower( $e->getMessage() ), 'rate limit' ) !== false && $retry < $max_retries ) {
+						$wait = pow( 2, $retry ); // 1, 2, 4 seconds
+						sleep( $wait );
+						$retry++;
+						continue;
+					}
+					throw $e;
+				}
+			}
 		}
 
 		if ( ! empty( $records ) ) {
