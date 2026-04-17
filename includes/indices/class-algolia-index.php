@@ -569,6 +569,11 @@ abstract class Algolia_Index {
 		 */
 		$this->reindexing = false;
 
+		if ( Algolia_Utils::is_large_site() ) {
+			// Add a delay between batches to avoid rate limiting.
+			sleep( Algolia_Utils::get_large_site_sleep_duration() ); // Gentle: 5 second delay.
+		}
+
 		if ( $page === $max_num_pages ) {
 
 			/**
