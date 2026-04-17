@@ -91,27 +91,27 @@ if ( ! defined( 'ABSPATH' ) ) {
 			<script type="text/javascript">
 			(function($) {
 				$(function() {
-					var ongoing = 0;
+					let ongoing = 0;
 					function updateIndexingPourcentage($btn, amount) {
 						$btn.text('Processing... ' + amount + '%');
 					}
 					function resetButton($btn, originalText) {
 						$btn.prop('disabled', false).text(originalText);
 						// Clear any existing error message.
-						var $errorDiv = $btn.siblings('.algolia-reindex-error');
+						const $errorDiv = $btn.siblings('.algolia-reindex-error');
 						if ($errorDiv.length) {
 							$errorDiv.remove();
 						}
 					}
 					function showError($button, message) {
 						// Find the closest container - either table cell or div.
-						var $container = $button.closest('td, .error');
+						const $container = $button.closest('td, .error');
 
 						// Remove any existing error.
 						$container.find('.algolia-reindex-error').remove();
 
 						// Create new error div.
-						var $errorDiv = $('<div class="algolia-reindex-error notice notice-error is-dismissible" style="margin: 5px 0;"><p></p></div>');
+						const $errorDiv = $('<div class="algolia-reindex-error notice notice-error is-dismissible" style="margin: 5px 0;"><p></p></div>');
 
 						// If in a table cell, adjust the styling.
 						if ($container.is('td')) {
@@ -126,7 +126,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 						$errorDiv.find('p').text(message);
 
 						// Add dismiss button and handle click.
-						var $dismissButton = $('<button type="button" class="notice-dismiss"><span class="screen-reader-text">Dismiss this notice.</span></button>');
+						const $dismissButton = $('<button type="button" class="notice-dismiss"><span class="screen-reader-text">Dismiss this notice.</span></button>');
 						$errorDiv.append($dismissButton);
 
 						$dismissButton.on('click', function() {
@@ -143,10 +143,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 					}
 					$('.algolia-reindex-button').on('click', function(e) {
 						e.preventDefault();
-						var $btn = $(this);
-						var index = $btn.data('index');
+						const $btn = $(this);
+						const index = $btn.data('index');
 						if (!index) return;
-						var originalText = $btn.text();
+						const originalText = $btn.text();
 						ongoing++;
 						$btn.prop('disabled', true);
 						updateIndexingPourcentage($btn, 0);
@@ -154,14 +154,14 @@ if ( ! defined( 'ABSPATH' ) ) {
 					});
 					function reIndex($btn, index, currentPage, originalText) {
 						if (!currentPage) currentPage = 1;
-						var data = {
+						const data = {
 							'action': 'algolia_re_index',
 							'index_id': index,
 							'p': currentPage
 						};
 						$.post(ajaxurl, data, function(response) {
 							if (typeof response.totalPagesCount === 'undefined' || response.success === false) {
-								var errorMessage = response.data && response.data.message
+								const errorMessage = response.data && response.data.message
 									? response.data.message
 									: 'An error occurred during reindexing. Please check your Algolia credentials and try again.';
 								showError($btn, errorMessage);
@@ -172,7 +172,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 								resetButton($btn, originalText);
 								return;
 							}
-							var progress = Math.round((currentPage / response.totalPagesCount) * 100);
+							const progress = Math.round((currentPage / response.totalPagesCount) * 100);
 							updateIndexingPourcentage($btn, progress);
 							if (response.finished !== true) {
 								reIndex($btn, index, ++currentPage, originalText);
@@ -181,9 +181,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 								setTimeout(function() { resetButton($btn, originalText); location.reload(); }, 1500);
 							}
 						}).fail(function(response) {
-							var errorMessage;
+							let errorMessage;
 							try {
-								var errorData = JSON.parse(response.responseText);
+								const errorData = JSON.parse(response.responseText);
 								errorMessage = errorData.data && errorData.data.message
 									? errorData.data.message
 									: 'An error occurred while communicating with the server. Please try again.';
