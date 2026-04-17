@@ -8,6 +8,7 @@
  * @package WebDevStudios\WPSWA
  */
 
+// phpcs:disable Squiz.Commenting.FunctionCommentThrowTag.WrongNumber -- We're using RuntimeException.
 use WebDevStudios\WPSWA\Algolia\AlgoliaSearch\Exceptions\AlgoliaException;
 use WebDevStudios\WPSWA\Algolia\AlgoliaSearch\SearchClient;
 use WebDevStudios\WPSWA\Algolia\AlgoliaSearch\SearchIndex;
@@ -999,3 +1000,5 @@ abstract class Algolia_Index {
 		$this->get_index()->clearObjects();
 	}
 }
+
+// phpcs:enable Squiz.Commenting.FunctionCommentThrowTag.WrongNumber -- We're using RuntimeException.

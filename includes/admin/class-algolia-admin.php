@@ -62,6 +62,7 @@ class Algolia_Admin {
 		new Algolia_Admin_Page_WooCommerce( $plugin );
 		new Algolia_Admin_Page_SEO( $plugin );
 		new Algolia_Admin_Page_Premium_Support( $plugin );
+		new Algolia_Admin_Page_Debug( $plugin );
 
 		add_action( 'admin_notices', array( $this, 'display_unmet_requirements_notices' ) );
 
@@ -207,7 +208,7 @@ class Algolia_Admin {
 				continue;
 			}
 			?>
-			<div class="error">
+			<div class="notice notice-info">
 				<p>
 					<?php
 					echo wp_kses(
