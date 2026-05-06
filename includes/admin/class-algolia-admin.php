@@ -77,7 +77,12 @@ class Algolia_Admin {
 	 * @since   1.0.0
 	 */
 	public function enqueue_styles() {
-		wp_enqueue_style( 'algolia-admin', plugin_dir_url( __FILE__ ) . 'css/algolia-admin.css', array(), ALGOLIA_VERSION );
+		wp_enqueue_style(
+			'algolia-admin',
+			plugin_dir_url( __FILE__ ) . 'css/algolia-admin.css',
+			array(),
+			$this->asset_version( __DIR__ . '/css/algolia-admin.css' )
+		);
 	}
 
 	/**
@@ -91,23 +96,45 @@ class Algolia_Admin {
 			'algolia-admin',
 			plugin_dir_url( __FILE__ ) . 'js/algolia-admin.js',
 			array( 'jquery', 'jquery-ui-sortable' ),
-			ALGOLIA_VERSION,
+			$this->asset_version( __DIR__ . '/js/algolia-admin.js' ),
 			false
 		);
 		wp_enqueue_script(
 			'algolia-admin-reindex-button',
 			plugin_dir_url( __FILE__ ) . 'js/reindex-button.js',
 			array( 'jquery' ),
-			ALGOLIA_VERSION,
+			$this->asset_version( __DIR__ . '/js/reindex-button.js' ),
 			false
 		);
 		wp_enqueue_script(
 			'algolia-admin-push-settings-button',
 			plugin_dir_url( __FILE__ ) . 'js/push-settings-button.js',
 			array( 'jquery' ),
-			ALGOLIA_VERSION,
+			$this->asset_version( __DIR__ . '/js/push-settings-button.js' ),
 			false
 		);
+	}
+
+	/**
+	 * Build a cache-busting version string for an admin asset.
+	 *
+	 * Uses the file's modification time so edits to bundled CSS/JS bust the
+	 * browser cache without needing to bump ALGOLIA_VERSION. Falls back to the
+	 * plugin version if the file cannot be read.
+	 *
+	 * @since 2.11.0
+	 *
+	 * @param string $path Absolute path to the asset.
+	 * @return string Version string suitable for wp_enqueue_*.
+	 */
+	private function asset_version( $path ) {
+		if ( is_readable( $path ) ) {
+			$mtime = filemtime( $path );
+			if ( $mtime ) {
+				return ALGOLIA_VERSION . '.' . $mtime;
+			}
+		}
+		return ALGOLIA_VERSION;
 	}
 
 	/**

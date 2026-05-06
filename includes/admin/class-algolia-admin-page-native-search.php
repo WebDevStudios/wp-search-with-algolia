@@ -115,7 +115,7 @@ class Algolia_Admin_Page_Native_Search {
 
 		add_settings_field(
 			'algolia_override_native_search',
-			esc_html__( 'Search results', 'wp-search-with-algolia' ),
+			esc_html__( 'Search results source', 'wp-search-with-algolia' ),
 			array( $this, 'override_native_search_callback' ),
 			$this->slug,
 			$this->section
@@ -123,8 +123,8 @@ class Algolia_Admin_Page_Native_Search {
 
 		add_settings_field(
 			'algolia_instantsearch_template_version',
-			esc_html__( 'Instantsearch Template version', 'wp-search-with-algolia' ),
-			[ $this, 'instantsearch_template_version' ],
+			esc_html__( 'InstantSearch template', 'wp-search-with-algolia' ),
+			array( $this, 'instantsearch_template_version' ),
 			$this->slug,
 			$this->section
 		);
@@ -151,7 +151,22 @@ class Algolia_Admin_Page_Native_Search {
 	public function override_native_search_callback() {
 		$value = $this->plugin->get_settings()->get_override_native_search();
 
-		require_once dirname( __FILE__ ) . '/partials/form-override-search-option.php';
+		require dirname( __FILE__ ) . '/partials/form-override-search-option.php';
+
+		Algolia_Admin_Field_Helpers::render_field_help(
+			__( 'Choose how WordPress search queries are answered. You can change this at any time.', 'wp-search-with-algolia' ),
+			array(
+				__( '<strong>Why use Algolia for search?</strong> Algolia returns ranked, typo-tolerant results in milliseconds, even on large sites. The standard WordPress search runs SQL <code>LIKE</code> queries, which slow down with content volume and miss close matches.', 'wp-search-with-algolia' ),
+				__( '<strong>Switching is non-destructive.</strong> Your WordPress content is never modified. The plugin only changes how the search query is run and how the results page is rendered. Switch back to the standard WordPress search at any time.', 'wp-search-with-algolia' ),
+				__( '<strong>Block (FSE) themes &amp; InstantSearch.</strong> If your active theme is a block theme (such as Twenty Twenty-Four or Twenty Twenty-Five), the plugin enqueues the InstantSearch assets but lets your block template render the page. You will need to add the InstantSearch markup yourself in the theme&rsquo;s search template, or copy <code>templates/instantsearch.php</code> into <code>your-theme/algolia/</code> and force the classic template by returning <code>false</code> from the <code>algolia_is_block_theme</code> filter.', 'wp-search-with-algolia' ),
+				__( '<strong>Indexing is required.</strong> Algolia can only return what has been indexed. Use the <strong>Re-index All Content</strong> button at the top of this page after your first switch.', 'wp-search-with-algolia' ),
+			),
+			array(),
+			array(
+				'url'   => 'https://www.algolia.com/doc/guides/building-search-ui/what-is-instantsearch/js/',
+				'label' => __( 'Read the InstantSearch.js overview', 'wp-search-with-algolia' ),
+			)
+		);
 	}
 
 	/**
@@ -163,7 +178,22 @@ class Algolia_Admin_Page_Native_Search {
 	public function instantsearch_template_version() {
 		$value = $this->plugin->get_settings()->get_instantsearch_template_version();
 
-		require_once dirname( __FILE__ ) . '/partials/form-override-search-version-option.php';
+		require dirname( __FILE__ ) . '/partials/form-override-search-version-option.php';
+
+		Algolia_Admin_Field_Helpers::render_field_help(
+			__( 'Only applies when "Use Algolia with InstantSearch.js" is selected above. Pick the template style your front-end search will use.', 'wp-search-with-algolia' ),
+			array(
+				__( '<strong>What this controls.</strong> Two reference templates ship with the plugin in <code>templates/instantsearch.php</code> and <code>templates/instantsearch-modern.php</code>. This setting decides which one the plugin loads on your search results page.', 'wp-search-with-algolia' ),
+				__( '<strong>When to pick Legacy.</strong> Existing sites that already customized the older template, or have integrations relying on the WP Utils JavaScript helpers.', 'wp-search-with-algolia' ),
+				__( '<strong>When to pick Modern.</strong> New installs and any site that wants to follow the patterns shown in current Algolia documentation.', 'wp-search-with-algolia' ),
+				__( '<strong>Customizing the template.</strong> Copy the file you chose into <code>your-theme/algolia/</code> and the plugin will load your copy instead. Switching this setting does <strong>not</strong> overwrite a customized template in your theme.', 'wp-search-with-algolia' ),
+			),
+			array(),
+			array(
+				'url'   => 'https://www.algolia.com/doc/guides/building-search-ui/widgets/showcase/js/',
+				'label' => __( 'Browse InstantSearch widget examples', 'wp-search-with-algolia' ),
+			)
+		);
 	}
 
 	/**
@@ -258,20 +288,29 @@ class Algolia_Admin_Page_Native_Search {
 	 * @since  1.0.0
 	 */
 	public function print_section_settings() {
-		echo '<p>' . esc_html__( 'By enabling these settings to override the native WordPress search, your search results will be powered by Algolia\'s typo-tolerant & relevant search algorithms.', 'wp-search-with-algolia' ) . '</p>';
+		echo '<p>' . esc_html__( 'Choose how WordPress should answer search queries, and pick the InstantSearch template style if you turn that experience on.', 'wp-search-with-algolia' ) . '</p>';
 
-		echo '<p>' . sprintf(
-			'<strong>%1$s</strong> - %2$s',
-			esc_html__( 'Re-index All Content', 'wp-search-with-algolia' ),
-			esc_html__( 'Resubmit all of your content to the Algolia search API. Search results will be updated once the re-index has completed.', 'wp-search-with-algolia' )
+		echo '<details class="algolia-field-help algolia-field-help--inline">';
+		echo '<summary>' . esc_html__( 'About the Re-index All Content and Push Settings buttons', 'wp-search-with-algolia' ) . '</summary>';
+		echo '<div class="algolia-field-help__body">';
+		echo '<p>' . wp_kses(
+			sprintf(
+				/* translators: 1: Re-index button label, 2: explanation. */
+				__( '<strong>%1$s:</strong> resubmits your content to the Algolia search API. Search results refresh once indexing completes. Run this after switching modes for the first time, or any time your content has drifted out of sync.', 'wp-search-with-algolia' ),
+				esc_html__( 'Re-index All Content', 'wp-search-with-algolia' )
+			),
+			array( 'strong' => array() )
 		) . '</p>';
-
-		echo '<p>' . sprintf(
-			'<strong>%1$s</strong> - %2$s <strong>%3$s</strong>',
-			esc_html__( 'Push Settings', 'wp-search-with-algolia' ),
-			esc_html__( 'Sync your search index settings to code-based overrides and plugin defaults.', 'wp-search-with-algolia' ),
-			esc_html__( 'WARNING this will override or reset configuration changes originally made within your Algolia dashboard.', 'wp-search-with-algolia' )
+		echo '<p>' . wp_kses(
+			sprintf(
+				/* translators: 1: Push Settings button label, 2: explanation, 3: warning. */
+				__( '<strong>%1$s:</strong> pushes the index settings configured in this plugin (ranking, searchable attributes, facets) up to Algolia. <strong>%2$s</strong>', 'wp-search-with-algolia' ),
+				esc_html__( 'Push Settings', 'wp-search-with-algolia' ),
+				esc_html__( 'Warning: this overwrites changes you may have made directly in the Algolia dashboard.', 'wp-search-with-algolia' )
+			),
+			array( 'strong' => array() )
 		) . '</p>';
+		echo '</div></details>';
 
 		// @Todo: replace this with a check on the searchable_posts_index.
 		$indices = $this->plugin->get_indices(
@@ -282,9 +321,9 @@ class Algolia_Admin_Page_Native_Search {
 		);
 
 		if ( empty( $indices ) ) {
-			echo '<div class="error-message"><p>' .
-					esc_html( __( 'You have no index containing only posts yet. Please index some content with the "Re-index All Content" button above.', 'wp-search-with-algolia' ) ) .
-					'</p></div>';
+			echo '<div class="notice notice-warning inline algolia-inline-notice"><p>' .
+				esc_html__( 'No posts have been indexed yet. Click "Re-index All Content" at the top of this page once your credentials are saved.', 'wp-search-with-algolia' ) .
+				'</p></div>';
 		}
 	}
 }
