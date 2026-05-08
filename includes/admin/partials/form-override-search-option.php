@@ -52,7 +52,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 		<div class="radio-info">
 			<?php
 			echo wp_kses(
-				__( 'Replaces the WordPress search page with a full Algolia InstantSearch UI: instant results as you type, typo tolerance, and built-in filters for post type, category, tag, and author. Customize by copying <code>templates/instantsearch.php</code> (or <code>instantsearch-modern.php</code>) into <code>your-theme/algolia/</code>. <strong>Block themes:</strong> see "Learn more" below for the extra step required.', 'wp-search-with-algolia' ),
+				__( 'Replaces the WordPress search page with a full Algolia InstantSearch UI: instant results as you type, typo tolerance, and built-in filters for post type, category, tag, and author. Customize by copying <code>templates/instantsearch-modern.php</code> (or <code>instantsearch.php</code>) into <code>your-theme/algolia/</code>. <strong>Block themes:</strong> see "Learn more" below for the extra step required.', 'wp-search-with-algolia' ),
 				array(
 					'code'   => array(),
 					'strong' => array(),
