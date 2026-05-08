@@ -296,7 +296,7 @@ class Algolia_Admin_Page_Native_Search {
 		echo '<p>' . wp_kses(
 			sprintf(
 				/* translators: 1: Re-index button label, 2: explanation. */
-				__( '<strong>%1$s:</strong> resubmits your content to the Algolia search API. Search results refresh once indexing completes. Run this after switching modes for the first time, or any time your content has drifted out of sync.', 'wp-search-with-algolia' ),
+				__( '<strong>%1$s:</strong> resubmits your content to the Algolia search API. Search results refresh once indexing completes. Run this after switching modes for the first time, or any time you change content to be indexed, like new shared attributes, or bulk importing of content has been performed.', 'wp-search-with-algolia' ),
 				esc_html__( 'Re-index All Content', 'wp-search-with-algolia' )
 			),
 			array( 'strong' => array() )
