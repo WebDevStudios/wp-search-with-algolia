@@ -48,9 +48,7 @@ $prefix = $this->settings->get_index_name_prefix();
 								<span class="screen-reader-text"><?php esc_html_e( 'Enable this index in the autocomplete dropdown', 'wp-search-with-algolia' ); ?></span>
 							</label>
 							<h3 class="algolia-autocomplete-row__title"><?php echo esc_html( $index['admin_name'] ); ?></h3>
-						</div>
 
-						<div class="algolia-autocomplete-row__meta">
 							<span class="algolia-autocomplete-row__index-name">
 								<span class="screen-reader-text"><?php esc_html_e( 'Index name:', 'wp-search-with-algolia' ); ?></span>
 								<code><?php echo esc_html( $prefix . $index['index_id'] ); ?></code>
@@ -59,7 +57,7 @@ $prefix = $this->settings->get_index_name_prefix();
 								<span class="algolia-autocomplete-row__debounce">
 									<?php
 									printf(
-										/* translators: %s: custom debounce timing in milliseconds. */
+									/* translators: %s: custom debounce timing in milliseconds. */
 										esc_html__( 'Custom debounce: %s ms', 'wp-search-with-algolia' ),
 										esc_html( (string) $index['debounce'] )
 									);
