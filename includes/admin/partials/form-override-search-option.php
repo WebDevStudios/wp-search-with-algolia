@@ -21,7 +21,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 			<?php esc_html_e( 'Do not use Algolia for search', 'wp-search-with-algolia' ); ?>
 		</label>
 		<div class="radio-info">
-			<?php esc_html_e( 'Keep the standard WordPress search. Algolia is not involved in answering queries. Pick this if you want to disable Algolia search temporarily, or are still configuring autocomplete and not ready to flip the search page.', 'wp-search-with-algolia' ); ?>
+			<?php esc_html_e( 'Keep the standard WordPress search. Algolia is not involved in answering queries. Pick this if you want to disable Algolia search temporarily, or are still configuring search settingsg and not ready to flip the search page.', 'wp-search-with-algolia' ); ?>
 		</div>
 	</div>
 
