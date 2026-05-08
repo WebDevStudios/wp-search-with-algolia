@@ -8,15 +8,24 @@
  * @package WebDevStudios\WPSWA
  */
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
+$algolia_header_subtitle = __( 'Configure the autocomplete dropdown that appears as visitors type in your site search.', 'wp-search-with-algolia' );
+$algolia_header_actions  = '';
 ?>
 
-<div class="wrap">
-	<h1><?php echo esc_html( get_admin_page_title() ); ?></h1>
-	<form method="post" action="options.php">
-		<?php
-		settings_fields( $this->option_group );
-		do_settings_sections( $this->slug );
-		submit_button();
-		?>
-	</form>
+<div class="wrap algolia-settings-page">
+	<?php require dirname( __FILE__ ) . '/admin-header.php'; ?>
+
+	<div class="algolia-settings-card">
+		<form method="post" action="options.php">
+			<?php
+			settings_fields( $this->option_group );
+			do_settings_sections( $this->slug );
+			submit_button();
+			?>
+		</form>
+	</div>
 </div>

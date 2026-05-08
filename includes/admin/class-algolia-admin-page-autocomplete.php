@@ -171,11 +171,28 @@ class Algolia_Admin_Page_Autocomplete {
 	public function autocomplete_enabled_callback() {
 		$value    = $this->settings->get_autocomplete_enabled();
 		$indices  = $this->autocomplete_config->get_form_data();
-		$checked  = 'yes' === $value ? 'checked ' : '';
-		$disabled = empty( $indices ) ? 'disabled ' : '';
+		$checked  = 'yes' === $value ? ' checked' : '';
+		$disabled = empty( $indices ) ? ' disabled' : '';
 		?>
-		<input type='checkbox' name='algolia_autocomplete_enabled' value='yes' <?php echo esc_html( $checked . ' ' . $disabled ); ?>/>
+		<label>
+			<input type="checkbox" name="algolia_autocomplete_enabled" value="yes"<?php echo esc_html( $checked . $disabled ); ?> />
+			<?php esc_html_e( 'Show an Algolia-powered dropdown of suggestions while visitors type in the site search.', 'wp-search-with-algolia' ); ?>
+		</label>
 		<?php
+
+		Algolia_Admin_Field_Helpers::render_field_help(
+			__( 'Adds search-as-you-type results to your site\'s existing search input(s).', 'wp-search-with-algolia' ),
+			array(
+				__( '<strong>What gets enhanced.</strong> The plugin attaches to inputs matching <code>input[name="s"]</code> by default, the standard WordPress search input. The dropdown appears as the visitor types and disappears when they click away or submit the form.', 'wp-search-with-algolia' ),
+				__( '<strong>Independent of the search results page.</strong> Autocomplete and the InstantSearch search results page (Search Page settings) are separate features. You can run autocomplete on its own, search results on their own, or both together.', 'wp-search-with-algolia' ),
+				__( '<strong>Targeting a different input.</strong> Use the <code>algolia_autocomplete_input_selector</code> filter to override the default selector if your theme uses a custom search field.', 'wp-search-with-algolia' ),
+			),
+			array(),
+			array(
+				'url'   => 'https://www.algolia.com/doc/ui-libraries/autocomplete/introduction/what-is-autocomplete/',
+				'label' => __( 'Read the Algolia Autocomplete documentation', 'wp-search-with-algolia' ),
+			)
+		);
 	}
 
 	/**
@@ -188,12 +205,23 @@ class Algolia_Admin_Page_Autocomplete {
 		$value   = $this->settings->get_autocomplete_debounce();
 		$indices = $this->autocomplete_config->get_form_data();
 		?>
-		<input type="number" name="algolia_autocomplete_debounce" class="small-text" min="0" value="<?php echo esc_attr( $value ); ?>" <?php disabled( empty( $indices ) ); ?>/>
-		<p class="description" id="home-description">
-			<?php esc_html_e( 'Enter the debounce timeout value in milliseconds. Use 0 (default) to disable debounce.', 'wp-search-with-algolia' ); ?>
-			<a href="https://www.algolia.com/doc/ui-libraries/autocomplete/guides/debouncing-sources/" target="_blank"><?php esc_html_e( 'Debouncing sources documentation', 'wp-search-with-algolia' ); ?></a>
-		</p>
+		<input type="number" name="algolia_autocomplete_debounce" class="small-text" min="0" step="50" value="<?php echo esc_attr( $value ); ?>" <?php disabled( empty( $indices ) ); ?>/>
+		<span class="algolia-input-suffix">ms</span>
 		<?php
+
+		Algolia_Admin_Field_Helpers::render_field_help(
+			__( 'Wait this many milliseconds after the visitor stops typing before sending a request to Algolia. Set to 0 to disable.', 'wp-search-with-algolia' ),
+			array(
+				__( '<strong>Why debounce.</strong> Without debouncing, every keystroke triggers a search request. On fast typists, that means many requests per second, most of them wasted, because only the final query matters to the visitor.', 'wp-search-with-algolia' ),
+				__( '<strong>Recommended starting point.</strong> <code>200</code> ms is a good default for most sites. Lower values feel snappier but increase request volume; higher values feel laggier but reduce load.', 'wp-search-with-algolia' ),
+				__( '<strong>Per-index override.</strong> A specific index can override this global value via the <code>debounce</code> property on its config; when set, that value is shown on the index card below.', 'wp-search-with-algolia' ),
+			),
+			array(),
+			array(
+				'url'   => 'https://www.algolia.com/doc/ui-libraries/autocomplete/guides/debouncing-sources/',
+				'label' => __( 'Read the debouncing sources guide', 'wp-search-with-algolia' ),
+			)
+		);
 	}
 
 	/**
@@ -211,7 +239,7 @@ class Algolia_Admin_Page_Autocomplete {
 		add_settings_error(
 			$this->option_group,
 			'autocomplete_enabled',
-			esc_html__( 'Autocomplete configuration has been saved. Make sure to hit the "re-index" buttons of the different indices that are not indexed yet.', 'wp-search-with-algolia' ),
+			esc_html__( 'Autocomplete settings saved. Run "Re-index" on any index that has not been indexed yet so its suggestions can appear in the dropdown.', 'wp-search-with-algolia' ),
 			'updated'
 		);
 
@@ -241,7 +269,18 @@ class Algolia_Admin_Page_Autocomplete {
 	public function autocomplete_config_callback() {
 		$indices = $this->autocomplete_config->get_form_data();
 
-		require_once dirname( __FILE__ ) . '/partials/page-autocomplete-config.php';
+		require dirname( __FILE__ ) . '/partials/page-autocomplete-config.php';
+
+		Algolia_Admin_Field_Helpers::render_field_help(
+			__( 'Each card below is one source the autocomplete dropdown can pull suggestions from. Toggle, reorder, and tune them to match how you want the dropdown to look.', 'wp-search-with-algolia' ),
+			array(
+				__( '<strong>Enable / disable.</strong> Use the toggle on each card to include that index in the dropdown. Disabled indices are still visible here so you can keep their settings without showing them to visitors.', 'wp-search-with-algolia' ),
+				__( '<strong>Reorder.</strong> Drag the handle on the left of each card to change the order sections appear in the dropdown.', 'wp-search-with-algolia' ),
+				__( '<strong>Section label.</strong> Shown as the heading above this group of suggestions in the dropdown (for example: <em>Articles</em>, <em>Products</em>, <em>Authors</em>).', 'wp-search-with-algolia' ),
+				__( '<strong>Max. suggestions.</strong> Controls how many results from this index appear in the dropdown. Keep totals modest. A dropdown that scrolls is harder to scan than 3 to 5 well-chosen sections.', 'wp-search-with-algolia' ),
+				__( '<strong>Re-index / Push settings.</strong> "Re-index" resends the records for that index. "Push settings" syncs ranking and searchable attributes up to Algolia. <strong>This overwrites changes you may have made directly in the Algolia dashboard.</strong>', 'wp-search-with-algolia' ),
+			)
+		);
 	}
 
 	/**
@@ -303,8 +342,13 @@ class Algolia_Admin_Page_Autocomplete {
 	 * @since  1.0.0
 	 */
 	public function print_section_settings() {
-		echo '<p>' . esc_html__( 'Autocomplete adds a search-as-you-type dropdown to your search field(s).', 'wp-search-with-algolia' ) . '</p>';
+		echo '<p>' . esc_html__( 'Show a dropdown of typo-tolerant suggestions while visitors type in your search field. Toggle the feature on, tune the timing, and choose which indices feed the dropdown.', 'wp-search-with-algolia' ) . '</p>';
 
-		echo '<p>' . esc_html__( 'Enabling Autocomplete adds the functionality to your site\'s frontend search. Indexing and settings pushes can be done regardless of enabled status.', 'wp-search-with-algolia' ) . '</p>';
+		$indices = $this->autocomplete_config->get_form_data();
+		if ( empty( $indices ) ) {
+			echo '<div class="notice notice-warning inline algolia-inline-notice"><p>' .
+				esc_html__( 'No indices are available yet. Configure at least one index on the Indexing page, then return here to choose which ones power the autocomplete dropdown.', 'wp-search-with-algolia' ) .
+				'</p></div>';
+		}
 	}
 }
