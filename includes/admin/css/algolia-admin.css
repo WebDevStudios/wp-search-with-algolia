@@ -1096,10 +1096,13 @@ form .radio-info {
   color: var(--algolia-dark-blue);
 }
 
+.algolia-pro-upsell__button-primary--inverse .dashicons-arrow-right-alt {
+  color: var(--algolia-dark-blue);
+}
+
 .algolia-pro-upsell__button-primary--inverse:hover,
 .algolia-pro-upsell__button-primary--inverse:focus {
   background: var(--algolia-white);
-  color: var(--algolia-dark-blue);
 }
 
 /* Responsive */
