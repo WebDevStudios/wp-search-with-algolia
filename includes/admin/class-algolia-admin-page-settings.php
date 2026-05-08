@@ -38,7 +38,7 @@ class Algolia_Admin_Page_Settings {
 	/**
 	 * Credentials settings section ID.
 	 *
-	 * @since 2.11.0
+	 * @since 2.12.0
 	 *
 	 * @var string
 	 */
@@ -47,7 +47,7 @@ class Algolia_Admin_Page_Settings {
 	/**
 	 * Display & analytics settings section ID.
 	 *
-	 * @since 2.11.0
+	 * @since 2.12.0
 	 *
 	 * @var string
 	 */
@@ -647,7 +647,7 @@ class Algolia_Admin_Page_Settings {
 	/**
 	 * Print the credentials section intro.
 	 *
-	 * @since 2.11.0
+	 * @since 2.12.0
 	 */
 	public function print_section_credentials() {
 		$allowed = array(
@@ -682,7 +682,7 @@ class Algolia_Admin_Page_Settings {
 	/**
 	 * Print the display & analytics section intro.
 	 *
-	 * @since 2.11.0
+	 * @since 2.12.0
 	 */
 	public function print_section_display() {
 		echo '<p>' . esc_html__( 'Control how the Algolia logo appears on your site and choose whether to send anonymous click and conversion events back to Algolia.', 'wp-search-with-algolia' ) . '</p>';

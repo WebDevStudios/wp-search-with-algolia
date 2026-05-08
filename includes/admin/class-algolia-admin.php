@@ -124,7 +124,7 @@ class Algolia_Admin {
 	 *
 	 * NOT USED BUT PRESERVING FOR THE MOMENT.
 	 *
-	 * @since 2.11.0
+	 * @since 2.12.0
 	 *
 	 * @param string $path Absolute path to the asset.
 	 * @return string Version string suitable for wp_enqueue_*.

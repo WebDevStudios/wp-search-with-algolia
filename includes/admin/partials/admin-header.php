@@ -10,7 +10,7 @@
  *                                   by the caller.
  *
  * @author  WebDevStudios <contact@webdevstudios.com>
- * @since   2.11.0
+ * @since   2.12.0
  *
  * @package WebDevStudios\WPSWA
  */

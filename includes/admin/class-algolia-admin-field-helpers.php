@@ -12,7 +12,7 @@
  * and Search settings pages.
  *
  * @author  WebDevStudios <contact@webdevstudios.com>
- * @since   2.11.0
+ * @since   2.12.0
  *
  * @package WebDevStudios\WPSWA
  */
@@ -20,7 +20,7 @@
 /**
  * Class Algolia_Admin_Field_Helpers
  *
- * @since 2.11.0
+ * @since 2.12.0
  */
 class Algolia_Admin_Field_Helpers {
 
@@ -28,7 +28,7 @@ class Algolia_Admin_Field_Helpers {
 	 * Render the always-visible short description plus an optional
 	 * collapsible "Learn more" block containing extended help.
 	 *
-	 * @since 2.11.0
+	 * @since 2.12.0
 	 *
 	 * @param string   $short_description   Short, one-sentence description (plain text).
 	 * @param array    $extended_paragraphs Long-form help blocks rendered in order. Each entry
@@ -121,7 +121,7 @@ class Algolia_Admin_Field_Helpers {
 	 * Render an inline notice indicating that a setting is locked by a
 	 * wp-config.php constant.
 	 *
-	 * @since 2.11.0
+	 * @since 2.12.0
 	 *
 	 * @param string $constant_name The PHP constant name (e.g. ALGOLIA_APPLICATION_ID).
 	 *
