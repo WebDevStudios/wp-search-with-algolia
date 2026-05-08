@@ -1,3 +1,6 @@
+## 2.12.0
+* Updated: Admin pages and Premium support UI refresh.
+
 ## 2.11.3
 * Fixed: minimum requirement discrepancies in readme and defined constant.
 * Updated: cleaned out some unused CSS selectors from really old functionality.
