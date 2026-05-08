@@ -303,12 +303,12 @@ class Algolia_Admin_Page_Settings {
 			Algolia_Admin_Field_Helpers::render_constant_locked_notice( 'ALGOLIA_API_KEY' );
 		}
 		Algolia_Admin_Field_Helpers::render_field_help(
-			__( 'Private key used by WordPress to push and update your indices. Never share it.', 'wp-search-with-algolia' ),
+			esc_html__( 'Private key used by WordPress to push and update your indices. Never share it.', 'wp-search-with-algolia' ),
 			array(
 				__( 'Find this on the <strong>API Keys</strong> page in your Algolia dashboard. WordPress uses this key on the server side to create indices, push records, and update settings. It is <strong>never</strong> sent to the browser.', 'wp-search-with-algolia' ),
 			),
 			array(
-				__( 'Treat this like a password. Anyone with it can modify or delete your Algolia data.', 'wp-search-with-algolia' ),
+				esc_html__( 'Treat this like a password. Anyone with it can modify or delete your Algolia data.', 'wp-search-with-algolia' ),
 				__( 'Tip: store it in <code>wp-config.php</code> as <code>ALGOLIA_API_KEY</code> if you would rather keep it out of the database.', 'wp-search-with-algolia' ),
 			),
 			array(
@@ -336,12 +336,12 @@ class Algolia_Admin_Page_Settings {
 			Algolia_Admin_Field_Helpers::render_constant_locked_notice( 'ALGOLIA_INDEX_NAME_PREFIX' );
 		}
 		Algolia_Admin_Field_Helpers::render_field_help(
-			__( 'Prepended to every index this site creates in Algolia.', 'wp-search-with-algolia' ),
+			esc_html__( 'Prepended to every index this site creates in Algolia.', 'wp-search-with-algolia' ),
 			array(
 				__( 'Use a unique prefix for each WordPress environment that shares the same Algolia application: for example <code>prod_</code>, <code>staging_</code>, or <code>dev_</code>. This prevents environments from overwriting each other&rsquo;s indices.', 'wp-search-with-algolia' ),
 			),
 			array(
-				__( 'Allowed characters: letters, numbers, and underscores.', 'wp-search-with-algolia' ),
+				esc_html__( 'Allowed characters: letters, numbers, and underscores.', 'wp-search-with-algolia' ),
 				__( 'Default: <code>wp_</code>. Changing this after indexing will require a re-index of your content.', 'wp-search-with-algolia' ),
 			)
 		);
@@ -364,14 +364,14 @@ class Algolia_Admin_Page_Settings {
 		echo '</label>';
 
 		Algolia_Admin_Field_Helpers::render_field_help(
-			__( 'Controls whether the &ldquo;Powered by Algolia&rdquo; logo appears alongside your search results.', 'wp-search-with-algolia' ),
+			esc_html__( 'Controls whether the &ldquo;Powered by Algolia&rdquo; logo appears alongside your search results.', 'wp-search-with-algolia' ),
 			array(
 				__( '<strong>Algolia&rsquo;s Terms of Service require the logo to remain visible on the free Community plan.</strong> Only enable this option if you are on a paid Algolia plan that permits removing the logo.', 'wp-search-with-algolia' ),
 			),
 			array(),
 			array(
 				'url'   => 'https://www.algolia.com/pricing/',
-				'label' => __( 'Compare Algolia plans', 'wp-search-with-algolia' ),
+				'label' => esc_html__( 'Compare Algolia plans', 'wp-search-with-algolia' ),
 			)
 		);
 	}
@@ -392,7 +392,7 @@ class Algolia_Admin_Page_Settings {
 		echo '</label>';
 
 		Algolia_Admin_Field_Helpers::render_field_help(
-			__( 'Powers your Algolia analytics dashboard and helps Algolia rank the most useful results higher.', 'wp-search-with-algolia' ),
+			esc_html__( 'Powers your Algolia analytics dashboard and helps Algolia rank the most useful results higher.', 'wp-search-with-algolia' ),
 			array(
 				__( '<strong>What it does.</strong> When enabled, the plugin sends anonymous events to Algolia each time a visitor interacts with your search results. Specifically, it tracks:', 'wp-search-with-algolia' ),
 				array(
@@ -411,7 +411,7 @@ class Algolia_Admin_Page_Settings {
 			array(),
 			array(
 				'url'   => 'https://www.algolia.com/doc/guides/building-search-ui/events/js/',
-				'label' => __( 'Read the Algolia Insights & events documentation', 'wp-search-with-algolia' ),
+				'label' => esc_html__( 'Read the Algolia Insights & events documentation', 'wp-search-with-algolia' ),
 			)
 		);
 	}
