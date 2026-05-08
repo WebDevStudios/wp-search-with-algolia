@@ -239,6 +239,7 @@ form .radio-info {
   align-items: center;
   display: flex;
   gap: 12px;
+  margin-bottom: 12px;
 }
 
 .algolia-autocomplete-row__toggle {
@@ -323,7 +324,7 @@ form .radio-info {
   display: flex;
   flex-direction: column;
   gap: 6px;
-  justify-content: flex-start;
+  justify-content: flex-end;
 }
 
 .algolia-autocomplete-row__actions .button {
@@ -339,6 +340,7 @@ form .radio-info {
   font-size: 16px;
   height: 16px;
   width: 16px;
+  line-height: initial;
 }
 
 /* Sortable placeholder */
