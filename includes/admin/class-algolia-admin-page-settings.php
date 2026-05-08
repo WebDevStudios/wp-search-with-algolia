@@ -175,7 +175,7 @@ class Algolia_Admin_Page_Settings {
 
 		add_settings_field(
 			'algolia_search_api_key',
-			esc_html__( 'Search-Only API Key', 'wp-search-with-algolia' ),
+			esc_html__( 'Search API Key', 'wp-search-with-algolia' ),
 			array( $this, 'search_api_key_callback' ),
 			$this->slug,
 			$this->section_credentials
@@ -270,18 +270,18 @@ class Algolia_Admin_Page_Settings {
 			Algolia_Admin_Field_Helpers::render_constant_locked_notice( 'ALGOLIA_SEARCH_API_KEY' );
 		}
 		Algolia_Admin_Field_Helpers::render_field_help(
-			__( 'Public, search-only key safe to expose to your visitors.', 'wp-search-with-algolia' ),
-			array(
-				__( 'Find this on the <strong>API Keys</strong> page in your Algolia dashboard. The Search-Only key is included in the JavaScript that runs on your site, so it must be the search-only key, never the Admin key.', 'wp-search-with-algolia' ),
-			),
-			array(
-				__( 'Has search permission only. It cannot modify or delete data.', 'wp-search-with-algolia' ),
-				__( 'Should not have a time-limited validity, or your front-end search will stop working when it expires.', 'wp-search-with-algolia' ),
-			),
-			array(
+			esc_html__( 'Public, search key safe to expose to your visitors.', 'wp-search-with-algolia' ),
+			[
+				__( 'Find this on the <strong>API Keys</strong> page in your Algolia dashboard. The Search key is included in the JavaScript that runs on your site, so it must be the search key, never the Admin key.', 'wp-search-with-algolia' ),
+			],
+			[
+				esc_html__( 'Has search permission only. It cannot modify or delete data.', 'wp-search-with-algolia' ),
+				esc_html__( 'Should not have a time-limited validity, or your front-end search will stop working when it expires.', 'wp-search-with-algolia' ),
+			],
+			[
 				'url'   => 'https://dashboard.algolia.com/account/api-keys/all',
-				'label' => __( 'Open the API Keys page in your Algolia dashboard', 'wp-search-with-algolia' ),
-			)
+				'label' => esc_html__( 'Open the API Keys page in your Algolia dashboard', 'wp-search-with-algolia' ),
+			]
 		);
 	}
 
