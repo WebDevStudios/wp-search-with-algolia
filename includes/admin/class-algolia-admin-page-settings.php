@@ -242,13 +242,13 @@ class Algolia_Admin_Page_Settings {
 		Algolia_Admin_Field_Helpers::render_field_help(
 			__( 'Your unique Algolia Application ID.', 'wp-search-with-algolia' ),
 			array(
-				__( 'Find this in your Algolia dashboard under <strong>Settings &rarr; API Keys</strong>. It is a short string of letters and numbers (for example <code>LATENCY</code>) that identifies your Algolia application.', 'wp-search-with-algolia' ),
+				__( 'Find this on the <strong>API Keys</strong> page in your Algolia dashboard. It is a short string of letters and numbers (for example <code>LATENCY</code>) that identifies your Algolia application.', 'wp-search-with-algolia' ),
 			),
-			array(),
-			array(
+			[],
+			[
 				'url'   => 'https://dashboard.algolia.com/account/api-keys/all',
 				'label' => __( 'Open the API Keys page in your Algolia dashboard', 'wp-search-with-algolia' ),
-			)
+			]
 		);
 	}
 
