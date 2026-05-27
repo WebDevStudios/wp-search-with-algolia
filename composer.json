@@ -30,7 +30,7 @@
     "brianhenryie/strauss": "^0.11.1",
     "php-stubs/wp-cli-stubs": "^2.7",
     "php-stubs/wordpress-stubs": "^6.1",
-    "algolia/algoliasearch-client-php": "3.4.2"
+    "algolia/algoliasearch-client-php": "4.43.1"
   },
   "extra": {
     "installer-name": "wp-search-with-algolia",
