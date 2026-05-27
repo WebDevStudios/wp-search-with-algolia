@@ -9,8 +9,7 @@
  */
 
 use WebDevStudios\WPSWA\Algolia\AlgoliaSearch\Exceptions\AlgoliaException;
-use WebDevStudios\WPSWA\Algolia\AlgoliaSearch\SearchClient;
-use WebDevStudios\WPSWA\Algolia\AlgoliaSearch\SearchIndex;
+use WebDevStudios\WPSWA\Algolia\AlgoliaSearch\Api\SearchClient;
 
 /**
  * Class Algolia_Index
