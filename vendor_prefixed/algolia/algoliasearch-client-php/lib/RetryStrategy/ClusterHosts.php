@@ -1,0 +1,194 @@
+<?php
+/**
+ * @license MIT
+ *
+ * Modified by WebDevStudios on 27-May-2026 using Strauss.
+ * @see https://github.com/BrianHenryIE/strauss
+ */
+
+namespace WebDevStudios\WPSWA\Algolia\AlgoliaSearch\RetryStrategy;
+
+use WebDevStudios\WPSWA\Algolia\AlgoliaSearch\Algolia;
+
+/**
+ * @internal
+ */
+final class ClusterHosts
+{
+    private $read;
+
+    private $write;
+
+    private $cacheKey;
+
+    private $lastReadHash;
+
+    private $lastWriteHash;
+
+    public function __construct(HostCollection $read, HostCollection $write)
+    {
+        $this->read = $read;
+        $this->write = $write;
+    }
+
+    public static function create($read, $write = null)
+    {
+        if (null === $write) {
+            $write = $read;
+        }
+
+        if (is_string($read)) {
+            $read = [$read => 0];
+        }
+
+        if (is_string($write)) {
+            $write = [$write => 0];
+        }
+
+        if (array_values($read) === $read) {
+            $read = array_fill_keys($read, 0);
+        }
+
+        if (array_values($write) === $write) {
+            $write = array_fill_keys($write, 0);
+        }
+
+        return new self(
+            HostCollection::create($read),
+            HostCollection::create($write)
+        );
+    }
+
+    public static function createFromAppId($applicationId)
+    {
+        $read = $write = [
+            $applicationId.'-1.algolianet.com' => 0,
+            $applicationId.'-2.algolianet.com' => 0,
+            $applicationId.'-3.algolianet.com' => 0,
+        ];
+
+        $read[$applicationId.'-dsn.algolia.net'] = 10;
+        $write[$applicationId.'.algolia.net'] = 10;
+
+        return self::create($read, $write)->shuffle();
+    }
+
+    public static function createFromCache($cacheKey)
+    {
+        if (!Algolia::isCacheEnabled()) {
+            return false;
+        }
+
+        if (!Algolia::getCache()->has($cacheKey)) {
+            return false;
+        }
+
+        return @unserialize(Algolia::getCache()->get($cacheKey));
+    }
+
+    public function read()
+    {
+        return $this->getUrls('read');
+    }
+
+    public function write()
+    {
+        return $this->getUrls('write');
+    }
+
+    public function getRetryCount($hostUrl, $isRead)
+    {
+        $collection = $isRead ? $this->read : $this->write;
+
+        return $collection->getRetryCountForUrl($hostUrl);
+    }
+
+    public function failed($host)
+    {
+        $this->read->markAsDown($host);
+        $this->write->markAsDown($host);
+
+        $this->updateCache();
+
+        return $this;
+    }
+
+    public function timedOut($host)
+    {
+        $this->read->timedOut($host);
+        $this->write->timedOut($host);
+        $this->updateCache();
+
+        return $this;
+    }
+
+    public function resetHost($host)
+    {
+        $this->read->resetHost($host);
+        $this->write->resetHost($host);
+        $this->updateCache();
+
+        return $this;
+    }
+
+    public function setRetryCount($hostUrl, int $count, $isRead = true)
+    {
+        $collection = $isRead ? $this->read : $this->write;
+        $collection->setRetryCount($hostUrl, $count);
+
+        return $this;
+    }
+
+    public function reset()
+    {
+        $this->read->reset();
+        $this->write->reset();
+
+        return $this;
+    }
+
+    public function shuffle()
+    {
+        $this->read->shuffle();
+        $this->write->shuffle();
+
+        return $this;
+    }
+
+    /**
+     * Sets the cache key to save the state of the ClusterHosts.
+     *
+     * @param string $cacheKey
+     *
+     * @return $this
+     */
+    public function setCacheKey($cacheKey)
+    {
+        $this->cacheKey = $cacheKey;
+
+        return $this;
+    }
+
+    private function getUrls($type)
+    {
+        $urls = $this->{$type}->getUrls();
+        $lashHashName = 'last'.ucfirst($type).'Hash';
+
+        if (Algolia::isCacheEnabled()) {
+            $hash = sha1(implode('-', $urls));
+            if ($hash !== $this->{$lashHashName}) {
+                $this->updateCache();
+            }
+            $this->{$lashHashName} = $hash;
+        }
+
+        return $urls;
+    }
+
+    private function updateCache()
+    {
+        if (null !== $this->cacheKey && Algolia::isCacheEnabled()) {
+            Algolia::getCache()->set($this->cacheKey, serialize($this));
+        }
+    }
+}
