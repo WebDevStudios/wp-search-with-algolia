@@ -6,10 +6,10 @@
  * @package WebDevStudios\WPSWA
  */
 
-use WebDevStudios\WPSWA\Algolia\AlgoliaSearch\Config\SearchConfig;
+use WebDevStudios\WPSWA\Algolia\AlgoliaSearch\Configuration\SearchConfig;
 use WebDevStudios\WPSWA\Algolia\AlgoliaSearch\Algolia;
-use WebDevStudios\WPSWA\Algolia\AlgoliaSearch\SearchClient;
-use WebDevStudios\WPSWA\Algolia\AlgoliaSearch\Support\UserAgent;
+use WebDevStudios\WPSWA\Algolia\AlgoliaSearch\Api\SearchClient;
+use WebDevStudios\WPSWA\Algolia\AlgoliaSearch\Support\AlgoliaAgent;
 
 /**
  * Class Algolia_Search_Client_Factory
