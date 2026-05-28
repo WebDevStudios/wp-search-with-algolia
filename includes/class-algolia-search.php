@@ -47,8 +47,6 @@ class Algolia_Search {
 	 */
 	private $index;
 
-	private $client;
-
 	/**
 	 * Algolia_Search constructor.
 	 *
@@ -57,10 +55,8 @@ class Algolia_Search {
 	 *
 	 * @param Algolia_Index $index Instance of Algolia_Index.
 	 */
-	public function __construct( Algolia_Index $index, $client ) {
+	public function __construct( Algolia_Index $index ) {
 		$this->index = $index;
-
-		$this->client = $client;
 
 		add_action( 'loop_start', [ $this, 'begin_highlighting' ] );
 		add_action( 'pre_get_posts', array( $this, 'pre_get_posts' ) );
