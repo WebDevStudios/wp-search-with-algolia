@@ -57,14 +57,17 @@ class Algolia_Search_Client_Factory {
 			ALGOLIA_VERSION
 		);
 
-		UserAgent::addCustomUserAgent(
+		$defaultconfig = SearchConfig::create( $app_id, $api_key );
+		AlgoliaAgent::addAlgoliaAgent(
+			$defaultconfig->getClientName(),
 			$integration_name,
 			$integration_version
 		);
 
 		global $wp_version;
 
-		UserAgent::addCustomUserAgent(
+		AlgoliaAgent::addAlgoliaAgent(
+			$defaultconfig->getClientName(),
 			'WordPress',
 			$wp_version
 		);
@@ -119,6 +122,19 @@ class Algolia_Search_Client_Factory {
 		if ( ! empty( $custom_config ) && is_array( $custom_config ) ) {
 			$config = SearchConfig::create( $app_id, $api_key );
 
+			// Set these again for the custom config
+			global $wp_version;
+			AlgoliaAgent::addAlgoliaAgent(
+				$defaultconfig->getClientName(),
+				$integration_name,
+				$integration_version
+			);
+			AlgoliaAgent::addAlgoliaAgent(
+				$defaultconfig->getClientName(),
+				'WordPress',
+				$wp_version
+			);
+
 			if ( ! empty( $custom_config['connectTimeout'] ) ) {
 				$config->setConnectTimeout( (int) $custom_config['connectTimeout'] );
 			}
@@ -136,9 +152,9 @@ class Algolia_Search_Client_Factory {
 			return SearchClient::createWithConfig( $config );
 		}
 
-		return SearchClient::create(
-			(string) $app_id,
-			(string) $api_key
+		// Default config.
+		return SearchClient::createWithConfig(
+			$defaultconfig
 		);
 	}
 }
