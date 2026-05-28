@@ -309,6 +309,6 @@ final class Algolia_Users_Index extends Algolia_Index {
 	 */
 	public function delete_item( $item ) {
 		$this->assert_is_supported( $item );
-		$this->get_index()->deleteObject( $item->ID );
+		$this->get_client()->deleteObject( $this->get_name(), $item->ID );
 	}
 }
