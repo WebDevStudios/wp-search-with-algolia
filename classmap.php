@@ -28,6 +28,9 @@ apply_filters_deprecated(
 	'The "algolia_should_require_search_client" filter is deprecated and no longer has any effect.',
 );
 
+if ( ! file_exists( ALGOLIA_PATH . 'vendor_prefixed/autoload.php' ) ) {
+	wp_die( 'Please run `composer install` to get dependencies' );
+}
 // Autoload vendor dependencies, that have been prefixed to prevent namespace collision.
 require_once ALGOLIA_PATH . 'vendor_prefixed/autoload.php';
 
