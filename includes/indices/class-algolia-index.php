@@ -217,7 +217,7 @@ abstract class Algolia_Index {
 				->setPage( $args['page'] )
 				->setHighlightPreTag( $args['highlightPreTag'] )
 				->setHighlightPostTag( $args['highlightPostTag'] )
-				->setRanking( [ $order . '(' . $order_by . ')' ] )
+				->setRanking( $replica->get_ranking() )
 		);
 	}
 
