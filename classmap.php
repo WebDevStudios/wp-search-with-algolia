@@ -29,7 +29,7 @@ apply_filters_deprecated(
 );
 
 if ( ! file_exists( ALGOLIA_PATH . 'vendor_prefixed/autoload.php' ) ) {
-	wp_die( 'Please run `composer install` to get dependencies' );
+	wp_die( 'WP Search with Algolia: Please run `composer install` to get dependencies' );
 }
 // Autoload vendor dependencies, that have been prefixed to prevent namespace collision.
 require_once ALGOLIA_PATH . 'vendor_prefixed/autoload.php';
