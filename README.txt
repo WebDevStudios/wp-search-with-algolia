@@ -120,6 +120,7 @@ Follow along with the changelog on [GitHub](https://github.com/WebDevStudios/wp-
 
 = 2.12.0 =
 * Updated: Admin pages and Premium support UI refresh.
+* Fixed: Prevent errors in WordPress Health panel if no application/api keys configured yet.
 
 = 2.11.3 =
 * Fixed: minimum requirement discrepancies in readme and defined constant.
@@ -140,99 +141,3 @@ Follow along with the changelog on [GitHub](https://github.com/WebDevStudios/wp-
 * Fixed: Return JSON error instead of echo exception message and continue to throw exception.
 * Added: Inline documentation for various custom filters and actions.
 * Added: Output custom debounce values in Autocomplete settings UI.
-
-= 2.10.4 =
-* Fixed: revised asset loading for InstantSearch with Full Site Editing enabled.
-* Added: Striping styles for Autocomplete table list.
-
-= 2.10.3 =
-* Added: Filter to still output frontend config data when using Instantsearch and FSE Theme.
-* Added: Filtering of new filter to attempt auto-detection of a FSE theme being in use.
-
-= 2.10.2 =
-* Added: Checkbox option to enable insights in Instantsearch templates. Please review changes to those.
-
-= 2.10.1 =
-* Fixed: Issues around admin notifications on the Autocomplete settings page, introduced in 2.10.0
-
-= 2.10.0 =
-* Added: Debounce option for Autocomplete.
-* Added: Initial integration with Health Panel.
-* Updated: Instantsearch to version 4.78.3
-* Updated: Prevent loading of API credentials on frontend when not using Autocomplete or Instantsearch.
-* Updated: Removed WooCommerce internal post types and taxonomies from Autocomplete list.
-* Updated: Prevent errors with Yoast SEO function checks.
-* Updated: Sync'd up internal code for `get_re_index_items_count()`
-
-= 2.9.0 =
-* Added: Instantsearch Template options. Choose between "Legacy" hogan.js/WP Utils templates and "Modern" Javascript string literals. "Modern" is more in line with Algolia Documentation.
-* Added: ability to customize default Headers for Algolia Search Client configuration.
-* Added: Initial support for programmatic Secured API key creation.
-* Updated: Sync'd up `get_items()` methods to allow for specifying specific IDs for posts, terms, and users.
-* Updated: Instantsearch templates use "Posts per page" amount by default, from WordPress Reading settings.
-* Updated: Amended Autocomplete settings page to remove more builtin post types that don't need to be available.
-
-= 2.8.3 =
-* Fixed: "Function _load_textdomain_just_in_time was called incorrectly" notices.
-
-= 2.8.2 =
-* Updated: Wording and UI details around the settings pages for better and more accurate reflection.
-* Updated: Confirmed compatibility with WP 6.7.x
-* Added: New page regarding Premium support from WebDevStudios. Let's work together.
-
-= 2.8.1 =
-* Updated: WP Search with Algolia Pro features list for version 1.4.0
-
-= 2.8.0 =
-* Added: Filter to customize Algolia SearchClient configuration with connect/read/write timeouts.
-* Updated: Prevent table content from being concatenated. Thanks @rodrigo-arias
-* Updated: Pass `$post_id` to `algolia_get_post_images` filter.
-* Updated: Confirmed compatibility with WP 6.5
-
-= 2.7.1 =
-* Fixed: Instantsearch.php template file. "Powered By Algolia" Instantsearch widget wrapped in a check for if the "Remove powered by" option is checked. This should match already working behavior with Autocomplete dropdown.
-
-= 2.7.0 =
-* Updated: Moved post sync action from `save_post` to `wp_after_insert_post`. This allows for the sync to wait until after post meta and terms have been updated. Removes need to click save twice to sync everything.
-* Updated: WP Search with Algolia feature list.
-
-= 2.6.2 =
-* Fixed: More performance updates and resolutions around WP All Import.
-
-= 2.6.1 =
-* Fixed: Performance issues related to delete operations.
-* Fixed: Performance issues around WP All Import.
-
-= 2.6.0 =
-* Added: Support for syncing imported items when "fast mode" from WP All Import enabled.
-* Added: Support for updating child posts if parent post's slug has been updated.
-* Added: Support for updating posts when an associated term has been updatd.
-* Added: Wait for delete operations to complete before moving to updates.
-* Updated: Algolia Search library to 4.18.x
-* Updated: InstantSearch library to 4.56.x
-
-= 2.5.4 =
-* Updated: Ensure reindexing completes when using the from_batch flag with CLI.
-* Updated: Assigned Algolia_Admin instance to a property for access elsewhere.
-
-= 2.5.3 =
-* Updated: Autocomplete template file with user link fix when cmd/ctrl clicking.
-* Updated: Class method visibility from protected to public.
-
-= 2.5.2 =
-* Updated: Fixed hits per page configuration for instantsearch
-* Added: Custom hook for settings page override.
-
-= 2.5.1 =
-* Updated readme.txt with more plugin information.
-* Repositioned help info on settings screens.
-
-= 2.5.0 =
-* Introduction of WP Search with Algolia Pro availability.
-* Added `algolia_custom_template_location` filter to allow specifying custom template locations besides just your active theme.
-* Templates: added action hooks at the end of Autocomplete and Instantsearch hit template blocks.
-* Updated `algolia_changes_watchers` filter to also receive the current indices.
-* Added watcher support for term and user meta updates.
-* Updated bundled CSS to better match selectors for default used widgets in the templates.
-* Clarified some details around Autocomplete settings and what can be done in each setting state.
-* Updated admin menu icon to use Algolia logo when no settings configured.
