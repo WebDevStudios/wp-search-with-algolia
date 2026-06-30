@@ -119,7 +119,7 @@ final class Algolia_Searchable_Posts_Index extends Algolia_Index {
 	 *
 	 * @return bool
 	 */
-	protected function should_index( $item ) {
+	public function should_index( $item ) {
 		return $this->should_index_post( $item );
 	}
 
