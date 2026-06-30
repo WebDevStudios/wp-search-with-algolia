@@ -81,7 +81,7 @@ class Algolia_Admin {
 			'algolia-admin',
 			plugin_dir_url( __FILE__ ) . 'css/algolia-admin.css',
 			[],
-			$this->asset_version( __DIR__ . '/css/algolia-admin.css' )
+			ALGOLIA_VERSION
 		);
 	}
 
