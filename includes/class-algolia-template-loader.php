@@ -115,6 +115,7 @@ class Algolia_Template_Loader {
 				 * @return string $value Updated selector.
 				 */
 				'input_selector' => (string) apply_filters( 'algolia_autocomplete_input_selector', "input[name='s']:not(.no-autocomplete):not(#adminbar-search)" ),
+				'min_chars'      => $settings->get_autocomplete_min_chars(),
 			],
 		];
 
