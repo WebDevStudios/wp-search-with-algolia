@@ -8,18 +8,27 @@
  * @package WebDevStudios\WPSWA
  */
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
+$algolia_header_subtitle = __( 'Connect WordPress to Algolia, and control how search results behave across your site.', 'wp-search-with-algolia' );
+$algolia_header_actions  = '';
 ?>
 
-<div class="wrap">
-	<h1><?php echo esc_html( get_admin_page_title() ); ?></h1>
+<div class="wrap algolia-settings-page">
+	<?php require dirname( __FILE__ ) . '/admin-header.php'; ?>
+
 	<?php if ( ! has_action( 'wpswa_pro_override_settings_output' ) ) : ?>
-		<form method="post" action="options.php">
-			<?php
-			settings_fields( $this->option_group );
-			do_settings_sections( $this->slug );
-			submit_button();
-			?>
-		</form>
+		<div class="algolia-settings-card">
+			<form method="post" action="options.php">
+				<?php
+				settings_fields( $this->option_group );
+				do_settings_sections( $this->slug );
+				submit_button();
+				?>
+			</form>
+		</div>
 	<?php else : ?>
 		<?php
 		/**
@@ -29,6 +38,7 @@
 		 *
 		 * @since 2.5.2
 		 */
-		do_action( 'wpswa_pro_override_settings_output' ); ?>
+		do_action( 'wpswa_pro_override_settings_output' );
+		?>
 	<?php endif; ?>
 </div>

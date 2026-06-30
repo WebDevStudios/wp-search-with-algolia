@@ -62,7 +62,7 @@ class Algolia_Health_Panel {
 				],
 				[
 					'label' => 'Searchable Posts Index Enabled',
-					'value' => $this->plugin->get_index( 'searchable_posts' )->is_enabled() ? 'true' : 'false',
+					'value' => $this->plugin->get_index( 'searchable_posts' ) && $this->plugin->get_index( 'searchable_posts' )->is_enabled() ? 'true' : 'false',
 				],
 				[
 					'label' => 'Autocomplete Enabled',

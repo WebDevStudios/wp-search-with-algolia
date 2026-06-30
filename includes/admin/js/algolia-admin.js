@@ -5,12 +5,24 @@
 		function() {
 
 			function updateAutocompletePositions () {
-				$( '.table-autocomplete .position-input' ).each(
+				$( '.algolia-autocomplete-list .position-input, .table-autocomplete .position-input' ).each(
 					function(index, value) {
 						$( value ).val( index );
 					}
 				);
 			}
+			$( '.algolia-autocomplete-list' ).sortable(
+				{
+					handle: '.algolia-autocomplete-row__handle',
+					placeholder: 'algolia-autocomplete-row__placeholder',
+					forcePlaceholderSize: true,
+					tolerance: 'pointer',
+					update: function() {
+						updateAutocompletePositions();
+					}
+				}
+			);
+			// Backwards compatibility for any custom code still rendering the legacy table.
 			$( '.table-autocomplete tbody' ).sortable(
 				{
 					update: function() {

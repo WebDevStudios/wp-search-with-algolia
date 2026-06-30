@@ -77,7 +77,12 @@ class Algolia_Admin {
 	 * @since   1.0.0
 	 */
 	public function enqueue_styles() {
-		wp_enqueue_style( 'algolia-admin', plugin_dir_url( __FILE__ ) . 'css/algolia-admin.css', array(), ALGOLIA_VERSION );
+		wp_enqueue_style(
+			'algolia-admin',
+			plugin_dir_url( __FILE__ ) . 'css/algolia-admin.css',
+			[],
+			ALGOLIA_VERSION
+		);
 	}
 
 	/**
@@ -108,6 +113,30 @@ class Algolia_Admin {
 			ALGOLIA_VERSION,
 			false
 		);
+	}
+
+	/**
+	 * Build a cache-busting version string for an admin asset.
+	 *
+	 * Uses the file's modification time so edits to bundled CSS/JS bust the
+	 * browser cache without needing to bump ALGOLIA_VERSION. Falls back to the
+	 * plugin version if the file cannot be read.
+	 *
+	 * NOT USED BUT PRESERVING FOR THE MOMENT.
+	 *
+	 * @since 2.12.0
+	 *
+	 * @param string $path Absolute path to the asset.
+	 * @return string Version string suitable for wp_enqueue_*.
+	 */
+	private function asset_version( $path ) {
+		if ( is_readable( $path ) ) {
+			$mtime = filemtime( $path );
+			if ( $mtime ) {
+				return ALGOLIA_VERSION . '.' . $mtime;
+			}
+		}
+		return ALGOLIA_VERSION;
 	}
 
 	/**
