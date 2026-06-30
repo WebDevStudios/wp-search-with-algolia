@@ -1,28 +1,33 @@
+'use strict';
 (function($) {
 
 	/* global algoliaPushSettingsButton */
 
 	$(
 		function() {
-			var $buttons = $( '.algolia-push-settings-button' );
-			$buttons.on( 'click', handleButtonClick );
+			let buttons = document.querySelectorAll('.algolia-push-settings-button');
+			if (buttons) {
+				Array.from(buttons).forEach((button) => {
+					button.addEventListener('click', handleButtonClick);
+				});
+			}
 		}
 	);
 
 	function handleButtonClick(e) {
-		$clickedButton = $( e.currentTarget );
-		var index      = $clickedButton.data( 'index' );
-		if ( ! index) {
-			throw new Error( 'Clicked button has no "data-index" set.' );
+		let $clickedButton = $(e.currentTarget);
+		let index = $clickedButton.data('index');
+		if (!index) {
+			throw new Error(algoliaPushSettingsButton.noDataIndex);
 		}
 
-		if ( ! window.confirm( algoliaPushSettingsButton.pushBtnAlert ) ) {
+		if (!window.confirm(algoliaPushSettingsButton.pushBtnAlert)) {
 			return;
 		}
 
-		disableButton( $clickedButton );
+		disableButton($clickedButton);
 
-		pushSettings( $clickedButton, index );
+		pushSettings($clickedButton, index);
 	}
 
 	function disableButton($button) {
@@ -35,25 +40,27 @@
 
 	function pushSettings($clickedButton, index) {
 
-		var data = {
+		let data = {
 			'action': 'algolia_push_settings',
 			'index_id': index
 		};
 
 		$.post(
 			ajaxurl, data, function(response) {
-				if (typeof response.success === 'undefined') {
-					alert( 'An error occurred' );
-					enableButton( $clickedButton );
-					return;
+				if (typeof response.success !== 'undefined' && response.success === false) {
+					if (typeof response.data.message !== 'undefined') {
+						alert(algoliaPushReindexButton.genericError);
+						enableButton($clickedButton);
+						return;
+					}
 				}
 
-				alert( 'Settings correctly pushed for index: ' + index );
+				alert(algoliaPushSettingsButton.correctlyPushed + ' ' + index );
 				enableButton( $clickedButton );
 			}
 		).fail(
 			function(response) {
-				alert( 'An error occurred: ' + response.responseText );
+				alert(algoliaPushReindexButton.exceptionErrorPrefix + ' ' + response.responseJSON.data.message );
 				enableButton( $clickedButton );
 			}
 		);
