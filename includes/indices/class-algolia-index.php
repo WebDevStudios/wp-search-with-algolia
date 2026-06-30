@@ -8,6 +8,7 @@
  * @package WebDevStudios\WPSWA
  */
 
+// phpcs:disable Squiz.Commenting.FunctionCommentThrowTag.WrongNumber -- We're using RuntimeException.
 use WebDevStudios\WPSWA\Algolia\AlgoliaSearch\Exceptions\AlgoliaException;
 use WebDevStudios\WPSWA\Algolia\AlgoliaSearch\SearchClient;
 use WebDevStudios\WPSWA\Algolia\AlgoliaSearch\SearchIndex;
@@ -497,7 +498,23 @@ abstract class Algolia_Index {
 			 */
 			do_action( 'algolia_after_get_records', $item );
 
-			$this->update_records( $item, $item_records );
+			// Retry logic for update_records (rate limit handling).
+			$max_retries = 3;
+			$retry       = 0;
+			while ( true ) {
+				try {
+					$this->update_records( $item, $item_records );
+					break; // Success.
+				} catch ( \Exception $e ) {
+					if ( strpos( strtolower( $e->getMessage() ), 'rate limit' ) !== false && $retry < $max_retries ) {
+						$wait = pow( 2, $retry ); // 1, 2, 4 seconds
+						sleep( $wait );
+						$retry++;
+						continue;
+					}
+					throw $e;
+				}
+			}
 		}
 
 		if ( ! empty( $records ) ) {
@@ -528,12 +545,22 @@ abstract class Algolia_Index {
 		// Don't saveObjects if sanitize_json_data failed.
 		if ( ! empty( $sanitized_records ) ) {
 
-			$index = $this->get_index();
-
-			try {
-				$index->saveObjects( $sanitized_records );
-			} catch ( \Throwable $throwable ) {
-				error_log( $throwable->getMessage() ); // phpcs:ignore -- Need a real logger.
+			$index       = $this->get_index();
+			$max_retries = 3;
+			$retry       = 0;
+			while ( true ) {
+				try {
+					$index->saveObjects( $sanitized_records );
+					break; // Success.
+				} catch ( \Exception $e ) {
+					if ( strpos( strtolower( $e->getMessage() ), 'rate limit' ) !== false && $retry < $max_retries ) {
+						$wait = pow( 2, $retry );
+						sleep( $wait );
+						$retry++;
+						continue;
+					}
+					throw $e;
+				}
 			}
 		}
 
@@ -541,6 +568,11 @@ abstract class Algolia_Index {
 		 * Set the reindexing bit back to false.
 		 */
 		$this->reindexing = false;
+
+		if ( Algolia_Utils::is_large_site() ) {
+			// Add a delay between batches to avoid rate limiting.
+			sleep( Algolia_Utils::get_large_site_sleep_duration() ); // Gentle: 5 second delay.
+		}
 
 		if ( $page === $max_num_pages ) {
 
@@ -999,3 +1031,5 @@ abstract class Algolia_Index {
 		$this->get_index()->clearObjects();
 	}
 }
+
+// phpcs:enable Squiz.Commenting.FunctionCommentThrowTag.WrongNumber -- We're using RuntimeException.
