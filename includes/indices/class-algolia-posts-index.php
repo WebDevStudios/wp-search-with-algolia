@@ -661,11 +661,11 @@ final class Algolia_Posts_Index extends Algolia_Index {
 		}
 
 		if ( $wait ) {
-			$this->get_index()->deleteObjects( $object_ids )->wait();
+			$this->get_client()->deleteObjects( $this->get_name(), $object_ids, true );
 			return;
 		}
 
-		$this->get_index()->deleteObjects( $object_ids );
+		$this->get_client()->deleteObjects( $this->get_name(), $object_ids );
 	}
 
 	/**

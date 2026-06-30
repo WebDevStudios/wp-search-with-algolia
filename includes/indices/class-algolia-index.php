@@ -9,8 +9,8 @@
  */
 
 use WebDevStudios\WPSWA\Algolia\AlgoliaSearch\Exceptions\AlgoliaException;
-use WebDevStudios\WPSWA\Algolia\AlgoliaSearch\SearchClient;
-use WebDevStudios\WPSWA\Algolia\AlgoliaSearch\SearchIndex;
+use WebDevStudios\WPSWA\Algolia\AlgoliaSearch\Api\SearchClient;
+use WebDevStudios\WPSWA\Algolia\AlgoliaSearch\Model\Search\SearchParamsObject;
 
 /**
  * Class Algolia_Index
@@ -179,7 +179,16 @@ abstract class Algolia_Index {
 			return $this->search_in_replica( $query, $args, $order_by, $order );
 		}
 
-		return $this->get_index()->search( $query, $args );
+		return $this->get_client()->searchSingleIndex(
+			$this->get_name(),
+			( new SearchParamsObject() )
+				->setQuery( $query )
+				->setAttributesToRetrieve( $args['attributesToRetrieve'] )
+				->setHitsPerPage( $args['hitsPerPage'] )
+				->setPage( $args['page'] )
+				->setHighlightPreTag( $args['highlightPreTag'] )
+				->setHighlightPostTag( $args['highlightPostTag'] )
+		);
 	}
 
 	/**
@@ -199,9 +208,17 @@ abstract class Algolia_Index {
 		$replica      = $this->get_replica( $order_by, $order );
 		$replica_name = $replica->get_replica_index_name( $this );
 
-		$index = $this->client->initIndex( $replica_name );
-
-		return $index->search( $query, $args );
+		return $this->get_client()->searchSingleIndex(
+			$replica_name,
+			( new SearchParamsObject() )
+				->setQuery( $query )
+				->setAttributesToRetrieve( $args['attributesToRetrieve'] )
+				->setHitsPerPage( $args['hitsPerPage'] )
+				->setPage( $args['page'] )
+				->setHighlightPreTag( $args['highlightPreTag'] )
+				->setHighlightPostTag( $args['highlightPostTag'] )
+				->setRanking( $replica->get_ranking() )
+		);
 	}
 
 	/**
@@ -390,10 +407,10 @@ abstract class Algolia_Index {
 			return;
 		}
 
-		$index = $this->get_index();
+		$client = $this->get_client();
 
 		try {
-			$index->saveObjects( $sanitized_records );
+			$client->saveObjects( $this->get_name(), $sanitized_records );
 		} catch ( \Throwable $throwable ) {
 			error_log( $throwable->getMessage() ); // phpcs:ignore -- Need a real logger.
 		}
@@ -404,11 +421,10 @@ abstract class Algolia_Index {
 	 *
 	 * @author WebDevStudios <contact@webdevstudios.com>
 	 * @since  1.0.0
-	 *
-	 * @return SearchIndex
 	 */
 	public function get_index() {
-		return $this->client->initIndex( (string) $this->get_name() );
+		_deprecated_function( __FUNCTION__, '3.0.0' );
+		return false;
 	}
 
 	/**
@@ -528,10 +544,9 @@ abstract class Algolia_Index {
 		// Don't saveObjects if sanitize_json_data failed.
 		if ( ! empty( $sanitized_records ) ) {
 
-			$index = $this->get_index();
-
+			$client = $this->get_client();
 			try {
-				$index->saveObjects( $sanitized_records );
+				$client->saveObjects( $this->get_name(), $sanitized_records );
 			} catch ( \Throwable $throwable ) {
 				error_log( $throwable->getMessage() ); // phpcs:ignore -- Need a real logger.
 			}
@@ -564,11 +579,9 @@ abstract class Algolia_Index {
 	 * @param bool $clear_if_existing Whether to clear an existing index or not.
 	 */
 	public function create_index_if_not_existing( $clear_if_existing = true ) {
-		$index = $this->get_index();
 
 		try {
-			$index->getSettings();
-			$index_exists = true;
+			$index_exists = $this->get_client()->indexExists( $this->get_name() );
 		} catch ( AlgoliaException $exception ) {
 			$index_exists = false;
 		}
@@ -590,7 +603,7 @@ abstract class Algolia_Index {
 			);
 
 			if ( true === $clear_if_existing ) {
-				$index->clearObjects();
+				$this->get_client()->clearObjects( $this->get_name() );
 			}
 
 			/**
@@ -626,16 +639,16 @@ abstract class Algolia_Index {
 	 * @since  1.0.0
 	 */
 	public function push_settings() {
-		$index = $this->get_index();
+		$client = $this->get_client();
 
 		// This will create the index if it does not exist.
 		$settings = $this->get_settings();
-		$index->setSettings( $settings );
+		$client->setSettings( $this->get_name(), $settings );
 
 		// Push synonyms.
 		$synonyms = $this->get_synonyms();
 		if ( ! empty( $synonyms ) ) {
-			$index->saveSynonyms( $synonyms );
+			$client->saveSynonyms( $this->get_name(), $synonyms );
 		}
 
 		$this->sync_replicas();
@@ -709,7 +722,7 @@ abstract class Algolia_Index {
 	 */
 	public function de_index_items() {
 		$index_name = $this->get_name();
-		$this->client->deleteIndex( $index_name );
+		$this->get_client()->deleteIndex( $index_name );
 
 		/**
 		 * Fires inside the de_index_items method.
@@ -923,13 +936,12 @@ abstract class Algolia_Index {
 			$replica_index_names[] = $replica->get_replica_index_name( $this );
 		}
 
-		$this->get_index()->setSettings(
+		$this->get_client()->setSettings(
+			$this->get_name(),
 			array(
 				'replicas' => $replica_index_names,
 			)
 		);
-
-		$client = $this->get_client();
 
 		// Ensure we re-push the master index settings each time.
 		$settings = $this->get_settings();
@@ -945,8 +957,7 @@ abstract class Algolia_Index {
 		foreach ( $replicas as $replica ) {
 			$settings['ranking'] = $replica->get_ranking();
 			$replica_index_name  = $replica->get_replica_index_name( $this );
-			$index               = $client->initIndex( $replica_index_name );
-			$index->setSettings( $settings );
+			$this->get_client()->setSettings( $replica_index_name, $settings );
 		}
 	}
 
@@ -975,7 +986,7 @@ abstract class Algolia_Index {
 	 */
 	public function exists() {
 		try {
-			$this->get_index()->getSettings();
+			$this->get_client()->indexExists( $this->get_name() );
 		} catch ( AlgoliaException $exception ) {
 			if ( $exception->getMessage() === 'Index does not exist' ) {
 				return false;
@@ -992,10 +1003,12 @@ abstract class Algolia_Index {
 	/**
 	 * Clear the index.
 	 *
+	 * Used in WP_CLI
+	 *
 	 * @author WebDevStudios <contact@webdevstudios.com>
 	 * @since  1.0.0
 	 */
 	public function clear() {
-		$this->get_index()->clearObjects();
+		$this->get_client()->clearObjects( $this->get_name() );
 	}
 }
