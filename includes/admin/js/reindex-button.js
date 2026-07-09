@@ -25,7 +25,7 @@
 	function handleReindexButtonClick(e) {
 
 		let $clickedButton = $(e.currentTarget);
-		let index = $clickedButton.data('index');
+		const index = $clickedButton.data('index');
 		if (!index) {
 			throw new Error(algoliaPushReindexButton.noDataindex);
 		}
@@ -48,7 +48,7 @@
 			currentPage = 1;
 		}
 
-		let data = {
+		const data = {
 			'action': 'algolia_re_index',
 			'index_id': index,
 			'p': currentPage
