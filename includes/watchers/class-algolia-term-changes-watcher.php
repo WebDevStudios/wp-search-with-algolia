@@ -115,6 +115,7 @@ class Algolia_Term_Changes_Watcher implements Algolia_Changes_Watcher {
 
 		$args = [
 			'posts_per_page' => $limit,
+			'post_type'      => get_taxonomy( $taxonomy )->object_type,
 			'tax_query'      => [
 				[
 					'taxonomy' => $taxonomy,
