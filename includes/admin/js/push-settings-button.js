@@ -55,7 +55,7 @@
 					}
 				}
 
-				alert(algoliaPushSettingsButton.correctlyPushed + ' ' + index );
+				alert(algoliaPushSettingsButton.successfullyPushed + ' ' + index );
 				enableButton( $clickedButton );
 			}
 		).fail(
