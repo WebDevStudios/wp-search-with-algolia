@@ -151,13 +151,23 @@ class Algolia_Term_Changes_Watcher implements Algolia_Changes_Watcher {
 				'exclude_from_search' => false,
 			]
 		);
-		$searchable_index      = new \Algolia_Searchable_Posts_Index( $searchable_post_types );
+
+		// Get configured autocomplete indices.
+		$config         = $algolia_plugin->get_settings()->get_autocomplete_config();
+		$config_indices = wp_list_pluck( $config, 'index_id' );
+
+		$searchable_index = new \Algolia_Searchable_Posts_Index( $searchable_post_types );
 		$searchable_index->set_name_prefix( $index_name_prefix );
 		$searchable_index->set_client( $client );
 		$searchable_index->set_enabled( true );
 		$post_indices[] = $searchable_index;
 
 		foreach ( $post_types as $post_type ) {
+			// Do not instantiate if post type is not included in autocomplete.
+			if ( ! in_array( 'posts_' . $post_type, $config_indices, true ) ) {
+				continue;
+			}
+
 			$post_index = new \Algolia_Posts_Index( $post_type );
 			$post_index->set_name_prefix( $index_name_prefix );
 			$post_index->set_client( $client );
