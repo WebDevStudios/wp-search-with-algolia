@@ -114,16 +114,6 @@ class Algolia_Search {
 		}
 
 		/**
-		 * Filters the search query used in the Algolia Index search.
-		 *
-		 * @since 2.13.0
-		 *
-		 * @param string   $value Searched query value.
-		 * @param WP_Query $query Search query object.
-		 */
-		$search_query = apply_filters( 'algolia_search_query', $query->query['s'], $query );
-
-		/**
 		 * Filters the array of parameters used in the Algolia Index search.
 		 *
 		 * @author WebDevStudios <contact@webdevstudios.com>
@@ -172,15 +162,15 @@ class Algolia_Search {
 		$order    = apply_filters( 'algolia_search_order', 'desc' );
 
 		try {
-			$results = $this->index->search( $search_query, $params, $order_by, $order );
+			$results = $this->index->search( $query->query['s'], $params, $order_by, $order );
 		} catch ( AlgoliaException $exception ) {
 			error_log( $exception->getMessage() ); // phpcs:ignore -- Legacy.
 
 			return;
 		}
 
-		add_filter( 'found_posts', [ $this, 'found_posts' ], 10, 2 );
-		add_filter( 'posts_search', [ $this, 'posts_search' ], 10, 2 );
+		add_filter( 'found_posts', array( $this, 'found_posts' ), 10, 2 );
+		add_filter( 'posts_search', array( $this, 'posts_search' ), 10, 2 );
 
 		// Store the current page hits, so that we can use them for highlighting later on.
 		foreach ( $results['hits'] as $hit ) {
@@ -191,7 +181,7 @@ class Algolia_Search {
 		// This is useful for pagination.
 		$this->total_hits = $results['nbHits'];
 
-		$post_ids = [];
+		$post_ids = array();
 		foreach ( $results['hits'] as $result ) {
 			$post_ids[] = $result['post_id'];
 		}
@@ -200,7 +190,7 @@ class Algolia_Search {
 		// a non existing post ID.
 		// Otherwise, the query returns all the results.
 		if ( empty( $post_ids ) ) {
-			$post_ids = [ 0 ];
+			$post_ids = array( 0 );
 		}
 
 		$query->set( 'posts_per_page', $params['hitsPerPage'] );
