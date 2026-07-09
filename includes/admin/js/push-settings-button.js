@@ -5,7 +5,7 @@
 
 	$(
 		function() {
-			let buttons = document.querySelectorAll('.algolia-push-settings-button');
+			const buttons = document.querySelectorAll('.algolia-push-settings-button');
 			if (buttons) {
 				Array.from(buttons).forEach((button) => {
 					button.addEventListener('click', handleButtonClick);
