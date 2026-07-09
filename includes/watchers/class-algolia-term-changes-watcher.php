@@ -125,9 +125,21 @@ class Algolia_Term_Changes_Watcher implements Algolia_Changes_Watcher {
 			],
 		];
 
-		$posts              = get_posts( $args );
-		$post_types         = wp_list_pluck( $posts, 'post_type' );
-		$post_types         = array_unique( $post_types );
+		$posts      = get_posts( $args );
+		$post_types = wp_list_pluck( $posts, 'post_type' );
+		$post_types = array_unique( $post_types );
+
+		// Get configured autocomplete indices.
+		$algolia_plugin = \Algolia_Plugin_Factory::create();
+		$config         = $algolia_plugin->get_settings()->get_autocomplete_config();
+		$config_indices = wp_list_pluck( $config, 'index_id' );
+
+		foreach( $post_types as $key => $post_type ) {
+			if ( ! in_array( 'posts_' . $post_type, $config_indices, true ) ) {
+				unset( $post_types[ $key ] );
+			}
+		}
+
 		$this->post_indices = $this->get_searchable_indexes( $post_types );
 		$this->sync_posts( $posts );
 	}
@@ -152,10 +164,6 @@ class Algolia_Term_Changes_Watcher implements Algolia_Changes_Watcher {
 			]
 		);
 
-		// Get configured autocomplete indices.
-		$config         = $algolia_plugin->get_settings()->get_autocomplete_config();
-		$config_indices = wp_list_pluck( $config, 'index_id' );
-
 		$searchable_index = new \Algolia_Searchable_Posts_Index( $searchable_post_types );
 		$searchable_index->set_name_prefix( $index_name_prefix );
 		$searchable_index->set_client( $client );
@@ -163,17 +171,11 @@ class Algolia_Term_Changes_Watcher implements Algolia_Changes_Watcher {
 		$post_indices[] = $searchable_index;
 
 		foreach ( $post_types as $post_type ) {
-			// Do not instantiate if post type is not included in autocomplete.
-			if ( ! in_array( 'posts_' . $post_type, $config_indices, true ) ) {
-				continue;
-			}
-
 			$post_index = new \Algolia_Posts_Index( $post_type );
 			$post_index->set_name_prefix( $index_name_prefix );
 			$post_index->set_client( $client );
 			$post_index->set_enabled( true );
 			$post_indices[] = $post_index;
-
 		}
 		return $post_indices;
 	}
