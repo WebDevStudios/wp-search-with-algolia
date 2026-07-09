@@ -351,9 +351,7 @@ class Algolia_Admin {
 
 			$index->push_settings();
 
-			$response = [];
-
-			wp_send_json_success( $response, 200 );
+			wp_send_json_success( [], 200 );
 		} catch ( Exception $exception ) {
 			wp_send_json_error( array( 'message' => $exception->getMessage() ), 500 );
 		}
