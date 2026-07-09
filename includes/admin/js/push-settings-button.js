@@ -16,7 +16,7 @@
 
 	function handleButtonClick(e) {
 		let $clickedButton = $(e.currentTarget);
-		let index = $clickedButton.data('index');
+		const index = $clickedButton.data('index');
 		if (!index) {
 			throw new Error(algoliaPushSettingsButton.noDataIndex);
 		}
