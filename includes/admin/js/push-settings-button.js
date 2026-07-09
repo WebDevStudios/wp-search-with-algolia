@@ -40,7 +40,7 @@
 
 	function pushSettings($clickedButton, index) {
 
-		let data = {
+		const data = {
 			'action': 'algolia_push_settings',
 			'index_id': index
 		};
