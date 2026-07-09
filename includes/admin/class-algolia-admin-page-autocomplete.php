@@ -251,6 +251,22 @@ class Algolia_Admin_Page_Autocomplete {
 		disabled( empty( $indices ), true ); ?> />
 		<label for="modern"><?php esc_html_e( 'Modern', 'wp-search-with-algolia' ); ?></label>
 		<?php
+
+		Algolia_Admin_Field_Helpers::render_field_help(
+			esc_html__( 'Pick which version of the Autocomplete library and template file to load.', 'wp-search-with-algolia' ),
+			[
+				__( '<strong>What this controls.</strong> Two reference templates ship with the plugin in <code>templates/autocomplete.php</code> and <code>templates/autocomplete-modern.php</code>. This setting decides which one the plugin loads on your search results page.', 'wp-search-with-algolia' ),
+				__( '<strong>Important notes</strong> The "Legacy" option will automatically attach to your active theme\'s search field. The "Modern" option needs to have a custom DOM element added to where you want search to appear. Modern will not automatically attach. Development work needed. Reach out to support with any questions.', 'wp-search-with-algolia' ),
+				__( '<strong>When to pick Legacy.</strong> Existing sites that already customized the older template, or have integrations relying on the WP Utils JavaScript helpers.', 'wp-search-with-algolia' ),
+				__( '<strong>When to pick Modern.</strong> Installs where you have more control over template files and can replace original search fields. Available Autocomplete documentation will match the Modern template file. Enhanced features like "Recent Searches", "Trending Searches", "Search Suggestions", Event tracking, and more are available with "Modern" Autocomplete.', 'wp-search-with-algolia' ),
+				__( '<strong>Customizing the template.</strong> Copy the file you chose into <code>your-theme/algolia/</code> and the plugin will load your copy instead. Switching this setting does <strong>not</strong> overwrite a customized template in your theme.', 'wp-search-with-algolia' ),
+			],
+			[],
+			[
+				'url'   => 'https://www.algolia.com/doc/ui-libraries/autocomplete/introduction/what-is-autocomplete',
+				'label' => esc_html__( 'Learn more about Autocomplete', 'wp-search-with-algolia' ),
+			]
+		);
 	}
 
 	/**
