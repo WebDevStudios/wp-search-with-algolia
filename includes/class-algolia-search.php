@@ -114,6 +114,16 @@ class Algolia_Search {
 		}
 
 		/**
+		 * Filters the search query used in the Algolia Index search.
+		 *
+		 * @since 2.13.0
+		 *
+		 * @param string   $value Searched query value.
+		 * @param WP_Query $query Search query object.
+		 */
+		$search_query = apply_filters( 'algolia_search_query', $query->query['s'], $query );
+
+		/**
 		 * Filters the array of parameters used in the Algolia Index search.
 		 *
 		 * @author WebDevStudios <contact@webdevstudios.com>
@@ -162,7 +172,7 @@ class Algolia_Search {
 		$order    = apply_filters( 'algolia_search_order', 'desc' );
 
 		try {
-			$results = $this->index->search( $query->query['s'], $params, $order_by, $order );
+			$results = $this->index->search( $search_query, $params, $order_by, $order );
 		} catch ( AlgoliaException $exception ) {
 			error_log( $exception->getMessage() ); // phpcs:ignore -- Legacy.
 
