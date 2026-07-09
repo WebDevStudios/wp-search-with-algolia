@@ -56,7 +56,7 @@
 
 		$.post(
 			ajaxurl, data, function(response) {
-				if (typeofresponse.success !== 'undefined' && response.success === false) {
+				if (typeof response.success !== 'undefined' && response.success === false) {
 					if (typeof response.data.message !== 'undefined') {
 						alert(algoliaPushReindexButton.errorPrefix + ' ' + response.data.message);
 						resetButton($clickedButton);
