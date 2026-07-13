@@ -568,7 +568,7 @@ class Algolia_Settings {
 	/**
 	 * Return the version keyword for Autocomplete version to use.
 	 *
-	 * @since NEXT
+	 * @since 2.13.0
 	 *
 	 * @return mixed|null
 	 */
@@ -602,7 +602,7 @@ class Algolia_Settings {
 	/**
 	 * Return whether or not the keyword version is set to 'modern' or 'legacy'.
 	 *
-	 * @since NEXT
+	 * @since 2.13.0
 	 *
 	 * @return bool
 	 */
