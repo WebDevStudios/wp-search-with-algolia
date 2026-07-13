@@ -138,6 +138,7 @@
 			container  : algolia.autocomplete.input_selector_modern,
 			openOnFocus: true,
 			debug      : algolia.debug,
+			insights   : algolia.insights_enabled,
 			getSources({query}) {
 				if (!query) {
 					return [];
