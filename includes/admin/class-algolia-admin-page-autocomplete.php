@@ -129,14 +129,14 @@ class Algolia_Admin_Page_Autocomplete {
 		add_settings_section(
 			$this->section,
 			null,
-			array( $this, 'print_section_settings' ),
+			[ $this, 'print_section_settings' ],
 			$this->slug
 		);
 
 		add_settings_field(
 			'algolia_autocomplete_enabled',
 			esc_html__( 'Enable Autocomplete', 'wp-search-with-algolia' ),
-			array( $this, 'autocomplete_enabled_callback' ),
+			[ $this, 'autocomplete_enabled_callback' ],
 			$this->slug,
 			$this->section
 		);
@@ -150,16 +150,25 @@ class Algolia_Admin_Page_Autocomplete {
 		);
 
 		add_settings_field(
-			'algolia_autocomplete_config',
-			esc_html__( 'Autocomplete Config', 'wp-search-with-algolia' ),
-			array( $this, 'autocomplete_config_callback' ),
+			'algolia_autocomplete_template_version',
+			esc_html__( 'Autocomplete Version', 'wp-search-with-algolia' ),
+			[ $this, 'autocomplete_version_callback' ],
 			$this->slug,
 			$this->section
 		);
 
-		register_setting( $this->option_group, 'algolia_autocomplete_enabled', array( $this, 'sanitize_autocomplete_enabled' ) );
-		register_setting( $this->option_group, 'algolia_autocomplete_debounce', array( $this, 'sanitize_autocomplete_debounce' ) );
-		register_setting( $this->option_group, 'algolia_autocomplete_config', array( $this, 'sanitize_autocomplete_config' ) );
+		add_settings_field(
+			'algolia_autocomplete_config',
+			esc_html__( 'Autocomplete Config', 'wp-search-with-algolia' ),
+			[ $this, 'autocomplete_config_callback' ],
+			$this->slug,
+			$this->section
+		);
+
+		register_setting( $this->option_group, 'algolia_autocomplete_enabled', [ $this, 'sanitize_autocomplete_enabled' ] );
+		register_setting( $this->option_group, 'algolia_autocomplete_debounce', [ $this, 'sanitize_autocomplete_debounce' ] );
+		register_setting( $this->option_group, 'algolia_autocomplete_template_version', [ $this, 'sanitize_autocomplete_version' ] );
+		register_setting( $this->option_group, 'algolia_autocomplete_config', [ $this, 'sanitize_autocomplete_config' ] );
 	}
 
 	/**
@@ -225,6 +234,42 @@ class Algolia_Admin_Page_Autocomplete {
 	}
 
 	/**
+	 * Callback to print the autocomplete version radio button.
+	 *
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 * @since  2.13.0
+	 */
+	public function autocomplete_version_callback() {
+		$value   = $this->settings->get_autocomplete_template_version();
+		$indices = $this->autocomplete_config->get_form_data();
+		?>
+		<input type="radio" id="legacy" name="algolia_autocomplete_template_version" value="legacy"<?php checked( 'legacy', $value );
+		disabled( empty( $indices ), true ); ?> />
+		<label for="legacy"><?php esc_html_e( 'Legacy', 'wp-search-with-algolia' ); ?></label>
+
+		<input type="radio" id="modern" name="algolia_autocomplete_template_version" value="modern"<?php checked( 'modern', $value );
+		disabled( empty( $indices ), true ); ?> />
+		<label for="modern"><?php esc_html_e( 'Modern', 'wp-search-with-algolia' ); ?></label>
+		<?php
+
+		Algolia_Admin_Field_Helpers::render_field_help(
+			esc_html__( 'Pick which version of the Autocomplete library and template file to load.', 'wp-search-with-algolia' ),
+			[
+				__( '<strong>What this controls.</strong> Two reference templates ship with the plugin in <code>templates/autocomplete.php</code> and <code>templates/autocomplete-modern.php</code>. This setting decides which one the plugin loads on your search results page.', 'wp-search-with-algolia' ),
+				__( '<strong>Important notes</strong> The "Legacy" option will automatically attach to your active theme\'s search field. The "Modern" option needs to have a custom DOM element added to where you want search to appear. Modern will not automatically attach. Development work needed. Reach out to support with any questions.', 'wp-search-with-algolia' ),
+				__( '<strong>When to pick Legacy.</strong> Existing sites that already customized the older template, or have integrations relying on the WP Utils JavaScript helpers.', 'wp-search-with-algolia' ),
+				__( '<strong>When to pick Modern.</strong> Installs where you have more control over template files and can replace original search fields. Available Autocomplete documentation will match the Modern template file. Enhanced features like "Recent Searches", "Trending Searches", "Search Suggestions", Event tracking, and more are available with "Modern" Autocomplete.', 'wp-search-with-algolia' ),
+				__( '<strong>Customizing the template.</strong> Copy the file you chose into <code>your-theme/algolia/</code> and the plugin will load your copy instead. Switching this setting does <strong>not</strong> overwrite a customized template in your theme.', 'wp-search-with-algolia' ),
+			],
+			[],
+			[
+				'url'   => 'https://www.algolia.com/doc/ui-libraries/autocomplete/introduction/what-is-autocomplete',
+				'label' => esc_html__( 'Learn more about Autocomplete', 'wp-search-with-algolia' ),
+			]
+		);
+	}
+
+	/**
 	 * Sanitize the Autocomplete enabled setting.
 	 *
 	 * @author WebDevStudios <contact@webdevstudios.com>
@@ -258,6 +303,20 @@ class Algolia_Admin_Page_Autocomplete {
 	 */
 	public function sanitize_autocomplete_debounce( $value ) {
 		return intval( $value );
+	}
+
+	/**
+	 * Sanitize the Autocomplete version setting.
+	 *
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 * @since 2.13.0
+	 *
+	 * @param string $values The original value.
+	 *
+	 * @return string
+	 */
+	public function sanitize_autocomplete_version( $values ) {
+		return sanitize_text_field( $values );
 	}
 
 	/**
