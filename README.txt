@@ -1,7 +1,7 @@
 === WP Search with Algolia ===
 Contributors: WebDevStudios, williamsba1, tw2113, mrasharirfan, scottbasgaard, gregrickaby, richaber, daveromsey
 Tags: algolia, autocomplete, instantsearch, relevance search, ai search
-Requires at least: 6.7.2
+Requires at least: 6.2.9
 Tested up to: 7.0
 Requires PHP: 7.4
 Stable tag: 2.13.0
