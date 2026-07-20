@@ -442,7 +442,7 @@ class Algolia_Plugin {
 	}
 
 	/**
-	 * Sync a single item to a given index by ID.
+	 * Sync a single WP_Post item to a given index by ID.
 	 *
 	 * Convenience wrapper so external code (themes, plugins, CLI commands) can
 	 * sync a single item without needing to construct an Algolia_Index or
@@ -456,7 +456,7 @@ class Algolia_Plugin {
 	 *
 	 * @return void
 	 */
-	public function sync_item( $item, $index_id = 'searchable_posts' ) {
+	public function sync_post_item( $item, $index_id = 'searchable_posts' ) {
 		$index = $this->get_index( $index_id );
 
 		if ( ! $index ) {
