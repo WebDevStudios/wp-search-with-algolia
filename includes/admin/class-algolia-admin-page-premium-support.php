@@ -70,7 +70,7 @@ class Algolia_Admin_Page_Premium_Support {
 	public function __construct( Algolia_Plugin $plugin ) {
 		$this->plugin = $plugin;
 
-		add_action( 'admin_menu', [ $this, 'add_page' ] );
+		add_action( 'admin_menu', [ $this, 'add_page' ], 12 );
 		add_action( 'admin_init', [ $this, 'add_settings' ] );
 	}
 
