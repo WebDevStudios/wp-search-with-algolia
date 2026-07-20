@@ -8,6 +8,8 @@
  * @package WebDevStudios\WPSWA
  */
 
+use WebDevStudios\WPSWA\Algolia\AlgoliaSearch\Exceptions\AlgoliaException;
+
 /**
  * Class Algolia_Plugin
  *
@@ -437,6 +439,43 @@ class Algolia_Plugin {
 		}
 
 		return null;
+	}
+
+	/**
+	 * Sync a single item to a given index by ID.
+	 *
+	 * Convenience wrapper so external code (themes, plugins, CLI commands) can
+	 * sync a single item without needing to construct an Algolia_Index or
+	 * Algolia_Changes_Watcher themselves.
+	 *
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 * @since  3.0.0
+	 *
+	 * @param int|WP_Post $item     The item to sync (e.g. a post ID or WP_Post object).
+	 * @param string      $index_id The ID of the index to sync into. Default 'searchable_posts'.
+	 *
+	 * @return void
+	 */
+	public function sync_item( $item, $index_id = 'searchable_posts' ) {
+		$index = $this->get_index( $index_id );
+
+		if ( ! $index ) {
+			return;
+		}
+
+		if ( is_numeric( $item ) ) {
+			$item = get_post( (int) $item );
+		}
+
+		if ( ! $item || ! $index->supports( $item ) ) {
+			return;
+		}
+
+		try {
+			$index->sync( $item );
+		} catch ( AlgoliaException $exception ) {
+			error_log( $exception->getMessage() ); // phpcs:ignore -- Legacy.
+		}
 	}
 
 	/**
