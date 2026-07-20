@@ -1,3 +1,7 @@
+## 2.13.1
+* No code changes.
+* Updated: reduced minimum WP version to return compatibility with ClassicPress
+
 ## 2.13.0
 * Updated: Bundle Autocomplete 1.x as an available update. Not set to default.
 * Updated: revises and updates Admin UI AJAX responses.
