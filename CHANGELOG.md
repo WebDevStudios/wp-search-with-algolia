@@ -1,3 +1,13 @@
+## 2.13.1
+* No code changes.
+* Updated: reduced minimum WP version to return compatibility with ClassicPress
+* Updated: Reduced "Premium Support" admin menu priority.
+
+## 2.13.0
+* Updated: Bundle Autocomplete 1.x as an available update. Not set to default.
+* Updated: revises and updates Admin UI AJAX responses.
+* Added: filter on search query value for "use with native template" searches and withing `pre_get_posts` callback.
+
 ## 2.12.0
 * Updated: Admin pages and Premium support UI refresh.
 * Fixed: Prevent errors in WordPress Health panel if no application/api keys configured yet.
