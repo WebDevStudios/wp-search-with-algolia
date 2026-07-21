@@ -69,7 +69,7 @@ class Algolia_Term_Changes_Watcher implements Algolia_Changes_Watcher {
 		// Fires after a term is deleted from the database and the cache is cleaned.
 		add_action( 'delete_term', array( $this, 'on_delete_term' ), 10, 4 );
 
-		add_action( 'admin_notices', [ $this, 'large_count_notice'] );
+		add_action( 'admin_notices', [ $this, 'large_count_notice' ] );
 	}
 
 	/**
