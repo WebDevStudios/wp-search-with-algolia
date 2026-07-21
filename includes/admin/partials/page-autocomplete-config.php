@@ -25,7 +25,7 @@ $algolia_prefix = $this->settings->get_index_name_prefix();
 <?php else : ?>
 	<div class="algolia-autocomplete-config">
 		<div class="algolia-autocomplete-list" role="list">
-			<?php foreach ( $indices as $alg_index ) : // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound?>
+			<?php foreach ( $indices as $alg_index ) : // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound ?>
 				<div class="algolia-autocomplete-row" role="listitem" data-index-id="<?php echo esc_attr( $alg_index['index_id'] ); ?>">
 					<div class="algolia-autocomplete-row__handle" aria-label="<?php esc_attr_e( 'Drag to reorder', 'wp-search-with-algolia' ); ?>">
 						<span class="dashicons dashicons-move" aria-hidden="true"></span>
