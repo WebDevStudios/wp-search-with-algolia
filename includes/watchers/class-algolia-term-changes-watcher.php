@@ -69,7 +69,7 @@ class Algolia_Term_Changes_Watcher implements Algolia_Changes_Watcher {
 		// Fires after a term is deleted from the database and the cache is cleaned.
 		add_action( 'delete_term', array( $this, 'on_delete_term' ), 10, 4 );
 
-		add_action( 'admin_notices', [ $this, 'large_count_notice'] );
+		add_action( 'admin_notices', [ $this, 'large_count_notice' ] );
 	}
 
 	/**
@@ -310,20 +310,23 @@ class Algolia_Term_Changes_Watcher implements Algolia_Changes_Watcher {
 		if ( ! $current_screen || 'term' !== $current_screen->base ) {
 			return;
 		}
-		if ( ! empty( $_GET['tag_ID'] ) && is_numeric( $_GET['tag_ID'] ) ) {
-			$termID = absint( $_GET['tag_ID'] );
+		$term_id = 0;
+
+		if ( ! empty( $_GET['tag_ID'] ) && is_numeric( $_GET['tag_ID'] ) ) { // phpcs:ignore -- WordPress.Security.NonceVerification.Recommended -- we are verifying $_GET values.
+			$term_id = absint( $_GET['tag_ID'] ); // phpcs:ignore -- WordPress.Security.NonceVerification.Recommended -- we are verifying $_GET values.
 		}
 
-		$term = get_term( $termID );
+		$term = get_term( $term_id );
 		if ( ! $term ) {
 			return;
 		}
 
-		// This filter is documented in includes/watchers/class-algolia-term-changes-watcher.php
+		// This filter is documented in includes/watchers/class-algolia-term-changes-watcher.php.
 		$limit = apply_filters( 'algolia_term_update_post_limit', 50 );
 		if ( $term->count > absint( $limit ) ) {
 			wp_admin_notice(
 				sprintf(
+					// translators: Placeholder will hold a number representing amount of posts to re-index.
 					esc_html__( 'Only the first %1$s posts with this term have been sync\'d to your Algolia indexes. Please run a bulk re-index to get the rest.', 'wp-search-with-algolia' ),
 					$limit
 				),

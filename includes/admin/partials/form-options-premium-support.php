@@ -15,7 +15,7 @@ $algolia_header_subtitle = __( 'Get hands-on help from the team behind WP Search
 $algolia_header_actions  = '';
 
 $wds_url = 'https://webdevstudios.com/contact/';
-$pro_url = 'https://pluginize.com/plugins/wp-search-with-algolia-pro/';
+$pro_url = 'https://pluginize.com/plugins/wp-search-with-algolia-pro/'; // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
 ?>
 
 <div class="wrap algolia-settings-page">

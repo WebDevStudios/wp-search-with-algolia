@@ -243,12 +243,20 @@ class Algolia_Admin_Page_Autocomplete {
 		$value   = $this->settings->get_autocomplete_template_version();
 		$indices = $this->autocomplete_config->get_form_data();
 		?>
-		<input type="radio" id="legacy" name="algolia_autocomplete_template_version" value="legacy"<?php checked( 'legacy', $value );
-		disabled( empty( $indices ), true ); ?> />
+		<input type="radio" id="legacy" name="algolia_autocomplete_template_version" value="legacy"
+			<?php
+			checked( 'legacy', $value );
+			disabled( empty( $indices ), true );
+			?>
+		/>
 		<label for="legacy"><?php esc_html_e( 'Legacy', 'wp-search-with-algolia' ); ?></label>
 
-		<input type="radio" id="modern" name="algolia_autocomplete_template_version" value="modern"<?php checked( 'modern', $value );
-		disabled( empty( $indices ), true ); ?> />
+		<input type="radio" id="modern" name="algolia_autocomplete_template_version" value="modern"
+			<?php
+			checked( 'modern', $value );
+			disabled( empty( $indices ), true );
+			?>
+		/>
 		<label for="modern"><?php esc_html_e( 'Modern', 'wp-search-with-algolia' ); ?></label>
 		<?php
 
