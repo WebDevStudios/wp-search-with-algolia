@@ -25,15 +25,15 @@ $algolia_prefix = $this->settings->get_index_name_prefix();
 <?php else : ?>
 	<div class="algolia-autocomplete-config">
 		<div class="algolia-autocomplete-list" role="list">
-			<?php foreach ( $indices as $index ) : ?>
-				<div class="algolia-autocomplete-row" role="listitem" data-index-id="<?php echo esc_attr( $index['index_id'] ); ?>">
+			<?php foreach ( $indices as $alg_index ) : ?>
+				<div class="algolia-autocomplete-row" role="listitem" data-index-id="<?php echo esc_attr( $alg_index['index_id'] ); ?>">
 					<div class="algolia-autocomplete-row__handle" aria-label="<?php esc_attr_e( 'Drag to reorder', 'wp-search-with-algolia' ); ?>">
 						<span class="dashicons dashicons-move" aria-hidden="true"></span>
 						<input
 							type="hidden"
 							class="position-input"
-							name="algolia_autocomplete_config[<?php echo esc_attr( $index['index_id'] ); ?>][position]"
-							value="<?php echo (int) $index['position']; ?>"
+							name="algolia_autocomplete_config[<?php echo esc_attr( $alg_index['index_id'] ); ?>][position]"
+							value="<?php echo (int) $alg_index['position']; ?>"
 						/>
 					</div>
 
@@ -42,24 +42,24 @@ $algolia_prefix = $this->settings->get_index_name_prefix();
 							<label class="algolia-autocomplete-row__toggle">
 								<input
 									type="checkbox"
-									name="algolia_autocomplete_config[<?php echo esc_attr( $index['index_id'] ); ?>][enabled]"
-									<?php checked( ! empty( $index['enabled'] ) ); ?>
+									name="algolia_autocomplete_config[<?php echo esc_attr( $alg_index['index_id'] ); ?>][enabled]"
+									<?php checked( ! empty( $alg_index['enabled'] ) ); ?>
 								/>
 								<span class="screen-reader-text"><?php esc_html_e( 'Enable this index in the autocomplete dropdown', 'wp-search-with-algolia' ); ?></span>
 							</label>
-							<h3 class="algolia-autocomplete-row__title"><?php echo esc_html( $index['admin_name'] ); ?></h3>
+							<h3 class="algolia-autocomplete-row__title"><?php echo esc_html( $alg_index['admin_name'] ); ?></h3>
 
 							<span class="algolia-autocomplete-row__index-name">
 								<span class="screen-reader-text"><?php esc_html_e( 'Index name:', 'wp-search-with-algolia' ); ?></span>
-								<code><?php echo esc_html( $prefix . $index['index_id'] ); ?></code>
+								<code><?php echo esc_html( $algolia_prefix . $alg_index['index_id'] ); ?></code>
 							</span>
-							<?php if ( ! empty( $index['debounce'] ) && $index['debounce'] > 0 ) : ?>
+							<?php if ( ! empty( $alg_index['debounce'] ) && $alg_index['debounce'] > 0 ) : ?>
 								<span class="algolia-autocomplete-row__debounce">
 									<?php
 									printf(
 									/* translators: %s: custom debounce timing in milliseconds. */
 										esc_html__( 'Custom debounce: %s ms', 'wp-search-with-algolia' ),
-										esc_html( (string) $index['debounce'] )
+										esc_html( (string) $alg_index['debounce'] )
 									);
 									?>
 								</span>
@@ -71,9 +71,9 @@ $algolia_prefix = $this->settings->get_index_name_prefix();
 								<span class="algolia-autocomplete-row__field-label"><?php esc_html_e( 'Section label', 'wp-search-with-algolia' ); ?></span>
 								<input
 									type="text"
-									name="algolia_autocomplete_config[<?php echo esc_attr( $index['index_id'] ); ?>][label]"
-									value="<?php echo esc_attr( $index['label'] ); ?>"
-									placeholder="<?php echo esc_attr( $index['admin_name'] ); ?>"
+									name="algolia_autocomplete_config[<?php echo esc_attr( $alg_index['index_id'] ); ?>][label]"
+									value="<?php echo esc_attr( $alg_index['label'] ); ?>"
+									placeholder="<?php echo esc_attr( $alg_index['admin_name'] ); ?>"
 								/>
 							</label>
 							<label class="algolia-autocomplete-row__field algolia-autocomplete-row__field--narrow">
@@ -82,8 +82,8 @@ $algolia_prefix = $this->settings->get_index_name_prefix();
 									type="number"
 									class="small-text"
 									min="1"
-									name="algolia_autocomplete_config[<?php echo esc_attr( $index['index_id'] ); ?>][max_suggestions]"
-									value="<?php echo (int) $index['max_suggestions']; ?>"
+									name="algolia_autocomplete_config[<?php echo esc_attr( $alg_index['index_id'] ); ?>][max_suggestions]"
+									value="<?php echo (int) $alg_index['max_suggestions']; ?>"
 								/>
 							</label>
 						</div>
@@ -93,7 +93,7 @@ $algolia_prefix = $this->settings->get_index_name_prefix();
 						<button
 							type="button"
 							class="algolia-reindex-button button button-primary"
-							data-index="<?php echo esc_attr( $index['index_id'] ); ?>"
+							data-index="<?php echo esc_attr( $alg_index['index_id'] ); ?>"
 						>
 							<span class="dashicons dashicons-update" aria-hidden="true"></span>
 							<?php esc_html_e( 'Re-index', 'wp-search-with-algolia' ); ?>
@@ -101,7 +101,7 @@ $algolia_prefix = $this->settings->get_index_name_prefix();
 						<button
 							type="button"
 							class="algolia-push-settings-button button"
-							data-index="<?php echo esc_attr( $index['index_id'] ); ?>"
+							data-index="<?php echo esc_attr( $alg_index['index_id'] ); ?>"
 						>
 							<span class="dashicons dashicons-cloud-upload" aria-hidden="true"></span>
 							<?php esc_html_e( 'Push settings', 'wp-search-with-algolia' ); ?>
