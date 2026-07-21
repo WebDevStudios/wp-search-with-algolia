@@ -310,14 +310,13 @@ class Algolia_Term_Changes_Watcher implements Algolia_Changes_Watcher {
 		if ( ! $current_screen || 'term' !== $current_screen->base ) {
 			return;
 		}
-		$term_ID = 0;
+		$term_id = 0;
 
-		// phpcs:ignore -- WordPress.Security.NonceVerification.Recommended -- we are verifying $_GET values.
 		if ( ! empty( $_GET['tag_ID'] ) && is_numeric( $_GET['tag_ID'] ) ) {
-			$term_ID = absint( $_GET['tag_ID'] );
+			$term_id = absint( $_GET['tag_ID'] ); // phpcs:ignore -- WordPress.Security.NonceVerification.Recommended -- we are verifying $_GET values.
 		}
 
-		$term = get_term( $term_ID );
+		$term = get_term( $term_id );
 		if ( ! $term ) {
 			return;
 		}
