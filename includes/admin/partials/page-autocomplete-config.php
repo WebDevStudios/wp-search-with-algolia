@@ -12,7 +12,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-$prefix = $this->settings->get_index_name_prefix();
+$algolia_prefix = $this->settings->get_index_name_prefix();
 ?>
 
 <?php if ( empty( $indices ) ) : ?>
