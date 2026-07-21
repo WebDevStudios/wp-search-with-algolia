@@ -118,6 +118,9 @@ All development is handled on [GitHub](https://github.com/WebDevStudios/wp-searc
 
 Follow along with the changelog on [GitHub](https://github.com/WebDevStudios/wp-search-with-algolia/releases).
 
+= 3.0.0 =
+* Fixed: WPCLI - Prevent index clearing when using `--all` but not specifying `--clear` as well.
+
 = 2.13.1 =
 * No code changes.
 * Updated: reduced minimum WP version to return compatibility with ClassicPress
