@@ -609,7 +609,7 @@ class Algolia_Settings {
 	public function should_use_autocomplete_modern() {
 		$version = $this->get_autocomplete_template_version();
 
-		return $version === 'modern';
+		return 'modern' === $version;
 	}
 
 	/**
