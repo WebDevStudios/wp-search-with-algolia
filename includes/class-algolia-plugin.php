@@ -58,6 +58,13 @@ class Algolia_Plugin {
 	private $indices;
 
 	/**
+	 * Array of indices keyed by blog ID.
+	 *
+	 * @var array
+	 */
+	private $indices_by_blog = array();
+
+	/**
 	 * Array of watchers.
 	 *
 	 * @author WebDevStudios <contact@webdevstudios.com>
@@ -66,6 +73,13 @@ class Algolia_Plugin {
 	 * @var array
 	 */
 	private $changes_watchers;
+
+	/**
+	 * Array of watchers keyed by blog ID.
+	 *
+	 * @var array
+	 */
+	private $changes_watchers_by_blog = array();
 
 	/**
 	 * Instance of Algolia_Styles.
@@ -166,6 +180,7 @@ class Algolia_Plugin {
 		$this->update_messages = new Algolia_Update_Messages();
 
 		add_action( 'init', array( $this, 'load' ), 20 );
+		add_action( 'switch_blog', array( $this, 'on_switch_blog' ), PHP_INT_MAX, 2 );
 	}
 
 	/**
@@ -187,6 +202,26 @@ class Algolia_Plugin {
 			$this->admin  = new Algolia_Admin( $this );
 			$this->health = new Algolia_Health_Panel( $this );
 		}
+	}
+
+	/**
+	 * Ensure indices/watchers are initialized for the switched blog.
+	 *
+	 * @param int $new_blog_id      New blog ID.
+	 * @param int $previous_blog_id Previous blog ID.
+	 *
+	 * @return void
+	 */
+	public function on_switch_blog( $new_blog_id, $previous_blog_id ) {
+		if ( (int) $new_blog_id === (int) $previous_blog_id ) {
+			return;
+		}
+
+		if ( ! $this->api->is_reachable() ) {
+			return;
+		}
+
+		$this->load_indices( (int) $new_blog_id );
 	}
 
 	/**
@@ -284,7 +319,18 @@ class Algolia_Plugin {
 	 * @author WebDevStudios <contact@webdevstudios.com>
 	 * @since  1.0.0
 	 */
-	public function load_indices() {
+	public function load_indices( $blog_id = null ) {
+		$blog_id = null === $blog_id ? (int) get_current_blog_id() : (int) $blog_id;
+
+		if ( isset( $this->indices_by_blog[ $blog_id ], $this->changes_watchers_by_blog[ $blog_id ] ) ) {
+			$this->indices          = $this->indices_by_blog[ $blog_id ];
+			$this->changes_watchers = $this->changes_watchers_by_blog[ $blog_id ];
+			return;
+		}
+
+		$this->indices          = array();
+		$this->changes_watchers = array();
+
 		$synced_indices_ids = $this->settings->get_synced_indices_ids();
 
 		$client            = $this->get_api()->get_client();
@@ -355,11 +401,11 @@ class Algolia_Plugin {
 				$index->set_enabled( true );
 
 				if ( $index->contains_only( 'posts' ) ) {
-					$this->changes_watchers[] = new Algolia_Post_Changes_Watcher( $index );
+					$this->changes_watchers[] = new Algolia_Post_Changes_Watcher( $index, $blog_id );
 				} elseif ( $index->contains_only( 'terms' ) ) {
-					$this->changes_watchers[] = new Algolia_Term_Changes_Watcher( $index );
+					$this->changes_watchers[] = new Algolia_Term_Changes_Watcher( $index, $blog_id );
 				} elseif ( $index->contains_only( 'users' ) ) {
-					$this->changes_watchers[] = new Algolia_User_Changes_Watcher( $index );
+					$this->changes_watchers[] = new Algolia_User_Changes_Watcher( $index, $blog_id );
 				}
 			}
 		}
@@ -378,6 +424,9 @@ class Algolia_Plugin {
 		foreach ( $this->changes_watchers as $watcher ) {
 			$watcher->watch();
 		}
+
+		$this->indices_by_blog[ $blog_id ]          = $this->indices;
+		$this->changes_watchers_by_blog[ $blog_id ] = $this->changes_watchers;
 	}
 
 	/**
