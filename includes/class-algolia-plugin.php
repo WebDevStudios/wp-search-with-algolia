@@ -180,7 +180,6 @@ class Algolia_Plugin {
 		$this->update_messages = new Algolia_Update_Messages();
 
 		add_action( 'init', array( $this, 'load' ), 20 );
-		add_action( 'switch_blog', array( $this, 'on_switch_blog' ), PHP_INT_MAX, 2 );
 	}
 
 	/**
@@ -190,6 +189,8 @@ class Algolia_Plugin {
 	 * @since  1.0.0
 	 */
 	public function load() {
+		add_action( 'switch_blog', array( $this, 'on_switch_blog' ), PHP_INT_MAX, 2 );
+
 		if ( $this->api->is_reachable() ) {
 			$this->load_indices();
 			$this->override_wordpress_search();
