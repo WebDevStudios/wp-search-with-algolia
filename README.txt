@@ -1,8 +1,8 @@
 === WP Search with Algolia ===
 Contributors: WebDevStudios, williamsba1, tw2113, mrasharirfan, scottbasgaard, gregrickaby, richaber, daveromsey
-Tags: algolia, autocomplete, instantsearch, relevance search, ai search
+Tags: algolia, search, autocomplete, instantsearch, relevance search, ai search
 Requires at least: 6.2.9
-Tested up to: 7.0
+Tested up to: 7.1
 Requires PHP: 7.4
 Stable tag: 2.13.1
 License: GNU General Public License v2.0, MIT License
@@ -151,11 +151,6 @@ Follow along with the changelog on [GitHub](https://github.com/WebDevStudios/wp-
 = 2.14.0 =
 * Added: `Algolia_Pro` class as the single source of truth for Pro feature data, pricing, requirements, and outbound links.
 * Added: Pro requirements check so you can confirm your site meets Pro's WordPress, PHP, and plugin version minimums before purchasing.
-* Added: Free vs Pro comparison and "New in Pro" summary on the Upgrade to Pro screen.
-* Added: "Go Pro" link on the Plugins screen.
-* Added: Contextual Pro information on the Search Page and Autocomplete settings screens.
-* Updated: "Premium Support" submenu is now "Upgrade to Pro", consolidating the two separate Pro menu entries into one.
-* Updated: WooCommerce and SEO screens now show real, context-aware content instead of a blurred screenshot.
 * Updated: Pro feature descriptions across the admin and readme now reflect Pro 1.7.
 * Updated: Pro promotion is hidden throughout the admin when WP Search with Algolia Pro is active.
 * Updated: WooCommerce and SEO screens are no longer registered at all when Pro is active.
