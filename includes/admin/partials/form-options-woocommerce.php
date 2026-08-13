@@ -60,10 +60,13 @@ $algolia_header_actions  = '';
 			</div>
 		<?php endif; ?>
 
-		<?php algolia_pro_render_feature_cards( array( 'woocommerce', 'ai' ) ); ?>
+		<div class="algolia-pro-stack">
+			<?php algolia_pro_render_feature_cards( array( 'woocommerce', 'ai' ) ); ?>
 
-		<?php algolia_pro_render_requirements(); ?>
+			<?php algolia_pro_render_requirements(); ?>
 
-		<?php algolia_pro_render_pricing_cta( 'woocommerce-page' ); ?>
+			<?php algolia_pro_render_pricing_cta( 'woocommerce-page' ); ?>
+		</div>
+
 	</div>
 </div>

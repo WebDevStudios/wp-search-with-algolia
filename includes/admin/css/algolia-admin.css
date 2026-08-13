@@ -2372,3 +2372,59 @@ form .radio-info {
   padding-top: 14px;
 }
 
+
+/* =========================================================
+   Pro block stacking
+
+   The feature cards, requirements check, and pricing call to action are
+   composed together on the WooCommerce, SEO, and Health screens. Each block
+   used to carry its own (inconsistent) margins, which left them butted
+   against each other. The stack owns the rhythm instead, and children reset
+   their margins so the spacing stays even however the blocks are combined.
+   ========================================================= */
+
+.algolia-pro-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  margin: 24px 0 4px;
+}
+
+.algolia-pro-stack > * {
+  margin: 0;
+}
+
+/* Standalone on a settings card these blocks need their own rounded edges;
+   inside the Pro upsell they inherit the wrapper's clipped corners. */
+.algolia-pro-stack .algolia-pro-upsell__features {
+  border-radius: 8px;
+}
+
+.algolia-pro-stack .algolia-pro-requirements {
+  border-radius: 0 8px 8px 0;
+}
+
+/*
+ * Closing offer panel. In the Pro hero the pricing sits directly on the
+ * gradient, but on a plain settings card it needs a container of its own or it
+ * reads as loose text falling out of the card.
+ */
+.algolia-pro-stack .algolia-pro-pricing {
+  align-items: center;
+  background: var(--algolia-gray);
+  border: 1px solid #dcdce6;
+  border-radius: 8px;
+  gap: 20px 28px;
+  justify-content: space-between;
+  padding: 22px 26px;
+}
+
+.algolia-pro-stack .algolia-pro-pricing__actions {
+  flex-shrink: 0;
+}
+
+@media screen and (max-width: 782px) {
+  .algolia-pro-stack .algolia-pro-pricing {
+    padding: 18px 20px;
+  }
+}

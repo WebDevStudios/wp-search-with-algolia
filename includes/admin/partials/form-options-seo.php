@@ -46,10 +46,13 @@ $algolia_header_actions  = '';
 			</div>
 		<?php endif; ?>
 
-		<?php algolia_pro_render_feature_cards( array( 'seo', 'index-health' ) ); ?>
+		<div class="algolia-pro-stack">
+			<?php algolia_pro_render_feature_cards( array( 'seo', 'index-health' ) ); ?>
 
-		<?php algolia_pro_render_requirements(); ?>
+			<?php algolia_pro_render_requirements(); ?>
 
-		<?php algolia_pro_render_pricing_cta( 'seo-page' ); ?>
+			<?php algolia_pro_render_pricing_cta( 'seo-page' ); ?>
+		</div>
+
 	</div>
 </div>
