@@ -27,18 +27,39 @@ Enable Autocomplete and Instantsearch to immediately provide a more robust searc
 This plugin requires API keys from [Algolia](https://www.algolia.com/). API keys are free for small personal projects and non-commercial use. Learn more about [commercial use pricing](https://www.algolia.com/pricing/).
 
 === WP Search with Algolia Pro ===
-Introducing **WP Search with Algolia Pro**, our new premium version of WP Search with Algolia! Pro features include:
 
-* Multisite Network-wide support!
-	* Create a global search for content across all the sites in your network all in one Algolia index.
-* WooCommerce support
-  * Indexing Product data including SKU, pricing (standard and variable), short descriptions, dimensions, and more.
-  * Total sales and total ratings indexed for popularity
-* Advanced SEO support with Yoast SEO, All in One SEO, Rank Math SEO, SEOPress, and The SEO Framework.
-  * Content level settings to exclude individual content from the search index
-  * Set Algolia’s indexing to match with existing search engine “noindex” settings
+**WP Search with Algolia Pro** is our premium add-on, built by the same team. It runs alongside this plugin and picks up where the free version stops.
 
-Are you ready to go Pro? Check out [WP Search with Algolia Pro on Pluginize](https://pluginize.com/plugins/wp-search-with-algolia-pro/)!
+**Index any custom field, no code required.** *(New in Pro 1.7)* Drag custom fields into your Algolia index from a visual screen. The Meta Field Mapper auto-detects fields from Advanced Custom Fields (ACF), Meta Box, CMB2, and native WordPress post meta, then lets you drop them into Searchable Attributes or Attributes for Faceting and reorder them to tune ranking. No PHP, no filters, no developer required.
+
+**Know your index is healthy.** *(New in Pro 1.7)* An index health panel and dashboard widget surface configuration and indexing problems. See the live index status of any post right on the edit screen, and re-index a single post with one button instead of re-running everything.
+
+**Catalog-grade WooCommerce search.** Index SKUs, standard and variable pricing, short descriptions, image sizes, and product dimensions or weight. Rank by total sales and product ratings. Control whether sold-out, hidden, and "shop only" products are indexed. Send add-to-cart, remove-from-cart, begin-checkout, and completed-order events to Algolia.
+
+**One search box for an entire network.** Aggregate every subsite in a multisite network into a single Algolia index, exclude specific sites, and track per-site indexing status from the network sites list.
+
+**Respect the editorial rules you already set.** Indexing honors "noindex" decisions from Yoast SEO, All in One SEO, Rank Math, SEOPress, and The SEO Framework, plus per-post controls in the editor.
+
+**Unlock Algolia's advanced AI.** Pro turns on Algolia Insights tracking, so your site collects the interaction data that semantic search, AI re-ranking, dynamic personalization, and shopping guides need to work.
+
+= Free vs Pro =
+
+Both versions index posts, pages, custom post types, terms, and users, and both power Autocomplete and InstantSearch. Everything below is only in Pro:
+
+* **Custom fields without code** — free requires writing PHP filters; Pro gives you a drag-and-drop screen.
+* **Index health panel and dashboard widget** — not available in free.
+* **Per-post index status and one-click re-index** — not available in free.
+* **WooCommerce product data** (SKU, pricing, dimensions, ratings) — not available in free.
+* **WooCommerce event tracking for Algolia AI** — not available in free.
+* **Multisite network-wide indexing** — not available in free.
+* **SEO plugin "noindex" mirroring** — five SEO plugins supported; not available in free.
+* **Direct technical support** — free is supported through the community forums.
+
+WP Search with Algolia Pro is $99, and includes six months of updates and technical support plus a 30-day money-back guarantee.
+
+**Pro requires WordPress 6.5 or higher, PHP 8.0 or higher, and WP Search with Algolia 2.10.2 or higher.** These are higher than this free plugin's own minimums, so check your server before purchasing.
+
+Ready to go Pro? Check out [WP Search with Algolia Pro on Pluginize](https://pluginize.com/plugins/wp-search-with-algolia-pro/?utm_source=wpswa-free&utm_medium=readme&utm_campaign=pro-upgrade&utm_content=description)!
 
 = Links =
 * [WebDevStudios](https://webdevstudios.com)
@@ -64,13 +85,22 @@ From your WordPress dashboard:
 
 = I see you now have a Pro addon, what features are available with it? =
 
-When you purchase a copy of [WP Search with Algolia Pro](https://pluginize.com/plugins/wp-search-with-algolia-pro/) you are getting access to the start of WooCommerce integration as well as Search Engine Optimization mirroring.
+[WP Search with Algolia Pro](https://pluginize.com/plugins/wp-search-with-algolia-pro/?utm_source=wpswa-free&utm_medium=readme&utm_campaign=pro-upgrade&utm_content=faq-features) adds six things to this plugin:
 
-With WooCommerce, you'll be able to manage settings to start including product information as part of indexed products, including out of box display with both Autocomplete and Instantsearch hit templates. You can also include details like product SKU values, total sales, and ratings to help with index ranking and relevance.
+1. **Meta Field Mapper** — map ACF, Meta Box, CMB2, and native post meta fields into your index from a drag-and-drop screen, with no PHP.
+2. **Index health** — a health panel and dashboard widget, per-post index status in the editor, and a one-click re-index for a single post.
+3. **WooCommerce** — SKUs, standard and variable pricing, short descriptions, image sizes, dimensions and weight, sales and ratings as ranking signals, control over sold-out and hidden products, and cart/checkout/order event tracking.
+4. **Multisite** — push every site in a network into one index, exclude specific sites, and monitor per-site indexing status.
+5. **SEO** — mirror "noindex" settings from Yoast SEO, All in One SEO, Rank Math, SEOPress, and The SEO Framework, plus per-post controls.
+6. **Algolia AI** — Insights tracking that feeds semantic search, AI re-ranking, personalization, and shopping guides.
 
-With SEO settings, you can configure your content to manage itself in your Algolia indexes based on your "noindex" settings from your dedicated SEO plugins.
+= I bought Pro. Do I still need this free plugin? =
 
-We intend to continue adding and evolving all the extra features in WP Search with Algolia Pro
+Yes. WP Search with Algolia Pro is an add-on, not a replacement. Keep this plugin installed and active — Pro extends it, and will deactivate itself if this plugin is not present.
+
+= What are Pro's requirements? =
+
+Pro requires WordPress 6.5 or higher, PHP 8.0 or higher, and WP Search with Algolia 2.10.2 or higher. These minimums are higher than this free plugin's, so confirm your server meets them before purchasing. Once this plugin is installed, the **Algolia Search &rarr; Upgrade to Pro** screen checks your site against all three and tells you where you stand.
 
 = Is this plugin a fork? =
 
@@ -117,6 +147,19 @@ All development is handled on [GitHub](https://github.com/WebDevStudios/wp-searc
 == Changelog ==
 
 Follow along with the changelog on [GitHub](https://github.com/WebDevStudios/wp-search-with-algolia/releases).
+
+= 2.14.0 =
+* Added: `Algolia_Pro` class as the single source of truth for Pro feature data, pricing, requirements, and outbound links.
+* Added: Pro requirements check so you can confirm your site meets Pro's WordPress, PHP, and plugin version minimums before purchasing.
+* Added: Free vs Pro comparison and "New in Pro" summary on the Upgrade to Pro screen.
+* Added: "Go Pro" link on the Plugins screen.
+* Added: Contextual Pro information on the Search Page and Autocomplete settings screens.
+* Updated: "Premium Support" submenu is now "Upgrade to Pro", consolidating the two separate Pro menu entries into one.
+* Updated: WooCommerce and SEO screens now show real, context-aware content instead of a blurred screenshot.
+* Updated: Pro feature descriptions across the admin and readme now reflect Pro 1.7.
+* Updated: Pro promotion is hidden throughout the admin when WP Search with Algolia Pro is active.
+* Updated: WooCommerce and SEO screens are no longer registered at all when Pro is active.
+* Deprecated: `Algolia_Utils::pro_cta_content()`, replaced by `algolia_pro_render_feature_cards()`.
 
 = 2.13.1 =
 * No code changes.
