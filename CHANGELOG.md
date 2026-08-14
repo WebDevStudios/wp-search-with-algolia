@@ -1,3 +1,11 @@
+## 2.14.0
+* Added: `Algolia_Pro` class as the single source of truth for Pro feature data, pricing, requirements, and outbound links.
+* Added: Pro requirements check so you can confirm your site meets Pro's WordPress, PHP, and plugin version minimums before purchasing.
+* Updated: Pro feature descriptions across the admin and readme now reflect Pro 1.7.
+* Updated: Pro promotion is hidden throughout the admin when WP Search with Algolia Pro is active.
+* Updated: WooCommerce and SEO screens are no longer registered at all when Pro is active.
+* Deprecated: `Algolia_Utils::pro_cta_content()`, replaced by `algolia_pro_render_feature_cards()`.
+
 ## 2.13.1
 * No code changes.
 * Updated: reduced minimum WP version to return compatibility with ClassicPress

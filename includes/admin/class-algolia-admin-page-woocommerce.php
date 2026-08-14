@@ -87,6 +87,14 @@ class Algolia_Admin_Page_WooCommerce {
 			return;
 		}
 
+		// Pro registers the real WooCommerce screen at this slug. Declining to
+		// register here is more robust than letting Pro call
+		// remove_submenu_page() after the fact, which depends on both plugins
+		// agreeing on hook order and slugs.
+		if ( Algolia_Pro::is_active() ) {
+			return;
+		}
+
 		add_submenu_page(
 			'algolia',
 			esc_html__( 'WooCommerce', 'wp-search-with-algolia' ),
