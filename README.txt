@@ -1,13 +1,13 @@
 === WP Search with Algolia ===
-Contributors: WebDevStudios, williamsba1, tw2113, mrasharirfan, scottbasgaard, gregrickaby, richaber, daveromsey
-Tags: algolia, search, autocomplete, instantsearch, relevance search, ai search
+Contributors: WebDevStudios, williamsba1, tw2113, mrasharirfan, scottbasgaard, gregrickaby, richaber
+Tags: algolia, search, autocomplete, instantsearch, ai search
 Requires at least: 6.2.9
 Tested up to: 7.1
 Requires PHP: 7.4
 Stable tag: 2.14.0
 License: GNU General Public License v2.0, MIT License
 
-Use the power of Algolia AI Search & Discovery to enhance your website's search. Enable AI-powered Autocomplete and InstantSearch for fast, accurate results and relevance.
+Use Algolia AI Search & Discovery to power your website's search with AI-powered Autocomplete and InstantSearch for fast, accurate, relevant results.
 
 == Description ==
 
