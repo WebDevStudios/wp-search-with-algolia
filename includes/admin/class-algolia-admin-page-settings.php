@@ -103,12 +103,21 @@ class Algolia_Admin_Page_Settings {
 	 * @return array
 	 */
 	public function add_action_links( array $links ) {
-		return array_merge(
-			$links,
-			array(
-				'<a href="' . esc_url( admin_url( 'admin.php?page=' . $this->slug ) ) . '">' . esc_html__( 'Settings', 'wp-search-with-algolia' ) . '</a>',
-			)
+		$new_links = array(
+			'<a href="' . esc_url( admin_url( 'admin.php?page=' . $this->slug ) ) . '">' . esc_html__( 'Settings', 'wp-search-with-algolia' ) . '</a>',
 		);
+
+		// Safe to check here: plugin action links are built during the Plugins
+		// screen render, long after every plugin file has loaded.
+		if ( ! Algolia_Pro::is_active() ) {
+			$new_links[] = sprintf(
+				'<a href="%1$s" target="_blank" rel="noopener noreferrer" class="algolia-plugins-go-pro"><strong>%2$s</strong></a>',
+				esc_url( Algolia_Pro::get_url( 'plugins-screen' ) ),
+				esc_html__( 'Go Pro', 'wp-search-with-algolia' )
+			);
+		}
+
+		return array_merge( $links, $new_links );
 	}
 
 	/**
