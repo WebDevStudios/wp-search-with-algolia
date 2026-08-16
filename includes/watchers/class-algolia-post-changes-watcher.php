@@ -28,6 +28,13 @@ class Algolia_Post_Changes_Watcher implements Algolia_Changes_Watcher {
 	private $index;
 
 	/**
+	 * Blog ID this watcher is bound to.
+	 *
+	 * @var int
+	 */
+	private $blog_id;
+
+	/**
 	 * Deleted posts array.
 	 *
 	 * @author WebDevStudios <contact@webdevstudios.com>
@@ -95,8 +102,18 @@ class Algolia_Post_Changes_Watcher implements Algolia_Changes_Watcher {
 	 *
 	 * @param Algolia_Index $index Algolia_Index instance.
 	 */
-	public function __construct( Algolia_Index $index ) {
-		$this->index = $index;
+	public function __construct( Algolia_Index $index, $blog_id = null ) {
+		$this->index   = $index;
+		$this->blog_id = null === $blog_id ? (int) get_current_blog_id() : (int) $blog_id;
+	}
+
+	/**
+	 * Check whether this watcher should handle current blog events.
+	 *
+	 * @return bool
+	 */
+	private function is_current_blog_context() {
+		return (int) get_current_blog_id() === $this->blog_id;
 	}
 
 	/**
@@ -141,6 +158,9 @@ class Algolia_Post_Changes_Watcher implements Algolia_Changes_Watcher {
 	 * @return void
 	 */
 	public function sync_item( $post_id ) {
+		if ( ! $this->is_current_blog_context() ) {
+			return;
+		}
 
 		if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) {
 			return;
@@ -182,6 +202,10 @@ class Algolia_Post_Changes_Watcher implements Algolia_Changes_Watcher {
 	 * @return void
 	 */
 	public function check_slug_update( $post_id, $post_data ) {
+		if ( ! $this->is_current_blog_context() ) {
+			return;
+		}
+
 		$post = get_post( (int) $post_id );
 		if ( isset( $post_data['post_name'] ) && $post_data['post_name'] !== $post->post_name ) {
 
@@ -213,6 +237,9 @@ class Algolia_Post_Changes_Watcher implements Algolia_Changes_Watcher {
 	 * @return void
 	 */
 	public function delete_item( $post_id ) {
+		if ( ! $this->is_current_blog_context() ) {
+			return;
+		}
 
 		$post = get_post( (int) $post_id );
 		if ( ! $post || ! $this->index->supports( $post ) ) {
@@ -241,6 +268,10 @@ class Algolia_Post_Changes_Watcher implements Algolia_Changes_Watcher {
 	 * @return void
 	 */
 	public function on_meta_change( $meta_id, $object_id, $meta_key, $meta_value ) {
+		if ( ! $this->is_current_blog_context() ) {
+			return;
+		}
+
 		$keys = array( '_thumbnail_id' );
 
 		/**
@@ -271,6 +302,9 @@ class Algolia_Post_Changes_Watcher implements Algolia_Changes_Watcher {
 	 * @return void
 	 */
 	public function track_updated_posts( $post_id ) {
+		if ( ! $this->is_current_blog_context() ) {
+			return;
+		}
 
 		// If `save_post` has not been executed, it means "fast mode" of WP All Import is enabled.
 		if ( in_array( $post_id, $this->posts_updated, true ) ) {
@@ -290,6 +324,10 @@ class Algolia_Post_Changes_Watcher implements Algolia_Changes_Watcher {
 	 * @return void
 	 */
 	public function sync_item_for_pmxi( $import_id ) {
+		if ( ! $this->is_current_blog_context() ) {
+			return;
+		}
+
 		$current_page = (int) get_option( 'algolia_pmxi_page', 1 );
 
 		if ( null === self::$pmxi_is_fast_mode ) {

@@ -27,6 +27,13 @@ class Algolia_Term_Changes_Watcher implements Algolia_Changes_Watcher {
 	private $index;
 
 	/**
+	 * Blog ID this watcher is bound to.
+	 *
+	 * @var int
+	 */
+	private $blog_id;
+
+	/**
 	 * Active Algolia Indices
 	 *
 	 * @author WebDevStudios <contact@webdevstudios.com>
@@ -43,8 +50,18 @@ class Algolia_Term_Changes_Watcher implements Algolia_Changes_Watcher {
 	 *
 	 * @param Algolia_Index $index Algolia_Index instance.
 	 */
-	public function __construct( Algolia_Index $index ) {
-		$this->index = $index;
+	public function __construct( Algolia_Index $index, $blog_id = null ) {
+		$this->index   = $index;
+		$this->blog_id = null === $blog_id ? (int) get_current_blog_id() : (int) $blog_id;
+	}
+
+	/**
+	 * Check whether this watcher should handle current blog events.
+	 *
+	 * @return bool
+	 */
+	private function is_current_blog_context() {
+		return (int) get_current_blog_id() === $this->blog_id;
 	}
 
 	/**
@@ -84,6 +101,10 @@ class Algolia_Term_Changes_Watcher implements Algolia_Changes_Watcher {
 	 * @return void
 	 */
 	public function sync_term_posts( $term_id, $tt_id, $taxonomy ) {
+		if ( ! $this->is_current_blog_context() ) {
+			return;
+		}
+
 		$term = get_term( (int) $term_id );
 		if ( ! $term || ! $this->index->supports( $term ) ) {
 			return;
@@ -199,6 +220,10 @@ class Algolia_Term_Changes_Watcher implements Algolia_Changes_Watcher {
 	 * @return void
 	 */
 	public function sync_item( $term_id ) {
+		if ( ! $this->is_current_blog_context() ) {
+			return;
+		}
+
 		if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) {
 			return;
 		}
@@ -230,6 +255,10 @@ class Algolia_Term_Changes_Watcher implements Algolia_Changes_Watcher {
 	 * @param array  $old_tt_ids Old array of term taxonomy IDs.
 	 */
 	public function handle_changes( $object_id, $terms, $tt_ids, $taxonomy, $append, $old_tt_ids ) {
+		if ( ! $this->is_current_blog_context() ) {
+			return;
+		}
+
 		$terms_to_sync = array_unique( array_merge( $terms, $old_tt_ids ) );
 
 		foreach ( $terms_to_sync as $term_id ) {
@@ -252,6 +281,10 @@ class Algolia_Term_Changes_Watcher implements Algolia_Changes_Watcher {
 	 * @return void
 	 */
 	public function on_delete_term( $term, $tt_id, $taxonomy, $deleted_term ) {
+		if ( ! $this->is_current_blog_context() ) {
+			return;
+		}
+
 		if ( ! $this->index->supports( $deleted_term ) ) {
 			return;
 		}
@@ -276,6 +309,9 @@ class Algolia_Term_Changes_Watcher implements Algolia_Changes_Watcher {
 	 * @since  2.5.0
 	 */
 	public function on_meta_change( $meta_id, $object_id, $meta_key, $meta_value ) {
+		if ( ! $this->is_current_blog_context() ) {
+			return;
+		}
 
 		// We will not listen for any specific key by default.
 		$keys = [];
@@ -305,6 +341,10 @@ class Algolia_Term_Changes_Watcher implements Algolia_Changes_Watcher {
 	 * @since 2.11.3
 	 */
 	public function large_count_notice() {
+		if ( ! $this->is_current_blog_context() ) {
+			return;
+		}
+
 		global $current_screen;
 
 		if ( ! $current_screen || 'term' !== $current_screen->base ) {
