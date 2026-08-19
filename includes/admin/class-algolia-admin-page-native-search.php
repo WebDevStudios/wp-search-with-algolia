@@ -254,6 +254,11 @@ class Algolia_Admin_Page_Native_Search {
 	 * @return void
 	 */
 	public function display_errors() {
+		$maybe_get_page = filter_input( INPUT_GET, 'page', FILTER_SANITIZE_SPECIAL_CHARS );
+		if ( empty( $maybe_get_page ) || $this->slug !== $maybe_get_page ) {
+			return;
+		}
+
 		settings_errors( $this->option_group );
 
 		if ( defined( 'ALGOLIA_HIDE_HELP_NOTICES' ) && ALGOLIA_HIDE_HELP_NOTICES ) {
@@ -266,13 +271,11 @@ class Algolia_Admin_Page_Native_Search {
 			return;
 		}
 
-		$maybe_get_page = filter_input( INPUT_GET, 'page', FILTER_SANITIZE_SPECIAL_CHARS );
-
 		$searchable_posts_index = $this->plugin->get_index( 'searchable_posts' );
 		if ( empty( $searchable_posts_index ) ) {
 			return;
 		}
-		if ( false === $searchable_posts_index->is_enabled() && ( ! empty( $maybe_get_page ) ) && $maybe_get_page === $this->slug ) {
+		if ( false === $searchable_posts_index->is_enabled() ) {
 			// translators: placeholder contains the link to the indexing page.
 			$message = sprintf( __( 'Searchable posts index needs to be checked on the <a href="%s">Algolia: Indexing page</a> for the search results to be powered by Algolia.', 'wp-search-with-algolia' ), esc_url( admin_url( 'admin.php?page=algolia-indexing' ) ) );
 			echo '<div class="error notice">
