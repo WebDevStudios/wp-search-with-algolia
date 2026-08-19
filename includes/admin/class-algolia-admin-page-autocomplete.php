@@ -375,6 +375,11 @@ class Algolia_Admin_Page_Autocomplete {
 	 * @return void
 	 */
 	public function display_errors() {
+		$maybe_get_page = filter_input( INPUT_GET, 'page', FILTER_SANITIZE_SPECIAL_CHARS );
+		if ( empty( $maybe_get_page ) || $this->slug !== $maybe_get_page ) {
+			return;
+		}
+
 		settings_errors( $this->option_group );
 
 		if ( defined( 'ALGOLIA_HIDE_HELP_NOTICES' ) && ALGOLIA_HIDE_HELP_NOTICES ) {
