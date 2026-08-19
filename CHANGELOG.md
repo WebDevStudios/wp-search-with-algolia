@@ -1,3 +1,6 @@
+## 2.14.1
+* Fixed: Settings, Autocomplete, and Native Search admin notices no longer appear on unrelated wp-admin screens (e.g. WooCommerce Edit Order).
+
 ## 2.14.0
 * Added: `Algolia_Pro` class as the single source of truth for Pro feature data, pricing, requirements, and outbound links.
 * Added: Pro requirements check so you can confirm your site meets Pro's WordPress, PHP, and plugin version minimums before purchasing.
