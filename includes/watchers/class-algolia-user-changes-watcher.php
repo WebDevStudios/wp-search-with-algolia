@@ -28,6 +28,13 @@ class Algolia_User_Changes_Watcher implements Algolia_Changes_Watcher {
 	private $index;
 
 	/**
+	 * Blog ID this watcher is bound to.
+	 *
+	 * @var int
+	 */
+	private $blog_id;
+
+	/**
 	 * Algolia_User_Changes_Watcher constructor.
 	 *
 	 * @author WebDevStudios <contact@webdevstudios.com>
@@ -35,8 +42,18 @@ class Algolia_User_Changes_Watcher implements Algolia_Changes_Watcher {
 	 *
 	 * @param Algolia_Index $index Algolia_Index instance.
 	 */
-	public function __construct( Algolia_Index $index ) {
-		$this->index = $index;
+	public function __construct( Algolia_Index $index, $blog_id = null ) {
+		$this->index   = $index;
+		$this->blog_id = null === $blog_id ? (int) get_current_blog_id() : (int) $blog_id;
+	}
+
+	/**
+	 * Check whether this watcher should handle current blog events.
+	 *
+	 * @return bool
+	 */
+	private function is_current_blog_context() {
+		return (int) get_current_blog_id() === $this->blog_id;
 	}
 
 	/**
@@ -79,6 +96,10 @@ class Algolia_User_Changes_Watcher implements Algolia_Changes_Watcher {
 	 * @return void
 	 */
 	public function sync_item( $user_id ) {
+		if ( ! $this->is_current_blog_context() ) {
+			return;
+		}
+
 		if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) {
 			return;
 		}
@@ -107,6 +128,10 @@ class Algolia_User_Changes_Watcher implements Algolia_Changes_Watcher {
 	 * @return void
 	 */
 	public function delete_item( $user_id ) {
+		if ( ! $this->is_current_blog_context() ) {
+			return;
+		}
+
 		$user = get_user_by( 'id', $user_id );
 
 		if ( ! $user || ! $this->index->supports( $user ) ) {
@@ -130,6 +155,10 @@ class Algolia_User_Changes_Watcher implements Algolia_Changes_Watcher {
 	 * @param WP_Post $post    Post object.
 	 */
 	public function on_save_post( $post_id, WP_Post $post ) {
+		if ( ! $this->is_current_blog_context() ) {
+			return;
+		}
+
 		$this->sync_item( (int) $post->post_author );
 	}
 
@@ -144,6 +173,10 @@ class Algolia_User_Changes_Watcher implements Algolia_Changes_Watcher {
 	 * @return void
 	 */
 	public function on_delete_post( $post_id ) {
+		if ( ! $this->is_current_blog_context() ) {
+			return;
+		}
+
 		$post = get_post( (int) $post_id );
 
 		if ( ! $post ) {
@@ -178,6 +211,9 @@ class Algolia_User_Changes_Watcher implements Algolia_Changes_Watcher {
 	 * @since  2.5.0
 	 */
 	public function on_meta_change( $meta_id, $object_id, $meta_key, $meta_value ) {
+		if ( ! $this->is_current_blog_context() ) {
+			return;
+		}
 
 		// We will not listen for any specific key by default.
 		$keys = [];
