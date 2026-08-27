@@ -104,7 +104,7 @@ class Algolia_Template_Loader {
 			'query'                => get_search_query(),
 			'indices'              => [],
 			'autocomplete'         => [
-				'sources'        => $autocomplete_config->get_config(),
+				'sources'               => $autocomplete_config->get_config(),
 
 				/**
 				 * Filters the CSS-style selector used to locate search inputs to add Autocomplete to.
@@ -114,9 +114,10 @@ class Algolia_Template_Loader {
 				 * @param  string $value Selector to target with.
 				 * @return string $value Updated selector.
 				 */
-				'input_selector' => (string) apply_filters( 'algolia_autocomplete_input_selector', "input[name='s']:not(.no-autocomplete):not(#adminbar-search)" ),
+				'input_selector'        => (string) apply_filters( 'algolia_autocomplete_input_selector', "input[name='s']:not(.no-autocomplete):not(#adminbar-search)" ),
 				'input_selector_modern' => (string) apply_filters(
-					'algolia_autocomplete_input_selector_modern', '#autocomplete'
+					'algolia_autocomplete_input_selector_modern',
+					'#autocomplete'
 				),
 			],
 		];
