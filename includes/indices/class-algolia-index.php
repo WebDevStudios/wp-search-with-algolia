@@ -233,6 +233,7 @@ abstract class Algolia_Index {
 			}
 		}
 
+		// phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- Exception message, never output directly.
 		throw new RuntimeException( sprintf( 'Unable to find replica for attribute "%s" with order "%s".', $attribute_name, $order ) );
 	}
 

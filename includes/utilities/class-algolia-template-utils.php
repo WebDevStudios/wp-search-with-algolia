@@ -250,13 +250,13 @@ class Algolia_Template_Utils {
 			return null;
 		}
 
-		// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_read_fopen
+		// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_read_fopen, WordPress.WP.AlternativeFunctions.file_system_operations_fopen -- Reads a local template header, matching WooCommerce's get_file_version().
 		$pointer = fopen( $template, 'r' );
 
-		// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_read_fread
+		// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_read_fread, WordPress.WP.AlternativeFunctions.file_system_operations_fread -- Reads a local template header, matching WooCommerce's get_file_version().
 		$file_data = fread( $pointer, 8192 );
 
-		// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_read_fclose
+		// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_read_fclose, WordPress.WP.AlternativeFunctions.file_system_operations_fclose -- Reads a local template header, matching WooCommerce's get_file_version().
 		fclose( $pointer );
 
 		$file_data = str_replace( "\r", "\n", $file_data );
@@ -274,7 +274,21 @@ class Algolia_Template_Utils {
 			return $version;
 		}
 
-		return _cleanup_header_comment( $matches[1] );
+		return self::cleanup_header_comment( $matches[1] );
+	}
+
+	/**
+	 * Strip trailing comment close tokens from a file header value.
+	 *
+	 * Local replacement for WordPress's private `_cleanup_header_comment()`.
+	 *
+	 * @since 2.14.2
+	 *
+	 * @param string $value Raw header comment value.
+	 * @return string Cleaned header value.
+	 */
+	private static function cleanup_header_comment( $value ): string {
+		return trim( preg_replace( '/\s*(?:\*\/|\?>).*/', '', $value ) );
 	}
 
 	/**

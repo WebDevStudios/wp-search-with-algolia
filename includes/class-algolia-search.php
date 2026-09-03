@@ -169,7 +169,7 @@ class Algolia_Search {
 		 * @param  string $value Order parameter. Default 'desc'.
 		 * @return string $value Filtered order parameter.
 		 */
-		$order    = apply_filters( 'algolia_search_order', 'desc' );
+		$order = apply_filters( 'algolia_search_order', 'desc' );
 
 		try {
 			$results = $this->index->search( $search_query, $params, $order_by, $order );

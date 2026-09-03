@@ -423,7 +423,11 @@ class Algolia_Admin {
 	 * @since 2.5.0
 	 */
 	public function handle_pro_redirect() {
-		if ( isset( $_GET['algolia-pro-upgrade'] ) && wp_verify_nonce( $_GET['algolia-pro-upgrade'], 'algolia-pro-nonce' ) ) {
+		$upgrade_nonce = isset( $_GET['algolia-pro-upgrade'] )
+			? sanitize_text_field( wp_unslash( $_GET['algolia-pro-upgrade'] ) )
+			: '';
+
+		if ( $upgrade_nonce && wp_verify_nonce( $upgrade_nonce, 'algolia-pro-nonce' ) ) {
 			wp_redirect( Algolia_Pro::get_url( 'legacy-menu-redirect' ) ); // phpcs:ignore WordPress.Security.SafeRedirect.wp_redirect_wp_redirect
 			exit();
 		}
