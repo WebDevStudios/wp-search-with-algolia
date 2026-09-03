@@ -323,18 +323,25 @@ class Algolia_Term_Changes_Watcher implements Algolia_Changes_Watcher {
 		// This filter is documented in includes/watchers/class-algolia-term-changes-watcher.php.
 		$limit = apply_filters( 'algolia_term_update_post_limit', 50 );
 		if ( $term->count > absint( $limit ) ) {
-			wp_admin_notice(
-				sprintf(
-					/* translators: %1$s: Number of posts that were synced for this term. */
-					esc_html__( 'Only the first %1$s posts with this term have been sync\'d to your Algolia indexes. Please run a bulk re-index to get the rest.', 'wp-search-with-algolia' ),
-					$limit
-				),
-				[
-					'id'                 => 'message',
-					'additional_classes' => array( 'updated' ),
-					'dismissible'        => true,
-				]
+			$message = sprintf(
+				/* translators: %1$s: Number of posts that were synced for this term. */
+				esc_html__( 'Only the first %1$s posts with this term have been sync\'d to your Algolia indexes. Please run a bulk re-index to get the rest.', 'wp-search-with-algolia' ),
+				$limit
 			);
+
+			// wp_admin_notice() requires WP 6.4+; this plugin still supports older versions.
+			if ( function_exists( 'wp_admin_notice' ) ) {
+				wp_admin_notice(
+					$message,
+					[
+						'id'                 => 'message',
+						'additional_classes' => array( 'updated' ),
+						'dismissible'        => true,
+					]
+				);
+			} else {
+				printf( '<div id="message" class="notice updated is-dismissible"><p>%s</p></div>', $message ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- $message is already escaped above.
+			}
 		}
 	}
 }
