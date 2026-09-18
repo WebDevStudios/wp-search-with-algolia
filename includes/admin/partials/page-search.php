@@ -12,6 +12,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+require_once dirname( __FILE__ ) . '/pro-parts.php';
+
 $algolia_header_subtitle = __( 'Choose how WordPress search uses Algolia, and re-index or push settings to keep results fresh.', 'wp-search-with-algolia' );
 
 ob_start();
@@ -38,4 +40,12 @@ $algolia_header_actions = ob_get_clean();
 			?>
 		</form>
 	</div>
+
+	<?php
+	algolia_pro_render_inline_nudge(
+		__( 'Re-indexing everything just to check whether one post made it in? Pro shows per-post index status in the editor, adds a one-click re-index for a single post, and flags index problems on your dashboard.', 'wp-search-with-algolia' ),
+		__( 'See Index Health in Pro', 'wp-search-with-algolia' ),
+		'search-page-nudge'
+	);
+	?>
 </div>
