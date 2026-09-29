@@ -58,6 +58,7 @@ require_once ALGOLIA_PATH . 'includes/indices/class-algolia-users-index.php';
 require_once ALGOLIA_PATH . 'includes/watchers/class-algolia-changes-watcher.php';
 require_once ALGOLIA_PATH . 'includes/watchers/class-algolia-post-changes-watcher.php';
 require_once ALGOLIA_PATH . 'includes/watchers/class-algolia-term-changes-watcher.php';
+require_once ALGOLIA_PATH . 'includes/watchers/class-algolia-term-post-sync-watcher.php';
 require_once ALGOLIA_PATH . 'includes/watchers/class-algolia-user-changes-watcher.php';
 
 require_once ALGOLIA_PATH . 'includes/utilities/class-algolia-health-panel.php';
