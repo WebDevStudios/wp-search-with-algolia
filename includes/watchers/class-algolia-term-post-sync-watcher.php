@@ -185,20 +185,24 @@ class Algolia_Term_Post_Sync_Watcher implements Algolia_Changes_Watcher {
 		if ( ! $current_screen || 'term' !== $current_screen->base ) {
 			return;
 		}
+
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only, used for display only.
 		if ( ! empty( $_GET['tag_ID'] ) && is_numeric( $_GET['tag_ID'] ) ) {
-			$termID = absint( $_GET['tag_ID'] );
+			// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only, used for display only.
+			$term_id = absint( $_GET['tag_ID'] );
 		}
 
-		$term = get_term( $termID );
+		$term = get_term( $term_id );
 		if ( ! $term ) {
 			return;
 		}
 
-		// This filter is documented in includes/watchers/class-algolia-term-post-sync-watcher.php
+		// This filter is documented in includes/watchers/class-algolia-term-post-sync-watcher.php.
 		$limit = apply_filters( 'algolia_term_update_post_limit', 50 );
 		if ( $term->count > absint( $limit ) ) {
 			wp_admin_notice(
 				sprintf(
+					/* translators: %1$s: maximum number of posts synced per term update. */
 					esc_html__( 'Only the first %1$s posts with this term have been sync\'d to your Algolia indexes. Please run a bulk re-index to get the rest.', 'wp-search-with-algolia' ),
 					$limit
 				),
