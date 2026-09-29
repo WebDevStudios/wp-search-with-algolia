@@ -364,6 +364,10 @@ class Algolia_Plugin {
 			}
 		}
 
+		// Always watch for term edits affecting post records, independent of
+		// whether a dedicated taxonomy terms-index is configured.
+		$this->changes_watchers[] = new Algolia_Term_Post_Sync_Watcher();
+
 		/**
 		 * Filters the array of changes watchers to work with.
 		 *
