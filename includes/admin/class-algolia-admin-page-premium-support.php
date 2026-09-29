@@ -70,7 +70,7 @@ class Algolia_Admin_Page_Premium_Support {
 	public function __construct( Algolia_Plugin $plugin ) {
 		$this->plugin = $plugin;
 
-		add_action( 'admin_menu', [ $this, 'add_page' ] );
+		add_action( 'admin_menu', [ $this, 'add_page' ], 12 );
 		add_action( 'admin_init', [ $this, 'add_settings' ] );
 	}
 
@@ -86,10 +86,28 @@ class Algolia_Admin_Page_Premium_Support {
 	public function add_page() {
 		$api         = $this->plugin->get_api();
 		$parent_slug = ! $api->is_reachable() ? 'algolia-account-settings' : 'algolia';
+
+		// Safe to check here: `admin_menu` fires long after every plugin file
+		// has loaded, so Pro's version constant is guaranteed to be defined by
+		// now if Pro is active. See Algolia_Pro::is_active().
+		if ( Algolia_Pro::is_active() ) {
+			// Pro is already installed, so this page is purely agency services.
+			add_submenu_page(
+				$parent_slug,
+				esc_html__( 'Premium Support from WebDevStudios', 'wp-search-with-algolia' ),
+				esc_html__( 'Premium Support', 'wp-search-with-algolia' ),
+				$this->capability,
+				$this->slug,
+				[ $this, 'display_page' ]
+			);
+
+			return;
+		}
+
 		add_submenu_page(
 			$parent_slug,
-			esc_html__( 'Premium Support from WebDevStudios', 'wp-search-with-algolia' ),
-			esc_html__( 'Premium Support', 'wp-search-with-algolia' ),
+			esc_html__( 'Upgrade to WP Search with Algolia Pro', 'wp-search-with-algolia' ),
+			'<span class="algolia-menu-highlight">' . esc_html__( 'Upgrade to Pro', 'wp-search-with-algolia' ) . '</span>',
 			$this->capability,
 			$this->slug,
 			[ $this, 'display_page' ]

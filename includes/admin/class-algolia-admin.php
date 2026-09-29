@@ -66,7 +66,6 @@ class Algolia_Admin {
 		add_action( 'admin_notices', array( $this, 'display_unmet_requirements_notices' ) );
 
 		add_filter( 'admin_footer_text', array( $this, 'algolia_footer' ) );
-		add_action( 'admin_menu', [ $this, 'add_pro_menu_item' ], 1000 );
 		add_action( 'admin_init', [ $this, 'handle_pro_redirect' ] );
 	}
 
@@ -150,9 +149,27 @@ class Algolia_Admin {
 		wp_localize_script(
 			'algolia-admin-push-settings-button',
 			'algoliaPushSettingsButton',
-			array(
-				'pushBtnAlert' => esc_html__( 'Warning: Pushing settings will override the settings in the Algolia dashboard. Do you want to continue?', 'wp-search-with-algolia' ),
-			)
+			[
+				'noDataIndex'          => esc_html__( 'Clicked button has no "data-index" set.', 'wp-search-with-algolia' ),
+				'pushBtnAlert'         => esc_html__( 'Warning: Pushing settings will override the settings in the Algolia dashboard. Do you want to continue?', 'wp-search-with-algolia' ),
+				'successfullyPushed'   => esc_html__( 'Settings successfully pushed for index:', 'wp-search-with-algolia' ),
+				'errorPrefix'          => esc_html__( 'Error:', 'wp-search-with-algolia' ),
+				'exceptionErrorPrefix' => esc_html__( 'Exception error:', 'wp-search-with-algolia' ),
+				'genericError'         => esc_html__( 'Unknown error', 'wp-search-with-algolia' ),
+			]
+		);
+
+		wp_localize_script(
+			'algolia-admin-reindex-button',
+			'algoliaPushReindexButton',
+			[
+				'reindexAbort'         => esc_html__( 'If you leave now, re-indexing tasks in progress will be aborted', 'wp-search-with-algolia' ),
+				'noDataindex'          => esc_html__( 'Clicked button has no "data-index" set.', 'wp-search-with-algolia' ),
+				'processingPrefix'     => esc_html__( 'Processing, please be patient ...', 'wp-search-with-algolia' ),
+				'errorPrefix'          => esc_html__( 'Error:', 'wp-search-with-algolia' ),
+				'exceptionErrorPrefix' => esc_html__( 'Exception error:', 'wp-search-with-algolia' ),
+				'noPageCount'          => esc_html__( 'An error occurred. Unable to find a page count.', 'wp-search-with-algolia' ),
+			]
 		);
 	}
 
@@ -296,14 +313,15 @@ class Algolia_Admin {
 			}
 			ob_end_clean();
 
-			$response = array(
+			$response = [
+				'currentPage'     => $page,
 				'totalPagesCount' => $total_pages,
 				'finished'        => $page >= $total_pages,
-			);
+			];
 
-			wp_send_json( $response );
+			wp_send_json_success( $response, 200 );
 		} catch ( Exception $exception ) {
-			wp_send_json_error( array( 'message' => $exception->getMessage() ) );
+			wp_send_json_error( [ 'message' => $exception->getMessage() ], 500 );
 		}
 	}
 
@@ -332,12 +350,9 @@ class Algolia_Admin {
 
 			$index->push_settings();
 
-			$response = array(
-				'success' => true,
-			);
-			wp_send_json( $response );
+			wp_send_json_success( [], 200 );
 		} catch ( Exception $exception ) {
-			wp_send_json_error( array( 'message' => $exception->getMessage() ) );
+			wp_send_json_error( array( 'message' => $exception->getMessage() ), 500 );
 		}
 	}
 
@@ -359,7 +374,7 @@ class Algolia_Admin {
 			return $original;
 		}
 
-		return sprintf(
+		$footer = sprintf(
 			// translators: Placeholder will hold the name of the plugin, version of the plugin and a link to WebdevStudios.
 			esc_attr__( '%1$s version %2$s by %3$s', 'wp-search-with-algolia' ),
 			esc_attr__( 'WP Search with Algolia', 'wp-search-with-algolia' ),
@@ -375,55 +390,41 @@ class Algolia_Admin {
 			// translators: Placeholders are just for HTML markup that doesn't need translated.
 			'<a href="https://wordpress.org/plugins/wp-search-with-algolia/#reviews" target="_blank" rel="noopener">%s</a>',
 			esc_attr__( 'Review', 'wp-search-with-algolia' )
-		) . ' - ' .
-		sprintf(
-			// translators: Placeholders are just for HTML markup that doesn't need translated.
-			'<a href="https://pluginize.com/plugins/wp-search-with-algolia-pro/" target="_blank" rel="noopener"><strong>%s</strong></a>',
-			esc_attr__( 'Go Pro', 'wp-search-with-algolia' )
-		) . ' - ' .
-		esc_attr__( 'Follow on X:', 'wp-search-with-algolia' ) .
+		) . ' - ';
+
+		// Never pitch Pro to someone who already bought it. Safe to check here:
+		// `admin_footer_text` fires long after all plugin files have loaded.
+		if ( ! Algolia_Pro::is_active() ) {
+			$footer .= sprintf(
+				// translators: Placeholders are just for HTML markup that doesn't need translated.
+				'<a href="%1$s" target="_blank" rel="noopener"><strong>%2$s</strong></a>',
+				esc_url( Algolia_Pro::get_url( 'admin-footer' ) ),
+				esc_attr__( 'Go Pro', 'wp-search-with-algolia' )
+			) . ' - ';
+		}
+
+		$footer .= esc_attr__( 'Follow on X:', 'wp-search-with-algolia' ) .
 		sprintf(
 			// translators: Placeholders are just for HTML markup that doesn't need translated.
 			' %s',
 			'<a href="https://x.com/webdevstudios" target="_blank" rel="noopener">WebDevStudios</a>'
 		);
-	}
 
-	/**
-	 * Add an "Upgrade to Pro" submenu link.
-	 *
-	 * @internal
-	 *
-	 * @since 2.5.0
-	 */
-	public function add_pro_menu_item() {
-		global $submenu;
-
-		$submenu['algolia'][] = [ // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited -- Only real way to modify in this way.
-			'<span class="algolia-menu-highlight">' . esc_html__( 'Upgrade to Pro', 'wp-search-with-algolia' ) . '</span>',
-			'manage_options',
-			wp_nonce_url(
-				add_query_arg(
-					[
-						'page'                => 'algolia-account-settings',
-						'algolia-pro-upgrade' => wp_create_nonce( 'algolia-pro-nonce' ),
-					],
-					admin_url(
-						'admin.php'
-					)
-				)
-			),
-		];
+		return $footer;
 	}
 
 	/**
 	 * Handle redirect to purchase WP Search with Algolia Pro link click.
 	 *
+	 * The "Upgrade to Pro" submenu that used to generate these URLs was
+	 * consolidated into the Algolia_Admin_Page_Premium_Support page in 2.14.0.
+	 * This handler is kept so existing bookmarks continue to work.
+	 *
 	 * @since 2.5.0
 	 */
 	public function handle_pro_redirect() {
 		if ( isset( $_GET['algolia-pro-upgrade'] ) && wp_verify_nonce( $_GET['algolia-pro-upgrade'], 'algolia-pro-nonce' ) ) {
-			wp_redirect( 'https://pluginize.com/plugins/wp-search-with-algolia-pro/' ); // phpcs:ignore WordPress.Security.SafeRedirect.wp_redirect_wp_redirect
+			wp_redirect( Algolia_Pro::get_url( 'legacy-menu-redirect' ) ); // phpcs:ignore WordPress.Security.SafeRedirect.wp_redirect_wp_redirect
 			exit();
 		}
 	}

@@ -29,6 +29,7 @@ class Algolia_Settings {
 		add_option( 'algolia_autocomplete_enabled', 'no' );
 		add_option( 'algolia_autocomplete_debounce', 0 );
 		add_option( 'algolia_autocomplete_config', array() );
+		add_option( 'algolia_autocomplete_template_version', 'legacy' );
 		add_option( 'algolia_override_native_search', 'native' );
 		add_option( 'algolia_instantsearch_template_version', 'legacy' );
 		add_option( 'algolia_index_name_prefix', 'wp_' );
@@ -565,6 +566,19 @@ class Algolia_Settings {
 	}
 
 	/**
+	 * Return the version keyword for Autocomplete version to use.
+	 *
+	 * @since 2.13.0
+	 *
+	 * @return mixed|null
+	 */
+	public function get_autocomplete_template_version() {
+		$chosen = get_option( 'algolia_autocomplete_template_version', 'legacy' );
+
+		return apply_filters( 'algolia_autocomplete_template_version', $chosen );
+	}
+
+	/**
 	 * Return the version keyword for Instantsearch version to use.
 	 *
 	 * @since 2.9.0
@@ -583,6 +597,19 @@ class Algolia_Settings {
 		 * @return string $value  Final template version.
 		 */
 		return apply_filters( 'algolia_instantsearch_template_version', $chosen );
+	}
+
+	/**
+	 * Return whether or not the keyword version is set to 'modern' or 'legacy'.
+	 *
+	 * @since 2.13.0
+	 *
+	 * @return bool
+	 */
+	public function should_use_autocomplete_modern() {
+		$version = $this->get_autocomplete_template_version();
+
+		return $version === 'modern';
 	}
 
 	/**

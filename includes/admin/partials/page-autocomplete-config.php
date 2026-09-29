@@ -12,6 +12,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals -- This is a template partial variable, not a true global.
 $prefix = $this->settings->get_index_name_prefix();
 ?>
 
@@ -25,6 +26,7 @@ $prefix = $this->settings->get_index_name_prefix();
 <?php else : ?>
 	<div class="algolia-autocomplete-config">
 		<div class="algolia-autocomplete-list" role="list">
+			<?php // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals -- This is a template partial loop variable, not a true global. ?>
 			<?php foreach ( $indices as $index ) : ?>
 				<div class="algolia-autocomplete-row" role="listitem" data-index-id="<?php echo esc_attr( $index['index_id'] ); ?>">
 					<div class="algolia-autocomplete-row__handle" aria-label="<?php esc_attr_e( 'Drag to reorder', 'wp-search-with-algolia' ); ?>">

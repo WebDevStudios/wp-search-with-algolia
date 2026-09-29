@@ -304,70 +304,28 @@ class Algolia_Utils {
 	/**
 	 * Return markup for WP Search with Algolia Pro Call To Action.
 	 *
-	 * @since 2.5.0
+	 * @since      2.5.0
+	 * @deprecated 2.14.0 Pro messaging now renders from Algolia_Pro and the
+	 *             shared partials in includes/admin/partials/pro-parts.php, so
+	 *             every surface stays in sync with the current Pro release.
+	 *
 	 * @return false|string
 	 */
 	public static function pro_cta_content() {
+		_deprecated_function(
+			__METHOD__,
+			'2.14.0',
+			'algolia_pro_render_feature_cards()'
+		);
+
+		if ( ! function_exists( 'algolia_pro_render_feature_cards' ) ) {
+			require_once ALGOLIA_PATH . 'includes/admin/partials/pro-parts.php';
+		}
+
 		ob_start();
-		?>
-		<div class="algolia-pro-cta">
-			<h2 class="algolia-pro-title"><?php esc_html_e( 'WP Search with Algolia Pro', 'wp-search-with-algolia' ); ?></h2>
-			<h3 class="algolia-pro-desc">
-				<?php esc_html_e( 'A premium Algolia search plugin specifically designed for enterprise-grade WordPress websites, including eCommerce', 'wp-search-with-algolia' ); ?>
-			</h3>
-			<div class="algolia-pro-features">
-				<div>
-					<?php $svg = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#0077ff" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>'; ?>
-					<h4><?php esc_html_e( 'WooCommerce Support', 'wp-search-with-algolia' ); ?></h4>
-					<span class="algolia-pro-feature">
-						<?php echo $svg; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- This is a hardcoded SVG. ?>
-						<span><?php esc_html_e( 'Index product SKUs, prices, short descriptions and product dimensions/weight for display.', 'wp-search-with-algolia' ); ?></span>
-					</span>
-					<span class="algolia-pro-feature">
-						<?php echo $svg; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- This is a hardcoded SVG. ?>
-						<span><?php esc_html_e( 'Index product total sales ratings for relevance.', 'wp-search-with-algolia' ); ?></span>
-					</span>
-					<span class="algolia-pro-feature">
-						<?php echo $svg; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- This is a hardcoded SVG. ?>
-						<span><?php esc_html_e( 'Index product total and average ratings for relevance.', 'wp-search-with-algolia' ); ?></span>
-					</span>
-					<span class="algolia-pro-feature">
-						<?php echo $svg; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- This is a hardcoded SVG. ?>
-						<span><?php esc_html_e( 'Control whether or not sold out products are indexed', 'wp-search-with-algolia' ); ?></span>
-					</span>
-					<span class="algolia-pro-feature">
-						<?php echo $svg; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- This is a hardcoded SVG. ?>
-						<span><?php esc_html_e( 'Control whether or not "shop only" or "hidden" products are indexed.', 'wp-search-with-algolia' ); ?></span>
-					</span>
-					<span class="algolia-pro-feature">
-						<?php echo $svg; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- This is a hardcoded SVG. ?>
-						<span><?php esc_html_e( 'Amend indexing to only include WooCommerce products.', 'wp-search-with-algolia' ); ?></span>
-					</span>
-				</div>
-				<div>
-					<h4><?php esc_html_e( 'Additional Features', 'wp-search-with-algolia' ); ?></h4>
-					<span class="algolia-pro-feature">
-						<?php echo $svg; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- This is a hardcoded SVG. ?>
-						<span><?php esc_html_e( 'Multisite indexing into a single network index to provide a global Algolia-powered search experience.', 'wp-search-with-algolia' ); ?></span>
-					</span>
-					<span class="algolia-pro-feature">
-						<?php echo $svg; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- This is a hardcoded SVG. ?>
-						<span><?php esc_html_e( 'Fine tune indexing on selected pieces of content', 'wp-search-with-algolia' ); ?></span>
-					</span>
-					<span class="algolia-pro-feature">
-						<?php echo $svg; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- This is a hardcoded SVG. ?>
-						<span><?php esc_html_e( 'Yoast SEO, All in One SEO, Rank Math SEO, SEOPress, and The SEO Framework Support', 'wp-search-with-algolia' ); ?></span>
-					</span>
-				</div>
-			</div>
-			<div>
-				<a href="https://pluginize.com/plugins/wp-search-with-algolia-pro/" class="algolia-pro-button" target="_blank" rel="noopener"><?php esc_html_e( 'Upgrade Now and Go Pro', 'wp-search-with-algolia' ); ?></a>
-				<span class="algolia-pro-more">
-				<a href="https://pluginize.com/plugins/wp-search-with-algolia-pro/" target="_blank" rel="noopener"><?php esc_html_e( 'Learn more and see all the features', 'wp-search-with-algolia' ); ?></a>
-			</span>
-			</div>
-		</div>
-		<?php
+		algolia_pro_render_feature_cards();
+		algolia_pro_render_pricing_cta( 'legacy-pro-cta' );
+
 		return ob_get_clean();
 	}
 }
