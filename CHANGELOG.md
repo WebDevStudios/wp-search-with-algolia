@@ -1,3 +1,6 @@
+## 2.15.0
+* Updated: `algoliasearch` JS client bumped from 4.18.0 to 4.25.2.
+
 ## 2.14.1
 * Fixed: Settings, Autocomplete, and Native Search admin notices no longer appear on unrelated wp-admin screens (e.g. WooCommerce Edit Order).
 
