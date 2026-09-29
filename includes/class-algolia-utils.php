@@ -318,6 +318,10 @@ class Algolia_Utils {
 			'algolia_pro_render_feature_cards()'
 		);
 
+		if ( Algolia_Pro::is_active() ) {
+			return '';
+		}
+
 		if ( ! function_exists( 'algolia_pro_render_feature_cards' ) ) {
 			require_once ALGOLIA_PATH . 'includes/admin/partials/pro-parts.php';
 		}
