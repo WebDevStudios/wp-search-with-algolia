@@ -87,6 +87,12 @@ class Algolia_Admin_Page_SEO {
 			return;
 		}
 
+		// Pro registers the real SEO screen at this slug. See the matching
+		// comment in Algolia_Admin_Page_WooCommerce::add_page().
+		if ( Algolia_Pro::is_active() ) {
+			return;
+		}
+
 		add_submenu_page(
 			'algolia',
 			esc_html__( 'SEO', 'wp-search-with-algolia' ),
