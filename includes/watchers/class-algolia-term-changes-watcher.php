@@ -169,42 +169,4 @@ class Algolia_Term_Changes_Watcher implements Algolia_Changes_Watcher {
 
 		$this->sync_item( $object_id );
 	}
-
-	/**
-	 * Conditionally set an admin notice about maybe bulk re-indexing to update
-	 * Algolia post records that have this term.
-	 *
-	 * @since 2.11.3
-	 */
-	public function large_count_notice() {
-		global $current_screen;
-
-		if ( ! $current_screen || 'term' !== $current_screen->base ) {
-			return;
-		}
-		if ( ! empty( $_GET['tag_ID'] ) && is_numeric( $_GET['tag_ID'] ) ) {
-			$termID = absint( $_GET['tag_ID'] );
-		}
-
-		$term = get_term( $termID );
-		if ( ! $term ) {
-			return;
-		}
-
-		// This filter is documented in includes/watchers/class-algolia-term-changes-watcher.php
-		$limit = apply_filters( 'algolia_term_update_post_limit', 50 );
-		if ( $term->count > absint( $limit ) ) {
-			wp_admin_notice(
-				sprintf(
-					esc_html__( 'Only the first %1$s posts with this term have been sync\'d to your Algolia indexes. Please run a bulk re-index to get the rest.', 'wp-search-with-algolia' ),
-					$limit
-				),
-				[
-					'id'                 => 'message',
-					'additional_classes' => array( 'updated' ),
-					'dismissible'        => true,
-				]
-			);
-		}
-	}
 }
