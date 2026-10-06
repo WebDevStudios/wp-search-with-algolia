@@ -57,7 +57,7 @@ Both versions index posts, pages, custom post types, terms, and users, and both 
 
 WP Search with Algolia Pro is $99, and includes six months of updates and technical support plus a 30-day money-back guarantee.
 
-**Pro requires WordPress 6.5 or higher, PHP 8.0 or higher, and WP Search with Algolia 2.10.2 or higher.** These are higher than this free plugin's own minimums, so check your server before purchasing.
+**Pro requires WordPress 6.5 or higher, PHP 8.1 or higher, and WP Search with Algolia 2.10.2 or higher.** These are higher than this free plugin's own minimums, so check your server before purchasing.
 
 Ready to go Pro? Check out [WP Search with Algolia Pro on Pluginize](https://pluginize.com/plugins/wp-search-with-algolia-pro/?utm_source=wpswa-free&utm_medium=readme&utm_campaign=pro-upgrade&utm_content=description)!
 
@@ -100,7 +100,7 @@ Yes. WP Search with Algolia Pro is an add-on, not a replacement. Keep this plugi
 
 = What are Pro's requirements? =
 
-Pro requires WordPress 6.5 or higher, PHP 8.0 or higher, and WP Search with Algolia 2.10.2 or higher. These minimums are higher than this free plugin's, so confirm your server meets them before purchasing. Once this plugin is installed, the **Algolia Search &rarr; Upgrade to Pro** screen checks your site against all three and tells you where you stand.
+Pro requires WordPress 6.5 or higher, PHP 8.1 or higher, and WP Search with Algolia 2.10.2 or higher. These minimums are higher than this free plugin's, so confirm your server meets them before purchasing. Once this plugin is installed, the **Algolia Search &rarr; Upgrade to Pro** screen checks your site against all three and tells you where you stand.
 
 = Is this plugin a fork? =
 
@@ -150,6 +150,8 @@ Follow along with the changelog on [GitHub](https://github.com/WebDevStudios/wp-
 
 = 3.0.0 =
 * Fixed: WPCLI - Prevent index clearing when using `--all` but not specifying `--clear` as well.
+* Fixed: `Algolia_Index::get_index()` no longer returns `false` after the Algolia SDK v4 migration, preventing a fatal error in Pro (and any other SDK v3-style integration) when checking a post's index status.
+* Changed: Minimum required PHP version bumped to 8.1 to match the bundled Algolia SDK v4's own requirement.
 
 = 2.14.1 =
 * Fixed: Settings, Autocomplete, and Native Search admin notices no longer appear on unrelated wp-admin screens (e.g. WooCommerce Edit Order).
