@@ -48,7 +48,22 @@
 	</rule>
 
 	<!-- Use WordPress "Docs" Coding Standards. -->
-	<rule ref="WordPress-Docs" />
+	<rule ref="WordPress-Docs">
+		<!--
+			This project's file comments consistently use @author, @since, @version
+			and @package (with no @subpackage/@copyright tags) in that order, which
+			differs from the generic Squiz file-comment conventions these sniffs
+			enforce. Excluded to match the project's established, intentional style
+			rather than rewriting every file's doc comment.
+		-->
+		<exclude name="Squiz.Commenting.FileComment.IncorrectAuthor"/>
+		<exclude name="Squiz.Commenting.FileComment.PackageTagOrder"/>
+		<exclude name="Squiz.Commenting.FileComment.SubpackageTagOrder"/>
+		<exclude name="Squiz.Commenting.FileComment.AuthorTagOrder"/>
+		<exclude name="Squiz.Commenting.FileComment.CopyrightTagOrder"/>
+		<exclude name="Squiz.Commenting.FileComment.MissingSubpackageTag"/>
+		<exclude name="Squiz.Commenting.FileComment.MissingCopyrightTag"/>
+	</rule>
 
 	<!--
 		WP Search With Algolia currently supports WP 5.0+.
