@@ -30,7 +30,6 @@ class Algolia_Search_Client_Factory {
 	 *
 	 * @return SearchClient
 	 */
-
 	public static function create( string $app_id, string $api_key ): SearchClient {
 
 		global $wp_version;
@@ -63,6 +62,7 @@ class Algolia_Search_Client_Factory {
 
 		/**
 		 * Allows for providing custom configuration arguments for Algolia Search Client.
+		 *
 		 * @see   https://www.algolia.com/doc/api-reference/api-methods/configuring-timeouts/
 		 * @since 2.8.0
 		 *
@@ -75,6 +75,7 @@ class Algolia_Search_Client_Factory {
 
 		/**
 		 * Allows for customizing an Algolia secured API key.
+		 *
 		 * @see   https://www.algolia.com/doc/api-reference/api-methods/generate-secured-api-key/
 		 * @since 2.9.0
 		 *
@@ -112,7 +113,7 @@ class Algolia_Search_Client_Factory {
 		if ( ! empty( $custom_config ) && is_array( $custom_config ) ) {
 			$customconfigobj = SearchConfig::create( $app_id, $api_key );
 
-			// Set these again for the custom config
+			// Set these again for the custom config.
 			AlgoliaAgent::addAlgoliaAgent(
 				$customconfigobj->getClientName(),
 				$integration_name,
@@ -141,14 +142,13 @@ class Algolia_Search_Client_Factory {
 			return SearchClient::createWithConfig( $customconfigobj );
 		}
 
-		// Default config, with maybe secure $api_key
+		// Default config, with maybe secure $api_key.
 		$configobj = SearchConfig::create( $app_id, $api_key );
 		AlgoliaAgent::addAlgoliaAgent(
 			$configobj->getClientName(),
 			$integration_name,
 			$integration_version
 		);
-
 
 		AlgoliaAgent::addAlgoliaAgent(
 			$configobj->getClientName(),

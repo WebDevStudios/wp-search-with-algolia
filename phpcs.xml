@@ -10,8 +10,13 @@
 	<!-- Only scan PHP files. -->
 	<arg name="extensions" value="php"/>
 
-	<!-- Whenever possible, cache the scan results and re-use those for unchanged files on the next scan. -->
-	<arg name="cache"/>
+	<!--
+		Caching is intentionally disabled. PHP_CodeSniffer's result cache is an
+		untracked file that can persist across CI runs in a reused build
+		workspace (e.g. Buddy), causing stale sniff results to resurface even
+		after this ruleset changes. Linting this project only takes a couple
+		of seconds, so the reliability win outweighs the speed cost.
+	-->
 
 	<!-- Set the memory limit to 256M.
 		For most standard PHP configurations, this means the memory limit will temporarily be raised.

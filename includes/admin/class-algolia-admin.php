@@ -249,6 +249,7 @@ class Algolia_Admin {
 		$allowed_html = array(
 			'strong' => array(),
 		);
+
 		$client = $this->plugin->get_api()->get_client();
 		foreach ( $indices as $index ) {
 			if ( $client->indexExists( $index->get_name() ) ) {
