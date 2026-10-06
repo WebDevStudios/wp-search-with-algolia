@@ -112,7 +112,7 @@ Yes. Because Algolia no longer supports their plugin, you will no longer receive
 
 = What are the minimum requirements? =
 
-* Requires WordPress 5.3+
+* Requires WordPress 6.2.9+
 * PHP version 8.1 or greater
 * MySQL version 5.0 or greater (MySQL 5.6 or greater is recommended)
 * cURL PHP extension
