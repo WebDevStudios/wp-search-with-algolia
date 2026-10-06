@@ -69,7 +69,7 @@ class Algolia_Term_Changes_Watcher implements Algolia_Changes_Watcher {
 		// Fires after a term is deleted from the database and the cache is cleaned.
 		add_action( 'delete_term', array( $this, 'on_delete_term' ), 10, 4 );
 
-		add_action( 'admin_notices', [ $this, 'large_count_notice'] );
+		add_action( 'admin_notices', [ $this, 'large_count_notice' ] );
 	}
 
 	/**
@@ -310,29 +310,38 @@ class Algolia_Term_Changes_Watcher implements Algolia_Changes_Watcher {
 		if ( ! $current_screen || 'term' !== $current_screen->base ) {
 			return;
 		}
-		if ( ! empty( $_GET['tag_ID'] ) && is_numeric( $_GET['tag_ID'] ) ) {
-			$termID = absint( $_GET['tag_ID'] );
+		$term_id = filter_input( INPUT_GET, 'tag_ID', FILTER_VALIDATE_INT );
+		if ( empty( $term_id ) ) {
+			return;
 		}
 
-		$term = get_term( $termID );
+		$term = get_term( $term_id );
 		if ( ! $term ) {
 			return;
 		}
 
-		// This filter is documented in includes/watchers/class-algolia-term-changes-watcher.php
+		// This filter is documented in includes/watchers/class-algolia-term-changes-watcher.php.
 		$limit = apply_filters( 'algolia_term_update_post_limit', 50 );
 		if ( $term->count > absint( $limit ) ) {
-			wp_admin_notice(
-				sprintf(
-					esc_html__( 'Only the first %1$s posts with this term have been sync\'d to your Algolia indexes. Please run a bulk re-index to get the rest.', 'wp-search-with-algolia' ),
-					$limit
-				),
-				[
-					'id'                 => 'message',
-					'additional_classes' => array( 'updated' ),
-					'dismissible'        => true,
-				]
+			$message = sprintf(
+				/* translators: %1$s: Number of posts that were synced for this term. */
+				esc_html__( 'Only the first %1$s posts with this term have been sync\'d to your Algolia indexes. Please run a bulk re-index to get the rest.', 'wp-search-with-algolia' ),
+				$limit
 			);
+
+			// wp_admin_notice() requires WP 6.4+; this plugin still supports older versions.
+			if ( function_exists( 'wp_admin_notice' ) ) {
+				wp_admin_notice(
+					$message,
+					[
+						'id'                 => 'message',
+						'additional_classes' => array( 'updated' ),
+						'dismissible'        => true,
+					]
+				);
+			} else {
+				printf( '<div id="message" class="notice updated is-dismissible"><p>%s</p></div>', $message ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- $message is already escaped above.
+			}
 		}
 	}
 }
