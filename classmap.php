@@ -8,6 +8,10 @@
  * @package WebDevStudios\WPSWA
  */
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 if ( ! defined( 'ALGOLIA_PATH' ) ) {
 	exit();
 }

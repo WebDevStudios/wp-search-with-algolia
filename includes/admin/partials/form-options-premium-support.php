@@ -26,6 +26,7 @@ $algolia_header_subtitle = $algolia_pro_active
 	: __( 'Take WordPress search further with Pro, or get hands-on help from the team behind the plugin.', 'wp-search-with-algolia' );
 $algolia_header_actions  = '';
 
+// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals -- This is a template partial variable, not a true global.
 $wds_url = 'https://webdevstudios.com/contact/';
 
 /*
