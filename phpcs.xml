@@ -127,4 +127,14 @@
 	<!-- WPSWA currently supports PHP 7.4+. -->
 	<config name="testVersion" value="7.4-"/>
 
+	<!--
+		Also set text_domain via the global config (not just the
+		WordPress.WP.I18n property above). WordPress.WP.I18n's sniff calls
+		trim( PHPCSHelper::get_config_data( 'text_domain' ) ), which returns
+		null when this isn't set, triggering a PHP 8.1+ "trim(): Passing
+		null" deprecation that aborts the sniff for any file calling a
+		translation function. Setting it here avoids the null entirely.
+	-->
+	<config name="text_domain" value="wp-search-with-algolia"/>
+
 </ruleset>
