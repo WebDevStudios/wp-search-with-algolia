@@ -289,6 +289,10 @@ class Algolia_Admin {
 	 */
 	public function re_index() {
 
+		if ( ! current_user_can( 'manage_options' ) || ! check_ajax_referer( 'algolia_re_index', 'nonce', false ) ) {
+			wp_send_json_error( [ 'message' => __( 'You are not allowed to do this.', 'wp-search-with-algolia' ) ], 403 );
+		}
+
 		$index_id = filter_input( INPUT_POST, 'index_id', FILTER_SANITIZE_SPECIAL_CHARS );
 		$page     = filter_input( INPUT_POST, 'p', FILTER_SANITIZE_SPECIAL_CHARS );
 
