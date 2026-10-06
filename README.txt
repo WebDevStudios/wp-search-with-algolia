@@ -3,7 +3,7 @@ Contributors: WebDevStudios, williamsba1, tw2113, mrasharirfan, scottbasgaard, g
 Tags: algolia, search, autocomplete, instantsearch, ai search
 Requires at least: 6.2.9
 Tested up to: 7.1
-Requires PHP: 8.0
+Requires PHP: 8.1
 Stable tag: 3.0.0
 License: GNU General Public License v2.0, MIT License
 

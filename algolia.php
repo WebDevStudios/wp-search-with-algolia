@@ -5,7 +5,7 @@
  * Description:       Integrate the powerful Algolia search service with WordPress
  * Version:           3.0.0
  * Requires at least: 6.2.9
- * Requires PHP:      8.0
+ * Requires PHP:      8.1
  * Author:            WebDevStudios
  * Author URI:        https://webdevstudios.com
  * License:           GNU General Public License v2.0 / MIT License
@@ -29,7 +29,7 @@ if ( ! defined( 'WPINC' ) ) {
 define( 'ALGOLIA_VERSION', '3.0.0' );
 
 // The minmum required PHP version.
-define( 'ALGOLIA_MIN_PHP_VERSION', '8.0' );
+define( 'ALGOLIA_MIN_PHP_VERSION', '8.1' );
 
 // The minimum required WordPress version.
 define( 'ALGOLIA_MIN_WP_VERSION', '6.2.9' );
