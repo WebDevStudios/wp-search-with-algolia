@@ -10,8 +10,13 @@
 	<!-- Only scan PHP files. -->
 	<arg name="extensions" value="php"/>
 
-	<!-- Whenever possible, cache the scan results and re-use those for unchanged files on the next scan. -->
-	<arg name="cache"/>
+	<!--
+		Caching is intentionally disabled. PHP_CodeSniffer's result cache is an
+		untracked file that can persist across CI runs in a reused build
+		workspace (e.g. Buddy), causing stale sniff results to resurface even
+		after this ruleset changes. Linting this project only takes a couple
+		of seconds, so the reliability win outweighs the speed cost.
+	-->
 
 	<!-- Set the memory limit to 256M.
 		For most standard PHP configurations, this means the memory limit will temporarily be raised.
@@ -48,7 +53,22 @@
 	</rule>
 
 	<!-- Use WordPress "Docs" Coding Standards. -->
-	<rule ref="WordPress-Docs" />
+	<rule ref="WordPress-Docs">
+		<!--
+			This project's file comments consistently use @author, @since, @version
+			and @package (with no @subpackage/@copyright tags) in that order, which
+			differs from the generic Squiz file-comment conventions these sniffs
+			enforce. Excluded to match the project's established, intentional style
+			rather than rewriting every file's doc comment.
+		-->
+		<exclude name="Squiz.Commenting.FileComment.IncorrectAuthor"/>
+		<exclude name="Squiz.Commenting.FileComment.PackageTagOrder"/>
+		<exclude name="Squiz.Commenting.FileComment.SubpackageTagOrder"/>
+		<exclude name="Squiz.Commenting.FileComment.AuthorTagOrder"/>
+		<exclude name="Squiz.Commenting.FileComment.CopyrightTagOrder"/>
+		<exclude name="Squiz.Commenting.FileComment.MissingSubpackageTag"/>
+		<exclude name="Squiz.Commenting.FileComment.MissingCopyrightTag"/>
+	</rule>
 
 	<!--
 		WP Search With Algolia currently supports WP 5.0+.
@@ -106,5 +126,18 @@
 
 	<!-- WPSWA currently supports PHP 7.4+. -->
 	<config name="testVersion" value="7.4-"/>
+
+	<!--
+		Also set text_domain and prefixes via the global config (not just
+		their sniff <property> values above). Both
+		WordPress.WP.I18n and WordPress.NamingConventions.PrefixAllGlobals
+		call trim( PHPCSHelper::get_config_data( ... ) ) to allow a CLI
+		override of their respective ruleset property, which returns null
+		when unset, triggering a PHP 8.1+ "trim(): Passing null" deprecation
+		that aborts the sniff for any matching file. Setting both here
+		avoids the null entirely.
+	-->
+	<config name="text_domain" value="wp-search-with-algolia"/>
+	<config name="prefixes" value="webdevstudios,wds,wpswa,algolia"/>
 
 </ruleset>

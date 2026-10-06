@@ -3,9 +3,9 @@
  * Plugin Name:       WP Search with Algolia
  * Plugin URI:        https://github.com/WebDevStudios/wp-search-with-algolia
  * Description:       Integrate the powerful Algolia search service with WordPress
- * Version:           2.14.1
+ * Version:           3.0.0
  * Requires at least: 6.2.9
- * Requires PHP:      7.4
+ * Requires PHP:      8.1
  * Author:            WebDevStudios
  * Author URI:        https://webdevstudios.com
  * License:           GNU General Public License v2.0 / MIT License
@@ -26,10 +26,10 @@ if ( ! defined( 'WPINC' ) ) {
 }
 
 // The Algolia Search plugin version.
-define( 'ALGOLIA_VERSION', '2.14.1' );
+define( 'ALGOLIA_VERSION', '3.0.0' );
 
 // The minmum required PHP version.
-define( 'ALGOLIA_MIN_PHP_VERSION', '7.4' );
+define( 'ALGOLIA_MIN_PHP_VERSION', '8.1' );
 
 // The minimum required WordPress version.
 define( 'ALGOLIA_MIN_WP_VERSION', '6.2.9' );
@@ -132,8 +132,6 @@ function algolia_load_textdomain() {
 	$locale = apply_filters( 'plugin_locale', get_locale(), 'wp-search-with-algolia' );
 
 	load_textdomain( 'wp-search-with-algolia', WP_LANG_DIR . '/wp-search-with-algolia/wp-search-with-algolia-' . $locale . '.mo' );
-
-	load_plugin_textdomain( 'wp-search-with-algolia', false, plugin_basename( dirname( __FILE__ ) ) . '/languages/' );
 }
 
 add_action( 'init', 'algolia_load_textdomain' );

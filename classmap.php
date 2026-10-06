@@ -8,6 +8,10 @@
  * @package WebDevStudios\WPSWA
  */
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 if ( ! defined( 'ALGOLIA_PATH' ) ) {
 	exit();
 }
@@ -28,6 +32,9 @@ apply_filters_deprecated(
 	'The "algolia_should_require_search_client" filter is deprecated and no longer has any effect.',
 );
 
+if ( ! file_exists( ALGOLIA_PATH . 'vendor_prefixed/autoload.php' ) ) {
+	wp_die( 'WP Search with Algolia: Please run `composer install` to get dependencies' );
+}
 // Autoload vendor dependencies, that have been prefixed to prevent namespace collision.
 require_once ALGOLIA_PATH . 'vendor_prefixed/autoload.php';
 
@@ -49,6 +56,7 @@ require_once ALGOLIA_PATH . 'includes/class-algolia-styles.php';
 require_once ALGOLIA_PATH . 'includes/class-algolia-scripts.php';
 
 require_once ALGOLIA_PATH . 'includes/indices/class-algolia-index.php';
+require_once ALGOLIA_PATH . 'includes/indices/class-algolia-index-legacy-client-adapter.php';
 require_once ALGOLIA_PATH . 'includes/indices/class-algolia-index-replica.php';
 require_once ALGOLIA_PATH . 'includes/indices/class-algolia-searchable-posts-index.php';
 require_once ALGOLIA_PATH . 'includes/indices/class-algolia-posts-index.php';
@@ -58,6 +66,7 @@ require_once ALGOLIA_PATH . 'includes/indices/class-algolia-users-index.php';
 require_once ALGOLIA_PATH . 'includes/watchers/class-algolia-changes-watcher.php';
 require_once ALGOLIA_PATH . 'includes/watchers/class-algolia-post-changes-watcher.php';
 require_once ALGOLIA_PATH . 'includes/watchers/class-algolia-term-changes-watcher.php';
+require_once ALGOLIA_PATH . 'includes/watchers/class-algolia-term-post-sync-watcher.php';
 require_once ALGOLIA_PATH . 'includes/watchers/class-algolia-user-changes-watcher.php';
 
 require_once ALGOLIA_PATH . 'includes/utilities/class-algolia-health-panel.php';

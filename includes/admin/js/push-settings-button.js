@@ -42,6 +42,7 @@
 
 		const data = {
 			'action': 'algolia_push_settings',
+			'nonce': algoliaPushSettingsButton.nonce,
 			'index_id': index
 		};
 

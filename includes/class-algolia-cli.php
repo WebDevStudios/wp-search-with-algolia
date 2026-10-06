@@ -133,7 +133,7 @@ class Algolia_CLI {
 		}
 
 		if ( 0 === $total_pages ) {
-			$index->re_index( 1 );
+			$index->re_index( 1, array(), false ); // Reindex but don't clear the index, we've already done that.
 			WP_CLI::success( sprintf( 'Index %s was created but no entries were sent.', $index->get_name() ) );
 
 			return;
@@ -144,7 +144,7 @@ class Algolia_CLI {
 		$page = $from_batch;
 		do {
 			WP_CLI::log( sprintf( 'Indexing batch %s.', $page ) );
-			$index->re_index( $page++ );
+			$index->re_index( $page++, array(), false ); // Reindex but don't clear the index, we've already done that.
 			WP_CLI::log( sprintf( 'Indexed batch %s.', ( $page - 1 ) ) );
 			$progress->tick();
 		} while ( $page <= ( $total_pages + $from_batch - 1 ) );

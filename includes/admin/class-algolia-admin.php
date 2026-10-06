@@ -150,6 +150,7 @@ class Algolia_Admin {
 			'algolia-admin-push-settings-button',
 			'algoliaPushSettingsButton',
 			[
+				'nonce'                => wp_create_nonce( 'algolia_push_settings' ),
 				'noDataIndex'          => esc_html__( 'Clicked button has no "data-index" set.', 'wp-search-with-algolia' ),
 				'pushBtnAlert'         => esc_html__( 'Warning: Pushing settings will override the settings in the Algolia dashboard. Do you want to continue?', 'wp-search-with-algolia' ),
 				'successfullyPushed'   => esc_html__( 'Settings successfully pushed for index:', 'wp-search-with-algolia' ),
@@ -163,6 +164,7 @@ class Algolia_Admin {
 			'algolia-admin-reindex-button',
 			'algoliaPushReindexButton',
 			[
+				'nonce'                => wp_create_nonce( 'algolia_re_index' ),
 				'reindexAbort'         => esc_html__( 'If you leave now, re-indexing tasks in progress will be aborted', 'wp-search-with-algolia' ),
 				'noDataindex'          => esc_html__( 'Clicked button has no "data-index" set.', 'wp-search-with-algolia' ),
 				'processingPrefix'     => esc_html__( 'Processing, please be patient ...', 'wp-search-with-algolia' ),
@@ -248,8 +250,9 @@ class Algolia_Admin {
 			'strong' => array(),
 		);
 
+		$client = $this->plugin->get_api()->get_client();
 		foreach ( $indices as $index ) {
-			if ( $index->exists() ) {
+			if ( $client->indexExists( $index->get_name() ) ) {
 				continue;
 			}
 			?>
@@ -286,6 +289,10 @@ class Algolia_Admin {
 	 * @throws Exception If index ID or page are not provided, or index name dies not exist.
 	 */
 	public function re_index() {
+
+		if ( ! current_user_can( 'manage_options' ) || ! check_ajax_referer( 'algolia_re_index', 'nonce', false ) ) {
+			wp_send_json_error( [ 'message' => __( 'You are not allowed to do this.', 'wp-search-with-algolia' ) ], 403 );
+		}
 
 		$index_id = filter_input( INPUT_POST, 'index_id', FILTER_SANITIZE_SPECIAL_CHARS );
 		$page     = filter_input( INPUT_POST, 'p', FILTER_SANITIZE_SPECIAL_CHARS );
@@ -335,6 +342,10 @@ class Algolia_Admin {
 	 * @throws Exception If index_id is not provided or if the corresponding index is null.
 	 */
 	public function push_settings() {
+
+		if ( ! current_user_can( 'manage_options' ) || ! check_ajax_referer( 'algolia_push_settings', 'nonce', false ) ) {
+			wp_send_json_error( [ 'message' => __( 'You are not allowed to do this.', 'wp-search-with-algolia' ) ], 403 );
+		}
 
 		$index_id = filter_input( INPUT_POST, 'index_id', FILTER_SANITIZE_SPECIAL_CHARS );
 
@@ -423,7 +434,11 @@ class Algolia_Admin {
 	 * @since 2.5.0
 	 */
 	public function handle_pro_redirect() {
-		if ( isset( $_GET['algolia-pro-upgrade'] ) && wp_verify_nonce( $_GET['algolia-pro-upgrade'], 'algolia-pro-nonce' ) ) {
+		$upgrade_nonce = isset( $_GET['algolia-pro-upgrade'] )
+			? sanitize_text_field( wp_unslash( $_GET['algolia-pro-upgrade'] ) )
+			: '';
+
+		if ( $upgrade_nonce && wp_verify_nonce( $upgrade_nonce, 'algolia-pro-nonce' ) ) {
 			wp_redirect( Algolia_Pro::get_url( 'legacy-menu-redirect' ) ); // phpcs:ignore WordPress.Security.SafeRedirect.wp_redirect_wp_redirect
 			exit();
 		}

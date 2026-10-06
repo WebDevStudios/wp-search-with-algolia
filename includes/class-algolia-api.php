@@ -9,7 +9,7 @@
  */
 
 use WebDevStudios\WPSWA\Algolia\AlgoliaSearch\Exceptions\AlgoliaException;
-use WebDevStudios\WPSWA\Algolia\AlgoliaSearch\SearchClient;
+use WebDevStudios\WPSWA\Algolia\AlgoliaSearch\Api\SearchClient;
 
 /**
  * Class Algolia_API
@@ -155,6 +155,7 @@ class Algolia_API {
 
 		if ( ! empty( $missing_acls ) ) {
 			throw new Exception(
+				// phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- Exception message, never output directly.
 				'Your admin API key is missing the following ACLs: ' . implode( ', ', $missing_acls )
 			);
 		}

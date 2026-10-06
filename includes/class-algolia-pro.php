@@ -72,7 +72,7 @@ class Algolia_Pro {
 	 * @since 2.14.0
 	 * @var string
 	 */
-	const MIN_PHP_VERSION = '8.0';
+	const MIN_PHP_VERSION = '8.1';
 
 	/**
 	 * Minimum WP Search with Algolia (free) version required by Pro.

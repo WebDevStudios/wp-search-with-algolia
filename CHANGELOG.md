@@ -1,3 +1,12 @@
+## 3.0.0
+* Updated: Migrated the bundled Algolia SDK from v3 to v4.
+* Fixed: WPCLI - Prevent index clearing when using `--all` but not specifying `--clear` as well.
+* Fixed: `Algolia_Index::get_index()` no longer returns `false` after the Algolia SDK v4 migration, preventing a fatal error in Pro (and any other SDK v3-style integration) when checking a post's index status.
+* Changed: Minimum required PHP version bumped to 8.1 to match the bundled Algolia SDK v4's own requirement.
+
+## 2.15.0
+* Updated: `algoliasearch` JS client bumped from 4.18.0 to 4.25.2.
+
 ## 2.14.1
 * Fixed: Settings, Autocomplete, and Native Search admin notices no longer appear on unrelated wp-admin screens (e.g. WooCommerce Edit Order).
 

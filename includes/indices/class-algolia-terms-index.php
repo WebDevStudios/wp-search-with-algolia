@@ -347,6 +347,6 @@ final class Algolia_Terms_Index extends Algolia_Index {
 	 */
 	public function delete_item( $item ) {
 		$this->assert_is_supported( $item );
-		$this->get_index()->deleteObject( $item->term_id );
+		$this->get_client()->deleteObject( $this->get_name(), $item->term_id );
 	}
 }
