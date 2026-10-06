@@ -155,6 +155,7 @@ class Algolia_API {
 
 		if ( ! empty( $missing_acls ) ) {
 			throw new Exception(
+				// phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- Exception message, never output directly.
 				'Your admin API key is missing the following ACLs: ' . implode( ', ', $missing_acls )
 			);
 		}
