@@ -324,6 +324,7 @@ class Algolia_Term_Changes_Watcher implements Algolia_Changes_Watcher {
 		if ( $term->count > absint( $limit ) ) {
 			wp_admin_notice(
 				sprintf(
+					/* translators: %1$s: The post limit for the term. */
 					esc_html__( 'Only the first %1$s posts with this term have been sync\'d to your Algolia indexes. Please run a bulk re-index to get the rest.', 'wp-search-with-algolia' ),
 					$limit
 				),
