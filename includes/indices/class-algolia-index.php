@@ -126,7 +126,7 @@ abstract class Algolia_Index {
 	 */
 	public function assert_is_supported( $item ) {
 		if ( ! $this->supports( $item ) ) {
-			throw new RuntimeException( 'Item is no supported on this index.' );
+			throw new RuntimeException( 'Item is not supported on this index.' );
 		}
 	}
 

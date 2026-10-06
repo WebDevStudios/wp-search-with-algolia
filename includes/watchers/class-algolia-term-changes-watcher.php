@@ -27,15 +27,6 @@ class Algolia_Term_Changes_Watcher implements Algolia_Changes_Watcher {
 	private $index;
 
 	/**
-	 * Active Algolia Indices
-	 *
-	 * @author WebDevStudios <contact@webdevstudios.com>
-	 * @since  2.6.0
-	 * @var post_indices
-	 */
-	private $post_indices;
-
-	/**
 	 * Algolia_Term_Changes_Watcher constructor.
 	 *
 	 * @author WebDevStudios <contact@webdevstudios.com>
@@ -56,7 +47,6 @@ class Algolia_Term_Changes_Watcher implements Algolia_Changes_Watcher {
 	public function watch() {
 		// Fires immediately after the given terms are edited.
 		add_action( 'edited_term', array( $this, 'sync_item' ) );
-		add_action( 'edited_term', [ $this, 'sync_term_posts' ], 10, 3 );
 
 		// Fires after an object's terms have been set.
 		add_action( 'set_object_terms', array( $this, 'handle_changes' ), 10, 6 );
@@ -68,124 +58,6 @@ class Algolia_Term_Changes_Watcher implements Algolia_Changes_Watcher {
 
 		// Fires after a term is deleted from the database and the cache is cleaned.
 		add_action( 'delete_term', array( $this, 'on_delete_term' ), 10, 4 );
-
-		add_action( 'admin_notices', [ $this, 'large_count_notice' ] );
-	}
-
-	/**
-	 * Check if the current term has post assigned to it, if it does and it supports posts, then sync them.
-	 *
-	 * @since 2.6.0
-	 *
-	 * @param int    $term_id  The current term to be updated.
-	 * @param int    $tt_id    The Term Taxonomy ID.
-	 * @param string $taxonomy The taxonomy slug.
-	 *
-	 * @return void
-	 */
-	public function sync_term_posts( $term_id, $tt_id, $taxonomy ) {
-		$term = get_term( (int) $term_id );
-		if ( ! $term || ! $this->index->supports( $term ) ) {
-			return;
-		}
-
-		/**
-		 * Filters whether or not to update posts with the edited term.
-		 *
-		 * @since 2.11.3
-		 *
-		 * @param bool   $value    Whether or not to sync posts with this term.
-		 * @param int    $term_id  The current term to be updated.
-		 * @param int    $tt_id    The term taxonomy ID.
-		 * @param string $taxonomy The taxonomy slug.
-		 */
-		$should_sync_term_posts = apply_filters( 'algolia_should_sync_term_posts', true, $term_id, $tt_id, $taxonomy );
-		if ( ! $should_sync_term_posts ) {
-			return;
-		}
-
-		/**
-		 * This filters a cap of how many posts to fetch for the updated term, to update their algolia records.
-		 *
-		 * @since 2.11.3
-		 *
-		 * @param int $value Amount of posts to update.
-		 */
-		$limit = apply_filters( 'algolia_term_update_post_limit', 50 );
-
-		$args = [
-			'posts_per_page' => $limit,
-			'tax_query'      => [
-				[
-					'taxonomy' => $taxonomy,
-					'field'    => 'term_id',
-					'terms'    => $term_id,
-				],
-			],
-		];
-
-		$posts              = get_posts( $args );
-		$post_types         = wp_list_pluck( $posts, 'post_type' );
-		$post_types         = array_unique( $post_types );
-		$this->post_indices = $this->get_searchable_indexes( $post_types );
-		$this->sync_posts( $posts );
-	}
-
-	/**
-	 * Returns an array of indexes based on selected post types.
-	 *
-	 * @since 2.6.0
-	 *
-	 * @param array $post_types An array of searchable post_types.
-	 */
-	private function get_searchable_indexes( $post_types ) {
-
-		$post_indices          = [];
-		$algolia_plugin        = \Algolia_Plugin_Factory::create();
-		$synced_indices_ids    = $algolia_plugin->get_settings()->get_synced_indices_ids();
-		$index_name_prefix     = $algolia_plugin->get_settings()->get_index_name_prefix();
-		$client                = $algolia_plugin->get_api()->get_client();
-		$searchable_post_types = get_post_types(
-			[
-				'exclude_from_search' => false,
-			]
-		);
-		$searchable_index      = new \Algolia_Searchable_Posts_Index( $searchable_post_types );
-		$searchable_index->set_name_prefix( $index_name_prefix );
-		$searchable_index->set_client( $client );
-		$searchable_index->set_enabled( true );
-		$post_indices[] = $searchable_index;
-
-		foreach ( $post_types as $post_type ) {
-			$post_index = new \Algolia_Posts_Index( $post_type );
-			$post_index->set_name_prefix( $index_name_prefix );
-			$post_index->set_client( $client );
-			$post_index->set_enabled( true );
-			$post_indices[] = $post_index;
-
-		}
-		return $post_indices;
-	}
-
-	/**
-	 * Looks for a valid index base on the post type and triggers an Algolia sync.
-	 *
-	 * @since 2.6.0
-	 *
-	 * @param array $posts The post type to look for an index.
-	 *
-	 * @return void
-	 */
-	public function sync_posts( $posts ) {
-		try {
-			foreach ( $this->post_indices as $index ) {
-				foreach ( $posts as $post ) {
-					$index->sync( $post );
-				}
-			}
-		} catch ( AlgoliaException $exception ) {
-			error_log( $exception->getMessage() ); // phpcs:ignore -- Legacy.
-		}
 	}
 
 	/**
@@ -296,52 +168,5 @@ class Algolia_Term_Changes_Watcher implements Algolia_Changes_Watcher {
 		}
 
 		$this->sync_item( $object_id );
-	}
-
-	/**
-	 * Conditionally set an admin notice about maybe bulk re-indexing to update
-	 * Algolia post records that have this term.
-	 *
-	 * @since 2.11.3
-	 */
-	public function large_count_notice() {
-		global $current_screen;
-
-		if ( ! $current_screen || 'term' !== $current_screen->base ) {
-			return;
-		}
-		$term_id = filter_input( INPUT_GET, 'tag_ID', FILTER_VALIDATE_INT );
-		if ( empty( $term_id ) ) {
-			return;
-		}
-
-		$term = get_term( $term_id );
-		if ( ! $term ) {
-			return;
-		}
-
-		// This filter is documented in includes/watchers/class-algolia-term-changes-watcher.php.
-		$limit = apply_filters( 'algolia_term_update_post_limit', 50 );
-		if ( $term->count > absint( $limit ) ) {
-			$message = sprintf(
-				/* translators: %1$s: Number of posts that were synced for this term. */
-				esc_html__( 'Only the first %1$s posts with this term have been sync\'d to your Algolia indexes. Please run a bulk re-index to get the rest.', 'wp-search-with-algolia' ),
-				$limit
-			);
-
-			// wp_admin_notice() requires WP 6.4+; this plugin still supports older versions.
-			if ( function_exists( 'wp_admin_notice' ) ) {
-				wp_admin_notice(
-					$message,
-					[
-						'id'                 => 'message',
-						'additional_classes' => array( 'updated' ),
-						'dismissible'        => true,
-					]
-				);
-			} else {
-				printf( '<div id="message" class="notice updated is-dismissible"><p>%s</p></div>', $message ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- $message is already escaped above.
-			}
-		}
 	}
 }
