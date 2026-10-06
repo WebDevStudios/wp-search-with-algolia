@@ -112,8 +112,8 @@ Yes. Because Algolia no longer supports their plugin, you will no longer receive
 
 = What are the minimum requirements? =
 
-* Requires WordPress 5.3+
-* PHP version 7.4 or greater
+* Requires WordPress 6.2.9+
+* PHP version 8.1 or greater
 * MySQL version 5.0 or greater (MySQL 5.6 or greater is recommended)
 * cURL PHP extension
 * mbstring PHP extension
@@ -149,6 +149,9 @@ All development is handled on [GitHub](https://github.com/WebDevStudios/wp-searc
 Follow along with the changelog on [GitHub](https://github.com/WebDevStudios/wp-search-with-algolia/releases).
 
 = 3.0.0 =
+* Updated: Migrated the bundled Algolia SDK from v3 to v4.
+* Updated: `algoliasearch` JS client bumped from 4.18.0 to 4.25.2.
+* Security: Fixed missing authorization checks on the re-index and push-settings admin AJAX actions; both now require the `manage_options` capability and a valid nonce.
 * Fixed: WPCLI - Prevent index clearing when using `--all` but not specifying `--clear` as well.
 * Fixed: `Algolia_Index::get_index()` no longer returns `false` after the Algolia SDK v4 migration, preventing a fatal error in Pro (and any other SDK v3-style integration) when checking a post's index status.
 * Changed: Minimum required PHP version bumped to 8.1 to match the bundled Algolia SDK v4's own requirement.
