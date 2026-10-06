@@ -50,6 +50,7 @@
 
 		const data = {
 			'action': 'algolia_re_index',
+			'nonce': algoliaPushReindexButton.nonce,
 			'index_id': index,
 			'p': currentPage
 		};

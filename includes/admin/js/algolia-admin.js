@@ -46,12 +46,11 @@
 
 					let linkChild = link.querySelector('.algolia-menu-highlight')
 					if (linkChild) {
+						// Highlight only. This used to also force target="_blank",
+						// which made sense when "Upgrade to Pro" was an offsite
+						// redirect. It now opens an in-admin page, so sending it
+						// to a new tab would be wrong.
 						child.classList.add('algolia-submenu-highlight')
-
-						let link = child.querySelector('a')
-						if (link) {
-							link.setAttribute('target', '_blank')
-						}
 					}
 				})
 			}

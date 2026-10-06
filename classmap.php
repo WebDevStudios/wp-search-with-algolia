@@ -8,6 +8,10 @@
  * @package WebDevStudios\WPSWA
  */
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 if ( ! defined( 'ALGOLIA_PATH' ) ) {
 	exit();
 }
@@ -43,6 +47,7 @@ require_once ALGOLIA_PATH . 'includes/class-algolia-autocomplete-config.php';
 require_once ALGOLIA_PATH . 'includes/class-algolia-cli.php';
 require_once ALGOLIA_PATH . 'includes/class-algolia-compatibility.php';
 require_once ALGOLIA_PATH . 'includes/class-algolia-plugin.php';
+require_once ALGOLIA_PATH . 'includes/class-algolia-pro.php';
 require_once ALGOLIA_PATH . 'includes/class-algolia-search.php';
 require_once ALGOLIA_PATH . 'includes/class-algolia-settings.php';
 require_once ALGOLIA_PATH . 'includes/class-algolia-template-loader.php';
@@ -60,6 +65,7 @@ require_once ALGOLIA_PATH . 'includes/indices/class-algolia-users-index.php';
 require_once ALGOLIA_PATH . 'includes/watchers/class-algolia-changes-watcher.php';
 require_once ALGOLIA_PATH . 'includes/watchers/class-algolia-post-changes-watcher.php';
 require_once ALGOLIA_PATH . 'includes/watchers/class-algolia-term-changes-watcher.php';
+require_once ALGOLIA_PATH . 'includes/watchers/class-algolia-term-post-sync-watcher.php';
 require_once ALGOLIA_PATH . 'includes/watchers/class-algolia-user-changes-watcher.php';
 
 require_once ALGOLIA_PATH . 'includes/utilities/class-algolia-health-panel.php';

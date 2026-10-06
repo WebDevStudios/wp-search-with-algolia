@@ -132,8 +132,6 @@ function algolia_load_textdomain() {
 	$locale = apply_filters( 'plugin_locale', get_locale(), 'wp-search-with-algolia' );
 
 	load_textdomain( 'wp-search-with-algolia', WP_LANG_DIR . '/wp-search-with-algolia/wp-search-with-algolia-' . $locale . '.mo' );
-
-	load_plugin_textdomain( 'wp-search-with-algolia', false, plugin_basename( dirname( __FILE__ ) ) . '/languages/' );
 }
 
 add_action( 'init', 'algolia_load_textdomain' );

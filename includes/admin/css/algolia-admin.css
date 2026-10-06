@@ -665,7 +665,9 @@ form .radio-info {
   border-radius: 12px;
   display: flex;
   flex-direction: column;
-  margin: 28px 0 0;
+  /* Bottom margin separates the Pro block from the WebDevStudios services
+     section that follows it on the Upgrade to Pro screen. */
+  margin: 28px 0 36px;
   overflow: hidden;
 }
 
@@ -960,7 +962,7 @@ form .radio-info {
 
 /* Subtle inline AI tag for individual feature bullets */
 
-.algolia-pro-upsell .algolia-pro-feature__ai-tag {
+.algolia-pro-feature__ai-tag {
   background: rgba(0, 61, 255, 0.08);
   border: 1px solid rgba(0, 61, 255, 0.25);
   border-radius: 3px;
@@ -985,7 +987,7 @@ form .radio-info {
   padding: 24px;
 }
 
-.algolia-pro-upsell .algolia-pro-feature {
+.algolia-pro-feature {
   background: var(--algolia-white);
   border: 1px solid #dcdcde;
   border-radius: 10px;
@@ -996,13 +998,13 @@ form .radio-info {
   transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
 }
 
-.algolia-pro-upsell .algolia-pro-feature:hover {
+.algolia-pro-feature:hover {
   border-color: var(--algolia-blue);
   box-shadow: 0 6px 24px rgba(0, 61, 255, 0.12);
   transform: translateY(-2px);
 }
 
-.algolia-pro-upsell .algolia-pro-feature__icon {
+.algolia-pro-feature__icon {
   align-items: center;
   background: rgba(0, 61, 255, 0.08);
   border-radius: 10px;
@@ -1014,13 +1016,13 @@ form .radio-info {
   width: 44px;
 }
 
-.algolia-pro-upsell .algolia-pro-feature__icon .dashicons {
+.algolia-pro-feature__icon .dashicons {
   font-size: 24px;
   height: 24px;
   width: 24px;
 }
 
-.algolia-pro-upsell .algolia-pro-feature__title {
+.algolia-pro-feature__title {
   color: var(--algolia-dark-blue);
   font-size: 16px;
   font-weight: 700;
@@ -1028,20 +1030,20 @@ form .radio-info {
   padding: 0;
 }
 
-.algolia-pro-upsell .algolia-pro-feature__lede {
+.algolia-pro-feature__lede {
   color: #3c434a;
   font-size: 13px;
   line-height: 1.55;
   margin: 0 0 14px;
 }
 
-.algolia-pro-upsell .algolia-pro-feature__list {
+.algolia-pro-feature__list {
   list-style: none;
   margin: 0;
   padding: 0;
 }
 
-.algolia-pro-upsell .algolia-pro-feature__list li {
+.algolia-pro-feature__list li {
   align-items: flex-start;
   color: #3c434a;
   display: flex;
@@ -1051,11 +1053,11 @@ form .radio-info {
   margin: 0 0 8px;
 }
 
-.algolia-pro-upsell .algolia-pro-feature__list li:last-child {
+.algolia-pro-feature__list li:last-child {
   margin-bottom: 0;
 }
 
-.algolia-pro-upsell .algolia-pro-feature__list .dashicons-yes-alt {
+.algolia-pro-feature__list .dashicons-yes-alt {
   color: var(--algolia-blue);
   flex-shrink: 0;
   font-size: 16px;
@@ -1533,5 +1535,896 @@ form .radio-info {
   .algolia-settings-card .algolia-pro-flex-item {
     flex: 1 1 100%;
     width: 100%;
+  }
+}
+
+/* Feature grids rendering fewer than the full set of cards. */
+
+.algolia-pro-upsell__features--1 {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.algolia-pro-upsell__features--2 {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+/* =========================================================
+   Pro — "New in" band
+   ========================================================= */
+
+.algolia-pro-whats-new {
+  align-items: center;
+  background: var(--algolia-dark-blue);
+  color: var(--algolia-white);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 18px;
+  padding: 14px 36px;
+}
+
+.algolia-pro-whats-new__badge {
+  background: var(--algolia-neon);
+  border-radius: 4px;
+  color: var(--algolia-dark-blue);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  padding: 4px 9px;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.algolia-pro-whats-new__list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 20px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.algolia-pro-whats-new__list li {
+  align-items: center;
+  color: rgba(255, 255, 255, 0.9);
+  display: flex;
+  font-size: 13px;
+  font-weight: 500;
+  gap: 6px;
+  margin: 0;
+}
+
+.algolia-pro-whats-new__list .dashicons {
+  color: var(--algolia-neon);
+  font-size: 16px;
+  height: 16px;
+  width: 16px;
+}
+
+.algolia-pro-whats-new__link {
+  align-items: center;
+  color: var(--algolia-white);
+  display: inline-flex;
+  font-size: 13px;
+  font-weight: 600;
+  gap: 4px;
+  margin-left: auto;
+  text-decoration: none;
+}
+
+.algolia-pro-whats-new__link:hover,
+.algolia-pro-whats-new__link:focus {
+  color: var(--algolia-neon);
+}
+
+.algolia-pro-whats-new__link .dashicons {
+  font-size: 16px;
+  height: 16px;
+  width: 16px;
+}
+
+/* =========================================================
+   Pro — pricing block
+   ========================================================= */
+
+.algolia-pro-pricing {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px 28px;
+  margin: 0 0 22px;
+}
+
+.algolia-pro-pricing__amount {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+/*
+ * Defaults assume a light background, because this block is also rendered on
+ * the WooCommerce and SEO screens inside a plain white settings card. The
+ * white-text treatment is opted into only within the dark hero.
+ */
+.algolia-pro-pricing__price {
+  color: var(--algolia-dark-blue);
+  font-size: 34px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1;
+}
+
+.algolia-pro-pricing__terms {
+  color: #50575e;
+  font-size: 13px;
+  line-height: 1.45;
+  max-width: 42ch;
+}
+
+.algolia-pro-upsell__hero .algolia-pro-pricing__price {
+  color: var(--algolia-white);
+}
+
+.algolia-pro-upsell__hero .algolia-pro-pricing__terms {
+  color: rgba(255, 255, 255, 0.82);
+}
+
+/*
+ * Same for the primary button: white-on-blue works in the hero, but needs to
+ * become blue-on-white when the block sits on a light card.
+ */
+.algolia-settings-card .algolia-pro-pricing .algolia-pro-upsell__button-primary {
+  background: var(--algolia-blue);
+  color: var(--algolia-white);
+}
+
+.algolia-settings-card .algolia-pro-pricing .algolia-pro-upsell__button-primary:hover,
+.algolia-settings-card .algolia-pro-pricing .algolia-pro-upsell__button-primary:focus {
+  background: var(--algolia-blue-lighten);
+  color: var(--algolia-white);
+}
+
+.algolia-pro-pricing__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+/* =========================================================
+   Pro — requirements / compatibility check
+   ========================================================= */
+
+.algolia-pro-requirements {
+  background: var(--algolia-white);
+  border: 1px solid #dcdce6;
+  border-left-width: 4px;
+  margin: 0;
+  padding: 20px 24px;
+}
+
+.algolia-pro-requirements.is-compatible {
+  border-left-color: #00a32a;
+}
+
+.algolia-pro-requirements.is-incompatible {
+  border-left-color: #dba617;
+}
+
+.algolia-pro-requirements__title {
+  align-items: center;
+  color: var(--algolia-dark-blue);
+  display: flex;
+  font-size: 15px;
+  font-weight: 700;
+  gap: 8px;
+  margin: 0 0 12px;
+  padding: 0;
+}
+
+.algolia-pro-requirements.is-compatible .algolia-pro-requirements__title .dashicons {
+  color: #00a32a;
+}
+
+.algolia-pro-requirements.is-incompatible .algolia-pro-requirements__title .dashicons {
+  color: #dba617;
+}
+
+.algolia-pro-requirements__list {
+  display: grid;
+  gap: 8px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.algolia-pro-requirements__list li {
+  align-items: baseline;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 8px;
+  margin: 0;
+}
+
+.algolia-pro-requirements__list .dashicons {
+  font-size: 18px;
+  height: 18px;
+  position: relative;
+  top: 3px;
+  width: 18px;
+}
+
+.algolia-pro-requirements__list li.is-met .dashicons {
+  color: #00a32a;
+}
+
+.algolia-pro-requirements__list li.is-unmet .dashicons {
+  color: #d63638;
+}
+
+.algolia-pro-requirements__label {
+  color: var(--algolia-dark-blue);
+  font-weight: 600;
+}
+
+.algolia-pro-requirements__detail {
+  color: #50575e;
+  font-size: 13px;
+}
+
+.algolia-pro-requirements__note {
+  color: #50575e;
+  font-size: 13px;
+  margin: 14px 0 0;
+}
+
+/* =========================================================
+   Pro — feature card additions
+   ========================================================= */
+
+.algolia-pro-feature {
+  position: relative;
+}
+
+.algolia-pro-feature--new {
+  border-color: var(--algolia-blue);
+  box-shadow: 0 0 0 1px var(--algolia-blue);
+}
+
+.algolia-pro-feature__new-tag {
+  background: var(--algolia-neon);
+  border-radius: 4px;
+  color: var(--algolia-dark-blue);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  padding: 3px 8px;
+  position: absolute;
+  right: 16px;
+  text-transform: uppercase;
+  top: 16px;
+}
+
+.algolia-pro-feature__subtitle {
+  color: #50575e;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  margin: -6px 0 8px;
+  text-transform: uppercase;
+}
+
+/* =========================================================
+   Pro — free vs Pro comparison table
+   ========================================================= */
+
+.algolia-pro-comparison {
+  background: var(--algolia-white);
+  border: 1px solid #dcdce6;
+  padding: 24px;
+}
+
+.algolia-pro-comparison__title {
+  color: var(--algolia-dark-blue);
+  font-size: 18px;
+  font-weight: 700;
+  margin: 0 0 16px;
+  padding: 0;
+}
+
+.algolia-pro-comparison__scroll {
+  overflow-x: auto;
+}
+
+.algolia-pro-comparison__table {
+  border-collapse: collapse;
+  min-width: 520px;
+  width: 100%;
+}
+
+.algolia-pro-comparison__table th,
+.algolia-pro-comparison__table td {
+  border-bottom: 1px solid #f0f0f4;
+  padding: 11px 14px;
+  text-align: left;
+  vertical-align: middle;
+}
+
+.algolia-pro-comparison__table thead th {
+  border-bottom: 2px solid #dcdce6;
+  color: var(--algolia-dark-blue);
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.algolia-pro-comparison__table thead th:last-child {
+  color: var(--algolia-blue);
+}
+
+.algolia-pro-comparison__table tbody th {
+  color: var(--algolia-dark-blue);
+  font-weight: 500;
+}
+
+.algolia-pro-comparison__cell {
+  color: #50575e;
+  font-size: 13px;
+  white-space: nowrap;
+  width: 22%;
+}
+
+.algolia-pro-comparison__cell--pro {
+  background: rgba(0, 61, 255, 0.04);
+  font-weight: 600;
+}
+
+.algolia-pro-comparison__cell .dashicons-yes {
+  color: #00a32a;
+}
+
+.algolia-pro-comparison__cell .dashicons-minus {
+  color: #c3c4c7;
+}
+
+/* =========================================================
+   Pro — contextual callouts and inline nudges
+   ========================================================= */
+
+.algolia-pro-context-callout {
+  align-items: flex-start;
+  background: rgba(0, 61, 255, 0.05);
+  border-left: 4px solid var(--algolia-blue);
+  display: flex;
+  gap: 12px;
+  margin: 0 0 24px;
+  padding: 16px 20px;
+}
+
+.algolia-pro-context-callout.is-neutral {
+  background: var(--algolia-gray);
+  border-left-color: #c3c4c7;
+}
+
+.algolia-pro-context-callout .dashicons {
+  color: var(--algolia-blue);
+  flex: 0 0 auto;
+  font-size: 20px;
+  height: 20px;
+  width: 20px;
+}
+
+.algolia-pro-context-callout.is-neutral .dashicons {
+  color: #787c82;
+}
+
+.algolia-pro-context-callout p {
+  color: var(--algolia-dark-blue);
+  font-size: 14px;
+  line-height: 1.55;
+  margin: 0;
+}
+
+.algolia-pro-inline-nudge {
+  align-items: baseline;
+  background: var(--algolia-gray);
+  border: 1px solid #dcdce6;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 10px;
+  margin: 20px 0 0;
+  padding: 14px 18px;
+}
+
+.algolia-pro-inline-nudge__badge {
+  background: var(--algolia-blue);
+  border-radius: 3px;
+  color: var(--algolia-white);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  padding: 3px 7px;
+  text-transform: uppercase;
+}
+
+.algolia-pro-inline-nudge__text {
+  color: #3c434a;
+  flex: 1 1 320px;
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+.algolia-pro-inline-nudge a {
+  color: var(--algolia-blue);
+  font-weight: 600;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.algolia-pro-inline-nudge a:hover,
+.algolia-pro-inline-nudge a:focus {
+  text-decoration: underline;
+}
+
+/* Smaller screens */
+@media screen and (max-width: 782px) {
+  .algolia-pro-whats-new {
+    padding: 14px 20px;
+  }
+  .algolia-pro-whats-new__link {
+    margin-left: 0;
+  }
+  .algolia-pro-pricing {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 14px;
+  }
+  .algolia-pro-comparison__cell {
+    white-space: normal;
+  }
+}
+
+/* =========================================================
+   WebDevStudios services section
+
+   Official WebDevStudios brand palette, scoped to this section. These
+   intentionally do NOT reuse the Algolia tokens above — this block should read
+   as WebDevStudios, visibly distinct from the Algolia Pro block preceding it.
+
+   Accessibility note: white text on WDS Orange is only 2.9:1, which fails
+   WCAG AA. Orange is therefore used as a background with Charcoal on top
+   (5.4:1), or as a foreground only against the dark Charcoal masthead
+   (5.4:1) — never as white-on-orange.
+   ========================================================= */
+
+.algolia-wds {
+  /* Primary palette. */
+  --wds-charcoal: #1d2327;
+  --wds-orange: #f3713c;
+  --wds-dark: #2c3338;
+  --wds-white: #fff;
+
+  /* Supporting palette. */
+  --wds-mid-slate: #3c434a;
+  --wds-light-gray: #f0f0f1;
+  --wds-border-gray: #c3c4c7;
+
+  /* Roles. */
+  --wds-ink: var(--wds-charcoal);
+  --wds-surface: var(--wds-white);
+  --wds-accent: var(--wds-orange);
+  --wds-accent-hover: #e05f2b;
+  --wds-on-accent: var(--wds-charcoal);
+  --wds-muted: var(--wds-mid-slate);
+  --wds-border: var(--wds-border-gray);
+
+  background: var(--wds-surface);
+  border: 1px solid var(--wds-border);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.algolia-wds__masthead {
+  align-items: center;
+  background: var(--wds-ink);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 20px;
+  padding: 20px 28px;
+}
+
+.algolia-wds__brand {
+  align-items: center;
+  display: inline-flex;
+}
+
+.algolia-wds__logo {
+  display: block;
+  height: 30px;
+  max-width: 260px;
+  width: auto;
+}
+
+/* Fallback wordmark, used until the official logo asset is dropped in. */
+.algolia-wds__wordmark {
+  color: var(--wds-white);
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1;
+  text-transform: lowercase;
+}
+
+.algolia-wds__wordmark-studios {
+  color: var(--wds-orange);
+}
+
+.algolia-wds__eyebrow {
+  border-left: 1px solid rgba(255, 255, 255, 0.22);
+  /* Orange on Charcoal is 5.4:1 — passes AA. */
+  color: var(--wds-orange);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  padding-left: 20px;
+  text-transform: uppercase;
+}
+
+.algolia-wds__body {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  padding: 26px 28px 30px;
+}
+
+.algolia-wds .algolia-premium-support-block h2 {
+  color: var(--wds-ink);
+  font-size: 21px;
+  font-weight: 700;
+  margin: 0 0 10px;
+  padding: 0;
+}
+
+.algolia-wds .algolia-premium-support-block > p,
+.algolia-wds .algolia-premium-support-list__item p {
+  color: var(--wds-muted);
+}
+
+.algolia-wds .algolia-premium-support-list__item {
+  background: var(--wds-light-gray);
+}
+
+.algolia-wds .algolia-premium-support-list__item .dashicons,
+.algolia-wds .algolia-premium-support-highlight__eyebrow {
+  color: var(--wds-accent);
+}
+
+.algolia-wds .algolia-premium-support-list__item h3,
+.algolia-wds .algolia-premium-support-highlight__title {
+  color: var(--wds-ink);
+}
+
+.algolia-wds .algolia-premium-support-highlight {
+  background: var(--wds-light-gray);
+  border-left-color: var(--wds-accent);
+}
+
+.algolia-wds .algolia-premium-support-highlight::before {
+  display: none;
+}
+
+/*
+ * The partnership block leads with the WebDevStudios wordmark instead of a
+ * generic icon. A 3.9:1 wordmark needs horizontal room, so the brand column is
+ * sized to the logo rather than to a square icon, and separated with a rule.
+ */
+.algolia-wds .algolia-premium-support-highlight__brand {
+  /* Top-aligned so the wordmark sits level with the eyebrow that introduces
+     the claim. Centering it leaves the mark floating in the middle of a tall
+     column once the copy wraps. */
+  align-items: flex-start;
+  align-self: stretch;
+  border-right: 1px solid var(--wds-border-gray);
+  display: flex;
+  flex: 0 0 auto;
+  padding-right: 26px;
+  padding-top: 2px;
+  width: 170px;
+}
+
+.algolia-wds .algolia-premium-support-highlight__logo {
+  display: block;
+  height: auto;
+  width: 100%;
+}
+
+.algolia-wds .algolia-premium-support-highlight__lede,
+.algolia-wds .algolia-premium-support-highlight__note {
+  color: var(--wds-muted);
+}
+
+.algolia-wds .wds-premium {
+  background: var(--wds-accent);
+  color: var(--wds-on-accent);
+}
+
+.algolia-wds .wds-premium:hover,
+.algolia-wds .wds-premium:focus {
+  background: var(--wds-accent-hover);
+  color: var(--wds-on-accent);
+}
+
+/* Smaller screens */
+@media screen and (max-width: 782px) {
+  /* Stack the brand above the copy; a vertical rule makes no sense stacked. */
+  .algolia-wds .algolia-premium-support-highlight {
+    flex-direction: column;
+    gap: 16px;
+  }
+  .algolia-wds .algolia-premium-support-highlight__brand {
+    align-self: flex-start;
+    border-bottom: 1px solid var(--wds-border-gray);
+    border-right: 0;
+    padding-bottom: 16px;
+    padding-right: 0;
+  }
+  .algolia-wds__masthead {
+    padding: 18px 20px;
+  }
+  .algolia-wds__eyebrow {
+    border-left: 0;
+    padding-left: 0;
+  }
+  .algolia-wds__body {
+    padding: 20px 20px 24px;
+  }
+}
+
+/* =========================================================
+   Upgrade to Pro — two-column layout
+
+   The Pro pitch is the primary column; the WebDevStudios services block runs
+   alongside it as a sticky sidebar so it stays visible while the visitor reads
+   down the (long) Pro content, instead of sitting ~2000px below the fold.
+   ========================================================= */
+
+/*
+ * .algolia-settings-page caps every settings screen at 960px, which is right
+ * for a single column of form fields but leaves only ~600px for the main
+ * column once a 340px sidebar is alongside it. This page opts into a wider
+ * cap so both columns have room to breathe.
+ */
+.algolia-settings-page:has(.algolia-pro-layout:not(.algolia-pro-layout--single)) {
+  max-width: 1320px;
+}
+
+.algolia-pro-layout {
+  align-items: start;
+  display: grid;
+  gap: 24px;
+  grid-template-columns: minmax(0, 1fr) 340px;
+}
+
+/* Pro already active: the services block is the whole page. */
+.algolia-pro-layout--single {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.algolia-pro-layout__main {
+  min-width: 0;
+}
+
+.algolia-pro-layout__aside {
+  min-width: 0;
+  position: sticky;
+  /* Clears the WP admin bar. */
+  top: 46px;
+}
+
+.algolia-pro-layout--single .algolia-pro-layout__aside {
+  position: static;
+}
+
+/* The Pro block no longer needs bottom separation from a following section. */
+.algolia-pro-layout__main .algolia-pro-upsell {
+  margin-bottom: 0;
+}
+
+/*
+ * Feature cards drop to two-up beside the sidebar. The three-up grid was built
+ * for a full-width block; at the narrowed main-column width it collapses to a
+ * couple of words per line and becomes unreadable.
+ */
+.algolia-pro-layout__main .algolia-pro-upsell__features {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.algolia-pro-layout__main .algolia-pro-upsell__features--1,
+.algolia-pro-layout__main .algolia-pro-upsell__features--2 {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+/* Narrower viewports: two-up before the cards get too tight to read. */
+@media screen and (max-width: 1440px) {
+  .algolia-pro-layout__main .algolia-pro-upsell__features {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.algolia-pro-layout__aside .algolia-wds {
+  margin-top: 28px;
+}
+
+.algolia-pro-layout--single .algolia-pro-layout__aside .algolia-wds {
+  margin-top: 0;
+}
+
+/* ---- Sidebar-scoped condensing of the WebDevStudios block ---- */
+
+/* Masthead stacks: a wordmark plus an eyebrow will not fit side by side. */
+.algolia-pro-layout__aside .algolia-wds__masthead {
+  align-items: flex-start;
+  flex-direction: column;
+  gap: 10px;
+  padding: 18px 20px;
+}
+
+/* Full width (Pro active): restore the side-by-side masthead. */
+.algolia-pro-layout--single .algolia-wds__masthead {
+  align-items: center;
+  flex-direction: row;
+  gap: 10px 20px;
+  padding: 20px 28px;
+}
+
+.algolia-pro-layout--single .algolia-wds__eyebrow {
+  border-left: 1px solid rgba(255, 255, 255, 0.22);
+  font-size: 12px;
+  padding-left: 20px;
+}
+
+.algolia-pro-layout__aside .algolia-wds__eyebrow {
+  border-left: 0;
+  font-size: 11px;
+  padding-left: 0;
+}
+
+.algolia-pro-layout__aside .algolia-wds__body {
+  gap: 20px;
+  padding: 20px 20px 24px;
+}
+
+.algolia-pro-layout__aside .algolia-wds .algolia-premium-support-block h2 {
+  font-size: 17px;
+  line-height: 1.3;
+}
+
+.algolia-pro-layout__aside .algolia-premium-support-block > p {
+  font-size: 13px;
+  margin-bottom: 16px;
+}
+
+/* Services stack to a single column. */
+.algolia-pro-layout__aside .algolia-premium-support-list {
+  grid-template-columns: minmax(0, 1fr);
+  gap: 12px;
+}
+
+.algolia-pro-layout__aside .algolia-premium-support-list__item {
+  padding: 12px 14px;
+}
+
+.algolia-pro-layout__aside .algolia-premium-support-list__item h3 {
+  font-size: 13px;
+}
+
+.algolia-pro-layout__aside .algolia-premium-support-list__item p {
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+/* Partnership block: stack the wordmark above the copy at sidebar width. */
+.algolia-pro-layout__aside .algolia-wds .algolia-premium-support-highlight {
+  flex-direction: column;
+  gap: 14px;
+  padding: 18px 20px;
+}
+
+.algolia-pro-layout__aside .algolia-wds .algolia-premium-support-highlight__brand {
+  align-self: flex-start;
+  border-bottom: 1px solid var(--wds-border-gray);
+  border-right: 0;
+  padding-bottom: 14px;
+  padding-right: 0;
+  padding-top: 0;
+  width: 150px;
+}
+
+.algolia-pro-layout__aside .algolia-premium-support-highlight__title {
+  font-size: 16px;
+}
+
+.algolia-pro-layout__aside .algolia-premium-support-highlight__lede {
+  font-size: 13px;
+  margin-bottom: 14px;
+}
+
+.algolia-pro-layout__aside .wds-premium {
+  justify-content: center;
+  width: 100%;
+}
+
+/* Collapse to a single column before the sidebar gets too cramped to read. */
+@media screen and (max-width: 1200px) {
+  .algolia-pro-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .algolia-pro-layout__aside {
+    position: static;
+  }
+}
+
+/* Compact sidebar: closing line before the CTA. */
+.algolia-pro-layout__aside .algolia-wds__beyond {
+  border-top: 1px solid var(--wds-border-gray);
+  color: var(--wds-muted);
+  font-size: 12px;
+  line-height: 1.55;
+  margin: 4px 0 16px;
+  padding-top: 14px;
+}
+
+
+/* =========================================================
+   Pro block stacking
+
+   The feature cards, requirements check, and pricing call to action are
+   composed together on the WooCommerce, SEO, and Health screens. Each block
+   used to carry its own (inconsistent) margins, which left them butted
+   against each other. The stack owns the rhythm instead, and children reset
+   their margins so the spacing stays even however the blocks are combined.
+   ========================================================= */
+
+.algolia-pro-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  margin: 24px 0 4px;
+}
+
+.algolia-pro-stack > * {
+  margin: 0;
+}
+
+/* Standalone on a settings card these blocks need their own rounded edges;
+   inside the Pro upsell they inherit the wrapper's clipped corners. */
+.algolia-pro-stack .algolia-pro-upsell__features {
+  border-radius: 8px;
+}
+
+.algolia-pro-stack .algolia-pro-requirements {
+  border-radius: 0 8px 8px 0;
+}
+
+/*
+ * Closing offer panel. In the Pro hero the pricing sits directly on the
+ * gradient, but on a plain settings card it needs a container of its own or it
+ * reads as loose text falling out of the card.
+ */
+.algolia-pro-stack .algolia-pro-pricing {
+  align-items: center;
+  background: var(--algolia-gray);
+  border: 1px solid #dcdce6;
+  border-radius: 8px;
+  gap: 20px 28px;
+  justify-content: space-between;
+  padding: 22px 26px;
+}
+
+.algolia-pro-stack .algolia-pro-pricing__actions {
+  flex-shrink: 0;
+}
+
+@media screen and (max-width: 782px) {
+  .algolia-pro-stack .algolia-pro-pricing {
+    padding: 18px 20px;
   }
 }
