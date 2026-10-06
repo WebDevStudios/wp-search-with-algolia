@@ -420,24 +420,12 @@ abstract class Algolia_Index {
 	/**
 	 * Get index.
 	 *
-	 * Historically returned the SDK v3 "index object" so callers could chain
-	 * methods like `->getObject()` directly on it. SDK v4 has no such object,
-	 * so this now returns a lightweight adapter that forwards those method
-	 * calls to the real client instead, to avoid breaking integrations (for
-	 * example, third-party add-ons) that have not yet been updated to call
-	 * the client directly.
-	 *
-	 * @author     WebDevStudios <contact@webdevstudios.com>
-	 * @since       1.0.0
-	 * @since       3.0.1 Returns a backward-compatibility adapter instead of false.
-	 * @deprecated  3.0.0 Use Algolia_Index::get_client() directly instead.
-	 * @see         Algolia_Index::get_client()
-	 *
-	 * @return Algolia_Index_Legacy_Client_Adapter
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 * @since  1.0.0
 	 */
 	public function get_index() {
-		_deprecated_function( __FUNCTION__, '3.0.0', 'Algolia_Index::get_client()' );
-		return new Algolia_Index_Legacy_Client_Adapter( $this->get_client(), $this->get_name() );
+		_deprecated_function( __FUNCTION__, '3.0.0' );
+		return false;
 	}
 
 	/**
