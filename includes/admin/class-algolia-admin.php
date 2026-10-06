@@ -150,6 +150,7 @@ class Algolia_Admin {
 			'algolia-admin-push-settings-button',
 			'algoliaPushSettingsButton',
 			[
+				'nonce'                => wp_create_nonce( 'algolia_push_settings' ),
 				'noDataIndex'          => esc_html__( 'Clicked button has no "data-index" set.', 'wp-search-with-algolia' ),
 				'pushBtnAlert'         => esc_html__( 'Warning: Pushing settings will override the settings in the Algolia dashboard. Do you want to continue?', 'wp-search-with-algolia' ),
 				'successfullyPushed'   => esc_html__( 'Settings successfully pushed for index:', 'wp-search-with-algolia' ),
@@ -163,6 +164,7 @@ class Algolia_Admin {
 			'algolia-admin-reindex-button',
 			'algoliaPushReindexButton',
 			[
+				'nonce'                => wp_create_nonce( 'algolia_re_index' ),
 				'reindexAbort'         => esc_html__( 'If you leave now, re-indexing tasks in progress will be aborted', 'wp-search-with-algolia' ),
 				'noDataindex'          => esc_html__( 'Clicked button has no "data-index" set.', 'wp-search-with-algolia' ),
 				'processingPrefix'     => esc_html__( 'Processing, please be patient ...', 'wp-search-with-algolia' ),
