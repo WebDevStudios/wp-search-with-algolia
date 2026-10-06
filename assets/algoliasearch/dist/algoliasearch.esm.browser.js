@@ -232,7 +232,7 @@ function encode(format, ...args) {
     return format.replace(/%s/g, () => encodeURIComponent(args[i++]));
 }
 
-const version = '4.18.0';
+const version = '4.25.2';
 
 const AuthMode = {
     /**
@@ -697,7 +697,7 @@ function createDeserializationError(message, response) {
 function createRetryError(transporterStackTrace) {
     return {
         name: 'RetryError',
-        message: 'Unreachable hosts - your application id may be incorrect. If the error persists, contact support@algolia.com.',
+        message: 'Unreachable hosts - your application id may be incorrect. If the error persists, please reach out to the Algolia Support team: https://alg.li/support .',
         transporterStackTrace,
     };
 }
@@ -2055,6 +2055,114 @@ function createConsoleLogger(logLevel) {
     };
 }
 
+const getRecommendations = base => {
+    return (queries, requestOptions) => {
+        const requests = queries.map(query => ({
+            ...query,
+            // The `threshold` param is required by the endpoint to make it easier
+            // to provide a default value later, so we default it in the client
+            // so that users don't have to provide a value.
+            threshold: query.threshold || 0,
+        }));
+        return base.transporter.read({
+            method: MethodEnum.Post,
+            path: '1/indexes/*/recommendations',
+            data: {
+                requests,
+            },
+            cacheable: true,
+        }, requestOptions);
+    };
+};
+
+const getFrequentlyBoughtTogether = base => {
+    return (queries, requestOptions) => {
+        return getRecommendations(base)(queries.map(query => ({
+            ...query,
+            fallbackParameters: {},
+            model: 'bought-together',
+        })), requestOptions);
+    };
+};
+
+const getRelatedProducts = base => {
+    return (queries, requestOptions) => {
+        return getRecommendations(base)(queries.map(query => ({
+            ...query,
+            model: 'related-products',
+        })), requestOptions);
+    };
+};
+
+const getTrendingFacets = base => {
+    return (queries, requestOptions) => {
+        const requests = queries.map(query => ({
+            ...query,
+            model: 'trending-facets',
+            // The `threshold` param is required by the endpoint to make it easier
+            // to provide a default value later, so we default it in the client
+            // so that users don't have to provide a value.
+            threshold: query.threshold || 0,
+        }));
+        return base.transporter.read({
+            method: MethodEnum.Post,
+            path: '1/indexes/*/recommendations',
+            data: {
+                requests,
+            },
+            cacheable: true,
+        }, requestOptions);
+    };
+};
+
+const getTrendingItems = base => {
+    return (queries, requestOptions) => {
+        const requests = queries.map(query => ({
+            ...query,
+            model: 'trending-items',
+            // The `threshold` param is required by the endpoint to make it easier
+            // to provide a default value later, so we default it in the client
+            // so that users don't have to provide a value.
+            threshold: query.threshold || 0,
+        }));
+        return base.transporter.read({
+            method: MethodEnum.Post,
+            path: '1/indexes/*/recommendations',
+            data: {
+                requests,
+            },
+            cacheable: true,
+        }, requestOptions);
+    };
+};
+
+const getLookingSimilar = base => {
+    return (queries, requestOptions) => {
+        return getRecommendations(base)(queries.map(query => ({
+            ...query,
+            model: 'looking-similar',
+        })), requestOptions);
+    };
+};
+
+const getRecommendedForYou = base => {
+    return (queries, requestOptions) => {
+        const requests = queries.map(query => ({
+            ...query,
+            model: 'recommended-for-you',
+            threshold: query.threshold || 0,
+        }));
+        return base.transporter.read({
+            method: MethodEnum.Post,
+            path: '1/indexes/*/recommendations',
+            data: {
+                requests,
+            },
+            cacheable: true,
+        }, requestOptions);
+    };
+};
+
 function createBrowserXhrRequester() {
     return {
         send(request) {
@@ -2111,6 +2219,117 @@ function createBrowserXhrRequester() {
     };
 }
 
+function createIngestionClient(options) {
+    if (!options || !options.transformation || !options.transformation.region) {
+        throw transformationConfigurationError('`region` must be provided when leveraging the transformation pipeline');
+    }
+    if (options.transformation.region !== 'eu' && options.transformation.region !== 'us') {
+        throw transformationConfigurationError('`region` is required and must be one of the following: eu, us');
+    }
+    const appId = options.appId;
+    const auth = createAuth(AuthMode.WithinHeaders, appId, options.apiKey);
+    const transporter = createTransporter({
+        hosts: [
+            {
+                url: `data.${options.transformation.region}.algolia.com`,
+                accept: CallEnum.ReadWrite,
+                protocol: 'https',
+            },
+        ],
+        ...options,
+        headers: {
+            ...auth.headers(),
+            ...{ 'content-type': 'text/plain' },
+            ...options.headers,
+        },
+        queryParameters: {
+            ...auth.queryParameters(),
+            ...options.queryParameters,
+        },
+    });
+    return {
+        transporter,
+        appId,
+        addAlgoliaAgent(segment, version) {
+            transporter.userAgent.add({ segment, version });
+            transporter.userAgent.add({ segment: 'Ingestion', version });
+            transporter.userAgent.add({ segment: 'Ingestion via Algoliasearch' });
+        },
+        clearCache() {
+            return Promise.all([
+                transporter.requestsCache.clear(),
+                transporter.responsesCache.clear(),
+            ]).then(() => undefined);
+        },
+        push({ indexName, pushTaskPayload, watch }, requestOptions) {
+            if (!indexName) {
+                throw transformationConfigurationError('Parameter `indexName` is required when calling `push`.');
+            }
+            if (!pushTaskPayload) {
+                throw transformationConfigurationError('Parameter `pushTaskPayload` is required when calling `push`.');
+            }
+            if (!pushTaskPayload.action) {
+                throw transformationConfigurationError('Parameter `pushTaskPayload.action` is required when calling `push`.');
+            }
+            if (!pushTaskPayload.records) {
+                throw transformationConfigurationError('Parameter `pushTaskPayload.records` is required when calling `push`.');
+            }
+            const opts = requestOptions || { queryParameters: {} };
+            return transporter.write({
+                method: MethodEnum.Post,
+                path: encode('1/push/%s', indexName),
+                data: pushTaskPayload,
+            }, {
+                ...opts,
+                queryParameters: {
+                    ...opts.queryParameters,
+                    watch: watch !== undefined,
+                },
+            });
+        },
+    };
+}
+function saveObjectsWithTransformation(indexName, client) {
+    return (objects, requestOptions) => {
+        if (!client) {
+            throw transformationConfigurationError('`options.transformation.region` must be provided at client instantiation before calling this method.');
+        }
+        const { autoGenerateObjectIDIfNotExist, watch, ...rest } = requestOptions || {};
+        const action = autoGenerateObjectIDIfNotExist
+            ? BatchActionEnum.AddObject
+            : BatchActionEnum.UpdateObject;
+        /* eslint functional/immutable-data: "off" */
+        return client.push({
+            indexName,
+            pushTaskPayload: { action, records: objects },
+            watch,
+        }, rest);
+    };
+}
+function partialUpdateObjectsWithTransformation(indexName, client) {
+    return (objects, requestOptions) => {
+        if (!client) {
+            throw transformationConfigurationError('`options.transformation.region` must be provided at client instantiation before calling this method.');
+        }
+        const { createIfNotExists, watch, ...rest } = requestOptions || {};
+        const action = createIfNotExists
+            ? BatchActionEnum.PartialUpdateObject
+            : BatchActionEnum.PartialUpdateObjectNoCreate;
+        /* eslint functional/immutable-data: "off" */
+        return client.push({
+            indexName,
+            pushTaskPayload: { action, records: objects },
+            watch,
+        }, rest);
+    };
+}
+function transformationConfigurationError(message) {
+    return {
+        name: 'TransformationConfigurationError',
+        message,
+    };
+}
+
 function algoliasearch(appId, apiKey, options) {
     const commonOptions = {
         appId,
@@ -2143,6 +2362,14 @@ function algoliasearch(appId, apiKey, options) {
             },
         });
     };
+    /* eslint functional/no-let: "off" */
+    let ingestionTransporter;
+    if (options && options.transformation) {
+        if (!options.transformation.region) {
+            throw transformationConfigurationError('`region` must be provided when leveraging the transformation pipeline');
+        }
+        ingestionTransporter = createIngestionClient({ ...options, ...commonOptions });
+    }
     return createSearchClient({
         ...searchClientOptions,
         methods: {
@@ -2185,49 +2412,53 @@ function algoliasearch(appId, apiKey, options) {
             waitAppTask,
             customRequest,
             initIndex: base => (indexName) => {
-                return initIndex(base)(indexName, {
-                    methods: {
-                        batch,
-                        delete: deleteIndex,
-                        findAnswers,
-                        getObject,
-                        getObjects,
-                        saveObject,
-                        saveObjects,
-                        search,
-                        searchForFacetValues,
-                        waitTask,
-                        setSettings,
-                        getSettings,
-                        partialUpdateObject,
-                        partialUpdateObjects,
-                        deleteObject,
-                        deleteObjects,
-                        deleteBy,
-                        clearObjects,
-                        browseObjects,
-                        getObjectPosition,
-                        findObject,
-                        exists,
-                        saveSynonym,
-                        saveSynonyms,
-                        getSynonym,
-                        searchSynonyms,
-                        browseSynonyms,
-                        deleteSynonym,
-                        clearSynonyms,
-                        replaceAllObjects,
-                        replaceAllSynonyms,
-                        searchRules,
-                        getRule,
-                        deleteRule,
-                        saveRule,
-                        saveRules,
-                        replaceAllRules,
-                        browseRules,
-                        clearRules,
-                    },
-                });
+                return {
+                    ...initIndex(base)(indexName, {
+                        methods: {
+                            batch,
+                            delete: deleteIndex,
+                            findAnswers,
+                            getObject,
+                            getObjects,
+                            saveObject,
+                            saveObjects,
+                            search,
+                            searchForFacetValues,
+                            waitTask,
+                            setSettings,
+                            getSettings,
+                            partialUpdateObject,
+                            partialUpdateObjects,
+                            deleteObject,
+                            deleteObjects,
+                            deleteBy,
+                            clearObjects,
+                            browseObjects,
+                            getObjectPosition,
+                            findObject,
+                            exists,
+                            saveSynonym,
+                            saveSynonyms,
+                            getSynonym,
+                            searchSynonyms,
+                            browseSynonyms,
+                            deleteSynonym,
+                            clearSynonyms,
+                            replaceAllObjects,
+                            replaceAllSynonyms,
+                            searchRules,
+                            getRule,
+                            deleteRule,
+                            saveRule,
+                            saveRules,
+                            replaceAllRules,
+                            browseRules,
+                            clearRules,
+                        },
+                    }),
+                    saveObjectsWithTransformation: saveObjectsWithTransformation(indexName, ingestionTransporter),
+                    partialUpdateObjectsWithTransformation: partialUpdateObjectsWithTransformation(indexName, ingestionTransporter),
+                };
             },
             initAnalytics: () => (clientOptions) => {
                 return createAnalyticsClient({
@@ -2247,6 +2478,13 @@ function algoliasearch(appId, apiKey, options) {
                 searchClientOptions.logger.info('The `initRecommendation` method is deprecated. Use `initPersonalization` instead.');
                 return initPersonalization()(clientOptions);
             },
+            getRecommendations,
+            getFrequentlyBoughtTogether,
+            getLookingSimilar,
+            getRecommendedForYou,
+            getRelatedProducts,
+            getTrendingFacets,
+            getTrendingItems,
         },
     });
 }

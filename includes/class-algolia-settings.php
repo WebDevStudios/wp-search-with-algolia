@@ -439,10 +439,12 @@ class Algolia_Settings {
 	 */
 	protected function assert_constant_is_non_empty_string( $value, $constant_name ) {
 		if ( ! is_string( $value ) ) {
+			// phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- Exception message, never output directly.
 			throw new RuntimeException( sprintf( 'Constant %s in wp-config.php should be a string, %s given.', $constant_name, gettype( $value ) ) );
 		}
 
 		if ( 0 === mb_strlen( $value ) ) {
+			// phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- Exception message, never output directly.
 			throw new RuntimeException( sprintf( 'Constant %s in wp-config.php cannot be empty.', $constant_name ) );
 		}
 	}
@@ -609,7 +611,7 @@ class Algolia_Settings {
 	public function should_use_autocomplete_modern() {
 		$version = $this->get_autocomplete_template_version();
 
-		return $version === 'modern';
+		return 'modern' === $version;
 	}
 
 	/**
