@@ -40,5 +40,4 @@ Thumbs.db export-ignore
 webpack.config.js export-ignore
 wp-cli.local.yml export-ignore
 yarn.lock export-ignore
-/assets export-ignore
 /vendor export-ignore
