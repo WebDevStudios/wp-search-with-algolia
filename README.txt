@@ -4,7 +4,7 @@ Tags: algolia, search, autocomplete, instantsearch, ai search
 Requires at least: 6.2.9
 Tested up to: 7.1
 Requires PHP: 8.1
-Stable tag: 3.0.0
+Stable tag: 3.0.1
 License: GNU General Public License v2.0, MIT License
 
 Use Algolia AI Search & Discovery to power your website's search with AI-powered Autocomplete and InstantSearch for fast, accurate, relevant results.
@@ -147,6 +147,9 @@ All development is handled on [GitHub](https://github.com/WebDevStudios/wp-searc
 == Changelog ==
 
 Follow along with the changelog on [GitHub](https://github.com/WebDevStudios/wp-search-with-algolia/releases).
+
+= 3.0.1 =
+* Fixed: Fatal error (`RuntimeException: Item is not supported on this index.`) when a post shared a taxonomy term with an unrelated post type, or when a child post (e.g., a WooCommerce product variation) didn't match its parent's index.
 
 = 3.0.0 =
 * Updated: Migrated the bundled Algolia SDK from v3 to v4.
