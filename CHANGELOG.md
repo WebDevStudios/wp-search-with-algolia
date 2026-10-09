@@ -1,3 +1,6 @@
+## 3.0.1
+* Fixed: Fatal error (`RuntimeException: Item is not supported on this index.`) when a post shared a taxonomy term with an unrelated post type, or when a child post (e.g., a WooCommerce product variation) didn't match its parent's index.
+
 ## 3.0.0
 * Updated: Migrated the bundled Algolia SDK from v3 to v4.
 * Updated: `algoliasearch` JS client bumped from 4.18.0 to 4.25.2.

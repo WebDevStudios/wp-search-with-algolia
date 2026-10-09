@@ -8,8 +8,6 @@
  * @package WebDevStudios\WPSWA
  */
 
-use WebDevStudios\WPSWA\Algolia\AlgoliaSearch\Exceptions\AlgoliaException;
-
 /**
  * Class Algolia_Term_Post_Sync_Watcher
  *
@@ -165,10 +163,13 @@ class Algolia_Term_Post_Sync_Watcher implements Algolia_Changes_Watcher {
 		try {
 			foreach ( $this->post_indices as $index ) {
 				foreach ( $posts as $post ) {
+					if ( ! $index->supports( $post ) ) {
+						continue;
+					}
 					$index->sync( $post );
 				}
 			}
-		} catch ( AlgoliaException $exception ) {
+		} catch ( Exception $exception ) {
 			error_log( $exception->getMessage() ); // phpcs:ignore -- Legacy.
 		}
 	}
