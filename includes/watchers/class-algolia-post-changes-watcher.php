@@ -158,8 +158,15 @@ class Algolia_Post_Changes_Watcher implements Algolia_Changes_Watcher {
 		$child_posts = get_transient( 'wp_algolia_child_posts_' . $post_id );
 
 		if ( false !== $child_posts ) {
-			foreach ( $child_posts as $child_post ) {
-				$this->index->sync( $child_post );
+			try {
+				foreach ( $child_posts as $child_post ) {
+					if ( ! $this->index->supports( $child_post ) ) {
+						continue;
+					}
+					$this->index->sync( $child_post );
+				}
+			} catch ( Exception $exception ) {
+				error_log( $exception->getMessage() ); // phpcs:ignore -- Legacy.
 			}
 			delete_transient( 'wp_algolia_child_posts_' . $post_id );
 		}
