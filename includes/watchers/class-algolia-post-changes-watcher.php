@@ -58,6 +58,18 @@ class Algolia_Post_Changes_Watcher implements Algolia_Changes_Watcher {
 	public static $pmxi_is_fast_mode;
 
 	/**
+	 * Child posts waiting to be re-synced after a parent slug change.
+	 *
+	 * One watcher is created for every enabled posts index. They all need this
+	 * list, so it stays on the class instead of a transient the first watcher can delete.
+	 *
+	 * @since 3.0.2
+	 *
+	 * @var array
+	 */
+	private static $pending_child_posts = [];
+
+	/**
 	 * All Import Batch size being processed.
 	 *
 	 * @author WebDevStudios <contact@webdevstudios.com>
@@ -155,9 +167,9 @@ class Algolia_Post_Changes_Watcher implements Algolia_Changes_Watcher {
 			return;
 		}
 
-		$child_posts = get_transient( 'wp_algolia_child_posts_' . $post_id );
+		$child_posts = self::$pending_child_posts[ (int) $post_id ] ?? [];
 
-		if ( false !== $child_posts ) {
+		if ( ! empty( $child_posts ) ) {
 			try {
 				foreach ( $child_posts as $child_post ) {
 					if ( ! $this->index->supports( $child_post ) ) {
@@ -168,7 +180,6 @@ class Algolia_Post_Changes_Watcher implements Algolia_Changes_Watcher {
 			} catch ( Exception $exception ) {
 				error_log( $exception->getMessage() ); // phpcs:ignore -- Legacy.
 			}
-			delete_transient( 'wp_algolia_child_posts_' . $post_id );
 		}
 		try {
 			$this->index->sync( $post );
@@ -178,7 +189,7 @@ class Algolia_Post_Changes_Watcher implements Algolia_Changes_Watcher {
 	}
 
 	/**
-	 * Check if a slug has been changed and add the childrens into a transient ( if it has children ).
+	 * Check if a slug has been changed and remember the children for every index.
 	 *
 	 * @author WebDevStudios <contact@webdevstudios.com>
 	 *
@@ -204,7 +215,7 @@ class Algolia_Post_Changes_Watcher implements Algolia_Changes_Watcher {
 					$pending_childs[] = $child_post;
 				}
 			}
-			set_transient( 'wp_algolia_child_posts_' . $post_id, $pending_childs, 60 );
+			self::$pending_child_posts[ (int) $post_id ] = $pending_childs;
 		}
 
 	}
