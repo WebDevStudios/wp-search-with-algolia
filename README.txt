@@ -148,6 +148,9 @@ All development is handled on [GitHub](https://github.com/WebDevStudios/wp-searc
 
 Follow along with the changelog on [GitHub](https://github.com/WebDevStudios/wp-search-with-algolia/releases).
 
+= NEXT =
+* Updated composer dependencies for Strauss and WPCS. Strauss is pinned at version 0.19.5 because later versions introduce bugs with the docblock modifications and Windows paths.
+
 = 3.0.1 =
 * Fixed: Fatal error (`RuntimeException: Item is not supported on this index.`) when a post shared a taxonomy term with an unrelated post type, or when a child post (e.g., a WooCommerce product variation) didn't match its parent's index.
 
