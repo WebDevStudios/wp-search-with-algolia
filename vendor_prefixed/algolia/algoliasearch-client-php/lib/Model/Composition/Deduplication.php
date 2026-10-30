@@ -15,8 +15,7 @@ use WebDevStudios\WPSWA\Algolia\AlgoliaSearch\Model\ModelInterface;
  * @description Deduplication configures the methods used to resolve duplicate items between main search results and injected group results.
  *
  * @license MIT
- * Modified by WebDevStudios on 06-October-2026 using Strauss.
- * @see https://github.com/BrianHenryIE/strauss
+ * Modified by WebDevStudios on 30-October-2026 using {@see https://github.com/BrianHenryIE/strauss}.
  */
 class Deduplication extends AbstractModel implements ModelInterface, \ArrayAccess, \JsonSerializable
 {

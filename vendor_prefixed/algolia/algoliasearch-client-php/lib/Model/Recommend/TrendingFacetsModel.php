@@ -12,8 +12,7 @@ namespace WebDevStudios\WPSWA\Algolia\AlgoliaSearch\Model\Recommend;
  * @description Trending facet values model.  This model recommends trending facet values for the specified facet attribute.
  *
  * @license MIT
- * Modified by WebDevStudios on 06-October-2026 using Strauss.
- * @see https://github.com/BrianHenryIE/strauss
+ * Modified by WebDevStudios on 30-October-2026 using {@see https://github.com/BrianHenryIE/strauss}.
  */
 class TrendingFacetsModel
 {

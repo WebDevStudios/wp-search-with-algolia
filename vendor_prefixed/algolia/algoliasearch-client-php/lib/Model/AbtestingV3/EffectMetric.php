@@ -12,8 +12,7 @@ namespace WebDevStudios\WPSWA\Algolia\AlgoliaSearch\Model\AbtestingV3;
  * @description Metric for which you want to detect the smallest relative difference.
  *
  * @license MIT
- * Modified by WebDevStudios on 06-October-2026 using Strauss.
- * @see https://github.com/BrianHenryIE/strauss
+ * Modified by WebDevStudios on 30-October-2026 using {@see https://github.com/BrianHenryIE/strauss}.
  */
 class EffectMetric
 {

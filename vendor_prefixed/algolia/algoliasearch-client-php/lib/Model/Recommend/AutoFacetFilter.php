@@ -15,8 +15,7 @@ use WebDevStudios\WPSWA\Algolia\AlgoliaSearch\Model\ModelInterface;
  * @description Facet attribute. Only recommendations with the same value (or only recommendations with a different value) as the original viewed item are included.
  *
  * @license MIT
- * Modified by WebDevStudios on 06-October-2026 using Strauss.
- * @see https://github.com/BrianHenryIE/strauss
+ * Modified by WebDevStudios on 30-October-2026 using {@see https://github.com/BrianHenryIE/strauss}.
  */
 class AutoFacetFilter extends AbstractModel implements ModelInterface, \ArrayAccess, \JsonSerializable
 {

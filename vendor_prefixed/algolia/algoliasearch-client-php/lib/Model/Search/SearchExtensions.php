@@ -15,8 +15,7 @@ use WebDevStudios\WPSWA\Algolia\AlgoliaSearch\Model\ModelInterface;
  * @description Additional parameters for Algolia AI features. Used to enable [Query Categorization](https://www.algolia.com/doc/guides/algolia-ai/query-categorization/) and other AI-powered capabilities.
  *
  * @license MIT
- * Modified by WebDevStudios on 06-October-2026 using Strauss.
- * @see https://github.com/BrianHenryIE/strauss
+ * Modified by WebDevStudios on 30-October-2026 using {@see https://github.com/BrianHenryIE/strauss}.
  */
 class SearchExtensions extends AbstractModel implements ModelInterface, \ArrayAccess, \JsonSerializable
 {

@@ -15,8 +15,7 @@ use WebDevStudios\WPSWA\Algolia\AlgoliaSearch\Model\ModelInterface;
  * @description Extra data that can be used in the search UI.  You can use this to control aspects of your search UI, such as the order of facet names and values without changing your frontend code.
  *
  * @license MIT
- * Modified by WebDevStudios on 06-October-2026 using Strauss.
- * @see https://github.com/BrianHenryIE/strauss
+ * Modified by WebDevStudios on 30-October-2026 using {@see https://github.com/BrianHenryIE/strauss}.
  */
 class RenderingContent extends AbstractModel implements ModelInterface, \ArrayAccess, \JsonSerializable
 {

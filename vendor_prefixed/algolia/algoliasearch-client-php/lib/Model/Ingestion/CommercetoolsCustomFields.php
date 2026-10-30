@@ -15,8 +15,7 @@ use WebDevStudios\WPSWA\Algolia\AlgoliaSearch\Model\ModelInterface;
  * @description Custom fields from commercetools to add to the records.  For more information, see [Using Custom Types and Custom Fields](https://docs.commercetools.com/tutorials/custom-types).
  *
  * @license MIT
- * Modified by WebDevStudios on 06-October-2026 using Strauss.
- * @see https://github.com/BrianHenryIE/strauss
+ * Modified by WebDevStudios on 30-October-2026 using {@see https://github.com/BrianHenryIE/strauss}.
  */
 class CommercetoolsCustomFields extends AbstractModel implements ModelInterface, \ArrayAccess, \JsonSerializable
 {

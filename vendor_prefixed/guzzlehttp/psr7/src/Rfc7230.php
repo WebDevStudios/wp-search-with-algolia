@@ -2,8 +2,7 @@
 /**
  * @license MIT
  *
- * Modified by WebDevStudios on 06-October-2026 using Strauss.
- * @see https://github.com/BrianHenryIE/strauss
+ * Modified by WebDevStudios on 30-October-2026 using {@see https://github.com/BrianHenryIE/strauss}.
  */
 
 declare(strict_types=1);
@@ -74,7 +73,13 @@ final class Rfc7230
 
     private static function isValidHostHeaderHost(string $host): bool
     {
-        if (preg_match('/[\x00-\x20\x7F\/\?#@\\\\]/', $host)) {
+        $invalidHost = preg_match('/[\x00-\x20\x7F\/\?#@\\\\]/', $host);
+
+        if ($invalidHost === false) {
+            return false;
+        }
+
+        if ($invalidHost === 1) {
             return false;
         }
 

@@ -15,8 +15,7 @@ use WebDevStudios\WPSWA\Algolia\AlgoliaSearch\Model\ModelInterface;
  * @description Injected items will originate from externally provided objectIDs (that must exist in the index) given at runtime in the run request payload.
  *
  * @license MIT
- * Modified by WebDevStudios on 06-October-2026 using Strauss.
- * @see https://github.com/BrianHenryIE/strauss
+ * Modified by WebDevStudios on 30-October-2026 using {@see https://github.com/BrianHenryIE/strauss}.
  */
 class InjectedItemExternalSource extends AbstractModel implements ModelInterface, \ArrayAccess, \JsonSerializable
 {

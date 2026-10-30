@@ -5,3 +5,5 @@
 
 require_once __DIR__ . '/algolia/algoliasearch-client-php/lib/Http/Psr7/functions.php';
 require_once __DIR__ . '/ralouphie/getallheaders/src/getallheaders.php';
+require_once __DIR__ . '/symfony/deprecation-contracts/function.php';
+require_once __DIR__ . '/symfony/polyfill-php80/bootstrap.php';

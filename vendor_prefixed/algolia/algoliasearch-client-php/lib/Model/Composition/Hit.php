@@ -15,8 +15,7 @@ use WebDevStudios\WPSWA\Algolia\AlgoliaSearch\Model\ModelInterface;
  * @description Search result.  A hit is a record from your index, augmented with special attributes for highlighting, snippeting, and ranking.
  *
  * @license MIT
- * Modified by WebDevStudios on 06-October-2026 using Strauss.
- * @see https://github.com/BrianHenryIE/strauss
+ * Modified by WebDevStudios on 30-October-2026 using {@see https://github.com/BrianHenryIE/strauss}.
  */
 class Hit extends AbstractModel implements ModelInterface, \ArrayAccess, \JsonSerializable
 {

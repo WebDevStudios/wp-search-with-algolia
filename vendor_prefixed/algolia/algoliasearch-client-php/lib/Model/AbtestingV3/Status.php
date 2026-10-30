@@ -12,8 +12,7 @@ namespace WebDevStudios\WPSWA\Algolia\AlgoliaSearch\Model\AbtestingV3;
  * @description A/B test status.  - `active`. The A/B test is live and search traffic is split between the two variants. - `stopped`. You stopped the A/B test. The A/B test data is still available for analysis. - `expired`. The A/B test was automatically stopped after reaching its end date. - `failed`. Creating the A/B test failed.
  *
  * @license MIT
- * Modified by WebDevStudios on 06-October-2026 using Strauss.
- * @see https://github.com/BrianHenryIE/strauss
+ * Modified by WebDevStudios on 30-October-2026 using {@see https://github.com/BrianHenryIE/strauss}.
  */
 class Status
 {

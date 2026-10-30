@@ -12,8 +12,7 @@ namespace WebDevStudios\WPSWA\Algolia\AlgoliaSearch\Model\Ingestion;
  * @description Name of an ecommerce platform with which to authenticate. This determines which authentication type you can select.
  *
  * @license MIT
- * Modified by WebDevStudios on 06-October-2026 using Strauss.
- * @see https://github.com/BrianHenryIE/strauss
+ * Modified by WebDevStudios on 30-October-2026 using {@see https://github.com/BrianHenryIE/strauss}.
  */
 class Platform
 {

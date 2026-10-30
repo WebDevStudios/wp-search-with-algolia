@@ -2,8 +2,7 @@
 /**
  * @license MIT
  *
- * Modified by WebDevStudios on 06-October-2026 using Strauss.
- * @see https://github.com/BrianHenryIE/strauss
+ * Modified by WebDevStudios on 30-October-2026 using {@see https://github.com/BrianHenryIE/strauss}.
  */
 
 declare(strict_types=1);
@@ -1306,6 +1305,6 @@ final class MimeType
      */
     public static function fromExtension(string $extension): ?string
     {
-        return self::MIME_TYPES[strtolower($extension)] ?? null;
+        return self::MIME_TYPES[Utils::asciiToLower($extension)] ?? null;
     }
 }
