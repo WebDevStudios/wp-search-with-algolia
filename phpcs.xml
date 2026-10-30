@@ -82,11 +82,7 @@
 		<exclude name="Squiz.Commenting.FileComment.MissingCopyrightTag"/>
 	</rule>
 
-	<!--
-		WP Search With Algolia currently supports WP 5.0+.
-		https://github.com/WordPress/WordPress-Coding-Standards/wiki/Customizable-sniff-properties#minimum-wp-version-to-check-for-usage-of-deprecated-functions-classes-and-function-parameters
-	-->
-	<config name="minimum_supported_wp_version" value="5.0"/>
+	<config name="minimum_wp_version" value="6.2.9"/>
 
 	<!--
 		Configure global prefixes/namespaces.
@@ -145,19 +141,7 @@
 	<!-- Use WordPress PHP Compatibility. -->
 	<rule ref="PHPCompatibilityWP"/>
 
-	<!-- WPSWA currently supports PHP 7.4+. -->
-	<config name="testVersion" value="7.4-"/>
-
-	<!--
-		Also set text_domain and prefixes via the global config (not just
-		their sniff <property> values above). Both
-		WordPress.WP.I18n and WordPress.NamingConventions.PrefixAllGlobals
-		call trim( PHPCSHelper::get_config_data( ... ) ) to allow a CLI
-		override of their respective ruleset property, which returns null
-		when unset, triggering a PHP 8.1+ "trim(): Passing null" deprecation
-		that aborts the sniff for any matching file. Setting both here
-		avoids the null entirely.
-	-->
+	<config name="testVersion" value="8.1"/>
 	<config name="text_domain" value="wp-search-with-algolia"/>
 	<config name="prefixes" value="webdevstudios,wds,wpswa,algolia"/>
 
