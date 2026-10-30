@@ -9,6 +9,5 @@ Closes #
 
 ### Checks:
 <!--- Review the following, and put an `x` in all the boxes that apply. -->
-- [ ] [Critical Flows](https://github.com/WebDevStudios/wp-search-with-algolia/wiki/Critical-Flows) pass
-- [ ] [Release Flows](https://github.com/WebDevStudios/wp-search-with-algolia/wiki/Release-Flows) pass
+- [ ] I have run all [relevant tests](https://github.com/WebDevStudios/wp-search-with-algolia/wiki/Which-Flows-to-Run) and they pass
 - [ ] I have added [Critical Flows](https://github.com/WebDevStudios/wp-search-with-algolia/wiki/Critical-Flows) or [Release Flows](https://github.com/WebDevStudios/wp-search-with-algolia/wiki/Release-Flows) for my changes
