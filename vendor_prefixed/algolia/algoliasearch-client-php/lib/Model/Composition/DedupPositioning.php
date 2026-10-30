@@ -12,8 +12,7 @@ namespace WebDevStudios\WPSWA\Algolia\AlgoliaSearch\Model\Composition;
  * @description Deduplication positioning configures how a duplicate result should be resolved between an injected item and main search results. Current configuration supports: - 'highest': always select the item in the highest position, and remove duplicates that appear lower in the results. - 'highestInjected': duplicate result will be moved to its highest possible injected position, but not higher.    If a duplicate appears higher in main search results, it will be removed to stay it's intended group position (which could be lower than main).
  *
  * @license MIT
- * Modified by WebDevStudios on 06-October-2026 using Strauss.
- * @see https://github.com/BrianHenryIE/strauss
+ * Modified by WebDevStudios on 30-October-2026 using {@see https://github.com/BrianHenryIE/strauss}.
  */
 class DedupPositioning
 {

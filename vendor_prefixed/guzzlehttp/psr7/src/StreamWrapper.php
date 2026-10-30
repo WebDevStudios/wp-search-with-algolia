@@ -2,8 +2,7 @@
 /**
  * @license MIT
  *
- * Modified by WebDevStudios on 06-October-2026 using Strauss.
- * @see https://github.com/BrianHenryIE/strauss
+ * Modified by WebDevStudios on 30-October-2026 using {@see https://github.com/BrianHenryIE/strauss}.
  */
 
 declare(strict_types=1);
@@ -103,6 +102,11 @@ final class StreamWrapper
     public function stream_write(string $data): int
     {
         return $this->stream->write($data);
+    }
+
+    public function stream_flush(): bool
+    {
+        return true;
     }
 
     public function stream_tell(): int

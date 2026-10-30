@@ -47,9 +47,21 @@
 	<!-- Use WordPress "Extra" Coding Standards. -->
 	<rule ref="WordPress-Extra">
 		<!-- Allow array short syntax. -->
-		<exclude name="Generic.Arrays.DisallowShortArraySyntax" />
+		<exclude name="Universal.Arrays.DisallowShortArraySyntax" />
 		<!-- Allow short prefixes. -->
 		<exclude name="WordPress.NamingConventions.PrefixAllGlobals.ShortPrefixPassed"/>
+		<!--
+			Sniffs introduced by WPCS 3.x that the existing codebase does not
+			yet follow. Excluded for now to keep the upgrade a config-only change.
+		-->
+		<exclude name="Modernize.FunctionCalls.Dirname.FileConstant"/>
+		<exclude name="Squiz.Functions.MultiLineFunctionDeclaration.SpaceAfterFunction"/>
+		<exclude name="PSR2.Methods.FunctionClosingBrace.SpacingBeforeClose"/>
+		<exclude name="PSR12.Functions.ReturnTypeDeclaration.SpaceBeforeColon"/>
+		<exclude name="PSR12.Functions.ReturnTypeDeclaration.SpaceBeforeReturnType"/>
+		<exclude name="Generic.CodeAnalysis.UnusedFunctionParameter.Found"/>
+		<exclude name="Universal.ControlStructures.DisallowLonelyIf.Found"/>
+		<exclude name="Universal.Operators.DisallowStandalonePostIncrementDecrement.PostIncrementFound"/>
 	</rule>
 
 	<!-- Use WordPress "Docs" Coding Standards. -->
@@ -70,11 +82,7 @@
 		<exclude name="Squiz.Commenting.FileComment.MissingCopyrightTag"/>
 	</rule>
 
-	<!--
-		WP Search With Algolia currently supports WP 5.0+.
-		https://github.com/WordPress/WordPress-Coding-Standards/wiki/Customizable-sniff-properties#minimum-wp-version-to-check-for-usage-of-deprecated-functions-classes-and-function-parameters
-	-->
-	<config name="minimum_supported_wp_version" value="5.0"/>
+	<config name="minimum_wp_version" value="6.2.9"/>
 
 	<!--
 		Configure global prefixes/namespaces.
@@ -82,8 +90,13 @@
 	-->
 	<rule ref="WordPress.NamingConventions.PrefixAllGlobals">
 		<properties>
-			<!-- Value: replace the function, class, and variable prefixes used. Separate multiple prefixes with a comma. -->
-			<property name="prefixes" type="array" value="webdevstudios,wds,wpswa,algolia"/>
+			<!-- Value: replace the function, class, and variable prefixes used. -->
+			<property name="prefixes" type="array">
+				<element value="webdevstudios"/>
+				<element value="wds"/>
+				<element value="wpswa"/>
+				<element value="algolia"/>
+			</property>
 		</properties>
 	</rule>
 
@@ -94,17 +107,21 @@
 	<rule ref="WordPress.WP.I18n">
 		<properties>
 			<!-- Value: replace the text domain used. -->
-			<property name="text_domain" type="array" value="wp-search-with-algolia"/>
+			<property name="text_domain" type="array">
+				<element value="wp-search-with-algolia"/>
+			</property>
 		</properties>
 	</rule>
 
 	<!--
 		Precision alignment should be fine in HTML.
-		https://github.com/WordPress/WordPress-Coding-Standards/wiki/Customizable-sniff-properties#precision-alignment-exempt-certain-tokens
+		WPCS 3.0 replaced WordPress.WhiteSpace.PrecisionAlignment with
+		Universal.WhiteSpace.PrecisionAlignment (PHPCSExtra), whose equivalent
+		property is "ignoreAlignmentBefore".
 	-->
-	<rule ref="WordPress.WhiteSpace.PrecisionAlignment">
+	<rule ref="Universal.WhiteSpace.PrecisionAlignment">
 		<properties>
-			<property name="ignoreAlignmentTokens" type="array">
+			<property name="ignoreAlignmentBefore" type="array">
 				<element value="T_COMMENT"/>
 				<element value="T_INLINE_HTML"/>
 			</property>
@@ -124,19 +141,7 @@
 	<!-- Use WordPress PHP Compatibility. -->
 	<rule ref="PHPCompatibilityWP"/>
 
-	<!-- WPSWA currently supports PHP 7.4+. -->
-	<config name="testVersion" value="7.4-"/>
-
-	<!--
-		Also set text_domain and prefixes via the global config (not just
-		their sniff <property> values above). Both
-		WordPress.WP.I18n and WordPress.NamingConventions.PrefixAllGlobals
-		call trim( PHPCSHelper::get_config_data( ... ) ) to allow a CLI
-		override of their respective ruleset property, which returns null
-		when unset, triggering a PHP 8.1+ "trim(): Passing null" deprecation
-		that aborts the sniff for any matching file. Setting both here
-		avoids the null entirely.
-	-->
+	<config name="testVersion" value="8.1"/>
 	<config name="text_domain" value="wp-search-with-algolia"/>
 	<config name="prefixes" value="webdevstudios,wds,wpswa,algolia"/>
 

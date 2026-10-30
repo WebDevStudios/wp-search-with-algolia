@@ -15,8 +15,7 @@ use WebDevStudios\WPSWA\Algolia\AlgoliaSearch\Model\ModelInterface;
  * @description Boolean filter applied to the A/B test population. Each filter targets a boolean metric and decides whether to include (true) or exclude (false) matching records.
  *
  * @license MIT
- * Modified by WebDevStudios on 06-October-2026 using Strauss.
- * @see https://github.com/BrianHenryIE/strauss
+ * Modified by WebDevStudios on 30-October-2026 using {@see https://github.com/BrianHenryIE/strauss}.
  */
 class MetricsFilter extends AbstractModel implements ModelInterface, \ArrayAccess, \JsonSerializable
 {

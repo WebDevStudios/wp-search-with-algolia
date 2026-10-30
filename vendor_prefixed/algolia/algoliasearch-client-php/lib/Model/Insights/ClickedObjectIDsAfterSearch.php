@@ -15,8 +15,7 @@ use WebDevStudios\WPSWA\Algolia\AlgoliaSearch\Model\ModelInterface;
  * @description Click event after an Algolia request. Use this event to track when users click items in the search results. If you're building your category pages with Algolia, you'll also use this event.
  *
  * @license MIT
- * Modified by WebDevStudios on 06-October-2026 using Strauss.
- * @see https://github.com/BrianHenryIE/strauss
+ * Modified by WebDevStudios on 30-October-2026 using {@see https://github.com/BrianHenryIE/strauss}.
  */
 class ClickedObjectIDsAfterSearch extends AbstractModel implements ModelInterface, \ArrayAccess, \JsonSerializable
 {

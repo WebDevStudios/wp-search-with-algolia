@@ -15,8 +15,7 @@ use WebDevStudios\WPSWA\Algolia\AlgoliaSearch\Model\ModelInterface;
  * @description Query Categorization prediction returned by the AI model. This field is empty when the model cannot categorize the query. See [Query Categorization](https://www.algolia.com/doc/guides/algolia-ai/query-categorization/).
  *
  * @license MIT
- * Modified by WebDevStudios on 06-October-2026 using Strauss.
- * @see https://github.com/BrianHenryIE/strauss
+ * Modified by WebDevStudios on 30-October-2026 using {@see https://github.com/BrianHenryIE/strauss}.
  */
 class QueryCategorization extends AbstractModel implements ModelInterface, \ArrayAccess, \JsonSerializable
 {

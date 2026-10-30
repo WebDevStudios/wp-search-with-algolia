@@ -12,8 +12,7 @@ namespace WebDevStudios\WPSWA\Algolia\AlgoliaSearch\Model\Analytics;
  * @description Character that characterizes how the filter is applied.  For example, for a facet filter `facet:value`, `:` is the operator. For a numeric filter `count>50`, `>` is the operator.
  *
  * @license MIT
- * Modified by WebDevStudios on 06-October-2026 using Strauss.
- * @see https://github.com/BrianHenryIE/strauss
+ * Modified by WebDevStudios on 30-October-2026 using {@see https://github.com/BrianHenryIE/strauss}.
  */
 class Operator
 {

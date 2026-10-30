@@ -15,8 +15,7 @@ use WebDevStudios\WPSWA\Algolia\AlgoliaSearch\Model\ModelInterface;
  * @description Input for a `streaming` task whose source is of type `ga4BigqueryExport` and for which extracted data is continuously streamed.
  *
  * @license MIT
- * Modified by WebDevStudios on 06-October-2026 using Strauss.
- * @see https://github.com/BrianHenryIE/strauss
+ * Modified by WebDevStudios on 30-October-2026 using {@see https://github.com/BrianHenryIE/strauss}.
  */
 class StreamingInput extends AbstractModel implements ModelInterface, \ArrayAccess, \JsonSerializable
 {
