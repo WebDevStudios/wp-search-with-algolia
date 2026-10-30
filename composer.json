@@ -39,7 +39,7 @@
       "namespace_prefix": "WebDevStudios\\WPSWA\\",
       "classmap_prefix": "WDS_WPSWA_",
       "constant_prefix": "WDS_WPSWA_",
-      "include_modified_date": true,
+      "include_modified_date": false,
       "include_author": true,
       "packages": [
         "algolia/algoliasearch-client-php",
