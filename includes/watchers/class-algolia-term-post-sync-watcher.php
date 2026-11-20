@@ -138,10 +138,14 @@ class Algolia_Term_Post_Sync_Watcher implements Algolia_Changes_Watcher {
 		$searchable_post_types = (array) apply_filters( 'algolia_searchable_post_types', $searchable_post_types );
 
 		$searchable_index = new \Algolia_Searchable_Posts_Index( $searchable_post_types );
-		$searchable_index->set_name_prefix( $index_name_prefix );
-		$searchable_index->set_client( $client );
-		$searchable_index->set_enabled( true );
-		$post_indices[] = $searchable_index;
+
+		// Only sync to the searchable posts index when the site is using it.
+		if ( in_array( $searchable_index->get_id(), $synced_indices_ids, true ) ) {
+			$searchable_index->set_name_prefix( $index_name_prefix );
+			$searchable_index->set_client( $client );
+			$searchable_index->set_enabled( true );
+			$post_indices[] = $searchable_index;
+		}
 
 		foreach ( $post_types as $post_type ) {
 			$post_index = new \Algolia_Posts_Index( $post_type );
