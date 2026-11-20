@@ -290,29 +290,41 @@ class Algolia_Admin {
 	 * Display a notice when the Algolia API can not be queried with the stored credentials.
 	 *
 	 * @author WebDevStudios <contact@webdevstudios.com>
-	 * @since  3.0.2
+	 * @since  NEXT
 	 *
 	 * @param Exception $exception The exception thrown by the Algolia API client.
 	 */
 	private function display_api_error_notice( Exception $exception ) {
 		$allowed_html = array(
-			'a' => array(
+			'a'    => array(
 				'href' => array(),
 			),
+			'code' => array(),
 		);
 
-		if ( in_array( (int) $exception->getCode(), array( 401, 403 ), true ) ) {
+		$error        = esc_html( rtrim( $exception->getMessage(), '.' ) );
+		$settings_url = esc_url( admin_url( 'admin.php?page=algolia-account-settings' ) );
+
+		if ( ! in_array( (int) $exception->getCode(), array( 401, 403 ), true ) ) {
 			$message = sprintf(
-				// translators: placeholder is the URL to the plugin settings page.
-				__( 'The stored Algolia API credentials are invalid. They may have been rotated or revoked in the Algolia dashboard. Please <a href="%s">update your API keys</a>.', 'wp-search-with-algolia' ),
-				esc_url( admin_url( 'admin.php?page=algolia-account-settings' ) )
+				// translators: placeholder 1 is the error message returned by the Algolia API client, placeholder 2 is the URL to the plugin settings page.
+				__( 'WP Search with Algolia could not complete a request to Algolia: %1$s. Please verify your <a href="%2$s">API credentials</a>.', 'wp-search-with-algolia' ),
+				$error,
+				$settings_url
+			);
+		} elseif ( $this->plugin->get_settings()->is_api_key_in_config() ) {
+			$message = sprintf(
+				// translators: placeholder 1 is the error message returned by the Algolia API, placeholder 2 is a PHP constant name wrapped in <code>.
+				__( 'Algolia rejected the stored API credentials: %1$s. The Admin API key may be invalid, rotated, revoked, or missing required permissions. It is set by the %2$s constant, so it needs to be updated in your wp-config.php file.', 'wp-search-with-algolia' ),
+				$error,
+				'<code>ALGOLIA_API_KEY</code>'
 			);
 		} else {
 			$message = sprintf(
-				// translators: placeholder 1 is the error message returned by the Algolia API client, placeholder 2 is the URL to the plugin settings page.
-				__( 'WP Search with Algolia could not connect to Algolia: %1$s. Please verify your <a href="%2$s">API credentials</a>.', 'wp-search-with-algolia' ),
-				esc_html( rtrim( $exception->getMessage(), '.' ) ),
-				esc_url( admin_url( 'admin.php?page=algolia-account-settings' ) )
+				// translators: placeholder 1 is the error message returned by the Algolia API, placeholder 2 is the URL to the plugin settings page.
+				__( 'Algolia rejected the stored API credentials: %1$s. The Admin API key may be invalid, rotated, revoked, or missing required permissions. Please <a href="%2$s">update your API keys</a>.', 'wp-search-with-algolia' ),
+				$error,
+				$settings_url
 			);
 		}
 		?>
