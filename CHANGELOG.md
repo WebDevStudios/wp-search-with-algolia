@@ -1,4 +1,7 @@
 ## NEXT
+* Fixed: Critical error on the plugin admin screens when the stored Admin API key is no longer valid (e.g. after rotating it in the Algolia dashboard). An admin notice is now shown instead so the credentials can be updated.
+* Fixed: Fatal error during WP All Import "fast mode" imports when the Algolia API rejects the request or can not be reached. The error is now logged and the import continues.
+* Updated: `wp algolia reindex` now names the failing index in its error message when a re-index is stopped by an Algolia API error.
 * Updated composer dependencies for Strauss and WPCS. Strauss is pinned at version 0.19.5 because later versions introduce bugs with the docblock modifications and Windows paths.
 
 ## 3.0.1

@@ -65,6 +65,8 @@ class Algolia_CLI {
 	 *
 	 * @param array $args       Positional arguments.
 	 * @param array $assoc_args Associative arguments.
+	 *
+	 * @throws WP_CLI\ExitException If WP-CLI requested an exit while re-indexing.
 	 */
 	public function reindex( $args, $assoc_args ) {
 		if ( ! $this->plugin->get_api()->is_reachable() ) {
@@ -99,7 +101,14 @@ class Algolia_CLI {
 		}
 
 		foreach ( $indices as $index ) {
-			$this->do_reindex( $index, $clear, $from_batch );
+			try {
+				$this->do_reindex( $index, $clear, $from_batch );
+			} catch ( WP_CLI\ExitException $exception ) {
+				// Let WP-CLI handle its own exit requests.
+				throw $exception;
+			} catch ( Exception $exception ) {
+				WP_CLI::error( sprintf( 'Re-indexing of index "%s" failed: %s', $index->get_name(), $exception->getMessage() ) );
+			}
 		}
 	}
 
