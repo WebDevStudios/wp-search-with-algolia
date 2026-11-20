@@ -327,7 +327,11 @@ class Algolia_Post_Changes_Watcher implements Algolia_Changes_Watcher {
 				add_filter( 'algolia_clear_index_if_existing', '__return_false' );
 
 				// Push up our current batch, clear out the queue, and increment our current page.
-				$this->index->re_index( 1, $this->posts_updated );
+				try {
+					$this->index->re_index( 1, $this->posts_updated );
+				} catch ( Exception $exception ) {
+					error_log( $exception->getMessage() ); // phpcs:ignore -- Legacy.
+				}
 				$this->posts_updated = [];
 				$current_page++;
 
@@ -352,7 +356,11 @@ class Algolia_Post_Changes_Watcher implements Algolia_Changes_Watcher {
 					add_filter( 'algolia_clear_index_if_existing', '__return_false' );
 
 					// Push up our final batch, clear out the queue just in case.
-					$this->index->re_index( 1, $this->posts_updated );
+					try {
+						$this->index->re_index( 1, $this->posts_updated );
+					} catch ( Exception $exception ) {
+						error_log( $exception->getMessage() ); // phpcs:ignore -- Legacy.
+					}
 					$this->posts_updated = [];
 
 					// Clear out for next import run.
