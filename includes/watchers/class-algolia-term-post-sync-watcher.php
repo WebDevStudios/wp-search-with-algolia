@@ -134,6 +134,9 @@ class Algolia_Term_Post_Sync_Watcher implements Algolia_Changes_Watcher {
 			]
 		);
 
+		// This filter is documented in includes/class-algolia-plugin.php.
+		$searchable_post_types = (array) apply_filters( 'algolia_searchable_post_types', $searchable_post_types );
+
 		$searchable_index = new \Algolia_Searchable_Posts_Index( $searchable_post_types );
 		$searchable_index->set_name_prefix( $index_name_prefix );
 		$searchable_index->set_client( $client );
