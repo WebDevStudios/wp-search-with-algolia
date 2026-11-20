@@ -501,75 +501,78 @@ abstract class Algolia_Index {
 		 */
 		$this->reindexing = true;
 
-		foreach ( $items as $item ) {
-			if ( ! $this->should_index( $item ) ) {
-				$this->delete_item( $item );
-				continue;
+		try {
+			foreach ( $items as $item ) {
+				if ( ! $this->should_index( $item ) ) {
+					$this->delete_item( $item );
+					continue;
+				}
+
+				/**
+				 * Fires before the retrieval of a record to be re-indexed.
+				 *
+				 * @since 1.0.0
+				 *
+				 * @param mixed $item The item to be re-indexed.
+				 */
+				do_action( 'algolia_before_get_records', $item );
+				$item_records = $this->get_records( $item );
+				$records      = array_merge( $records, $item_records );
+
+				/**
+				 * Fires after the retrieval of a record to be re-indexed.
+				 *
+				 * @since 1.0.0
+				 *
+				 * @param mixed $item The item to be re-indexed.
+				 */
+				do_action( 'algolia_after_get_records', $item );
+
+				$this->update_records( $item, $item_records );
 			}
 
-			/**
-			 * Fires before the retrieval of a record to be re-indexed.
-			 *
-			 * @since 1.0.0
-			 *
-			 * @param mixed $item The item to be re-indexed.
-			 */
-			do_action( 'algolia_before_get_records', $item );
-			$item_records = $this->get_records( $item );
-			$records      = array_merge( $records, $item_records );
+			if ( ! empty( $records ) ) {
 
-			/**
-			 * Fires after the retrieval of a record to be re-indexed.
-			 *
-			 * @since 1.0.0
-			 *
-			 * @param mixed $item The item to be re-indexed.
-			 */
-			do_action( 'algolia_after_get_records', $item );
+				/**
+				 * Filters the records to be reindexed.
+				 *
+				 * @since 2.1.0
+				 *
+				 * @param array  $records  Array of records to re-index.
+				 * @param int    $page     Page to re-index.
+				 * @param string $index_id The index ID without prefix.
+				 */
+				$records = apply_filters(
+					'algolia_re_index_records',
+					$records,
+					$page,
+					$this->get_id()
+				);
 
-			$this->update_records( $item, $item_records );
-		}
-
-		if ( ! empty( $records ) ) {
-
-			/**
-			 * Filters the records to be reindexed.
-			 *
-			 * @since 2.1.0
-			 *
-			 * @param array  $records  Array of records to re-index.
-			 * @param int    $page     Page to re-index.
-			 * @param string $index_id The index ID without prefix.
-			 */
-			$records = apply_filters(
-				'algolia_re_index_records',
-				$records,
-				$page,
-				$this->get_id()
-			);
-
-			try {
-				$sanitized_records = $this->sanitize_json_data( $records );
-			} catch ( \Throwable $throwable ) {
-				error_log( $throwable->getMessage() ); // phpcs:ignore -- Need a real logger.
+				try {
+					$sanitized_records = $this->sanitize_json_data( $records );
+				} catch ( \Throwable $throwable ) {
+					error_log( $throwable->getMessage() ); // phpcs:ignore -- Need a real logger.
+				}
 			}
-		}
 
-		// Don't saveObjects if sanitize_json_data failed.
-		if ( ! empty( $sanitized_records ) ) {
+			// Don't saveObjects if sanitize_json_data failed.
+			if ( ! empty( $sanitized_records ) ) {
 
-			$client = $this->get_client();
-			try {
-				$client->saveObjects( $this->get_name(), $sanitized_records );
-			} catch ( \Throwable $throwable ) {
-				error_log( $throwable->getMessage() ); // phpcs:ignore -- Need a real logger.
+				$client = $this->get_client();
+				try {
+					$client->saveObjects( $this->get_name(), $sanitized_records );
+				} catch ( \Throwable $throwable ) {
+					error_log( $throwable->getMessage() ); // phpcs:ignore -- Need a real logger.
+				}
 			}
+		} finally {
+			/**
+			 * Set the reindexing bit back to false, even when an item failed,
+			 * so that later syncs on this index are not skipped.
+			 */
+			$this->reindexing = false;
 		}
-
-		/**
-		 * Set the reindexing bit back to false.
-		 */
-		$this->reindexing = false;
 
 		if ( $page === $max_num_pages ) {
 
