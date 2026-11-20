@@ -1,4 +1,5 @@
 ## NEXT
+* Fixed: Critical error on the plugin admin screens when the stored Admin API key is no longer valid (e.g. after rotating it in the Algolia dashboard). An admin notice is now shown instead so the credentials can be updated.
 * Updated composer dependencies for Strauss and WPCS. Strauss is pinned at version 0.19.5 because later versions introduce bugs with the docblock modifications and Windows paths.
 
 ## 3.0.1
