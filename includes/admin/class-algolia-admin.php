@@ -252,8 +252,15 @@ class Algolia_Admin {
 
 		$client = $this->plugin->get_api()->get_client();
 		foreach ( $indices as $index ) {
-			if ( $client->indexExists( $index->get_name() ) ) {
-				continue;
+			try {
+				if ( $client->indexExists( $index->get_name() ) ) {
+					continue;
+				}
+			} catch ( Exception $exception ) {
+				// The index status is unknown, e.g. because the stored API key was rotated or revoked.
+				$this->display_api_error_notice( $exception );
+
+				return;
 			}
 			?>
 			<div class="error">
@@ -277,6 +284,42 @@ class Algolia_Admin {
 			</div>
 			<?php
 		}
+	}
+
+	/**
+	 * Display a notice when the Algolia API can not be queried with the stored credentials.
+	 *
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 * @since  3.0.2
+	 *
+	 * @param Exception $exception The exception thrown by the Algolia API client.
+	 */
+	private function display_api_error_notice( Exception $exception ) {
+		$allowed_html = array(
+			'a' => array(
+				'href' => array(),
+			),
+		);
+
+		if ( in_array( (int) $exception->getCode(), array( 401, 403 ), true ) ) {
+			$message = sprintf(
+				// translators: placeholder is the URL to the plugin settings page.
+				__( 'The stored Algolia API credentials are invalid. They may have been rotated or revoked in the Algolia dashboard. Please <a href="%s">update your API keys</a>.', 'wp-search-with-algolia' ),
+				esc_url( admin_url( 'admin.php?page=algolia-account-settings' ) )
+			);
+		} else {
+			$message = sprintf(
+				// translators: placeholder 1 is the error message returned by the Algolia API client, placeholder 2 is the URL to the plugin settings page.
+				__( 'WP Search with Algolia could not connect to Algolia: %1$s. Please verify your <a href="%2$s">API credentials</a>.', 'wp-search-with-algolia' ),
+				esc_html( rtrim( $exception->getMessage(), '.' ) ),
+				esc_url( admin_url( 'admin.php?page=algolia-account-settings' ) )
+			);
+		}
+		?>
+		<div class="notice notice-error">
+			<p><?php echo wp_kses( $message, $allowed_html ); ?></p>
+		</div>
+		<?php
 	}
 
 	/**
