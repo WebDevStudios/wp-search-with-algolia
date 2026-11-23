@@ -369,7 +369,7 @@ class Algolia_Post_Changes_Watcher implements Algolia_Changes_Watcher {
 	 * does not interrupt the import.
 	 *
 	 * @author WebDevStudios <contact@webdevstudios.com>
-	 * @since  NEXT
+	 * @since  3.0.2
 	 *
 	 * @return void
 	 */

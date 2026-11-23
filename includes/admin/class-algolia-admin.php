@@ -290,7 +290,7 @@ class Algolia_Admin {
 	 * Display a notice when the Algolia API can not be queried with the stored credentials.
 	 *
 	 * @author WebDevStudios <contact@webdevstudios.com>
-	 * @since  NEXT
+	 * @since  3.0.2
 	 *
 	 * @param Exception $exception The exception thrown by the Algolia API client.
 	 */
