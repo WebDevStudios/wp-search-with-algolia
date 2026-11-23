@@ -327,7 +327,7 @@ class Algolia_Post_Changes_Watcher implements Algolia_Changes_Watcher {
 				add_filter( 'algolia_clear_index_if_existing', '__return_false' );
 
 				// Push up our current batch, clear out the queue, and increment our current page.
-				$this->index->re_index( 1, $this->posts_updated );
+				$this->re_index_updated_posts();
 				$this->posts_updated = [];
 				$current_page++;
 
@@ -352,13 +352,41 @@ class Algolia_Post_Changes_Watcher implements Algolia_Changes_Watcher {
 					add_filter( 'algolia_clear_index_if_existing', '__return_false' );
 
 					// Push up our final batch, clear out the queue just in case.
-					$this->index->re_index( 1, $this->posts_updated );
+					$this->re_index_updated_posts();
 					$this->posts_updated = [];
 
 					// Clear out for next import run.
 					delete_option( 'algolia_pmxi_page' );
 				}
 			}
+		}
+	}
+
+	/**
+	 * Re-index the posts collected during a WP All Import "fast mode" batch.
+	 *
+	 * Failures are logged instead of thrown, so that an Algolia API error
+	 * does not interrupt the import.
+	 *
+	 * @author WebDevStudios <contact@webdevstudios.com>
+	 * @since  3.0.2
+	 *
+	 * @return void
+	 */
+	private function re_index_updated_posts() {
+		try {
+			$this->index->re_index( 1, $this->posts_updated );
+		} catch ( Exception $exception ) {
+			// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- Legacy.
+			error_log(
+				sprintf(
+					'WP Search with Algolia: a WP All Import batch of %1$d post(s) was not synced to the "%2$s" index: %3$s. Post IDs: %4$s',
+					count( $this->posts_updated ),
+					$this->index->get_name(),
+					rtrim( $exception->getMessage(), '.' ),
+					implode( ', ', array_map( 'intval', $this->posts_updated ) )
+				)
+			);
 		}
 	}
 }

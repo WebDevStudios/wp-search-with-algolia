@@ -4,7 +4,7 @@ Tags: algolia, search, autocomplete, instantsearch, ai search
 Requires at least: 6.2.9
 Tested up to: 7.1
 Requires PHP: 8.1
-Stable tag: 3.0.1
+Stable tag: 3.0.2
 License: GNU General Public License v2.0, MIT License
 
 Use Algolia AI Search & Discovery to power your website's search with AI-powered Autocomplete and InstantSearch for fast, accurate, relevant results.
@@ -148,7 +148,11 @@ All development is handled on [GitHub](https://github.com/WebDevStudios/wp-searc
 
 Follow along with the changelog on [GitHub](https://github.com/WebDevStudios/wp-search-with-algolia/releases).
 
-= NEXT =
+= 3.0.2 =
+* Fixed: Editing a term no longer adds posts to the searchable posts index when their post type is excluded by the `algolia_searchable_post_types` filter, or when the site does not use that index.
+* Fixed: Critical error on the plugin admin screens when the stored Admin API key is no longer valid (e.g. after rotating it in the Algolia dashboard). An admin notice is now shown instead so the credentials can be updated.
+* Fixed: Fatal error during WP All Import "fast mode" imports when the Algolia API rejects the request or can not be reached. The error is now logged and the import continues.
+* Updated: `wp algolia reindex` now names the failing index in its error message when a re-index is stopped by an Algolia API error.
 * Updated composer dependencies for Strauss and WPCS. Strauss is pinned at version 0.19.5 because later versions introduce bugs with the docblock modifications and Windows paths.
 
 = 3.0.1 =
