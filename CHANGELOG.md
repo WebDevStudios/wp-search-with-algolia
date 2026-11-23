@@ -1,4 +1,4 @@
-## NEXT
+## 3.0.2
 * Fixed: Editing a term no longer adds posts to the searchable posts index when their post type is excluded by the `algolia_searchable_post_types` filter, or when the site does not use that index.
 * Fixed: Critical error on the plugin admin screens when the stored Admin API key is no longer valid (e.g. after rotating it in the Algolia dashboard). An admin notice is now shown instead so the credentials can be updated.
 * Fixed: Fatal error during WP All Import "fast mode" imports when the Algolia API rejects the request or can not be reached. The error is now logged and the import continues.
